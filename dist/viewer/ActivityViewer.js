@@ -12,6 +12,8 @@ import {useToast, toastType} from "../_framework/Toast.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {enumerateCombinations} from "../core/utils/enumeration.js";
 import {determineNumberOfActivityVariants, parseActivityDefinition} from "../_utils/activityUtils.js";
+import createComponentInfoObjects from "../core/utils/componentInfoObjects.js";
+import {addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSerializedComponents} from "../core/utils/serializedStateProcessing.js";
 let rngClass = prng_alea;
 export default function ActivityViewer(props) {
   const toast = useToast();
@@ -32,6 +34,7 @@ export default function ActivityViewer(props) {
   const [nPages, setNPages] = useState(1);
   const [variantsByPage, setVariantsByPage] = useState(null);
   const [itemWeights, setItemWeights] = useState(null);
+  const previousComponentTypeCountsByPage = useRef([]);
   const [cidChanged, setCidChanged] = useState(props.cidChanged);
   const serverSaveId = useRef(null);
   const activityStateToBeSavedToDatabase = useRef(null);
@@ -192,6 +195,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
         activityInfo.current = newActivityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
         loadedState = true;
@@ -242,6 +246,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
         activityInfo.current = newActivityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
       } else {
@@ -263,6 +268,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(results.variantsByPage);
         setItemWeights(results.itemWeights);
         newItemWeights = results.itemWeights;
+        previousComponentTypeCountsByPage.current = results.previousComponentTypeCounts;
         activityInfo.current = results.activityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
       }
@@ -403,11 +409,13 @@ export default function ActivityViewer(props) {
     }
     let orderWithCids = [...originalOrder];
     newOrder.forEach((v, i) => orderWithCids[i].cid = v.cid);
+    let previousComponentTypeCounts = await initializeComponentTypeCounts(newOrder);
     let activityInfo2 = {
       orderWithCids,
       variantsByPage: variantsByPage2,
       itemWeights: itemWeights2,
-      numberOfVariants: activityVariantResult.numberOfVariants
+      numberOfVariants: activityVariantResult.numberOfVariants,
+      previousComponentTypeCounts
     };
     return {
       success: true,
@@ -415,7 +423,8 @@ export default function ActivityViewer(props) {
       itemWeights: itemWeights2,
       variantsByPage: variantsByPage2,
       variantIndex: variantIndex2,
-      activityInfo: activityInfo2
+      activityInfo: activityInfo2,
+      previousComponentTypeCounts
     };
   }
   async function saveState() {
@@ -641,6 +650,7 @@ export default function ActivityViewer(props) {
   }
   if (activityContentChanged) {
     setActivityContentChanged(false);
+    previousComponentTypeCountsByPage.current = [];
     setStage("wait");
     loadState().then((results) => {
       if (results) {
@@ -670,6 +680,7 @@ export default function ActivityViewer(props) {
       cid: page.cid,
       doenetML: page.doenetML,
       pageNumber: (ind + 1).toString(),
+      previousComponentTypeCounts: previousComponentTypeCountsByPage.current[ind],
       pageIsActive: ind + 1 === currentPage,
       itemNumber,
       attemptNumber,
@@ -835,4 +846,29 @@ function processShuffleOrder(order, rng) {
     }
   }
   return {success: true, pages};
+}
+async function initializeComponentTypeCounts(order) {
+  let previousComponentTypeCountsByPage = [{}];
+  let componentInfoObjects = createComponentInfoObjects();
+  for (let [ind, page] of order.slice(0, order.length - 1).entries()) {
+    let {fullSerializedComponents} = await expandDoenetMLsToFullSerializedComponents({
+      contentIds: [page.cid],
+      doenetMLs: [page.doenetML],
+      componentInfoObjects
+    });
+    let serializedComponents = fullSerializedComponents[0];
+    addDocumentIfItsMissing(serializedComponents);
+    let documentChildren = serializedComponents[0].children;
+    let componentTypeCounts = countComponentTypes(documentChildren);
+    let countsSoFar = previousComponentTypeCountsByPage[ind];
+    for (let cType in countsSoFar) {
+      if (cType in componentTypeCounts) {
+        componentTypeCounts[cType] += countsSoFar[cType];
+      } else {
+        componentTypeCounts[cType] = countsSoFar[cType];
+      }
+    }
+    previousComponentTypeCountsByPage.push(componentTypeCounts);
+  }
+  return previousComponentTypeCountsByPage;
 }

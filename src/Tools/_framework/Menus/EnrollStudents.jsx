@@ -12,7 +12,7 @@ const setPageToolView = useSetRecoilState(pageToolViewAtom);
 const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   
   return <ButtonGroup vertical>
-  <Button width="menu" onClick={()=>setPageToolView({page:'course',tool:"enrollment",view:"",params:{courseId}})} value="Go to Enrollment">Go to Enrollment</Button>
+  <Button width="menu" onClick={()=>setPageToolView({page:'course',tool:"people",view:"",params:{courseId}})} value="Go to People">Go to People</Button>
   </ButtonGroup>
 }
 

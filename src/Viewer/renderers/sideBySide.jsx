@@ -6,7 +6,7 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 
 
 export default React.memo(function sideBySide(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   // console.log(">>>name: ", name, " value: ", SVs);
   // console.log(">>>children",children)
 
@@ -66,8 +66,8 @@ export default React.memo(function sideBySide(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <div id={name} style={{display:"flex",maxWidth:"850px", margin: "12px 0"}}>
-      <a name={name} />
+    <div id={id} style={{display:"flex",maxWidth:"850px", margin: "12px 0"}}>
+      <a name={id} />
       {styledChildren}
     </div>
     </VisibilitySensor>

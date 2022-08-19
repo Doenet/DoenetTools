@@ -8,12 +8,16 @@ header('Content-Type: application/json');
 include '../api/db_connection.php';
 include "../api/lexicographicalRankingSort.php";
 
+$_POST = json_decode(file_get_contents('php://input'), true);
+
+
 $message = "";
 $success = TRUE;
-$courseId = $_REQUEST['courseId'];
-$doenetId = $_REQUEST['doenetId'];
-$parentDoenetId = $_REQUEST['parentDoenetId'];
-$pageDoenetId = $_REQUEST['pageDoenetId'];
+$courseId = $_POST['courseId'];
+$doenetId = $_POST['doenetId'];
+$parentDoenetId = $_POST['parentDoenetId'];
+$pageDoenetId = $_POST['pageDoenetId'];
+$doenetML = $_POST['doenetML'];
 
 if ($parentDoenetId == ""){
   $parentDoenetId = $courseId;
@@ -83,7 +87,7 @@ if ($success){
       $conn->query($sql);
 
 
-      //Create blank file for page
+      //Create file for page
       $filename = "../media/byPageId/$pageDoenetId.doenet";
       $dirname = dirname($filename);
       if (!is_dir($dirname)) {
@@ -95,7 +99,7 @@ if ($success){
           $success = false;
           $message = "Unable to open file!";
       } else {
-          // don't write anything to file so that it is a blank file
+          fwrite($newfile, $doenetML);
           fclose($newfile);
       }
 

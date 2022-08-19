@@ -5,7 +5,7 @@ import { sizeToCSS } from './utils/css';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Image(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props, false);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
   let [url, setUrl] = useState(null)
 
   let onChangeVisibility = isVisible => {
@@ -60,18 +60,18 @@ export default React.memo(function Image(props) {
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <div style={outerStyle}>
-        <a name={name} />
+        <a name={id} />
         {
           url || SVs.source ?
             <img
-              id={name}
+              id={id}
               src={url ? url : SVs.source ? SVs.source : ""}
               style={imageStyle}
               alt={SVs.description}
             />
             :
             <div
-              id={name}
+              id={id}
               style={imageStyle}
             >
               {SVs.description}

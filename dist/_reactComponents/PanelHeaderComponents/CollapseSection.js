@@ -20,6 +20,10 @@ const SectionHeader = Styled.div`
   text-align: center;
   background-color: var(--mainGray);
   color: var(--canvastext);
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 const SectionContent = Styled.div`
   padding: 1em;
@@ -40,7 +44,6 @@ export default function CollapseSection(props) {
   const labelVisible = props.label ? "static" : "none";
   const align = props.vertical ? "static" : "flex";
   const width = props.width ? props.width : null;
-  const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
   const disabled = props.disabled ? props.disabled : null;
   const label = props.label ? props.label : null;
   let contentStyle = collapsed ? {display: "none"} : {display: "block"};
@@ -51,17 +54,23 @@ export default function CollapseSection(props) {
     transform: `${collapsed ? "" : "rotate(90deg)"}`
   };
   return /* @__PURE__ */ React.createElement(Section, {
-    "aria-label": ariaLabel,
     width
   }, /* @__PURE__ */ React.createElement(Label, {
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(SectionHeader, {
+    "aria-label": title,
+    "aria-labelledby": label,
+    "aria-disabled": disabled,
     style: headerStyle,
     disabled,
     onClick: () => {
       disabled ? "" : setCollapsed(!collapsed);
-    }
+    },
+    onKeyDown: (e) => {
+      disabled ? "" : e.key === "Enter" || e.key === "Spacebar" || e.key === " " ? setCollapsed(!collapsed) : "";
+    },
+    tabIndex: "0"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCaretRight,
     style: arrowIcon

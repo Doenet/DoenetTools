@@ -42,6 +42,7 @@ export default function DateTime(props) {
   };
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
     return /* @__PURE__ */ React.createElement("div", null, props.label ? /* @__PURE__ */ React.createElement(Label, {
+      id: "checkbox-label",
       vertical: props.vertical
     }, props.label) : null, /* @__PURE__ */ React.createElement("input", {
       ...propsRI,
@@ -54,6 +55,8 @@ export default function DateTime(props) {
         ...props.style
       },
       ref: inputRef,
+      "aria-labelledby": "checkbox-label",
+      "aria-haspopup": "true",
       onChange: (e) => {
         setCursorStart(e.target.selectionStart);
         setCursorEnd(e.target.selectionEnd);

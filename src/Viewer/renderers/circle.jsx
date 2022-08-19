@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 export default React.memo(function Circle(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
   Circle.ignoreActionsWithoutCore = true;
 
@@ -198,7 +198,7 @@ export default React.memo(function Circle(props) {
 
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = circleJXG.current;
+        board.itemsRenderedLowQuality[id] = circleJXG.current;
       }
 
 
@@ -290,7 +290,7 @@ export default React.memo(function Circle(props) {
     return null;
   }
 
-  return <a name={name} />
+  return <a name={id} />
 
 })
 

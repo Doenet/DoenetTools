@@ -1,4 +1,4 @@
-import { r as react } from '../common/index-61623f21.js';
+import { r as react } from '../common/index-56a88a1e.js';
 import '../common/_commonjsHelpers-f5d70792.js';
 
 function clamp(v, min, max) {
@@ -939,8 +939,10 @@ class DragEngine extends CoordinatesEngine {
       bindFunction('lostPointerCapture', '', this.pointerUp.bind(this));
     }
 
-    bindFunction('key', 'down', this.keyDown.bind(this));
-    bindFunction('key', 'up', this.keyUp.bind(this));
+    if (this.config.keys) {
+      bindFunction('key', 'down', this.keyDown.bind(this));
+      bindFunction('key', 'up', this.keyUp.bind(this));
+    }
 
     if (this.config.filterTaps) {
       bindFunction('click', '', this.pointerClick.bind(this), {
@@ -1033,6 +1035,10 @@ const dragConfigResolver = _objectSpread2(_objectSpread2({}, coordinatesConfigRe
   }) {
     this.pointerButtons = buttons;
     return !this.pointerLock && this.device === 'pointer' && capture;
+  },
+
+  keys(value = true) {
+    return value;
   },
 
   threshold(value, _k, {
@@ -1339,11 +1345,11 @@ class PinchEngine extends Engine {
       bindFunction(device, 'change', this[device + 'Move'].bind(this));
       bindFunction(device, 'end', this[device + 'End'].bind(this));
       bindFunction(device, 'cancel', this[device + 'End'].bind(this));
-    } else {
-      bindFunction('wheel', '', this.wheel.bind(this), {
-        passive: false
-      });
     }
+
+    bindFunction('wheel', '', this.wheel.bind(this), {
+      passive: false
+    });
   }
 
 }

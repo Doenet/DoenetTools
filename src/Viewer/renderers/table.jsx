@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Table(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -57,12 +57,12 @@ export default React.memo(function Table(props) {
       }
     }
 
-    heading = <div id={name + "_title"}>{title}</div>
+    heading = <div id={id + "_title"}>{title}</div>
 
     return (
       <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <div id={name} style={{ margin: "12px 0" }}>
-        <a name={name} />
+      <div id={id} style={{ margin: "12px 0" }}>
+        <a name={id} />
         {heading}
         {childrenToRender}
       </div>

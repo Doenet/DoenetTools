@@ -1,42 +1,44 @@
 import {faFolderTree} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {itemByDoenetId, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {
+  itemByDoenetId,
+  selectedCourseItems,
+  useCourse
+} from "../../_reactComponents/Course/CourseActions.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
-import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
+import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {toastType, useToast} from "../Toast.js";
 export default function SelectedSection() {
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const doenetId = useRecoilValue(selectedCourseItems)[0];
+  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const {label: recoilLabel, isAssigned} = useRecoilValue(itemByDoenetId(doenetId));
   const {renameItem, deleteItem} = useCourse(courseId);
-  const [itemTextFieldLabel, setItemTextFieldLabel] = useState(itemObj.label);
+  const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const {updateAssignItem} = useCourse(courseId);
   let assignSectionText = "Assign Section";
-  if (itemObj.isAssigned) {
+  if (isAssigned) {
     assignSectionText = "Unassign Section";
   }
   useEffect(() => {
-    if (itemTextFieldLabel !== itemObj.label) {
-      setItemTextFieldLabel(itemObj.label);
-    }
-  }, [doenetId]);
+    setItemTextFieldLabel(recoilLabel);
+  }, [recoilLabel]);
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === "") {
-      effectiveItemLabel = itemObj.label;
-      if (itemObj.label === "") {
+      effectiveItemLabel = recoilLabel;
+      if (recoilLabel === "") {
         effectiveItemLabel = "Untitled";
       }
       setItemTextFieldLabel(effectiveItemLabel);
       addToast("Every item must have a label.");
     }
-    if (itemObj.label !== effectiveItemLabel) {
+    if (recoilLabel !== effectiveItemLabel) {
       renameItem(doenetId, effectiveItemLabel);
     }
   };
@@ -46,46 +48,45 @@ export default function SelectedSection() {
     style: {margin: "16px 5px"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faFolderTree
-  }), " ", itemObj.label);
-  if (effectiveRole === "student") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, heading);
-  }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButton, {
-    width: "menu",
-    value: assignSectionText,
-    onClick: () => {
-      console.log("itemObj.isAssigned", itemObj.isAssigned);
-      let toastText = "Section Assigned.";
-      if (itemObj.isAssigned) {
-        toastText = "Section Unassigned.";
-      }
-      updateAssignItem({
-        doenetId,
-        isAssigned: !itemObj.isAssigned,
-        successCallback: () => {
-          addToast(toastText, toastType.INFO);
+  }), " ", recoilLabel);
+  if (canEditContent === "1") {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButton, {
+      width: "menu",
+      value: assignSectionText,
+      onClick: () => {
+        let toastText = "Section Assigned.";
+        if (isAssigned) {
+          toastText = "Section Unassigned.";
         }
-      });
-    }
-  }), /* @__PURE__ */ React.createElement(Textfield, {
-    label: "Label",
-    vertical: true,
-    width: "menu",
-    value: itemTextFieldLabel,
-    onChange: (e) => setItemTextFieldLabel(e.target.value),
-    onKeyDown: (e) => {
-      if (e.keyCode === 13)
-        handelLabelModfication();
-    },
-    onBlur: handelLabelModfication
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
-    width: "menu",
-    value: "Delete Section",
-    alert: true,
-    onClick: (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      deleteItem({doenetId});
-    }
-  }));
+        updateAssignItem({
+          doenetId,
+          isAssigned: !isAssigned,
+          successCallback: () => {
+            addToast(toastText, toastType.INFO);
+          }
+        });
+      }
+    }), /* @__PURE__ */ React.createElement(Textfield, {
+      label: "Label",
+      vertical: true,
+      width: "menu",
+      value: itemTextFieldLabel,
+      onChange: (e) => setItemTextFieldLabel(e.target.value),
+      onKeyDown: (e) => {
+        if (e.keyCode === 13)
+          handelLabelModfication();
+      },
+      onBlur: handelLabelModfication
+    }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+      width: "menu",
+      value: "Delete Section",
+      alert: true,
+      onClick: (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteItem({doenetId});
+      }
+    }));
+  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, heading);
 }

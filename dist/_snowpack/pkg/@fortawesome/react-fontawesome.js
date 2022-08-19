@@ -1,9 +1,9 @@
 import { p as propTypes } from '../common/index-d3677bfe.js';
-import { r as react } from '../common/index-61623f21.js';
+import { r as react } from '../common/index-56a88a1e.js';
 import '../common/_commonjsHelpers-f5d70792.js';
 
 /*!
- * Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2022 Fonticons, Inc.
  */
@@ -249,7 +249,7 @@ var LONG_STYLE_TO_PREFIX = {
   'fa-solid': 'fas',
   'fa-thin': 'fat'
 };
-var ICON_SELECTION_SYNTAX_PATTERN = /fa[srltdbk\-\ ]/; // eslint-disable-line no-useless-escape
+var ICON_SELECTION_SYNTAX_PATTERN = /fa[srltdbk]?[\-\ ]/; // eslint-disable-line no-useless-escape
 
 var LAYERS_TEXT_CLASSNAME = 'fa-layers-text';
 var FONT_FAMILY_PATTERN = /Font ?Awesome ?([56 ]*)(Solid|Regular|Light|Thin|Duotone|Brands|Free|Pro|Kit)?.*/i; // TODO: do we need to handle font-weight for kit SVG pseudo-elements?
@@ -1536,7 +1536,7 @@ var p = config.measurePerformance && PERFORMANCE && PERFORMANCE.mark && PERFORMA
   mark: noop$1,
   measure: noop$1
 };
-var preamble = "FA \"6.1.1\"";
+var preamble = "FA \"6.1.2\"";
 
 var begin = function begin(name) {
   p.mark("".concat(preamble, " ").concat(name, " begins"));
@@ -1817,6 +1817,10 @@ function classParser (node) {
     val.iconName = byLigature(val.prefix, node.innerText) || byUnicode(val.prefix, toHex(node.innerText));
   }
 
+  if (!val.iconName && config.autoFetchSvg && node.firstChild && node.firstChild.nodeType === Node.TEXT_NODE) {
+    val.iconName = node.firstChild.data;
+  }
+
   return val;
 }
 
@@ -1926,6 +1930,11 @@ function onTree(root) {
   };
 
   var prefixes = config.autoFetchSvg ? Object.keys(PREFIX_TO_STYLE) : Object.keys(styles$2);
+
+  if (!prefixes.includes('fa')) {
+    prefixes.push('fa');
+  }
+
   var prefixesDomQuery = [".".concat(LAYERS_TEXT_CLASSNAME, ":not([").concat(DATA_FA_I2SVG, "])")].concat(prefixes.map(function (p) {
     return ".".concat(p, ":not([").concat(DATA_FA_I2SVG, "])");
   })).join(', ');
@@ -3018,6 +3027,7 @@ function classList(props) {
     'fa-inverse': inverse,
     'fa-border': border,
     'fa-li': listItem,
+    'fa-flip': flip === true,
     'fa-flip-horizontal': flip === 'horizontal' || flip === 'both',
     'fa-flip-vertical': flip === 'vertical' || flip === 'both'
   }, _defineProperty$1(_classes, "fa-".concat(size), typeof size !== 'undefined' && size !== null), _defineProperty$1(_classes, "fa-rotate-".concat(rotation), typeof rotation !== 'undefined' && rotation !== null && rotation !== 0), _defineProperty$1(_classes, "fa-pull-".concat(pull), typeof pull !== 'undefined' && pull !== null), _defineProperty$1(_classes, 'fa-swap-opacity', props.swapOpacity), _classes); // map over all the keys in the classes object
@@ -3230,6 +3240,7 @@ FontAwesomeIcon.displayName = 'FontAwesomeIcon';
 FontAwesomeIcon.propTypes = {
   beat: propTypes.bool,
   border: propTypes.bool,
+  beatFade: propTypes.bool,
   bounce: propTypes.bool,
   className: propTypes.string,
   fade: propTypes.bool,
@@ -3238,7 +3249,7 @@ FontAwesomeIcon.propTypes = {
   maskId: propTypes.string,
   fixedWidth: propTypes.bool,
   inverse: propTypes.bool,
-  flip: propTypes.oneOf(['horizontal', 'vertical', 'both']),
+  flip: propTypes.oneOf([true, false, 'horizontal', 'vertical', 'both']),
   icon: propTypes.oneOfType([propTypes.object, propTypes.array, propTypes.string]),
   listItem: propTypes.bool,
   pull: propTypes.oneOf(['right', 'left']),
@@ -3262,7 +3273,7 @@ FontAwesomeIcon.defaultProps = {
   maskId: null,
   fixedWidth: false,
   inverse: false,
-  flip: null,
+  flip: false,
   icon: null,
   listItem: false,
   pull: null,
@@ -3270,6 +3281,8 @@ FontAwesomeIcon.defaultProps = {
   rotation: null,
   size: null,
   spin: false,
+  spinPulse: false,
+  spinReverse: false,
   beat: false,
   fade: false,
   beatFade: false,

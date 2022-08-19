@@ -253,11 +253,19 @@ function substituteDeprecations(serializedComponents) {
   // Note: use lower case for keys
   let deprecatedPropertySubstitutions = {
     tname: "target",
-    triggerwithtnames: "triggerWithTargets",
-    updatewithtname: "updateWithTarget",
+    triggerwithtnames: "triggerWith",
+    updatewithtname: "updateWith",
     paginatortname: "paginator",
     randomizeorder: "shuffleOrder",
-    copytarget: "copySource"
+    copytarget: "copySource",
+    triggerwithtargets: "triggerWith",
+    triggerwhentargetsclicked: "triggerWhenObjectsClicked",
+    fortarget: "forObject",
+    targetattributestoignore: "sourceAttributesToIgnore",
+    targetattributestoignorerecursively: "sourceAttributesToIgnoreRecursively",
+    targetsareresponses: "sourcesAreResponses",
+    updatewithtarget: "updateWith",
+    targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
   }
 
   // Note: use lower case for keys
@@ -269,6 +277,9 @@ function substituteDeprecations(serializedComponents) {
     collect: {
       target: "source",
       tname: "source",
+    },
+    summarystatistics: {
+      target: "source",
     }
   }
 
@@ -987,7 +998,6 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           // TODO: if previous component is a string,
           // keep going back and add string lengths to get actual index
           if (componentInd > 0 && serializedComponents[componentInd - 1].range) {
-            console.log(serializedComponents, serializedComponents[componentInd - 1])
             let previousRange = serializedComponents[componentInd - 1].range;
             if (previousRange.closeEnd) {
               macroStartInd += previousRange.closeEnd;
@@ -1241,11 +1251,10 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
   let newAttributes = componentsForAttributes[0].attributes;
 
   if (newAttributes.prop || newAttributes.propIndex || newAttributes.componentIndex) {
-    console.warn("Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex")
-    // return {
-    //   success: false,
-    //   message: "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex"
-    // }
+    return {
+      success: false,
+      message: "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex"
+    }
   }
   return { success: true, newAttributes }
 }
@@ -1934,6 +1943,86 @@ function breakStringInPiecesBySpacesOrParens(string) {
     success: true,
     pieces: pieces,
   }
+
+}
+
+export function countRegularComponentTypesInNamespace(serializedComponents, componentCounts = {}) {
+
+  for (let serializedComponent of serializedComponents) {
+    if (typeof serializedComponent === "object") {
+
+      let componentType = serializedComponent.componentType;
+
+      let count = componentCounts[componentType];
+      if (count === undefined) {
+        count = 0;
+      }
+
+      let doenetAttributes = serializedComponent.doenetAttributes;
+
+      // if created from a attribute/sugar/macro, don't include in component counts
+      if (!(doenetAttributes?.isAttributeChild || doenetAttributes?.createdFromSugar
+        || doenetAttributes?.createdFromMacro
+      )) {
+        componentCounts[componentType] = ++count;
+      }
+
+      if (serializedComponent.children && !serializedComponent.attributes?.newNamespace?.primitive) {
+        // if don't have new namespace, recurse to children
+        componentCounts = countRegularComponentTypesInNamespace(serializedComponent.children, componentCounts);
+      }
+    }
+  }
+
+  return componentCounts;
+
+}
+
+export function renameAutonameBasedOnNewCounts(serializedComponents, newComponentCounts = {}) {
+
+  let componentCounts = { ...newComponentCounts };
+
+  for (let serializedComponent of serializedComponents) {
+    if (typeof serializedComponent === "object") {
+
+      let componentType = serializedComponent.componentType;
+
+      let count = componentCounts[componentType];
+      if (count === undefined) {
+        count = 0;
+      }
+
+      let doenetAttributes = serializedComponent.doenetAttributes;
+
+      // if created from a attribute/sugar/macro, don't include in component counts
+      if (!(doenetAttributes?.isAttributeChild || doenetAttributes?.createdFromSugar
+        || doenetAttributes?.createdFromMacro
+      )) {
+        componentCounts[componentType] = ++count;
+
+        // check if name was created from counting components
+
+        if (serializedComponent.componentName) {
+          let lastSlash = serializedComponent.componentName.lastIndexOf('/');
+          let originalName = serializedComponent.componentName.substring(lastSlash + 1);
+          let nameStartFromComponentType = '_' + componentType.toLowerCase();
+          if (originalName.substring(0, nameStartFromComponentType.length) === nameStartFromComponentType) {
+            // recreate using new count
+            serializedComponent.componentName = serializedComponent.componentName.substring(0, lastSlash + 1)
+              + nameStartFromComponentType + count;
+          }
+        }
+
+      }
+
+      if (serializedComponent.children && !serializedComponent.attributes?.newNamespace?.primitive) {
+        // if don't have new namespace, recurse to children
+        componentCounts = renameAutonameBasedOnNewCounts(serializedComponent.children, componentCounts);
+      }
+    }
+  }
+
+  return componentCounts;
 
 }
 
@@ -3332,11 +3421,143 @@ function indexRangeString(serializedComponent) {
       indEnd = serializedComponent.range.selfCloseEnd;
     } else if (serializedComponent.range.openBegin !== undefined) {
       indBegin = serializedComponent.range.openBegin;
-      indEnd = serializedComponent.range.openEnd;
+      indEnd = serializedComponent.range.closeEnd;
     }
     if (indBegin !== undefined) {
       message += ` at indices ${indBegin}-${indEnd}`;
     }
   }
   return message;
+}
+
+export function extractComponentNamesAndIndices(serializedComponents, nameSubstitutions = {}) {
+  let componentArray = [];
+
+  for (let serializedComponent of serializedComponents) {
+    if (typeof serializedComponent === "object") {
+      let componentName = serializedComponent.componentName;
+      for (let originalName in nameSubstitutions) {
+        componentName = componentName.replace(originalName, nameSubstitutions[originalName])
+      }
+      if (serializedComponent.doenetAttributes?.fromCopyTarget) {
+        let lastSlash = componentName.lastIndexOf("/");
+        let originalName = componentName.slice(lastSlash + 1);
+        let newName = serializedComponent.doenetAttributes.assignNames[0];
+        componentName = componentName.replace(originalName, newName);
+        nameSubstitutions[originalName] = newName;
+      }
+      let componentObj = {
+        componentName
+      }
+      if (serializedComponent.range) {
+        if (serializedComponent.range.selfCloseBegin !== undefined) {
+          componentObj.indBegin = serializedComponent.range.selfCloseBegin;
+          componentObj.indEnd = serializedComponent.range.selfCloseEnd;
+        } else if (serializedComponent.range.openBegin !== undefined) {
+          componentObj.indBegin = serializedComponent.range.openBegin;
+          componentObj.indEnd = serializedComponent.range.closeEnd;
+        }
+      }
+
+      componentArray.push(componentObj);
+
+      if (serializedComponent.children) {
+        componentArray.push(...extractComponentNamesAndIndices(serializedComponent.children, { ...nameSubstitutions }))
+      }
+
+    }
+  }
+
+  return componentArray;
+
+}
+
+export function extractRangeIndexPieces({
+  componentArray, lastInd = 0, stopInd = Infinity, enclosingComponentName
+}) {
+
+  let rangePieces = [];
+
+  let componentInd = 0;
+  let foundComponentAfterStopInd = false;
+  while (componentInd < componentArray.length) {
+    let componentObj = componentArray[componentInd];
+
+    if (componentObj.indBegin === undefined) {
+      componentInd++;
+      continue;
+    }
+
+    if (componentObj.indBegin > stopInd) {
+      if (enclosingComponentName && lastInd <= stopInd) {
+        rangePieces.push({
+          begin: lastInd,
+          end: stopInd,
+          componentName: enclosingComponentName
+        })
+      }
+      foundComponentAfterStopInd = true;
+      break;
+    }
+
+    if (enclosingComponentName && componentObj.indBegin > lastInd) {
+      rangePieces.push({
+        begin: lastInd,
+        end: componentObj.indBegin - 1,
+        componentName: enclosingComponentName
+      })
+    }
+
+
+    let extractResult = extractRangeIndexPieces({
+      componentArray: componentArray.slice(componentInd + 1),
+      lastInd: componentObj.indBegin,
+      stopInd: componentObj.indEnd,
+      enclosingComponentName: componentObj.componentName
+    });
+
+    componentInd += extractResult.componentsConsumed + 1;
+    rangePieces.push(...extractResult.rangePieces);
+
+    lastInd = componentObj.indEnd + 1;
+
+  }
+
+  if (!foundComponentAfterStopInd && Number.isFinite(stopInd) && stopInd >= lastInd) {
+    rangePieces.push({
+      begin: lastInd,
+      end: stopInd,
+      componentName: enclosingComponentName
+    })
+  }
+
+
+  return { componentsConsumed: componentInd, rangePieces };
+
+}
+
+export function countComponentTypes(serializedComponents) {
+  let componentTypeCounts = {};
+
+  for (let component of serializedComponents) {
+    if (typeof component === "object") {
+      let cType = component.componentType;
+      let nComponents = 1;
+      if (component.attributes?.createComponentOfType?.primitive) {
+        cType = component.attributes.createComponentOfType.primitive;
+        nComponents = component.attributes.nComponents?.primitive;
+        if (!(Number.isInteger(nComponents) && nComponents > 0)) {
+          nComponents = 1;
+        }
+      }
+      if (cType in componentTypeCounts) {
+        componentTypeCounts[cType] += nComponents;
+      } else {
+        componentTypeCounts[cType] = nComponents;
+      }
+    }
+  }
+
+  return componentTypeCounts;
+
 }

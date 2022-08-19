@@ -13,23 +13,24 @@ import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPane
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByPageId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
+import { useValidateEmail } from '../../_utils/hooks/useValidateEmail';
 
-const enrollmentAtomByCourseId = atomFamily({
-  key:"enrollmentAtomByCourseId",
+const peopleAtomByCourseId = atomFamily({
+  key:"peopleAtomByCourseId",
   default:[],
   effects:courseId => [ ({setSelf, trigger})=>{
     if (trigger == 'get' && courseId){
-      axios.get('/api/getEnrollment.php', { params: { courseId } })
+      axios.get('/api/loadCoursePeople.php', { params: { courseId } })
       .then(resp=>{
-        setSelf(resp.data.enrollmentArray)
+        setSelf(resp.data.peopleArray)
       })
     } 
   },
   ]
 })
 
-export const enrollmentByCourseId = selectorFamily({
-  key:"enrollmentByCourseId",
+export const peopleByCourseId = selectorFamily({
+  key:"peopleByCourseId",
   get:(courseId)=>({get,getCallback})=>{
     const recoilWithdraw = getCallback(({set})=> async (email)=>{
         let payload = {
@@ -41,7 +42,7 @@ export const enrollmentByCourseId = selectorFamily({
           let resp = await axios.post('/api/withDrawStudents.php', payload);
           // console.log("resp",resp.data)
           if (resp.status < 300) {
-            set(enrollmentAtomByCourseId(courseId),
+            set(peopleAtomByCourseId(courseId),
           ( prev ) => {
               let next = [...prev];
               const indexOfStudent = next.findIndex((value)=>value.email == email)
@@ -69,7 +70,7 @@ export const enrollmentByCourseId = selectorFamily({
         let resp = await axios.post('/api/unWithDrawStudents.php', payload);
         // console.log("resp",resp.data)
         if (resp.status < 300) {
-          set(enrollmentAtomByCourseId(courseId),
+          set(peopleAtomByCourseId(courseId),
         ( prev ) => {
             let next = [...prev];
             const indexOfStudent = next.findIndex((value)=>value.email == email)
@@ -87,15 +88,14 @@ export const enrollmentByCourseId = selectorFamily({
     
     })
 
-    const recoilMergeData = getCallback(({set})=> async (payload)=>{
+    const recoilMergeData = getCallback(({set})=> async (payload, successCallback)=>{
       try {
-        let resp = await axios.post('/api/mergeEnrollmentData.php', payload);
-        // console.log("resp",resp.data)
-        if (resp.status < 300) {
-          set(enrollmentAtomByCourseId(courseId),resp.data.enrollmentArray);
-          //TODO (Emilio): toast
+        let {data: {success, peopleArray, message}} = await axios.post('/api/mergePeopleData.php', {...payload, courseId});
+        if (success) {
+          set(peopleAtomByCourseId(courseId),peopleArray);
+          successCallback?.()
         } else {
-          throw new Error(`response code: ${resp.status}`);
+          throw new Error(message);
         }
       } catch (err) {
         //TODO (Emilio): toast
@@ -104,7 +104,7 @@ export const enrollmentByCourseId = selectorFamily({
     })
 
     return {
-      value:get(enrollmentAtomByCourseId(courseId)),
+      value:get(peopleAtomByCourseId(courseId)),
       recoilWithdraw,
       recoilUnWithdraw,
       recoilMergeData
@@ -325,23 +325,24 @@ export function useSetCourseIdFromDoenetId(doenetId) {
   const item = useRecoilValue(itemByDoenetId('doenetId'));
   const setCourseId = useSetRecoilState(courseIdAtom);
 
-  useEffect(async () => {
+  useEffect(() => {
 
     // if item is found, then we already have the course with doenetId initialized
     if(Object.keys(item).length > 0) {
       return;
     }
   
-    const { data } = await axios.get('/api/getCourseIdFromDoenetId.php', {
+    axios.get('/api/getCourseIdFromDoenetId.php', {
       params: { doenetId },
-    });
+    }).then(({data}) => {
+      if(data.success) {
+        setCourseId(data.courseId);
+      } else {
+        setCourseId("__not_found__")
+      }
+    }).catch(console.error)
   
-    if(data.success) {
-      setCourseId(data.courseId);
-    } else {
-      setCourseId("__not_found__")
-    }
-  
+
   }, [doenetId])
 
 }
@@ -517,6 +518,50 @@ export const coursePermissionsAndSettingsByCourseId = selectorFamily({
     },
 });
 
+
+const unfilteredCourseRolesByCourseId = atomFamily({
+  key: 'unfilteredCourseRolesByCourseId',
+  effects: courseId => [
+    async ({ setSelf, trigger }) => {
+      if (trigger === 'get') {
+        const { data: {roles} } = await axios.get(
+          '/api/loadCourseRoles.php', { params:{ courseId } }
+        );
+        setSelf(roles);
+      }
+    }
+  ]
+})
+
+export const courseRolesByCourseId = selectorFamily({
+  key: 'filteredCourseRolesByCourseId',
+  get: courseId => ({get}) => {
+    const permissonsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
+    const roles = get(unfilteredCourseRolesByCourseId(courseId));
+
+    const ignoreKeys = ['isIncludedInGradebook', 'sectionPermissonOnly', 'dataAccessPermission', 'roleId', 'roleLabel'];
+    let filteredRoles = roles?.filter((role) => {
+      let valid = 
+        role.roleId === permissonsAndSettings.roleId 
+        || !Object.keys(role).every((permKey) => (
+              (role[permKey] ?? '0') === permissonsAndSettings[permKey] 
+              || ignoreKeys.includes(permKey) 
+              ||  (role[permKey] ?? '0') === '1' && permissonsAndSettings[permKey] === '0'
+          ))
+      return (valid)
+    }) ?? [];
+    return filteredRoles;
+  }
+})
+
+export const courseRolePermissonsByCourseIdRoleId = selectorFamily({
+  key: 'courseRoleByCourseIdRoleId',
+  get: ({courseId, roleId}) => ({get}) => {
+    return get(unfilteredCourseRolesByCourseId(courseId))?.find(({roleId: candidateRoleId}) => candidateRoleId === roleId) ?? {};
+  }
+})
+
+
 export const useCreateCourse = () => {
   const createCourse = useRecoilCallback(({ set }) => async () => {
     let {
@@ -595,7 +640,7 @@ function findContentsChildIds(content){
 }
 
 export const useCourse = (courseId) => {
-  const { label, color, image } = useRecoilValue(
+  const { label, color, image, defaultRoleId } = useRecoilValue(
     coursePermissionsAndSettingsByCourseId(courseId),
   );
   const addToast = useToast();
@@ -891,6 +936,7 @@ export const useCourse = (courseId) => {
             showHints: true,
             showCorrectness: true,
             showCreditAchievedMenu: true,
+            paginate: true,
             proctorMakesAvailable: false,
             pinnedAfterDate: null,
             pinnedUntilDate: null,
@@ -1213,8 +1259,6 @@ export const useCourse = (courseId) => {
       },
   );
 
- 
-
   const modifyCourse = useRecoilCallback(
     ({ set }) =>
       async (
@@ -1237,10 +1281,113 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
       },
   );
+
+  const validateEmail = useValidateEmail();
+
+
+  const addUser = useRecoilCallback(({set}) => async (email, options, successCallback, failureCallback = defaultFailure) => {
+    try {
+      if (!validateEmail(email)) throw new Error('Invalid email, try again');
+      const {
+        data: { success, message, userData: serverUserData },
+      } = await axios.post('/api/addCourseUser.php', {
+        courseId,
+        email,
+        ...options,
+      });
+      if(success) {
+        set(peopleAtomByCourseId(courseId), (prev) => ([...prev, {...serverUserData}]));
+        successCallback(message);
+      } else {
+        throw new Error(message);
+      }
+    } catch (err) {
+      failureCallback(err.message);
+    }
+    
+  });
+
+  const modifyUserRole = useRecoilCallback(({set}) => async (email, roleId, successCallback, failureCallback = defaultFailure) => {
+    try {
+      const {
+        data: { success, message },
+      } = await axios.post('api/updateUserRole.php', {
+        courseId,
+        userEmail: email,
+        roleId
+      });
+      if(success) {
+        set(peopleAtomByCourseId(courseId), (prev) => {
+          const next = prev.slice(0);
+          const idx = prev.findIndex(({email: candidate}) => (candidate === email))
+          next[idx] = {...prev[idx], roleId}
+          return next
+        });
+        successCallback();
+      } else {
+        throw new Error(message);
+      }
+    } catch (err) {
+      failureCallback(err.message);
+    }
+    
+  });
+
+  const modifyRolePermissions = useRecoilCallback(({set}) => 
+    async (roleId, newPermissions, successCallback, failureCallback = defaultFailure) =>
+    {
+      try {
+
+        const { 
+          data: {
+            success, 
+            message, 
+            actionType, 
+            roleId: serverRoleId,
+            updatedPermissions
+        }} = await axios.post('/api/updateRolePermissons.php', {
+              courseId, 
+              roleId, 
+              permissions: {...newPermissions, label: newPermissions?.roleLabel}
+        })
+
+        if(success) {
+          set(
+            unfilteredCourseRolesByCourseId(courseId), (prev => {
+              const next = [...prev];
+              const idx = prev.findIndex(({roleId: candidateRoleId}) => candidateRoleId === serverRoleId);
+              let {label: roleLabel} = updatedPermissions;
+              if(roleLabel === undefined) roleLabel = prev[idx].roleLabel;
+              switch(actionType) {
+                case 'add':
+                  next.push({...updatedPermissions,roleLabel, roleId: serverRoleId})
+                  break;
+                case 'update':
+                  next.splice(idx, 1, {...prev[idx],...updatedPermissions,roleLabel})
+                  break;
+                case 'delete':
+                  next.splice(idx, 1);
+                  break;
+              }
+              return next;
+            })
+          )
+          successCallback();
+        } else {
+          throw new Error(message);
+        }
+      } catch (err) {
+        failureCallback(err.message);
+      }
+    }, 
+    [courseId, defaultFailure]
+    );
+
+  
 
   const deleteCourse = useRecoilCallback(
     ({ set }) =>
@@ -1256,51 +1403,52 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
       },
     [courseId, defaultFailure],
   );
 
-  const renameItem = useRecoilCallback( ({ snapshot,set }) =>
-  async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
-    try {
-        //Undo copy and cut
-        let cutObjs = await snapshot.getPromise(cutCourseItems);
-        for (let cutObj of cutObjs){
-          set(itemByDoenetId(cutObj.doenetId),(prev)=>{
-            let next = {...prev};
-            next['isBeingCut'] = false;
-            return next;
-          })
+  const renameItem = useRecoilCallback(
+    ({ snapshot,set }) =>
+      async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
+        try {
+          //Undo copy and cut
+          let cutObjs = await snapshot.getPromise(cutCourseItems);
+          for (let cutObj of cutObjs){
+            set(itemByDoenetId(cutObj.doenetId),(prev)=>{
+              let next = {...prev};
+              next['isBeingCut'] = false;
+              return next;
+            })
+          }
+          set(cutCourseItems,[]);
+          set(copiedCourseItems,[]);
+
+
+          let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId))
+          let resp = await axios.get('/api/renameCourseItem.php', {params:{ courseId,doenetId,newLabel,type:itemObj.type } });
+          if (resp.status < 300) {
+            let updatedItem = resp.data.item;
+            if (itemObj.type !== 'page'){
+              updatedItem.isOpen = itemObj.isOpen;
+            }
+            set(itemByDoenetId(doenetId),(prev)=>{
+              let next = {...prev}
+              next.label = updatedItem.label;
+              return next
+            });
+            
+            // updatedItem.isSelected = itemObj.isSelected;
+            // set(itemByDoenetId(doenetId),updatedItem);
+
+            successCallback?.();
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          failureCallback(err.message);
         }
-        set(cutCourseItems,[]);
-        set(copiedCourseItems,[]);
-
-
-      let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId))
-      let resp = await axios.get('/api/renameCourseItem.php', {params:{ courseId,doenetId,newLabel,type:itemObj.type } });
-      if (resp.status < 300) {
-        let updatedItem = resp.data.item;
-        if (itemObj.type !== 'page'){
-          updatedItem.isOpen = itemObj.isOpen;
-        }
-        set(itemByDoenetId(doenetId),(prev)=>{
-          let next = {...prev}
-          next.label = updatedItem.label;
-          return next
-        });
-        
-        // updatedItem.isSelected = itemObj.isSelected;
-        // set(itemByDoenetId(doenetId),updatedItem);
-
-        successCallback?.();
-      } else {
-        throw new Error(`response code: ${resp.status}`);
-      }
-    } catch (err) {
-      failureCallback(err);
-    }
   },
 [courseId, defaultFailure],
   );
@@ -1310,10 +1458,10 @@ export const useCourse = (courseId) => {
     async ({ doenetId, isAssigned, successCallback, failureCallback = defaultFailure }) => {
       try {
 
-      let resp = await axios.get('/api/updateIsAssignedOnAnItem.php', {params:{ courseId,doenetId,isAssigned } });
-      // console.log("resp.data",resp.data)
-      if (resp.status < 300) {
-        // let isAssigned = resp.data.isAssigned;
+        let resp = await axios.get('/api/updateIsAssignedOnAnItem.php', {params:{ courseId,doenetId,isAssigned } });
+        // console.log("resp.data",resp.data)
+        if (resp.status < 300) {
+          // let isAssigned = resp.data.isAssigned;
 
         set(itemByDoenetId(doenetId),(prev)=>{
           let next = {...prev}
@@ -1326,7 +1474,7 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
       } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
       }
   },[courseId,defaultFailure]);
 
@@ -1410,7 +1558,7 @@ export const useCourse = (courseId) => {
             .map(x => contentToDoenetML({ content: x, indentLevel: 1 }))))
             .join("");
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
 
         let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
@@ -1441,7 +1589,7 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
   });
 
@@ -1759,7 +1907,7 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
 
   });
@@ -2122,7 +2270,7 @@ export const useCourse = (courseId) => {
               throw new Error(`response code: ${resp.status}`);
             }
           } catch (err) {
-            failureCallback(err);
+            failureCallback(err.message);
           }
         }
 
@@ -2407,7 +2555,7 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
         }
 
@@ -2453,13 +2601,16 @@ export const useCourse = (courseId) => {
       })
 
 
-  return { create, 
+  return { 
+    label, 
+    color, 
+    image,
+    defaultRoleId,
+    create, 
     deleteItem, 
     deleteCourse, 
     modifyCourse, 
-    label, 
-    color, 
-    image, 
+    modifyRolePermissions,
     renameItem, 
     compileActivity, 
     updateAssignItem,
@@ -2468,5 +2619,7 @@ export const useCourse = (courseId) => {
     cutItems,
     pasteItems,
     findPagesFromDoenetIds,
+    addUser,
+    modifyUserRole
    };
 };

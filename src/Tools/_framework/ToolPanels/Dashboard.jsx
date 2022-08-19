@@ -11,31 +11,23 @@ import {
   profileAtom,
 } from '../NewToolRoot';
 import Next7Days from '../Widgets/Next7Days';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCode,
-  faUser,
-  faChartPie,
-  faTasks,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCode, faUser, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const { canModifyCourseSettings, canManageUsers, dataAccessPermission } =
+    useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
   let profile = loadProfile.contents;
 
   useEffect(() => {
-    if (effectiveRole === 'student') {
-      setSuppressMenus(['ClassTimes']);
-    } else {
-      setSuppressMenus([]);
-    }
-  }, [effectiveRole, setSuppressMenus]);
+    setSuppressMenus(canModifyCourseSettings === '1' ? [] : ['ClassTimes']);
+  }, [canModifyCourseSettings, setSuppressMenus]);
 
   return (
     <div style={props?.style ?? {}}>
@@ -61,35 +53,35 @@ export default function Dashboard(props) {
               });
             }}
           />
-          {effectiveRole === 'instructor' ? (
-            <>
-              <Card
-                name="Enrollment"
-                icon={<FontAwesomeIcon icon={faUser} />}
-                value="Enrollment"
-                onClick={() =>
-                  setPageToolView({
-                    page: 'course',
-                    tool: 'enrollment',
-                    view: '',
-                    params: { courseId },
-                  })
-                }
-              />
-              <Card
-                name="Data"
-                icon={<FontAwesomeIcon icon={faChartPie} />}
-                value="Data"
-                onClick={() =>
-                  setPageToolView({
-                    page: 'course',
-                    tool: 'data',
-                    view: '',
-                    params: { courseId },
-                  })
-                }
-              />
-            </>
+          {canManageUsers === '1' ? (
+            <Card
+              name="People"
+              icon={<FontAwesomeIcon icon={faUser} />}
+              value="People"
+              onClick={() =>
+                setPageToolView({
+                  page: 'course',
+                  tool: 'people',
+                  view: '',
+                  params: { courseId },
+                })
+              }
+            />
+          ) : null}
+          {(dataAccessPermission ?? 'None') !== 'None' ? (
+            <Card
+              name="Data"
+              icon={<FontAwesomeIcon icon={faChartPie} />}
+              value="Data"
+              onClick={() =>
+                setPageToolView({
+                  page: 'course',
+                  tool: 'data',
+                  view: '',
+                  params: { courseId },
+                })
+              }
+            />
           ) : null}
           {/* {effectiveRole === 'instructor' ?
           <Card 

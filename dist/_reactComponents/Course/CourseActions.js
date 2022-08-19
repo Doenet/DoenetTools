@@ -13,21 +13,22 @@ import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
 import {useToast, toastType} from "../../_framework/Toast.js";
 import {fileByPageId, fileByCid} from "../../_framework/ToolHandlers/CourseToolHandler.js";
 import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
-const enrollmentAtomByCourseId = atomFamily({
-  key: "enrollmentAtomByCourseId",
+import {useValidateEmail} from "../../_utils/hooks/useValidateEmail.js";
+const peopleAtomByCourseId = atomFamily({
+  key: "peopleAtomByCourseId",
   default: [],
   effects: (courseId) => [
     ({setSelf, trigger}) => {
       if (trigger == "get" && courseId) {
-        axios.get("/api/getEnrollment.php", {params: {courseId}}).then((resp) => {
-          setSelf(resp.data.enrollmentArray);
+        axios.get("/api/loadCoursePeople.php", {params: {courseId}}).then((resp) => {
+          setSelf(resp.data.peopleArray);
         });
       }
     }
   ]
 });
-export const enrollmentByCourseId = selectorFamily({
-  key: "enrollmentByCourseId",
+export const peopleByCourseId = selectorFamily({
+  key: "peopleByCourseId",
   get: (courseId) => ({get, getCallback}) => {
     const recoilWithdraw = getCallback(({set}) => async (email) => {
       let payload = {
@@ -37,7 +38,7 @@ export const enrollmentByCourseId = selectorFamily({
       try {
         let resp = await axios.post("/api/withDrawStudents.php", payload);
         if (resp.status < 300) {
-          set(enrollmentAtomByCourseId(courseId), (prev) => {
+          set(peopleAtomByCourseId(courseId), (prev) => {
             let next = [...prev];
             const indexOfStudent = next.findIndex((value) => value.email == email);
             next[indexOfStudent] = {...prev[indexOfStudent], withdrew: "1"};
@@ -57,7 +58,7 @@ export const enrollmentByCourseId = selectorFamily({
       try {
         let resp = await axios.post("/api/unWithDrawStudents.php", payload);
         if (resp.status < 300) {
-          set(enrollmentAtomByCourseId(courseId), (prev) => {
+          set(peopleAtomByCourseId(courseId), (prev) => {
             let next = [...prev];
             const indexOfStudent = next.findIndex((value) => value.email == email);
             next[indexOfStudent] = {...prev[indexOfStudent], withdrew: "0"};
@@ -69,19 +70,20 @@ export const enrollmentByCourseId = selectorFamily({
       } catch (err) {
       }
     });
-    const recoilMergeData = getCallback(({set}) => async (payload) => {
+    const recoilMergeData = getCallback(({set}) => async (payload, successCallback) => {
       try {
-        let resp = await axios.post("/api/mergeEnrollmentData.php", payload);
-        if (resp.status < 300) {
-          set(enrollmentAtomByCourseId(courseId), resp.data.enrollmentArray);
+        let {data: {success, peopleArray, message}} = await axios.post("/api/mergePeopleData.php", {...payload, courseId});
+        if (success) {
+          set(peopleAtomByCourseId(courseId), peopleArray);
+          successCallback?.();
         } else {
-          throw new Error(`response code: ${resp.status}`);
+          throw new Error(message);
         }
       } catch (err) {
       }
     });
     return {
-      value: get(enrollmentAtomByCourseId(courseId)),
+      value: get(peopleAtomByCourseId(courseId)),
       recoilWithdraw,
       recoilUnWithdraw,
       recoilMergeData
@@ -379,6 +381,36 @@ export const coursePermissionsAndSettingsByCourseId = selectorFamily({
     });
   }
 });
+const unfilteredCourseRolesByCourseId = atomFamily({
+  key: "unfilteredCourseRolesByCourseId",
+  effects: (courseId) => [
+    async ({setSelf, trigger}) => {
+      if (trigger === "get") {
+        const {data: {roles}} = await axios.get("/api/loadCourseRoles.php", {params: {courseId}});
+        setSelf(roles);
+      }
+    }
+  ]
+});
+export const courseRolesByCourseId = selectorFamily({
+  key: "filteredCourseRolesByCourseId",
+  get: (courseId) => ({get}) => {
+    const permissonsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
+    const roles = get(unfilteredCourseRolesByCourseId(courseId));
+    const ignoreKeys = ["isIncludedInGradebook", "sectionPermissonOnly", "dataAccessPermission", "roleId", "roleLabel"];
+    let filteredRoles = roles?.filter((role) => {
+      let valid = role.roleId === permissonsAndSettings.roleId || !Object.keys(role).every((permKey) => (role[permKey] ?? "0") === permissonsAndSettings[permKey] || ignoreKeys.includes(permKey) || (role[permKey] ?? "0") === "1" && permissonsAndSettings[permKey] === "0");
+      return valid;
+    }) ?? [];
+    return filteredRoles;
+  }
+});
+export const courseRolePermissonsByCourseIdRoleId = selectorFamily({
+  key: "courseRoleByCourseIdRoleId",
+  get: ({courseId, roleId}) => ({get}) => {
+    return get(unfilteredCourseRolesByCourseId(courseId))?.find(({roleId: candidateRoleId}) => candidateRoleId === roleId) ?? {};
+  }
+});
 export const useCreateCourse = () => {
   const createCourse = useRecoilCallback(({set}) => async () => {
     let {
@@ -431,7 +463,7 @@ function findContentsChildIds(content) {
   return orderAndPageIds;
 }
 export const useCourse = (courseId) => {
-  const {label, color, image} = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  const {label, color, image, defaultRoleId} = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   const addToast = useToast();
   function insertPageOrOrderToActivityInSpecificOrder({
     content,
@@ -861,15 +893,15 @@ export const useCourse = (courseId) => {
           let insertedAfterDoenetId;
           let newJSON;
           if (itemType == "page") {
-            ({order: newJSON, previousDoenetId: insertedAfterDoenetId} = addPageToActivity({
-              orderObj: containingItemObj.order,
-              needleOrderDoenetId: selectedItemObj.parentDoenetId,
+            ({content: newJSON, previousDoenetId: insertedAfterDoenetId} = addPageToActivity({
+              activityOrOrderObj: containingItemObj,
+              needleOrderOrActivityId: selectedItemObj.parentDoenetId,
               itemToAdd: pageThatWasCreated?.doenetId
             }));
           } else if (itemType == "order") {
-            ({order: newJSON, previousDoenetId: insertedAfterDoenetId} = addPageToActivity({
-              orderObj: containingItemObj.order,
-              needleOrderDoenetId: selectedItemObj.parentDoenetId,
+            ({content: newJSON, previousDoenetId: insertedAfterDoenetId} = addPageToActivity({
+              activityOrOrderObj: containingItemObj,
+              needleOrderOrActivityId: selectedItemObj.parentDoenetId,
               itemToAdd: orderObj
             }));
           }
@@ -879,19 +911,20 @@ export const useCourse = (courseId) => {
             newJSON
           });
           let newActivityObj = {...containingItemObj};
-          newActivityObj.order = newJSON;
+          newActivityObj.content = newJSON;
           orderObj["isOpen"] = false;
           orderObj["isSelected"] = false;
           orderObj["containingDoenetId"] = selectedItemObj?.containingDoenetId;
           orderObj["parentDoenetId"] = selectedItemObj?.parentDoenetId;
-          set(itemByDoenetId(newActivityObj.doenetId), newActivityObj);
-          let newItemDoenetId = orderDoenetIdThatWasCreated;
+          let newItemDoenetId;
           if (itemType == "page") {
             set(itemByDoenetId(pageThatWasCreated.doenetId), pageThatWasCreated);
             newItemDoenetId = pageThatWasCreated.doenetId;
           } else if (itemType == "order") {
             set(itemByDoenetId(orderObj.doenetId), orderObj);
+            newItemDoenetId = orderDoenetIdThatWasCreated;
           }
+          set(itemByDoenetId(newActivityObj.doenetId), newActivityObj);
           set(authorCourseItemOrderByCourseId(courseId), (prev) => {
             let next = [...prev];
             next.splice(next.indexOf(insertedAfterDoenetId) + 1, 0, newItemDoenetId);
@@ -900,7 +933,6 @@ export const useCourse = (courseId) => {
         }
       }
     }
-    successCallback();
     return newDoenetId;
   });
   const modifyCourse = useRecoilCallback(({set}) => async (modifications, successCallback, failureCallback = defaultFailure) => {
@@ -916,9 +948,98 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
   });
+  const validateEmail = useValidateEmail();
+  const addUser = useRecoilCallback(({set}) => async (email, options, successCallback, failureCallback = defaultFailure) => {
+    try {
+      if (!validateEmail(email))
+        throw new Error("Invalid email, try again");
+      const {
+        data: {success, message, userData: serverUserData}
+      } = await axios.post("/api/addCourseUser.php", {
+        courseId,
+        email,
+        ...options
+      });
+      if (success) {
+        set(peopleAtomByCourseId(courseId), (prev) => [...prev, {...serverUserData}]);
+        successCallback(message);
+      } else {
+        throw new Error(message);
+      }
+    } catch (err) {
+      failureCallback(err.message);
+    }
+  });
+  const modifyUserRole = useRecoilCallback(({set}) => async (email, roleId, successCallback, failureCallback = defaultFailure) => {
+    try {
+      const {
+        data: {success, message}
+      } = await axios.post("api/updateUserRole.php", {
+        courseId,
+        userEmail: email,
+        roleId
+      });
+      if (success) {
+        set(peopleAtomByCourseId(courseId), (prev) => {
+          const next = prev.slice(0);
+          const idx = prev.findIndex(({email: candidate}) => candidate === email);
+          next[idx] = {...prev[idx], roleId};
+          return next;
+        });
+        successCallback();
+      } else {
+        throw new Error(message);
+      }
+    } catch (err) {
+      failureCallback(err.message);
+    }
+  });
+  const modifyRolePermissions = useRecoilCallback(({set}) => async (roleId, newPermissions, successCallback, failureCallback = defaultFailure) => {
+    try {
+      const {
+        data: {
+          success,
+          message,
+          actionType,
+          roleId: serverRoleId,
+          updatedPermissions
+        }
+      } = await axios.post("/api/updateRolePermissons.php", {
+        courseId,
+        roleId,
+        permissions: {...newPermissions, label: newPermissions?.roleLabel}
+      });
+      if (success) {
+        set(unfilteredCourseRolesByCourseId(courseId), (prev) => {
+          const next = [...prev];
+          const idx = prev.findIndex(({roleId: candidateRoleId}) => candidateRoleId === serverRoleId);
+          let {label: roleLabel} = updatedPermissions;
+          if (roleLabel === void 0)
+            roleLabel = prev[idx].roleLabel;
+          switch (actionType) {
+            case "add":
+              next.push({...updatedPermissions, roleLabel, roleId: serverRoleId});
+              break;
+            case "update":
+              next.splice(idx, 1, {...prev[idx], ...updatedPermissions, roleLabel});
+              break;
+            case "delete":
+              next.splice(idx, 1);
+              break;
+          }
+          return next;
+        });
+        successCallback();
+      } else {
+        throw new Error(message);
+      }
+    } catch (err) {
+      failureCallback(err.message);
+    }
+  }, [courseId, defaultFailure]);
   const deleteCourse = useRecoilCallback(({set}) => async (successCallback, failureCallback = defaultFailure) => {
     try {
       let resp = await axios.post("/api/deleteCourse.php", {courseId});
@@ -929,7 +1050,7 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
   }, [courseId, defaultFailure]);
   const renameItem = useRecoilCallback(({snapshot, set}) => async (doenetId, newLabel, successCallback, failureCallback = defaultFailure) => {
@@ -961,7 +1082,7 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
   }, [courseId, defaultFailure]);
   const updateAssignItem = useRecoilCallback(({set}) => async ({doenetId, isAssigned, successCallback, failureCallback = defaultFailure}) => {
@@ -978,7 +1099,7 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
   }, [courseId, defaultFailure]);
   const compileActivity = useRecoilCallback(({set, snapshot}) => async ({activityDoenetId, successCallback, isAssigned = false, courseId: courseId2, failureCallback = defaultFailure}) => {
@@ -1036,7 +1157,7 @@ ${contentStrings}${indentSpacing}</order>
     try {
       childrenString = (await Promise.all(activity.content.map((x) => contentToDoenetML({content: x, indentLevel: 1})))).join("");
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
     let activityDoenetML = `<document${attributeString}>
 ${childrenString}</document>`;
@@ -1061,7 +1182,7 @@ ${childrenString}</document>`;
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
   });
   function updateOrder({content, needleDoenetId, changesObj}) {
@@ -1310,7 +1431,7 @@ ${childrenString}</document>`;
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
   });
   const copyItems = useRecoilCallback(({set, snapshot}) => async ({successCallback, failureCallback = defaultFailure}) => {
@@ -1581,7 +1702,7 @@ ${childrenString}</document>`;
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
       }
       if (sourcePagesAndOrdersToMove.length > 0) {
@@ -1617,6 +1738,7 @@ ${childrenString}</document>`;
               updatedSourceItemJSON = deletePageFromActivity({content: containingObj.content, needleDoenetId: cutObj.doenetId});
               if (destinationContainingObj.doenetId == containingObj.doenetId) {
                 destinationJSON = deletePageFromActivity({content: destinationJSON, needleDoenetId: cutObj.doenetId});
+                destinationContainingObj.content = destinationJSON;
               }
             } else if (containingObj.type == "bank") {
               let nextPages = [...containingObj.pages];
@@ -1789,7 +1911,7 @@ ${childrenString}</document>`;
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
       }
       set(copiedCourseItems, [...cutObjs]);
@@ -1822,13 +1944,15 @@ ${childrenString}</document>`;
     return pagesFound;
   });
   return {
+    label,
+    color,
+    image,
+    defaultRoleId,
     create,
     deleteItem,
     deleteCourse,
     modifyCourse,
-    label,
-    color,
-    image,
+    modifyRolePermissions,
     renameItem,
     compileActivity,
     updateAssignItem,
@@ -1836,6 +1960,8 @@ ${childrenString}</document>`;
     copyItems,
     cutItems,
     pasteItems,
-    findPagesFromDoenetIds
+    findPagesFromDoenetIds,
+    addUser,
+    modifyUserRole
   };
 };

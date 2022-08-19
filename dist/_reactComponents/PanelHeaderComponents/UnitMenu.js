@@ -12,6 +12,10 @@ const Textfield = styled.input`
   text-align: center;
   resize: none;
   cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+  &:focus {
+    outline: ${(props) => props.alert};
+    outline-offset: 2px;
+  }
 `;
 const Label = styled.p`
   font-size: 14px;
@@ -45,6 +49,11 @@ const Units = styled.button`
     background-color: ${(props) => props.disabled ? "none" : "var(--lightBlue)"};
     cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   };
+
+  &:focus {
+    outline: ${(props) => props.alert};
+    outline-offset: 4px;
+  }
 `;
 const Unit = styled.div`
   display: none;
@@ -218,6 +227,7 @@ export default function UnitMenu(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LabelContainer, {
     align
   }, /* @__PURE__ */ React.createElement(Label, {
+    id: "unitmenu-label",
     visible: labelVisible,
     onMouseDown: (e) => {
       initialClickLabelPosition.current = [e.clientX, e.clientY];
@@ -225,6 +235,8 @@ export default function UnitMenu(props) {
     },
     className: "noselect"
   }, labelvalue), /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Textfield, {
+    "aria-labelledby": "unitmenu-label",
+    "aria-disabled": props.disabled ? true : false,
     disabled,
     id: "text",
     type: "text",
@@ -240,7 +252,10 @@ export default function UnitMenu(props) {
       changeValue(event);
     }
   }), /* @__PURE__ */ React.createElement(Units, {
-    disabled
+    "aria-disabled": props.disabled ? true : false,
+    disabled,
+    alert,
+    "aria-haspopup": "true"
   }, currentUnit, /* @__PURE__ */ React.createElement(Unit, {
     id: "unit",
     disabled

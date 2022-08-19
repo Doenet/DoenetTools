@@ -8,7 +8,7 @@ import useDoenetRender from './useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Section(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
   // console.log("name: ", name, " SVs: ", SVs," Children",children);
 
   let onChangeVisibility = isVisible => {
@@ -66,12 +66,14 @@ export default React.memo(function Section(props) {
 
   }
 
-  if (!title) {
+  if (title) {
+    title = <>{SVs.titlePrefix}{title}</>
+  } else {
     title = SVs.title;
   }
 
   let heading = null;
-  let headingId = name + "_title";
+  let headingId = id + "_title";
 
   if (SVs.collapsible) {
     if (SVs.open) {
@@ -126,7 +128,7 @@ export default React.memo(function Section(props) {
       checkWorkText = SVs.submitLabelNoCorrectness;
     }
     checkworkComponent = (
-      <button id={name + "_submit"}
+      <button id={id + "_submit"}
         tabIndex="0"
         style={checkWorkStyle}
         onClick={submitAllAnswers}
@@ -145,7 +147,7 @@ export default React.memo(function Section(props) {
       if (validationState.current === "correct") {
         checkWorkStyle.backgroundColor = "var(--mainGreen)";
         checkworkComponent = (
-          <span id={name + "_correct"}
+          <span id={id + "_correct"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
@@ -155,7 +157,7 @@ export default React.memo(function Section(props) {
       } else if (validationState.current === "incorrect") {
         checkWorkStyle.backgroundColor = "var(--mainRed)";
         checkworkComponent = (
-          <span id={name + "_incorrect"}
+          <span id={id + "_incorrect"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faTimes} />
@@ -168,7 +170,7 @@ export default React.memo(function Section(props) {
         let partialCreditContents = `${percent}% Correct`;
 
         checkworkComponent = (
-          <span id={name + "_partial"}
+          <span id={id + "_partial"}
             style={checkWorkStyle}
           >
             {partialCreditContents}
@@ -179,7 +181,7 @@ export default React.memo(function Section(props) {
       if (validationState.current !== "unvalidated") {
         checkWorkStyle.backgroundColor = "var(--mainPurple)";
         checkworkComponent = (
-          <span id={name + "_saved"}
+          <span id={id + "_saved"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCloud} />
@@ -195,7 +197,7 @@ export default React.memo(function Section(props) {
   //TODO checkwork
   let content =
     <>
-      <a name={name} />
+      <a name={id} />
       {heading} <br />
       {children}
       {checkworkComponent}
@@ -207,7 +209,7 @@ export default React.memo(function Section(props) {
 
     let innerContent = null;
     if (SVs.open) {
-      innerContent = <div style={{ display: "block", padding: SVs.boxed && "6px" }}>
+      innerContent = <div style={{ display: "block", padding: "6px" }}>
         {children}
         {checkworkComponent}
       </div>
@@ -218,19 +220,19 @@ export default React.memo(function Section(props) {
           style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: SVs.open ? "var(--mainBorder)" : "none", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)" }}
           onClick={() => callAction({ action: SVs.open ? actions.closeSection : actions.revealSection })}
         >
-          <a name={name} />
+          <a name={id} />
           {heading}
         </div>
         {innerContent}
       </div>
     // }else{
     //   content = <>
-    //   <a name={name} />
+    //   <a name={id} />
     //   <span style={{
     //     display: "block", backgroundColor: "#ebebeb", cursor: "pointer"}}
     //     onClick={() => callAction({action: actions.closeSection})}
     //   >
-    //     <a name={name} />
+    //     <a name={id} />
     //     {heading}
     //   </span>
     //   <span style={{ display: "block", backgroundColor: "white" }} >
@@ -242,7 +244,7 @@ export default React.memo(function Section(props) {
 
     // } else {
     //   content = <>
-    //     <a name={name} />
+    //     <a name={id} />
     //     <span 
     //       style={{ display: "block", backgroundColor: "#ebebeb", cursor: "pointer"}}
     //       onClick={() => callAction({action: actions.revealSection})}
@@ -256,7 +258,7 @@ export default React.memo(function Section(props) {
     content =
       <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)" }}>
         <div style={{ padding: "6px", borderBottom: "var(--mainBorder)", backgroundColor: "var(--mainGray)", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)" }}>
-          <a name={name} />
+          <a name={id} />
           {heading}<br />
         </div>
         <div style={{ display: "block", padding: "6px" }}>
@@ -267,9 +269,9 @@ export default React.memo(function Section(props) {
   }
 
   switch (SVs.containerTag) {
-    case "aside": return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><aside id={name} style={{ margin: "12px 0" }}> {content} </aside></VisibilitySensor>;
-    case "div": return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={name} style={{ margin: "12px 0" }}> {content} </div></VisibilitySensor>;
+    case "aside": return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><aside id={id} style={{ margin: "12px 0" }}> {content} </aside></VisibilitySensor>;
+    case "div": return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={id} style={{ margin: "12px 0" }}> {content} </div></VisibilitySensor>;
     case "none": return <>{content}</>;
-    default: return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><section id={name} style={{ margin: "12px 0" }}> {content} </section></VisibilitySensor>;
+    default: return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><section id={id} style={{ margin: "12px 0" }}> {content} </section></VisibilitySensor>;
   }
 })

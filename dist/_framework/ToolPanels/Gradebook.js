@@ -22,7 +22,7 @@ import {
   searchParamAtomFamily,
   suppressMenusAtom
 } from "../NewToolRoot.js";
-import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export const Styles = styled.div`
   padding: 1rem;
   table {
@@ -446,19 +446,16 @@ function DefaultColumnFilter({
 }
 function GradebookOverview() {
   let driveIdValue = useRecoilValue(driveId);
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let students = useRecoilValueLoadable(studentData);
   let assignments = useRecoilValueLoadable(assignmentData);
   let overView = useRecoilValueLoadable(overViewData);
-  let effectiveRole = useRecoilValue(effectiveRoleAtom);
+  let {canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   useEffect(() => {
-    if (effectiveRole === "student") {
-      setSuppressMenus(["GradeDownload"]);
-    } else {
-      setSuppressMenus([]);
-    }
-  }, [effectiveRole, setSuppressMenus]);
+    setSuppressMenus(canViewAndModifyGrades === "1" ? [] : ["GradeDownload"]);
+  }, [canViewAndModifyGrades, setSuppressMenus]);
   if (assignments.state !== "hasValue" || students.state !== "hasValue" || overView.state !== "hasValue") {
     return null;
   }

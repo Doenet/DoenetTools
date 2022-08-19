@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ActivityViewer from '../../../Viewer/ActivityViewer';
+import ActivityViewer, { saveStateToDBTimerIdAtom } from '../../../Viewer/ActivityViewer';
 import {
   useRecoilValue,
   atom,
@@ -22,6 +22,8 @@ import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { prng_alea } from 'esm-seedrandom';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
 import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { useLocation, useNavigate } from 'react-router';
+
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -31,8 +33,7 @@ export const currentAttemptNumber = atom({
 export const creditAchievedAtom = atom({
   key: 'creditAchievedAtom',
   default: {
-    creditByItem: [1, 0, 0.5],
-    // creditByItem:[],
+    creditByItem:[],
     creditForAttempt: 0,
     creditForAssignment: 0,
     totalPointsOrPercent: 0,
@@ -93,7 +94,7 @@ function generateNewVariant({ previousVariants, allPossibleVariants, individuali
 }
 
 export default function AssignmentViewer() {
-  console.log(">>>===AssignmentViewer")
+  // console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const courseId = useRecoilValue(courseIdAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
@@ -105,6 +106,7 @@ export default function AssignmentViewer() {
       requestedVariantIndex,
       attemptNumber,
       showCorrectness,
+      paginate,
       showFeedback,
       showHints,
       cid,
@@ -118,15 +120,23 @@ export default function AssignmentViewer() {
   let userId = useRef(null);
   let individualize = useRef(null);
 
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+  }, [saveStateToDBTimerIdAtom])
+
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
 
+  let { search, hash } = useLocation();
+  let navigate = useNavigate();
+
+
   useEffect(() => {
     const prevTitle = document.title;
-    if(label) {
+    if (label) {
       document.title = `${label} - Doenet`;
     }
     return () => {
@@ -157,6 +167,7 @@ export default function AssignmentViewer() {
         dueDate,
         showCorrectness,
         showCreditAchievedMenu,
+        paginate,
         showFeedback,
         showHints,
         showSolution,
@@ -338,6 +349,7 @@ export default function AssignmentViewer() {
           requestedVariantIndex,
           attemptNumber,
           showCorrectness,
+          paginate,
           showFeedback,
           showHints,
           cid,
@@ -354,6 +366,16 @@ export default function AssignmentViewer() {
 
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
 
+    if (hash && hash !== "#page1") {
+      navigate(search + "#page1", { replace: true });
+    }
+
+    // don't attempt to save data from old attempt number
+    // (which would triggered a reset and error message);
+    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+    if(oldTimeoutId !== null) {
+      clearTimeout(oldTimeoutId)
+    }
 
     //Check if cid has changed
 
@@ -475,7 +497,7 @@ export default function AssignmentViewer() {
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
-  if(courseId === "__not_found__") {
+  if (courseId === "__not_found__") {
     return <h1>Content not found or no permission to view content</h1>;
   } else if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId, itemObj);
@@ -511,6 +533,7 @@ export default function AssignmentViewer() {
         updateCreditAchievedCallback={updateCreditAchieved}
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
+        paginate={paginate}
       // generatedVariantCallback={variantCallback}
       />
     </>

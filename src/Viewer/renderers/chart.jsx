@@ -8,7 +8,7 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 export const BoardContext = createContext();
 
 export default React.memo(function Chart(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
   // console.log({ name, SVs })
 
   let onChangeVisibility = isVisible => {
@@ -69,8 +69,8 @@ export default React.memo(function Chart(props) {
 
 
   return <>
-    <a name={name} />
-    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={name} /></VisibilitySensor>
+    <a name={id} />
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={id} /></VisibilitySensor>
   </>;
 
 })

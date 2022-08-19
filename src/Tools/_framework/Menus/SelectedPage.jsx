@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 // import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-// import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast, toastType } from '@Toast';
@@ -59,6 +58,7 @@ export default function SelectedPage() {
   <ActionButton
           width="menu"
           value="Edit Page"
+          data-test="Edit Page" 
           onClick={() => {
             setPageToolView({
               page: 'course',

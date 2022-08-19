@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 // import me from 'math-expressions';
 
 export default React.memo(function Ray(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Ray.ignoreActionsWithoutCore = true;
 
@@ -280,7 +280,7 @@ export default React.memo(function Ray(props) {
     return null;
   }
 
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 
 })
 

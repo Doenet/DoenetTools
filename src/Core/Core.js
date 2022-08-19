@@ -329,6 +329,32 @@ export default class Core {
       },
     })
 
+    let foundAnswerDescendant = function (comp) {
+      let sDecs = comp.stateValues.scoredDescendants;
+      if (Array.isArray(sDecs)) {
+        for (let dec of sDecs) {
+          if (dec.componentType === "answer") {
+            return true;
+          } else {
+            if (foundAnswerDescendant(dec)) {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    }
+
+    await this.document.stateValues.scoredDescendants;  // to evaluated scoredDescendants
+
+    if (!foundAnswerDescendant(this.document)) {
+      // if there are no scored items in document
+      // then treat the first view of the document as a submission
+      // so that will get credit for viewing the page
+      this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
+    }
+
     this.resolveInitialized();
 
     setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
@@ -8364,23 +8390,11 @@ export default class Core {
       }
 
 
-      let componentsSubmitted = [];
-      for (let itemSubmission of recordItemSubmissions) {
-        componentsSubmitted.push({
-          componentName: itemSubmission.submittedComponent,
-          response: itemSubmission.response,
-          responseText: itemSubmission.responseText,
-          creditAchieved: itemSubmission.creditAchieved,
-          subitemNumber: itemSubmission.itemNumber
-        });
-      }
-
-
       // if itemNumber is zero, it means this document wasn't given any weight,
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ pageCreditAchieved, componentsSubmitted });
+        this.saveSubmissions({ pageCreditAchieved });
       }
 
     }
@@ -9620,7 +9634,9 @@ export default class Core {
 
   }
 
-  async saveState() {
+  async saveState(overrideThrottle = false) {
+
+    this.savePageStateTimeoutID = null;
 
     if (!this.flags.allowSaveState && !this.flags.allowLocalState) {
       return;
@@ -9668,18 +9684,25 @@ export default class Core {
     this.changesToBeSaved = true;
 
     // if not currently in throttle, save changes to database
-    this.saveChangesToDatabase();
+    this.saveChangesToDatabase(overrideThrottle);
 
 
   }
 
-  async saveChangesToDatabase() {
+  async saveChangesToDatabase(overrideThrottle) {
     // throttle save to database at 60 seconds
 
-    if (this.saveStateToDBTimerId !== null || !this.changesToBeSaved) {
+    if (!this.changesToBeSaved) {
       return;
     }
 
+    if (this.saveStateToDBTimerId !== null) {
+      if (overrideThrottle) {
+        clearTimeout(this.saveStateToDBTimerId);
+      } else {
+        return;
+      }
+    }
 
     this.changesToBeSaved = false;
 
@@ -9687,8 +9710,7 @@ export default class Core {
     this.saveStateToDBTimerId = setTimeout(() => {
       this.saveStateToDBTimerId = null;
       this.saveChangesToDatabase();
-    }, 10000);
-    // }, 60000);
+    }, 60000);
 
 
     // TODO: find out how to test if not online
@@ -9804,7 +9826,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ pageCreditAchieved, componentsSubmitted }) {
+  saveSubmissions({ pageCreditAchieved }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9815,7 +9837,6 @@ export default class Core {
       attemptNumber: this.attemptNumber,
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
-      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
 
     console.log('payload for save credit for item', payload);
@@ -10111,8 +10132,8 @@ export default class Core {
     }
   }
 
-  handleNavigatingToHash(hash) {
-    let component = this._components[hash];
+  handleNavigatingToComponent(componentName) {
+    let component = this._components[componentName];
     if (component?.actions?.revealSection) {
       this.requestAction({ componentName: component.componentName, actionName: "revealSection" })
     }
@@ -10121,6 +10142,18 @@ export default class Core {
   async terminate() {
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
+
+    if (this.savePageStateTimeoutID) {
+      // if in debounce to save page to local storage
+      // then immediate save to local storage
+      // and override timeout to save to database
+      clearTimeout(this.savePageStateTimeoutID);
+      await this.saveState(true);
+    } else {
+      // else override timeout to save any pending changes to database
+      await this.saveChangesToDatabase(true)
+    }
+
   }
 
 }

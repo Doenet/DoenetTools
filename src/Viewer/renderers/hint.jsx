@@ -8,7 +8,7 @@ import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Hint(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -88,8 +88,8 @@ export default React.memo(function Hint(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <aside id={name} key={name}>
-      <a name={name} />
+    <aside id={id} key={id}>
+      <a name={id} />
       <span
         style={{
           display: 'block',

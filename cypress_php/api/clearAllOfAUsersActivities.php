@@ -15,6 +15,25 @@ if ($userId == ''){
     $userId = 'cyuserid';
 }
 
+
+$sql = "
+DELETE FROM user_assignment
+WHERE userId='$userId'
+";
+$result = $conn->query($sql);
+
+$sql = "
+DELETE FROM user_assignment_attempt
+WHERE userId='$userId'
+";
+$result = $conn->query($sql);
+
+$sql = "
+DELETE FROM user_assignment_attempt_item
+WHERE userId='$userId'
+";
+$result = $conn->query($sql);
+
 $sql = "
 SELECT courseId
 FROM course_user
@@ -34,7 +53,6 @@ foreach($courseIds AS $courseId){
   ";
   $result = $conn->query($sql);
   
-  //Not deleting user_assignment info
   $sql = "
   DELETE FROM assignment
   WHERE courseId='$courseId'

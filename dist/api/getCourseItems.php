@@ -147,7 +147,7 @@ $containingDoenetIds = [];
 			}
 		}
 
-	}else if($permissions["canViewCourse"] == '1'){
+	}else if($permissions != false){
 		//TODO: check that user can view content
 		$sql = "
 		SELECT cc.type,

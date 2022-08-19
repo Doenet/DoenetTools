@@ -85,8 +85,11 @@ export default function ProgressBar(props) {
   }, [props.progress, props.showProgress, barWidth]);
   return /* @__PURE__ */ React.createElement(Container, {
     align,
-    alignItems
+    alignItems,
+    "aria-labelledby": "progress-bar-label",
+    "aria-label": "progress bar" + percent
   }, /* @__PURE__ */ React.createElement(Label, {
+    id: "progress-bar-label",
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(Svg, {

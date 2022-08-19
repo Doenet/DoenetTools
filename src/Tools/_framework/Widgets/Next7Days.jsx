@@ -1,10 +1,9 @@
 /**
  * External dependencies
  */
-import React, { useState, Suspense, useEffect, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 import {
   useRecoilCallback,
-  useRecoilState,
   useRecoilValue,
   useSetRecoilState,
   atom,
@@ -12,15 +11,12 @@ import {
 /**
  * Internal dependencies
  */
-import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+import { pageToolViewAtom } from '../NewToolRoot';
 import {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
   clearDriveAndItemSelections,
-  folderDictionary,
-  DoenetML,
-  DriveHeader,
 } from '../../../_reactComponents/Drive/NewDrive';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import {
@@ -37,7 +33,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -508,9 +504,11 @@ export default function Next7Days({ courseId }) {
   const doubleClickCallback = useRecoilCallback(
     ({ snapshot }) =>
       async ({ type, doenetId, path }) => {
-        let role = await snapshot.getPromise(effectiveRoleAtom);
+        let { canEditContent } = await snapshot.getPromise(
+          effectivePermissionsByCourseId(courseId),
+        );
 
-        if (role === 'instructor') {
+        if (canEditContent === '1') {
           switch (type) {
             case itemType.DOENETML:
               //TODO: VariantIndex params
@@ -544,8 +542,7 @@ export default function Next7Days({ courseId }) {
               );
           }
         } else {
-          //role: student
-
+          //no edit permissions
           switch (type) {
             case itemType.DOENETML:
               //TODO: VariantIndex params
@@ -578,7 +575,7 @@ export default function Next7Days({ courseId }) {
           }
         }
       },
-    [setPageToolView],
+    [courseId, setPageToolView],
   );
 
   if (!initialized && courseId !== '') {
@@ -587,7 +584,7 @@ export default function Next7Days({ courseId }) {
     loadAssignmentArray(courseId);
     return null;
   }
-  // return null;
+  // return null;   // for testing
 
   if (problemMessage !== '') {
     return (

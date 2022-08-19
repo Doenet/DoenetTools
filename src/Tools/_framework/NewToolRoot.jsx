@@ -126,11 +126,12 @@ export default function ToolRoot() {
     DataPanel: lazy(() => import('./ToolPanels/DataPanel')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
-    Enrollment: lazy(() => import('./ToolPanels/Enrollment')),
+    People: lazy(() => import('./ToolPanels/People')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
     GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
     GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
+    RolesEditor: lazy(() => import('./ToolPanels/RoleEditor')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -145,8 +146,8 @@ export default function ToolRoot() {
     DashboardBreadCrumb: lazy(() =>
       import('./HeaderControls/DashboardBreadCrumb'),
     ),
-    EnrollmentBreadCrumb: lazy(() =>
-      import('./HeaderControls/EnrollmentBreadCrumb'),
+    PeopleBreadCrumb: lazy(() =>
+      import('./HeaderControls/PeopleBreadCrumb'),
     ),
     DataBreadCrumb: lazy(() => import('./HeaderControls/DataBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
@@ -585,11 +586,13 @@ let navigationObj = {
       currentMainPanel: 'EditorViewer',
       currentMenus: [
         'PageVariant',
+        'PageLink',
         'AssignmentSettingsMenu',
         'SupportingFilesMenu',
       ],
       menusTitles: [
         'Page Variant',
+        'Page Link',
         'Assignment Settings',
         'Supporting Files',
       ],
@@ -602,21 +605,18 @@ let navigationObj = {
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
       waitForMenuSuppression: true,
     },
-    enrollment: {
+    people: {
       //allStudentsInCourse
-      pageName: 'Enrollment',
+      pageName: 'People',
       menuPanelCap: 'DriveInfoCap',
-      // currentMenus:["LoadEnrollment","ManualEnrollment"],
-      // menusTitles:["Load","Manual"],
-      // menusInitOpen:[false,false],
-      currentMenus: ['LoadEnrollment'],
+      currentMenus: ['LoadPeople'],
       menusTitles: ['Import Learners'],
       menusInitOpen: [false],
-      currentMainPanel: 'Enrollment',
-      supportPanelOptions: [],
-      supportPanelTitles: [],
+      currentMainPanel: 'People',
+      supportPanelOptions: ['RolesEditor'],
+      supportPanelTitles: ['Roles Editor'],
       supportPanelIndex: 0,
-      headerControls: ['EnrollmentBreadCrumb'],
+      headerControls: ['PeopleBreadCrumb'],
       // headerControls: ["BackButton"],
     },
     data: {

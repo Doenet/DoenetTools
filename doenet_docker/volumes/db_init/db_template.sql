@@ -21,7 +21,7 @@
 
 /*!40000 DROP DATABASE IF EXISTS `doenet_local`*/;
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `doenet_local` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `doenet_local` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
 
 USE `doenet_local`;
 
@@ -87,6 +87,7 @@ CREATE TABLE `assignment` (
   `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
+  `paginate` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
@@ -99,7 +100,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,0);
+INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,13 +140,13 @@ DROP TABLE IF EXISTS `collection`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) DEFAULT '',
-  `entryId` char(21) NOT NULL,
-  `entryDoenetId` char(21) NOT NULL DEFAULT '',
-  `entryContentId` char(64) NOT NULL DEFAULT '',
-  `entryVariant` text NOT NULL,
+  `doenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `entryId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `entryDoenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `entryContentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `entryVariant` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,13 +167,13 @@ DROP TABLE IF EXISTS `collection_groups`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `collection_groups` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) NOT NULL DEFAULT '',
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `minStudents` int(11) NOT NULL DEFAULT '1',
   `maxStudents` int(11) NOT NULL DEFAULT '1',
   `preferredStudents` int(11) NOT NULL DEFAULT '1',
   `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -239,7 +240,7 @@ CREATE TABLE `content_interactions` (
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -266,6 +267,7 @@ CREATE TABLE `course` (
   `isDeleted` tinyint(1) DEFAULT '0',
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT 'none',
+  `defaultRoleId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -277,7 +279,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-INSERT INTO `course` VALUES (1,'_KwRMyq2rLo3B0dhVXgh6R','Untitled Course',0,0,'picture1.jpg','none');
+INSERT INTO `course` VALUES (1,'_KwRMyq2rLo3B0dhVXgh6R','Untitled Course',0,0,'picture1.jpg','none','8TJ2vT06pm72vQee6P5qJ');
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -348,6 +350,49 @@ LOCK TABLES `course_grade_category` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `course_role`
+--
+
+DROP TABLE IF EXISTS `course_role`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `course_role` (
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled Role',
+  `isIncludedInGradebook` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewContentSource` tinyint(1) NOT NULL DEFAULT '0',
+  `canEditContent` tinyint(1) NOT NULL DEFAULT '0',
+  `canPublishContent` tinyint(1) NOT NULL DEFAULT '0',
+  `canProctor` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewAndModifyGrades` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
+  `canModifyActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
+  `canModifyCourseSettings` tinyint(1) NOT NULL DEFAULT '0',
+  `dataAccessPermission` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'None',
+  `canViewUsers` tinyint(1) NOT NULL DEFAULT '0',
+  `canManageUsers` tinyint(1) NOT NULL DEFAULT '0',
+  `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
+  `isOwner` tinyint(1) NOT NULL DEFAULT '0',
+  `sectionPermissionOnly` int(255) DEFAULT NULL,
+  PRIMARY KEY (`courseId`,`roleId`),
+  UNIQUE KEY `roleId` (`roleId`),
+  CONSTRAINT `course_role_ibfk_1` FOREIGN KEY (`courseId`) REFERENCES `course` (`courseId`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_role`
+--
+
+LOCK TABLES `course_role` WRITE;
+/*!40000 ALTER TABLE `course_role` DISABLE KEYS */;
+INSERT INTO `course_role` VALUES ('_KwRMyq2rLo3B0dhVXgh6R','8TJ2vT06pm72vQee6P5qJ','Student',1,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),('_KwRMyq2rLo3B0dhVXgh6R','bnisBJFL0KUS3uYY7RltV','Owner',0,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,1,NULL);
+/*!40000 ALTER TABLE `course_role` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `course_user`
 --
 
@@ -355,27 +400,22 @@ DROP TABLE IF EXISTS `course_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_user` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `canViewCourse` tinyint(1) DEFAULT '0',
-  `canViewContentSource` tinyint(1) DEFAULT '0',
-  `canEditContent` tinyint(1) DEFAULT '0',
-  `canPublishContent` tinyint(1) DEFAULT '0',
-  `canViewUnassignedContent` tinyint(1) DEFAULT '0',
-  `canProctor` tinyint(1) DEFAULT '0',
-  `canViewAndModifyGrades` tinyint(1) DEFAULT '0',
-  `canViewActivitySettings` tinyint(1) DEFAULT '0',
-  `canModifyCourseSettings` tinyint(1) DEFAULT '0',
-  `canViewUsers` tinyint(1) DEFAULT '0',
-  `canManageUsers` tinyint(1) DEFAULT '0',
-  `canModifyRoles` tinyint(1) DEFAULT '0',
-  `isOwner` tinyint(1) DEFAULT '0',
-  `sectionPermissionOnly` int(255) DEFAULT NULL,
-  `roleLabels` json DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `userDrive` (`userId`,`courseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `externalId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dateEnrolled` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC DateTime',
+  `section` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `withdrew` bit(1) DEFAULT b'0',
+  `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
+  `courseCredit` double DEFAULT NULL,
+  `courseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timeLimitMultiplier` float NOT NULL DEFAULT '1',
+  `roleId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`courseId`,`userId`),
+  KEY `course_user_ibfk_1` (`roleId`),
+  CONSTRAINT `course_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `course_role` (`roleId`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -384,7 +424,7 @@ CREATE TABLE `course_user` (
 
 LOCK TABLES `course_user` WRITE;
 /*!40000 ALTER TABLE `course_user` DISABLE KEYS */;
-INSERT INTO `course_user` VALUES (1,'cyuserId','_KwRMyq2rLo3B0dhVXgh6R',1,1,1,1,1,1,1,1,1,1,1,1,1,NULL,'[\"Owner\"]');
+INSERT INTO `course_user` VALUES ('_KwRMyq2rLo3B0dhVXgh6R','cyuserId',NULL,'2022-08-11 17:54:51',NULL,_binary '\0',NULL,NULL,NULL,NULL,1,'bnisBJFL0KUS3uYY7RltV');
 /*!40000 ALTER TABLE `course_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -496,45 +536,6 @@ CREATE TABLE `drive_user` (
 LOCK TABLES `drive_user` WRITE;
 /*!40000 ALTER TABLE `drive_user` DISABLE KEYS */;
 /*!40000 ALTER TABLE `drive_user` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `enrollment`
---
-
-DROP TABLE IF EXISTS `enrollment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `enrollment` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `firstName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `username` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `empId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `dateEnrolled` datetime DEFAULT NULL COMMENT 'UTC DateTime',
-  `section` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `withdrew` bit(1) DEFAULT b'0',
-  `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
-  `forTesting` bit(1) DEFAULT b'0' COMMENT 'Flags account to not to be included in course calculations',
-  `courseCredit` double DEFAULT NULL,
-  `courseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `timeLimitMultiplier` float NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  KEY `driveId_userId` (`courseId`,`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `enrollment`
---
-
-LOCK TABLES `enrollment` WRITE;
-/*!40000 ALTER TABLE `enrollment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -819,18 +820,12 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
-  `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
+  `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'New User',
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
-  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
+  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
   `profilePicture` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `trackingConsent` tinyint(1) DEFAULT '0',
-  `roleStudent` tinyint(1) DEFAULT '1',
-  `roleInstructor` tinyint(1) DEFAULT '0',
-  `roleCourseDesigner` tinyint(1) DEFAULT '0',
-  `roleWatchdog` tinyint(1) DEFAULT '0',
-  `roleCommunityTA` tinyint(1) DEFAULT '0',
-  `roleLiveDataCommunity` tinyint(1) DEFAULT '0',
   `canUpload` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`userId`),
@@ -844,7 +839,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1,1,0,0,0,0,1),(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,1,0,0,0,0,0,0),(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0,0);
+INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1),(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,0),(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -984,4 +979,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-04 14:54:43
+-- Dump completed on 2022-08-12 21:17:07

@@ -972,7 +972,7 @@ function Folder(props) {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
       "data-test": "driveItem",
-      tabIndex: 0,
+      tabIndex: "0",
       className: "noselect nooutline",
       style: {
         cursor: "pointer",
@@ -1079,7 +1079,7 @@ function Folder(props) {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
       "data-test": "navDriveHeader",
-      tabIndex: 0,
+      tabIndex: "0",
       className: "noselect nooutline",
       style: {
         cursor: "pointer",
@@ -1124,7 +1124,7 @@ function Folder(props) {
       folder = /* @__PURE__ */ React.createElement("div", {
         role: "button",
         "data-doenet-driveinstanceid": props.driveInstanceId,
-        tabIndex: 0,
+        tabIndex: "0",
         className: "noselect nooutline",
         style: {
           cursor: "pointer",
@@ -1336,6 +1336,7 @@ export const selectedDriveItemsAtom = atomFamily({
 });
 export const clearDriveAndItemSelections = selector({
   key: "clearDriveAndItemSelections",
+  get: () => null,
   set: ({get, set}) => {
     const globalItemsSelected = get(globalSelectedNodesAtom);
     for (let itemObj of globalItemsSelected) {
@@ -1349,8 +1350,6 @@ export const clearDriveAndItemSelections = selector({
     if (globalDrivesSelected.length > 0) {
       set(drivecardSelectedNodesAtom, []);
     }
-  },
-  get: () => {
   }
 });
 export const driveInstanceParentFolderIdAtom = atomFamily({
@@ -1627,7 +1626,7 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     "data-doenet-driveinstanceid": props.driveInstanceId,
     role: "button",
     "data-test": "driveItem",
-    tabIndex: 0,
+    tabIndex: "0",
     className: "noselect nooutline",
     style: {
       cursor: "pointer",

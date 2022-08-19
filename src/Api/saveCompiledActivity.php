@@ -89,6 +89,7 @@ if ($success) {
 		showHints,
 		showCorrectness,
 		showCreditAchievedMenu,
+		paginate,
 		proctorMakesAvailable
 		FROM assignment
         WHERE doenetId='$doenetId'
@@ -117,6 +118,7 @@ if ($success) {
             "showCorrectness" => $row["showCorrectness"] == "1" ? true : false,
             "showCreditAchievedMenu" =>
                 $row["showCreditAchievedMenu"] == "1" ? true : false,
+            "paginate" => $row["paginate"] == "1" ? true : false,
             "proctorMakesAvailable" =>
                 $row["proctorMakesAvailable"] == "1" ? true : false,
         ];

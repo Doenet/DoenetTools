@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 export default React.memo(function LineSegment(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
   LineSegment.ignoreActionsWithoutCore = true;
 
@@ -380,7 +380,7 @@ export default React.memo(function LineSegment(props) {
       board.updateRenderer();
 
     }
-    return <><a name={name} /></>
+    return <><a name={id} /></>
   }
 
   if (SVs.hidden) {
@@ -388,7 +388,7 @@ export default React.memo(function LineSegment(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 
 
 })
