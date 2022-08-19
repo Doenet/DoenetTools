@@ -92,8 +92,6 @@ export default function ActivityViewer(props) {
   const [itemWeights, setItemWeights] = useRecoilState(itemWeightsAtom);
   const previousComponentTypeCountsByPage = useRef([]);
 
-  const [cidChanged, setCidChanged] = useState(props.cidChanged);
-  const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
 
   const serverSaveId = useRef(null);
 
@@ -646,7 +644,9 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    setCidChanged(resp.data.cidChanged === true);
+    if(resp.data.cidChanged === true) {
+      props.cidChangedCallback();
+    }
 
     let data = resp.data;
 
@@ -899,7 +899,9 @@ export default function ActivityViewer(props) {
         }
       });
 
-      setCidChanged(resp.data.cidChanged === true);
+      if(resp.data.cidChanged === true) {
+        props.cidChangedCallback();
+      }
 
     } catch (e) {
       // ignore any errors
@@ -1200,23 +1202,6 @@ export default function ActivityViewer(props) {
     )
   }
 
-  let cidChangedAlert = null;
-  if (cidChanged) {
-    if (cidChangedMessageOpen) {
-      cidChangedAlert = <div>
-        <p>A new version of this activity is available.
-          Do you want to start a new attempt using new version?
-          (This will reset the activity to its initial state.)
-        </p>
-        <button onClick={() => setCidChangedMessageOpen(false)}>Yes</button>
-        <button onClick={() => setCidChangedMessageOpen(false)}>No</button>
-      </div>
-    } else {
-      cidChangedAlert = <div>
-        <button onClick={() => setCidChangedMessageOpen(true)}>content changed</button>
-      </div>
-    }
-  }
 
   let pageControls = null;
   if (props.paginate && nPages > 1) {
@@ -1228,7 +1213,6 @@ export default function ActivityViewer(props) {
   }
 
   return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
-    {cidChangedAlert}
     {pageControls}
     {title}
     {pages}
