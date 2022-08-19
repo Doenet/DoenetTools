@@ -76,7 +76,7 @@ setcookie(
     $isSecure,
     false
 );
-header("Location: /exam?tool=assessment&doenetId=$doenetId");
+header("Location: /exam?tool=assessment&doenetId=$doenetId&hideLinks=true");
 // setcookie("EJWT", $value, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
 // setcookie("EJWT_JS", 1, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
 

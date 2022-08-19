@@ -10,12 +10,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faCog,
-  faHome,
+  // faHome,
   faSun,
   faMoon,
 } from '@fortawesome/free-solid-svg-icons';
 import Logo from '../Logo';
-import { pageToolViewAtom } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { darkModeAtom } from '../DarkmodeController';
 // import Logo from '../Logo';
@@ -256,6 +256,8 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
 // console.log(">>>===MenuPanel", hide)
 // console.log(">>>menuPanelCap",menuPanelCap)
 // console.log(">>>currentMenus",currentMenus)
+const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
+
 
   //These maintain the panels' state
   const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
@@ -355,13 +357,25 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     );
   }
 
+  let settingsButton = null;
+
+  if (hideLinks != 'true'){
+    settingsButton = <SettingsButton
+    onClick={() =>
+      setPageToolView({ page: 'settings', tool: '', view: '' })
+    }
+  >
+    <FontAwesomeIcon icon={faCog} />
+  </SettingsButton>
+  }
+
   return (
     <MenuPanelsWrapper hide={hide} aria-label="menus">
       <MenuPanelsCap fix={hide} role="banner">
         <Branding style={{ marginLeft: '5px' }}>
           {/* <Logo src="data:image/gif;base64,R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7 */}
           {/* "/> */}
-          <Logo />
+          <Logo hasLink={hideLinks != 'true'} />
           <p>Doenet</p>
         </Branding>
         <IconsGroup>
@@ -377,13 +391,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
             uncheckedIcon={<FontAwesomeIcon icon={faMoon} />}
           />
 
-          <SettingsButton
-            onClick={() =>
-              setPageToolView({ page: 'settings', tool: '', view: '' })
-            }
-          >
-            <FontAwesomeIcon icon={faCog} />
-          </SettingsButton>
+          {settingsButton}
         </IconsGroup>
 
         <span>
