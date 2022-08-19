@@ -241,13 +241,6 @@ export default function ClassTimes() {
                 newClassTime.startTime = DateToUTCDateString(
                   new Date(value.value._d),
                 );
-                // console.log('getTime: ', newClassTime.startTime.getHour());
-                // console.log(
-                //   'typeof newClassTime.startTime',
-                //   typeof newClassTime.startTime,
-                // );
-                // console.log('newClassTime.startTime ', newClassTime.startTime);
-                // console.log('newStartTime: ', index, newClassTime);
                 updateClassTime({ index, newClassTime });
                 // } else {
                 // console.log('not valid'); // TODO toast
@@ -264,11 +257,15 @@ export default function ClassTimes() {
               width="74px"
               value={new Date(timeObj.endTime)}
               onBlur={(value, valid) => {
+                // if (valid) {
                 let newClassTime = { ...timeObj };
                 newClassTime.endTime = DateToUTCDateString(
                   new Date(value.value._d),
                 );
                 updateClassTime({ index, newClassTime });
+                // } else {
+                // console.log('not valid'); // TODO toast
+                // }
               }}
             />
           </td>
