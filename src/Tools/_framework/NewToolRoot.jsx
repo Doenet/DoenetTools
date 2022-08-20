@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useRef } from 'react';
+import React, { useState, lazy, Suspense, useRef, useEffect } from 'react';
 import {
   atom,
   selector,
@@ -10,7 +10,7 @@ import {
 } from 'recoil';
 import styled, { keyframes } from 'styled-components';
 import Toast from './Toast';
-import ContentPanel from './Panels/NewContentPanel';
+import ContentPanel, { panelsInfoAtom } from './Panels/NewContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 import MainPanel from './Panels/NewMainPanel';
@@ -390,6 +390,7 @@ export default function ToolRoot() {
 
   // <p>insert keyboard here</p></FooterPanel>
 
+
   return (
     <>
       <ToolContainer>
@@ -435,6 +436,7 @@ export default function ToolRoot() {
 // hasNoMenuPanel: true,
 // waitForMenuSuppression:true,
 // footer: {height,open,component}
+// initialProportion: 1,
 
 let navigationObj = {
   exam: {
@@ -617,6 +619,7 @@ let navigationObj = {
       supportPanelTitles: ['Roles Editor'],
       supportPanelIndex: 0,
       headerControls: ['PeopleBreadCrumb'],
+      initialProportion: 1,
       // headerControls: ["BackButton"],
     },
     data: {
@@ -800,6 +803,8 @@ function RootController(props) {
     useRecoilState(pageToolViewAtom);
   const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
   const [suppressMenus, setSuppressMenus] = useRecoilState(suppressMenusAtom);
+  const setPanelsInfoAtom = useSetRecoilState(panelsInfoAtom);
+
 
   let lastPageToolView = useRef({ page: 'init', tool: '', view: '' });
   let backPageToolView = useRef({ page: 'init', tool: '', view: '' });
@@ -834,6 +839,19 @@ function RootController(props) {
   let nextPageToolView = { page: '', tool: '', view: '' };
   let nextMenusAndPanels = null;
   // console.log("\n>>>===RootController")
+
+  //initialProportion
+  let initialProportion = navigationObj[recoilPageToolView.page]?.[recoilPageToolView.tool]?.initialProportion
+
+  useEffect(()=>{
+    let nextInitialProportion = initialProportion;
+    if (!nextInitialProportion){ nextInitialProportion = 0.5}
+      setPanelsInfoAtom((prev)=>{
+        let next = {...prev}
+        next.proportion = nextInitialProportion;
+        return next;
+      })
+  },[initialProportion])
 
   //Suppress Menu change test
   let isSuppressMenuChange = !arraysEqual(
