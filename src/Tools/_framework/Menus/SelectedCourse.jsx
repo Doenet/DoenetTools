@@ -11,7 +11,6 @@ import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 
 import {
   DeleteCourse,
-  EditDefaultRole,
   EditImageAndColor,
   EditLabel,
 } from '../../../_reactComponents/Course/SettingComponents';
@@ -164,7 +163,7 @@ const CourseInfoPanel = function ({ courseId }) {
       {canModifyCourseSettings === '1' && (
         <EditImageAndColor courseId={courseId} />
       )}
-      {isAdmin === '1' && <EditDefaultRole courseId={courseId} />}
+      <br />
       {isOwner === '1' && <DeleteCourse courseId={courseId} />}
     </>
   );
