@@ -25,6 +25,21 @@ export const scrollableContainerAtom = atom({
   default: null
 })
 
+export const currentPageAtom = atom({
+  key: "currentPageAtom",
+  default: 0
+})
+
+export const activityAttemptNumberSetUpAtom = atom({
+  key: "activityAttemptNumberSetUpAtom",
+  default: 0
+})
+
+export const itemWeightsAtom = atom({
+  key: "itemWeightsAtom",
+  default: []
+})
+
 export default function ActivityViewer(props) {
   const toast = useToast();
 
@@ -65,16 +80,18 @@ export default function ActivityViewer(props) {
   const [flags, setFlags] = useState(props.flags);
 
   const [currentPage, setCurrentPage] = useState(0);
+  const setRecoilCurrentPage = useSetRecoilState(currentPageAtom);
   const currentPageRef = useRef(currentPage);  // so that event listener can get new current page
   currentPageRef.current = currentPage; // so updates on every refresh
+
+  const setActivityAttemptNumberSetUp = useSetRecoilState(activityAttemptNumberSetUpAtom);
 
   const [nPages, setNPages] = useState(0);
 
   const [variantsByPage, setVariantsByPage] = useState(null);
-  const [itemWeights, setItemWeights] = useState(null);
+  const [itemWeights, setItemWeights] = useRecoilState(itemWeightsAtom);
   const previousComponentTypeCountsByPage = useRef([]);
 
-  const [cidChanged, setCidChanged] = useState(props.cidChanged);
 
   const serverSaveId = useRef(null);
 
@@ -143,7 +160,17 @@ export default function ActivityViewer(props) {
         itemWeights,
       }
     }
-  })
+  }, [
+    activityDefinition,
+    requestedVariantIndex,
+    variantIndex,
+    cid,
+    order,
+    currentPage,
+    nPages,
+    variantsByPage,
+    itemWeights
+  ])
 
   useEffect(() => {
     // for non-paginated activity
@@ -182,6 +209,7 @@ export default function ActivityViewer(props) {
 
             if (topPage && topPage !== currentPageRef.current) {
               setCurrentPage(topPage)
+              setRecoilCurrentPage(topPage)
             }
           }
 
@@ -198,7 +226,9 @@ export default function ActivityViewer(props) {
     if (hash && nPages) {
       let match = hash.match(/^#page(\d+)/)
       if (match) {
-        setCurrentPage(Math.max(1, Math.min(nPages, match[1])));
+        let newPage = Math.max(1, Math.min(nPages, match[1]));
+        setCurrentPage(newPage);
+        setRecoilCurrentPage(newPage);
       }
     }
   }, [hash, nPages])
@@ -207,7 +237,7 @@ export default function ActivityViewer(props) {
     if (currentPage > 0 && nPages > 1) {
       let pageAnchor = `#page${currentPage}`;
       if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
-        navigate(location.search + pageAnchor, { replace: true })
+        navigate(location.search + pageAnchor, { replace: true, state: { doNotScroll: true } })
       }
     }
   }, [currentPage, nPages])
@@ -224,32 +254,44 @@ export default function ActivityViewer(props) {
     // If navigate back to that location (i.e., hit back button)
     // then scroll back to the location when clicked
 
-    console.log({
-      currentLocationKey: currentLocationKey.current,
-      newLocationKey: location.key,
-      scrollPositionFromLink: location.state?.previousScrollPosition,
-      newScrollPOsition: previousLocations.current[location.key]?.lastScrollPosition
-    })
+    // console.log({
+    //   currentLocationKey: currentLocationKey.current,
+    //   newLocationKey: location.key,
+    //   scrollPositionFromLink: location.state?.previousScrollPosition,
+    //   newScrollPosition: previousLocations.current[location.key]?.lastScrollPosition
+    // })
+
+    let foundNewInPrevious = false;
 
     if (currentLocationKey.current !== location.key) {
-      if (location.state?.previousScrollPosition && currentLocationKey.current) {
+      if (location.state?.previousScrollPosition !== undefined && currentLocationKey.current) {
         previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
       }
-      if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
-        scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+
+        if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
+          scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+        }
       }
+
 
       previousLocations.current[location.key] = { ...location };
       currentLocationKey.current = location.key;
     }
 
+    // since the <Link> from react router doesn't seem to scroll into hashes
+    // always scroll to the hash the first time we get a location from a <Link>
+    if (!location.state?.doNotScroll && (location.key === "default" || !foundNewInPrevious)) {
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    }
+
   }, [location])
 
-  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) =>
-    async () => {
-      return await snapshot.getPromise(saveStateToDBTimerIdAtom)
-    }
-  )
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+  }, [saveStateToDBTimerIdAtom])
 
 
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
@@ -429,8 +471,10 @@ export default function ActivityViewer(props) {
         serverSaveId.current = localInfo.saveId;
 
         // activityState is just currentPage
+        // if hash doesn't already specify a page, set page from activityState
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(localInfo.activityState.currentPage);
+          setRecoilCurrentPage(localInfo.activityState.currentPage);
         }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
@@ -511,8 +555,10 @@ export default function ActivityViewer(props) {
         let activityState = JSON.parse(resp.data.activityState);
 
         // activityState is just currentPage
+        // if hash doesn't already specify a page, set page from activityState
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(activityState.currentPage);
+          setRecoilCurrentPage(activityState.currentPage);
         }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
@@ -534,12 +580,14 @@ export default function ActivityViewer(props) {
         // get initial state and info
 
         // start at page 1
+        // if hash doesn't already specify a page, set page to 1
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(1);
+          setRecoilCurrentPage(1);
         }
 
         let results;
-        results = await calculateOrderAndVariants({activityDefinition, requestedVariantIndex});
+        results = await calculateOrderAndVariants({ activityDefinition, requestedVariantIndex });
         if (!results.success) {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
@@ -596,7 +644,9 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    setCidChanged(resp.data.cidChanged === true);
+    if(resp.data.cidChanged === true) {
+      props.cidChangedCallback();
+    }
 
     let data = resp.data;
 
@@ -693,7 +743,7 @@ export default function ActivityViewer(props) {
 
   }
 
-  async function saveChangesToDatabase(overrideThrottle = false) {
+  async function saveChangesToDatabase() {
     // throttle save to database at 60 seconds
 
     if (!changesToBeSaved.current) {
@@ -708,11 +758,7 @@ export default function ActivityViewer(props) {
     let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
 
     if (oldTimeoutId !== null) {
-      if (overrideThrottle) {
-        clearTimeout(oldTimeoutId);
-      } else {
-        return;
-      }
+      return;
     }
 
 
@@ -781,24 +827,12 @@ export default function ActivityViewer(props) {
       // then we reset the activity to the new state
       if (attemptNumber !== Number(data.attemptNumber)) {
 
-        if (props.flags.allowLocalState) {
-          idb_set(
-            `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
-            {
-              activityState: JSON.parse(data.activityState),
-              activityInfo: JSON.parse(data.activityInfo),
-              saveId: data.saveId,
-              variantIndex: data.variantIndex
-            }
-          )
+        resetActivity({
+          changedOnDevice: data.device,
+          newCid: data.cid,
+          newAttemptNumber: Number(data.attemptNumber),
+        })
 
-          resetActivity({
-            changedOnDevice: data.device,
-            newCid: data.cid,
-            newAttemptNumber: Number(data.attemptNumber),
-          })
-
-        }
       } else if (cid !== data.cid) {
 
         // if the cid changed without the attemptNumber changing, something went wrong
@@ -824,15 +858,11 @@ export default function ActivityViewer(props) {
     //Initialize user_assignment tables
     if (flags.allowSaveSubmissions) {
 
-      // if an item weight is set to zero, then it is not considered an item
-      // in the assignments table
-      // and it will not affect the resulting score
-      let weights = newItemWeights.filter(x => x);
 
       try {
         let resp = await axios.post('/api/initAssignmentAttempt.php', {
           doenetId: props.doenetId,
-          weights,
+          weights: newItemWeights,
           attemptNumber,
         });
 
@@ -869,7 +899,9 @@ export default function ActivityViewer(props) {
         }
       });
 
-      setCidChanged(resp.data.cidChanged === true);
+      if(resp.data.cidChanged === true) {
+        props.cidChangedCallback();
+      }
 
     } catch (e) {
       // ignore any errors
@@ -879,6 +911,7 @@ export default function ActivityViewer(props) {
 
   function clickNext() {
     setCurrentPage((was) => Math.min(nPages, was + 1));
+    setRecoilCurrentPage((was) => Math.min(nPages, was + 1));
 
     let event = {
       verb: "interacted",
@@ -893,6 +926,7 @@ export default function ActivityViewer(props) {
 
   function clickPrevious() {
     setCurrentPage((was) => Math.max(1, was - 1));
+    setRecoilCurrentPage((was) => Math.max(1, was - 1));
 
     let event = {
       verb: "interacted",
@@ -1101,7 +1135,9 @@ export default function ActivityViewer(props) {
 
     loadState().then(results => {
       if (results) {
-        initializeUserAssignmentTables(results.newItemWeights);
+        initializeUserAssignmentTables(results.newItemWeights).then(() => {
+          setActivityAttemptNumberSetUp(attemptNumber)
+        })
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
       settingUp.current = false;
@@ -1119,16 +1155,8 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
-  let lastItemNumber = 0;
 
   for (let [ind, page] of order.entries()) {
-    let itemNumber;
-    if (itemWeights[ind] > 0) {
-      lastItemNumber++;
-      itemNumber = lastItemNumber;
-    } else {
-      itemNumber = 0;
-    }
 
     let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
 
@@ -1142,7 +1170,7 @@ export default function ActivityViewer(props) {
       pageNumber={(ind + 1).toString()}
       previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
       pageIsActive={thisPageIsActive}
-      itemNumber={itemNumber}
+      itemNumber={ind + 1}
       attemptNumber={attemptNumber}
       flags={flags}
       activityVariantIndex={variantIndex}
@@ -1174,12 +1202,6 @@ export default function ActivityViewer(props) {
     )
   }
 
-  let cidChangedAlert = null;
-  if (cidChanged) {
-    cidChangedAlert = <div>
-      <button onClick={() => alert("Hey, content changed")}>content changed</button>
-    </div>
-  }
 
   let pageControls = null;
   if (props.paginate && nPages > 1) {
@@ -1191,7 +1213,6 @@ export default function ActivityViewer(props) {
   }
 
   return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
-    {cidChangedAlert}
     {pageControls}
     {title}
     {pages}

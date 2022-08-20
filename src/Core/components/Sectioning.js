@@ -2,52 +2,21 @@ import SectioningComponent from './abstract/SectioningComponent';
 
 export class Section extends SectioningComponent {
   static componentType = "section";
+  static rendererType = "section";
 
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 1 }
-    });
-
-    return stateVariableDefinitions;
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.includeParentNumber.defaultValue = true;
+    return attributes;
   }
+
 }
 
-export class Subsection extends SectioningComponent {
+export class Subsection extends Section {
   static componentType = "subsection";
-  static rendererType = "section";
-
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 2 }
-    });
-
-    return stateVariableDefinitions;
-  }
-
 }
-
-export class Subsubsection extends SectioningComponent {
+export class Subsubsection extends Section {
   static componentType = "subsubsection";
-  static rendererType = "section";
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 3 }
-    });
-
-    return stateVariableDefinitions;
-  }
-
 }
 
 export class Paragraphs extends SectioningComponent {
@@ -86,6 +55,8 @@ export class Aside extends SectioningComponent {
       createStateVariable: "startOpen",
       defaultValue: false,
     }
+    attributes.suppressAutoNumber.defaultValue = true;
+
     return attributes;
   }
 
@@ -118,6 +89,10 @@ export class Aside extends SectioningComponent {
       setValue: { containerTag: "aside" }
     });
 
+    stateVariableDefinitions.sectionName.definition = () => ({
+      setValue: { sectionName: "Aside" }
+    });
+
     return stateVariableDefinitions;
   }
 
@@ -140,10 +115,6 @@ export class Problem extends SectioningComponent {
 
     stateVariableDefinitions.sectionName.definition = () => ({
       setValue: { sectionName: "Problem" }
-    });
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 3 }
     });
 
     return stateVariableDefinitions;
@@ -180,10 +151,6 @@ export class Example extends SectioningComponent {
 
     stateVariableDefinitions.sectionName.definition = () => ({
       setValue: { sectionName: "Example" }
-    });
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 3 }
     });
 
     return stateVariableDefinitions;

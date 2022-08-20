@@ -586,11 +586,13 @@ let navigationObj = {
       currentMainPanel: 'EditorViewer',
       currentMenus: [
         'PageVariant',
+        'PageLink',
         'AssignmentSettingsMenu',
         'SupportingFilesMenu',
       ],
       menusTitles: [
         'Page Variant',
+        'Page Link',
         'Assignment Settings',
         'Supporting Files',
       ],

@@ -84,9 +84,9 @@ Cypress.Commands.add("createActivity", ({courseId,doenetId,parentDoenetId,pageDo
 });
 
 
-Cypress.Commands.add("createMultipageActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,doenetML1,doenetML2}) => {
-  // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
-  cy.request('POST', `/cyapi/cypressCreateMultipageActivity.php`, {courseId, doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,doenetML1,doenetML2})
+Cypress.Commands.add("createMultipageActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4,doenetML1,doenetML2,doenetML3,doenetML4}) => {
+  cy.log(courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4)
+  cy.request('POST', `/cyapi/cypressCreateMultipageActivity.php`, {courseId, doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4,doenetML1,doenetML2,doenetML3,doenetML4})
     // .then((resp)=>{
     //   cy.log(resp.body)
     // })

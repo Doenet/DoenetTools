@@ -33,8 +33,7 @@ export const currentAttemptNumber = atom({
 export const creditAchievedAtom = atom({
   key: 'creditAchievedAtom',
   default: {
-    creditByItem: [1, 0, 0.5],
-    // creditByItem:[],
+    creditByItem: [],
     creditForAttempt: 0,
     creditForAssignment: 0,
     totalPointsOrPercent: 0,
@@ -117,11 +116,16 @@ export default function AssignmentViewer() {
     },
     setLoad,
   ] = useState({});
+
+  const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
+
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
 
-  const setSaveStateToDBTimerId = useSetRecoilState(saveStateToDBTimerIdAtom);
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+  }, [saveStateToDBTimerIdAtom])
 
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
@@ -369,11 +373,12 @@ export default function AssignmentViewer() {
       navigate(search + "#page1", { replace: true });
     }
 
-    // setting the save state timeout id from activity viewer to null 
-    // so that it doesn't attempt to save data from old attempt number
-    // (which triggered a reset and error message);
-    setSaveStateToDBTimerId(null);
-
+    // don't attempt to save data from old attempt number
+    // (which would triggered a reset and error message);
+    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+    if (oldTimeoutId !== null) {
+      clearTimeout(oldTimeoutId)
+    }
 
     //Check if cid has changed
 
@@ -484,6 +489,15 @@ export default function AssignmentViewer() {
     console.log(`page changed to ${pageNumber}`)
   }
 
+  async function incrementAttemptNumberAndAttemptsAllowed() {
+
+    let resp = await axios.post('/api/incrementAttemptsAllowedIfCidChanged.php', {
+      doenetId,
+    });
+
+    setRecoilAttemptNumber(was => was + 1)
+  }
+
   // console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
@@ -507,8 +521,28 @@ export default function AssignmentViewer() {
     return null;
   }
 
+  let cidChangedAlert = null;
+  if (cidChanged) {
+    if (cidChangedMessageOpen) {
+      cidChangedAlert = <div>
+        <p>A new version of this activity is available.
+          Do you want to start a new attempt using the new version?
+          (This will reset the activity to its initial state.)
+        </p>
+        <button onClick={incrementAttemptNumberAndAttemptsAllowed}>Yes</button>
+        <button onClick={() => setCidChangedMessageOpen(false)}>No</button>
+      </div>
+    } else {
+      cidChangedAlert = <div>
+        <button onClick={() => setCidChangedMessageOpen(true)}>content changed</button>
+      </div>
+    }
+  }
+
+
   return (
     <>
+      {cidChangedAlert}
       <ActivityViewer
         key={`activityViewer${doenetId}`}
         cid={cid}
@@ -532,6 +566,12 @@ export default function AssignmentViewer() {
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}
+        cidChangedCallback={() =>
+          setLoad((was) => {
+            let newObj = { ...was };
+            newObj.cidChanged = true;
+            return newObj;
+          })}
       // generatedVariantCallback={variantCallback}
       />
     </>

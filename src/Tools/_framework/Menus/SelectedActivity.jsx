@@ -12,6 +12,7 @@ import {
   AttemptAggregation,
   DueDate,
   GradeCategory,
+  ItemWeights,
   Individualize,
   MakePublic,
   PinAssignment,
@@ -275,6 +276,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
         <AttemptAggregation {...sharedProps} />
         <TotalPointsOrPercent {...sharedProps} />
         <GradeCategory {...sharedProps} />
+        <ItemWeights {...sharedProps} />
         <div style={{ margin: '16px 0' }}>
           <Individualize {...sharedProps} />
           <ShowSolution {...sharedProps} />

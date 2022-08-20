@@ -12,7 +12,7 @@ export default React.memo(function Ref(props) {
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
-  const scollableContainer = useRecoilValue(scrollableContainerAtom);
+  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
   let { search } = useLocation();
   let navigate = useNavigate();
@@ -30,6 +30,7 @@ export default React.memo(function Ref(props) {
   let url = "";
   let targetForATag = "_blank";
   let haveValidTarget = false;
+  let externalUri = false;
   if (SVs.cid || SVs.doenetId) {
     if (SVs.cid) {
       url = `cid=${SVs.cid}`
@@ -73,6 +74,7 @@ export default React.memo(function Ref(props) {
     url = SVs.uri;
     if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
       haveValidTarget = true;
+      externalUri = true;
     }
   } else {
     url += search;
@@ -98,9 +100,15 @@ export default React.memo(function Ref(props) {
   } else {
     if (haveValidTarget) {
 
-      let stateObj = {}
-      Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scollableContainer.scrollTop, enumerable: true });
-      return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
+      if (externalUri) {
+        return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
+      } else {
+
+        let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
+        let stateObj = { fromLink: true }
+        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () =>scrollableContainer[scrollAttribute], enumerable: true });
+        return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
+      }
     } else {
       return <span id={id}>{linkContent}</span>
     }

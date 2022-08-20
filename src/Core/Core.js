@@ -329,6 +329,32 @@ export default class Core {
       },
     })
 
+    let foundAnswerDescendant = function (comp) {
+      let sDecs = comp.stateValues.scoredDescendants;
+      if (Array.isArray(sDecs)) {
+        for (let dec of sDecs) {
+          if (dec.componentType === "answer") {
+            return true;
+          } else {
+            if (foundAnswerDescendant(dec)) {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    }
+
+    await this.document.stateValues.scoredDescendants;  // to evaluated scoredDescendants
+
+    if (!foundAnswerDescendant(this.document)) {
+      // if there are no scored items in document
+      // then treat the first view of the document as a submission
+      // so that will get credit for viewing the page
+      this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
+    }
+
     this.resolveInitialized();
 
     setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
@@ -467,6 +493,18 @@ export default class Core {
       }]
 
       this.postUpdateRenderers({ updateInstructions }, true)
+
+      // if have some states to force update
+      // then post these updates without setting init to true
+      if (results.rendererStatesToForceUpdate.length > 0) {
+        let updateInstructions = [{
+          instructionType: "updateRendererStates",
+          rendererStatesToUpdate: results.rendererStatesToForceUpdate,
+        }]
+        this.postUpdateRenderers({ updateInstructions })
+
+      }
+
 
       await this.processStateVariableTriggers();
 
@@ -707,12 +745,22 @@ export default class Core {
 
 
     let rendererStatesToUpdate = [];
+    let rendererStatesToForceUpdate = [];
 
     let stateValuesForRenderer = {};
+    let stateValuesForRendererAlwaysUpdate = {};
+    let alwaysUpdate = false;
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
         stateValuesForRenderer[stateVariable] = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
+        if (component.state[stateVariable].alwaysUpdateRenderer) {
+          alwaysUpdate = true;
+        }
       }
+    }
+
+    if (alwaysUpdate) {
+      stateValuesForRendererAlwaysUpdate = stateValuesForRenderer;
     }
 
     let componentName = component.componentName;
@@ -727,6 +775,7 @@ export default class Core {
             let results = await this.initializeRenderedComponentInstruction(child);
             childrenToRender.push(results.componentToRender);
             rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
+            rendererStatesToForceUpdate.push(...results.rendererStatesToForceUpdate);
 
           } else if (typeof child === "string") {
             childrenToRender.push(child);
@@ -742,6 +791,12 @@ export default class Core {
       stateValues: stateValuesForRenderer,
       childrenInstructions: childrenToRender,
     });
+    if (Object.keys(stateValuesForRendererAlwaysUpdate).length > 0) {
+      rendererStatesToForceUpdate.push({
+        componentName,
+        stateValues: stateValuesForRendererAlwaysUpdate,
+      });
+    }
 
     // this.renderState is used to save the renderer state to the database
     this.rendererState[componentName] = {
@@ -783,7 +838,7 @@ export default class Core {
     };
 
 
-    return { componentToRender: rendererInstructions, rendererStatesToUpdate };
+    return { componentToRender: rendererInstructions, rendererStatesToUpdate, rendererStatesToForceUpdate };
   }
 
   deleteFromComponentsToRender({
@@ -8364,23 +8419,11 @@ export default class Core {
       }
 
 
-      let componentsSubmitted = [];
-      for (let itemSubmission of recordItemSubmissions) {
-        componentsSubmitted.push({
-          componentName: itemSubmission.submittedComponent,
-          response: itemSubmission.response,
-          responseText: itemSubmission.responseText,
-          creditAchieved: itemSubmission.creditAchieved,
-          subitemNumber: itemSubmission.itemNumber
-        });
-      }
-
-
       // if itemNumber is zero, it means this document wasn't given any weight,
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ pageCreditAchieved, componentsSubmitted });
+        this.saveSubmissions({ pageCreditAchieved });
       }
 
     }
@@ -9812,7 +9855,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ pageCreditAchieved, componentsSubmitted }) {
+  saveSubmissions({ pageCreditAchieved }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9823,7 +9866,6 @@ export default class Core {
       attemptNumber: this.attemptNumber,
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
-      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
 
     console.log('payload for save credit for item', payload);
@@ -9857,7 +9899,13 @@ export default class Core {
           postMessage({
             messageType: "updateCreditAchieved",
             coreId: this.coreId,
-            args: data
+            args: {
+              creditByItem: data.creditByItem.map(Number),
+              creditForAssignment: Number(data.creditForAssignment),
+              creditForAttempt: Number(data.creditForAttempt),
+              showCorrectness: data.showCorrectness === "1",
+              totalPointsOrPercent: Number(data.totalPointsOrPercent),
+            }
           })
 
           //TODO: need type warning (red but doesn't hang around)

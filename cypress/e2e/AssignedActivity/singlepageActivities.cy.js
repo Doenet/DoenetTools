@@ -1,7 +1,7 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
 
-describe('Multipage activity tests', function () {
+describe('Single page activity tests', function () {
   const userId = "cyuserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
