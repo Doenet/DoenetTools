@@ -6230,6 +6230,146 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('copy map source with no link', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Number of iterations: <mathinput name="n" /></p>
+
+    <graph>
+    
+      <map name="map1" assignNames="(A B C) (D E F)">
+      <template>
+      
+      <point x="$i{link='false'}" y='$i.value{link="false"}+1'>
+      </point>
+      <point>
+        (<number copySource="i" link="false" /> + 2, <number copySource="i.value" link="false" /> +3)
+      </point>
+      <point>
+        (<copy source="i" link="false" /> + 4, <copy source="i.value" link="false" /> +5)
+      </point>
+      </template>
+      
+      <sources alias="i"><sequence from="1" to="$n" /></sources>
+      </map>
+        
+    </graph>
+
+    <p>A: <copy source="A" assignNames="A2" /></p>
+    <p>B: <copy source="B" assignNames="B2" /></p>
+    <p>C: <copy source="C" assignNames="C2" /></p>
+    <p>D: <copy source="D" assignNames="D2" /></p>
+    <p>E: <copy source="E" assignNames="E2" /></p>
+    <p>F: <copy source="F" assignNames="F2" /></p>
+  
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/A2')).should('not.exist')
+    cy.get(cesc('#/B2')).should('not.exist')
+    cy.get(cesc('#/C2')).should('not.exist')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.get('#\\/n textarea').type("1{enter}", {force:true});
+
+    cy.get(cesc('#/A2') + ' .mjx-mrow').should('contain.text', '(1,2)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 9, y: 0 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: 1, y: 8 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/C",
+        args: { x: 7, y: 2 }
+      })
+    })
+
+    cy.get(cesc('#/C2') + ' .mjx-mrow').should('contain.text', '(7,2)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force:true});
+
+    cy.get(cesc('#/D2') + ' .mjx-mrow').should('contain.text', '(2,3)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)')
+    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(4,5)')
+    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/D",
+        args: { x: 0, y: 10 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/E",
+        args: { x: 9, y: 1 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/F",
+        args: { x: 2, y: 8 }
+      })
+    })
+
+    cy.get(cesc('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
+    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
+    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", {force:true});
+
+    cy.get(cesc('#/A2')).should('not.exist')
+    cy.get(cesc('#/B2')).should('not.exist')
+    cy.get(cesc('#/C2')).should('not.exist')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force:true});
+
+    cy.get(cesc('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
+    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
+    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
+  });
+
   it('external content cannot reach outside namespace', () => {
     cy.window().then(async (win) => {
       win.postMessage({
