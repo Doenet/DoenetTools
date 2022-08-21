@@ -1835,7 +1835,6 @@ export const useCourse = (courseId) => {
   const updateCollectionLink = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({courseId, doenetId, label, collectionDoenetId, isManuallyFiltered, pages=[], successCallback, failureCallback = defaultFailure}) => {
-
         let collectionLinkObj = await snapshot.getPromise(itemByDoenetId(doenetId));
         let activityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
         // console.log("previous collectionLink:",collectionLinkObj)
@@ -1843,12 +1842,14 @@ export const useCourse = (courseId) => {
           //New collection source!  
           //We need to update pages from the server 
           //and add new objects to itemByDoenetId
+      
           let { data } = await axios.post('/api/createPageLinks.php', {
             courseId,
+            containingDoenetId:collectionLinkObj.containingDoenetId,
             collectionDoenetId
           });
         console.log("createPageLinks data",data)
-
+          pages=Object.keys(data?.linkPageObjs);
         }
 
         let changesObj = {label,collectionDoenetId,isManuallyFiltered,pages};
@@ -1874,6 +1875,7 @@ export const useCourse = (courseId) => {
           }
           return next;
         });
+        //TODO: Need to make link_pages too
   });
 
   const updateOrderBehavior = useRecoilCallback(
