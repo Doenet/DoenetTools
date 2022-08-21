@@ -100,7 +100,9 @@ export default React.memo(function Ref(props) {
   } else {
     if (haveValidTarget) {
 
-      if (externalUri) {
+      if (externalUri || url === "#") {
+        // for some reason, if url = "#", the <Link>, below, causes a refresh
+        // as it removes the # from the url.  So we use a <a> directly in this case.
         return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
       } else {
 

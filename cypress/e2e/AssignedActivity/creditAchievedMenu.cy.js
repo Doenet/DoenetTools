@@ -297,16 +297,16 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
-    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
-    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
     
     cy.get('#page1\\/ans textarea').type("x{enter}", {force: true})
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
-    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
-    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '66.7%')
 
     cy.get('[data-test="next"]').click();
@@ -314,9 +314,9 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('#page2\\/_problem1_title').should('have.text', 'Problem 2');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
-    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
-    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '66.7%')
 
     cy.get('[data-test="next"]').click();
@@ -324,26 +324,26 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('#page3\\/_problem1_title').should('have.text', 'Problem 3');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
-    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
-    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '66.7%')
 
     cy.get('#page3\\/ans textarea').type("y{enter}", {force: true})
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
-    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
-    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
     cy.get('[data-test="next"]').click();
     cy.get('#page4\\/_p1').should('have.text', 'No questions here, either');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
-    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
-    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'NA')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Complete')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
 

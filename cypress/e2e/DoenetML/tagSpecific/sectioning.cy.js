@@ -1335,14 +1335,18 @@ describe('Sectioning Tag Tests', function () {
 
       <p>Copy of original title: <text copySource="sec.title" name="title1" /></p>
       <p>Copy of revised title: <text copySource="revised.title" name="title2" /></p>
-    
+      <p>Original section number: <text copySource="sec.sectionNumber" name="sectionNumber1" /></p>
+      <p>Revised section number: <text copySource="revised.sectionNumber" name="sectionNumber2" /></p>
+   
     `}, "*");
     });
 
-    cy.get('#\\/sec_title').should('have.text', 'A title');
-    cy.get('#\\/revised_title').should('have.text', 'A better title');
+    cy.get('#\\/sec_title').should('have.text', 'Section 1: A title');
+    cy.get('#\\/revised_title').should('have.text', 'Section 2: A better title');
     cy.get('#\\/title1').should('have.text', 'A title');
     cy.get('#\\/title2').should('have.text', 'A better title');
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
 
     cy.get('#\\/_p1').should('have.text', 'Hello');
     cy.get('#\\/revised p:first-of-type').should('have.text', 'Hello');
@@ -1366,17 +1370,21 @@ describe('Sectioning Tag Tests', function () {
 
       <p>Copy of original title: <text copySource="sec.title" name="title1" /></p>
       <p>Copy of revised title: <text copySource="revised.title" name="title2" /></p>
+      <p>Original section number: <text copySource="sec.sectionNumber" name="sectionNumber1" /></p>
+      <p>Revised section number: <text copySource="revised.sectionNumber" name="sectionNumber2" /></p>
     
     `}, "*");
     });
 
-    cy.get('#\\/sec_title').should('have.text', 'A title');
-    cy.get('#\\/revised_title').should('have.text', 'A better title');
+    cy.get('#\\/sec_title').should('have.text', 'Section 1: A title');
+    cy.get('#\\/revised_title').should('have.text', 'Section 2: A better title');
     cy.get('#\\/sec\\/_title1').should('have.text', 'A title');
     cy.get('#\\/revised\\/_title').should('not.exist');
     cy.get('#\\/revised\\/_title2').should('have.text', 'A better title');
     cy.get('#\\/title1').should('have.text', 'A title');
     cy.get('#\\/title2').should('have.text', 'A better title');
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
 
     cy.get('#\\/sec\\/_p1').should('have.text', 'Hello');
     cy.get('#\\/revised\\/_p1').should('have.text', 'Hello');
@@ -1419,7 +1427,26 @@ describe('Sectioning Tag Tests', function () {
           <p><lorem generateSentences="1" /></p>
         </section>
       </section>
-  
+
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
 
     `}, "*");
     });
@@ -1434,6 +1461,25 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1');
     cy.get('#\\/sec23_title').should('have.text', 'Section 2.3');
 
+    cy.get('#\\/title1').should('have.text', 'Section 1');
+    cy.get('#\\/title2').should('have.text', 'Section 2');
+    cy.get('#\\/title21').should('have.text', 'Section 2.1');
+    cy.get('#\\/title22').should('have.text', 'Section 2.2');
+    cy.get('#\\/title221').should('have.text', 'Section 2.2.1');
+    cy.get('#\\/title222').should('have.text', 'Section 2.2.2');
+    cy.get('#\\/title223').should('have.text', 'Section 2.2.3');
+    cy.get('#\\/title2231').should('have.text', 'Section 2.2.3.1');
+    cy.get('#\\/title23').should('have.text', 'Section 2.3');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1448,7 +1494,6 @@ describe('Sectioning Tag Tests', function () {
       expect(stateVariables['/sec23'].stateValues.level).eq(2);
     });
   });
-
 
   it('Auto naming of section titles, with custom titles', () => {
     cy.window().then(async (win) => {
@@ -1495,6 +1540,26 @@ describe('Sectioning Tag Tests', function () {
         </section>
       </section>
   
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
 
     `}, "*");
     });
@@ -1508,6 +1573,26 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sec223_title').should('have.text', 'Section 2.2.3: BBC');
     cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1: BBCA');
     cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -1523,7 +1608,6 @@ describe('Sectioning Tag Tests', function () {
       expect(stateVariables['/sec23'].stateValues.level).eq(2);
     });
   });
-
 
   it('Auto naming of section titles, with custom titles, no auto name', () => {
     cy.window().then(async (win) => {
@@ -1570,6 +1654,26 @@ describe('Sectioning Tag Tests', function () {
         </section>
       </section>
   
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
 
     `}, "*");
     });
@@ -1583,6 +1687,27 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sec223_title').should('have.text', '2.2.3. BBC');
     cy.get('#\\/sec2231_title').should('have.text', '2.2.3.1. BBCA');
     cy.get('#\\/sec23_title').should('have.text', '2.3. BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+
 
 
     cy.window().then(async (win) => {
@@ -1598,7 +1723,6 @@ describe('Sectioning Tag Tests', function () {
       expect(stateVariables['/sec23'].stateValues.level).eq(2);
     });
   });
-
 
   it('Not auto naming of section titles, with custom titles, no auto name and number', () => {
     cy.window().then(async (win) => {
@@ -1644,7 +1768,27 @@ describe('Sectioning Tag Tests', function () {
           <p><lorem generateSentences="1" /></p>
         </section>
       </section>
-  
+    
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
 
     `}, "*");
     });
@@ -1658,6 +1802,26 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sec223_title').should('have.text', 'BBC');
     cy.get('#\\/sec2231_title').should('have.text', 'BBCA');
     cy.get('#\\/sec23_title').should('have.text', 'BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -1673,7 +1837,6 @@ describe('Sectioning Tag Tests', function () {
       expect(stateVariables['/sec23'].stateValues.level).eq(2);
     });
   });
-
 
   it('Auto naming of section titles, with custom titles, no auto number', () => {
     cy.window().then(async (win) => {
@@ -1719,7 +1882,27 @@ describe('Sectioning Tag Tests', function () {
           <p><lorem generateSentences="1" /></p>
         </section>
       </section>
-  
+      
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
 
     `}, "*");
     });
@@ -1733,6 +1916,26 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sec223_title').should('have.text', 'Section: BBC');
     cy.get('#\\/sec2231_title').should('have.text', 'Section: BBCA');
     cy.get('#\\/sec23_title').should('have.text', 'Section: BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -1748,7 +1951,6 @@ describe('Sectioning Tag Tests', function () {
       expect(stateVariables['/sec23'].stateValues.level).eq(2);
     });
   });
-
 
   it('Auto naming of section titles, with custom titles, turning off include parent number', () => {
     cy.window().then(async (win) => {
@@ -1808,6 +2010,33 @@ describe('Sectioning Tag Tests', function () {
       </section>
   
 
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.1.1: <text name="title211" copySource="sec211.title" /></p>
+      <p>Title 2.1.1.1: <text name="title2111" copySource="sec2111.title" /></p>
+      <p>Title 2.1.1.2: <text name="title2112" copySource="sec2112.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.1.1: <text name="sectionNumber211" copySource="sec211.sectionNumber" /></p>
+      <p>Number for 2.1.1.1: <text name="sectionNumber2111" copySource="sec2111.sectionNumber" /></p>
+      <p>Number for 2.1.1.2: <text name="sectionNumber2112" copySource="sec2112.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
+
     `}, "*");
     });
 
@@ -1823,6 +2052,32 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sec223_title').should('have.text', 'Section 2.3: BBC');
     cy.get('#\\/sec2231_title').should('have.text', 'Section 2.3.1: BBCA');
     cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title211').should('have.text', 'BAA');
+    cy.get('#\\/title2111').should('have.text', 'BAAA');
+    cy.get('#\\/title2112').should('have.text', 'BAAB');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber211').should('have.text', '1');
+    cy.get('#\\/sectionNumber2111').should('have.text', '1.1');
+    cy.get('#\\/sectionNumber2112').should('have.text', '1.2');
+    cy.get('#\\/sectionNumber22').should('have.text', '2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -1841,7 +2096,6 @@ describe('Sectioning Tag Tests', function () {
       expect(stateVariables['/sec23'].stateValues.level).eq(2);
     });
   });
-
 
   it('Auto naming of section titles, no auto name', () => {
     cy.window().then(async (win) => {
@@ -1879,6 +2133,26 @@ describe('Sectioning Tag Tests', function () {
         </section>
       </section>
   
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
 
     `}, "*");
     });
@@ -1892,6 +2166,26 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sec223_title').should('have.text', '2.2.3');
     cy.get('#\\/sec2231_title').should('have.text', '2.2.3.1');
     cy.get('#\\/sec23_title').should('have.text', '2.3');
+
+    cy.get('#\\/title1').should('have.text', '1');
+    cy.get('#\\/title2').should('have.text', '2');
+    cy.get('#\\/title21').should('have.text', '2.1');
+    cy.get('#\\/title22').should('have.text', '2.2');
+    cy.get('#\\/title221').should('have.text', '2.2.1');
+    cy.get('#\\/title222').should('have.text', '2.2.2');
+    cy.get('#\\/title223').should('have.text', '2.2.3');
+    cy.get('#\\/title2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/title23').should('have.text', '2.3');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -1907,7 +2201,6 @@ describe('Sectioning Tag Tests', function () {
       expect(stateVariables['/sec23'].stateValues.level).eq(2);
     });
   });
-
 
   it('Aside suppresses auto number by default', () => {
     cy.window().then(async (win) => {
@@ -1934,6 +2227,12 @@ describe('Sectioning Tag Tests', function () {
         </aside>
       </aside>
   
+      <p>Title 1: <text name="title1" copySource="aside1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="aside2.title" /></p>
+      <p>Title 3: <text name="title3" copySource="aside3.title" /></p>
+      <p>Title 3.1: <text name="title31" copySource="aside31.title" /></p>
+      <p>Title 3.2: <text name="title32" copySource="aside32.title" /></p>
+      <p>Title 3.3: <text name="title33" copySource="aside33.title" /></p>
 
     `}, "*");
     });
@@ -1943,6 +2242,10 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/aside1_title').should('not.contain.text', ':');
     cy.get('#\\/aside2_title').should('contain.text', 'Aside: Side point');
     cy.get('#\\/aside3_title').should('contain.text', 'Aside 3: Another side point');
+    cy.get('#\\/title1').should('have.text', 'Aside');
+    cy.get('#\\/title2').should('have.text', 'Side point');
+    cy.get('#\\/title3').should('have.text', 'Another side point');
+
     cy.get('#\\/aside3_title').click();
 
     cy.get('#\\/aside31_title').should('contain.text', 'Aside');
@@ -1952,6 +2255,11 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/aside32_title').should('not.contain.text', ':');
     cy.get('#\\/aside33_title').should('contain.text', 'Aside 3.3 ');
     cy.get('#\\/aside33_title').should('not.contain.text', ':');
+
+
+    cy.get('#\\/title31').should('have.text', 'Aside');
+    cy.get('#\\/title32').should('have.text', 'Aside 2');
+    cy.get('#\\/title33').should('have.text', 'Aside 3.3');
 
   });
 
@@ -1991,6 +2299,31 @@ describe('Sectioning Tag Tests', function () {
       </section>
   
 
+      <p>Title Section 1: <text name="titleSec1" copySource="sec1.title" /></p>
+      <p>Title Problem 1.1: <text name="titleProb11" copySource="prob11.title" /></p>
+      <p>Title Exercise 1.1: <text name="titleExer11" copySource="exer11.title" /></p>
+      <p>Title Example 1.1: <text name="titleExam11" copySource="exam11.title" /></p>
+      <p>Title Problem 1.2: <text name="titleProb12" copySource="prob12.title" /></p>
+      <p>Title Exercise 1.2: <text name="titleExer12" copySource="exer12.title" /></p>
+      <p>Title Example 1.2: <text name="titleExam12" copySource="exam12.title" /></p>
+      <p>Title Problem 1.3: <text name="titleProb13" copySource="prob13.title" /></p>
+      <p>Title Exercise 1.3: <text name="titleExer13" copySource="exer13.title" /></p>
+      <p>Title Example 1.3: <text name="titleExam13" copySource="exam13.title" /></p>
+
+
+      <p>Number for Section 1: <text name="sectionNumberSec1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for Problem 1.1: <text name="sectionNumberProb11" copySource="prob11.sectionNumber" /></p>
+      <p>Number for Exercise 1.1: <text name="sectionNumberExer11" copySource="exer11.sectionNumber" /></p>
+      <p>Number for Example 1.1: <text name="sectionNumberExam11" copySource="exam11.sectionNumber" /></p>
+      <p>Number for Problem 1.2: <text name="sectionNumberProb12" copySource="prob12.sectionNumber" /></p>
+      <p>Number for Exercise 1.2: <text name="sectionNumberExer12" copySource="exer12.sectionNumber" /></p>
+      <p>Number for Example 1.2: <text name="sectionNumberExam12" copySource="exam12.sectionNumber" /></p>
+      <p>Number for Problem 1.3: <text name="sectionNumberProb13" copySource="prob13.sectionNumber" /></p>
+      <p>Number for Exercise 1.3: <text name="sectionNumberExer13" copySource="exer13.sectionNumber" /></p>
+      <p>Number for Example 1.3: <text name="sectionNumberExam13" copySource="exam13.sectionNumber" /></p>
+
+
+
     `}, "*");
     });
 
@@ -2004,6 +2337,26 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/prob13_title').should('have.text', 'Problem 1.3');
     cy.get('#\\/exer13_title').should('have.text', 'Exercise 1.3');
     cy.get('#\\/exam13_title').should('have.text', 'Example 1.3');
+
+    cy.get('#\\/titleProb11').should('have.text', 'Problem 1');
+    cy.get('#\\/titleExer11').should('have.text', 'Exercise 1');
+    cy.get('#\\/titleExam11').should('have.text', 'Example 1');
+    cy.get('#\\/titleProb12').should('have.text', 'Problem 2');
+    cy.get('#\\/titleExer12').should('have.text', 'Exercise 2');
+    cy.get('#\\/titleExam12').should('have.text', 'Example 2');
+    cy.get('#\\/titleProb13').should('have.text', 'Problem 1.3');
+    cy.get('#\\/titleExer13').should('have.text', 'Exercise 1.3');
+    cy.get('#\\/titleExam13').should('have.text', 'Example 1.3');
+
+    cy.get('#\\/sectionNumberProb11').should('have.text', '1');
+    cy.get('#\\/sectionNumberExer11').should('have.text', '1');
+    cy.get('#\\/sectionNumberExam11').should('have.text', '1');
+    cy.get('#\\/sectionNumberProb12').should('have.text', '2');
+    cy.get('#\\/sectionNumberExer12').should('have.text', '2');
+    cy.get('#\\/sectionNumberExam12').should('have.text', '2');
+    cy.get('#\\/sectionNumberProb13').should('have.text', '1.3');
+    cy.get('#\\/sectionNumberExer13').should('have.text', '1.3');
+    cy.get('#\\/sectionNumberExam13').should('have.text', '1.3');
 
   });
 

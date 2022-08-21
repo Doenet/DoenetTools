@@ -116,7 +116,13 @@ export default class SectioningComponent extends BlockComponent {
     Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
 
     stateVariableDefinitions.enumeration = {
-      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "sectionNumber",
+        public: true,
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
+      }],
       returnDependencies: () => ({
         countAmongSiblings: {
           dependencyType: "countAmongSiblingsOfSameType"
@@ -139,7 +145,9 @@ export default class SectioningComponent extends BlockComponent {
         }
 
         enumeration.push(dependencyValues.countAmongSiblings)
-        return { setValue: { enumeration } }
+
+        
+        return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
 
       }
     }
@@ -225,9 +233,9 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "sectionName",
         },
-        enumeration: {
+        sectionNumber: {
           dependencyType: "stateVariable",
-          variableName: "enumeration"
+          variableName: "sectionNumber"
         },
         suppressAutoName: {
           dependencyType: "stateVariable",
@@ -250,7 +258,7 @@ export default class SectioningComponent extends BlockComponent {
           if (!dependencyValues.suppressAutoName) {
             titlePrefix = dependencyValues.sectionName + " ";
           }
-          titlePrefix += dependencyValues.enumeration.join(".")
+          titlePrefix += dependencyValues.sectionNumber;
         }
 
 
@@ -266,7 +274,7 @@ export default class SectioningComponent extends BlockComponent {
             }
           }
 
-          title = titlePrefix + dependencyValues.titleChild[dependencyValues.titleChild.length - 1].stateValues.text;
+          title = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].stateValues.text;
 
         }
 
