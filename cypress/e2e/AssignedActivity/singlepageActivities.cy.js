@@ -48,13 +48,13 @@ describe('Single page activity tests', function () {
 
 </section>`
 
-    cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId, doenetML});
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="toast"]').contains('Activity Assigned');
@@ -78,7 +78,7 @@ describe('Single page activity tests', function () {
 
     cy.get('#\\/aside').then(el => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels-1).lt(headerPixels+1)
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
@@ -99,7 +99,7 @@ describe('Single page activity tests', function () {
 
     cy.get('#\\/aside').then(el => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels-1).lt(headerPixels+1)
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
@@ -130,20 +130,20 @@ describe('Single page activity tests', function () {
 `
 
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId,doenetML });
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
     cy.createActivity({ courseId, doenetId: doenetId2, parentDoenetId: courseId, pageDoenetId: pageDoenetId3, doenetML: doenetMLother });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',2); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
@@ -177,7 +177,7 @@ describe('Single page activity tests', function () {
 
     cy.get('#\\/aside').then(el => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels-1).lt(headerPixels+1)
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
     cy.wait(1500);  // wait for debounce
@@ -217,7 +217,7 @@ describe('Single page activity tests', function () {
 
     cy.get('#\\/aside').then(el => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels-1).lt(headerPixels+1)
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
   })
 
@@ -242,9 +242,9 @@ describe('Single page activity tests', function () {
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
@@ -276,9 +276,127 @@ describe('Single page activity tests', function () {
 
     cy.get('#\\/aside').then(el => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels-1).lt(headerPixels+1)
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
+  })
+
+  it('Update to new versino', () => {
+    const doenetML = `
+  <problem name="prob">
+    <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
+    <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
+    <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
+  </problem >`
+
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
+    cy.get('#\\/credit').should('have.text', '1')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.go("back");
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#\\/ans textarea').type("{end}{backspace}1{enter}", { force: true });
+
+    cy.log('At least for now, hitting enter before core is intialized does not submit response')
+    cy.get('#\\/cr').should("contain.text", '1')
+    cy.get('#\\/ans textarea').type("{enter}", { force: true });
+
+    cy.get('#\\/credit').should('have.text', '0')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+
+    cy.go("back");
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Activity"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#\\/cr').should('contain.text', '1');
+    cy.get('#\\/ans2').should('not.exist');
+
+    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
+
+    cy.get('[data-test=CancelNewVersion]').click();
+    cy.get('[data-test="Main Panel"]').should("not.contain.text", "new version");
+
+    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
+    cy.get('[data-test=ConfirmNewVersion]').click();
+
+    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('[data-test="New Attempt"]').click();
+
+    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.wait(1500);  // just making sure nothing gets saved even if wait for debounce
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Activity"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.log('immediately get new version')
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('#\\/ans3 textarea').type("4{enter}", {force: true});
+
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
   })
 
 })

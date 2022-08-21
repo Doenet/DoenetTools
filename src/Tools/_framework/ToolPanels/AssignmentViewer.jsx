@@ -529,12 +529,12 @@ export default function AssignmentViewer() {
           Do you want to start a new attempt using the new version?
           (This will reset the activity to its initial state.)
         </p>
-        <button onClick={incrementAttemptNumberAndAttemptsAllowed}>Yes</button>
-        <button onClick={() => setCidChangedMessageOpen(false)}>No</button>
+        <button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion">Yes</button>
+        <button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion">No</button>
       </div>
     } else {
       cidChangedAlert = <div>
-        <button onClick={() => setCidChangedMessageOpen(true)}>content changed</button>
+        <button onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable">New version available!</button>
       </div>
     }
   }

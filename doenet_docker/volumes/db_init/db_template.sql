@@ -113,7 +113,7 @@ DROP TABLE IF EXISTS `class_times`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `class_times` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dotwIndex` int(1) NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,

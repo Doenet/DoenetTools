@@ -440,7 +440,7 @@ export default function Next7Days({ courseId }) {
     selectedItemId = selected[0].itemId;
   }
 
-  let loadAssignmentArray = useRecoilCallback(({ set }) => async (driveId) => {
+  let loadAssignmentArray = useRecoilCallback(({ set }) => async (courseId) => {
     //Clear selection when click on main panel
     set(mainPanelClickAtom, (was) => [
       ...was,
@@ -449,8 +449,9 @@ export default function Next7Days({ courseId }) {
     ]);
 
     const { data } = await axios.get('/api/loadTODO.php', {
-      params: { driveId },
+      params: { courseId },
     });
+    console.log('N7 data: ', data);
     if (!data.success) {
       setProblemMessage(data.message);
       return;
@@ -583,6 +584,7 @@ export default function Next7Days({ courseId }) {
     loadAssignmentArray(courseId);
     return null;
   }
+  // return null;   // for testing
 
   if (problemMessage !== '') {
     return (

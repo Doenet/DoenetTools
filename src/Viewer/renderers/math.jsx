@@ -50,11 +50,11 @@ export default React.memo(function Math(props) {
   )
 
   let anchors = [
-    React.createElement('a', { name: id, key: id })
+    <a name={id} key={id} />
   ];
   if (SVs.mrowChildNames) {
-    anchors.push(SVs.mrowChildNames.map(x =>
-      React.createElement('a', { name: x, key: x })
+    anchors.push(...SVs.mrowChildNames.map(x =>
+     <a name={x} key={x} id={x} />
     ))
   }
 
