@@ -36,21 +36,6 @@ function PageOption({selected,i,pageId}){
   }
 }
 
-function PagesInACollectionOptions({doenetId,manuallyFilteredPages=[]}){
-  let collectionItemObj = useRecoilValue(itemByDoenetId(doenetId));
-  let PageOptionsJSX = []
-  let pages = collectionItemObj?.pages ? collectionItemObj?.pages : []
-  for (let [i,pageId] of pages.entries()){
-    if (manuallyFilteredPages.includes(pageId)){
-      PageOptionsJSX.push(<PageOption selected i={i} pageId={pageId} />)
-    }else{
-      PageOptionsJSX.push(<PageOption i={i} pageId={pageId} />)
-    }
-
-  }
-  return <>{PageOptionsJSX}</>
-}
-
 export default function SelectedCollectionLink() {
   // const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
@@ -106,7 +91,15 @@ export default function SelectedCollectionLink() {
  
  if (itemObj.collectionDoenetId){
    
-   let pagesFromCollectionJSX = <PagesInACollectionOptions doenetId={itemObj.collectionDoenetId} manuallyFilteredPages={itemObj.manuallyFilteredPages} />;
+   let storedPageOptionsJSX = [];
+  console.log(">>>itemObj",itemObj)
+   for (let [i,pageId] of Object.entries(itemObj.pages)){
+    let selected = false;
+    if (itemObj?.manuallyFilteredPages && itemObj.manuallyFilteredPages.includes(pageId)){
+      selected = true
+    }
+    storedPageOptionsJSX.push(<PageOption selected={selected} i={i} pageId={pageId} />)
+   }
 
   pageAliasesJSX = <><div style={{display: "flex"}}>
   <Checkbox
@@ -118,7 +111,7 @@ export default function SelectedCollectionLink() {
 />Filter Page Aliases</div>
     <RelatedItems
       width="menu"
-      options={pagesFromCollectionJSX}
+      options={storedPageOptionsJSX}
       disabled={!itemObj.isManuallyFiltered}
       onChange={(e) => {
         let values = Array.from(

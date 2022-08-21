@@ -88,7 +88,7 @@ export default function NavigationPanel() {
   const updateSelectMenu = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ singleItem }) => {
-        console.log("singleItem",singleItem)
+        console.log(`singleItem doenetId:${singleItem.doenetId}`,singleItem)
         if (singleItem !== null) {
           if (singleItem.type == "activity"){
             set(selectedMenuPanelAtom,"SelectedActivity");
@@ -102,7 +102,7 @@ export default function NavigationPanel() {
             set(selectedMenuPanelAtom,"SelectedBank");
           }else if (singleItem.type == "collectionLink"){
             set(selectedMenuPanelAtom,"SelectedCollectionLink");
-          }else if (singleItem.type == "pageAlias"){
+          }else if (singleItem.type == "pageLink"){
             set(selectedMenuPanelAtom,"SelectedPageLink");
           }else{
             set(selectedMenuPanelAtom,null);

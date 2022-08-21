@@ -52,7 +52,7 @@ if ($success){
 
 //Make DoenetIds and copy collection doenetId files to new doenetIds
 $linkPageObjs = [];
-$originalPages = [];
+$sourcePages = [];
 if ($success){
 
   $sql = "
@@ -65,7 +65,7 @@ if ($success){
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $json = json_decode($row["json"], true);
-        $originalPages = $json['pages'];
+        $sourcePages = $json['pages'];
     }else{
       $success = FALSE;
       $message = "Collection not found.";
@@ -73,12 +73,12 @@ if ($success){
 }
 
 if ($success){
-  foreach ($originalPages AS &$originalPage){
+  foreach ($sourcePages AS &$sourcePage){
     $doenetId = include "randomId.php";
     $doenetId = "_" . $doenetId;
 
     //Copy the original file to the doenetId
-    $sourceFile = "../media/byPageId/$originalPage.doenet";
+    $sourceFile = "../media/byPageId/$sourcePage.doenet";
     $destinationFile = "../media/byPageId/$doenetId.doenet";
     $dirname = dirname($destinationFile);
     if (!is_dir($dirname)) {
@@ -89,11 +89,12 @@ if ($success){
         $message = "failed to copy";
     }
 
+    //TODO: make this more efficient
     if ($success){
       $sql = "
       SELECT label
       FROM pages
-      WHERE doenetId='$originalPage'
+      WHERE doenetId='$sourcePage'
       ";
       $result = $conn->query($sql);
       $row = $result->fetch_assoc();
@@ -107,7 +108,7 @@ if ($success){
       ";
       $conn->query($sql);
 
-      $linkPageObjs["$doenetId"] = $originalPage;
+      $linkPageObjs["$doenetId"] = Array("sourcePage"=>$sourcePage,"nextLabel"=>$nextLabel);
     }
 
   }

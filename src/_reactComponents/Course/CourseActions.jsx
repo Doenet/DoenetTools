@@ -955,13 +955,6 @@ export const useCourse = (courseId) => {
         //Get selection information to know previous doenetId by order
         if (itemType == 'activity') {
 
-          console.log("props to create activity", {
-            previousContainingDoenetId,
-            courseId,
-            itemType,
-            parentDoenetId,
-        })
- 
           let { data } = await axios.post('/api/createCourseItem.php', {
               previousContainingDoenetId,
               courseId,
@@ -1090,6 +1083,7 @@ export const useCourse = (courseId) => {
             collectionDoenetId: null,
             isManuallyFiltered: false,
             pages:[],
+            manuallyFilteredPages:[],
             label:"Untitled Collection Link",
           }
 
@@ -1834,9 +1828,11 @@ export const useCourse = (courseId) => {
 
   const updateCollectionLink = useRecoilCallback(
     ({ set,snapshot }) =>
-      async ({courseId, doenetId, label, collectionDoenetId, isManuallyFiltered, pages=[], successCallback, failureCallback = defaultFailure}) => {
+      async ({courseId, doenetId, label, collectionDoenetId, isManuallyFiltered, manuallyFilteredPages=[], successCallback, failureCallback = defaultFailure}) => {
         let collectionLinkObj = await snapshot.getPromise(itemByDoenetId(doenetId));
-        let activityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
+        let pages = collectionLinkObj.pages;
+        const containingDoenetId = collectionLinkObj.containingDoenetId;
+        let activityObj = await snapshot.getPromise(itemByDoenetId(containingDoenetId))
         // console.log("previous collectionLink:",collectionLinkObj)
         if (collectionDoenetId !== collectionLinkObj.collectionDoenetId){
           //New collection source!  
@@ -1845,16 +1841,33 @@ export const useCourse = (courseId) => {
       
           let { data } = await axios.post('/api/createPageLinks.php', {
             courseId,
-            containingDoenetId:collectionLinkObj.containingDoenetId,
+            containingDoenetId,
             collectionDoenetId
           });
         console.log("createPageLinks data",data)
-          pages=Object.keys(data?.linkPageObjs);
+          pages=Object.keys(data.linkPageObjs);
+          //TODO: Need to make link_pages too
+          for (let pageDoenetId of pages){
+            let sourcePageDoenetId = data.linkPageObjs[pageDoenetId].sourcePage;
+            let nextLabel = data.linkPageObjs[pageDoenetId].nextLabel;
+    
+            let linkPageObj = {
+              type:"pageLink",
+              doenetId:pageDoenetId,
+              sourcePageDoenetId,
+              containingDoenetId,
+              parentDoenetId:doenetId,
+              isSelected:false,
+              label:nextLabel
+            }
+            console.log("linkPageObj",linkPageObj)
+            set(itemByDoenetId(pageDoenetId),linkPageObj)
+          }
         }
 
-        let changesObj = {label,collectionDoenetId,isManuallyFiltered,pages};
+        let changesObj = {label,collectionDoenetId,isManuallyFiltered,pages,manuallyFilteredPages};
         let newJSON = updateAssignmentCollectionAlias({content:activityObj.content,needleDoenetId:doenetId,changesObj});
-        // console.log("newJSON",newJSON)
+        console.log("newJSON",newJSON)
         let { data } = await axios.post('/api/updateActivityStructure.php', {
           courseId,
           doenetId:collectionLinkObj.containingDoenetId,
@@ -1870,12 +1883,15 @@ export const useCourse = (courseId) => {
           next.isManuallyFiltered = isManuallyFiltered;
           next.collectionDoenetId = collectionDoenetId;
           next.pages = [...pages];
+          next.manuallyFilteredPages = [...manuallyFilteredPages];
           if(label){
             next.label = label;
+          }else{
+            next.label = prev.label;
           }
           return next;
         });
-        //TODO: Need to make link_pages too
+        
   });
 
   const updateOrderBehavior = useRecoilCallback(

@@ -681,6 +681,31 @@ LOCK TABLES `ipfs_to_upload` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `link_pages`
+--
+
+DROP TABLE IF EXISTS `link_pages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `link_pages` (
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `containingDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sourceCollectionDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `link_pages`
+--
+
+LOCK TABLES `link_pages` WRITE;
+/*!40000 ALTER TABLE `link_pages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `link_pages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `page_state`
 --
 
@@ -976,4 +1001,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-19 19:48:13
+-- Dump completed on 2022-08-21  3:01:06
