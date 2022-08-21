@@ -7,20 +7,19 @@ import { pageToolViewAtom } from '../NewToolRoot';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 
-export default function SelectedPageAlias() {
+export default function SelectedPageLink() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const pageId = useRecoilValue(selectedCourseItems)[0];
-  const pageObj = useRecoilValue(itemByDoenetId(pageId));
-  const containingObj = useRecoilValue(itemByDoenetId(pageObj.containingDoenetId));
-  const doenetId = containingObj.doenetId;
+  const doenetId = useRecoilValue(selectedCourseItems)[0];
+  const pageObj = useRecoilValue(itemByDoenetId(doenetId));
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(pageObj.label)
 
   useEffect(()=>{
     if (itemTextFieldLabel !== pageObj.label){
       setItemTextFieldLabel(pageObj.label)
     }
-  },[pageId]) //Only check when the pageId changes
+  },[doenetId]) //Only check when the pageId changes
 
+  console.log(">>>>SelectedPageLink pageObj",pageObj)
 
   let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
     <FontAwesomeIcon icon={faLink} /> {pageObj.label} 
@@ -32,19 +31,20 @@ export default function SelectedPageAlias() {
   <ActionButtonGroup vertical>
   <ActionButton
           width="menu"
-          value="Edit Page"
+          value="View Page Link"
           onClick={() => {
             setPageToolView({
               page: 'course',
               tool: 'editor',
               view: '',
               params: {
-                pageId,
-                doenetId,
+                linkPageId:doenetId,
               },
             });
           }}
         />
   </ActionButtonGroup>
+  <br />
+  <div>Rename Goes Here</div>
   </>
 }

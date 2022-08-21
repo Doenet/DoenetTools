@@ -30,12 +30,16 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('collectionDoenetId', $_POST)) {
   $success = false;
   $message = 'Missing collectionDoenetId';
+} elseif (!array_key_exists('parentDoenetId', $_POST)) {
+  $success = false;
+  $message = 'Missing parentDoenetId';
 }
 
 if ($success){
   $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
   $containingDoenetId = mysqli_real_escape_string($conn, $_POST['containingDoenetId']);
   $collectionDoenetId = mysqli_real_escape_string($conn, $_POST['collectionDoenetId']);
+  $parentDoenetId = mysqli_real_escape_string($conn, $_POST['parentDoenetId']);
   
 }
 
@@ -73,6 +77,13 @@ if ($success){
 }
 
 if ($success){
+  //Delete previous page links so they don't build up
+  $sql = "
+  DELETE FROM link_pages 
+  WHERE parentDoenetId = '$parentDoenetId'
+  ";
+  $conn->query($sql);
+
   foreach ($sourcePages AS &$sourcePage){
     $doenetId = include "randomId.php";
     $doenetId = "_" . $doenetId;
@@ -88,6 +99,7 @@ if ($success){
         $success = FALSE;
         $message = "failed to copy";
     }
+    
 
     //TODO: make this more efficient
     if ($success){
@@ -102,9 +114,9 @@ if ($success){
 
       $sql = "
       INSERT INTO link_pages 
-      (courseId,containingDoenetId,doenetId,sourceCollectionDoenetId,label)
+      (courseId,containingDoenetId,parentDoenetId,doenetId,sourceCollectionDoenetId,label)
       VALUES
-      ('$courseId','$containingDoenetId','$doenetId','$collectionDoenetId','$nextLabel')
+      ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$collectionDoenetId','$nextLabel')
       ";
       $conn->query($sql);
 

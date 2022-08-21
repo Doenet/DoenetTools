@@ -690,6 +690,7 @@ DROP TABLE IF EXISTS `link_pages`;
 CREATE TABLE `link_pages` (
   `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `containingDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sourceCollectionDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
@@ -1001,4 +1002,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-21  3:01:06
+-- Dump completed on 2022-08-21 15:51:35

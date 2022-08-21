@@ -117,6 +117,8 @@ export default function NavigationPanel() {
     ({ set, snapshot }) =>
       async ({ doenetId, courseId }) => {
         let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
+        console.log("!!!!!clickedItem",clickedItem);
+
         let { canEditContent } = await snapshot.getPromise(
           effectivePermissionsByCourseId(courseId),
         );
@@ -132,6 +134,18 @@ export default function NavigationPanel() {
               },
             };
           });
+        } else if (clickedItem.type == 'pageLink') {
+          set(pageToolViewAtom, (prev) => {
+            return {
+              page: 'course',
+              tool: 'editor',
+              view: prev.view,
+              params: {
+                linkPageId: doenetId,
+              },
+            };
+          });
+        
         } else if (clickedItem.type == 'activity') {
           if (canEditContent == '1') {
             //Find first page

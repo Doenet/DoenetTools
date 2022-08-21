@@ -185,14 +185,7 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDo
         orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
       }else if (item?.type == 'collectionLink'){
       //Store order objects for UI
-      let numberToSelect = item.numberToSelect;
-      if (numberToSelect == undefined){
-        numberToSelect = 1;
-      }
-      let withReplacement = item.withReplacement;
-      if (withReplacement == undefined){
-        withReplacement = false;
-      }
+ 
       let parentDoenetId = orderDoenetId;
       if (orderDoenetId == null){
         parentDoenetId = assignmentDoenetId;
@@ -204,12 +197,19 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDo
         collectionDoenetId:item.collectionDoenetId,
         isManuallyFiltered:item.isManuallyFiltered,
         pages:item.pages,
+        manuallyFilteredPages:item.manuallyFilteredPages,
         label:item.label,
         isOpen:false,
         isSelected:false,
         parentDoenetId
       });
       orderAndPagesDoenetIds.push(item.doenetId);
+      let linkPages = [...item.pages]
+      if (item.isManuallyFiltered){
+        linkPages = [...item.manuallyFilteredPages]
+      }
+      orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...linkPages]
+
       }else{
         //Page 
         orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,item];
@@ -295,7 +295,7 @@ export function useInitCourseItems(courseId) {
           const { data } = await axios.get('/api/getCourseItems.php', {
            params: { courseId },
           });
-          console.log("data",data)
+          console.log("getCourseItems.php data",data)
           if(data.success) {
             //DoenetIds depth first search and going into json structures
             // console.log("data",data)
@@ -315,7 +315,7 @@ export function useInitCourseItems(courseId) {
                   contentArray:item.content,
                   assignmentDoenetId:item.doenetId
                 });
-                // console.log(">>>>ordersAndPagesIds",ordersAndPagesIds)
+                console.log(">>>>ordersAndPagesIds",ordersAndPagesIds)
                 if (!item.isSinglePage){
                   items = [...items,...ordersAndPagesIds];
                 }
@@ -1835,14 +1835,12 @@ export const useCourse = (courseId) => {
         let activityObj = await snapshot.getPromise(itemByDoenetId(containingDoenetId))
         // console.log("previous collectionLink:",collectionLinkObj)
         if (collectionDoenetId !== collectionLinkObj.collectionDoenetId){
-          //New collection source!  
-          //We need to update pages from the server 
-          //and add new objects to itemByDoenetId
       
           let { data } = await axios.post('/api/createPageLinks.php', {
             courseId,
             containingDoenetId,
-            collectionDoenetId
+            collectionDoenetId,
+            parentDoenetId:doenetId,
           });
         console.log("createPageLinks data",data)
           pages=Object.keys(data.linkPageObjs);

@@ -7,7 +7,6 @@ import ActionButton from '../../../_reactComponents/PanelHeaderComponents/Action
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
@@ -38,7 +37,6 @@ function PageOption({selected,i,pageId}){
 
 export default function SelectedCollectionLink() {
   // const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));

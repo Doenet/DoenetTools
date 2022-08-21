@@ -351,7 +351,6 @@ function CollectionLinkChildren({courseId, indentLevel, pages, courseNavigatorPr
 function CollectionLink({courseId,numberOfVisibleColumns,indentLevel,number=null,courseNavigatorProps,collectionLinkInfo}){
   let { doenetId } = collectionLinkInfo;
   let collectionLinkRecoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
-  console.log("collectionLinkRecoilPageInfo",collectionLinkRecoilPageInfo)
 
   let collectionLinkChildrenJSX = null;
 
