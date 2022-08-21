@@ -18,11 +18,12 @@ export default function DateTime(props) {
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
 
-  let borderColor = props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)';
+  let borderColor = props.alert
+    ? '2px solid var(--mainRed)'
+    : 'var(--mainBorder)';
   borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
   let width = props.width ? props.width : '170px';
-  
 
   useEffect(() => {
     //todo try lastValid update
@@ -58,12 +59,20 @@ export default function DateTime(props) {
     return (
       <div>
         {props.label ? (
-          <Label id="checkbox-label" vertical={props.vertical}>{props.label}</Label>
+          <Label id="checkbox-label" vertical={props.vertical}>
+            {props.label}
+          </Label>
         ) : null}
         <input
           {...propsRI}
-          style={{ border: borderColor, cursor: cursorStyle, width: width, color:'var(--canvastext)', backgroundColor: 'var(--canvas)',...props.style
-           }}
+          style={{
+            border: borderColor,
+            cursor: cursorStyle,
+            width: width,
+            color: 'var(--canvastext)',
+            backgroundColor: 'var(--canvas)',
+            ...props.style,
+          }}
           ref={inputRef}
           aria-labelledby="checkbox-label"
           aria-haspopup="true"
@@ -85,7 +94,6 @@ export default function DateTime(props) {
               e.target.blur();
             }
           }}
-          
         />
       </div>
     );
@@ -102,9 +110,9 @@ export default function DateTime(props) {
         // disabled
         style={{
           cursor: 'not-allowed',
-         //cs color: 'var(--canvastext)',
-         color:'var(--canvastext)',
-         backgroundColor: 'var(--canvas)',
+          //cs color: 'var(--canvastext)',
+          color: 'var(--canvastext)',
+          backgroundColor: 'var(--canvas)',
           height: '18px',
           width: '170px',
           border: '2px solid var(--mainGray)',
@@ -114,7 +122,8 @@ export default function DateTime(props) {
       />
     );
   }
-
+  console.log('value:', value);
+  console.log('lastValid:', lastValid);
   return (
     <Datetime
       renderInput={renderInput}
@@ -127,7 +136,6 @@ export default function DateTime(props) {
           ? false
           : true
       }
-      
       inputProps={inputProps}
       onChange={(dateObjectOrString) => {
         setValue(dateObjectOrString);
@@ -145,7 +153,6 @@ export default function DateTime(props) {
         } else {
           setValue(lastValid);
         }
-      
 
         if (props.onBlur) {
           props.onBlur({
