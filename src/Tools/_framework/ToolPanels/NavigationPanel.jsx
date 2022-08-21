@@ -117,7 +117,6 @@ export default function NavigationPanel() {
     ({ set, snapshot }) =>
       async ({ doenetId, courseId }) => {
         let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
-        console.log("!!!!!clickedItem",clickedItem);
 
         let { canEditContent } = await snapshot.getPromise(
           effectivePermissionsByCourseId(courseId),
