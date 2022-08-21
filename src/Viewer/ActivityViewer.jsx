@@ -124,12 +124,18 @@ export default function ActivityViewer(props) {
   let hash = location.hash;
   const previousLocations = useRef({});
   const currentLocationKey = useRef(null);
+  const viewerWasUnmounted = useRef(false);
 
 
   let navigate = useNavigate();
 
 
-  // set ref to value from recoil atom
+  useEffect(() => {
+    return () => {
+      saveState({ overrideThrottle: true });
+      viewerWasUnmounted.current = true;
+    }
+  }, [])
 
   useEffect(() => {
 
@@ -644,7 +650,7 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    if(resp.data.cidChanged === true) {
+    if (resp.data.cidChanged === true) {
       props.cidChangedCallback();
     }
 
@@ -688,14 +694,14 @@ export default function ActivityViewer(props) {
   }
 
 
-  async function saveState() {
+  async function saveState({ overrideThrottle = false, overrideStage = false } = {}) {
 
     if (!props.flags.allowSaveState && !props.flags.allowLocalState) {
       return;
     }
 
 
-    if (stage !== "saving" || currentPage === pageAtPreviousSave.current) {
+    if ((stage !== "saving" && !overrideStage) || currentPage === pageAtPreviousSave.current) {
       // haven't gotten a save event from page or no change to be saved
       return;
     }
@@ -738,12 +744,12 @@ export default function ActivityViewer(props) {
     changesToBeSaved.current = true;
 
     // if not currently in throttle, save changes to database
-    saveChangesToDatabase();
+    saveChangesToDatabase(overrideThrottle);
 
 
   }
 
-  async function saveChangesToDatabase() {
+  async function saveChangesToDatabase(overrideThrottle) {
     // throttle save to database at 60 seconds
 
     if (!changesToBeSaved.current) {
@@ -758,7 +764,11 @@ export default function ActivityViewer(props) {
     let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
 
     if (oldTimeoutId !== null) {
-      return;
+      if (overrideThrottle) {
+        clearTimeout(oldTimeoutId);
+      } else {
+        return;
+      }
     }
 
 
@@ -899,12 +909,16 @@ export default function ActivityViewer(props) {
         }
       });
 
-      if(resp.data.cidChanged === true) {
+      if (resp.data.cidChanged === true) {
         props.cidChangedCallback();
       }
 
     } catch (e) {
       // ignore any errors
+    }
+
+    if (viewerWasUnmounted.current) {
+      saveState({ overrideThrottle: true, overrideStage: true });
     }
 
   }

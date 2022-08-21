@@ -2745,7 +2745,7 @@ describe('Specifying single variant document tests', function () {
         <variantControl nvariants="100"/>
     
         <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
-          <option><problem newNamespace><title>A word problem</title>
+          <option><problem newNamespace suppressAutoName suppressAutoNumber><title>A word problem</title>
             <variantControl nvariants="5" variantNames="a b c d e" />
             <p>Word:
               <select>
@@ -2757,7 +2757,7 @@ describe('Specifying single variant document tests', function () {
               </select>
             </p>
           </problem></option>
-          <option><problem newNamespace><title>A number problem</title>
+          <option><problem newNamespace suppressAutoName suppressAutoNumber><title>A number problem</title>
             <variantControl nvariants="4" />
             <p>Number: <selectfromsequence to="10"/></p>
           </problem></option>
@@ -3057,12 +3057,12 @@ describe('Specifying single variant document tests', function () {
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
     
-        <problem newNamespace name="problem1"><title>A number problem</title>
+        <problem newNamespace name="problem1" suppressAutoName suppressAutoNumber><title>A number problem</title>
           <variantControl nvariants="4" />
           <p>Number: <selectfromsequence to="10"/></p>
         </problem>
         <select assignnames="(problem2)  (problem3)" numbertoselect="2" withReplacement>
-          <option><problem newNamespace><title>A word problem</title>
+          <option><problem newNamespace suppressAutoName suppressAutoNumber><title>A word problem</title>
             <variantControl nvariants="3" variantNames="a b c" />
             <p>Word:
               <select>
@@ -3072,7 +3072,7 @@ describe('Specifying single variant document tests', function () {
               </select>
             </p>
           </problem></option>
-          <option><problem newNamespace><title>A number problem</title>
+          <option><problem newNamespace suppressAutoName suppressAutoNumber><title>A number problem</title>
             <variantControl nvariants="4" />
             <p>Number: <selectfromsequence to="10"/></p>
           </problem></option>
@@ -3408,7 +3408,7 @@ describe('Specifying single variant document tests', function () {
         <variantControl nvariants="100"/>
     
         <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
-          <option><problem newNamespace><title>A word problem</title>
+          <option><problem newNamespace suppressAutoName suppressAutoNumber><title>A word problem</title>
             <variantControl nvariants="5" variantNames="a b c d e" />
             <p>Word:
               <select>
@@ -3420,7 +3420,7 @@ describe('Specifying single variant document tests', function () {
               </select>
             </p>
           </problem></option>
-          <option><problem newNamespace><title>A number problem</title>
+          <option><problem newNamespace suppressAutoName suppressAutoNumber><title>A number problem</title>
             <text>Filler to move children to same spot</text>
             <p>Number: <selectfromsequence to="10"/></p>
           </problem></option>

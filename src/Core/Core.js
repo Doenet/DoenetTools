@@ -8131,7 +8131,9 @@ export default class Core {
       return this.resolveAction({ actionId: args.actionId });
     }
 
-    console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+    if(component) {
+      console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+    }
 
   }
 

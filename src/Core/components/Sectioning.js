@@ -23,6 +23,13 @@ export class Paragraphs extends SectioningComponent {
   static componentType = "paragraphs";
   static rendererType = "section";
 
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.suppressAutoNumber.defaultValue = true;
+    attributes.suppressAutoName.defaultValue = true;
+    return attributes;
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -31,6 +38,10 @@ export class Paragraphs extends SectioningComponent {
       setValue: { level: 4 }
     });
 
+    stateVariableDefinitions.sectionName.definition = () => ({
+      setValue: { sectionName: "Paragraphs" }
+    });
+    
     return stateVariableDefinitions;
   }
 
