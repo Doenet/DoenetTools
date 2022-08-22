@@ -10,6 +10,7 @@ describe('Multipage activity tests', function () {
   const pageDoenetId1 = "_page1id";
   const pageDoenetId2 = "_page2id";
   const pageDoenetId3 = "_page3id";
+  const pageDoenetId4 = "_page4id";
 
   const headerPixels = 40;
 
@@ -1493,7 +1494,7 @@ describe('Multipage activity tests', function () {
   })
 
 
-  it('Update to new versino', () => {
+  it('Update to new version', () => {
     const doenetML1 = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
@@ -1501,7 +1502,7 @@ describe('Multipage activity tests', function () {
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
   </problem >`
 
-  const doenetML2 = `
+    const doenetML2 = `
   <problem name="prob">
     <p>What is <m>2+2</m>? <answer name="ans">4</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
@@ -1632,8 +1633,8 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '50%')
 
-    cy.get('#page1\\/ans3 textarea').type("4{enter}", {force:true})
-    
+    cy.get('#page1\\/ans3 textarea').type("4{enter}", { force: true })
+
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '33.3%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '16.7%')
@@ -1641,7 +1642,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test=next]').click()
 
-    cy.get('#page2\\/ans textarea').type("4{enter}", {force: true});
+    cy.get('#page2\\/ans textarea').type("4{enter}", { force: true });
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '33.3%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
@@ -1777,6 +1778,104 @@ describe('Multipage activity tests', function () {
 
   })
 
+
+  it('Clicking links does not give update version prompt', () => {
+    const doenetML = `
+<section name="sect">
+  <title>Info only</title>
+  <p>This activity is just information only, with no interactive content.
+    <ref name="goPage1" page="1">Go to page 1.</ref>
+    <ref name="goPage2" page="2">Go to page 2.</ref>
+    <ref name="goPage3" page="3">Go to page 3.</ref>
+  </p>
+  
+  <lorem generateParagraphs="8" />
+</section >
+`
+
+    cy.createMultipageActivity({
+      courseId, doenetId, parentDoenetId: courseId,
+      pageDoenetId1, pageDoenetId2, pageDoenetId3,
+      doenetML1: doenetML, doenetML2: doenetML, doenetML3: doenetML
+    });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#page1\\/sect_title').should('have.text', 'Section 1: Info only')
+
+    cy.get('#page1\\/goPage2').click();
+    cy.get('#page2\\/sect_title').should('have.text', 'Section 2: Info only')
+
+
+    cy.get('#page2\\/goPage3').click();
+    cy.get('#page3\\/sect_title').should('have.text', 'Section 3: Info only')
+
+    cy.get("[data-test=previous]").click()
+    cy.get('#page2\\/sect_title').should('have.text', 'Section 2: Info only')
+
+    cy.get('#page2\\/goPage1').click();
+    cy.get('#page1\\/sect_title').should('have.text', 'Section 1: Info only')
+
+    cy.wait(2000);  // wait for debounce
+    cy.get('[data-test="Crumb 2"]').click(); 
+
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Activity"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra1'>Extra content 1</p>{enter}")
+
+    cy.go("back")
+
+    cy.get('[data-test="folderToggleOpenIcon"]').click();
+
+    cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Page"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra2'>Extra content 2</p>{enter}")
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(3).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Page"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra3'>Extra content 3</p>{enter}")
+
+
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get("#page1\\/extra1").should('have.text', 'Extra content 1');
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+    cy.get('#page1\\/goPage3').click();
+    cy.get('#page3\\/extra3').should('have.text', 'Extra content 3')
+
+    cy.get('#page3\\/goPage2').click();
+    cy.get('#page2\\/extra2').should('have.text', 'Extra content 2')
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+  })
 
 
 })

@@ -371,7 +371,7 @@ export default React.memo(function Video(props) {
 
   }
 
-  if (player.current) {
+  if (player.current?.getPlayerState) {
 
     let playerState = player.current.getPlayerState();
     if (SVs.state === "playing") {

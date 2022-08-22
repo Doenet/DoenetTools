@@ -8131,7 +8131,7 @@ export default class Core {
       return this.resolveAction({ actionId: args.actionId });
     }
 
-    if(component) {
+    if (component) {
       console.warn(`Cannot run action ${actionName} on component ${componentName}`);
     }
 
@@ -8240,7 +8240,9 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false }) {
+  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
+    doNotSave = false
+  }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
@@ -8477,13 +8479,15 @@ export default class Core {
 
     }
 
+    if (!doNotSave) {
 
-    clearTimeout(this.savePageStateTimeoutID);
+      clearTimeout(this.savePageStateTimeoutID);
 
-    //Debounce the save to database
-    this.savePageStateTimeoutID = setTimeout(() => {
-      this.saveState();
-    }, 1000);
+      //Debounce the save to database
+      this.savePageStateTimeoutID = setTimeout(() => {
+        this.saveState();
+      }, 1000);
+    }
 
 
 
