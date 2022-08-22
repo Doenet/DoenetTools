@@ -1844,6 +1844,7 @@ export const useCourse = (courseId) => {
     ({ set,snapshot }) =>
       async ({courseId, doenetId, label, collectionDoenetId, isManuallyFiltered, manuallyFilteredPages=[], successCallback, failureCallback = defaultFailure}) => {
         let collectionLinkObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+        if (!label){ label = collectionLinkObj.label}
         let pages = collectionLinkObj.pages;
         const containingDoenetId = collectionLinkObj.containingDoenetId;
         let activityObj = await snapshot.getPromise(itemByDoenetId(containingDoenetId))
@@ -1873,7 +1874,7 @@ export const useCourse = (courseId) => {
               isSelected:false,
               label:nextLabel
             }
-            console.log("linkPageObj",linkPageObj)
+            // console.log("linkPageObj",linkPageObj)
             set(itemByDoenetId(pageDoenetId),linkPageObj)
           }
 
@@ -1904,8 +1905,8 @@ export const useCourse = (courseId) => {
               doenetIdsToRemove = [...collectionLinkObj.pages]
             }
           }
-          console.log("doenetIdsToAdd",doenetIdsToAdd)
-          console.log("doenetIdsToRemove",doenetIdsToRemove)
+          // console.log("doenetIdsToAdd",doenetIdsToAdd)
+          // console.log("doenetIdsToRemove",doenetIdsToRemove)
 
           set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
             let next = [...prev];
@@ -1916,8 +1917,9 @@ export const useCourse = (courseId) => {
 
 
         let changesObj = {label,collectionDoenetId,isManuallyFiltered,pages,manuallyFilteredPages};
+        // console.log("changesObj",changesObj)
         let newJSON = updateAssignmentCollectionLink({content:activityObj.content,needleDoenetId:doenetId,changesObj});
-        console.log("newJSON",newJSON)
+        // console.log("newJSON",newJSON)
         let { data } = await axios.post('/api/updateActivityStructure.php', {
           courseId,
           doenetId:collectionLinkObj.containingDoenetId,

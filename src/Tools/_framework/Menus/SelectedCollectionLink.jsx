@@ -116,7 +116,7 @@ export default function SelectedCollectionLink() {
             e.target.selectedOptions,
             (option) => option.value,
           );
-      updateCollectionLink({courseId, doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
+        updateCollectionLink({courseId, doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
 
           // setManuallyFilteredPages(values)
       // updateOrderBehavior({doenetId, behavior, numberToSelect, withReplacement, restrictPages:!restrictPages, selectedCollectionDoenetId, restrictToThesePages:values})
