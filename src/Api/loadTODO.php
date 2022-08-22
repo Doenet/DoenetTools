@@ -20,14 +20,13 @@ if ($courseId == ""){
   $message = 'Internal Error: missing courseId';
 }
 
-//Check if they have view rights
+//Check if enrolled in course
 if ($success){
 $sql = "
-SELECT canViewCourse
+SELECT userId
 FROM course_user
 WHERE userId='$userId'
 AND courseId='$courseId'
-AND canViewCourse='1'
 ";
 $result = $conn->query($sql); 
   if ($result->num_rows < 1) {
