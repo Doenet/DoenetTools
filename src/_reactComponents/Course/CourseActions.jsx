@@ -295,14 +295,14 @@ export function useInitCourseItems(courseId) {
           const { data } = await axios.get('/api/getCourseItems.php', {
            params: { courseId },
           });
-          console.log("getCourseItems.php data",data)
+          // console.log("getCourseItems.php data",data)
           if(data.success) {
             //DoenetIds depth first search and going into json structures
             // console.log("data",data)
             //TODO: make more efficent for student only view
             let pageDoenetIdToParentDoenetId = {};
             let doenetIds = data.items.reduce((items,item)=>{
-              if (item.type !== 'page'){
+              if (item.type !== 'page' && item.type !== 'pageLink'){
                 items.push(item.doenetId)
               }
               if (item.type === 'activity'){
@@ -315,7 +315,7 @@ export function useInitCourseItems(courseId) {
                   contentArray:item.content,
                   assignmentDoenetId:item.doenetId
                 });
-                console.log(">>>>ordersAndPagesIds",ordersAndPagesIds)
+                // console.log(">>>>ordersAndPagesIds",ordersAndPagesIds)
                 if (!item.isSinglePage){
                   items = [...items,...ordersAndPagesIds];
                 }
@@ -329,6 +329,7 @@ export function useInitCourseItems(courseId) {
               }
               //Store activity, bank and page information
               set(itemByDoenetId(item.doenetId), localizeDates(item, dateKeys));
+              // console.log("item",item.doenetId,localizeDates(item, dateKeys))
 
               return items
             },[])
@@ -1848,7 +1849,8 @@ export const useCourse = (courseId) => {
         let activityObj = await snapshot.getPromise(itemByDoenetId(containingDoenetId))
         // console.log("previous collectionLink:",collectionLinkObj)
         if (collectionDoenetId !== collectionLinkObj.collectionDoenetId){
-      
+        //Selected Collection changed
+        //Automatically unselects filter page links
           let { data } = await axios.post('/api/createPageLinks.php', {
             courseId,
             containingDoenetId,
@@ -1875,33 +1877,43 @@ export const useCourse = (courseId) => {
             set(itemByDoenetId(pageDoenetId),linkPageObj)
           }
 
+        }
+
           //update authorCourseItemOrderByCourseId
+          let doenetIdsToAdd = []
           let doenetIdsToRemove = []
-          let doenetIdsToAdd = [...pages]
+
+          if (collectionDoenetId !== collectionLinkObj.collectionDoenetId){
+            //Changed source collection
+            doenetIdsToAdd = [...pages] //pages from php file above 
+          }else if (!collectionLinkObj.isManuallyFiltered && isManuallyFiltered){
+            //Turned on manual filter
+            doenetIdsToAdd = [...collectionLinkObj.manuallyFilteredPages] 
+          }else if (collectionLinkObj.isManuallyFiltered && !isManuallyFiltered){
+            //Turned off manual filter
+            doenetIdsToAdd = [...collectionLinkObj.pages]  
+          }else if (collectionLinkObj.manuallyFilteredPages.length != manuallyFilteredPages.length){
+            //Changed manually filtered pages
+            doenetIdsToAdd = [...manuallyFilteredPages] 
+          }
+
           if (collectionLinkObj.pages.length > 0){
             if (collectionLinkObj.isManuallyFiltered){
-              console.log("HERE!!!!")
               doenetIdsToRemove = [...collectionLinkObj.manuallyFilteredPages]
             }else{
               doenetIdsToRemove = [...collectionLinkObj.pages]
-              console.log("collectionLinkObj.pages",collectionLinkObj.pages)
             }
           }
-          console.log("collectionLinkObj",collectionLinkObj)
-          console.log("doenetIdsToRemove",doenetIdsToRemove)
           console.log("doenetIdsToAdd",doenetIdsToAdd)
+          console.log("doenetIdsToRemove",doenetIdsToRemove)
+
           set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
             let next = [...prev];
             let index = next.indexOf(doenetId);
-            console.log("index",index)
-            console.log("update authorCourseItemOrderByCourseId prev",prev)
             next.splice(index+1,doenetIdsToRemove.length,...doenetIdsToAdd)
-            console.log("update authorCourseItemOrderByCourseId next",next)
             return next;
           })
 
-
-        }
 
         let changesObj = {label,collectionDoenetId,isManuallyFiltered,pages,manuallyFilteredPages};
         let newJSON = updateAssignmentCollectionLink({content:activityObj.content,needleDoenetId:doenetId,changesObj});

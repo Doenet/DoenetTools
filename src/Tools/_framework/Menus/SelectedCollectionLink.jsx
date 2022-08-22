@@ -90,7 +90,7 @@ export default function SelectedCollectionLink() {
  if (itemObj.collectionDoenetId){
    
    let storedPageOptionsJSX = [];
-  console.log(">>>itemObj",itemObj)
+
    for (let [i,pageId] of Object.entries(itemObj.pages)){
     let selected = false;
     if (itemObj?.manuallyFilteredPages && itemObj.manuallyFilteredPages.includes(pageId)){
@@ -106,7 +106,7 @@ export default function SelectedCollectionLink() {
     onClick={()=>{
       updateCollectionLink({courseId, doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:!itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
     }}
-/>Filter Page Aliases</div>
+/>Filter Page Links</div>
     <RelatedItems
       width="menu"
       options={storedPageOptionsJSX}
