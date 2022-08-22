@@ -281,7 +281,7 @@ describe('Single page activity tests', function () {
 
   })
 
-  it('Update to new versino', () => {
+  it('Update to new version', () => {
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
@@ -393,10 +393,192 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", {force: true});
+    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+  })
+
+  it('Clicking links does not give update version prompt', () => {
+    const doenetML = `
+<section name="sect">
+  <title>Info only</title>
+  <p name="top">This activity is just information only, with no interactive content.
+    <ref name="goMiddle1" target="middle">Go to middle.</ref>
+    <ref name="goBottom1" target="bottom">Go to bottom.</ref>
+  </p>
+  
+  <lorem generateParagraphs="8" />
+
+  <p name="middle">A paragraph in the middle.
+    <ref name="goTop2" target="top">Go to top.</ref>
+    <ref name="goBottom2" target="bottom">Go to bottom.</ref>
+  </p>
+  
+  <lorem generateParagraphs="8" />
+
+  <p name="bottom">A paragraph near the bottom.
+    <ref name="goTop3" target="top">Go to top.</ref>
+    <ref name="goMiddle3" target="middle">Go to middle.</ref>
+  </p>
+
+  <lorem generateParagraphs="8" />
+
+</section >
+`
+
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#\\/sect_title').should('have.text', 'Section 1: Info only')
+    cy.window().then(async (win) => {
+      expect(win.scrollY).eq(0);
+    })
+
+
+    cy.get('#\\/goMiddle1').click();
+    cy.url().should('match', /#\/middle$/)
+
+    cy.get('#\\/middle').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+
+    cy.get('#\\/goBottom2').click();
+    cy.url().should('match', /#\/bottom$/)
+
+    cy.get('#\\/bottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.wait(2000);  // wait for debounce
+
+
+    cy.go("back");
+
+    cy.get('#\\/middle').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.go("back");
+    cy.go("back");
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Activity"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra'>Extra content</p>{enter}{ctrl+s}")
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get("#\\/extra").should('have.text', 'Extra content');
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+  })
+
+  it('Video interactions do not give update version prompt', () => {
+    const doenetML = `
+<title>A video</title>
+<video youtube="tJ4ypc5L6uU" width="640px" height="360px" name="v" />
+<p>State: <copy prop="state" source="v" assignNames="state" /></p>
+<p>Time: <copy prop="time" source="v" assignNames="time" /></p>
+<p>
+  <callAction target="v" actionName="playVideo" name="playAction"><label>Play action</label></callAction>
+  <callAction target="v" actionName="pauseVideo" name="pauseAction"><label>Pause action</label></callAction>
+</p>
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#\\/_title1').should('have.text', 'A video')
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.go("back");
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Activity"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='more1'>More content 1</p>{enter}{ctrl+s}")
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get("#\\/more1").should('have.text', 'More content 1');
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+    cy.get('#\\/state').contains("stopped")
+    cy.get('#\\/playAction').click();
+    cy.get('#\\/time').contains("1")
+    cy.get('#\\/pauseAction').click();
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.go("back");
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Activity"]').click();
+
+    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='more2'>More content 2</p>{enter}{ctrl+s}")
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get("#\\/more2").should('have.text', 'More content 2');
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
   })
 
 })

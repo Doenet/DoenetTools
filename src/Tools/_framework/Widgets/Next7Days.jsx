@@ -41,6 +41,7 @@ import {
   faChevronRight,
   faThumbtack,
 } from '@fortawesome/free-solid-svg-icons';
+import { findFirstPageOfActivity, itemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
@@ -424,7 +425,7 @@ export default function Next7Days({ courseId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const showCompleted = useRecoilValue(showCompletedAtom);
   const showOverdue = useRecoilValue(showOverdueAtom);
-
+  useInitCourseItems(courseId);
   // const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   // let [numColumns,setNumColumns] = useState(4);
   let [assignmentArray, setAssignmentArray] = useState([]);
@@ -451,7 +452,7 @@ export default function Next7Days({ courseId }) {
     const { data } = await axios.get('/api/loadTODO.php', {
       params: { courseId },
     });
-    console.log('N7 data: ', data);
+    // console.log('Next7 data: ', data);
     if (!data.success) {
       setProblemMessage(data.message);
       return;
@@ -505,12 +506,16 @@ export default function Next7Days({ courseId }) {
     ({ snapshot }) =>
       async ({ type, doenetId, path }) => {
         let { canEditContent } = await snapshot.getPromise(
-          effectivePermissionsByCourseId(courseId),
-        );
-
+          effectivePermissionsByCourseId(courseId)
+          );
+          
+          
+          //Note: need to send pageId
         if (canEditContent === '1') {
-          switch (type) {
-            case itemType.DOENETML:
+            let itemObj = await snapshot.getPromise(
+              itemByDoenetId(doenetId)
+              );
+              let pageId = findFirstPageOfActivity(itemObj.content)
               //TODO: VariantIndex params
               setPageToolView({
                 page: 'course',
@@ -518,61 +523,22 @@ export default function Next7Days({ courseId }) {
                 view: '',
                 params: {
                   doenetId,
-                  path,
+                  pageId
                 },
               });
 
-              break;
-            case itemType.COLLECTION:
-              setPageToolView({
-                page: 'course',
-                tool: 'editor',
-                view: '',
-                params: {
-                  doenetId,
-                  path,
-                  isCollection: true,
-                },
-              });
-
-              break;
-            default:
-              throw new Error(
-                'NavigationPanel doubleClick info type not defined',
-              );
-          }
+          
         } else {
           //no edit permissions
-          switch (type) {
-            case itemType.DOENETML:
-              //TODO: VariantIndex params
-              setPageToolView({
-                page: 'course',
-                tool: 'assignment',
-                view: '',
-                params: {
-                  doenetId,
-                },
-              });
-
-              break;
-            case itemType.COLLECTION:
-              setPageToolView({
-                page: 'course',
-                tool: 'assignment',
-                view: '',
-                params: {
-                  doenetId,
-                  isCollection: true,
-                },
-              });
-
-              break;
-            default:
-              throw new Error(
-                'NavigationPanel doubleClick info type not defined',
-              );
-          }
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                doenetId,
+              },
+            });
+     
         }
       },
     [courseId, setPageToolView],

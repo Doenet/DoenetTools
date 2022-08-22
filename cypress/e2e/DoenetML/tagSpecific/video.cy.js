@@ -264,10 +264,17 @@ describe('Video Tag Tests', function () {
     cy.get('#\\/v').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
 
     cy.get('#\\/state').contains("initializing")
+    
+    cy.log('clikcing play action too early does not do anything (no error)')
+    cy.get('#\\/playAction').click();
+    cy.get('#\\/state').contains("stopped")
+    cy.get('#\\/time').contains("0")
+
+    cy.wait(2000);
+    cy.get('#\\/state').contains("stopped")
     cy.get('#\\/time').contains("0")
 
     cy.log('play via action')
-    cy.get('#\\/state').contains("stopped")
     cy.get('#\\/playAction').click();
 
     cy.get('#\\/state').contains("playing")
