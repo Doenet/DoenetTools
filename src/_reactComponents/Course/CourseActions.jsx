@@ -699,7 +699,8 @@ export const useCourse = (courseId) => {
     needleOrderDoenetId,
     createdItemType,
     createdPageDonenetId=null,
-    createdOrderObj=null
+    createdOrderObj=null,
+    createdCollectionLink=null,
   }){
     let newContent = [...content];
     let insertedAfterDoenetId;
@@ -725,6 +726,8 @@ export const useCourse = (courseId) => {
           newItem.content = [...newItem.content,createdPageDonenetId]
         }else if (createdItemType == 'order'){
           newItem.content = [...newItem.content,{...createdOrderObj}]
+        }else if (createdItemType == 'collectionLink'){
+          newItem.content = [...newItem.content,{...createdCollectionLink}]
         }
         newContent.splice(i,1,newItem)
         
@@ -736,7 +739,8 @@ export const useCourse = (courseId) => {
           needleOrderDoenetId,
           createdItemType,
           createdPageDonenetId,
-          createdOrderObj
+          createdOrderObj,
+          createdCollectionLink
         });
         if (subContent != null){
           //Attach subContent to order in newContent 
@@ -1199,8 +1203,13 @@ export const useCourse = (courseId) => {
             });
           }else if (selectedItemObj.type == 'order'){
             let orderDoenetId = selectedItemObj.doenetId;
-            if (pageThatWasCreated){
-              pageThatWasCreated.parentDoenetId = orderDoenetId;
+            let createdCollectionLink = null;
+            if (itemType == 'page'){
+              if (pageThatWasCreated){
+                pageThatWasCreated.parentDoenetId = orderDoenetId;
+              }
+            }else if (itemType == 'collectionLink'){
+              createdCollectionLink = collectionLinkObj;
             }
             const containingItemObj = await snapshot.getPromise(itemByDoenetId(selectedItemObj.containingDoenetId));
 
@@ -1209,10 +1218,13 @@ export const useCourse = (courseId) => {
               needleOrderDoenetId:orderDoenetId,
               createdItemType:itemType,
               createdPageDonenetId:pageThatWasCreated?.doenetId,
-              createdOrderObj:orderObj})
+              createdOrderObj:orderObj,
+              createdCollectionLink,
+            })
 
             let newActivityObj = {...containingItemObj}
             newActivityObj.content = newContent;
+
 
             let { data } = await axios.post('/api/updateActivityStructure.php', {
                 courseId,
@@ -1220,18 +1232,27 @@ export const useCourse = (courseId) => {
                 newJSON:newContent,
               });
               // console.log("data",data)
-              orderObj['isOpen'] = false;
-              orderObj['isSelected'] = false;
-              orderObj['containingDoenetId'] = selectedItemObj?.containingDoenetId;
-              orderObj['parentDoenetId'] = selectedItemObj?.doenetId;
-              // console.log("orderObj",orderObj)
+              
               set(itemByDoenetId(newActivityObj.doenetId),newActivityObj)
-              let newItemDoenetId = orderDoenetIdThatWasCreated;
+              let newItemDoenetId;
               if (itemType == 'page'){
                 set(itemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
                 newItemDoenetId = pageThatWasCreated.doenetId;
               }else if (itemType == 'order'){
+                orderObj['isOpen'] = false;
+                orderObj['isSelected'] = false;
+                orderObj['containingDoenetId'] = selectedItemObj?.containingDoenetId;
+                orderObj['parentDoenetId'] = selectedItemObj?.doenetId;
+                // console.log("orderObj",orderObj)
                 set(itemByDoenetId(orderObj.doenetId),orderObj)
+                newItemDoenetId = orderDoenetIdThatWasCreated;
+              }else if (itemType == 'collectionLink'){
+                collectionLinkObj['isOpen'] = false;
+                collectionLinkObj['isSelected'] = false;
+                collectionLinkObj['containingDoenetId'] = selectedItemObj?.containingDoenetId;
+                collectionLinkObj['parentDoenetId'] = selectedItemObj?.doenetId;
+                set(itemByDoenetId(collectionLinkObj.doenetId),collectionLinkObj)
+                newItemDoenetId = collectionAliasDoenetIdThatWasCreated;
               }
               set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
                 let next = [...prev];

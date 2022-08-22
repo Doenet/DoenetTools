@@ -174,7 +174,7 @@ function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,inde
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-  console.log("authorItemOrder",courseId,sectionId,authorItemOrder)
+  console.log(`authorItemOrder CourseId-${courseId}-SectionId-${sectionId}-`,authorItemOrder)
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
@@ -272,7 +272,7 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
       }else if (!collectionLinkPageOrOrder?.type){
         return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={collectionLinkPageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
       }else if (collectionLinkPageOrOrder?.type == 'collectionLink'){
-        return <CollectionLink key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} collectionLinkInfo={collectionLinkPageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+        return <CollectionLink key={`CollectionLink${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} collectionLinkInfo={collectionLinkPageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
       }
     })
     return <>
@@ -292,20 +292,24 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
   
    let contentJSX = [];
    if (behavior == 'sequence'){
-      contentJSX = content.map((pageOrOrder,i)=>{
-        if (pageOrOrder?.type == 'order'){
-          return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+      contentJSX = content.map((collectionLinkPageOrOrder,i)=>{
+        if (collectionLinkPageOrOrder?.type == 'order'){
+          return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={collectionLinkPageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+        }else if(collectionLinkPageOrOrder?.type == 'collectionLink'){
+          return <CollectionLink key={`CollectionLink${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} collectionLinkInfo={collectionLinkPageOrOrder} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
-          return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
+          return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={collectionLinkPageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
         }
       })
     }else{
       //All other behaviors
-      contentJSX = content.map((pageOrOrder,i)=>{
-        if (pageOrOrder?.type == 'order'){
-          return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+      contentJSX = content.map((collectionLinkPageOrOrder,i)=>{
+        if (collectionLinkPageOrOrder?.type == 'order'){
+          return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={collectionLinkPageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+        }else if(collectionLinkPageOrOrder?.type == 'collectionLink'){
+          return <CollectionLink key={`CollectionLink${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} collectionLinkInfo={collectionLinkPageOrOrder} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
-          return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+          return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={collectionLinkPageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }
       })
     }
