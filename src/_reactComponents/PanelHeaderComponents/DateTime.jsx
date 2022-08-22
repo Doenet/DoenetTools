@@ -122,8 +122,8 @@ export default function DateTime(props) {
       />
     );
   }
-  console.log('value:', value);
-  console.log('lastValid:', lastValid);
+  // console.log('value:', value);
+  // console.log('lastValid:', lastValid);
   return (
     <Datetime
       renderInput={renderInput}
