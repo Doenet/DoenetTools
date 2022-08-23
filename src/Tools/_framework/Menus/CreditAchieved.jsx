@@ -46,7 +46,7 @@ export default function CreditAchieved() {
   const initialize = useRecoilCallback(({ set }) => async (attemptNumber, doenetId, userId, tool) => {
 
 
-    const { data } = await axios.get(`api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
+    const { data } = await axios.get(`/api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
 
     const creditByItem = data.creditByItem.map(Number);
     const creditForAssignment = Number(data.creditForAssignment)
