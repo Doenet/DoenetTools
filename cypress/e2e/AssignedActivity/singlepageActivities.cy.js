@@ -64,8 +64,8 @@ describe('Single page activity tests', function () {
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
 
@@ -442,8 +442,8 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="View Assigned Activity"]').click();
 
     cy.get('#\\/sect_title').should('have.text', 'Section 1: Info only')
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
 
