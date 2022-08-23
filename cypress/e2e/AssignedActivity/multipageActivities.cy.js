@@ -274,8 +274,8 @@ describe('Multipage activity tests', function () {
     cy.get('#page2\\/_section1_title').should('not.exist')
     cy.url().should('match', /#page1$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
     cy.get('#page1\\/bi_input').click();
@@ -315,8 +315,8 @@ describe('Multipage activity tests', function () {
 
     cy.url().should('match', /#page2$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
 
@@ -404,8 +404,8 @@ describe('Multipage activity tests', function () {
 
     cy.url().should('match', /#page2$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
     cy.get('#page2\\/toAside').click();
@@ -486,8 +486,8 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
     cy.get('#page1\\/bi_input').click();
@@ -1330,6 +1330,126 @@ describe('Multipage activity tests', function () {
 
   })
 
+
+  it('Switching pages scrolls to top', () => {
+    const doenetML1 = `
+<title>Page 1</title>
+<p><ref target="pBottom" name="toBottom">To bottom link</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<p name="pBottom"><ref page="2" name="toPage2">Go to page 2</ref></p>
+
+<lorem generateParagraphs="8" />
+`
+
+    const doenetML2 = `
+<title>Page 2</title>
+<p><ref target="pBottom" name="toBottom">To bottom link</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<p name="pBottom"><ref page="1" name="toPage1">Go to page 1</ref></p>
+
+<lorem generateParagraphs="8" />
+`
+
+
+    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.log('make sure both pages are rendered')
+    cy.get('#page1\\/_title1').should('have.text', 'Page 1')
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page2\\/_title1').should('have.text', 'Page 2');
+    cy.url().should('match', /#page2$/)
+
+    cy.get('#page2\\/toBottom').click();
+    cy.url().should('match', /#page2\/pBottom$/)
+
+    cy.get('#page2\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 1 via bottom button')
+    cy.get('[data-test=previous-bottom').click();
+
+    cy.get('#page1\\/_title1').should('have.text', 'Page 1')
+    cy.url().should('match', /#page1$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+    cy.get('#page1\\/toBottom').click();
+    cy.url().should('match', /#page1\/pBottom$/)
+
+    cy.get('#page1\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 2 via bottom button')
+    cy.get('[data-test=next-bottom').click();
+
+    cy.get('#page2\\/_title1').should('have.text', 'Page 2');
+    cy.url().should('match', /#page2$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+    cy.get('#page2\\/toBottom').click();
+    cy.url().should('match', /#page2\/pBottom$/)
+
+    cy.get('#page2\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 1 via bottom link')
+    cy.get('#page2\\/toPage1').click();
+
+    cy.get('#page1\\/_title1').should('have.text', 'Page 1')
+    cy.url().should('match', /#page1$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+    cy.get('#page1\\/toBottom').click();
+    cy.url().should('match', /#page1\/pBottom$/)
+
+    cy.get('#page1\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 2 via bottom link')
+    cy.get('#page1\\/toPage2').click();
+
+    cy.get('#page2\\/_title1').should('have.text', 'Page 2');
+    cy.url().should('match', /#page2$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+
+  })
 
   it('paginated two-page activity remembers page', () => {
     const doenetML1 = `

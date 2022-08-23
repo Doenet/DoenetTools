@@ -119,6 +119,7 @@ export default function ActivityViewer(props) {
 
   const nodeRef = useRef(null);
   const ignoreNextScroll = useRef(false);
+  const stillNeedToScrollTo = useRef(null);
 
   let location = useLocation();
   let hash = location.hash;
@@ -233,17 +234,34 @@ export default function ActivityViewer(props) {
       let match = hash.match(/^#page(\d+)/)
       if (match) {
         let newPage = Math.max(1, Math.min(nPages, match[1]));
-        setCurrentPage(newPage);
-        setRecoilCurrentPage(newPage);
+        if (newPage !== currentPage) {
+          setCurrentPage(newPage);
+          setRecoilCurrentPage(newPage);
+        }
       }
     }
   }, [hash, nPages])
 
   useEffect(() => {
     if (currentPage > 0 && nPages > 1) {
-      let pageAnchor = `#page${currentPage}`;
-      if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
-        navigate(location.search + pageAnchor, { replace: true, state: { doNotScroll: true } })
+      let hashPage = Number(hash?.match(/^#page(\d+)/)?.[1]);
+      if (hashPage !== currentPage) {
+        let pageAnchor = `#page${currentPage}`;
+        // if we have moved to a page that does not correspond to the hash
+        // modify the hash to match the page.
+        let navigateAttrs = { replace: true }
+        if (!props.paginate) {
+          // If not paginated, then do not scroll to the top of the page,
+          // as the page change could be triggered by scrolling
+
+          navigateAttrs.state = { doNotScroll: true }
+        }
+        navigate(location.search + pageAnchor, navigateAttrs)
+      }
+      if (stillNeedToScrollTo.current) {
+        document.getElementById(stillNeedToScrollTo.current)?.scrollIntoView();
+        stillNeedToScrollTo.current = null;
+
       }
     }
   }, [currentPage, nPages])
@@ -287,10 +305,22 @@ export default function ActivityViewer(props) {
       currentLocationKey.current = location.key;
     }
 
+    stillNeedToScrollTo.current = null;
+
     // since the <Link> from react router doesn't seem to scroll into hashes
     // always scroll to the hash the first time we get a location from a <Link>
     if (!location.state?.doNotScroll && (location.key === "default" || !foundNewInPrevious)) {
-      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+      let scrollTo = cssesc(hash.slice(1));
+      if (props.paginate && hash.match(/^#page(\d+)$/)) {
+        // if paginate, want to scroll to top of activity so can still see page controls
+        scrollTo = 'activityTop';
+      }
+      if (props.paginate && Number(hash.match(/^#page(\d+)/)?.[1]) !== currentPage) {
+        stillNeedToScrollTo.current = scrollTo;
+      } else {
+        document.getElementById(scrollTo)?.scrollIntoView();
+      }
+
     }
 
   }, [location])
@@ -1222,18 +1252,25 @@ export default function ActivityViewer(props) {
   }
 
 
-  let pageControls = null;
+  let pageControlsTop = null;
+  let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
-    pageControls = <>
+    pageControlsTop = <>
       <button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
+      { } Page {currentPage} of {nPages} { }
       <button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
-      <p>Page {currentPage} of {nPages}</p>
+    </>
+    pageControlsBottom = <>
+      <button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
+      { } Page {currentPage} of {nPages} { }
+      <button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
     </>
   }
 
   return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
-    {pageControls}
+    {pageControlsTop}
     {title}
     {pages}
+    {pageControlsBottom}
   </div>
 }
