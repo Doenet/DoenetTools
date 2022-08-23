@@ -80,6 +80,7 @@ export default function CreditAchieved() {
   // wait for the assignment attempt item tables to be set up
   // so that will have the rows for each item
   if (activityAttemptNumberSetUp !== recoilAttemptNumber) {
+    lastAttemptNumber.current = activityAttemptNumberSetUp;
     return null;
   }
 

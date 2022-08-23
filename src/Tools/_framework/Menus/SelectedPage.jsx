@@ -91,6 +91,7 @@ export default function SelectedPage() {
           create({itemType:"page"})
         }
         value="Add Page"
+        data-test="Add Page"
       />
     {containingObj.type == 'activity' ? 
      <Button
@@ -99,6 +100,7 @@ export default function SelectedPage() {
        create({itemType:"order"})
      }
      value="Add Order"
+     data-test="Add Order"
    /> : null
     }
      
@@ -107,6 +109,7 @@ export default function SelectedPage() {
     <Button
       width="menu"
       value="Delete Page"
+      data-test="Delete Page"
       alert
       onClick={(e) => {
         e.preventDefault();
