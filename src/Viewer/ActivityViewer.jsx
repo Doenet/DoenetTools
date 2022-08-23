@@ -430,6 +430,7 @@ export default function ActivityViewer(props) {
     let loadedState = false;
     let newItemWeights;
     let newVariantIndex;
+    let loadedFromInitialState = false;
 
     if (props.flags.allowLocalState) {
 
@@ -585,6 +586,8 @@ export default function ActivityViewer(props) {
 
         // get initial state and info
 
+        loadedFromInitialState = true;
+
         // start at page 1
         // if hash doesn't already specify a page, set page to 1
         if (!hash?.match(/^#page(\d+)/)) {
@@ -620,7 +623,7 @@ export default function ActivityViewer(props) {
     }
 
 
-    return { newItemWeights, newVariantIndex };
+    return { newItemWeights, newVariantIndex, loadedFromInitialState };
 
   }
 
@@ -890,8 +893,6 @@ export default function ActivityViewer(props) {
 
     }
 
-    setStage('continue');
-
   }
 
   async function receivedSaveFromPage() {
@@ -1143,15 +1144,19 @@ export default function ActivityViewer(props) {
 
   if (activityContentChanged) {
     setActivityContentChanged(false);
+    setActivityAttemptNumberSetUp(0);
+
     previousComponentTypeCountsByPage.current = [];
 
     setStage("wait");
 
-    loadState().then(results => {
+    loadState().then(async results => {
       if (results) {
-        initializeUserAssignmentTables(results.newItemWeights).then(() => {
-          setActivityAttemptNumberSetUp(attemptNumber)
-        })
+        if (results.loadedFromInitialState) {
+          await initializeUserAssignmentTables(results.newItemWeights);
+        }
+        setStage('continue');
+        setActivityAttemptNumberSetUp(attemptNumber)
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
       settingUp.current = false;
