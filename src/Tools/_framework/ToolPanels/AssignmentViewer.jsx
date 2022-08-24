@@ -267,17 +267,6 @@ export default function AssignmentViewer() {
         // }
 
 
-        let result = await returnNumberOfActivityVariants(cid);
-
-        if (!result.success) {
-          setStage('Problem');
-          setMessage(result.message);
-          return;
-        }
-
-        allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map(x => (x + 1));
-
-
         //Find attemptNumber
         resp = await axios.get('/api/loadTakenVariants.php', {
           params: { doenetId },
@@ -308,6 +297,30 @@ export default function AssignmentViewer() {
         }
 
         set(currentAttemptNumber, attemptNumber);
+
+
+        let result = await returnNumberOfActivityVariants(cid);
+
+        if (!result.success) {
+          setLoad({
+            requestedVariantIndex: 0,
+            attemptNumber,
+            showCorrectness,
+            paginate,
+            showFeedback,
+            showHints,
+            cid,
+            doenetId,
+            solutionDisplayMode,
+            cidChanged,
+          });
+          setStage('Problem');
+          setMessage(result.message);
+          return;
+        }
+
+        allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map(x => (x + 1));
+
 
         if (needNewVariant) {
 
@@ -439,6 +452,7 @@ export default function AssignmentViewer() {
       }
 
       individualize.current = resp.data.individualize === '1';
+      setStage('Ready');
 
     }
 
@@ -514,11 +528,11 @@ export default function AssignmentViewer() {
   } else if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId, itemObj);
     return null;
-  } else if (stage === 'Problem') {
-    return <h1>{message}</h1>;
   } else if (recoilAttemptNumber > attemptNumber) {
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber, recoilDoenetId);
     return null;
+  } else if (stage === 'Problem') {
+    return <h1>{message}</h1>;
   }
 
   let cidChangedAlert = null;
@@ -583,7 +597,13 @@ export default function AssignmentViewer() {
 
 async function returnNumberOfActivityVariants(cid) {
 
-  let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
+  let activityDefinitionDoenetML;
+
+  try {
+    activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
+  } catch (e) {
+    return { success: false, message: "Could not retrieve file" }
+  }
 
   let result = parseActivityDefinition(activityDefinitionDoenetML);
 
