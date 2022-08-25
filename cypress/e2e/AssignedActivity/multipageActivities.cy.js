@@ -635,7 +635,6 @@ describe('Multipage activity tests', function () {
 
   })
 
-
   it('Links to paginated two-page activity', () => {
     const doenetML1 = `
 <section>
@@ -1050,7 +1049,6 @@ describe('Multipage activity tests', function () {
 
   })
 
-
   it('Go directly to URLs of paginated two-page activity', () => {
     const doenetML1 = `
 <section>
@@ -1329,7 +1327,6 @@ describe('Multipage activity tests', function () {
     })
 
   })
-
 
   it('Switching pages scrolls to top', () => {
     const doenetML1 = `
@@ -1612,7 +1609,6 @@ describe('Multipage activity tests', function () {
     cy.url().should('contain', doenetId)
 
   })
-
 
   it('Update to new version', () => {
     const doenetML1 = `
@@ -1898,7 +1894,6 @@ describe('Multipage activity tests', function () {
 
   })
 
-
   it('Clicking links does not give update version prompt', () => {
     const doenetML = `
 <section name="sect">
@@ -2083,7 +2078,6 @@ describe('Multipage activity tests', function () {
 
 
   })
-
 
   it('Change number of pages in activity', () => {
     const doenetML = `

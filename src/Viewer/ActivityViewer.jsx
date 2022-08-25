@@ -114,8 +114,8 @@ export default function ActivityViewer(props) {
   })
 
 
-  const prerenderedPages = useRef([])
-  const allPagesPrerendered = useRef(false);
+  const [renderedPages, setRenderedPages] = useState([])
+  const allPagesRendered = useRef(false);
 
   const nodeRef = useRef(null);
   const ignoreNextScroll = useRef(false);
@@ -267,11 +267,11 @@ export default function ActivityViewer(props) {
   }, [currentPage, nPages])
 
   useEffect(() => {
-    if (allPagesPrerendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
+    if (allPagesRendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
       ignoreNextScroll.current = true;
       document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
     }
-  }, [allPagesPrerendered.current])
+  }, [allPagesRendered.current])
 
   useEffect(() => {
     // Keep track of scroll position when clicked on a link
@@ -1064,13 +1064,17 @@ export default function ActivityViewer(props) {
 
   }
 
-  function pagePrerenderedCallback(pageInd, success) {
-    if (success) {
-      prerenderedPages.current[pageInd] = true;
+  function pageRenderedCallback(pageInd) {
+    let newRenderedPages;
+    setRenderedPages(was => {
+      newRenderedPages = [...was];
+      newRenderedPages[pageInd] = true;
+      return newRenderedPages;
+    })
 
-      if (prerenderedPages.current.length === nPages && prerenderedPages.current.every(x => x)) {
-        allPagesPrerendered.current = true;
-      }
+
+    if (newRenderedPages.length === nPages && newRenderedPages.every(x => x)) {
+      allPagesRendered.current = true;
     }
 
   }
@@ -1231,7 +1235,7 @@ export default function ActivityViewer(props) {
       saveStateCallback={receivedSaveFromPage}
       updateDataOnContentChange={props.updateDataOnContentChange}
       coreCreatedCallback={() => coreCreatedCallback(ind)}
-      pagePrerenderedCallback={(x) => pagePrerenderedCallback(ind, x)}
+      renderersInitializedCallback={() => pageRenderedCallback(ind)}
       hideWhenInactive={props.paginate}
       prefixForIds={prefixForIds}
     />
