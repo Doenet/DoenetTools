@@ -73,8 +73,8 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
       doenetMLByPage[page.cid] = page.doenetML;
     }
 
-    if(variantIndex % 10 === 0) {
-      postMessage({ messageType: "status", stage: "Gathering", complete: variantIndex/numberOfVariants });
+    if (variantIndex % 10 === 0) {
+      postMessage({ messageType: "status", stage: "Gathering", complete: variantIndex / numberOfVariants });
     }
 
   }
@@ -170,7 +170,8 @@ function calculateInitialRendererState({ doenetML, doenetId, requestedVariantInd
       doenetML,
       doenetId,
       requestedVariantIndex,
-      flags
+      flags,
+      prerender: true,
     }
   })
 
@@ -182,7 +183,7 @@ function calculateInitialRendererState({ doenetML, doenetId, requestedVariantInd
   let rendererState = {};
   coreWorker.onmessage = function (e) {
     // console.log('message from core', e.data)
-    if (e.data.messageType === "updateRenderers") {
+    if (e.data.messageType === "updateRenderers" && e.data.init) {
       for (let instruction of e.data.args.updateInstructions) {
         if (instruction.instructionType === "updateRendererStates") {
           for (let { componentName, stateValues, childrenInstructions } of instruction.rendererStatesToUpdate

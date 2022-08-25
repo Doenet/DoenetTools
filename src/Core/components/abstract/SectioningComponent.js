@@ -146,7 +146,7 @@ export default class SectioningComponent extends BlockComponent {
 
         enumeration.push(dependencyValues.countAmongSiblings)
 
-        
+
         return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
 
       }
@@ -223,7 +223,7 @@ export default class SectioningComponent extends BlockComponent {
       },
       forRenderer: true,
       alwaysUpdateRenderer: true,
-      returnDependencies: () => ({
+      returnDependencies: ({ sharedParameters }) => ({
         titleChild: {
           dependencyType: "child",
           childGroups: ["titles"],
@@ -244,13 +244,17 @@ export default class SectioningComponent extends BlockComponent {
         suppressAutoNumber: {
           dependencyType: "stateVariable",
           variableName: "suppressAutoNumber"
+        },
+        prerender: {
+          dependencyType: "value",
+          value: sharedParameters.prerender
         }
       }),
       definition({ dependencyValues }) {
 
         let titlePrefix = "";
         let title = "";
-        if (dependencyValues.suppressAutoNumber) {
+        if (dependencyValues.suppressAutoNumber || dependencyValues.prerender) {
           if (!dependencyValues.suppressAutoName) {
             titlePrefix = dependencyValues.sectionName;
           }

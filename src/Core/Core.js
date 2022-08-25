@@ -30,6 +30,7 @@ export default class Core {
     requestedVariant, requestedVariantIndex,
     previousComponentTypeCounts = {},
     flags = {},
+    prerender = false,
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
     // console.time('core');
@@ -110,6 +111,7 @@ export default class Core {
     this.parameterStack = new ParameterStack();
 
     this.parameterStack.parameters.rngClass = prng_alea;
+    this.parameterStack.parameters.prerender = prerender;
 
     this.initialized = false;
     this.initializedPromiseResolves = [];
@@ -5545,7 +5547,7 @@ export default class Core {
           essentialArray = component.essentialState[essentialVarName] = [];
         }
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
 
@@ -5574,7 +5576,7 @@ export default class Core {
       } else {
         component.essentialState[essentialVarName] = result.setEssentialValue[varName];
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
         this.essentialValuesSavedInDefinition[component.componentName][varName]
