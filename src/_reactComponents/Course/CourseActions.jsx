@@ -1415,7 +1415,7 @@ export const useCourse = (courseId) => {
     try {
       const {
         data: { success, message },
-      } = await axios.post('api/updateUserRole.php', {
+      } = await axios.post('/api/updateUserRole.php', {
         courseId,
         userEmail: email,
         roleId

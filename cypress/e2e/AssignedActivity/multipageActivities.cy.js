@@ -274,8 +274,8 @@ describe('Multipage activity tests', function () {
     cy.get('#page2\\/_section1_title').should('not.exist')
     cy.url().should('match', /#page1$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
     cy.get('#page1\\/bi_input').click();
@@ -315,8 +315,8 @@ describe('Multipage activity tests', function () {
 
     cy.url().should('match', /#page2$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
 
@@ -404,8 +404,8 @@ describe('Multipage activity tests', function () {
 
     cy.url().should('match', /#page2$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
     cy.get('#page2\\/toAside').click();
@@ -486,8 +486,8 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
 
-    cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
     })
 
     cy.get('#page1\\/bi_input').click();
@@ -612,6 +612,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('#page2\\/insideAside').should('not.exist');
 
+    cy.wait(500);  // this wait should not be necessary, but wondering if this will prevent random failures
     cy.url().should('match', /#page2$/)
 
     // Note sure why the rect of page2 does not appear to be at the top
@@ -634,7 +635,6 @@ describe('Multipage activity tests', function () {
 
 
   })
-
 
   it('Links to paginated two-page activity', () => {
     const doenetML1 = `
@@ -1050,7 +1050,6 @@ describe('Multipage activity tests', function () {
 
   })
 
-
   it('Go directly to URLs of paginated two-page activity', () => {
     const doenetML1 = `
 <section>
@@ -1330,6 +1329,125 @@ describe('Multipage activity tests', function () {
 
   })
 
+  it('Switching pages scrolls to top', () => {
+    const doenetML1 = `
+<title>Page 1</title>
+<p><ref target="pBottom" name="toBottom">To bottom link</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<p name="pBottom"><ref page="2" name="toPage2">Go to page 2</ref></p>
+
+<lorem generateParagraphs="8" />
+`
+
+    const doenetML2 = `
+<title>Page 2</title>
+<p><ref target="pBottom" name="toBottom">To bottom link</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<p name="pBottom"><ref page="1" name="toPage1">Go to page 1</ref></p>
+
+<lorem generateParagraphs="8" />
+`
+
+
+    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.log('make sure both pages are rendered')
+    cy.get('#page1\\/_title1').should('have.text', 'Page 1')
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page2\\/_title1').should('have.text', 'Page 2');
+    cy.url().should('match', /#page2$/)
+
+    cy.get('#page2\\/toBottom').click();
+    cy.url().should('match', /#page2\/pBottom$/)
+
+    cy.get('#page2\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 1 via bottom button')
+    cy.get('[data-test=previous-bottom').click();
+
+    cy.get('#page1\\/_title1').should('have.text', 'Page 1')
+    cy.url().should('match', /#page1$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+    cy.get('#page1\\/toBottom').click();
+    cy.url().should('match', /#page1\/pBottom$/)
+
+    cy.get('#page1\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 2 via bottom button')
+    cy.get('[data-test=next-bottom').click();
+
+    cy.get('#page2\\/_title1').should('have.text', 'Page 2');
+    cy.url().should('match', /#page2$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+    cy.get('#page2\\/toBottom').click();
+    cy.url().should('match', /#page2\/pBottom$/)
+
+    cy.get('#page2\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 1 via bottom link')
+    cy.get('#page2\\/toPage1').click();
+
+    cy.get('#page1\\/_title1').should('have.text', 'Page 1')
+    cy.url().should('match', /#page1$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+    cy.get('#page1\\/toBottom').click();
+    cy.url().should('match', /#page1\/pBottom$/)
+
+    cy.get('#page1\\/pBottom').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    })
+
+    cy.log('go to page 2 via bottom link')
+    cy.get('#page1\\/toPage2').click();
+
+    cy.get('#page2\\/_title1').should('have.text', 'Page 2');
+    cy.url().should('match', /#page2$/)
+
+    cy.get('[data-test="Main Panel"]').then(el => {
+      expect(el.scrollTop()).eq(0);
+    })
+
+
+  })
 
   it('paginated two-page activity remembers page', () => {
     const doenetML1 = `
@@ -1492,7 +1610,6 @@ describe('Multipage activity tests', function () {
     cy.url().should('contain', doenetId)
 
   })
-
 
   it('Update to new version', () => {
     const doenetML1 = `
@@ -1778,7 +1895,6 @@ describe('Multipage activity tests', function () {
 
   })
 
-
   it('Clicking links does not give update version prompt', () => {
     const doenetML = `
 <section name="sect">
@@ -1826,7 +1942,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/sect_title').should('have.text', 'Section 1: Info only')
 
     cy.wait(2000);  // wait for debounce
-    cy.get('[data-test="Crumb 2"]').click(); 
+    cy.get('[data-test="Crumb 2"]').click();
 
 
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1874,6 +1990,294 @@ describe('Multipage activity tests', function () {
     cy.get('#page2\\/extra2').should('have.text', 'Extra content 2')
 
     cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+  })
+
+  it('Increase from one to two page activity, page one info only', () => {
+    const doenetML = `
+<section name="sect">
+  <title>Info only</title>
+</section >
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId: pageDoenetId1, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+
+    cy.get('#\\/sect_title').should('have.text', 'Section 1: Info only')
+
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 2 Credit"]').should('not.exist')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+
+    cy.wait(2000);  // wait for debounce
+
+
+    cy.go("back");
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Add Page"]').click();
+    cy.get('.navigationRow').eq(0).get('[data-test="folderToggleOpenIcon"]').click();
+
+
+    cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Page"]').click();
+
+    cy.get('.cm-content').type('<title>Page 1</title>{enter}<p>x: <answer name="ans">x</answer></p>{enter}')
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#page1\\/sect_title').should('have.text', 'Section 1: Info only')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+
+    // assignment and attempt percent are still at 100%, but don't insist on it
+
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page2\\/_title1').should('have.text', 'Page 1')
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
+
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '50%')
+
+    cy.get('#page2\\/ans textarea').type("x{enter}", { force: true })
+
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+
+  })
+
+  it('Change number of pages in activity', () => {
+    const doenetML = `
+<problem name="prob">
+  <p>1: <answer name="ans">1</answer></p>
+</problem >
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId: pageDoenetId1, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+
+    cy.get('#\\/prob_title').should('have.text', 'Problem 1')
+
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('not.exist')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
+
+
+    cy.wait(1500);  // wait for debounce
+
+
+    cy.go("back");
+
+    cy.log("increase to two pages, no new version prompt")
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Add Page"]').click();
+    cy.get('.navigationRow').eq(0).get('[data-test="folderToggleOpenIcon"]').click();
+
+
+    cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Page"]').click();
+
+    cy.get('.cm-content').type('<problem name="prob">{enter}<p>2: <answer name="ans">2</answer></p>{enter}</problem>{enter}')
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#page1\\/prob_title').should('have.text', 'Problem 1')
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page2\\/prob_title').should('have.text', 'Problem 2')
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.go("back")
+
+    cy.log("decrease to one page, no new version prompt")
+    cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
+    cy.get('[data-test="Delete Page"]').click();
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#\\/prob_title').should('have.text', 'Problem 1')
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('not.exist')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
+
+    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+
+    cy.get('#\\/ans textarea').type("1{enter}", { force: true })
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.go("back");
+
+    cy.log('Add second page, get new version prompt')
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Add Page"]').click();
+
+    cy.get('.navigationRow').should('have.length', 3);
+    cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
+    cy.get('[data-test="Edit Page"]').click();
+
+    cy.get('.cm-content').type('<problem name="prob">{enter}<p>2: <answer name="ans">2</answer></p>{enter}</problem>{enter}')
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.go("back")
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#\\/prob_title').should('have.text', 'Problem 1')
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 2 Credit"]').should('not.exist')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('[data-test=next]').should('not.exist')
+
+    cy.get('[data-test=NewVersionAvailable]').click();
+
+    cy.get('[data-test=ConfirmNewVersion]').click();
+
+    cy.get('#page1\\/prob_title').should('have.text', 'Problem 1')
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get("[data-test=next]").click();
+
+    cy.get('#page2\\/prob_title').should('have.text', 'Problem 2')
+
+    cy.get('#page2\\/ans textarea').type("2{enter}", { force: true })
+
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.go("back");
+
+    cy.log('Delete second page, get new version prompt')
+
+    cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
+    cy.get('[data-test="Delete Page"]').click();
+
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#page2\\/prob_title').should('have.text', 'Problem 2')
+
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('[data-test=NewVersionAvailable]').click();
+
+    cy.get('[data-test=ConfirmNewVersion]').click();
+
+    cy.get('#\\/prob_title').should('have.text', 'Problem 1')
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('not.exist')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('#\\/ans textarea').type("1{enter}", { force: true })
+
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
   })
 

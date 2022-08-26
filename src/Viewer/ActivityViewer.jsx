@@ -114,11 +114,12 @@ export default function ActivityViewer(props) {
   })
 
 
-  const prerenderedPages = useRef([])
-  const allPagesPrerendered = useRef(false);
+  const [renderedPages, setRenderedPages] = useState([])
+  const allPagesRendered = useRef(false);
 
   const nodeRef = useRef(null);
   const ignoreNextScroll = useRef(false);
+  const stillNeedToScrollTo = useRef(null);
 
   let location = useLocation();
   let hash = location.hash;
@@ -233,27 +234,44 @@ export default function ActivityViewer(props) {
       let match = hash.match(/^#page(\d+)/)
       if (match) {
         let newPage = Math.max(1, Math.min(nPages, match[1]));
-        setCurrentPage(newPage);
-        setRecoilCurrentPage(newPage);
+        if (newPage !== currentPage) {
+          setCurrentPage(newPage);
+          setRecoilCurrentPage(newPage);
+        }
       }
     }
   }, [hash, nPages])
 
   useEffect(() => {
     if (currentPage > 0 && nPages > 1) {
-      let pageAnchor = `#page${currentPage}`;
-      if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
-        navigate(location.search + pageAnchor, { replace: true, state: { doNotScroll: true } })
+      let hashPage = Number(hash?.match(/^#page(\d+)/)?.[1]);
+      if (hashPage !== currentPage) {
+        let pageAnchor = `#page${currentPage}`;
+        // if we have moved to a page that does not correspond to the hash
+        // modify the hash to match the page.
+        let navigateAttrs = { replace: true }
+        if (!props.paginate) {
+          // If not paginated, then do not scroll to the top of the page,
+          // as the page change could be triggered by scrolling
+
+          navigateAttrs.state = { doNotScroll: true }
+        }
+        navigate(location.search + pageAnchor, navigateAttrs)
+      }
+      if (stillNeedToScrollTo.current) {
+        document.getElementById(stillNeedToScrollTo.current)?.scrollIntoView();
+        stillNeedToScrollTo.current = null;
+
       }
     }
   }, [currentPage, nPages])
 
   useEffect(() => {
-    if (allPagesPrerendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
+    if (allPagesRendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
       ignoreNextScroll.current = true;
       document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
     }
-  }, [allPagesPrerendered.current])
+  }, [allPagesRendered.current])
 
   useEffect(() => {
     // Keep track of scroll position when clicked on a link
@@ -287,10 +305,22 @@ export default function ActivityViewer(props) {
       currentLocationKey.current = location.key;
     }
 
+    stillNeedToScrollTo.current = null;
+
     // since the <Link> from react router doesn't seem to scroll into hashes
     // always scroll to the hash the first time we get a location from a <Link>
     if (!location.state?.doNotScroll && (location.key === "default" || !foundNewInPrevious)) {
-      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+      let scrollTo = cssesc(hash.slice(1));
+      if (props.paginate && hash.match(/^#page(\d+)$/)) {
+        // if paginate, want to scroll to top of activity so can still see page controls
+        scrollTo = 'activityTop';
+      }
+      if (props.paginate && Number(hash.match(/^#page(\d+)/)?.[1]) !== currentPage) {
+        stillNeedToScrollTo.current = scrollTo;
+      } else {
+        document.getElementById(scrollTo)?.scrollIntoView();
+      }
+
     }
 
   }, [location])
@@ -430,6 +460,7 @@ export default function ActivityViewer(props) {
     let loadedState = false;
     let newItemWeights;
     let newVariantIndex;
+    let loadedFromInitialState = false;
 
     if (props.flags.allowLocalState) {
 
@@ -585,6 +616,8 @@ export default function ActivityViewer(props) {
 
         // get initial state and info
 
+        loadedFromInitialState = true;
+
         // start at page 1
         // if hash doesn't already specify a page, set page to 1
         if (!hash?.match(/^#page(\d+)/)) {
@@ -620,7 +653,7 @@ export default function ActivityViewer(props) {
     }
 
 
-    return { newItemWeights, newVariantIndex };
+    return { newItemWeights, newVariantIndex, loadedFromInitialState };
 
   }
 
@@ -890,8 +923,6 @@ export default function ActivityViewer(props) {
 
     }
 
-    setStage('continue');
-
   }
 
   async function receivedSaveFromPage() {
@@ -1033,13 +1064,17 @@ export default function ActivityViewer(props) {
 
   }
 
-  function pagePrerenderedCallback(pageInd, success) {
-    if (success) {
-      prerenderedPages.current[pageInd] = true;
+  function pageRenderedCallback(pageInd) {
+    let newRenderedPages;
+    setRenderedPages(was => {
+      newRenderedPages = [...was];
+      newRenderedPages[pageInd] = true;
+      return newRenderedPages;
+    })
 
-      if (prerenderedPages.current.length === nPages && prerenderedPages.current.every(x => x)) {
-        allPagesPrerendered.current = true;
-      }
+
+    if (newRenderedPages.length === nPages && newRenderedPages.every(x => x)) {
+      allPagesRendered.current = true;
     }
 
   }
@@ -1143,15 +1178,19 @@ export default function ActivityViewer(props) {
 
   if (activityContentChanged) {
     setActivityContentChanged(false);
+    setActivityAttemptNumberSetUp(0);
+
     previousComponentTypeCountsByPage.current = [];
 
     setStage("wait");
 
-    loadState().then(results => {
+    loadState().then(async results => {
       if (results) {
-        initializeUserAssignmentTables(results.newItemWeights).then(() => {
-          setActivityAttemptNumberSetUp(attemptNumber)
-        })
+        if (results.loadedFromInitialState) {
+          await initializeUserAssignmentTables(results.newItemWeights);
+        }
+        setStage('continue');
+        setActivityAttemptNumberSetUp(attemptNumber)
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
       settingUp.current = false;
@@ -1196,7 +1235,7 @@ export default function ActivityViewer(props) {
       saveStateCallback={receivedSaveFromPage}
       updateDataOnContentChange={props.updateDataOnContentChange}
       coreCreatedCallback={() => coreCreatedCallback(ind)}
-      pagePrerenderedCallback={(x) => pagePrerenderedCallback(ind, x)}
+      renderersInitializedCallback={() => pageRenderedCallback(ind)}
       hideWhenInactive={props.paginate}
       prefixForIds={prefixForIds}
     />
@@ -1217,18 +1256,25 @@ export default function ActivityViewer(props) {
   }
 
 
-  let pageControls = null;
+  let pageControlsTop = null;
+  let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
-    pageControls = <>
+    pageControlsTop = <>
       <button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
+      { } Page {currentPage} of {nPages} { }
       <button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
-      <p>Page {currentPage} of {nPages}</p>
+    </>
+    pageControlsBottom = <>
+      <button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
+      { } Page {currentPage} of {nPages} { }
+      <button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
     </>
   }
 
   return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
-    {pageControls}
+    {pageControlsTop}
     {title}
     {pages}
+    {pageControlsBottom}
   </div>
 }

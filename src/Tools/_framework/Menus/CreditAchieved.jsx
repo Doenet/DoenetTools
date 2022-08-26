@@ -46,7 +46,7 @@ export default function CreditAchieved() {
   const initialize = useRecoilCallback(({ set }) => async (attemptNumber, doenetId, userId, tool) => {
 
 
-    const { data } = await axios.get(`api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
+    const { data } = await axios.get(`/api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
 
     const creditByItem = data.creditByItem.map(Number);
     const creditForAssignment = Number(data.creditForAssignment)
@@ -80,6 +80,7 @@ export default function CreditAchieved() {
   // wait for the assignment attempt item tables to be set up
   // so that will have the rows for each item
   if (activityAttemptNumberSetUp !== recoilAttemptNumber) {
+    lastAttemptNumber.current = activityAttemptNumberSetUp;
     return null;
   }
 
