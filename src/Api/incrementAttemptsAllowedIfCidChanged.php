@@ -130,10 +130,11 @@ if ($success) {
 
             $conn->query($sql);
 
-
-            // we increment the user's numberOfAttemptsAllowedAdjustment
+            // we set the user's numberOfAttemptsAllowedAdjustment to be equal to lastAttemptNumber
+            // so the number of remaining attempts is set to the original number allowed
+            $newNumberOfAttemptsAllowedAdjustment = $lastAttemptNumber;
             $sql = "UPDATE user_assignment
-                SET numberOfAttemptsAllowedAdjustment = coalesce(numberOfAttemptsAllowedAdjustment, 0) + 1
+                SET numberOfAttemptsAllowedAdjustment = $newNumberOfAttemptsAllowedAdjustment
                 WHERE userId = '$userId'
                 AND doenetId = '$doenetId'
                 ";
@@ -141,14 +142,14 @@ if ($success) {
             $conn->query($sql);
         }
     }
-
 }
 
 $response_arr = [
     "success" => $success,
     "message" => $message,
     "cidChanged" => $cidChanged,
-    "newAttemptNUmber" => $newAttemptNumber
+    "newAttemptNumber" => $newAttemptNumber,
+    "newNumberOfAttemptsAllowedAdjustment" => $newNumberOfAttemptsAllowedAdjustment,
 ];
 
 // set response code - 200 OK

@@ -461,7 +461,7 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
             updateAssignmentSettings({
               keyToUpdate: 'numberOfAttemptsAllowed',
               value,
-              description: 'Attempts Allowe',
+              description: 'Attempts Allowed',
               valueDescription,
             });
           }}

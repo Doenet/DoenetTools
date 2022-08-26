@@ -57,21 +57,36 @@ if ($success) {
     fclose($newfile);
 
     if ($isAssigned) {
-        $sql = "
-        UPDATE course_content
-        SET isAssigned='1',
-        jsonDefinition=JSON_SET(jsonDefinition,'$.assignedCid','$cid')
-        WHERE doenetId='$doenetId'
-        AND courseId='$courseId'
-        ";
+
+        $sql = "SELECT JSONdefinition->>'$.assignedCid' as assignedCid
+            FROM course_content
+            WHERE doenetId='$doenetId'
+            AND courseId='$courseId'
+            ";
+
         $result = $conn->query($sql);
-        $sql = "
-        INSERT INTO assignment
-        (doenetId,courseId)
-        VALUES
-        ('$doenetId','$courseId')
-        ";
-        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $previousAssignedCid = $row["assignedCid"];
+
+        if($previousAssignedCid != $cid) {
+
+            $sql = "
+            UPDATE course_content
+            SET isAssigned='1',
+            jsonDefinition=JSON_SET(jsonDefinition,'$.assignedCid','$cid')
+            WHERE doenetId='$doenetId'
+            AND courseId='$courseId'
+            ";
+            $result = $conn->query($sql);
+            $sql = "
+            INSERT INTO assignment
+            (doenetId,courseId)
+            VALUES
+            ('$doenetId','$courseId')
+            ";
+            $result = $conn->query($sql);
+
+        }
 
         $sql = "SELECT assignedDate,
 		dueDate,
@@ -122,6 +137,31 @@ if ($success) {
             "proctorMakesAvailable" =>
                 $row["proctorMakesAvailable"] == "1" ? true : false,
         ];
+
+        if($previousAssignedCid != $cid && !is_null($assignmentSettings["numberOfAttemptsAllowed"])) {
+            // update numberOfAttemptsAllowedAdjustment for any students who already started the assigment
+            // to effectively reset the number of attempts allowed
+
+            // set numberOfAttemptsAllowed to the maximum attempt number,
+            // excluding the latest attempt if the activity_state of the latest attempt has not been saved
+
+            $sql = "UPDATE user_assignment AS ua
+                            INNER JOIN (
+                            SELECT uaa.userId, uaa.doenetId, MAX(uaa.attemptNumber) as attemptNumber
+                            FROM user_assignment_attempt uaa
+                            LEFT JOIN activity_state as a
+                            ON uaa.userId=a.userId AND uaa.doenetId=a.doenetId AND uaa.attemptNumber = a.attemptNumber
+                            WHERE uaa.doenetId ='$doenetId'
+                            AND (a.cid IS NOT NULL OR uaa.attemptNumber != 
+                            (SELECT MAX(attemptNumber) FROM user_assignment_attempt as uaa2 where uaa2.userId=uaa.userId AND uaa2.doenetId=uaa.doenetId))
+                            GROUP BY uaa.userId, uaa.doenetId
+                            ) AS sq ON ua.userId=sq.userId AND ua.doenetId=sq.doenetId
+                            SET ua.numberOfAttemptsAllowedAdjustment = sq.attemptNumber";
+                            
+            $result = $conn->query($sql);
+        
+        }
+
     } else {
         $sql = "
         UPDATE course_content
