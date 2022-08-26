@@ -5236,8 +5236,12 @@ describe('Point Tag Tests', function () {
   <line through="$_point3 $_point4" />
   </graph>
 
-  <booleaninput name='h1' prefill="false" label="Hide first intersection" />
-  <booleaninput name='h2' prefill="true" label="Hide second intersection" />
+  <booleaninput name='h1' prefill="false" >
+    <label>Hide first intersection</label>
+  </booleaninput>
+  <booleaninput name='h2' prefill="true" >
+    <label>Hide second intersection</label>
+  </booleaninput>
   
   <p name="i1">Intersection 1: <intersection hide="$h1"><copy target="_line1" /><copy target="_line2" /></intersection></p>
   <p name="i2">Intersection 2: <intersection hide="$h2"><copy target="_line1" /><copy target="_line2" /></intersection></p>
@@ -10718,11 +10722,11 @@ describe('Point Tag Tests', function () {
     <text>a</text>
 
     <graph name="g">
-      <point name="A" label="A" x="1" y="2" />
-      <point name="B" label="B" x="3" y="4">
+      <point name="A" labelIsName x="1" y="2" />
+      <point name="B" labelIsName x="3" y="4">
         <constraints><constrainToGrid /></constraints>
       </point>
-      <point name="C" label="C" x="2$n+1" y="1" />
+      <point name="C" labelIsName x="2$n+1" y="1" />
     </graph>
 
     <graph name="g1">
@@ -10854,11 +10858,11 @@ describe('Point Tag Tests', function () {
     <text>a</text>
 
     <graph name="g">
-      <point name="A" label="A" xs="1 2" />
-      <point name="B" label="B" xs="3 4">
+      <point name="A" labelIsName xs="1 2" />
+      <point name="B" labelIsName xs="3 4">
         <constraints><constrainToGrid /></constraints>
       </point>
-      <point name="C" label="C" xs="2$n+1 1" />
+      <point name="C" labelIsName xs="2$n+1 1" />
     </graph>
 
     <graph name="g1">
@@ -10989,11 +10993,11 @@ describe('Point Tag Tests', function () {
     <text>a</text>
 
     <graph name="g">
-      <point name="A" label="A" coords="(1,2)" />
-      <point name="B" label="B" coords="(3,4)">
+      <point name="A" labelIsName coords="(1,2)" />
+      <point name="B" labelIsName coords="(3,4)">
         <constraints><constrainToGrid /></constraints>
       </point>
-      <point name="C" label="C" coords="(2$n+1,1)" />
+      <point name="C" labelIsName coords="(2$n+1,1)" />
     </graph>
 
     <graph name="g1">

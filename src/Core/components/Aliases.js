@@ -2,6 +2,7 @@ import TextComponent from './Text';
 import TextOrInline from './abstract/TextOrInline';
 import Template from './Template';
 import MathComponent from './Math';
+import Label from './Label';
 
 
 
@@ -30,4 +31,14 @@ export class Else extends Template {
 
 export class externalContent extends Template {
   static componentType = "externalContent";
+}
+
+export class Xlabel extends Label {
+  static componentType = "xlabel";
+  static rendererType = "label";
+}
+
+export class Ylabel extends Label {
+  static componentType = "ylabel";
+  static rendererType = "label";
 }

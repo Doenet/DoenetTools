@@ -46,9 +46,6 @@ export default class Slider extends BaseComponent {
       createStateVariable: "initialValue",
       defaultValue: null,
     }
-    attributes.label = {
-      createComponentOfType: "label",
-    };
     attributes.labelIsName = {
       createComponentOfType: "boolean",
       createStateVariable: "labelIsName",
