@@ -40,6 +40,16 @@ export const creditAchievedAtom = atom({
   },
 });
 
+export const numberOfAttemptsAllowedAdjustmentAtom = atom({
+  key: 'numberOfAttemptsAllowedAdjustment',
+  default: 0,
+})
+
+export const cidChangedAtom = atom({
+  key: 'cidChanged',
+  default: false,
+})
+
 
 
 //Randomly pick next variant
@@ -101,6 +111,7 @@ export default function AssignmentViewer() {
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
   const [recoilAttemptNumber, setRecoilAttemptNumber] = useRecoilState(currentAttemptNumber);
+  const [cidChanged, setCidChanged] = useRecoilState(cidChangedAtom);
   const [
     {
       requestedVariantIndex,
@@ -112,10 +123,12 @@ export default function AssignmentViewer() {
       cid,
       doenetId,
       solutionDisplayMode,
-      cidChanged,
+      baseNumberOfAttemptsAllowed,
     },
     setLoad,
   ] = useState({});
+
+  const setNumberOfAttemptsAllowedAdjustment = useSetRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
 
   const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
 
@@ -149,6 +162,7 @@ export default function AssignmentViewer() {
 
 
   useEffect(() => {
+    console.log('about to initialize values', recoilDoenetId, itemObj)
     initializeValues(recoilDoenetId, itemObj);
   }, [itemObj, recoilDoenetId])
 
@@ -175,6 +189,7 @@ export default function AssignmentViewer() {
         showHints,
         showSolution,
         proctorMakesAvailable,
+        numberOfAttemptsAllowed: baseNumberOfAttemptsAllowed
       }) => {
 
         // if itemObj has not yet been loaded, don't process yet
@@ -244,7 +259,7 @@ export default function AssignmentViewer() {
 
         console.log(`retrieved cid: ${cid}`);
 
-        let cidChanged = resp.data.cidChanged;
+        setCidChanged(resp.data.cidChanged);
 
 
         // TODO: add a flag to enable the below feature
@@ -298,6 +313,23 @@ export default function AssignmentViewer() {
 
         set(currentAttemptNumber, attemptNumber);
 
+        resp = await axios.get('/api/loadAttemptsAllowedAdjustment.php', {
+          params: { doenetId },
+        });
+
+        if (!resp.data.success) {
+          setStage('Problem');
+          if (resp.data.message) {
+            setMessage(`Could not load assignment: ${resp.data.message}`);
+          } else {
+            setMessage(`Could not load assignment: ${resp.data}`);
+          }
+          return;
+        }
+
+        let numberOfAttemptsAllowedAdjustment = Number(resp.data.numberOfAttemptsAllowedAdjustment)
+        set(numberOfAttemptsAllowedAdjustmentAtom, numberOfAttemptsAllowedAdjustment);
+
 
         let result = await returnNumberOfActivityVariants(cid);
 
@@ -312,7 +344,7 @@ export default function AssignmentViewer() {
             cid,
             doenetId,
             solutionDisplayMode,
-            cidChanged,
+            baseNumberOfAttemptsAllowed,
           });
           setStage('Problem');
           setMessage(result.message);
@@ -371,7 +403,7 @@ export default function AssignmentViewer() {
           cid,
           doenetId,
           solutionDisplayMode,
-          cidChanged,
+          baseNumberOfAttemptsAllowed,
         });
 
         setStage('Ready');
@@ -383,7 +415,7 @@ export default function AssignmentViewer() {
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
 
     if (hash && hash !== "#page1") {
-      navigate(search + "#page1", { replace: true });
+      navigate(search, { replace: true });
     }
 
     // don't attempt to save data from old attempt number
@@ -476,9 +508,9 @@ export default function AssignmentViewer() {
       newObj.attemptNumber = newAttemptNumber;
       newObj.requestedVariantIndex = newRequestedVariantIndex;
       newObj.cid = cid;
-      newObj.cidChanged = false;
       return newObj;
     });
+    setCidChanged(false);
   }
 
   const updateCreditAchieved = useRecoilCallback(
@@ -509,7 +541,10 @@ export default function AssignmentViewer() {
       doenetId,
     });
 
-    setRecoilAttemptNumber(was => was + 1)
+    if (resp.data.cidChanged) {
+      setNumberOfAttemptsAllowedAdjustment(Number(resp.data.newNumberOfAttemptsAllowedAdjustment))
+      setRecoilAttemptNumber(was => was + 1)
+    }
   }
 
   // console.log(`>>>>stage -${stage}-`);
@@ -538,10 +573,14 @@ export default function AssignmentViewer() {
   let cidChangedAlert = null;
   if (cidChanged) {
     if (cidChangedMessageOpen) {
+      let attemptNumberPhrase = null;
+      if (baseNumberOfAttemptsAllowed > 1) {
+        attemptNumberPhrase = " and the number of available attempts";
+      }
       cidChangedAlert = <div>
         <p>A new version of this activity is available.
           Do you want to start a new attempt using the new version?
-          (This will reset the activity to its initial state.)
+          (This will reset the activity{attemptNumberPhrase}.)
         </p>
         <button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion">Yes</button>
         <button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion">No</button>
@@ -561,7 +600,6 @@ export default function AssignmentViewer() {
         key={`activityViewer${doenetId}`}
         cid={cid}
         doenetId={doenetId}
-        cidChanged={cidChanged}
         flags={{
           showCorrectness,
           readOnly: false,
@@ -580,12 +618,7 @@ export default function AssignmentViewer() {
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}
-        cidChangedCallback={() =>
-          setLoad((was) => {
-            let newObj = { ...was };
-            newObj.cidChanged = true;
-            return newObj;
-          })}
+        cidChangedCallback={() => setCidChanged(true)}
       // generatedVariantCallback={variantCallback}
       />
     </>
@@ -611,7 +644,11 @@ async function returnNumberOfActivityVariants(cid) {
     return result;
   }
 
-  result = await determineNumberOfActivityVariants(result.activityJSON);
+  try {
+    result = await determineNumberOfActivityVariants(result.activityJSON);
+  } catch (e) {
+    return { success: false, message: e.message }
+  }
 
   return { success: true, numberOfVariants: result.numberOfVariants };
 }
