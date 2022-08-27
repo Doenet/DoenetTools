@@ -372,7 +372,7 @@ function CollectionLink({courseId,numberOfVisibleColumns,indentLevel,number=null
 
 function PageLink({courseId,doenetId,indentLevel,numberOfVisibleColumns,number=null,courseNavigatorProps}){
   let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
-  return <Row courseId={courseId} itemType="pageLink" courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLink} label={`${recoilPageInfo.label} Page Link`} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
+  return <Row courseId={courseId} itemType="pageLink" courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLink} label={`Page Link of ${recoilPageInfo.label}`} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
 function Row({courseId,doenetId,itemType,numberOfVisibleColumns,columnsJSX=[],icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){

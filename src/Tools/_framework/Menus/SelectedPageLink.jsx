@@ -2,13 +2,13 @@ import { faLink } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
-import { itemByDoenetId, selectedCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import axios from 'axios';
-
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 
 export default function SelectedPageLink() {
@@ -17,6 +17,8 @@ export default function SelectedPageLink() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const pageObj = useRecoilValue(itemByDoenetId(doenetId));
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(pageObj.label)
+  let { updateContentLinksToSources } = useCourse(courseId);
+  
 
   const renamePageLink = useRecoilCallback(({set})=>async (courseId,doenetId,label)=>{
     const { data } = await axios.get('/api/renamePageLink.php',{params:{courseId,doenetId,label}})
@@ -73,6 +75,16 @@ export default function SelectedPageLink() {
       onBlur={handleLabelModfication}
     />
   <br />
+  <br />
+    <Button
+    width="menu"
+    value="Update Content to Source"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      updateContentLinksToSources({pages:[doenetId]});
+    }}
+    />
 
   </>
 }

@@ -1613,7 +1613,11 @@ export const useCourse = (courseId) => {
         async function pageToDoenetML({ pageDoenetId, indentLevel = 1 }) {
           let indentSpacing = "  ".repeat(indentLevel);
 
-          let pageDoenetML = (await snapshot.getPromise(fileByPageId(pageDoenetId)));
+          //TODO: Improve how this works.  Sending the whole file back and forth isn't the best
+          //Also, fileByPageId was caching the result so I went to the source
+          // let pageDoenetML = (await snapshot.getPromise(fileByPageId(pageDoenetId)));
+          let {data:pageDoenetML} = await axios.get(`/media/byPageId/${pageDoenetId}.doenet`)
+          // console.log(`pageDoenetML ${pageDoenetId}`,pageDoenetML)
           let params = {
             doenetML: pageDoenetML,
             pageId: pageDoenetId,
@@ -1998,6 +2002,32 @@ export const useCourse = (courseId) => {
           }
           return next;
         });
+        
+  });
+
+  const updateContentLinksToSources = useRecoilCallback(
+    ({ set }) =>
+      async ({pages, failureCallback = defaultFailure}) => {
+
+
+      let timeOfLastUpdate = new Date(); //Only update the time when we copy over the changes
+        let { data } = await axios.post('/api/updatePageLinks.php', {
+          courseId,
+          pages,
+        });
+        // console.log("updateContentLinksToSources data",data)
+        if (data.success){
+          for (let pageDoenetId of pages){
+        
+            set(itemByDoenetId(pageDoenetId),(prev)=>{
+              let next = {...prev}
+              next.timeOfLastUpdate = timeOfLastUpdate;
+              return next
+            })
+          }
+        }else{
+          failureCallback(data.message);
+        }
         
   });
 
@@ -2921,6 +2951,7 @@ export const useCourse = (courseId) => {
     updateAssignItem,
     updateOrderBehavior,
     updateCollectionLink, 
+    updateContentLinksToSources,
     copyItems, 
     cutItems,
     pasteItems,

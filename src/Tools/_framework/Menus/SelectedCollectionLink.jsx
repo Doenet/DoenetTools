@@ -45,7 +45,7 @@ export default function SelectedCollectionLink() {
     effectivePermissionsByCourseId(courseId),
   );
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
-  let { deleteItem, updateCollectionLink } = useCourse(courseId);
+  let { deleteItem, updateCollectionLink, updateContentLinksToSources } = useCourse(courseId);
   
 
   useEffect(()=>{
@@ -118,16 +118,6 @@ export default function SelectedCollectionLink() {
             (option) => option.value,
           );
         updateCollectionLink({courseId, doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
-
-          // setManuallyFilteredPages(values)
-      // updateOrderBehavior({doenetId, behavior, numberToSelect, withReplacement, restrictPages:!restrictPages, selectedCollectionDoenetId, restrictToThesePages:values})
-
-        // //TODO: Clara please build this in to RelatedItems
-        // let emailAddresses = Array.from(
-        //   e.target.selectedOptions,
-        //   (option) => option.value,
-        // );
-        // updateRestrictedTo({ courseId, doenetId, emailAddresses });
       }}
       multiple
     />
@@ -165,13 +155,22 @@ export default function SelectedCollectionLink() {
       {pageAliasesJSX}
       <br />
     <Button
+    width="menu"
+    value="Update Content to Sources"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      updateContentLinksToSources({pages:itemObj.pages});
+    }}
+    />
+      <br />
+    <Button
       width="menu"
       value="Delete Collection Link"
       alert
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        // console.log("delete ",doenetId)
         deleteItem({doenetId});
       }}
     />

@@ -693,7 +693,9 @@ CREATE TABLE `link_pages` (
   `parentDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sourceCollectionDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
+  `sourcePageDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timeOfLastUpdate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1002,4 +1004,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-21 15:51:35
+-- Dump completed on 2022-08-27 20:36:32
