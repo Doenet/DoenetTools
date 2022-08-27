@@ -50,9 +50,9 @@ export default React.memo(function Circle(props) {
 
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -81,7 +81,7 @@ export default React.memo(function Circle(props) {
       jsxCircleAttributes.label.useMathJax = true
     }
 
-    if (SVs.showLabel && SVs.label !== "") {
+    if (SVs.showLabel && SVs.labelForGraph !== "") {
       if (SVs.applyStyleToLabel) {
         jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
       } else {
@@ -143,7 +143,7 @@ export default React.memo(function Circle(props) {
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     return newCircleJXG;
 
@@ -262,9 +262,9 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
       }
 
-      circleJXG.current.name = SVs.label;
+      circleJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         circleJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

@@ -1146,6 +1146,9 @@ export default class Copy extends CompositeComponent {
 
         replacements = processResult.serializedComponents;
 
+        workspace.numReplacementsBySource.push(replacements.length)
+        workspace.numNonStringReplacementsBySource.push(replacements.filter(x => typeof x !== "string").length)
+
       }
 
       let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
@@ -1379,7 +1382,7 @@ export default class Copy extends CompositeComponent {
 
 
       // if require a single component and have a single replacement,
-      // but the only discrepancy is that it ti sthe wrong time,
+      // but the only discrepancy is that it is the wrong type,
       // then wrap that replacement with the blank component we are creating,
       // i.e., add the current replacement as the child of the new component
 

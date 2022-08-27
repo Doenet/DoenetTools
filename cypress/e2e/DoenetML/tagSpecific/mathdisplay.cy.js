@@ -372,7 +372,7 @@ describe('Math Display Tag Tests', function () {
 
   });
 
-  it.only('dynamic numbered aligned equations', () => {
+  it('dynamic numbered aligned equations', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

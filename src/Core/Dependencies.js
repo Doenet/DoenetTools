@@ -6044,6 +6044,11 @@ class ShadowSourceDependency extends Dependency {
 
     this.returnSingleComponent = true;
 
+    // for shadow source
+    // always make variables optional so that don't get error
+    // depending on shadow source (which a component can't control)
+    this.variablesOptional = true;
+
   }
 
 

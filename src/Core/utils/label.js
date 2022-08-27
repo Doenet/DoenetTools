@@ -12,7 +12,7 @@ export function returnLabelStateVariableDefinitions() {
     }),
     definition({ dependencyValues, componentName }) {
       let componentNameAndShadowSourceNames = [componentName];
-      if(dependencyValues.shadowSource?.stateValues.componentNameAndShadowSourceNames) {
+      if (dependencyValues.shadowSource?.stateValues.componentNameAndShadowSourceNames) {
         componentNameAndShadowSourceNames.push(...dependencyValues.shadowSource.stateValues.componentNameAndShadowSourceNames)
       }
       return { setValue: { componentNameAndShadowSourceNames } }
@@ -74,12 +74,12 @@ export function returnLabelStateVariableDefinitions() {
 
         let label = "__";
         let cNames = dependencyValues.componentNameAndShadowSourceNames
-        .slice(dependencyValues.labelIsNameAttr.shadowDepth);
+          .slice(dependencyValues.labelIsNameAttr.shadowDepth);
 
-        for(let cN of cNames) {
+        for (let cN of cNames) {
           let lastSlash = cN.lastIndexOf('/');
           label = cN.substring(lastSlash + 1);
-          if(label.slice(0, 2) !== "__") {
+          if (label.slice(0, 2) !== "__") {
             break;
           }
         }
@@ -93,10 +93,7 @@ export function returnLabelStateVariableDefinitions() {
           }
         }
 
-        if (label[0] === "_") {
-          // &#95; is HTML entity for underscore, so JSXgraph won't replace it with subscript
-          label = label.replaceAll("_", "&#95;");
-        } else {
+        if (label[0] !== "_") {
           // we have a user supplied name
 
           if (label.includes("_") || label.includes("-")) {
@@ -160,6 +157,47 @@ export function returnLabelStateVariableDefinitions() {
     }
   }
 
+  stateVariableDefinitions.labelForGraph = {
+    forRenderer: true,
+    returnDependencies: () => ({
+      label: {
+        dependencyType: "stateVariable",
+        variableName: "label"
+      },
+      labelHasLatex: {
+        dependencyType: "stateVariable",
+        variableName: "labelHasLatex"
+      }
+    }),
+    definition({ dependencyValues }) {
+      let labelForGraph;
+      if (dependencyValues.labelHasLatex) {
+        // when not inside parents
+        // replace all _ with &UnderBar; and all ^ with &Hat;
+        let nParens = 0;
+        labelForGraph = "";
+        for (let s of dependencyValues.label) {
+          if (s === "(") {
+            nParens++;
+          } else if (s === ")") {
+            nParens--;
+          } else if (nParens === 0) {
+            if (s === "_") {
+              s = "&UnderBar;"
+            } else if (s === "^") {
+              s = "&Hat;"
+            }
+          }
+          labelForGraph += s;
+        }
+      } else {
+        labelForGraph = dependencyValues.label.replaceAll("_", "&UnderBar;").replaceAll("^", "&Hat;");
+      }
+
+      return { setValue: { labelForGraph } };
+
+    }
+  }
   return stateVariableDefinitions;
 
 }
