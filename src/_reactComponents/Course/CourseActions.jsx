@@ -1941,17 +1941,20 @@ export const useCourse = (courseId) => {
             //Resurect selected pages if there were some
             pages = [...collectionLinkObj.manuallyFilteredPages];
             manuallyFilteredPages = [...collectionLinkObj.manuallyFilteredPages]
-            
           }else if (collectionLinkObj.isManuallyFiltered && !isManuallyFiltered){
             //Turned off manual filter
             doenetIdsToAdd = [...collectionLinkObj.pagesByCollectionSource[collectionLinkObj.collectionDoenetId]]  
             pages = [...collectionLinkObj.pagesByCollectionSource[collectionLinkObj.collectionDoenetId]]
             
-          }else if (collectionLinkObj.manuallyFilteredPages.length != manuallyFilteredPages.length){
+          }else if (collectionLinkObj.manuallyFilteredPages.length != manuallyFilteredPages.length ||
+            collectionLinkObj.manuallyFilteredPages[0] != manuallyFilteredPages[0] 
+            ){
+            //If you click on one and another one the length is the same so check if they are different
             //Changed manually filtered pages
             doenetIdsToAdd = [...manuallyFilteredPages] 
+            pages = [...manuallyFilteredPages] 
           }
-
+          changesObj.pages = pages; //save changes to pages
           // console.log("doenetIdsToAdd",doenetIdsToAdd)
           // console.log("doenetIdsToRemove",doenetIdsToRemove)
 

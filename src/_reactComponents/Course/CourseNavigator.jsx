@@ -360,10 +360,7 @@ function CollectionLink({courseId,numberOfVisibleColumns,indentLevel,number=null
 
   if (collectionLinkRecoilPageInfo.isOpen){
     let pages = collectionLinkRecoilPageInfo.pages;
-    // console.log("collectionLinkRecoilPageInfo",collectionLinkRecoilPageInfo)
-    if (collectionLinkRecoilPageInfo.isManuallyFiltered){
-      pages = collectionLinkRecoilPageInfo.manuallyFilteredPages
-    }
+    // console.log("nav pages",pages)
     collectionLinkChildrenJSX = <CollectionLinkChildren courseId={courseId} indentLevel={indentLevel} pages={pages} courseNavigatorProps={courseNavigatorProps}/>
   }
 
