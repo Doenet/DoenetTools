@@ -28,6 +28,7 @@ function CollectionSelectionOptions({courseId,selectedDoenetId}){
 
 function PageOption({selected,i,pageId}){
   let pageObj = useRecoilValue(itemByDoenetId(pageId));
+
   if (selected){
     return <option selected key={`PagesInACollection${i}`} value={pageId}>{pageObj.label}</option>
   }else{
@@ -91,7 +92,7 @@ export default function SelectedCollectionLink() {
    
    let storedPageOptionsJSX = [];
 
-   for (let [i,pageId] of Object.entries(itemObj.pages)){
+   for (let [i,pageId] of Object.entries(itemObj.pagesByCollectionSource[itemObj.collectionDoenetId])){
     let selected = false;
     if (itemObj?.manuallyFilteredPages && itemObj.manuallyFilteredPages.includes(pageId)){
       selected = true
@@ -156,6 +157,7 @@ export default function SelectedCollectionLink() {
         options={collectionsInCourseJSX}
         onChange={(e) => {
           //Clear out manual pages on change
+          // console.log("collectionDoenetId",e.target.value)
           updateCollectionLink({courseId, doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:false,manuallyFilteredPages:[]})
         }}
       />
@@ -169,7 +171,7 @@ export default function SelectedCollectionLink() {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("delete ",doenetId)
+        // console.log("delete ",doenetId)
         deleteItem({doenetId});
       }}
     />

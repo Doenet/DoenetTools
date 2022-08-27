@@ -360,6 +360,7 @@ function CollectionLink({courseId,numberOfVisibleColumns,indentLevel,number=null
 
   if (collectionLinkRecoilPageInfo.isOpen){
     let pages = collectionLinkRecoilPageInfo.pages;
+    // console.log("collectionLinkRecoilPageInfo",collectionLinkRecoilPageInfo)
     if (collectionLinkRecoilPageInfo.isManuallyFiltered){
       pages = collectionLinkRecoilPageInfo.manuallyFilteredPages
     }

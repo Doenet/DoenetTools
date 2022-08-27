@@ -77,12 +77,12 @@ if ($success){
 }
 
 if ($success){
-  //Delete previous page links so they don't build up
-  $sql = "
-  DELETE FROM link_pages 
-  WHERE parentDoenetId = '$parentDoenetId'
-  ";
-  $conn->query($sql);
+  // //Delete previous page links so they don't build up
+  // $sql = "
+  // DELETE FROM link_pages 
+  // WHERE parentDoenetId = '$parentDoenetId'
+  // ";
+  // $conn->query($sql);
 
   foreach ($sourcePages AS &$sourcePage){
     $doenetId = include "randomId.php";
