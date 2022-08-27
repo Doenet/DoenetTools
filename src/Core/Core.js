@@ -1809,11 +1809,14 @@ export default class Core {
 
     }
 
-    return { success: false }
+    // lastly try to match with afterAdapters set to true
+    return this.findChildGroupNoAdapters(
+      childType, parentClass, true
+    )
 
   }
 
-  findChildGroupNoAdapters(componentType, parentClass) {
+  findChildGroupNoAdapters(componentType, parentClass, afterAdapters = false) {
     if (parentClass.childGroupOfComponentType[componentType]) {
       return {
         success: true,
@@ -1827,6 +1830,9 @@ export default class Core {
           inheritedComponentType: componentType,
           baseComponentType: typeFromGroup
         })) {
+          if(group.matchAfterAdapters && !afterAdapters) {
+            continue;
+          }
           // don't match composites to the base component
           // so that they will expand
           if (!(typeFromGroup === "_base" &&

@@ -177,7 +177,8 @@
     <curve styleNumber="3" fixed><copy source="f" /></curve>
     <line styleNumber="4" equation="y=x" fixed />
   
-    <point label="($(variable)_0,0)" name="P1" hide="$nPoints < 1" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 1' styleNumber='$P1StyleNum'>
+    <point name="P1" hide="$nPoints < 1" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 1' styleNumber='$P1StyleNum'>
+      <label>($(variable)_0,0)</label>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="$x0" y="0" ></point></attractTo>
       </constraints>
@@ -187,13 +188,15 @@
 
     <line name="h1" through="$ph11 $ph12" hide="$nHlines < 1" fixed="$nPoints > 1" styleNumber="$h1StyleNum" />
 
-    <point label="(0, $(variable)_1)" name="P2" hide="$nPoints < 2" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 3' styleNumber='$P2StyleNum'>
+    <point name="P2" hide="$nPoints < 2" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 3' styleNumber='$P2StyleNum'>
+      <label>(0,$(variable)_1)</label>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="0" y="$x1" ></point></attractTo>
       </constraints>
     </point>
 
-    <point label="($(variable)_1,0)" name="P3" hide="$nPoints < 3" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 4' styleNumber='$P3StyleNum'>
+    <point name="P3" hide="$nPoints < 3" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 4' styleNumber='$P3StyleNum'>
+      <label>($(variable)_1,0)</label>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="$x1" y="0" ></point></attractTo>
       </constraints>
@@ -203,7 +206,8 @@
 
     <line name="h2" through="$ph21 $ph22" hide="$nHlines < 2" fixed="$nPoints > 3" styleNumber="$h2StyleNum" />
 
-    <point label="(0, $(variable)_2)" name="P4" hide="$nPoints < 4" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 6' styleNumber='$P4StyleNum'>
+    <point name="P4" hide="$nPoints < 4" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 6' styleNumber='$P4StyleNum'>
+      <label>(0,$(variable)_2)</label>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="0" y="$x2" ></point></attractTo>
       </constraints>
@@ -292,7 +296,9 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nPoints = 0">
             <p>Click 
-              <updateValue label="add point" name="addPoint1" target="nPoints" newValue="1" />
+              <updateValue name="addPoint1" target="nPoints" newValue="1" >
+                <label>add point</label>
+              </updateValue>
               to create a point for the initial condition.</p>
           </case>
           <case condition="not $P1Placed">
@@ -309,7 +315,9 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nVlines = 0" >
             <p>Click
-            <updateValue label="add vertical line" name="addVline1" target="nVlines" newValue="1" />
+            <updateValue name="addVline1" target="nVlines" newValue="1" >
+              <label>add vertical line</label>
+            </updateValue>
             to create the line.</p>
           </case>
           <case condition="not $v1Placed" >
@@ -325,7 +333,9 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nHlines = 0" >
             <p>Click 
-              <updateValue label="add horizontal line" name="addHline1" target="nHlines" newValue="1" />
+              <updateValue name="addHline1" target="nHlines" newValue="1" >
+                <label>add horizontal line</label>
+              </updateValue>
             to create the line.</p>
           </case>
 
@@ -335,7 +345,9 @@
 
           <case condition="$nPoints < 2">
             <p>The horizontal line is in place. Click
-              <updateValue label="add point" name="addPoint2"  target="nPoints" newValue="2" />
+              <updateValue name="addPoint2"  target="nPoints" newValue="2" >
+                <label>add point</label>
+              </updateValue>
              to create a point.</p>
           </case>
 
@@ -355,7 +367,9 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nPoints = 2" >
             <p>Click
-              <updateValue label="add point" name="addPoint3" target="nPoints" newValue="3" />
+              <updateValue name="addPoint3" target="nPoints" newValue="3" >
+                <label>add point</label>
+              </updateValue>
             to create a point.</p>
           </case>
           <case condition="not $P3Placed">
@@ -372,7 +386,9 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nVlines = 1" >
             <p>Click
-              <updateValue label="add vertical line" name="addVline2" target="nVlines" newValue="2" />
+              <updateValue name="addVline2" target="nVlines" newValue="2" >
+                <label>add vertical line</label>
+              </updateValue>
             to create a vertical line.</p>
           </case>
           <case condition="not $v2Placed">
@@ -388,7 +404,9 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nHlines = 1" >
             <p>Click 
-              <updateValue label="add horizontal line" name="addHline2" target="nHlines" newValue="2" />
+              <updateValue name="addHline2" target="nHlines" newValue="2" >
+                <label>add horizontal line</label>
+              </updateValue>
               to create a horizontal line.</p>
           </case>
           <case condition="not $h2Placed">
@@ -396,7 +414,9 @@
           </case>
           <case condition="$nPoints = 3">
             <p>The line is where we want it.  Now, create a point by clicking
-              <updateValue label="add point" name="addPoint4" target="nPoints" newValue="4" />.</p>
+              <updateValue name="addPoint4" target="nPoints" newValue="4" >
+                <label>add point</label>
+              </updateValue>.</p>
           </case>
           <case condition="not $P4Placed">
             <p>Move the point to where that horizontal line crosses the <m>y</m>-axis.</p>
@@ -412,7 +432,8 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="not $previewShortcut" >
             <p>Click this 
-              <triggerSet label="preview shortcut" name="shortcutButton">
+              <triggerSet name="shortcutButton">
+                <label>preview shortcut</label>
                 <updateValue target="flashShortcut" newValue="true" type="boolean" />
                 <updateValue target="previewShortcut" newValue="true" type="boolean" /> 
               </triggerSet>
@@ -427,7 +448,9 @@
 
     </conditionalContent>
 
-    <triggerSet label="Reset tutorial" name="resetTutorial" disabled="$step = 0">
+    <triggerSet name="resetTutorial" disabled="$step = 0">
+      <label>Reset tutorial</label>
+
       <updateValue target="step" newValue="0" />
       <updateValue target="nPoints" newValue="0" />
       <updateValue target="nHlines" newValue="0" />
@@ -457,7 +480,9 @@
     </triggerSet>
     <callAction triggerWith="resetTutorial" target="ans" actionName="submitAnswer" />
     
-    <updateValue label="Next" name="next" disabled="$stepCompleted < $step" target="step" newValue="$step+1" />
+    <updateValue name="next" disabled="$stepCompleted < $step" target="step" newValue="$step+1">
+      <label>Next</label>
+    </updateValue>
     <callAction triggerWith="next" target="ans" actionName="submitAnswer" />
 
     <answer name="ans" hide weight="$answerWeight">

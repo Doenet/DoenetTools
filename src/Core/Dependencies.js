@@ -6021,8 +6021,8 @@ class SourceCompositeIdentityDependency extends Dependency {
 
 dependencyTypeArray.push(SourceCompositeIdentityDependency);
 
-class ShadowSourceIdentityDependency extends Dependency {
-  static dependencyType = "shadowSourceIdentity";
+class ShadowSourceDependency extends Dependency {
+  static dependencyType = "shadowSource";
 
   setUpParameters() {
 
@@ -6031,6 +6031,15 @@ class ShadowSourceIdentityDependency extends Dependency {
       this.specifiedComponentName = this.componentName;
     } else {
       this.componentName = this.upstreamComponentName;
+    }
+
+    if (this.definition.variableNames) {
+      if (!Array.isArray(this.definition.variableNames)) {
+        throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
+      }
+      this.originalDownstreamVariableNames = this.definition.variableNames;
+    } else {
+      this.originalDownstreamVariableNames = [];
     }
 
     this.returnSingleComponent = true;
@@ -6123,7 +6132,7 @@ class ShadowSourceIdentityDependency extends Dependency {
 
 }
 
-dependencyTypeArray.push(ShadowSourceIdentityDependency);
+dependencyTypeArray.push(ShadowSourceDependency);
 
 class AdapterSourceStateVariableDependency extends Dependency {
   static dependencyType = "adapterSourceStateVariable";

@@ -39,10 +39,16 @@ describe('CobwebPolyline Tag Tests', function () {
   </answer>
   </p>
 
-  <updateValue label="Add line" name="addline" target="nPoints" newValue="$nPoints+1" />
-  <updateValue label="Delete line" name="deleteline" hide="$nPoints=1" target='nPoints' newValue="$nPoints-1" />
+  <updateValue name="addline" target="nPoints" newValue="$nPoints+1" >
+    <label>Add line</label>
+  </updateValue>
+  <updateValue name="deleteline" hide="$nPoints=1" target='nPoints' newValue="$nPoints-1" >
+    <label>Delete line</label>
+  </updateValue>
   
-  <graph xmin="-2" xmax="5" ymin="-2.2" ymax="4.5" width="500px" height="300px" name="graph1" xlabel="x_n" ylabel="x_{n+1}" newnamespace="true">
+  <graph xmin="-2" xmax="5" ymin="-2.2" ymax="4.5" width="500px" height="300px" name="graph1" newnamespace="true">
+    <xlabel>x_n</xlabel>
+    <ylabel>x_{n+1}</ylabel>
     <cobwebpolyline name="cobweb" stylenumber="4" attractThreshold="0.2" nPoints="$(../nPoints)" function="$(../f)" initialPoint="$(../P1)" nIterationsRequired='3' />
   </graph> 
 
@@ -1084,7 +1090,7 @@ describe('CobwebPolyline Tag Tests', function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:cid=bafkreiah747zddsnu6rqcn5zkdulayqblonmbdemrfnpcywmuwgfr4pu7i" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreib5ssptxnwf2r3thkrv6da3w2xeqvyqacaekgzabqz5ag5szwf3o4" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
   
   `}, "*");
     });
@@ -1398,7 +1404,7 @@ describe('CobwebPolyline Tag Tests', function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:cid=bafkreidismivx4zkyrwk3cstggk2c5ex542vdb27nje3z3h4e4wpey5pdq" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreieuwhnrgr6hyug6u34xuw2azts2tcdtig7aetajoty5kbtutwmc4a" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   <p>Credit achieved: <copy source="_document1" prop="creditAchieved" assignNames="ca" /></p>
   `}, "*");

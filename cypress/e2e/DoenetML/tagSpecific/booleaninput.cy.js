@@ -21,7 +21,9 @@ describe('BooleanInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <booleaninput label="hello" name="bi1" />
+    <booleaninput name="bi1" >
+      <label>hello</label>
+    </booleaninput>
     <copy prop="value" target="bi1" assignNames="v1" />
     <copy target="_copy1" assignNames="v2" />
     `}, "*");
@@ -135,10 +137,14 @@ describe('BooleanInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><booleaninput prefill="true" label="green" name="bi1" /></p>
+    <p><booleaninput prefill="true" name="bi1" >
+      <label>green</label>
+    </booleaninput></p>
     <p><booleanInput copySource="bi1" name="bi1a" /></p>
     <p><copy prop="value" target="bi1" assignNames="v1" /></p>
-    <p><booleaninput label="red" name="bi2" /></p>
+    <p><booleaninput name="bi2" >
+      <label>red</label>
+    </booleaninput></p>
     <p><copy prop="value" target="bi2" assignNames="v2" /></p>
     `}, "*");
     });
@@ -332,8 +338,12 @@ describe('BooleanInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><booleanInput name="atb" label="As Toggle" /></p>
-    <p><booleanInput name="bi" label="hello" asToggleButton="$atb"/></p>
+    <p><booleanInput name="atb" >
+      <label>As Toggle</label>
+    </booleaninput></p>
+    <p><booleanInput name="bi" asToggleButton="$atb">
+      <label>hello</label>
+    </booleaninput></p>
 
     <copy prop="value" target="bi" assignNames="v1" />
     <copy target="_copy1" assignNames="v2" />

@@ -1180,8 +1180,12 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first sequence" />
-    <booleaninput name='h2' prefill="true" label="Hide second sequence" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first sequence</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second sequence</label>
+    </booleaninput>
     <p>Length of sequence 1: <mathinput name="n1" prefill="4" /></p>
     <p>Length of sequence 2: <mathinput name="n2" prefill="4" /></p>
 

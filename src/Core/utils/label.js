@@ -3,13 +3,22 @@ export function returnLabelStateVariableDefinitions() {
 
   let stateVariableDefinitions = {};
 
-  stateVariableDefinitions.originalComponentName = {
-    shadowVariable: true,
-    returnDependencies: () => ({}),
-    definition({ componentName }) {
-      return { setValue: { originalComponentName: componentName } }
+  stateVariableDefinitions.componentNameAndShadowSourceNames = {
+    returnDependencies: () => ({
+      shadowSource: {
+        dependencyType: "shadowSource",
+        variableNames: ["componentNameAndShadowSourceNames"],
+      }
+    }),
+    definition({ dependencyValues, componentName }) {
+      let componentNameAndShadowSourceNames = [componentName];
+      if(dependencyValues.shadowSource?.stateValues.componentNameAndShadowSourceNames) {
+        componentNameAndShadowSourceNames.push(...dependencyValues.shadowSource.stateValues.componentNameAndShadowSourceNames)
+      }
+      return { setValue: { componentNameAndShadowSourceNames } }
     }
   }
+
 
   stateVariableDefinitions.label = {
     forRenderer: true,
@@ -29,11 +38,6 @@ export function returnLabelStateVariableDefinitions() {
       forRenderer: true,
     }],
     returnDependencies: () => ({
-      labelAttr: {
-        dependencyType: "attributeComponent",
-        attributeName: "label",
-        variableNames: ["value", "hasLatex"]
-      },
       labelChild: {
         dependencyType: "child",
         childGroups: ["labels"],
@@ -43,9 +47,13 @@ export function returnLabelStateVariableDefinitions() {
         dependencyType: "stateVariable",
         variableName: "labelIsName"
       },
-      originalComponentName: {
+      labelIsNameAttr: {
+        dependencyType: "attributeComponent",
+        attributeName: "labelIsName",
+      },
+      componentNameAndShadowSourceNames: {
         dependencyType: "stateVariable",
-        variableName: "originalComponentName"
+        variableName: "componentNameAndShadowSourceNames"
       }
     }),
     definition({ dependencyValues }) {
@@ -57,16 +65,24 @@ export function returnLabelStateVariableDefinitions() {
             labelHasLatex: labelChild.stateValues.hasLatex
           }
         }
-      } else if (dependencyValues.labelAttr) {
-        return {
-          setValue: {
-            label: dependencyValues.labelAttr.stateValues.value,
-            labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+      } else if (dependencyValues.labelIsName) {
+
+        // find a valid name for a label from the component name
+        // or the name of one of its shadow targets,
+        // starting with the shadow depth of labelIsName attribute,
+        // i.e., starting with closest component that had the attribute
+
+        let label = "__";
+        let cNames = dependencyValues.componentNameAndShadowSourceNames
+        .slice(dependencyValues.labelIsNameAttr.shadowDepth);
+
+        for(let cN of cNames) {
+          let lastSlash = cN.lastIndexOf('/');
+          label = cN.substring(lastSlash + 1);
+          if(label.slice(0, 2) !== "__") {
+            break;
           }
         }
-      } else if (dependencyValues.labelIsName) {
-        let lastSlash = dependencyValues.originalComponentName.lastIndexOf('/');
-        let label = dependencyValues.originalComponentName.substring(lastSlash + 1);
         if (label.slice(0, 2) === "__") {
           // if label from componentName starts with two underscores,
           // it is an automatically generated component name that has random characters in it
@@ -88,7 +104,7 @@ export function returnLabelStateVariableDefinitions() {
           } else if (label.match(/^[a-z]/)) {
             if (label.match(/[A-Z]/)) {
               // label starts with a lower case letter and has an upper case letter
-              // treat as camel case and add spaces and capitalize first letter
+              // treat as camel case and add spaces and lowercase letters
               label = label.replace(/([A-Z])/g, ' $1').toLowerCase();
             }
           } else if (label.match(/^[A-Z]/)) {
@@ -115,7 +131,6 @@ export function returnLabelStateVariableDefinitions() {
       }
     },
     inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-      console.log({ desiredStateVariableValues, dependencyValues })
       if (typeof desiredStateVariableValues.label !== "string") {
         return { success: false }
       }
@@ -128,15 +143,6 @@ export function returnLabelStateVariableDefinitions() {
             setDependency: "labelChild",
             desiredValue: desiredStateVariableValues.label,
             childIndex: lastLabelInd,
-            variableIndex: 0
-          }]
-        }
-      } else if (dependencyValues.labelAttr) {
-        return {
-          success: true,
-          instructions: [{
-            setDependency: "labelAttr",
-            desiredValue: desiredStateVariableValues.label,
             variableIndex: 0
           }]
         }
