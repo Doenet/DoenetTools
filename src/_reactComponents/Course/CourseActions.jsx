@@ -1599,6 +1599,10 @@ export const useCourse = (courseId) => {
         async function contentToDoenetML({ content, indentLevel = 1 }) {
           if (content.type === "order") {
             return await orderToDoenetML({ order: content, indentLevel });
+          } else if (content.type === "collectionLink") {
+            return (await Promise.all(content.pages
+              .map(x => pageToDoenetML({ pageDoenetId: x, indentLevel: indentLevel + 1 }))))
+              .join("");
           } else if (typeof content === "string") {
             return await pageToDoenetML({ pageDoenetId: content, indentLevel });
           } else {
@@ -1610,7 +1614,6 @@ export const useCourse = (courseId) => {
           let indentSpacing = "  ".repeat(indentLevel);
 
           let pageDoenetML = (await snapshot.getPromise(fileByPageId(pageDoenetId)));
-
           let params = {
             doenetML: pageDoenetML,
             pageId: pageDoenetId,
@@ -1660,6 +1663,8 @@ export const useCourse = (courseId) => {
         }
 
         let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
+
+        console.log("activityDoenetML",activityDoenetML)
         try {
           let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId: activityDoenetId, isAssigned, activityDoenetML });
          
