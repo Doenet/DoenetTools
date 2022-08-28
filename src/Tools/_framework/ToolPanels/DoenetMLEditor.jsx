@@ -49,7 +49,7 @@ export function useSaveDraft(){
 }
 
 
-export default function DoenetMLEditor(props) {
+export default function DoenetMLEditor() {
   // console.log(">>>===DoenetMLEditor")
 
   // const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
@@ -114,7 +114,6 @@ export default function DoenetMLEditor(props) {
   }
 
   // console.log(`>>>Show CodeMirror with value -${updateInternalValue}-`)
-
   return <div><CodeMirror
     key="codemirror"
     readOnly={readOnly}

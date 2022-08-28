@@ -120,6 +120,7 @@ export default function EditorViewer() {
 
   let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageId) => {
     let {data:doenetML} = await axios.get(`/media/byPageId/${pageId}.doenet`);
+    doenetML = doenetML.toString(); //Numbers mess up codeMirror
     //TODO: Problem with caching when contents change in pageLink
     // let response = await snapshot.getPromise(fileByPageId(pageId));
     let pageObj = await snapshot.getPromise(itemByDoenetId(pageId))

@@ -1618,6 +1618,7 @@ export const useCourse = (courseId) => {
           //Also, fileByPageId was caching the result so I went to the source
           // let pageDoenetML = (await snapshot.getPromise(fileByPageId(pageDoenetId)));
           let {data:pageDoenetML} = await axios.get(`/media/byPageId/${pageDoenetId}.doenet`)
+          pageDoenetML = pageDoenetML.toString();
           // console.log(`pageDoenetML ${pageDoenetId}`,pageDoenetML)
           let params = {
             doenetML: pageDoenetML,
