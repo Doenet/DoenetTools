@@ -51,9 +51,9 @@ export default React.memo(function Ray(props) {
 
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + 7,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -138,7 +138,7 @@ export default React.memo(function Ray(props) {
 
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     rayJXG.current = newRayJXG;
 
@@ -250,10 +250,10 @@ export default React.memo(function Ray(props) {
       }
 
 
-      rayJXG.current.name = SVs.label;
+      rayJXG.current.name = SVs.labelForGraph;
       // rayJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         rayJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

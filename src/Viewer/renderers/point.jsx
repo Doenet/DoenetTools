@@ -50,11 +50,11 @@ export default React.memo(function Point(props) {
     let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
 
     let fixed = !SVs.draggable || SVs.fixed;
-    let withlabel = SVs.showLabel && SVs.label !== "";
+    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
     //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withlabel,
       fixed: true,
@@ -353,9 +353,9 @@ export default React.memo(function Point(props) {
         board.updateInfobox(pointJXG.current);
       }
 
-      pointJXG.current.name = SVs.label;
+      pointJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         pointJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

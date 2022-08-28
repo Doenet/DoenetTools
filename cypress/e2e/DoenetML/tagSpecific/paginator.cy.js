@@ -1939,7 +1939,7 @@ describe('Paginator Tag Tests', function () {
 
   })
 
-  it.only('Variants stay consistent with external copies', () => {
+  it('Variants stay consistent with external copies', () => {
 
     let doenetMLWithSelects = `
     <text>a</text>
@@ -2109,7 +2109,7 @@ describe('Paginator Tag Tests', function () {
               })
 
             } else {
-              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}: Animal sounds`)
+              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
               cy.wait(10);
 
               cy.window().then(async (win) => {
@@ -2218,7 +2218,7 @@ describe('Paginator Tag Tests', function () {
             })
 
           } else {
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}: Animal sounds`)
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
             cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
 
             cy.wait(10);
@@ -2322,7 +2322,7 @@ describe('Paginator Tag Tests', function () {
             })
 
           } else {
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}: Animal sounds`)
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
             cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
 
             cy.wait(10);

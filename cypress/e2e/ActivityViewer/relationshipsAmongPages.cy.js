@@ -42,7 +42,7 @@ describe('Relationships among pages tests', function () {
           <problem>
             <p>The fifth problem</p>
           </problem>
-          <problem>
+          <problem includeAutoName includeAutoNumber>
             <title>Named problem</title>
             <p>The sixth problem</p>
           </problem>
@@ -237,7 +237,7 @@ describe('Relationships among pages tests', function () {
             <section>
               <p>The fifth section</p>
             </section>
-            <section>
+            <section includeAutoName includeAutoNumber>
               <title>Named section</title>
               <p>The sixth section</p>
               <subsection>

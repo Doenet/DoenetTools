@@ -291,23 +291,36 @@ describe('Point Tag Tests', function () {
     </point>
   </graph>
 
-  <copy target="g" assignNames="g2" />
+  <graph name="g2" copySource="g" newNamespace />
 
   <graph name="g3">
-     <copy target="P" assignNames="P3" />
-     <copy target="_point2" assignNames="Q3" />
+     <copy source="P" assignNames="P3" />
+     <copy source="_point2" assignNames="Q3" />
   </graph>
 
   <graph name="g4">
-     <copy target="P" assignNames="P4" labelIsName="false" />
-     <copy target="_point2" assignNames="Q4" labelIsName="false" />
+     <copy source="P" assignNames="P4" labelIsName="false" />
+     <copy source="_point2" assignNames="Q4" labelIsName="false" />
   </graph>
 
-  <copy target="g2" assignNames="g5" />
-  <copy target="g3" assignNames="g6" />
-  <copy target="g4" assignNames="g7" />
+  <graph copySource="g2" name="g5" newNamespace />
+  <graph copySource="g3" name="g6" newNamespace />
+  <graph copySource="g4" name="g7" newNamespace />
 
-
+  <p>P label: <label copySource="P.label" name="Plabel" /></p>
+  <p>_point2 label: <label copySource="_point2.label" name="point2label" /></p>
+  <p>g2/P label: <label copySource="g2/P.label" name="g2Plabel" /></p>
+  <p>g2/_point2 label: <label copySource="g2/_point2.label" name="g2point2label" /></p>
+  <p>P3 label: <label copySource="P3.label" name="P3label" /></p>
+  <p>Q3 label: <label copySource="Q3.label" name="Q3label" /></p>
+  <p>P4 label: <label copySource="P4.label" name="P4label" /></p>
+  <p>Q4 label: <label copySource="Q4.label" name="Q4label" /></p>
+  <p>g5/P label: <label copySource="g5/P.label" name="g5Plabel" /></p>
+  <p>g5/_point2 label: <label copySource="g5/_point2.label" name="g5point2label" /></p>
+  <p>g6/P3 label: <label copySource="g6/P3.label" name="g6Plabel" /></p>
+  <p>g6/Q3 label: <label copySource="g6/Q3.label" name="g6point2label" /></p>
+  <p>g7/P4 label: <label copySource="g7/P4.label" name="g7Plabel" /></p>
+  <p>g7/Q4 label: <label copySource="g7/Q4.label" name="g7point2label" /></p>
 
     `}, "*");
     });
@@ -315,7 +328,21 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.log(`Labels are P and P'`)
+    cy.get('#\\/Plabel').should('have.text', 'P')
+    cy.get('#\\/point2label').should('have.text', '_point2')
+    cy.get('#\\/g2Plabel').should('have.text', 'P')
+    cy.get('#\\/g2point2label').should('have.text', '_point2')
+    cy.get('#\\/P3label').should('have.text', 'P')
+    cy.get('#\\/Q3label').should('have.text', '_point2')
+    cy.get('#\\/P4label').should('have.text', '')
+    cy.get('#\\/Q4label').should('have.text', '')
+    cy.get('#\\/g5Plabel').should('have.text', 'P')
+    cy.get('#\\/g5point2label').should('have.text', '_point2')
+    cy.get('#\\/g6Plabel').should('have.text', 'P')
+    cy.get('#\\/g6point2label').should('have.text', '_point2')
+    cy.get('#\\/g7Plabel').should('have.text', '')
+    cy.get('#\\/g7point2label').should('have.text', '')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -329,19 +356,33 @@ describe('Point Tag Tests', function () {
       let Q7Name = stateVariables["/g7"].activeChildren[1].componentName;
 
       expect(stateVariables['/P'].stateValues.label).eq('P')
-      expect(stateVariables['/_point2'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/P'].stateValues.labelForGraph).eq('P')
+      expect(stateVariables['/_point2'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/_point2'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P2Name].stateValues.label).eq('P')
-      expect(stateVariables[Q2Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P2Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q2Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q2Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables['/P3'].stateValues.label).eq('P')
-      expect(stateVariables['/Q3'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/P3'].stateValues.labelForGraph).eq('P')
+      expect(stateVariables['/Q3'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/Q3'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables['/P4'].stateValues.label).eq('')
+      expect(stateVariables['/P4'].stateValues.labelForGraph).eq('')
       expect(stateVariables['/Q4'].stateValues.label).eq(``)
+      expect(stateVariables['/Q4'].stateValues.labelForGraph).eq(``)
       expect(stateVariables[P5Name].stateValues.label).eq('P')
-      expect(stateVariables[Q5Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P5Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q5Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q5Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P6Name].stateValues.label).eq('P')
-      expect(stateVariables[Q6Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P6Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q6Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q6Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P7Name].stateValues.label).eq('')
+      expect(stateVariables[P7Name].stateValues.labelForGraph).eq('')
       expect(stateVariables[Q7Name].stateValues.label).eq(``)
+      expect(stateVariables[Q7Name].stateValues.labelForGraph).eq(``)
     })
 
   })
@@ -514,15 +555,15 @@ describe('Point Tag Tests', function () {
       let Q5Name = stateVariables["/g5"].activeChildren[1].componentName;
 
       expect(stateVariables['/P'].stateValues.label).eq('P')
-      expect(stateVariables['/_point2'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/_point2'].stateValues.label).eq(`&UnderBar;point2`)
       expect(stateVariables[P2Name].stateValues.label).eq('P')
-      expect(stateVariables[Q2Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[Q2Name].stateValues.label).eq(`&UnderBar;point2`)
       expect(stateVariables['/P3'].stateValues.label).eq('P')
-      expect(stateVariables['/Q3'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/Q3'].stateValues.label).eq(`&UnderBar;point2`)
       expect(stateVariables[P4Name].stateValues.label).eq('P')
-      expect(stateVariables[Q4Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[Q4Name].stateValues.label).eq(`&UnderBar;point2`)
       expect(stateVariables[P5Name].stateValues.label).eq('P')
-      expect(stateVariables[Q5Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[Q5Name].stateValues.label).eq(`&UnderBar;point2`)
     })
 
   })
@@ -548,7 +589,8 @@ describe('Point Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g/P'].stateValues.label).eq('P')
-      expect(stateVariables['/g/_point2'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/g/_point2'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/g/_point2'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
     })
 
   })
@@ -598,6 +640,161 @@ describe('Point Tag Tests', function () {
 
   })
 
+  it('labelIsName and copies', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="A" labelIsName />
+  </graph>
+  <graph>
+    <point copySource="A" name="B" />
+  </graph>
+  <graph>
+    <copy source="A" assignNames="C" />
+  </graph>
+  <graph>
+    <point copySource="A" name="D" labelIsName/>
+  </graph>
+  <graph>
+    <copy source="A" assignNames="E" labelIsName />
+  </graph>
+  <graph>
+    <point copySource="A" labelIsName/>
+  </graph>
+  <graph>
+    <copy source="A" labelIsName />
+  </graph>
+
+  <p><text copySource="A" copyProp="label" name="lA" /></p>
+  <p><label copySource="B" copyProp="label" name="lB" /></p>
+  <p><text copySource="C" copyProp="label" name="lC" /></p>
+  <p><label copySource="D" copyProp="label" name="lD" /></p>
+  <p><text copySource="E" copyProp="label" name="lE" /></p>
+  <p><label copySource="_point4" copyProp="label" name="lp4" /></p>
+  <p><label copySource="_copy3" copyProp="label" name="lc3" /></p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/lA").should('have.text', 'A');
+    cy.get("#\\/lB").should('have.text', 'A');
+    cy.get("#\\/lC").should('have.text', 'A');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'E');
+    cy.get("#\\/lp4").should('have.text', '_point4');
+    cy.get("#\\/lc3").should('have.text', 'A');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('A')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('A')
+      expect(stateVariables['/B'].stateValues.label).eq('A')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('A')
+      expect(stateVariables['/C'].stateValues.label).eq('A')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('A')
+      expect(stateVariables['/D'].stateValues.label).eq('D')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('D')
+      expect(stateVariables['/E'].stateValues.label).eq('E')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('E')
+      expect(stateVariables['/_point4'].stateValues.label).eq('_point4')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('&UnderBar;point4')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('A')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
+    })
+
+  })
+
+  it('escape underscore and caret in labelForGraph except if math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="A" >
+      <label>x_1</label>
+      (0,0)
+    </point>
+    <point name="B" >
+      <label><m>x_1</m></label>
+      (1,1)
+    </point>
+    <point name="C" >
+      <label>x^1</label>
+      (2,2)
+    </point>
+    <point name="D" >
+      <label><m>x^1</m></label>
+      (3,3)
+    </point>
+    <point name="E" >
+      <label>x^1 or <m>x^2</m> or x_3 or <m>x_4</m></label>
+      (4,4)
+    </point>
+    <point name="F" >
+      <label>x_a^b or <m>x_c^d</m></label>
+      (5,5)
+    </point>
+  </graph>
+
+  <p>label for A: <label copySource="A" copyProp="label" name="lA" /></p>
+  <p>label for B: <label copySource="B" copyProp="label" name="lB" /></p>
+  <p>label for C: <label copySource="C" copyProp="label" name="lC" /></p>
+  <p>label for D: <label copySource="D" copyProp="label" name="lD" /></p>
+  <p>label for E: <label copySource="E" copyProp="label" name="lE" /></p>
+  <p>label for F: <label copySource="F" copyProp="label" name="lF" /></p>
+  <p>text of label for A: <text copySource="A" copyProp="label" name="tA" /></p>
+  <p>text of label for B: <text copySource="B" copyProp="label" name="tB" /></p>
+  <p>text of label for C: <text copySource="C" copyProp="label" name="tC" /></p>
+  <p>text of label for D: <text copySource="D" copyProp="label" name="tD" /></p>
+  <p>text of label for E: <text copySource="E" copyProp="label" name="tE" /></p>
+  <p>text of label for F: <text copySource="F" copyProp="label" name="tF" /></p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/lA").should('have.text', 'x_1');
+    cy.get("#\\/lB .mjx-mrow").eq(0).should('have.text', 'x1');
+    cy.get("#\\/lC").should('have.text', 'x^1');
+    cy.get("#\\/lD .mjx-mrow").eq(0).should('have.text', 'x1');
+    cy.get("#\\/lE").should('contain.text', 'x^1 or ');
+    cy.get("#\\/lE").should('contain.text', 'or x_3 or ');
+    cy.get("#\\/lE .mjx-mrow").eq(0).should('have.text', 'x2');
+    cy.get("#\\/lE .mjx-mrow").eq(1).should('have.text', 'x4');
+    cy.get("#\\/lF").should('contain.text', 'x_a^b or ');
+    cy.get("#\\/lF .mjx-mrow").eq(0).should('have.text', 'xdc');
+
+    cy.get("#\\/tA").should('have.text', 'x_1');
+    cy.get("#\\/tB").should('have.text', 'x_1');
+    cy.get("#\\/tC").should('have.text', 'x^1');
+    cy.get("#\\/tD").should('have.text', 'x^1');
+    cy.get("#\\/tE").should('have.text', 'x^1 or x^2 or x_3 or x_4');
+    cy.get("#\\/tF").should('have.text', 'x_a^b or x_c^d');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('x_1')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('x&UnderBar;1')
+      expect(stateVariables['/B'].stateValues.label).eq('\\(x_1\\)')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('\\(x_1\\)')
+      expect(stateVariables['/C'].stateValues.label).eq('x^1')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('x&Hat;1')
+      expect(stateVariables['/D'].stateValues.label).eq('\\(x^1\\)')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('\\(x^1\\)')
+      expect(stateVariables['/E'].stateValues.label).eq('x^1 or \\(x^2\\) or x_3 or \\(x_4\\)')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('x&Hat;1 or \\(x^2\\) or x&UnderBar;3 or \\(x_4\\)')
+      expect(stateVariables['/F'].stateValues.label).eq('x_a^b or \\(x_c^d\\)')
+      expect(stateVariables['/F'].stateValues.labelForGraph).eq('x&UnderBar;a&Hat;b or \\(x_c^d\\)')
+    })
+
+  })
+
   it('point sugar from single copied math', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -643,7 +840,7 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/P'].stateValues.label).eq('P')
       expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
-      expect(stateVariables['/Q'].stateValues.label).eq('P')
+      expect(stateVariables['/Q'].stateValues.label).eq('Q')
     })
 
     cy.log('move point P to (3,5)')
@@ -778,7 +975,7 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/P'].stateValues.label).eq('P')
       expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
-      expect(stateVariables['/Q'].stateValues.label).eq('P')
+      expect(stateVariables['/Q'].stateValues.label).eq('Q')
     })
 
     cy.log('move point P to (3,5)')
@@ -913,7 +1110,7 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/P'].stateValues.label).eq('P')
       expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
-      expect(stateVariables['/Q'].stateValues.label).eq('P')
+      expect(stateVariables['/Q'].stateValues.label).eq('Q')
     })
 
     cy.log('move point P to (3,5)')
@@ -1049,7 +1246,7 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/P'].stateValues.label).eq('P')
       expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
-      expect(stateVariables['/Q'].stateValues.label).eq('P')
+      expect(stateVariables['/Q'].stateValues.label).eq('Q')
     })
 
     cy.log('move point P to (3,5)')
