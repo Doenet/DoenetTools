@@ -2471,6 +2471,15 @@ export const useCourse = (courseId) => {
           //Test if cut orders and pages can go in destination
           for (let cutObj of cutObjs){
 
+            if (cutObj.type == 'collectionLink' ){
+              failureCallback("Pasting collection links is not yet supported")
+              return;
+            }
+            if (cutObj.type == 'pageLink' ){
+              failureCallback("Pasting page links is not yet supported")
+              return;
+            }
+            
             if (destType == 'section'  && 
             (cutObj.type == 'page' ||
             cutObj.type == 'order' ) &&
