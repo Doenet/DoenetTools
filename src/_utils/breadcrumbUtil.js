@@ -146,10 +146,14 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
   return crumbs;
 }
 
-export function useEditorCrumb({ pageId, doenetId }) {
+export function useEditorCrumb({ pageId, doenetId, linkPageId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const pageObj = useRecoilValue(itemByDoenetId(pageId));
   let { label: pageLabel } = pageObj;
+  const linkPageObj = useRecoilValue(itemByDoenetId(linkPageId));
+  if (linkPageId){
+    ({ label: pageLabel } = linkPageObj);
+  }
   const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   let { label: activityLabel } = activityObj;
   let crumbs = [
@@ -169,7 +173,7 @@ export function useEditorCrumb({ pageId, doenetId }) {
     },
   ];
 
-  if (!activityObj.isSinglePage && activityObj.type != 'bank') {
+  if (!activityObj.isSinglePage && activityObj.type != 'bank' && !linkPageId) {
     let firstPageDoenetId = findFirstPageOfActivity(activityObj.content);
     crumbs = [
       {
@@ -215,6 +219,24 @@ export function useEditorCrumb({ pageId, doenetId }) {
             params: {
               doenetId,
               pageId,
+            },
+          });
+        },
+      },
+    ];
+  }
+
+  if (linkPageId) {
+    crumbs = [
+      {
+        label: pageLabel ?? '_',
+        onClick: () => {
+          setPageToolView({
+            page: 'course',
+            tool: 'editor',
+            view: '',
+            params: {
+              linkPageId,
             },
           });
         },

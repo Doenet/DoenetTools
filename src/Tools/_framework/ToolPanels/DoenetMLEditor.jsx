@@ -57,6 +57,13 @@ export default function DoenetMLEditor(props) {
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom)
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
+  const paramlinkPageId = useRecoilValue(searchParamAtomFamily('linkPageId'))
+  let effectivePageId = paramPageId;
+  let readOnly = false;
+  if (paramlinkPageId){
+    readOnly = true;
+    effectivePageId = paramlinkPageId
+  }
   const courseId = useRecoilValue(courseIdAtom)
   
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
@@ -100,7 +107,7 @@ export default function DoenetMLEditor(props) {
   }, [viewerDoenetML])
 
 
-  if (paramPageId !== initializedPageId) {
+  if (effectivePageId !== initializedPageId) {
     //DoenetML is changing to another PageId
     backupOldDraft.current = true;
     return null;
@@ -110,6 +117,7 @@ export default function DoenetMLEditor(props) {
 
   return <div><CodeMirror
     key="codemirror"
+    readOnly={readOnly}
     editorRef={editorRef}
     setInternalValue={updateInternalValue}
     // value={editorDoenetML} 

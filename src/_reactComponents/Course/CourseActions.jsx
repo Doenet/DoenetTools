@@ -364,6 +364,7 @@ export function useSetCourseIdFromDoenetId(doenetId) {
     axios.get('/api/getCourseIdFromDoenetId.php', {
       params: { doenetId },
     }).then(({data}) => {
+      // console.log(`getCourseIdFromDoenetId donetId ${doenetId} data`,data)
       if(data.success) {
         setCourseId(data.courseId);
       } else {

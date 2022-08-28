@@ -33,8 +33,19 @@ WHERE doenetId='$doenetId'
         $row = $result->fetch_assoc();
         $courseId = $row['courseId'];
     } else {
-        $success = false;
-        $message = 'Content not found or no permission to view content';
+        $sql = "
+        SELECT courseId
+        FROM link_pages
+        WHERE doenetId='$doenetId'
+        ";
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $courseId = $row['courseId'];
+            }else{
+                $success = false;
+                $message = 'Content not found or no permission to view content';
+            }
     }
 }
 
