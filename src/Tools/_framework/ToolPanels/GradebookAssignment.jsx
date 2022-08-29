@@ -294,7 +294,9 @@ export default function GradebookAssignmentView(){
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
-                let name = row.cell.row.cells[0].value
+                //TODO: proper access method from tableV8
+                let name = row.cell.row.cells[0].value.props.children
+                console.log(name)
                 let userId = getUserId(students.contents, name);
                 
                 //e.stopPropagation()
@@ -306,7 +308,7 @@ export default function GradebookAssignmentView(){
                     view: '',
                     params: { courseId, doenetId, userId, attemptNumber: i, previousCrumb: 'assignment'},
                 })
-            }}> {row.value} </a>
+            }}>{row.value}</a>
         })
     }
 
@@ -333,7 +335,7 @@ export default function GradebookAssignmentView(){
                 view: '',
                 params: { courseId, doenetId, userId, previousCrumb: 'assignment'},
             })
-        }}> {name} </a>
+        }}>{name}</a>
 
      
             for (let i = 1; i <= maxAttempts; i++) {
