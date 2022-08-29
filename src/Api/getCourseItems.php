@@ -32,6 +32,7 @@ function nullishCoalesce(&$value, $default) {
 }
 
 $containingDoenetIds = [];
+$activityDoenetIds = [];
 	//Can the user edit content?
 	if ($permissions["canEditContent"] == '1'){
 		//Yes then all items and json
@@ -110,6 +111,9 @@ $containingDoenetIds = [];
 				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
 					array_push($containingDoenetIds,$row['doenetId']);
 				}
+				if ($row['type'] == 'activity' ){
+					array_push($activityDoenetIds,$row['doenetId']);
+				}
 				
 				$json = json_decode($row['json'],true);
 				// var_dump($json);
@@ -138,6 +142,36 @@ $containingDoenetIds = [];
 							"type"=>"page",
 							"doenetId"=>$row['doenetId'],
 							"containingDoenetId"=>$row['containingDoenetId'],
+							"label"=>$row['label']
+						);
+						$item['isSelected'] = false; //Note: no isOpen
+						array_push($items,$item);
+
+					}
+				}
+
+			}
+			//page links
+			foreach($activityDoenetIds as $activityDoenetId){
+				$sql = "
+				SELECT 
+				doenetId,
+				containingDoenetId,
+				parentDoenetId,
+				sourceCollectionDoenetId,
+				label
+				FROM link_pages
+				WHERE containingDoenetId = '$activityDoenetId'
+				";
+				$result = $conn->query($sql);
+				if ($result->num_rows > 0) {
+					while($row = $result->fetch_assoc()){
+						$item = array(
+							"type"=>"pageLink",
+							"doenetId"=>$row['doenetId'],
+							"containingDoenetId"=>$row['containingDoenetId'],
+							"parentDoenetId"=>$row['parentDoenetId'],
+							"sourceCollectionDoenetId"=>$row['sourceCollectionDoenetId'],
 							"label"=>$row['label']
 						);
 						$item['isSelected'] = false; //Note: no isOpen

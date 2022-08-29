@@ -64,6 +64,9 @@ if ($success){
   }else if ($itemType == 'order'){
     //TODO: make sure this is the same id as the one entered as order in the structure
     $orderDoenetIdThatWasCreated = $doenetId;
+  }else if ($itemType == 'collectionLink'){
+    //TODO: make sure this is the same id as the one entered as order in the structure
+    $collectionAliasDoenetIdThatWasCreated = $doenetId;
   }
 }
 
@@ -73,6 +76,7 @@ $response_arr = array(
   "message"=>$message,
   "pageThatWasCreated"=>$pageThatWasCreated,
   "orderDoenetIdThatWasCreated"=>$orderDoenetIdThatWasCreated,
+  "collectionAliasDoenetIdThatWasCreated"=>$collectionAliasDoenetIdThatWasCreated,
   );
 
 

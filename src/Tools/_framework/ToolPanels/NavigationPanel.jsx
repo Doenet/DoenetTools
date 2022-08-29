@@ -87,24 +87,25 @@ export default function NavigationPanel() {
 
   const updateSelectMenu = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ selectedItems }) => {
-        if (selectedItems.length == 1) {
-          let selectedDoenetId = selectedItems[0];
-          let selectedItem = await snapshot.getPromise(
-            itemByDoenetId(selectedDoenetId),
-          );
-          if (selectedItem.type == 'activity') {
-            set(selectedMenuPanelAtom, 'SelectedActivity');
-          } else if (selectedItem.type == 'order') {
-            set(selectedMenuPanelAtom, 'SelectedOrder');
-          } else if (selectedItem.type == 'page') {
-            set(selectedMenuPanelAtom, 'SelectedPage');
-          } else if (selectedItem.type == 'section') {
-            set(selectedMenuPanelAtom, 'SelectedSection');
-          } else if (selectedItem.type == 'bank') {
-            set(selectedMenuPanelAtom, 'SelectedBank');
-          } else {
-            set(selectedMenuPanelAtom, null);
+      async ({ singleItem }) => {
+        console.log(`singleItem doenetId:${singleItem.doenetId}`,singleItem)
+        if (singleItem !== null) {
+          if (singleItem.type == "activity"){
+            set(selectedMenuPanelAtom,"SelectedActivity");
+          }else if (singleItem.type == "order"){
+            set(selectedMenuPanelAtom,"SelectedOrder");
+          }else if (singleItem.type == "page"){
+            set(selectedMenuPanelAtom,"SelectedPage");
+          }else if (singleItem.type == "section"){
+            set(selectedMenuPanelAtom,"SelectedSection");
+          }else if (singleItem.type == "bank"){
+            set(selectedMenuPanelAtom,"SelectedBank");
+          }else if (singleItem.type == "collectionLink"){
+            set(selectedMenuPanelAtom,"SelectedCollectionLink");
+          }else if (singleItem.type == "pageLink"){
+            set(selectedMenuPanelAtom,"SelectedPageLink");
+          }else{
+            set(selectedMenuPanelAtom,null);
           }
         } else {
           set(selectedMenuPanelAtom, null);
@@ -116,6 +117,7 @@ export default function NavigationPanel() {
     ({ set, snapshot }) =>
       async ({ doenetId, courseId }) => {
         let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
+
         let { canEditContent } = await snapshot.getPromise(
           effectivePermissionsByCourseId(courseId),
         );
@@ -131,6 +133,18 @@ export default function NavigationPanel() {
               },
             };
           });
+        } else if (clickedItem.type == 'pageLink') {
+          set(pageToolViewAtom, (prev) => {
+            return {
+              page: 'course',
+              tool: 'editor',
+              view: prev.view,
+              params: {
+                linkPageId: doenetId,
+              },
+            };
+          });
+        
         } else if (clickedItem.type == 'activity') {
           if (canEditContent == '1') {
             //Find first page
