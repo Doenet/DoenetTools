@@ -84,12 +84,12 @@ export default React.memo(function Section(props) {
   }
 
   switch (SVs.level) {
-    case 0: heading = <span id={headingId} style={{ fontSize: '2em' }}>{title}</span>; break;
-    case 1: heading = <span id={headingId} style={{ fontSize: '1.5em' }}>{title}</span>; break;
-    case 2: heading = <span id={headingId} style={{ fontSize: '1.17em' }}>{title}</span>; break;
-    case 3: heading = <span id={headingId} style={{ fontSize: '1em' }}>{title}</span>; break;
-    case 4: heading = <span id={headingId} style={{ fontSize: '.83em' }}>{title}</span>; break;
-    case 5: heading = <span id={headingId} style={{ fontSize: '.67em' }}>{title}</span>; break;
+    case 0: heading = <h1 id={headingId}>{title}</h1>; break;
+    case 1: heading = <h2 id={headingId}>{title}</h2>; break;
+    case 2: heading = <h3 id={headingId}>{title}</h3>; break;
+    case 3: heading = <h4 id={headingId}>{title}</h4>; break;
+    case 4: heading = <h5 id={headingId}>{title}</h5>; break;
+    case 5: heading = <h6 id={headingId}>{title}</h6>; break;
   }
   // if (SVs.level === 0) {
   //   heading = <span id={headingId} style={{fontSize:'2em'}}>{title}</span>;
@@ -198,7 +198,7 @@ export default React.memo(function Section(props) {
   let content =
     <>
       <a name={id} />
-      {heading} <br />
+      {heading}
       {children}
       {checkworkComponent}
     </>;
