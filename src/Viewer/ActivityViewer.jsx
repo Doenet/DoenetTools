@@ -1255,12 +1255,12 @@ export default function ActivityViewer(props) {
   let pageControlsTop = null;
   let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
-    pageControlsTop = <div style={{display: "flex", alignItems: "center"}}>
+    pageControlsTop = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
       <Button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
       <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
       <Button  data-test={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
     </div>
-    pageControlsBottom = <div style={{display: "flex", alignItems: "center"}}>
+    pageControlsBottom = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
       <Button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
       <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
       <Button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
