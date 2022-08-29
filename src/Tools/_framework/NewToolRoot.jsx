@@ -108,7 +108,7 @@ export default function ToolRoot() {
     AccountSettings: lazy(() => import('./ToolPanels/AccountSettings')),
     HomePanel: lazy(() => import('./ToolPanels/HomePanel')),
     PublicActivityViewer: lazy(() => import('./ToolPanels/PublicActivityViewer')),
-    DriveCards: lazy(() => import('./ToolPanels/DriveCards')),
+    CourseCards: lazy(() => import('./ToolPanels/CourseCards')),
     SignIn: lazy(() => import('./ToolPanels/SignIn')),
     SignOut: lazy(() => import('./ToolPanels/SignOut')),
     NavigationPanel: lazy(() => import('./ToolPanels/NavigationPanel')),
@@ -485,7 +485,7 @@ let navigationObj = {
     courseChooser: {
       //allCourses
       pageName: 'Course',
-      currentMainPanel: 'DriveCards',
+      currentMainPanel: 'CourseCards',
       currentMenus: ['CreateCourse'],
       menusTitles: ['Create Course'],
       menusInitOpen: [true],
