@@ -571,8 +571,8 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
                 setTotalPointsOrPercent(0);
                 totalPointsOrPercentLocal = 0;
               } else {
-                totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
-                setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
+                totalPointsOrPercentLocal = parseFloat(totalPointsOrPercent);
+                setTotalPointsOrPercent(parseFloat(totalPointsOrPercent));
               }
 
               updateAssignmentSettings(doenetId, {
