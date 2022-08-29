@@ -23,6 +23,9 @@ import { prng_alea } from 'esm-seedrandom';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
 import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 import { useLocation, useNavigate } from 'react-router';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton'
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button'
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 
 export const currentAttemptNumber = atom({
@@ -577,17 +580,21 @@ export default function AssignmentViewer() {
       if (baseNumberOfAttemptsAllowed > 1) {
         attemptNumberPhrase = " and the number of available attempts";
       }
-      cidChangedAlert = <div>
-        <p>A new version of this activity is available.
-          Do you want to start a new attempt using the new version?
-          (This will reset the activity{attemptNumberPhrase}.)
-        </p>
-        <button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion">Yes</button>
-        <button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion">No</button>
+      cidChangedAlert = <div style={{border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}}>
+        A new version of this activity is available.
+        Do you want to start a new attempt using the new version?
+        (This will reset the activity{attemptNumberPhrase}.)
+        <div style={{display: "flex", justifyContent: "center", padding: "5px"}}>
+          <ButtonGroup>
+            <Button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion" value="Yes"></Button>
+            <Button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion" value="No" alert></Button>
+          </ButtonGroup>
+        </div>
+        
       </div>
     } else {
-      cidChangedAlert = <div>
-        <button onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable">New version available!</button>
+      cidChangedAlert = <div style={{marginLeft: "1px", marginRight: "5px", marginBottom: "5px"}}>
+        <ActionButton onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable" value="New version available!"></ActionButton>
       </div>
     }
   }
