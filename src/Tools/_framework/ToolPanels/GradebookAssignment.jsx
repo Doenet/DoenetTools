@@ -323,11 +323,6 @@ export default function GradebookAssignmentView(){
     for (let userId in students.contents) {
         let firstName = students.contents[userId].firstName;
         let lastName = students.contents[userId].lastName;
-        let role = students.contents[userId].role;
-
-        //TODO: need a switch to filter this in the future
-        if (role !== 'Student'){ continue; }
-
         let row = {};
 
         let name = firstName + " " + lastName
