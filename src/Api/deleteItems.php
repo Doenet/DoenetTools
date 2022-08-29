@@ -39,9 +39,9 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('collectionsJsonDoenetIds', $_POST)) {
     $success = false;
     $message = 'Missing collectionsJsonDoenetIds';
-} elseif (!array_key_exists('pageLinksDoenetIds', $_POST)) {
+} elseif (!array_key_exists('pageLinkDoenetIds', $_POST)) {
     $success = false;
-    $message = 'Missing pageLinksDoenetIds';
+    $message = 'Missing pageLinkDoenetIds';
 } elseif (!array_key_exists('baseCollectionsDoenetIds', $_POST)) {
     $success = false;
     $message = 'Missing baseCollectionsDoenetIds';
@@ -64,9 +64,9 @@ if ($success){
     $collectionsJsonDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["collectionsJsonDoenetIds"]);
-    $pageLinksDoenetIds = array_map(function ($item) use ($conn) {
+    $pageLinkDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
-    }, $_POST["pageLinksDoenetIds"]);
+    }, $_POST["pageLinkDoenetIds"]);
     $baseCollectionsDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["baseCollectionsDoenetIds"]);
@@ -86,17 +86,17 @@ if ($success){
 }
 
 if ($success) {
-    if (count($pageLinksDoenetIds) > 0){
-        $list_of_pageLinksDoenetIds = join("','",$pageLinksDoenetIds);
-        $list_of_pageLinksDoenetIds = "'" . $list_of_pageLinksDoenetIds . "'";  
+    if (count($pageLinkDoenetIds) > 0){
+        $list_of_pageLinkDoenetIds = join("','",$pageLinkDoenetIds);
+        $list_of_pageLinkDoenetIds = "'" . $list_of_pageLinkDoenetIds . "'";  
         $sql = "
         DELETE FROM link_pages
-        WHERE doenetId IN ($list_of_pageLinksDoenetIds)
+        WHERE doenetId IN ($list_of_pageLinkDoenetIds)
         AND courseId='$courseId'
         ";
         $conn->query($sql); 
         //Delete collection link files
-        foreach($pageLinksDoenetIds AS &$pageLinkDoenetId){
+        foreach($pageLinkDoenetIds AS &$pageLinkDoenetId){
             $fileLocation = "../media/byPageId/$pageLinkDoenetId.doenet";
             unlink($fileLocation);
         }

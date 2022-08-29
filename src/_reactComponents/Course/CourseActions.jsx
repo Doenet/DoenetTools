@@ -243,6 +243,33 @@ export function findPageDoenetIdsInAnOrder({content,needleOrderDoenetId,foundNee
   return pageDoenetIds;
 }
 
+//Need needleOrderDoenentId and foundNeedle as order's don't store content in recoil by design
+export function findCollectionLinksAndPageLinksInContentArray({content,needleOrderDoenentId,foundNeedle=false}){
+  let pageLinkDoenetIds = [];
+  let collectionLinkDoenetIds = [];
+
+    for (let item of content){
+      if (item?.type == 'order'){
+        if (item.doenetId == needleOrderDoenentId){
+          foundNeedle = true;
+        }
+        let {pageLinkDoenetIds:morePageLinkDoenetIds,
+          collectionLinkDoenetIds:moreCollectionLinkDoenetIds} = findCollectionLinksAndPageLinksInContentArray({content:item.content,needleOrderDoenentId,foundNeedle})
+          pageLinkDoenetIds = [...pageLinkDoenetIds,...morePageLinkDoenetIds];
+          collectionLinkDoenetIds = [...collectionLinkDoenetIds,...moreCollectionLinkDoenetIds];
+        
+      }else if (item?.type == 'collectionLink'){
+        if (foundNeedle){
+          pageLinkDoenetIds = [...pageLinkDoenetIds,...item.pages];
+          collectionLinkDoenetIds = [...collectionLinkDoenetIds,item.doenetId];
+        }
+      }
+
+    }
+
+  return {pageLinkDoenetIds,collectionLinkDoenetIds};
+}
+
 export function findPageIdsInContentArray({content,needleOrderDoenetId,foundNeedle=false}){
   let pageDoenetIds = [];
 
@@ -255,7 +282,7 @@ export function findPageIdsInContentArray({content,needleOrderDoenetId,foundNeed
           morePageDoenetIds = findPageIdsInContentArray({content:item.content,needleOrderDoenetId,foundNeedle})
         }
         pageDoenetIds = [...pageDoenetIds,...morePageDoenetIds];
-      }else{
+      }else if (item?.type != 'collectionLink'){
         //Page 
         if (foundNeedle){
           pageDoenetIds.push(item);
@@ -1215,6 +1242,7 @@ export const useCourse = (courseId) => {
               }
             }else if (itemType == 'collectionLink'){
               createdCollectionLink = collectionLinkObj;
+         
             }
             const containingItemObj = await snapshot.getPromise(itemByDoenetId(selectedItemObj.containingDoenetId));
 
@@ -2075,8 +2103,8 @@ export const useCourse = (courseId) => {
         let baseActivitiesDoenetIds = [];
         let baseSectionsDoenetIds = [];
         let orderDoenetIds = []; //Only to update local recoil
-        let collectionLinksDoenetIds = []; //Only to update local recoil
-        let pageLinksDoenetIds = []; 
+        let collectionLinkDoenetIds = []; //Only to update local recoil
+        let pageLinkDoenetIds = []; 
 
         if (itemToDeleteObj.type == 'page'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
@@ -2095,17 +2123,21 @@ export const useCourse = (courseId) => {
 
         }else if (itemToDeleteObj.type == 'order'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
+          let content = containingObj.content;
+          let pageLinksAndCollectionLinksObj = findCollectionLinksAndPageLinksInContentArray({content,needleOrderDoenentId:itemToDeleteObj.doenetId})
+          pageLinkDoenetIds = pageLinksAndCollectionLinksObj.pageLinkDoenetIds;
+          collectionLinkDoenetIds = pageLinksAndCollectionLinksObj.collectionLinkDoenetIds;
           //Find doenentIds of pages contained by the order
-          pagesDoenetIds = findPageDoenetIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:itemToDeleteObj.doenetId})
-          orderDoenetIds = findOrderIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
+          pagesDoenetIds = findPageDoenetIdsInAnOrder({content,needleOrderDoenetId:itemToDeleteObj.doenetId})
+          orderDoenetIds = findOrderIdsInAnOrder({content,needleOrderDoenetId:doenetId})
           //Find updated activities' default order
-          let nextContent = deleteOrderFromContent({content:containingObj.content,needleDoenetId:doenetId})
+          let nextContent = deleteOrderFromContent({content,needleDoenetId:doenetId})
           activitiesJson.push(nextContent);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'collectionLink'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
-          collectionLinksDoenetIds = [itemToDeleteObj.doenetId];
-          pageLinksDoenetIds = [...itemToDeleteObj.pages]
+          collectionLinkDoenetIds = [itemToDeleteObj.doenetId];
+          pageLinkDoenetIds = [...itemToDeleteObj.pages]
           let nextContent = deleteCollectionAliasFromContent({content:containingObj.content,needleDoenetId:doenetId})
           activitiesJson.push(nextContent);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
@@ -2114,8 +2146,7 @@ export const useCourse = (courseId) => {
           pagesDoenetIds = itemToDeleteObj.pages;
         }else if (itemToDeleteObj.type == 'activity'){
           let content = itemToDeleteObj.content;
-          // let temp = findCollectionLinksAndPageLinksInContentArray({content,needleOrderDoenetId:null,foundNeedle:true})
-          // console.log("temp",temp);
+          ({pageLinkDoenetIds,collectionLinkDoenetIds} = findCollectionLinksAndPageLinksInContentArray({content,foundNeedle:true}))
           pagesDoenetIds = findPageIdsInContentArray({content,needleOrderDoenetId:null,foundNeedle:true})
           orderDoenetIds = findOrderIdsInAnOrder({content,needleOrderDoenetId:null,foundNeedle:true})
           baseActivitiesDoenetIds = [doenetId]
@@ -2139,20 +2170,20 @@ export const useCourse = (courseId) => {
           }
         }
 
-        // console.log(">>DELETE!",{
-        //   courseId,
-        //   pagesDoenetIds,
-        //   courseContentDoenetIds,
-        //   activitiesJson,
-        //   activitiesJsonDoenetIds,
-        //   collectionsJson,
-        //   collectionsJsonDoenetIds,
-        //   baseCollectionsDoenetIds,
-        //   baseActivitiesDoenetIds,
-        //   baseSectionsDoenetIds,
-        //   collectionLinksDoenetIds,
-        //   pageLinksDoenetIds
-        // })
+        console.log(">>DELETE!",{
+          courseId,
+          pagesDoenetIds,
+          courseContentDoenetIds,
+          activitiesJson,
+          activitiesJsonDoenetIds,
+          collectionsJson,
+          collectionsJsonDoenetIds,
+          baseCollectionsDoenetIds,
+          baseActivitiesDoenetIds,
+          baseSectionsDoenetIds,
+          collectionLinkDoenetIds,
+          pageLinkDoenetIds
+        })
 
 
         //Delete off of server first
@@ -2166,7 +2197,7 @@ export const useCourse = (courseId) => {
           activitiesJsonDoenetIds,
           collectionsJson,
           collectionsJsonDoenetIds,
-          pageLinksDoenetIds,
+          pageLinkDoenetIds,
           baseCollectionsDoenetIds,
           baseActivitiesDoenetIds,
           baseSectionsDoenetIds
@@ -2213,16 +2244,14 @@ export const useCourse = (courseId) => {
           next.splice(index,1);
         }
        }
-       for (let collectionLinkDoenetId of collectionLinksDoenetIds){
+       for (let collectionLinkDoenetId of collectionLinkDoenetIds){
         let index = next.indexOf(collectionLinkDoenetId);
         if (index != -1){
           next.splice(index,1);
         }
        }
-       console.log("pageLinksDoenetIds",pageLinksDoenetIds)
-       for (let pageLinkDoenetId of pageLinksDoenetIds){
+       for (let pageLinkDoenetId of pageLinkDoenetIds){
          let index = next.indexOf(pageLinkDoenetId);
-         console.log("pageLinkDoenetId",pageLinkDoenetId,index)
         if (index != -1){
           next.splice(index,1);
         }
