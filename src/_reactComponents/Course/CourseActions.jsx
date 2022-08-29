@@ -2092,7 +2092,7 @@ export const useCourse = (courseId) => {
     ({ set,snapshot }) =>
       async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
         let itemToDeleteObj = await snapshot.getPromise(itemByDoenetId(doenetId));
-        console.log(">>deleteItem itemToDeleteObj",itemToDeleteObj)
+        // console.log(">>deleteItem itemToDeleteObj",itemToDeleteObj)
         let pagesDoenetIds = [];
         let courseContentDoenetIds = [];
         let activitiesJson = [];
@@ -2170,20 +2170,20 @@ export const useCourse = (courseId) => {
           }
         }
 
-        console.log(">>DELETE!",{
-          courseId,
-          pagesDoenetIds,
-          courseContentDoenetIds,
-          activitiesJson,
-          activitiesJsonDoenetIds,
-          collectionsJson,
-          collectionsJsonDoenetIds,
-          baseCollectionsDoenetIds,
-          baseActivitiesDoenetIds,
-          baseSectionsDoenetIds,
-          collectionLinkDoenetIds,
-          pageLinkDoenetIds
-        })
+        // console.log(">>DELETE!",{
+        //   courseId,
+        //   pagesDoenetIds,
+        //   courseContentDoenetIds,
+        //   activitiesJson,
+        //   activitiesJsonDoenetIds,
+        //   collectionsJson,
+        //   collectionsJsonDoenetIds,
+        //   baseCollectionsDoenetIds,
+        //   baseActivitiesDoenetIds,
+        //   baseSectionsDoenetIds,
+        //   collectionLinkDoenetIds,
+        //   pageLinkDoenetIds
+        // })
 
 
         //Delete off of server first
@@ -2274,7 +2274,7 @@ export const useCourse = (courseId) => {
           next.splice(index,1);
         }
        }
-       console.log("delete item author order prev and next:",prev,next)
+      //  console.log("delete item author order prev and next:",prev,next)
        return next;
      });
     
