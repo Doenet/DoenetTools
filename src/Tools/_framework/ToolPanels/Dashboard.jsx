@@ -14,13 +14,22 @@ import Next7Days from '../Widgets/Next7Days';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode, faUser, faChartPie } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCode,
+  faUser,
+  faChartPie,
+  faTasks,
+} from '@fortawesome/free-solid-svg-icons';
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { canModifyCourseSettings, canManageUsers, dataAccessPermission } =
-    useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const {
+    canModifyCourseSettings,
+    canManageUsers,
+    dataAccessPermission,
+    canViewAndModifyGrades,
+  } = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
   let profile = loadProfile.contents;
@@ -83,37 +92,40 @@ export default function Dashboard(props) {
               }
             />
           ) : null}
-          {/* {effectiveRole === 'instructor' ?
-          <Card 
-            name='Gradebook' 
-            icon={<FontAwesomeIcon icon={faTasks}/>}
-            value="Gradebook" 
-            onClick={() => 
-            setPageToolView((was)=>{return {
-              page: 'course',
-              tool: 'gradebook',
-              view: was.view,
-              params: { courseId },
-              }})
-            } 
-          />
-          :
-          <Card 
-            name='Gradebook' 
-            icon={<FontAwesomeIcon icon={faTasks}/>}
-            style={{marginLeft: '-600px'}}
-            value="Gradebook" 
-            onClick={() => 
-            setPageToolView((was)=>{return {
-              page: 'course',
-              tool: 'gradebookStudent',
-              view: was.view,
-              params: { courseId, userId:profile.userId },
-              }})
-
-            } 
-          />
-          } */}
+          {canViewAndModifyGrades === '1' ? (
+            <Card
+              name="Gradebook"
+              icon={<FontAwesomeIcon icon={faTasks} />}
+              value="Gradebook"
+              onClick={() =>
+                setPageToolView((was) => {
+                  return {
+                    page: 'course',
+                    tool: 'gradebook',
+                    view: was.view,
+                    params: { courseId },
+                  };
+                })
+              }
+            />
+          ) : (
+            <Card
+              name="Gradebook"
+              icon={<FontAwesomeIcon icon={faTasks} />}
+              style={{ marginLeft: '-600px' }}
+              value="Gradebook"
+              onClick={() =>
+                setPageToolView((was) => {
+                  return {
+                    page: 'course',
+                    tool: 'gradebookStudent',
+                    view: was.view,
+                    params: { courseId, userId: profile.userId },
+                  };
+                })
+              }
+            />
+          )}
         </div>
       </div>
       <div style={{ marginTop: '10px', margin: '10px' }}>

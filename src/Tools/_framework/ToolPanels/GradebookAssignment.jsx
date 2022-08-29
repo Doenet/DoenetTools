@@ -24,7 +24,7 @@ import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonG
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import DropdownMenu from "../../../_reactComponents/PanelHeaderComponents/DropdownMenu";
 import { suppressMenusAtom } from '../NewToolRoot';
-import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import axios from "axios";
 
 export const processGradesAtom = atom({
@@ -233,22 +233,22 @@ function UploadChoices({ doenetId, maxAttempts }){
 export default function GradebookAssignmentView(){
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
     let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
-    let driveIdValue = useRecoilValue(searchParamAtomFamily('driveId'))
+    let courseId = useRecoilValue(searchParamAtomFamily('courseId'))
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     let [process,setProcess] = useRecoilState(processGradesAtom);
     const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
-    let effectiveRole = useRecoilValue(effectiveRoleAtom);
+    let { canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
     let assignments = useRecoilValueLoadable(assignmentData);
 
 
     useEffect(()=>{
-        if (effectiveRole === "student"){
+        if (canViewAndModifyGrades === "1"){
             setSuppressMenus(["GradeUpload"])
         }else{
             setSuppressMenus([])
         }
-    },[effectiveRole])
+    },[canViewAndModifyGrades, setSuppressMenus])
     
 
 
@@ -303,7 +303,7 @@ export default function GradebookAssignmentView(){
                     page: 'course',
                     tool: 'gradebookStudentAssignment',
                     view: '',
-                    params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, previousCrumb: 'assignment'},
+                    params: { courseId, doenetId, userId, attemptNumber: i, previousCrumb: 'assignment'},
                 })
             }}> {row.value} </a>
         })
@@ -335,7 +335,7 @@ export default function GradebookAssignmentView(){
                 page: 'course',
                 tool: 'gradebookStudentAssignment',
                 view: '',
-                params: { driveId: driveIdValue, doenetId, userId, previousCrumb: 'assignment'},
+                params: { courseId, doenetId, userId, previousCrumb: 'assignment'},
             })
         }}> {name} </a>
 
