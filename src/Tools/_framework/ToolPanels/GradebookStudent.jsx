@@ -224,8 +224,6 @@ export default function GradebookStudent() {
 
   let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`;
 
-  console.log('rows', overviewTable.rows);
-
   return (
     <>
       <div style={{ marginLeft: '18px' }}>

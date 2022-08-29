@@ -43,6 +43,7 @@ export const entriesGradesAtom = atom({
     });
 
 const getUserId = (students, name) => {
+    console.log(students, name)
     for(let userId in students){
         //console.log(userId, students[userId].firstName);
         
