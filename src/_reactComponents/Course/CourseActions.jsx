@@ -2075,6 +2075,8 @@ export const useCourse = (courseId) => {
         let baseActivitiesDoenetIds = [];
         let baseSectionsDoenetIds = [];
         let orderDoenetIds = []; //Only to update local recoil
+        let collectionLinksDoenetIds = []; //Only to update local recoil
+        let pageLinksDoenetIds = []; 
 
         if (itemToDeleteObj.type == 'page'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
@@ -2097,20 +2099,23 @@ export const useCourse = (courseId) => {
           pagesDoenetIds = findPageDoenetIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:itemToDeleteObj.doenetId})
           orderDoenetIds = findOrderIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
           //Find updated activities' default order
-          let nextOrder = deleteOrderFromContent({content:containingObj.content,needleDoenetId:doenetId})
-          activitiesJson.push(nextOrder);
+          let nextContent = deleteOrderFromContent({content:containingObj.content,needleDoenetId:doenetId})
+          activitiesJson.push(nextContent);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'collectionLink'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
-          let nextOrder = deleteCollectionAliasFromContent({content:containingObj.content,needleDoenetId:doenetId})
-          console.log("nextOrder",nextOrder)
-          activitiesJson.push(nextOrder);
+          collectionLinksDoenetIds = [itemToDeleteObj.doenetId];
+          pageLinksDoenetIds = [...itemToDeleteObj.pages]
+          let nextContent = deleteCollectionAliasFromContent({content:containingObj.content,needleDoenetId:doenetId})
+          activitiesJson.push(nextContent);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'bank'){
           baseCollectionsDoenetIds.push(doenetId);
           pagesDoenetIds = itemToDeleteObj.pages;
         }else if (itemToDeleteObj.type == 'activity'){
           let content = itemToDeleteObj.content;
+          // let temp = findCollectionLinksAndPageLinksInContentArray({content,needleOrderDoenetId:null,foundNeedle:true})
+          // console.log("temp",temp);
           pagesDoenetIds = findPageIdsInContentArray({content,needleOrderDoenetId:null,foundNeedle:true})
           orderDoenetIds = findOrderIdsInAnOrder({content,needleOrderDoenetId:null,foundNeedle:true})
           baseActivitiesDoenetIds = [doenetId]
@@ -2144,7 +2149,9 @@ export const useCourse = (courseId) => {
         //   collectionsJsonDoenetIds,
         //   baseCollectionsDoenetIds,
         //   baseActivitiesDoenetIds,
-        //   baseSectionsDoenetIds
+        //   baseSectionsDoenetIds,
+        //   collectionLinksDoenetIds,
+        //   pageLinksDoenetIds
         // })
 
 
@@ -2159,6 +2166,7 @@ export const useCourse = (courseId) => {
           activitiesJsonDoenetIds,
           collectionsJson,
           collectionsJsonDoenetIds,
+          pageLinksDoenetIds,
           baseCollectionsDoenetIds,
           baseActivitiesDoenetIds,
           baseSectionsDoenetIds
@@ -2166,6 +2174,7 @@ export const useCourse = (courseId) => {
       if (resp.status < 300) {
         // console.log("data",resp.data)
         let { success, message } = resp.data;
+        // console.log(resp.data)
 
      //update recoil for deleted items from collections
      for (let [i,collectionDoenetId] of Object.entries(collectionsJsonDoenetIds)){
@@ -2200,6 +2209,20 @@ export const useCourse = (courseId) => {
        }
        for (let orderDoenetId of orderDoenetIds){
         let index = next.indexOf(orderDoenetId);
+        if (index != -1){
+          next.splice(index,1);
+        }
+       }
+       for (let collectionLinkDoenetId of collectionLinksDoenetIds){
+        let index = next.indexOf(collectionLinkDoenetId);
+        if (index != -1){
+          next.splice(index,1);
+        }
+       }
+       console.log("pageLinksDoenetIds",pageLinksDoenetIds)
+       for (let pageLinkDoenetId of pageLinksDoenetIds){
+         let index = next.indexOf(pageLinkDoenetId);
+         console.log("pageLinkDoenetId",pageLinkDoenetId,index)
         if (index != -1){
           next.splice(index,1);
         }

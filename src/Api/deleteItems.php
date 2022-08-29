@@ -39,6 +39,9 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('collectionsJsonDoenetIds', $_POST)) {
     $success = false;
     $message = 'Missing collectionsJsonDoenetIds';
+} elseif (!array_key_exists('pageLinksDoenetIds', $_POST)) {
+    $success = false;
+    $message = 'Missing pageLinksDoenetIds';
 } elseif (!array_key_exists('baseCollectionsDoenetIds', $_POST)) {
     $success = false;
     $message = 'Missing baseCollectionsDoenetIds';
@@ -61,6 +64,9 @@ if ($success){
     $collectionsJsonDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["collectionsJsonDoenetIds"]);
+    $pageLinksDoenetIds = array_map(function ($item) use ($conn) {
+        return mysqli_real_escape_string($conn, $item);
+    }, $_POST["pageLinksDoenetIds"]);
     $baseCollectionsDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["baseCollectionsDoenetIds"]);
@@ -80,6 +86,21 @@ if ($success){
 }
 
 if ($success) {
+    if (count($pageLinksDoenetIds) > 0){
+        $list_of_pageLinksDoenetIds = join("','",$pageLinksDoenetIds);
+        $list_of_pageLinksDoenetIds = "'" . $list_of_pageLinksDoenetIds . "'";  
+        $sql = "
+        DELETE FROM link_pages
+        WHERE doenetId IN ($list_of_pageLinksDoenetIds)
+        AND courseId='$courseId'
+        ";
+        $conn->query($sql); 
+        //Delete collection link files
+        foreach($pageLinksDoenetIds AS &$pageLinkDoenetId){
+            $fileLocation = "../media/byPageId/$pageLinkDoenetId.doenet";
+            unlink($fileLocation);
+        }
+    }
     if (count($baseCollectionsDoenetIds) > 0){
         $list_of_baseCollectionsDoenetIds = join("','",$baseCollectionsDoenetIds);
         $list_of_baseCollectionsDoenetIds = "'" . $list_of_baseCollectionsDoenetIds . "'";
@@ -89,7 +110,7 @@ if ($success) {
         WHERE doenetId IN ($list_of_baseCollectionsDoenetIds)
         AND courseId='$courseId'
         ";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
     if (count($baseActivitiesDoenetIds) > 0){
         $list_of_baseActivitiesDoenetIds = join("','",$baseActivitiesDoenetIds);
@@ -100,7 +121,7 @@ if ($success) {
         WHERE doenetId IN ($list_of_baseActivitiesDoenetIds)
         AND courseId='$courseId'
         ";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
     if (count($baseSectionsDoenetIds) > 0){
         $list_of_baseSectionsDoenetIds = join("','",$baseSectionsDoenetIds);
@@ -111,7 +132,7 @@ if ($success) {
         WHERE doenetId IN ($list_of_baseSectionsDoenetIds)
         AND courseId='$courseId'
         ";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
     
     //Mark pages deleted
@@ -124,7 +145,7 @@ if ($success) {
         WHERE doenetId IN ($list_of_pagesDoenetIds)
         AND courseId='$courseId'
         ";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
 
     if (count($collectionsJsonDoenetIds) > 0){
@@ -138,7 +159,7 @@ if ($success) {
             WHERE doenetId='$collectionsJsonDoenetId'
             AND courseId='$courseId'
             ";
-            $result = $conn->query($sql);
+            $conn->query($sql);
         }
     }
 
@@ -153,7 +174,7 @@ if ($success) {
             WHERE doenetId='$activitiesJsonDoenetId'
             AND courseId='$courseId'
             ";
-            $result = $conn->query($sql);
+            $conn->query($sql);
         }
     }
 
