@@ -1,5 +1,4 @@
 import cssesc from 'cssesc';
-import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
 
 function cesc(s) {
   s = cssesc(s, { isIdentifier: true });

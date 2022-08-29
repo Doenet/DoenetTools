@@ -1,5 +1,13 @@
+/**
+* DEBT - menuPanelMargin css variable does not exist
+*/
+
 .rdtPicker {
-  margin-left: var(--menuPanelMargin, 0px);
+  margin-left: var(--menuPanelMargin, -50px);
+}
+
+.rdtDays {
+  width: 220px;
 }
 
 .form-control {

@@ -41,9 +41,6 @@ export default class BooleanInput extends Input {
       defaultValue: false,
       public: true,
     };
-    attributes.label = {
-      createComponentOfType: "label",
-    };
     attributes.labelIsName = {
       createComponentOfType: "boolean",
       createStateVariable: "labelIsName",

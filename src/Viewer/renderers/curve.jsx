@@ -66,9 +66,9 @@ export default React.memo(function Curve(props) {
 
     //things to be passed to JSXGraph as attributes
     var curveAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -80,7 +80,7 @@ export default React.memo(function Curve(props) {
     };
 
 
-    if (SVs.showLabel && SVs.label !== "") {
+    if (SVs.showLabel && SVs.labelForGraph !== "") {
       let anchorx, offset, position;
       if (SVs.labelPosition === "upperright") {
         position = 'urt';
@@ -593,7 +593,7 @@ export default React.memo(function Curve(props) {
 
       let visible = !SVs.hidden;
 
-      curveJXG.current.name = SVs.label;
+      curveJXG.current.name = SVs.labelForGraph;
 
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;
@@ -665,7 +665,7 @@ export default React.memo(function Curve(props) {
       curveJXG.current.updateCurve();
       if (curveJXG.current.hasLabel) {
         curveJXG.current.label.needsUpdate = true;
-        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.label !== "";
+        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.labelForGraph !== "";
         if (SVs.applyStyleToLabel) {
           curveJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
         } else {

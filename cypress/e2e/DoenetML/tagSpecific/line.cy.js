@@ -110,8 +110,8 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <point label='P'>(3,5)</point>
-  <point label='Q'>(-4,-1)</point>
+  <point><label>P</label>(3,5)</point>
+  <point><label>Q</label>(-4,-1)</point>
     <line through="$_point1 $_point2 "/>
   </graph>
   <copy target="_point1" assignNames="p1a" />

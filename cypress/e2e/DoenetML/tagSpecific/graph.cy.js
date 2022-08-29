@@ -98,7 +98,7 @@ describe('Graph Tag Tests', function () {
     <text>a</text>
     <graph>
       <function>x^2</function>
-      <function variables="t" stylenumber="2" label="g">t^3</function>
+      <function variables="t" stylenumber="2"><label>g</label>t^3</function>
     </graph>
     `}, "*");
     });
@@ -285,8 +285,8 @@ describe('Graph Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <graph name="g" xlabel="$xlabel" xlabelPosition="$xlabelpos" ylabel="$ylabel" ylabelPosition="$ylabelpos" ylabelAlignment="$ylabelalign">
-
+    <graph name="g" xlabelPosition="$xlabelpos" ylabelPosition="$ylabelpos" ylabelAlignment="$ylabelalign">
+    <xlabel>$xlabel</xlabel><ylabel>$ylabel</ylabel>
     </graph>
 
     <tabular>
@@ -321,12 +321,33 @@ describe('Graph Tag Tests', function () {
 
     // not sure what to test as don't know how to check renderer...
 
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g"].stateValues.xlabel).eq("x");
+      expect(stateVariables["/g"].stateValues.xlabelPosition).eq("right");
+      expect(stateVariables["/g"].stateValues.ylabel).eq("y");
+      expect(stateVariables["/g"].stateValues.ylabelPosition).eq("top");
+      expect(stateVariables["/g"].stateValues.ylabelAlignment).eq("left");
+    })
+
     cy.get('#\\/xlabel_input').clear().type("hello{enter}")
     cy.get('#\\/ylabel_input').clear().type("bye{enter}")
-
     cy.get('#\\/xlabelpos').select("left")
     cy.get('#\\/ylabelpos').select("bottom")
-    cy.get('#\\/ylabelalign').select("left")
+    cy.get('#\\/ylabelalign').select("right")
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g"].stateValues.xlabel).eq("hello");
+      expect(stateVariables["/g"].stateValues.xlabelPosition).eq("left");
+      expect(stateVariables["/g"].stateValues.ylabel).eq("bye");
+      expect(stateVariables["/g"].stateValues.ylabelPosition).eq("bottom");
+      expect(stateVariables["/g"].stateValues.ylabelAlignment).eq("right");
+    })
+
+
 
   });
 
@@ -1257,7 +1278,10 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <graph xlabel="$(x.submittedResponse{ createComponentOfType='math'})" ylabel="y" />
+    <graph>
+      <xlabel>$(x.submittedResponse{ createComponentOfType='math'})</xlabel>
+      <ylabel>y</ylabel>
+    </graph>
 
     <answer name="x">x</answer>
     <copy prop="submittedResponse" target="x" assignNames="sr" />

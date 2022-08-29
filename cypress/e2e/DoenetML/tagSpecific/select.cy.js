@@ -3143,8 +3143,12 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first select" />
-    <booleaninput name='h2' prefill="true" label="Hide second select" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first select</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second select</label>
+    </booleaninput>
     <p><select assignnames="(c)" hide="$h1">
       <option><text>a</text></option>
       <option><text>b</text></option>

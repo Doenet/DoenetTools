@@ -34,8 +34,12 @@
     <copy prop="fractionCorrectVerticesAdjusted" source="cobwebPolyline" assignNames="fractionCorrectCobweb" />
   </setup>
 
-  <updateValue label="Add line" name="addLine" target="nPoints" newValue="$nPoints+1" type="number" />
-  <updateValue label="Delete line" name="deleteLine" target="nPoints" newValue="$nPoints-1" type="number" disabled="$nPoints <= 1" />
+  <updateValue name="addLine" target="nPoints" newValue="$nPoints+1" type="number" >
+    <label>Add line</label>
+  </updateValue>
+  <updateValue name="deleteLine" target="nPoints" newValue="$nPoints-1" type="number" disabled="$nPoints <= 1" >
+    <label>Delete line</label>
+  </updateValue>
 
   <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_$timeVariable" ylabel="$(variable)_{$timeVariable+1}" showNavigation="$showNavigation" identicalAxisScales grid="$grid">
     <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" nIterationsRequired="$nIterationsRequired" attractThreshold="$attractThreshold" variable="$variable" defaultPoint="$defaultPoint" />

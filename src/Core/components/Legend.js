@@ -96,7 +96,7 @@ export default class Legend extends GraphicalComponent {
               componentName: cName,
             }
             dependencies[`graphicalElement${ind}ShadowSource`] = {
-              dependencyType: "shadowSourceIdentity",
+              dependencyType: "shadowSource",
               componentName: cName,
             }
             

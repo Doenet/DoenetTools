@@ -357,7 +357,9 @@ describe('Conditional Content Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <text name="animal" hide>fox</text><text name="verb" hide>jumps</text>
-  <booleaninput label="animal phrase" name="b" />
+  <booleaninput name="b" >
+    <label>animal phrase</label>
+  </booleaninput>
 
   <p name="p"><conditionalContent condition="$b">The $animal $verb.</conditionalcontent></p>
   `}, "*");
@@ -2420,8 +2422,12 @@ describe('Conditional Content Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first conditionalContent" />
-    <booleaninput name='h2' prefill="true" label="Hide second conditionalContent" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first conditionalContent</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second conditionalContent</label>
+    </booleaninput>
     <mathinput name="n" />
     <p name="pa">a: <conditionalContent assignNames="a" maximumNumberToShow="1" hide="$h1">
       <case condition="$n<0"><text>dog</text></case>

@@ -27,7 +27,9 @@ describe('UpdateValue Tag Tests', function () {
     </map>
     </graph>
     <p></p>
-    <updatevalue label="double" target="count" newValue="2$count" />
+    <updatevalue target="count" newValue="2$count" >
+      <label>double</label>
+    </updateValue>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -140,7 +142,9 @@ describe('UpdateValue Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <boolean name="b" />
-    <updateValue target="b" newValue="not$b" type="boolean" label="change mind" />
+    <updateValue target="b" newValue="not$b" type="boolean" >
+      <label>change mind</label>
+    </updateValue>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -165,8 +169,12 @@ describe('UpdateValue Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <boolean name="b" />
-    <updateValue name="setTrue" target="b" newValue="true" type="boolean" label="set true" />
-    <updateValue name="setFalse" target="b" newValue="false" type="boolean" label="set false" />
+    <updateValue name="setTrue" target="b" newValue="true" type="boolean" >
+      <label>set true</label>
+    </updateValue>
+    <updateValue name="setFalse" target="b" newValue="false" type="boolean" >
+      <label>set false</label>
+    </updateValue>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -197,7 +205,9 @@ describe('UpdateValue Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <number name="n" >1</number>
-    <updateValue name="setToSum" target="n" newValue="1+1" type="number" label="set to 1+1" />
+    <updateValue name="setToSum" target="n" newValue="1+1" type="number" >
+      <label>set to 1+1</label>
+    </updateValue>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -216,8 +226,12 @@ describe('UpdateValue Tag Tests', function () {
     <text>a</text>
     <point name="P">(1,2)</point>
 
-    <updateValue target="P" prop="x" newValue="2$(P.x)" label="double" />
-    <updateValue target="P.x" newValue="2$(P.x)" label="also double" />
+    <updateValue target="P" prop="x" newValue="2$(P.x)" >
+      <label>double</label>
+    </updateValue>
+    <updateValue target="P.x" newValue="2$(P.x)" >
+      <label>also double</label>
+    </updateValue>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -446,9 +460,15 @@ describe('UpdateValue Tag Tests', function () {
     <point name="P">(1,2)</point>
     <point name="Q">(3,4)</point>
 
-    <updateValue target="l.point1.x" newValue="2$(P.x)" label="double" />
-    <updateValue target="l.points[1].x" newValue="2$(P.x)" label="also double" />
-    <updateValue target="l.points[1]" newValue="(3,7)" label="set point" />
+    <updateValue target="l.point1.x" newValue="2$(P.x)" >
+      <label>double</label>
+    </updateValue>
+    <updateValue target="l.points[1].x" newValue="2$(P.x)" >
+      <label>also double</label>
+    </updateValue>
+    <updateValue target="l.points[1]" newValue="(3,7)" >
+      <label>set point</label>
+    </updateValue>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -494,7 +514,9 @@ describe('UpdateValue Tag Tests', function () {
     <math name="x">x</math>
     <math name="y">y</math>
     
-    <updateValue name="trip" target="x" newValue="3$x" label="update" simplify />
+    <updateValue name="trip" target="x" newValue="3$x" simplify >
+      <label>update</label>
+    </updateValue>
     <updateValue name="quad" target="y" newValue="4$y" triggerWith="trip" simplify />
     `}, "*");
     });
@@ -543,8 +565,12 @@ describe('UpdateValue Tag Tests', function () {
     <math name="y">y</math>
     <math name="z">z</math>
     
-    <updateValue name="doub" target="z" newValue="2$z" label="update" simplify />
-    <updateValue name="trip" target="x" newValue="3$x" label="update" simplify />
+    <updateValue name="doub" target="z" newValue="2$z" simplify >
+      <label>update</label>
+    </updateValue>
+    <updateValue name="trip" target="x" newValue="3$x" simplify >
+      <label>update</label>
+    </updateValue>
     <updateValue name="quad" target="y" newValue="4$y" triggerWith="doub trip" simplify />
     `}, "*");
     });
@@ -1228,7 +1254,8 @@ describe('UpdateValue Tag Tests', function () {
     <p>Say hello: <text name="hello"></text></p>
     <p>Count: <number name="n">1</number></p>
 
-    <triggerSet label="perform updates" >
+    <triggerSet >
+      <label>perform updates</label>
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
       <updateValue target="n" newValue="$n+1" type="number" />
@@ -1268,7 +1295,8 @@ describe('UpdateValue Tag Tests', function () {
     <p>Say hello: <text name="hello"></text></p>
     <p>Count: <number name="n">1</number></p>
 
-    <triggerSet label="perform updates" >
+    <triggerSet >
+      <label>perform updates</label>
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
 
@@ -1311,12 +1339,14 @@ describe('UpdateValue Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <triggerSet label="perform updates" >
+    <triggerSet >
+      <label>perform updates</label>
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWith="_triggerset1" >
+    <triggerSet triggerWith="_triggerset1" >
+      <label>perform updates</label>
       <updateValue target="n" newValue="$n+1" type="number"  />
       <updateValue target="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -1514,12 +1544,14 @@ describe('UpdateValue Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
+    <triggerSet triggerWhen="$(P.x)>0 and $(P.y)>0">
+      <label>perform updates</label>
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWith="_triggerset1" triggerWhen="$(P.x)<0 and $(P.y)<0" >
+    <triggerSet triggerWith="_triggerset1" triggerWhen="$(P.x)<0 and $(P.y)<0" >
+      <label>perform updates</label>
       <updateValue target="n" newValue="$n+1" type="number"  />
       <updateValue target="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -1648,7 +1680,8 @@ describe('UpdateValue Tag Tests', function () {
     <p>Say hello: <text name="hello"></text></p>
     <p>Count: <number name="n">1</number></p>
 
-    <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
+    <triggerSet triggerWhen="$(P.x)>0 and $(P.y)>0">
+      <label>perform updates</label>
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
       <updateValue target="n" newValue="$n+1" type="number" triggerWhen="$(P.x)<0 and $(P.y)<0" />
@@ -1768,7 +1801,8 @@ describe('UpdateValue Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
+    <triggerSet triggerWhen="$(P.x)>0 and $(P.y)>0">
+      <label>perform updates</label>
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
       <updateValue target="n" newValue="$n+1" type="number" triggerWith="uv" />
@@ -1893,7 +1927,9 @@ describe('UpdateValue Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <text name="t">something</text>
-    <updatevalue name="toBlank" label="setToBlank" type="text" target="t" newValue="" />
+    <updatevalue name="toBlank" type="text" target="t" newValue="" >
+      <label>setToBlank</label>
+    </updateValue>
 
     `}, "*");
     });
@@ -1915,8 +1951,12 @@ describe('UpdateValue Tag Tests', function () {
     <p>m = <number name="m" >1</number></p>
     <p>n = <number name="n" >10</number></p>
 
-    <p><updateValue name="incm" label="increment m" target="m" newValue="$m+1"  /></p>
-    <p><updateValue name="incn" label="increment n" target="n" newValue="$n+10" disabledIgnoresParentReadOnly /></p>
+    <p><updateValue name="incm" target="m" newValue="$m+1"  >
+      <label>increment m</label>
+    </updateValue></p>
+    <p><updateValue name="incn" target="n" newValue="$n+10" disabledIgnoresParentReadOnly >
+      <label>increment n</label>
+    </updateValue></p>
 
     `
     cy.get('#testRunner_toggleControls').click();

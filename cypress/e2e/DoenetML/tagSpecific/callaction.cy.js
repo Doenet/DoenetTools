@@ -25,7 +25,9 @@ describe('CallAction Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" name="rs" >
+      <label>roll dice</label>
+    </callAction></p>
     <p>Sum: <number name="sum"><sum>
       <map>
         <template><number>$v*10^($i-1)</number></template>
@@ -92,10 +94,13 @@ describe('CallAction Tag Tests', function () {
     <copy target="theGraphs" assignNames="theGraphs2" />
 
     <p>points from graph: <collect componentTypes="point" target="theGraphs/g" prop="coords" assignNames="p1 p2 p3" /></p>
-    <callAction name="addPoint" target="theGraphs/g" actionName="addChildren" label="add point">
+    <callAction name="addPoint" target="theGraphs/g" actionName="addChildren">
+      <label>add point</label>
       <point>(3,4)</point>
     </callAction>
-    <callAction name="deletePoint" target="theGraphs/g" actionName="deleteChildren" label="delete point" number="1" />
+    <callAction name="deletePoint" target="theGraphs/g" actionName="deleteChildren" number="1" >
+      <label>delete point</label>
+    </callAction>
     <p><booleaninput name="bi" /><copy prop="value" target="bi" assignNames="b" /></p>
     `}, "*");
     });
@@ -341,7 +346,9 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" name="rs" >
+      <label>roll dice and add point</label>
+    </callAction></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
@@ -349,8 +356,9 @@ describe('CallAction Tag Tests', function () {
     
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="rs">
-    <point>(3,4)</point>
+    <callAction name="addPoint" target="g" actionName="addChildren" triggerWith="rs">
+      <label>add point</label>
+      <point>(3,4)</point>
     </callAction>
 
     `}, "*");
@@ -438,10 +446,14 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" name="rs" >
+      <label>roll dice and add point</label>
+    </callAction></p>
 
     <p><number name="n">1</number></p>
-    <p><updateValue label="increment number and add point" name="in" target="n" newValue="$n+1" type="number" /></p>
+    <p><updateValue name="in" target="n" newValue="$n+1" type="number" >
+      <label>increment number and add point</label>
+    </updateValue></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
@@ -449,8 +461,9 @@ describe('CallAction Tag Tests', function () {
         
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="rs in">
-    <point>(3,4)</point>
+    <callAction name="addPoint" target="g" actionName="addChildren" triggerWith="rs in">
+      <label>add point</label>
+      <point>(3,4)</point>
     </callAction>
 
     `}, "*");
@@ -580,7 +593,9 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P.x)>0 and $(P.y)>0" /></p>
+    <p><callAction target="s" actionName="resample" name="rs" triggerWhen="$(P.x)>0 and $(P.y)>0" >
+      <label>roll dice</label>
+    </callAction></p>
     `}, "*");
     });
 
@@ -767,7 +782,9 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhenObjectsClicked="P" /></p>
+    <p><callAction target="s" actionName="resample" name="rs" triggerWhenObjectsClicked="P" >
+      <label>roll dice</label>
+    </callAction></p>
     `}, "*");
     });
 
@@ -905,10 +922,13 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWith="addPoint" /></p>
+    <p><callAction target="s" actionName="resample" name="rs"  triggerWith="addPoint" >
+      <label>roll dice and add point</label>
+    </callAction></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
-    <point>(3,4)</point>
+    <callAction name="addPoint" target="g" actionName="addChildren" triggerWhen="$(P.x)>0 and $(P.y)>0" >
+      <label>add point</label>
+      <point>(3,4)</point>
     </callAction>
 
     `}, "*");
@@ -1135,10 +1155,13 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWith="addPoint" triggerWhen="$(P.x)<0 and $(P.y)<0" /></p>
+    <p><callAction target="s" actionName="resample" name="rs"  triggerWith="addPoint" triggerWhen="$(P.x)<0 and $(P.y)<0" >
+      <label>roll dice and add point</label>
+    </callAction></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
-    <point>(3,4)</point>
+    <callAction name="addPoint" target="g" actionName="addChildren" triggerWhen="$(P.x)>0 and $(P.y)>0" >
+      <label>add point</label>
+      <point>(3,4)</point>
     </callAction>
     `}, "*");
     });
@@ -1365,9 +1388,13 @@ describe('CallAction Tag Tests', function () {
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
-    <triggerSet label="perform actions" name="tset" >
-      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
-      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
+    <triggerSet name="tset" >
+      <label>perform actions</label>
+      <callAction target="s" actionName="resample" name="rs" >
+        <label>roll dice and add point</label>
+      </callAction>
+      <callAction name="addPoint" target="g" actionName="addChildren" >
+        <label>add point</label>
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
@@ -1464,9 +1491,13 @@ describe('CallAction Tag Tests', function () {
 
     <p>Enter x: <answer name="ans">x</answer></p>
 
-    <triggerSet label="perform actions" name="tset" >
-      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
-      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
+    <triggerSet name="tset" >
+        <label>perform actions</label>
+        <callAction target="s" actionName="resample" name="rs" >
+        <label>roll dice and add point</label>
+      </callAction>
+      <callAction name="addPoint" target="g" actionName="addChildren" >
+        <label>add point</label>
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
@@ -1584,7 +1615,9 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and more" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" name="rs" >
+      <label>roll dice and more</label>
+    </callAction></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
@@ -1592,8 +1625,9 @@ describe('CallAction Tag Tests', function () {
     
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="addOne">
-    <point>(3,4)</point>
+    <callAction name="addPoint" target="g" actionName="addChildren" triggerWith="addOne">
+      <label>add point</label>
+      <point>(3,4)</point>
     </callAction>
 
     <p>Count: <number name="n">1</number></p>

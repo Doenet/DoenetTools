@@ -602,8 +602,8 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph name="g1" newNamespace>
-    <point label='A' name="A">(3,5)</point>
-    <point label='B' name="B">(-4,-1)</point>
+    <point labelIsName name="A">(3,5)</point>
+    <point labelIsName name="B">(-4,-1)</point>
     <lineSegment endpoints="$A $B" name="ls"/>
   </graph>
 

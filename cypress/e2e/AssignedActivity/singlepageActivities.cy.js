@@ -865,7 +865,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Assigned Activity"]').click();
 
-    cy.get('#\\/sect_title').should('have.text', 'Section 1: Info only')
+    cy.get('#\\/sect_title').should('have.text', 'Info only')
     cy.get('[data-test="Main Panel"]').then(el => {
       expect(el.scrollTop()).eq(0);
     })

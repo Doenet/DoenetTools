@@ -2011,8 +2011,12 @@ describe('Collect Tag Tests', function () {
       </map>
     </p>
 
-    <booleaninput name='h1' prefill="false" label="Hide first collect" />
-    <booleaninput name='h2' prefill="true" label="Hide second collect" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first collect</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second collect</label>
+    </booleaninput>
     <p>Number of points <mathinput name="n" prefill="4" /></p>
 
     <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" source="_p1" /></p>

@@ -286,7 +286,7 @@ const CourseCardWrapper = (props) => {
                   color={item.color}
                   label={item.label}
                   isSelected={isSelected}
-                  role={item.roleLabels}
+                  roleLabel={item.roleLabel}
                 />
               </DriveCardFocus>
             </a.div>

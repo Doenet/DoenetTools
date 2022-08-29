@@ -62,9 +62,9 @@ export default React.memo(function Polyline(props) {
 
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + 7,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -379,7 +379,7 @@ export default React.memo(function Polyline(props) {
       }
 
 
-      polylineJXG.current.name = SVs.label;
+      polylineJXG.current.name = SVs.labelForGraph;
 
       if (polylineJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
