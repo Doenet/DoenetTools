@@ -97,10 +97,6 @@ export default class Graph extends BlockComponent {
     };
     attributes.xlabel = {
       createComponentOfType: "label",
-      createStateVariable: "xlabel",
-      defaultValue: "",
-      public: true,
-      forRenderer: true
     };
     attributes.xlabelPosition = {
       createComponentOfType: "text",
@@ -120,10 +116,6 @@ export default class Graph extends BlockComponent {
     }
     attributes.ylabel = {
       createComponentOfType: "label",
-      createStateVariable: "ylabel",
-      defaultValue: "",
-      public: true,
-      forRenderer: true
     };
     attributes.ylabelPosition = {
       createComponentOfType: "text",
@@ -202,6 +194,19 @@ export default class Graph extends BlockComponent {
     return [{
       group: "graphical",
       componentTypes: ["_graphical"]
+    },
+    {
+      group: "xlabels",
+      componentTypes: ["xlabel"]
+    },
+    {
+      group: "ylabels",
+      componentTypes: ["ylabel"]
+    },
+    {
+      group: "childrenThatShouldNotBeHere",
+      componentTypes: ["_base"],
+      matchAfterAdapters: true
     }]
 
   }
@@ -269,37 +274,164 @@ export default class Graph extends BlockComponent {
       }
     }
 
-    stateVariableDefinitions.xlabelHasLatex = {
+
+    stateVariableDefinitions.xlabel = {
       forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+        addStateVariablesShadowingStateVariables: {
+          hasLatex: {
+            stateVariableToShadow: "xlabelHasLatex",
+          }
+        },
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "xlabelHasLatex",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         xlabelAttr: {
           dependencyType: "attributeComponent",
           attributeName: "xlabel",
-          variableNames: ["hasLatex"]
-        }
+          variableNames: ["value", "hasLatex"]
+        },
+        xlabelChild: {
+          dependencyType: "child",
+          childGroups: ["xlabels"],
+          variableNames: ["value", "hasLatex"]
+        },
       }),
-      definition({dependencyValues}) {
-        return {
-          setValue: {
-            xlabelHasLatex: dependencyValues.xlabelAttr?.stateValues.hasLatex || false
+      definition({ dependencyValues }) {
+        if (dependencyValues.xlabelChild.length > 0) {
+          let xlabelChild = dependencyValues.xlabelChild[dependencyValues.xlabelChild.length - 1]
+          return {
+            setValue: {
+              xlabel: xlabelChild.stateValues.value,
+              xlabelHasLatex: xlabelChild.stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.xlabelAttr) {
+          return {
+            setValue: {
+              xlabel: dependencyValues.xlabelAttr.stateValues.value,
+              xlabelHasLatex: dependencyValues.xlabelAttr.stateValues.hasLatex
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { xlabel: true },
+            setValue: { xlabelHasLatex: false }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        console.log({ desiredStateVariableValues, dependencyValues })
+        if (typeof desiredStateVariableValues.xlabel !== "string") {
+          return { success: false }
+        }
+
+        if (dependencyValues.xlabelChild.length > 0) {
+          let lastLabelInd = dependencyValues.xlabelChild.length - 1;
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "xlabelChild",
+              desiredValue: desiredStateVariableValues.xlabel,
+              childIndex: lastLabelInd,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setStateVariable: "xlabel",
+              value: desiredStateVariableValues.xlabel
+            }]
           }
         }
       }
     }
 
-    stateVariableDefinitions.ylabelHasLatex = {
+    stateVariableDefinitions.ylabel = {
       forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+        addStateVariablesShadowingStateVariables: {
+          hasLatex: {
+            stateVariableToShadow: "ylabelHasLatex",
+          }
+        },
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "ylabelHasLatex",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         ylabelAttr: {
           dependencyType: "attributeComponent",
           attributeName: "ylabel",
-          variableNames: ["hasLatex"]
-        }
+          variableNames: ["value", "hasLatex"]
+        },
+        ylabelChild: {
+          dependencyType: "child",
+          childGroups: ["ylabels"],
+          variableNames: ["value", "hasLatex"]
+        },
       }),
-      definition({dependencyValues}) {
-        return {
-          setValue: {
-            ylabelHasLatex: dependencyValues.ylabelAttr?.stateValues.hasLatex || false
+      definition({ dependencyValues }) {
+        if (dependencyValues.ylabelChild.length > 0) {
+          let ylabelChild = dependencyValues.ylabelChild[dependencyValues.ylabelChild.length - 1]
+          return {
+            setValue: {
+              ylabel: ylabelChild.stateValues.value,
+              ylabelHasLatex: ylabelChild.stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.ylabelAttr) {
+          return {
+            setValue: {
+              ylabel: dependencyValues.ylabelAttr.stateValues.value,
+              ylabelHasLatex: dependencyValues.ylabelAttr.stateValues.hasLatex
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { ylabel: true },
+            setValue: { ylabelHasLatex: false }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        console.log({ desiredStateVariableValues, dependencyValues })
+        if (typeof desiredStateVariableValues.ylabel !== "string") {
+          return { success: false }
+        }
+
+        if (dependencyValues.ylabelChild.length > 0) {
+          let lastLabelInd = dependencyValues.ylabelChild.length - 1;
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "ylabelChild",
+              desiredValue: desiredStateVariableValues.ylabel,
+              childIndex: lastLabelInd,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setStateVariable: "ylabel",
+              value: desiredStateVariableValues.ylabel
+            }]
           }
         }
       }
@@ -321,6 +453,33 @@ export default class Graph extends BlockComponent {
         }
       },
     };
+
+    stateVariableDefinitions.childIndicesToRender = {
+      returnDependencies: () => ({
+        graphicalChildren: {
+          dependencyType: "child",
+          childGroups: ["graphical"],
+        },
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["graphical", "xlabels", "ylabels", "childrenThatShouldNotBeHere"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+
+        let graphicalChildNames = dependencyValues.graphicalChildren.map(x => x.componentName);
+
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (graphicalChildNames.includes(child.componentName)) {
+            childIndicesToRender.push(ind)
+          }
+        }
+
+        return { setValue: { childIndicesToRender } }
+
+      }
+    }
 
     stateVariableDefinitions.nChildrenAdded = {
       defaultValue: 0,

@@ -716,7 +716,9 @@ describe('Map Tag Tests', function () {
     <math name="a">x</math>
     <copy name="mapcopy" target="_map1" />
 
-    <updatevalue label="double" target="length" newValue="2$length" />
+    <updatevalue target="length" newValue="2$length"  >
+      <label>double</label>
+    </updatevalue>
     `}, "*");
     });
 
@@ -2412,8 +2414,12 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first map" />
-    <booleaninput name='h2' prefill="true" label="Hide second map" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first map</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second map</label>
+    </booleaninput>
     <p>Length of map 1: <mathinput name="n1" prefill="4" /></p>
     <p>Length of map 2: <mathinput name="n2" prefill="4" /></p>
 

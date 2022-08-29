@@ -49,9 +49,9 @@ export default React.memo(function Angle(props) {
     let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
 
     var jsxAngleAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,//SVs.draggable !== true,
       layer: 10 * SVs.layer + 7,
       radius: SVs.numericalRadius,
@@ -67,7 +67,7 @@ export default React.memo(function Angle(props) {
       jsxAngleAttributes.label.useMathJax = true;
     }
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     let through;
 
@@ -137,9 +137,9 @@ export default React.memo(function Angle(props) {
 
       angleJXG.current.setAttribute({ radius: SVs.numericalRadius, visible: !SVs.hidden });
 
-      angleJXG.current.name = SVs.label;
+      angleJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         angleJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

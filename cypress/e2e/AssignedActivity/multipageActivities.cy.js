@@ -612,6 +612,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('#page2\\/insideAside').should('not.exist');
 
+    cy.wait(500);  // this wait should not be necessary, but wondering if this will prevent random failures
     cy.url().should('match', /#page2$/)
 
     // Note sure why the rect of page2 does not appear to be at the top
@@ -634,7 +635,6 @@ describe('Multipage activity tests', function () {
 
 
   })
-
 
   it('Links to paginated two-page activity', () => {
     const doenetML1 = `
@@ -1050,7 +1050,6 @@ describe('Multipage activity tests', function () {
 
   })
 
-
   it('Go directly to URLs of paginated two-page activity', () => {
     const doenetML1 = `
 <section>
@@ -1329,7 +1328,6 @@ describe('Multipage activity tests', function () {
     })
 
   })
-
 
   it('Switching pages scrolls to top', () => {
     const doenetML1 = `
@@ -1612,7 +1610,6 @@ describe('Multipage activity tests', function () {
     cy.url().should('contain', doenetId)
 
   })
-
 
   it('Update to new version', () => {
     const doenetML1 = `
@@ -1898,10 +1895,9 @@ describe('Multipage activity tests', function () {
 
   })
 
-
   it('Clicking links does not give update version prompt', () => {
     const doenetML = `
-<section name="sect">
+<section includeAutoName includeAutoNumber name="sect">
   <title>Info only</title>
   <p>This activity is just information only, with no interactive content.
     <ref name="goPage1" page="1">Go to page 1.</ref>
@@ -2018,7 +2014,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="View Assigned Activity"]').click();
 
 
-    cy.get('#\\/sect_title').should('have.text', 'Section 1: Info only')
+    cy.get('#\\/sect_title').should('have.text', 'Info only')
 
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -2054,7 +2050,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test="View Assigned Activity"]').click();
 
-    cy.get('#page1\\/sect_title').should('have.text', 'Section 1: Info only')
+    cy.get('#page1\\/sect_title').should('have.text', 'Info only')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
 
@@ -2083,7 +2079,6 @@ describe('Multipage activity tests', function () {
 
 
   })
-
 
   it('Change number of pages in activity', () => {
     const doenetML = `

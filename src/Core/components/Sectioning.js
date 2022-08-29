@@ -23,13 +23,6 @@ export class Paragraphs extends SectioningComponent {
   static componentType = "paragraphs";
   static rendererType = "section";
 
-  static createAttributesObject() {
-    let attributes = super.createAttributesObject();
-    attributes.suppressAutoNumber.defaultValue = true;
-    attributes.suppressAutoName.defaultValue = true;
-    return attributes;
-  }
-
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -66,7 +59,6 @@ export class Aside extends SectioningComponent {
       createStateVariable: "startOpen",
       defaultValue: false,
     }
-    attributes.suppressAutoNumber.defaultValue = true;
 
     return attributes;
   }

@@ -70,6 +70,20 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
     }
 
+    attributes.includeAutoName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeAutoName",
+      defaultValue: false,
+      public: true,
+    }
+
+    attributes.includeAutoNumber = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeAutoNumber",
+      defaultValue: false,
+      public: true,
+    }
+
     attributes.includeParentNumber = {
       createComponentOfType: "boolean",
       createStateVariable: "includeParentNumber",
@@ -146,7 +160,7 @@ export default class SectioningComponent extends BlockComponent {
 
         enumeration.push(dependencyValues.countAmongSiblings)
 
-        
+
         return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
 
       }
@@ -223,7 +237,7 @@ export default class SectioningComponent extends BlockComponent {
       },
       forRenderer: true,
       alwaysUpdateRenderer: true,
-      returnDependencies: () => ({
+      returnDependencies: ({ sharedParameters }) => ({
         titleChild: {
           dependencyType: "child",
           childGroups: ["titles"],
@@ -237,40 +251,51 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "sectionNumber"
         },
-        suppressAutoName: {
+        includeAutoName: {
           dependencyType: "stateVariable",
-          variableName: "suppressAutoName"
+          variableName: "includeAutoName"
         },
-        suppressAutoNumber: {
+        includeAutoNumber: {
           dependencyType: "stateVariable",
-          variableName: "suppressAutoNumber"
+          variableName: "includeAutoNumber"
+        },
+        prerender: {
+          dependencyType: "value",
+          value: sharedParameters.prerender
         }
       }),
       definition({ dependencyValues }) {
 
         let titlePrefix = "";
         let title = "";
-        if (dependencyValues.suppressAutoNumber) {
-          if (!dependencyValues.suppressAutoName) {
-            titlePrefix = dependencyValues.sectionName;
-          }
-        } else {
-          if (!dependencyValues.suppressAutoName) {
+
+        const haveTitleChild = dependencyValues.titleChild.length > 0;
+
+        let includeAutoNumber = (dependencyValues.includeAutoNumber || !haveTitleChild)
+          && !dependencyValues.prerender;
+
+        let includeAutoName = dependencyValues.includeAutoName || !haveTitleChild;
+
+        if (includeAutoNumber) {
+          if(includeAutoName) {
             titlePrefix = dependencyValues.sectionName + " ";
           }
           titlePrefix += dependencyValues.sectionNumber;
+        } else {
+          if (includeAutoName) {
+            titlePrefix = dependencyValues.sectionName;
+          }
         }
 
-
-        if (dependencyValues.titleChild.length === 0) {
+        if (!haveTitleChild) {
           title = titlePrefix;
         } else {
 
           if (titlePrefix) {
-            if (dependencyValues.suppressAutoName) {
-              titlePrefix += ". "
-            } else {
+            if (dependencyValues.includeAutoName) {
               titlePrefix += ": "
+            } else {
+              titlePrefix += ". "
             }
           }
 

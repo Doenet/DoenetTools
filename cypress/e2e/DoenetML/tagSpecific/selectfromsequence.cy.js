@@ -1694,8 +1694,12 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first select" />
-    <booleaninput name='h2' prefill="true" label="Hide second select" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first select</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second select</label>
+    </booleaninput>
     <p><selectfromsequence assignnames="c" hide="$h1" type="letters" from="a" to="e"/>, <selectfromsequence assignnames="d" hide="$h2" type="letters" from="a" to="e"/></p>
     <p><copy target="c" />, <copy target="d" /></p>
     `}, "*");
@@ -1734,8 +1738,12 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='f1' prefill="false" label="Fix first select" />
-    <booleaninput name='f2' prefill="true" label="Fix second select" />
+    <booleaninput name='f1' prefill="false" >
+      <label>Fix first select</label>
+    </booleaninput>
+    <booleaninput name='f2' prefill="true" >
+      <label>Fix second select</label>
+    </booleaninput>
     <p>
       <selectfromsequence assignnames="a" type="letters" from="a" to="e"/>
       <selectfromsequence assignnames="b" fixed="$f1" type="letters" from="a" to="e"/>

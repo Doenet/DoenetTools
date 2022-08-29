@@ -129,8 +129,6 @@ export default function PageViewer(props) {
   const preventMoreAnimations = useRef(false);
   const animationInfo = useRef({});
 
-  const havePrerendered = useRef(null);
-
   const resolveActionPromises = useRef({});
 
   const prefixForIds = props.prefixForIds || "";
@@ -287,15 +285,6 @@ export default function PageViewer(props) {
 
   }, [location, hash, documentRenderer, props.pageIsActive])
 
-  useEffect(() => {
-
-    if (havePrerendered.current !== null) {
-      props.pagePrerenderedCallback?.(havePrerendered.current)
-
-    }
-
-  }, [havePrerendered.current])
-
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
     coreWorker.current.terminate();
@@ -398,6 +387,8 @@ export default function PageViewer(props) {
           callAction,
         }
       ));
+
+      props.renderersInitializedCallback?.()
 
     });
 
@@ -671,7 +662,6 @@ export default function PageViewer(props) {
       } else {
         setStage('readyToCreateCore');
       }
-      havePrerendered.current = Object.keys(initialCoreData.current).length > 0;
     }
 
   }

@@ -45,9 +45,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
     // TODO: either change behavior or change how label is specified
 
     let jsxAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
 

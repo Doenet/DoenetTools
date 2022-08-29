@@ -30,6 +30,7 @@ export default class Core {
     requestedVariant, requestedVariantIndex,
     previousComponentTypeCounts = {},
     flags = {},
+    prerender = false,
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
     // console.time('core');
@@ -110,6 +111,7 @@ export default class Core {
     this.parameterStack = new ParameterStack();
 
     this.parameterStack.parameters.rngClass = prng_alea;
+    this.parameterStack.parameters.prerender = prerender;
 
     this.initialized = false;
     this.initializedPromiseResolves = [];
@@ -1807,11 +1809,14 @@ export default class Core {
 
     }
 
-    return { success: false }
+    // lastly try to match with afterAdapters set to true
+    return this.findChildGroupNoAdapters(
+      childType, parentClass, true
+    )
 
   }
 
-  findChildGroupNoAdapters(componentType, parentClass) {
+  findChildGroupNoAdapters(componentType, parentClass, afterAdapters = false) {
     if (parentClass.childGroupOfComponentType[componentType]) {
       return {
         success: true,
@@ -1825,6 +1830,9 @@ export default class Core {
           inheritedComponentType: componentType,
           baseComponentType: typeFromGroup
         })) {
+          if(group.matchAfterAdapters && !afterAdapters) {
+            continue;
+          }
           // don't match composites to the base component
           // so that they will expand
           if (!(typeFromGroup === "_base" &&
@@ -5545,7 +5553,7 @@ export default class Core {
           essentialArray = component.essentialState[essentialVarName] = [];
         }
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
 
@@ -5574,7 +5582,7 @@ export default class Core {
       } else {
         component.essentialState[essentialVarName] = result.setEssentialValue[varName];
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
         this.essentialValuesSavedInDefinition[component.componentName][varName]

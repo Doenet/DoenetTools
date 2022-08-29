@@ -52,9 +52,9 @@ export default React.memo(function LineSegment(props) {
 
     //things to be passed to JSXGraph as attributes
     var jsxSegmentAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -177,7 +177,7 @@ export default React.memo(function LineSegment(props) {
       ]
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     return lineSegmentJXG.current;
 
@@ -353,9 +353,9 @@ export default React.memo(function LineSegment(props) {
         lineSegmentJXG.current.visProp.dash = newDash;
       }
 
-      lineSegmentJXG.current.name = SVs.label;
+      lineSegmentJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         lineSegmentJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

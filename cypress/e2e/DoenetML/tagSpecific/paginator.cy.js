@@ -43,10 +43,14 @@ describe('Paginator Tag Tests', function () {
       </section>
     </paginator>
     <p>
-    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" target="pgn" number="$pageNum -1" />
+    <callAction name="prevPage" disabled="$pageNum = 1" actionName="setPage" target="pgn" number="$pageNum -1"  >
+      <label>prev</label>
+    </callAction>
     Page <copy prop="currentPage" target="pgn" assignNames="pageNum" />
     of <copy prop="nPages" target="pgn" assignNames="nPages" />
-    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1" />
+    <callAction name="nextPage" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1"  >
+      <label>next</label>
+    </callAction>
     
     </p>
     <p>What is 2+2? <answer>4</answer></p>
@@ -1935,7 +1939,7 @@ describe('Paginator Tag Tests', function () {
 
   })
 
-  it.only('Variants stay consistent with external copies', () => {
+  it('Variants stay consistent with external copies', () => {
 
     let doenetMLWithSelects = `
     <text>a</text>
@@ -2105,7 +2109,7 @@ describe('Paginator Tag Tests', function () {
               })
 
             } else {
-              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}: Animal sounds`)
+              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
               cy.wait(10);
 
               cy.window().then(async (win) => {
@@ -2214,7 +2218,7 @@ describe('Paginator Tag Tests', function () {
             })
 
           } else {
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}: Animal sounds`)
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
             cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
 
             cy.wait(10);
@@ -2318,7 +2322,7 @@ describe('Paginator Tag Tests', function () {
             })
 
           } else {
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}: Animal sounds`)
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
             cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
 
             cy.wait(10);
