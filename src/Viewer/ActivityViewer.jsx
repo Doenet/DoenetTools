@@ -13,7 +13,7 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 import { useLocation, useNavigate } from 'react-router';
 import cssesc from 'cssesc';
 import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
-
+import Button from '../_reactComponents/PanelHeaderComponents/Button';
 
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
@@ -1259,16 +1259,20 @@ export default function ActivityViewer(props) {
   let pageControlsTop = null;
   let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
-    pageControlsTop = <>
-      <button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
-      { } Page {currentPage} of {nPages} { }
-      <button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
-    </>
-    pageControlsBottom = <>
-      <button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
-      { } Page {currentPage} of {nPages} { }
-      <button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
-    </>
+    pageControlsTop = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
+      <Button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+      <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
+      <Button  data-test={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+    </div>
+
+    if(renderedPages[currentPage-1]){
+      pageControlsBottom = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
+      <Button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+      <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
+      <Button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+    </div>
+    }
+    
   }
 
   return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
