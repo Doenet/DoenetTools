@@ -169,7 +169,7 @@ export default function People() {
             dateEnrolled,
             <Button
               key={'withdraw'}
-              value={withdrew === '0' ? 'Widthdraw' : 'Enroll'}
+              value={withdrew === '0' ? 'Withdraw' : 'Enroll'}
               onClick={(e) => {
                 if (withdrew === '0') {
                   withDrawLearners(e, email);

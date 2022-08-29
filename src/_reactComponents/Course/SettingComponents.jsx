@@ -736,6 +736,7 @@ export function MangeRoles({ courseId }) {
           />
         </ButtonGroup>
       )}
+      <br />
       <CollapseSection width="menu" title="Delete Role" collapsed>
         <Button
           width="menu"

@@ -33,12 +33,19 @@ describe('Math Display Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+    <lorem generateParagraphs="2" />
     <men name="e1">\\sin(x)</men>
+    <lorem generateParagraphs="2" />
     <men name="e2">\\cos(x)</men>
+    <lorem generateParagraphs="2" />
     <men name="e3">\\tan(x)</men>
+    <lorem generateParagraphs="2" />
 
     <p>We have equation <ref target="e1" name="re1" />, equation <ref target="e2" name="re2" />, and equation <ref target="e3" name="re3" />.</p>
     <p>From copying properties: <copy prop="equationTag" target="e1" assignNames="te1" />, <copy prop="equationTag" target="e2" assignNames="te2" />, and <copy prop="equationTag" target="e3" assignNames="te3" />.</p>
+
+    <lorem generateParagraphs="8" />
+
     `}, "*");
     });
 
@@ -58,14 +65,32 @@ describe('Math Display Tag Tests', function () {
     cy.get('#\\/re1').should('have.text', '(1)')
     cy.get('#\\/re2').should('have.text', '(2)')
     cy.get('#\\/re3').should('have.text', '(3)')
-    cy.get('#\\/re1').should('have.attr', 'href', '#/e1')
-    cy.get('#\\/re2').should('have.attr', 'href', '#/e2')
-    cy.get('#\\/re3').should('have.attr', 'href', '#/e3')
 
     cy.get('#\\/_p2').should('have.text', 'From copying properties: 1, 2, and 3.')
     cy.get('#\\/te1').should('have.text', '1')
     cy.get('#\\/te2').should('have.text', '2')
     cy.get('#\\/te3').should('have.text', '3')
+
+    cy.get('#\\/re1').click();
+
+    cy.get('#\\/e1').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(-1).lt(5)
+    })
+
+    cy.get('#\\/re2').click();
+
+    cy.get('#\\/e2').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(-1).lt(5)
+    })
+
+    cy.get('#\\/re3').click();
+
+    cy.get('#\\/e3').then(el => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(-1).lt(5)
+    })
 
   });
 
@@ -108,6 +133,7 @@ describe('Math Display Tag Tests', function () {
       <copy prop="value" target="m" assignNames="ma" />
       <copy prop="value" target="n" assignNames="na" />
     </p>
+    <lorem generateParagraphs="8" />
     `}, "*");
     });
 
@@ -125,7 +151,11 @@ describe('Math Display Tag Tests', function () {
       cy.get('#\\/px').should('have.text', `x: ${counter}, equation (${counter})`)
       cy.get('#\\/etx').should('have.text', `${counter}`)
       cy.get('#\\/rx').should('have.text', `(${counter})`)
-      cy.get('#\\/rx').should('have.attr', 'href', `#/x`)
+      cy.get('#\\/rx').click();
+      cy.get('#\\/x').then(el => {
+        let rect = el[0].getBoundingClientRect();
+        expect(rect.top).gt(-1).lt(5)
+      })
 
       for (let i = 1; i <= m; i++) {
         cy.window().then(async (win) => {
@@ -137,7 +167,11 @@ describe('Math Display Tag Tests', function () {
             cy.get(`#\\/pm${i}`).should('have.text', `m${i}: ${counter}, equation (${counter})`)
             cy.get(`#\\/etm${i}`).should('have.text', `${counter}`)
             cy.get(`#\\/rm${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rm${i}`).should('have.attr', 'href', `#/m${i}/eq`)
+            cy.get(`#\\/rm${i}`).click();
+            cy.get(`#\\/m${i}\\/eq`).then(el => {
+              let rect = el[0].getBoundingClientRect();
+              expect(rect.top).gt(-1).lt(5)
+            })
           }
         })
       }
@@ -146,7 +180,10 @@ describe('Math Display Tag Tests', function () {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
-          cy.get(`#\\/rm${i}`).should('have.attr', 'href', `#`)
+          cy.get(`#\\/rm${i}`).click();
+          cy.window().then(async (win) => {
+            expect(win.scrollY).eq(0);
+          })
         })
       }
 
@@ -158,7 +195,11 @@ describe('Math Display Tag Tests', function () {
         cy.get('#\\/py').should('have.text', `y: ${counter}, equation (${counter})`)
         cy.get('#\\/ety').should('have.text', `${counter}`)
         cy.get('#\\/ry').should('have.text', `(${counter})`)
-        cy.get('#\\/ry').should('have.attr', 'href', `#/y`)
+        cy.get('#\\/ry').click();
+        cy.get('#\\/y').then(el => {
+          let rect = el[0].getBoundingClientRect();
+          expect(rect.top).gt(-1).lt(5)
+        })
       })
 
       for (let i = 1; i <= n; i++) {
@@ -171,7 +212,11 @@ describe('Math Display Tag Tests', function () {
             cy.get(`#\\/pn${i}`).should('have.text', `n${i}: ${counter}, equation (${counter})`)
             cy.get(`#\\/etn${i}`).should('have.text', `${counter}`)
             cy.get(`#\\/rn${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rn${i}`).should('have.attr', 'href', `#/n${i}/eq`)
+            cy.get(`#\\/rn${i}`).click();
+            cy.get(`#\\/n${i}\\/eq`).then(el => {
+              let rect = el[0].getBoundingClientRect();
+              expect(rect.top).gt(-1).lt(5)
+            })
           }
         })
       }
@@ -181,7 +226,10 @@ describe('Math Display Tag Tests', function () {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
-          cy.get(`#\\/rn${i}`).should('have.attr', 'href', `#`)
+          cy.get(`#\\/rn${i}`).click();
+          cy.window().then(async (win) => {
+            expect(win.scrollY).eq(0);
+          })
         })
       }
 
@@ -194,7 +242,11 @@ describe('Math Display Tag Tests', function () {
         cy.get('#\\/pz').should('have.text', `z: ${counter}, equation (${counter})`)
         cy.get('#\\/etz').should('have.text', `${counter}`)
         cy.get('#\\/rz').should('have.text', `(${counter})`)
-        cy.get('#\\/rz').should('have.attr', 'href', `#/z`)
+        cy.get('#\\/rz').click();
+        cy.get('#\\/z').then(el => {
+          let rect = el[0].getBoundingClientRect();
+          expect(rect.top).gt(-1).lt(5)
+        })
       })
     }
 
@@ -363,6 +415,7 @@ describe('Math Display Tag Tests', function () {
       <copy prop="value" target="m" assignNames="ma" />
       <copy prop="value" target="n" assignNames="na" />
     </p>
+    <lorem generateParagraphs="8" />
     `}, "*");
     });
 
@@ -380,7 +433,11 @@ describe('Math Display Tag Tests', function () {
       cy.get('#\\/px').should('have.text', `x: ${counter}, equation (${counter})`)
       cy.get('#\\/etx').should('have.text', `${counter}`)
       cy.get('#\\/rx').should('have.text', `(${counter})`)
-      cy.get('#\\/rx').should('have.attr', 'href', `#/x`)
+      cy.get('#\\/rx').click();
+      cy.get('#\\/x').then(el => {
+        let rect = el[0].getBoundingClientRect();
+        expect(rect.top).gt(-1).lt(5)
+      })
 
       for (let i = 1; i <= m; i++) {
         cy.window().then(async (win) => {
@@ -395,7 +452,11 @@ describe('Math Display Tag Tests', function () {
             cy.get(`#\\/pm${i}`).should('have.text', `m${i}: ${counter}, equation (${counter})`)
             cy.get(`#\\/etm${i}`).should('have.text', `${counter}`)
             cy.get(`#\\/rm${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rm${i}`).should('have.attr', 'href', `#/m${i}/eq`)
+            cy.get(`#\\/rm${i}`).click();
+            cy.get(`#\\/m${i}\\/eq`).then(el => {
+              let rect = el[0].getBoundingClientRect();
+              expect(rect.top).gt(-1).lt(5)
+            })
           }
         })
       }
@@ -404,7 +465,10 @@ describe('Math Display Tag Tests', function () {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
-          cy.get(`#\\/rm${i}`).should('have.attr', 'href', `#`)
+          cy.get(`#\\/rm${i}`).click();
+          cy.window().then(async (win) => {
+            expect(win.scrollY).eq(0);
+          })
         })
       }
 
@@ -416,7 +480,11 @@ describe('Math Display Tag Tests', function () {
         cy.get('#\\/py').should('have.text', `y: ${counter}, equation (${counter})`)
         cy.get('#\\/ety').should('have.text', `${counter}`)
         cy.get('#\\/ry').should('have.text', `(${counter})`)
-        cy.get('#\\/ry').should('have.attr', 'href', `#/y`)
+        cy.get('#\\/ry').click();
+        cy.get('#\\/y').then(el => {
+          let rect = el[0].getBoundingClientRect();
+          expect(rect.top).gt(-1).lt(5)
+        })
       })
 
       for (let i = 1; i <= n; i++) {
@@ -432,7 +500,11 @@ describe('Math Display Tag Tests', function () {
             cy.get(`#\\/pn${i}`).should('have.text', `n${i}: ${counter}, equation (${counter})`)
             cy.get(`#\\/etn${i}`).should('have.text', `${counter}`)
             cy.get(`#\\/rn${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rn${i}`).should('have.attr', 'href', `#/n${i}/eq`)
+            cy.get(`#\\/rn${i}`).click();
+            cy.get(`#\\/n${i}\\/eq`).then(el => {
+              let rect = el[0].getBoundingClientRect();
+              expect(rect.top).gt(-1).lt(5)
+            })
           }
         })
       }
@@ -442,7 +514,10 @@ describe('Math Display Tag Tests', function () {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
-          cy.get(`#\\/rn${i}`).should('have.attr', 'href', `#`)
+          cy.get(`#\\/rn${i}`).click();
+          cy.window().then(async (win) => {
+            expect(win.scrollY).eq(0);
+          })
         })
       }
 
@@ -455,7 +530,11 @@ describe('Math Display Tag Tests', function () {
         cy.get('#\\/pz').should('have.text', `z: ${counter}, equation (${counter})`)
         cy.get('#\\/etz').should('have.text', `${counter}`)
         cy.get('#\\/rz').should('have.text', `(${counter})`)
-        cy.get('#\\/rz').should('have.attr', 'href', `#/z`)
+        cy.get('#\\/rz').click();
+        cy.get('#\\/z').then(el => {
+          let rect = el[0].getBoundingClientRect();
+          expect(rect.top).gt(-1).lt(5)
+        })
       })
     }
 
@@ -532,6 +611,7 @@ describe('Math Display Tag Tests', function () {
       <copy prop="value" target="m" assignNames="ma" />
       <copy prop="value" target="n" assignNames="na" />
     </p>
+    <lorem generateParagraphs="8" />
     `}, "*");
     });
 
@@ -549,7 +629,12 @@ describe('Math Display Tag Tests', function () {
       cy.get('#\\/px').should('have.text', `x: ${counter}, equation (${counter})`)
       cy.get('#\\/etx').should('have.text', `${counter}`)
       cy.get('#\\/rx').should('have.text', `(${counter})`)
-      cy.get('#\\/rx').should('have.attr', 'href', `#/x`)
+      cy.get('#\\/rx').click();
+      cy.url().should('match', RegExp(`#\\/x$`))
+      cy.get('#\\/x').then(el => {
+        let rect = el[0].getBoundingClientRect();
+        expect(rect.top).gt(-1).lt(5)
+      })
 
       let labeledMs = 0;
       let unlabeledMs = 0;
@@ -568,7 +653,12 @@ describe('Math Display Tag Tests', function () {
               cy.get(`#\\/pm${i}`).should('have.text', `m${i}: ${counter}, equation (${counter})`)
               cy.get(`#\\/etm${i}`).should('have.text', `${counter}`)
               cy.get(`#\\/rm${i}`).should('have.text', `(${counter})`)
-              cy.get(`#\\/rm${i}`).should('have.attr', 'href', `#/m${i}/eq`)
+              cy.get(`#\\/rm${i}`).click();
+              cy.url().should('match', RegExp(`#\\/m${i}\\/eq$`))
+              cy.get(`#\\/m${i}\\/eq`).then(el => {
+                let rect = el[0].getBoundingClientRect();
+                expect(rect.top).gt(-1).lt(5)
+              })
             }
           } else {
             unlabeledMs++;
@@ -579,7 +669,8 @@ describe('Math Display Tag Tests', function () {
               cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
               cy.get(`#\\/etm${i}`).should('have.text', '')
               cy.get(`#\\/rm${i}`).should('have.text', `???`)
-              cy.get(`#\\/rm${i}`).should('have.attr', 'href', `#/m${i}/eq`)
+              cy.get(`#\\/rm${i}`).click();
+              cy.url().should('match', RegExp(`#\\/m${i}\\/eq$`))
             }
           }
         })
@@ -589,7 +680,11 @@ describe('Math Display Tag Tests', function () {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
-          cy.get(`#\\/rm${i}`).should('have.attr', 'href', `#`)
+          cy.get(`#\\/rm${i}`).click();
+          cy.url().should('match', RegExp(`#$`))
+          cy.window().then(async (win) => {
+            expect(win.scrollY).eq(0);
+          })
         })
       }
 
@@ -601,7 +696,12 @@ describe('Math Display Tag Tests', function () {
         cy.get('#\\/py').should('have.text', `y: ${counter}, equation (${counter})`)
         cy.get('#\\/ety').should('have.text', `${counter}`)
         cy.get('#\\/ry').should('have.text', `(${counter})`)
-        cy.get('#\\/ry').should('have.attr', 'href', `#/y`)
+        cy.get('#\\/ry').click();
+        cy.url().should('match', RegExp(`#\\/y$`))
+        cy.get('#\\/y').then(el => {
+          let rect = el[0].getBoundingClientRect();
+          expect(rect.top).gt(-1).lt(5)
+        })
       })
 
       let labeledNs = 0;
@@ -621,7 +721,12 @@ describe('Math Display Tag Tests', function () {
               cy.get(`#\\/pn${i}`).should('have.text', `n${i}: ${counter}, equation (${counter})`)
               cy.get(`#\\/etn${i}`).should('have.text', `${counter}`)
               cy.get(`#\\/rn${i}`).should('have.text', `(${counter})`)
-              cy.get(`#\\/rn${i}`).should('have.attr', 'href', `#/n${i}/eq`)
+              cy.get(`#\\/rn${i}`).click();
+              cy.url().should('match', RegExp(`#\\/n${i}\\/eq$`))
+              cy.get(`#\\/n${i}\\/eq`).then(el => {
+                let rect = el[0].getBoundingClientRect();
+                expect(rect.top).gt(-1).lt(5)
+              })
             }
           } else {
             unlabeledNs++;
@@ -632,7 +737,8 @@ describe('Math Display Tag Tests', function () {
               cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
               cy.get(`#\\/etn${i}`).should('have.text', ``)
               cy.get(`#\\/rn${i}`).should('have.text', `???`)
-              cy.get(`#\\/rn${i}`).should('have.attr', 'href', `#/n${i}/eq`)
+              cy.get(`#\\/rn${i}`).click();
+              cy.url().should('match', RegExp(`#\\/n${i}\\/eq$`))
             }
           }
         })
@@ -643,7 +749,11 @@ describe('Math Display Tag Tests', function () {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
-          cy.get(`#\\/rn${i}`).should('have.attr', 'href', `#`)
+          cy.get(`#\\/rn${i}`).click();
+          cy.url().should('match', RegExp(`#$`))
+          cy.window().then(async (win) => {
+            expect(win.scrollY).eq(0);
+          })
         })
       }
 
@@ -656,7 +766,12 @@ describe('Math Display Tag Tests', function () {
         cy.get('#\\/pz').should('have.text', `z: ${counter}, equation (${counter})`)
         cy.get('#\\/etz').should('have.text', `${counter}`)
         cy.get('#\\/rz').should('have.text', `(${counter})`)
-        cy.get('#\\/rz').should('have.attr', 'href', `#/z`)
+        cy.get('#\\/rz').click();
+        cy.url().should('match', RegExp(`#\\/z$`))
+        cy.get('#\\/z').then(el => {
+          let rect = el[0].getBoundingClientRect();
+          expect(rect.top).gt(-1).lt(5)
+        })
       })
     }
 

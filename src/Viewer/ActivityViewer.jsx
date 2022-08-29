@@ -3,29 +3,42 @@ import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import PageViewer from './PageViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-import { prng_alea } from 'esm-seedrandom';
-import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
 import axios from 'axios';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { useToast, toastType } from '@Toast';
 import { nanoid } from 'nanoid';
-import { enumerateCombinations } from '../Core/utils/enumeration';
-import { determineNumberOfActivityVariants, parseActivityDefinition } from '../_utils/activityUtils';
-import createComponentInfoObjects from '../Core/utils/componentInfoObjects';
-import { addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSerializedComponents } from '../Core/utils/serializedStateProcessing';
+import { calculateOrderAndVariants, parseActivityDefinition } from '../_utils/activityUtils';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import { useLocation, useNavigate } from 'react-router';
 import cssesc from 'cssesc';
-import { atom, useRecoilCallback, useSetRecoilState } from 'recoil';
-
-let rngClass = prng_alea;
+import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
+import Button from '../_reactComponents/PanelHeaderComponents/Button';
 
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
   default: null
 })
 
+export const scrollableContainerAtom = atom({
+  key: "scollParentAtom",
+  default: null
+})
+
+export const currentPageAtom = atom({
+  key: "currentPageAtom",
+  default: 0
+})
+
+export const activityAttemptNumberSetUpAtom = atom({
+  key: "activityAttemptNumberSetUpAtom",
+  default: 0
+})
+
+export const itemWeightsAtom = atom({
+  key: "itemWeightsAtom",
+  default: []
+})
 
 export default function ActivityViewer(props) {
   const toast = useToast();
@@ -67,16 +80,18 @@ export default function ActivityViewer(props) {
   const [flags, setFlags] = useState(props.flags);
 
   const [currentPage, setCurrentPage] = useState(0);
+  const setRecoilCurrentPage = useSetRecoilState(currentPageAtom);
   const currentPageRef = useRef(currentPage);  // so that event listener can get new current page
   currentPageRef.current = currentPage; // so updates on every refresh
+
+  const setActivityAttemptNumberSetUp = useSetRecoilState(activityAttemptNumberSetUpAtom);
 
   const [nPages, setNPages] = useState(0);
 
   const [variantsByPage, setVariantsByPage] = useState(null);
-  const [itemWeights, setItemWeights] = useState(null);
+  const [itemWeights, setItemWeights] = useRecoilState(itemWeightsAtom);
   const previousComponentTypeCountsByPage = useRef([]);
 
-  const [cidChanged, setCidChanged] = useState(props.cidChanged);
 
   const serverSaveId = useRef(null);
 
@@ -84,6 +99,7 @@ export default function ActivityViewer(props) {
   const changesToBeSaved = useRef(false);
 
   const setSaveStateToDBTimerId = useSetRecoilState(saveStateToDBTimerIdAtom);
+  const [scrollableContainer, setScrollableContainer] = useRecoilState(scrollableContainerAtom);
 
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
@@ -98,18 +114,29 @@ export default function ActivityViewer(props) {
   })
 
 
-  const prerenderedPages = useRef([])
-  const allPagesPrerendered = useRef(false);
+  const [renderedPages, setRenderedPages] = useState([])
+  const allPagesRendered = useRef(false);
 
   const nodeRef = useRef(null);
   const ignoreNextScroll = useRef(false);
+  const stillNeedToScrollTo = useRef(null);
 
-  let { hash, search } = useLocation();
+  let location = useLocation();
+  let hash = location.hash;
+  const previousLocations = useRef({});
+  const currentLocationKey = useRef(null);
+  const viewerWasUnmounted = useRef(false);
+
 
   let navigate = useNavigate();
 
 
-  // set ref to value from recoil atom
+  useEffect(() => {
+    return () => {
+      saveState({ overrideThrottle: true });
+      viewerWasUnmounted.current = true;
+    }
+  }, [])
 
   useEffect(() => {
 
@@ -140,45 +167,61 @@ export default function ActivityViewer(props) {
         itemWeights,
       }
     }
-  })
+  }, [
+    activityDefinition,
+    requestedVariantIndex,
+    variantIndex,
+    cid,
+    order,
+    currentPage,
+    nPages,
+    variantsByPage,
+    itemWeights
+  ])
 
   useEffect(() => {
     // for non-paginated activity
     // set the current page to be the page at the top of the screen
     // will be used to set the url hash
 
-    if (!props.paginate && nPages > 1 && nodeRef.current) {
+    if (nodeRef.current) {
 
-      let scrollableContainer = nodeRef.current.parentNode.id === "mainPanel"
+      let newScrollableContainer = nodeRef.current.parentNode.id === "mainPanel"
         ? nodeRef.current.parentNode : window
 
-      scrollableContainer.addEventListener('scroll', (event) => {
-        // find page that is at the top
+      setScrollableContainer(newScrollableContainer);
 
-        if (ignoreNextScroll.current) {
-          ignoreNextScroll.current = false;
+      if (!props.paginate && nPages > 1) {
 
-        } else {
+        newScrollableContainer.addEventListener('scroll', (event) => {
+          // find page that is at the top
 
-          let topPage;
-          for (let ind = 0; ind < nPages - 1; ind++) {
-            let thePage = document.getElementById(`page${ind + 1}`);
-            if (thePage) {
-              let { bottom } = thePage.getBoundingClientRect();
-              if (bottom < 50) {
-                topPage = ind + 2;
-              } else if (!topPage) {
-                topPage = 1;
+          if (ignoreNextScroll.current) {
+            ignoreNextScroll.current = false;
+
+          } else {
+
+            let topPage;
+            for (let ind = 0; ind < nPages - 1; ind++) {
+              let thePage = document.getElementById(`page${ind + 1}`);
+              if (thePage) {
+                let { bottom } = thePage.getBoundingClientRect();
+                if (bottom < 50) {
+                  topPage = ind + 2;
+                } else if (!topPage) {
+                  topPage = 1;
+                }
               }
+            }
+
+            if (topPage && topPage !== currentPageRef.current) {
+              setCurrentPage(topPage)
+              setRecoilCurrentPage(topPage)
             }
           }
 
-          if (topPage && topPage !== currentPageRef.current) {
-            setCurrentPage(topPage)
-          }
-        }
-
-      })
+        })
+      }
     }
   }, [nodeRef.current, nPages])
 
@@ -190,33 +233,101 @@ export default function ActivityViewer(props) {
     if (hash && nPages) {
       let match = hash.match(/^#page(\d+)/)
       if (match) {
-        setCurrentPage(Math.max(1, Math.min(nPages, match[1])));
+        let newPage = Math.max(1, Math.min(nPages, match[1]));
+        if (newPage !== currentPage) {
+          setCurrentPage(newPage);
+          setRecoilCurrentPage(newPage);
+        }
       }
     }
   }, [hash, nPages])
 
   useEffect(() => {
     if (currentPage > 0 && nPages > 1) {
-      let pageAnchor = `#page${currentPage}`;
-      if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
-        navigate(search + pageAnchor, { replace: true })
+      let hashPage = Number(hash?.match(/^#page(\d+)/)?.[1]);
+      if (hashPage !== currentPage) {
+        let pageAnchor = `#page${currentPage}`;
+        // if we have moved to a page that does not correspond to the hash
+        // modify the hash to match the page.
+        let navigateAttrs = { replace: true }
+        if (!props.paginate) {
+          // If not paginated, then do not scroll to the top of the page,
+          // as the page change could be triggered by scrolling
+
+          navigateAttrs.state = { doNotScroll: true }
+        }
+        navigate(location.search + pageAnchor, navigateAttrs)
+      }
+      if (stillNeedToScrollTo.current) {
+        document.getElementById(stillNeedToScrollTo.current)?.scrollIntoView();
+        stillNeedToScrollTo.current = null;
+
       }
     }
   }, [currentPage, nPages])
 
   useEffect(() => {
-    if (allPagesPrerendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
+    if (allPagesRendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
       ignoreNextScroll.current = true;
       document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
     }
-  }, [allPagesPrerendered.current])
+  }, [allPagesRendered.current])
+
+  useEffect(() => {
+    // Keep track of scroll position when clicked on a link
+    // If navigate back to that location (i.e., hit back button)
+    // then scroll back to the location when clicked
+
+    // console.log({
+    //   currentLocationKey: currentLocationKey.current,
+    //   newLocationKey: location.key,
+    //   scrollPositionFromLink: location.state?.previousScrollPosition,
+    //   newScrollPosition: previousLocations.current[location.key]?.lastScrollPosition
+    // })
+
+    let foundNewInPrevious = false;
+
+    if (currentLocationKey.current !== location.key) {
+      if (location.state?.previousScrollPosition !== undefined && currentLocationKey.current) {
+        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
+      }
+
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+
+        if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
+          scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+        }
+      }
 
 
-  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) =>
-    async () => {
-      return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+      previousLocations.current[location.key] = { ...location };
+      currentLocationKey.current = location.key;
     }
-  )
+
+    stillNeedToScrollTo.current = null;
+
+    // since the <Link> from react router doesn't seem to scroll into hashes
+    // always scroll to the hash the first time we get a location from a <Link>
+    if (!location.state?.doNotScroll && (location.key === "default" || !foundNewInPrevious)) {
+      let scrollTo = cssesc(hash.slice(1));
+      if (props.paginate && hash.match(/^#page(\d+)$/)) {
+        // if paginate, want to scroll to top of activity so can still see page controls
+        scrollTo = 'activityTop';
+      }
+      if (props.paginate && Number(hash.match(/^#page(\d+)/)?.[1]) !== currentPage) {
+        stillNeedToScrollTo.current = scrollTo;
+      } else {
+        document.getElementById(scrollTo)?.scrollIntoView();
+      }
+
+    }
+
+  }, [location])
+
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+  }, [saveStateToDBTimerIdAtom])
 
 
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
@@ -349,6 +460,7 @@ export default function ActivityViewer(props) {
     let loadedState = false;
     let newItemWeights;
     let newVariantIndex;
+    let loadedFromInitialState = false;
 
     if (props.flags.allowLocalState) {
 
@@ -396,8 +508,10 @@ export default function ActivityViewer(props) {
         serverSaveId.current = localInfo.saveId;
 
         // activityState is just currentPage
+        // if hash doesn't already specify a page, set page from activityState
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(localInfo.activityState.currentPage);
+          setRecoilCurrentPage(localInfo.activityState.currentPage);
         }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
@@ -478,8 +592,10 @@ export default function ActivityViewer(props) {
         let activityState = JSON.parse(resp.data.activityState);
 
         // activityState is just currentPage
+        // if hash doesn't already specify a page, set page from activityState
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(activityState.currentPage);
+          setRecoilCurrentPage(activityState.currentPage);
         }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
@@ -500,13 +616,17 @@ export default function ActivityViewer(props) {
 
         // get initial state and info
 
+        loadedFromInitialState = true;
+
         // start at page 1
+        // if hash doesn't already specify a page, set page to 1
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(1);
+          setRecoilCurrentPage(1);
         }
 
         let results;
-        results = await calculateOrderAndVariants();
+        results = await calculateOrderAndVariants({ activityDefinition, requestedVariantIndex });
         if (!results.success) {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
@@ -533,7 +653,7 @@ export default function ActivityViewer(props) {
     }
 
 
-    return { newItemWeights, newVariantIndex };
+    return { newItemWeights, newVariantIndex, loadedFromInitialState };
 
   }
 
@@ -563,7 +683,9 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    setCidChanged(resp.data.cidChanged === true);
+    if (resp.data.cidChanged === true) {
+      props.cidChangedCallback();
+    }
 
     let data = resp.data;
 
@@ -604,170 +726,15 @@ export default function ActivityViewer(props) {
 
   }
 
-  async function calculateOrderAndVariants() {
 
-    let activityVariantResult = await determineNumberOfActivityVariants(activityDefinition);
-
-    let variantIndex = (requestedVariantIndex - 1) % activityVariantResult.numberOfVariants + 1;
-    if (variantIndex < 1) {
-      variantIndex += activityVariantResult.numberOfVariants;
-    }
-
-    let rng = new rngClass(variantIndex.toString());
-
-    let orderResult = determineOrder(activityDefinition.order, rng);
-
-    if (!orderResult.success) {
-      return orderResult;
-    }
-
-
-    let originalOrder = orderResult.pages;
-
-
-    let itemWeights = activityDefinition.itemWeights || [];
-
-    if (!Array.isArray(itemWeights) || !itemWeights.every(x => x >= 0)) {
-      return { success: false, message: "Invalid itemWeights" };
-    }
-
-    let nPages = originalOrder.length;
-
-    itemWeights = itemWeights.slice(0, nPages);
-
-    if (itemWeights.length < nPages) {
-      itemWeights.push(...Array(nPages - itemWeights.length).fill(1));
-    }
-
-    // normalize itemWeights to sum to 1
-    let totalWeight = itemWeights.reduce((a, c) => a + c);
-    if (totalWeight > 0) {
-      itemWeights = itemWeights.map(x => x / totalWeight);
-    }
-
-
-    let pageVariantsResult;
-
-    if (activityVariantResult.pageVariants) {
-      pageVariantsResult = [activityVariantResult.pageVariants]
-    } else {
-
-      let promises = [];
-      for (let page of originalOrder) {
-        promises.push(returnAllPossibleVariants({
-          cid: page.cid, doenetML: page.doenetML
-        }));
-      }
-
-      try {
-        pageVariantsResult = await Promise.all(promises);
-      } catch (e) {
-        return { success: false, message: `Error retrieving content for activity. ${e.message}` };
-      }
-    }
-
-
-    let variantForEachPage;
-
-    // filter out the ignored variants for each page
-    let allPossibleNonIgnoredPerPage = [], indicesToIgnorePerPage = [];
-    let numberOfVariantsPerPage = [];
-
-    for (let pageResult of pageVariantsResult) {
-      let allPossibleVariants = [...pageResult.allPossibleVariants];
-      let indicesToIgnore = [...pageResult.variantIndicesToIgnore]
-      for (let ind of indicesToIgnore) {
-        delete allPossibleVariants[ind];
-      }
-      let numberOfVariants = allPossibleVariants.filter(x => x !== undefined).length;
-
-      allPossibleNonIgnoredPerPage.push(allPossibleVariants);
-      indicesToIgnorePerPage.push(indicesToIgnore);
-      numberOfVariantsPerPage.push(numberOfVariants);
-    }
-
-    let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1)
-
-    if (numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants) {
-
-      let pageVariantCombinationIndex = (variantIndex - 1) % numberOfPageVariantCombinations + 1;
-
-      variantForEachPage = enumerateCombinations({
-        numberOfOptionsByIndex: numberOfVariantsPerPage,
-        maxNumber: pageVariantCombinationIndex,
-      })[pageVariantCombinationIndex - 1].map(x => x + 1);
-
-    } else {
-      variantForEachPage = [...Array(nPages).keys()].map(i => Math.floor(rng() * numberOfVariantsPerPage[i]) + 1)
-    }
-
-    let variantsByPage = [];
-
-    let newOrder = [];
-    for (let [ind, possibleVariants] of pageVariantsResult.entries()) {
-
-      let pageVariantIndex = variantForEachPage[ind];
-
-      let indicesToIgnore = indicesToIgnorePerPage[ind];
-
-      for (let i of indicesToIgnore) {
-        if (pageVariantIndex >= i) {
-          pageVariantIndex++;
-        } else {
-          break;
-        }
-      }
-
-      variantsByPage.push(pageVariantIndex);
-
-      // if looked up doenetML to determine possible variants
-      // record that doenetML in the order so don't have to load it again
-      // Also, add cid if it isn't there
-      let page = originalOrder[ind];
-      if (page.doenetML === undefined) {
-        page = { ...page };
-        page.doenetML = possibleVariants.doenetML;
-      } else if (!page.cid) {
-        page = { ...page };
-        page.cid = possibleVariants.cid;
-      }
-      newOrder.push(page);
-
-    }
-
-    let orderWithCids = [...originalOrder];
-    newOrder.forEach((v, i) => orderWithCids[i].cid = v.cid);
-
-    let previousComponentTypeCounts = await initializeComponentTypeCounts(newOrder);
-
-    let activityInfo = {
-      orderWithCids,
-      variantsByPage,
-      itemWeights,
-      numberOfVariants: activityVariantResult.numberOfVariants,
-      previousComponentTypeCounts
-    };
-
-    return {
-      success: true,
-      order: newOrder,
-      itemWeights,
-      variantsByPage,
-      variantIndex,
-      activityInfo,
-      previousComponentTypeCounts,
-    };
-
-  }
-
-  async function saveState() {
+  async function saveState({ overrideThrottle = false, overrideStage = false } = {}) {
 
     if (!props.flags.allowSaveState && !props.flags.allowLocalState) {
       return;
     }
 
 
-    if (stage !== "saving" || currentPage === pageAtPreviousSave.current) {
+    if ((stage !== "saving" && !overrideStage) || currentPage === pageAtPreviousSave.current) {
       // haven't gotten a save event from page or no change to be saved
       return;
     }
@@ -810,12 +777,12 @@ export default function ActivityViewer(props) {
     changesToBeSaved.current = true;
 
     // if not currently in throttle, save changes to database
-    saveChangesToDatabase();
+    saveChangesToDatabase(overrideThrottle);
 
 
   }
 
-  async function saveChangesToDatabase(overrideThrottle = false) {
+  async function saveChangesToDatabase(overrideThrottle) {
     // throttle save to database at 60 seconds
 
     if (!changesToBeSaved.current) {
@@ -903,24 +870,12 @@ export default function ActivityViewer(props) {
       // then we reset the activity to the new state
       if (attemptNumber !== Number(data.attemptNumber)) {
 
-        if (props.flags.allowLocalState) {
-          idb_set(
-            `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
-            {
-              activityState: JSON.parse(data.activityState),
-              activityInfo: JSON.parse(data.activityInfo),
-              saveId: data.saveId,
-              variantIndex: data.variantIndex
-            }
-          )
+        resetActivity({
+          changedOnDevice: data.device,
+          newCid: data.cid,
+          newAttemptNumber: Number(data.attemptNumber),
+        })
 
-          resetActivity({
-            changedOnDevice: data.device,
-            newCid: data.cid,
-            newAttemptNumber: Number(data.attemptNumber),
-          })
-
-        }
       } else if (cid !== data.cid) {
 
         // if the cid changed without the attemptNumber changing, something went wrong
@@ -946,15 +901,11 @@ export default function ActivityViewer(props) {
     //Initialize user_assignment tables
     if (flags.allowSaveSubmissions) {
 
-      // if an item weight is set to zero, then it is not considered an item
-      // in the assignments table
-      // and it will not affect the resulting score
-      let weights = newItemWeights.filter(x => x);
 
       try {
         let resp = await axios.post('/api/initAssignmentAttempt.php', {
           doenetId: props.doenetId,
-          weights,
+          weights: newItemWeights,
           attemptNumber,
         });
 
@@ -971,8 +922,6 @@ export default function ActivityViewer(props) {
       }
 
     }
-
-    setStage('continue');
 
   }
 
@@ -991,16 +940,23 @@ export default function ActivityViewer(props) {
         }
       });
 
-      setCidChanged(resp.data.cidChanged === true);
+      if (resp.data.cidChanged === true) {
+        props.cidChangedCallback();
+      }
 
     } catch (e) {
       // ignore any errors
+    }
+
+    if (viewerWasUnmounted.current) {
+      saveState({ overrideThrottle: true, overrideStage: true });
     }
 
   }
 
   function clickNext() {
     setCurrentPage((was) => Math.min(nPages, was + 1));
+    setRecoilCurrentPage((was) => Math.min(nPages, was + 1));
 
     let event = {
       verb: "interacted",
@@ -1015,6 +971,7 @@ export default function ActivityViewer(props) {
 
   function clickPrevious() {
     setCurrentPage((was) => Math.max(1, was - 1));
+    setRecoilCurrentPage((was) => Math.max(1, was - 1));
 
     let event = {
       verb: "interacted",
@@ -1107,13 +1064,17 @@ export default function ActivityViewer(props) {
 
   }
 
-  function pagePrerenderedCallback(pageInd, success) {
-    if (success) {
-      prerenderedPages.current[pageInd] = true;
+  function pageRenderedCallback(pageInd) {
+    let newRenderedPages;
+    setRenderedPages(was => {
+      newRenderedPages = [...was];
+      newRenderedPages[pageInd] = true;
+      return newRenderedPages;
+    })
 
-      if (prerenderedPages.current.length === nPages && prerenderedPages.current.every(x => x)) {
-        allPagesPrerendered.current = true;
-      }
+
+    if (newRenderedPages.length === nPages && newRenderedPages.every(x => x)) {
+      allPagesRendered.current = true;
     }
 
   }
@@ -1217,13 +1178,19 @@ export default function ActivityViewer(props) {
 
   if (activityContentChanged) {
     setActivityContentChanged(false);
+    setActivityAttemptNumberSetUp(0);
+
     previousComponentTypeCountsByPage.current = [];
 
     setStage("wait");
 
-    loadState().then(results => {
+    loadState().then(async results => {
       if (results) {
-        initializeUserAssignmentTables(results.newItemWeights);
+        if (results.loadedFromInitialState) {
+          await initializeUserAssignmentTables(results.newItemWeights);
+        }
+        setStage('continue');
+        setActivityAttemptNumberSetUp(attemptNumber)
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
       settingUp.current = false;
@@ -1241,16 +1208,8 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
-  let lastItemNumber = 0;
 
   for (let [ind, page] of order.entries()) {
-    let itemNumber;
-    if (itemWeights[ind] > 0) {
-      lastItemNumber++;
-      itemNumber = lastItemNumber;
-    } else {
-      itemNumber = 0;
-    }
 
     let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
 
@@ -1264,7 +1223,7 @@ export default function ActivityViewer(props) {
       pageNumber={(ind + 1).toString()}
       previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
       pageIsActive={thisPageIsActive}
-      itemNumber={itemNumber}
+      itemNumber={ind + 1}
       attemptNumber={attemptNumber}
       flags={flags}
       activityVariantIndex={variantIndex}
@@ -1276,7 +1235,7 @@ export default function ActivityViewer(props) {
       saveStateCallback={receivedSaveFromPage}
       updateDataOnContentChange={props.updateDataOnContentChange}
       coreCreatedCallback={() => coreCreatedCallback(ind)}
-      pagePrerenderedCallback={(x) => pagePrerenderedCallback(ind, x)}
+      renderersInitializedCallback={() => pageRenderedCallback(ind)}
       hideWhenInactive={props.paginate}
       prefixForIds={prefixForIds}
     />
@@ -1296,243 +1255,30 @@ export default function ActivityViewer(props) {
     )
   }
 
-  let cidChangedAlert = null;
-  if (cidChanged) {
-    cidChangedAlert = <div>
-      <button onClick={() => alert("Hey, content changed")}>content changed</button>
-    </div>
-  }
 
-  let pageControls = null;
+  let pageControlsTop = null;
+  let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
-    pageControls = <>
-      <button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
-      <button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
-      <p>Page {currentPage} of {nPages}</p>
-    </>
+    pageControlsTop = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
+      <Button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+      <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
+      <Button  data-test={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+    </div>
+
+    if(renderedPages[currentPage-1]){
+      pageControlsBottom = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
+      <Button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+      <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
+      <Button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+    </div>
+    }
+    
   }
 
   return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
-    {cidChangedAlert}
-    {pageControls}
+    {pageControlsTop}
     {title}
     {pages}
+    {pageControlsBottom}
   </div>
-}
-
-
-function determineOrder(order, rng) {
-
-  if (order?.type?.toLowerCase() !== "order") {
-    return { success: false, message: "invalid order" }
-  }
-
-  let behavior = order.behavior?.toLowerCase();
-
-  if (behavior === undefined) {
-    behavior = 'sequence';
-  }
-
-  switch (behavior) {
-    case 'sequence':
-      return processSequenceOrder(order, rng);
-    case 'select':
-      return processSelectOrder(order, rng);
-    case 'shuffle':
-      return processShuffleOrder(order, rng);
-    default:
-      return { success: false, message: `Have not implemented behavior: ${behavior}` }
-  }
-
-}
-
-function processSequenceOrder(order, rng) {
-  let pages = [];
-
-  for (let item of order.content) {
-    let type = item.type.toLowerCase();
-    if (type === "page") {
-      pages.push(item)
-    } else if (type === "order") {
-      let orderResult = determineOrder(item, rng);
-      if (orderResult.success) {
-        pages.push(...orderResult.pages)
-      } else {
-        return orderResult;
-      }
-    } else {
-      return { success: false, message: "Unrecognized item in order." }
-    }
-  }
-
-  return { success: true, pages }
-}
-
-function processSelectOrder(order, rng) {
-
-  let numberToSelect = order.numberToSelect;
-  let nItems = order.content.length;
-
-  if (!(Number.isInteger(numberToSelect) && numberToSelect > 0)) {
-    numberToSelect = 1;
-  }
-
-  let numberUniqueRequired = 1;
-  if (!order.withReplacement) {
-    numberUniqueRequired = numberToSelect;
-  }
-
-  if (numberUniqueRequired > nItems) {
-    return {
-      success: false,
-      message: "Cannot select " + numberUniqueRequired +
-        " components from only " + nItems
-    };
-  }
-
-  let selectWeights = order.selectWeights || [];
-
-  if (!Array.isArray(selectWeights) || !selectWeights.every(x => x >= 0)) {
-    return { success: false, message: "Invalid selectWeights" };
-  }
-
-  selectWeights = selectWeights.slice(0, nItems);
-
-  if (selectWeights.length < nItems) {
-    selectWeights.push(...Array(nItems - selectWeights.length).fill(1));
-  }
-
-  // normalize selectWeights to sum to 1
-  let totalWeight = selectWeights.reduce((a, c) => a + c);
-  selectWeights = selectWeights.map(x => x / totalWeight);
-
-
-  //https://stackoverflow.com/a/44081700
-  let cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-  let indsRemaining = [...Array(cumulativeWeights.length).keys()];
-
-  let selectedItems = [];
-
-  for (let ind = 0; ind < numberToSelect; ind++) {
-
-    // random number in [0, 1)
-    let rand = rng();
-
-    // find largest index where cumulativeWeight is larger than rand
-    // using binary search
-    let start = -1, end = cumulativeWeights.length - 1;
-    while (start < end - 1) {
-      let mid = Math.floor((start + end) / 2); // mid point
-      if (cumulativeWeights[mid] > rand) {
-        end = mid;
-      } else {
-        start = mid;
-      }
-    }
-
-    selectedItems.push(order.content[indsRemaining[end]])
-
-    if (!order.withReplacement && ind < numberToSelect - 1) {
-      // remove selected index and renormalize weights
-      selectWeights.splice(end, 1);
-      indsRemaining.splice(end, 1);
-      totalWeight = selectWeights.reduce((a, c) => a + c);
-      selectWeights = selectWeights.map(x => x / totalWeight);
-      cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-
-    }
-  }
-
-
-  let pages = [];
-
-
-  for (let item of selectedItems) {
-    let type = item.type.toLowerCase();
-    if (type === "page") {
-      pages.push(item)
-    } else if (type === "order") {
-      let orderResult = determineOrder(item);
-      if (orderResult.success) {
-        pages.push(...orderResult.pages)
-      } else {
-        return orderResult;
-      }
-    } else {
-      return { success: false, message: "Unrecognized item in order." }
-    }
-  }
-
-  return { success: true, pages }
-}
-
-function processShuffleOrder(order, rng) {
-
-  let newOrder = [...order.content];
-
-  // shuffle the order
-  // https://stackoverflow.com/a/12646864
-  for (let i = order.content.length - 1; i > 0; i--) {
-    const rand = rng();
-    const j = Math.floor(rand * (i + 1));
-    [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
-  }
-
-  let pages = [];
-
-  for (let item of newOrder) {
-    let type = item.type.toLowerCase();
-    if (type === "page") {
-      pages.push(item)
-    } else if (type === "order") {
-      let orderResult = determineOrder(item, rng);
-      if (orderResult.success) {
-        pages.push(...orderResult.pages)
-      } else {
-        return orderResult;
-      }
-    } else {
-      return { success: false, message: "Unrecognized item in order." }
-    }
-  }
-
-  return { success: true, pages }
-}
-
-async function initializeComponentTypeCounts(order) {
-
-  let previousComponentTypeCountsByPage = [{}];
-
-  let componentInfoObjects = createComponentInfoObjects();
-
-  for (let [ind, page] of order.slice(0, order.length - 1).entries()) {
-
-    let { fullSerializedComponents } = await expandDoenetMLsToFullSerializedComponents({
-      contentIds: [page.cid],
-      doenetMLs: [page.doenetML],
-      componentInfoObjects,
-    });
-
-    let serializedComponents = fullSerializedComponents[0];
-
-    addDocumentIfItsMissing(serializedComponents);
-
-    let documentChildren = serializedComponents[0].children;
-
-    let componentTypeCounts = countComponentTypes(documentChildren);
-
-    let countsSoFar = previousComponentTypeCountsByPage[ind];
-    for (let cType in countsSoFar) {
-      if (cType in componentTypeCounts) {
-        componentTypeCounts[cType] += countsSoFar[cType];
-      } else {
-        componentTypeCounts[cType] = countsSoFar[cType];
-      }
-    }
-
-    previousComponentTypeCountsByPage.push(componentTypeCounts);
-
-  }
-
-  return previousComponentTypeCountsByPage;
 }

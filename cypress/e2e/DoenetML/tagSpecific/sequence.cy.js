@@ -1180,8 +1180,12 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first sequence" />
-    <booleaninput name='h2' prefill="true" label="Hide second sequence" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first sequence</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second sequence</label>
+    </booleaninput>
     <p>Length of sequence 1: <mathinput name="n1" prefill="4" /></p>
     <p>Length of sequence 2: <mathinput name="n2" prefill="4" /></p>
 
@@ -1352,6 +1356,130 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/b2 textarea').type("{end}{backspace}41{enter}", { force: true })
     cy.get('#\\/thelist').should('have.text', '9, 41, 6, 7')
+
+  });
+
+  it('copies with link="false" are not fixed', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>From: <mathinput name="from" prefill="1" /></p>
+    <p>Step: <mathinput name="step" prefill="2" /></p>
+
+    <p name="thelist"><aslist><sequence assignNames="a b" from="$from" step="$step" to="7" /></aslist></p>
+
+    <p>Change first: <mathinput name="a2" bindValueTo="$a{link='false'}" /></p>
+    <p>Change second: <mathinput name="b2" bindValueTo="$b{link='false'}" /></p>
+
+    <p>Copy of a2: <copy source="a2" assignNames="a3" /></p>
+    <p>Copy of b2: <copy source="b2" assignNames="b3" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/thelist').should('have.text', '1, 3, 5, 7')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '1')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '3')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}21{enter}", { force: true }).blur()
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '21')
+    cy.get('#\\/thelist').should('have.text', '1, 3, 5, 7')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '21')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '3')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '21')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}0{enter}", { force: true }).blur()
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '0')
+    cy.get('#\\/thelist').should('have.text', '1, 3, 5, 7')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '21')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '0')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '21')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '0')
+
+    cy.get('#\\/from textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 6')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '21')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '0')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '21')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '0')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}8{enter}", { force: true }).blur()
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '8')
+    cy.get('#\\/thelist').should('have.text', '4, 6')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '8')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '0')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '8')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '0')
+
+    cy.get('#\\/step textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '8')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '8')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}9{enter}", { force: true }).blur()
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '9')
+    cy.get('#\\/thelist').should('have.text', '4')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '9')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+
+    cy.get('#\\/b2 textarea').type("2{enter}", { force: true }).blur()
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '2')
+    cy.get('#\\/thelist').should('have.text', '4')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '9')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '2')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '2')
+
+    cy.get('#\\/from textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '2')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '2')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}3{enter}", { force: true }).blur()
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '3')
+    cy.get('#\\/thelist').should('have.text', '')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '3')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '2')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '2')
+
+    cy.get('#\\/step textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/from textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '0, 3, 6')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '0')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '3')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}8{enter}", { force: true }).blur()
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '8')
+    cy.get('#\\/thelist').should('have.text', '0, 3, 6')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '8')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '3')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '8')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}7{enter}", { force: true }).blur()
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '7')
+    cy.get('#\\/thelist').should('have.text', '0, 3, 6')
+    cy.get(`#\\/a2 .mq-editable-field`).should('have.text', '8')
+    cy.get(`#\\/b2 .mq-editable-field`).should('have.text', '7')
+    cy.get('#\\/a3 .mjx-mrow').eq(0).should('have.text', '8')
+    cy.get('#\\/b3 .mjx-mrow').eq(0).should('have.text', '7')
+
 
   });
 

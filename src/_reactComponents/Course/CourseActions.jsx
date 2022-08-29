@@ -321,28 +321,28 @@ export function useInitCourseItems(courseId) {
   }, [getDataAndSetRecoil, courseId]);
 }
 
-//TODO: Duane, useEffect cannot be asyc
 export function useSetCourseIdFromDoenetId(doenetId) {
   const item = useRecoilValue(itemByDoenetId('doenetId'));
   const setCourseId = useSetRecoilState(courseIdAtom);
 
-  useEffect(async () => {
+  useEffect(() => {
 
     // if item is found, then we already have the course with doenetId initialized
     if(Object.keys(item).length > 0) {
       return;
     }
   
-    const { data } = await axios.get('/api/getCourseIdFromDoenetId.php', {
+    axios.get('/api/getCourseIdFromDoenetId.php', {
       params: { doenetId },
-    });
+    }).then(({data}) => {
+      if(data.success) {
+        setCourseId(data.courseId);
+      } else {
+        setCourseId("__not_found__")
+      }
+    }).catch(console.error)
   
-    if(data.success) {
-      setCourseId(data.courseId);
-    } else {
-      setCourseId("__not_found__")
-    }
-  
+
   }, [doenetId])
 
 }
@@ -1315,7 +1315,7 @@ export const useCourse = (courseId) => {
     try {
       const {
         data: { success, message },
-      } = await axios.post('api/updateUserRole.php', {
+      } = await axios.post('/api/updateUserRole.php', {
         courseId,
         userEmail: email,
         roleId

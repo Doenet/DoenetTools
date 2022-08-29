@@ -74,12 +74,14 @@ export default function SelectedBank() {
             width="menu"
             onClick={() => create({ itemType: 'page' })}
             value="Add Page"
+            data-test="Add Page"
           />
         </ButtonGroup>
         <br />
         <Button
           width="menu"
           value="Delete Collection"
+          data-test="Delete Collection"
           alert
           onClick={(e) => {
             e.preventDefault();

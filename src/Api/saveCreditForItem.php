@@ -23,10 +23,6 @@ $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
 $credit = mysqli_real_escape_string($conn, $_POST['credit']);
 $itemNumber = mysqli_real_escape_string($conn, $_POST['itemNumber']);
-$componentsSubmitted = mysqli_real_escape_string(
-    $conn,
-    $_POST['componentsSubmitted']
-);
 
 //TODO: check if attempt is older than given attempt
 
@@ -45,9 +41,6 @@ if ($doenetId == '') {
 } elseif ($itemNumber == '') {
     $success = false;
     $message = 'Internal Error: missing itemNumber';
-} elseif ($componentsSubmitted == '') {
-    $success = false;
-    $message = 'Internal Error: missing componentsSubmitted';
 } elseif ($userId == '') {
     if ($examUserId == '') {
         $success = false;
@@ -102,9 +95,8 @@ if ($success) {
         $result = $conn->query($sql);
 
         if ($result->num_rows < 1) {
-            //TODO: handle Owners and Admins not being enrolled.
-            // $databaseError = 1;
-            // $valid = 0;
+            $databaseError = 1;
+            $valid = 0;
         } else {
             $row = $result->fetch_assoc();
             $timeLimit = ceil($timeLimit * $row['timeLimitMultiplier']);

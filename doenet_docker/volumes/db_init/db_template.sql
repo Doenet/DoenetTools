@@ -113,7 +113,7 @@ DROP TABLE IF EXISTS `class_times`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `class_times` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dotwIndex` int(1) NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,
@@ -268,6 +268,8 @@ CREATE TABLE `course` (
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT 'none',
   `defaultRoleId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `browserExamKeys` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -279,7 +281,6 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-INSERT INTO `course` VALUES (1,'_KwRMyq2rLo3B0dhVXgh6R','Untitled Course',0,0,'picture1.jpg','none','8TJ2vT06pm72vQee6P5qJ');
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,7 +318,6 @@ CREATE TABLE `course_content` (
 
 LOCK TABLES `course_content` WRITE;
 /*!40000 ALTER TABLE `course_content` DISABLE KEYS */;
-INSERT INTO `course_content` VALUES (1,'activity','_KwRMyq2rLo3B0dhVXgh6R','_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R','Untitled Activity','2022-08-04 03:32:22',0,1,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_CAIJ5GQDmIuniRQmWNwd5\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreieszxhhjdhin3wbdvaudhiumb2ygqbnd6cfwyz4hqjdcbgrw6cebq\", \"itemWeights\": [1], \"isSinglePage\": true}');
 /*!40000 ALTER TABLE `course_content` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -388,7 +388,6 @@ CREATE TABLE `course_role` (
 
 LOCK TABLES `course_role` WRITE;
 /*!40000 ALTER TABLE `course_role` DISABLE KEYS */;
-INSERT INTO `course_role` VALUES ('_KwRMyq2rLo3B0dhVXgh6R','8TJ2vT06pm72vQee6P5qJ','Student',1,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),('_KwRMyq2rLo3B0dhVXgh6R','bnisBJFL0KUS3uYY7RltV','Owner',0,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,1,NULL);
 /*!40000 ALTER TABLE `course_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -424,7 +423,6 @@ CREATE TABLE `course_user` (
 
 LOCK TABLES `course_user` WRITE;
 /*!40000 ALTER TABLE `course_user` DISABLE KEYS */;
-INSERT INTO `course_user` VALUES ('_KwRMyq2rLo3B0dhVXgh6R','cyuserId',NULL,'2022-08-11 17:54:51',NULL,_binary '\0',NULL,NULL,NULL,NULL,1,'bnisBJFL0KUS3uYY7RltV');
 /*!40000 ALTER TABLE `course_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -744,7 +742,6 @@ CREATE TABLE `pages` (
 
 LOCK TABLES `pages` WRITE;
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
-INSERT INTO `pages` VALUES ('_KwRMyq2rLo3B0dhVXgh6R','_Ga07DeeWjhH6Y4UpWlakE','_CAIJ5GQDmIuniRQmWNwd5','Untitled',0);
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -979,4 +976,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-12 21:17:07
+-- Dump completed on 2022-08-19 19:48:13

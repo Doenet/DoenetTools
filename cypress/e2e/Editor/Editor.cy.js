@@ -138,8 +138,9 @@ it('Assign two-page activity',()=>{
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
 
-  cy.get('[data-test="toast"]').contains('Activity Assigned');
+  cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
   cy.get('[data-test="toast cancel button"]').click();
+
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
   cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();

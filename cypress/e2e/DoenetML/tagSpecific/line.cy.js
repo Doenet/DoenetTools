@@ -110,8 +110,8 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <point label='P'>(3,5)</point>
-  <point label='Q'>(-4,-1)</point>
+  <point><label>P</label>(3,5)</point>
+  <point><label>Q</label>(-4,-1)</point>
     <line through="$_point1 $_point2 "/>
   </graph>
   <copy target="_point1" assignNames="p1a" />
@@ -227,6 +227,7 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get("#\\/p1 .mjx-mrow").should('be.visible'); // to make sure MathJax rendered
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {
@@ -304,6 +305,7 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get("#\\/p1 .mjx-mrow").should('be.visible'); // to make sure MathJax rendered
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {

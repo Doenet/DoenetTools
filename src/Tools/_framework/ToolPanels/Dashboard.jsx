@@ -129,7 +129,7 @@ export default function Dashboard(props) {
         </div>
       </div>
       <div style={{ marginTop: '10px', margin: '10px' }}>
-        {/* <Next7Days driveId={courseId}/> */}
+        <Next7Days courseId={courseId} />
       </div>
     </div>
   );

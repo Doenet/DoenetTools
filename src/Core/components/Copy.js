@@ -1146,6 +1146,9 @@ export default class Copy extends CompositeComponent {
 
         replacements = processResult.serializedComponents;
 
+        workspace.numReplacementsBySource.push(replacements.length)
+        workspace.numNonStringReplacementsBySource.push(replacements.filter(x => typeof x !== "string").length)
+
       }
 
       let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
@@ -1379,7 +1382,7 @@ export default class Copy extends CompositeComponent {
 
 
       // if require a single component and have a single replacement,
-      // but the only discrepancy is that it ti sthe wrong time,
+      // but the only discrepancy is that it is the wrong type,
       // then wrap that replacement with the blank component we are creating,
       // i.e., add the current replacement as the child of the new component
 
@@ -1554,6 +1557,12 @@ export default class Copy extends CompositeComponent {
         sourceAttributesToIgnoreRecursively
       })
     ];
+
+    // when copying with link=false, ignore fixed if from essential state
+    // so that, for example, a copy from a sequence with link=false is not fixed
+    if (!link && serializedReplacements[0].state?.fixed !== undefined) {
+      delete serializedReplacements[0].state.fixed
+    }
 
     // console.log(`serializedReplacements for ${component.componentName}`);
     // console.log(JSON.parse(JSON.stringify(serializedReplacements)));
@@ -2987,10 +2996,16 @@ export async function replacementFromProp({ component, components,
         if (stateVarObj.shadowingInstructions.addAttributeComponentsShadowingStateVariables) {
           let additionalAttributes = {};
           for (let attrName in stateVarObj.shadowingInstructions.addAttributeComponentsShadowingStateVariables) {
-            let vName = stateVarObj.shadowingInstructions.addAttributeComponentsShadowingStateVariables[attrName].stateVariableToShadow;
-            let attributeValue = await target.state[vName].value;
-            if (!target.state[vName].usedDefault) {
-              additionalAttributes[attrName] = attributeValue;
+
+
+            // when copying with link=false, don't copy fixed attribute
+            // so that, for example, a copy from a sequence with link=false is not fixed
+            if (attrName !== "fixed") {
+              let vName = stateVarObj.shadowingInstructions.addAttributeComponentsShadowingStateVariables[attrName].stateVariableToShadow;
+              let attributeValue = await target.state[vName].value;
+              if (!target.state[vName].usedDefault) {
+                additionalAttributes[attrName] = attributeValue;
+              }
             }
           }
 

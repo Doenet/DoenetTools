@@ -51,9 +51,9 @@ export default React.memo(function Line(props) {
 
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -140,7 +140,7 @@ export default React.memo(function Line(props) {
 
     })
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     lineJXG.current = newLineJXG;
 
@@ -255,9 +255,9 @@ export default React.memo(function Line(props) {
         lineJXG.current.visProp.dash = newDash;
       }
 
-      lineJXG.current.name = SVs.label;
+      lineJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         lineJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

@@ -672,8 +672,12 @@ describe('Extract Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first extract" />
-    <booleaninput name='h2' prefill="true" label="Hide second extract" />
+    <booleaninput name='h1' prefill="false" >
+      <label>Hide first extract</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true" >
+      <label>Hide second extract</label>
+    </booleaninput>
 
     <p name="e1">extract 1: <extract hide="$h1" prop="value" ><text>hello</text></extract></p>
     <p name="e2">extract 2: <extract hide="$h2" prop="value" ><text>hello</text></extract></p>

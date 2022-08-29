@@ -824,9 +824,15 @@ describe('AnimateFromSequence Tag Tests', function () {
 
   <animateFromSequence name="x" animationMode='increase' target='a' animationInterval='100' />
 
-  <callAction target="x" actionName="startAnimation" label="start" name="start" />
-  <callAction target="x" actionName="stopAnimation" label="stop" name="stop" />
-  <callAction target="x" actionName="toggleAnimation" label="toggle" name="toggle" />
+  <callAction target="x" actionName="startAnimation" name="start" >
+    <label>start</label>
+  </callAction>
+  <callAction target="x" actionName="stopAnimation" name="stop" >
+    <label>stop</label>
+  </callAction>
+  <callAction target="x" actionName="toggleAnimation" name="toggle" >
+    <label>toggle</label>
+  </callAction>
 
   <p>copy: <copy target="a" assignNames="a2" /></p>
 

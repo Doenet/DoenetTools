@@ -1,6 +1,12 @@
+import { prng_alea } from "esm-seedrandom";
 import { retrieveTextFileForCid } from "../Core/utils/retrieveTextFile";
 import { returnAllPossibleVariants } from "../Core/utils/returnAllPossibleVariants";
 import { parseAndCompile } from "../Parser/parser";
+import { enumerateCombinations } from '../Core/utils/enumeration';
+import createComponentInfoObjects from '../Core/utils/componentInfoObjects';
+import { addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSerializedComponents } from '../Core/utils/serializedStateProcessing';
+
+let rngClass = prng_alea;
 
 export function parseActivityDefinition(activityDefDoenetML) {
 
@@ -256,6 +262,161 @@ export function parseActivityDefinition(activityDefDoenetML) {
 }
 
 
+export async function calculateOrderAndVariants({ activityDefinition, requestedVariantIndex }) {
+
+  let activityVariantResult = await determineNumberOfActivityVariants(activityDefinition);
+
+  let variantIndex = (requestedVariantIndex - 1) % activityVariantResult.numberOfVariants + 1;
+  if (variantIndex < 1) {
+    variantIndex += activityVariantResult.numberOfVariants;
+  }
+
+  let rng = new rngClass(variantIndex.toString());
+
+  let orderResult = determineOrder(activityDefinition.order, rng);
+
+  if (!orderResult.success) {
+    return orderResult;
+  }
+
+
+  let originalOrder = orderResult.pages;
+
+
+  let itemWeights = activityDefinition.itemWeights || [];
+
+  if (!Array.isArray(itemWeights) || !itemWeights.every(x => x >= 0)) {
+    return { success: false, message: "Invalid itemWeights" };
+  }
+
+  let nPages = originalOrder.length;
+
+  itemWeights = itemWeights.slice(0, nPages);
+
+  if (itemWeights.length < nPages) {
+    itemWeights.push(...Array(nPages - itemWeights.length).fill(1));
+  }
+
+  // normalize itemWeights to sum to 1
+  let totalWeight = itemWeights.reduce((a, c) => a + c);
+  if (totalWeight > 0) {
+    itemWeights = itemWeights.map(x => x / totalWeight);
+  }
+
+
+  let pageVariantsResult;
+
+  if (activityVariantResult.pageVariants) {
+    pageVariantsResult = [activityVariantResult.pageVariants]
+  } else {
+
+    let promises = [];
+    for (let page of originalOrder) {
+      promises.push(returnAllPossibleVariants({
+        cid: page.cid, doenetML: page.doenetML
+      }));
+    }
+
+    try {
+      pageVariantsResult = await Promise.all(promises);
+    } catch (e) {
+      return { success: false, message: `Error retrieving content for activity. ${e.message}` };
+    }
+  }
+
+
+  let variantForEachPage;
+
+  // filter out the ignored variants for each page
+  let allPossibleNonIgnoredPerPage = [], indicesToIgnorePerPage = [];
+  let numberOfVariantsPerPage = [];
+
+  for (let pageResult of pageVariantsResult) {
+    let allPossibleVariants = [...pageResult.allPossibleVariants];
+    let indicesToIgnore = [...pageResult.variantIndicesToIgnore]
+    for (let ind of indicesToIgnore) {
+      delete allPossibleVariants[ind];
+    }
+    let numberOfVariants = allPossibleVariants.filter(x => x !== undefined).length;
+
+    allPossibleNonIgnoredPerPage.push(allPossibleVariants);
+    indicesToIgnorePerPage.push(indicesToIgnore);
+    numberOfVariantsPerPage.push(numberOfVariants);
+  }
+
+  let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1)
+
+  if (numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants) {
+
+    let pageVariantCombinationIndex = (variantIndex - 1) % numberOfPageVariantCombinations + 1;
+
+    variantForEachPage = enumerateCombinations({
+      numberOfOptionsByIndex: numberOfVariantsPerPage,
+      maxNumber: pageVariantCombinationIndex,
+    })[pageVariantCombinationIndex - 1].map(x => x + 1);
+
+  } else {
+    variantForEachPage = [...Array(nPages).keys()].map(i => Math.floor(rng() * numberOfVariantsPerPage[i]) + 1)
+  }
+
+  let variantsByPage = [];
+
+  let newOrder = [];
+  for (let [ind, possibleVariants] of pageVariantsResult.entries()) {
+
+    let pageVariantIndex = variantForEachPage[ind];
+
+    let indicesToIgnore = indicesToIgnorePerPage[ind];
+
+    for (let i of indicesToIgnore) {
+      if (pageVariantIndex >= i) {
+        pageVariantIndex++;
+      } else {
+        break;
+      }
+    }
+
+    variantsByPage.push(pageVariantIndex);
+
+    // if looked up doenetML to determine possible variants
+    // record that doenetML in the order so don't have to load it again
+    // Also, add cid if it isn't there
+    let page = originalOrder[ind];
+    if (page.doenetML === undefined) {
+      page = { ...page };
+      page.doenetML = possibleVariants.doenetML;
+    } else if (!page.cid) {
+      page = { ...page };
+      page.cid = possibleVariants.cid;
+    }
+    newOrder.push(page);
+
+  }
+
+  let orderWithCids = [...originalOrder];
+  newOrder.forEach((v, i) => orderWithCids[i].cid = v.cid);
+
+  let previousComponentTypeCounts = await initializeComponentTypeCounts(newOrder);
+
+  let activityInfo = {
+    orderWithCids,
+    variantsByPage,
+    itemWeights,
+    numberOfVariants: activityVariantResult.numberOfVariants,
+    previousComponentTypeCounts
+  };
+
+  return {
+    success: true,
+    order: newOrder,
+    itemWeights,
+    variantsByPage,
+    variantIndex,
+    activityInfo,
+    previousComponentTypeCounts,
+  };
+
+}
 
 export async function determineNumberOfActivityVariants(activityDefinition) {
   let numberOfVariants = 1000;
@@ -267,7 +428,7 @@ export async function determineNumberOfActivityVariants(activityDefinition) {
       numberOfVariants = 1000;
     }
 
-  } else if (activityDefinition.order.behavior === "sequence" &&
+  } else if ((activityDefinition.order.behavior === undefined || activityDefinition.order.behavior === "sequence") &&
     activityDefinition.order.content.every(x => x.type === "page")
   ) {
 
@@ -306,4 +467,253 @@ export async function returnNumberOfActivityVariantsForCid(cid) {
   result = await determineNumberOfActivityVariants(result.activityJSON);
 
   return { success: true, numberOfVariants: result.numberOfVariants };
+}
+
+
+export function prerenderActivity({ cid, doenetId, flags }) {
+
+  let worker = new Worker('/_utils/prerenderWorker.js', { type: 'module' });
+
+  // console.log(`Prerendering activity`, cid, doenetId, flags, worker);
+
+  worker.postMessage({
+    messageType: "prerenderActivity",
+    args: {
+      cid,
+      doenetId,
+      flags
+    }
+  })
+
+
+  worker.onmessage = function (e) {
+    if (e.data.messageType === "finished") {
+      worker.terminate();
+    } else if (e.data.messageType === "error") {
+      console.error(e.data.message)
+      worker.terminate();
+    }
+  }
+
+  return worker;
+
+}
+
+
+
+
+function determineOrder(order, rng) {
+
+  if (order?.type?.toLowerCase() !== "order") {
+    return { success: false, message: "invalid order" }
+  }
+
+  let behavior = order.behavior?.toLowerCase();
+
+  if (behavior === undefined) {
+    behavior = 'sequence';
+  }
+
+  switch (behavior) {
+    case 'sequence':
+      return processSequenceOrder(order, rng);
+    case 'select':
+      return processSelectOrder(order, rng);
+    case 'shuffle':
+      return processShuffleOrder(order, rng);
+    default:
+      return { success: false, message: `Have not implemented behavior: ${behavior}` }
+  }
+
+}
+
+function processSequenceOrder(order, rng) {
+  let pages = [];
+
+  for (let item of order.content) {
+    let type = item.type.toLowerCase();
+    if (type === "page") {
+      pages.push(item)
+    } else if (type === "order") {
+      let orderResult = determineOrder(item, rng);
+      if (orderResult.success) {
+        pages.push(...orderResult.pages)
+      } else {
+        return orderResult;
+      }
+    } else {
+      return { success: false, message: "Unrecognized item in order." }
+    }
+  }
+
+  return { success: true, pages }
+}
+
+function processSelectOrder(order, rng) {
+
+  let numberToSelect = order.numberToSelect;
+  let nItems = order.content.length;
+
+  if (!(Number.isInteger(numberToSelect) && numberToSelect > 0)) {
+    numberToSelect = 1;
+  }
+
+  let numberUniqueRequired = 1;
+  if (!order.withReplacement) {
+    numberUniqueRequired = numberToSelect;
+  }
+
+  if (numberUniqueRequired > nItems) {
+    return {
+      success: false,
+      message: "Cannot select " + numberUniqueRequired +
+        " components from only " + nItems
+    };
+  }
+
+  let selectWeights = order.selectWeights || [];
+
+  if (!Array.isArray(selectWeights) || !selectWeights.every(x => x >= 0)) {
+    return { success: false, message: "Invalid selectWeights" };
+  }
+
+  selectWeights = selectWeights.slice(0, nItems);
+
+  if (selectWeights.length < nItems) {
+    selectWeights.push(...Array(nItems - selectWeights.length).fill(1));
+  }
+
+  // normalize selectWeights to sum to 1
+  let totalWeight = selectWeights.reduce((a, c) => a + c);
+  selectWeights = selectWeights.map(x => x / totalWeight);
+
+
+  //https://stackoverflow.com/a/44081700
+  let cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
+  let indsRemaining = [...Array(cumulativeWeights.length).keys()];
+
+  let selectedItems = [];
+
+  for (let ind = 0; ind < numberToSelect; ind++) {
+
+    // random number in [0, 1)
+    let rand = rng();
+
+    // find largest index where cumulativeWeight is larger than rand
+    // using binary search
+    let start = -1, end = cumulativeWeights.length - 1;
+    while (start < end - 1) {
+      let mid = Math.floor((start + end) / 2); // mid point
+      if (cumulativeWeights[mid] > rand) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    selectedItems.push(order.content[indsRemaining[end]])
+
+    if (!order.withReplacement && ind < numberToSelect - 1) {
+      // remove selected index and renormalize weights
+      selectWeights.splice(end, 1);
+      indsRemaining.splice(end, 1);
+      totalWeight = selectWeights.reduce((a, c) => a + c);
+      selectWeights = selectWeights.map(x => x / totalWeight);
+      cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
+
+    }
+  }
+
+
+  let pages = [];
+
+
+  for (let item of selectedItems) {
+    let type = item.type.toLowerCase();
+    if (type === "page") {
+      pages.push(item)
+    } else if (type === "order") {
+      let orderResult = determineOrder(item);
+      if (orderResult.success) {
+        pages.push(...orderResult.pages)
+      } else {
+        return orderResult;
+      }
+    } else {
+      return { success: false, message: "Unrecognized item in order." }
+    }
+  }
+
+  return { success: true, pages }
+}
+
+function processShuffleOrder(order, rng) {
+
+  let newOrder = [...order.content];
+
+  // shuffle the order
+  // https://stackoverflow.com/a/12646864
+  for (let i = order.content.length - 1; i > 0; i--) {
+    const rand = rng();
+    const j = Math.floor(rand * (i + 1));
+    [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+  }
+
+  let pages = [];
+
+  for (let item of newOrder) {
+    let type = item.type.toLowerCase();
+    if (type === "page") {
+      pages.push(item)
+    } else if (type === "order") {
+      let orderResult = determineOrder(item, rng);
+      if (orderResult.success) {
+        pages.push(...orderResult.pages)
+      } else {
+        return orderResult;
+      }
+    } else {
+      return { success: false, message: "Unrecognized item in order." }
+    }
+  }
+
+  return { success: true, pages }
+}
+
+async function initializeComponentTypeCounts(order) {
+
+  let previousComponentTypeCountsByPage = [{}];
+
+  let componentInfoObjects = createComponentInfoObjects();
+
+  for (let [ind, page] of order.slice(0, order.length - 1).entries()) {
+
+    let { fullSerializedComponents } = await expandDoenetMLsToFullSerializedComponents({
+      contentIds: [page.cid],
+      doenetMLs: [page.doenetML],
+      componentInfoObjects,
+    });
+
+    let serializedComponents = fullSerializedComponents[0];
+
+    addDocumentIfItsMissing(serializedComponents);
+
+    let documentChildren = serializedComponents[0].children;
+
+    let componentTypeCounts = countComponentTypes(documentChildren);
+
+    let countsSoFar = previousComponentTypeCountsByPage[ind];
+    for (let cType in countsSoFar) {
+      if (cType in componentTypeCounts) {
+        componentTypeCounts[cType] += countsSoFar[cType];
+      } else {
+        componentTypeCounts[cType] = countsSoFar[cType];
+      }
+    }
+
+    previousComponentTypeCountsByPage.push(componentTypeCounts);
+
+  }
+
+  return previousComponentTypeCountsByPage;
 }

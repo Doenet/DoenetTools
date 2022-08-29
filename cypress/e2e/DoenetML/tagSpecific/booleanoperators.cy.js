@@ -544,7 +544,9 @@ describe('Boolean Operator Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-    <booleaninput label="show point"/>
+    <booleaninput>
+      <label>show point</label>
+    </booleaninput>
     <graph>
       <point hide="not $_booleaninput1">
        (1,2)

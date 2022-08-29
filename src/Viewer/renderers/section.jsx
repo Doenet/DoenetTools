@@ -66,7 +66,9 @@ export default React.memo(function Section(props) {
 
   }
 
-  if (!title) {
+  if (title) {
+    title = <>{SVs.titlePrefix}{title}</>
+  } else {
     title = SVs.title;
   }
 
@@ -207,7 +209,7 @@ export default React.memo(function Section(props) {
 
     let innerContent = null;
     if (SVs.open) {
-      innerContent = <div style={{ display: "block", padding: SVs.boxed && "6px" }}>
+      innerContent = <div style={{ display: "block", padding: "6px" }}>
         {children}
         {checkworkComponent}
       </div>

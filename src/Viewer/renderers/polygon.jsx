@@ -72,9 +72,9 @@ export default React.memo(function Polygon(props) {
 
 
     let jsxPolygonAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 7,
 
@@ -345,7 +345,7 @@ export default React.memo(function Polygon(props) {
       }
 
 
-      polygonJXG.current.name = SVs.label;
+      polygonJXG.current.name = SVs.labelForGraph;
 
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {

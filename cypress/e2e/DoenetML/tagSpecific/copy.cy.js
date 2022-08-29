@@ -35,7 +35,7 @@ describe('Copy Tag Tests', function () {
     <math modifyIndirectly="true">x</math>
     <copy assignNames="c" source="_math2"/>
     <copy assignNames="d" source="c"/>
-    <point label="A">(1,2)</point>
+    <point><label>A</label>(1,2)</point>
     <copy assignNames="e" source="_point1"/>
     <copy assignNames="f" source="e"/>
     `}, "*");
@@ -71,7 +71,7 @@ describe('Copy Tag Tests', function () {
     <math name="b" copySource="a"/>
     <math name="c" copySource="_math2"/>
     <math name="d" copySource="c"/>
-    <point label="A">(1,2)</point>
+    <point><label>A</label>(1,2)</point>
     <point name="e" copySource="_point1"/>
     <point name="f" copySource="e"/>
     `}, "*");
@@ -110,11 +110,22 @@ describe('Copy Tag Tests', function () {
     <copy name="cr6" assignNames="r6" source="cr2" modifyIndirectly="false" />
     <copy name="cr7" assignNames="r7" source="cr3" modifyIndirectly="false" />
 
-    <point label="A" name="A">(1,2)</point>
+    <point labelIsName name="A">(1,2)</point>
     <copy name="cA2" assignNames="A2" source="A"/>
-    <copy label="B" name="cB" assignNames="B" source="A"/>
-    <copy label="C" name="cC" assignNames="C" source="cB"/>
-    <copy name="cC2" assignNames="C2" source="cC"/>
+    <copy name="cB" assignNames="B" source="A" labelIsName />
+    <copy name="cB2" assignNames="B2" source="A" />
+    <copy name="cC" assignNames="C" source="cB" labelIsName/>
+    <copy name="cC2" assignNames="C2" source="cB"/>
+    <copy name="cC3" assignNames="C3" source="B" labelIsName/>
+    <copy name="cC4" assignNames="C4" source="B"/>
+    <copy name="cD" assignNames="D" source="cC" labelIsName/>
+    <copy name="cD2" assignNames="D2" source="cC"/>
+    <copy name="cD3" assignNames="D3" source="C" labelIsName/>
+    <copy name="cD4" assignNames="D4" source="C"/>
+    <copy name="cD5" assignNames="D5" source="cC2" labelIsName/>
+    <copy name="cD6" assignNames="D6" source="cC2"/>
+    <copy name="cD7" assignNames="D7" source="C2" labelIsName/>
+    <copy name="cD8" assignNames="D8" source="C2"/>
     `}, "*");
     });
 
@@ -135,8 +146,19 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables['/A'].stateValues.label).eq("A");
       expect(stateVariables['/A2'].stateValues.label).eq("A");
       expect(stateVariables['/B'].stateValues.label).eq("B");
+      expect(stateVariables['/B2'].stateValues.label).eq("A");
       expect(stateVariables['/C'].stateValues.label).eq("C");
-      expect(stateVariables['/C2'].stateValues.label).eq("C");
+      expect(stateVariables['/C2'].stateValues.label).eq("B");
+      expect(stateVariables['/C3'].stateValues.label).eq("C3");
+      expect(stateVariables['/C4'].stateValues.label).eq("B");
+      expect(stateVariables['/D'].stateValues.label).eq("D");
+      expect(stateVariables['/D2'].stateValues.label).eq("C");
+      expect(stateVariables['/D3'].stateValues.label).eq("D3");
+      expect(stateVariables['/D4'].stateValues.label).eq("C");
+      expect(stateVariables['/D5'].stateValues.label).eq("D5");
+      expect(stateVariables['/D6'].stateValues.label).eq("B");
+      expect(stateVariables['/D7'].stateValues.label).eq("D7");
+      expect(stateVariables['/D8'].stateValues.label).eq("B");
 
     })
   });
@@ -155,11 +177,34 @@ describe('Copy Tag Tests', function () {
     <math name="r6" copySource="r2" modifyIndirectly="false" />
     <math name="r7" copySource="r3" modifyIndirectly="false" />
 
-    <point label="A" name="A">(1,2)</point>
-    <point name="A2" copySource="A"/>
-    <point label="B" name="B" copySource="A"/>
-    <point label="C" name="C" copySource="B"/>
-    <point name="C2" copySource="C"/>
+    <point labelIsName name="A">(1,2)</point>
+    <point name="A2"><label>A</label>(1,2)</point>
+    <point name="A3" copySource="A"/>
+    <point name="A4" copySource="A2"/>
+    <point labelIsName name="B" copySource="A"/>
+    <point name="B2" copySource="A"/>
+    <point name="B3" copySource="A"><label>B</label></point>
+    <point labelIsName name="B4" copySource="A2"/>
+    <point name="B5" copySource="A2"/>
+    <point name="B6" copySource="A2"><label>B</label></point>
+    <point labelIsName name="C" copySource="B"/>
+    <point name="C2" copySource="B"/>
+    <point name="C3" copySource="B"><label>C</label></point>
+    <point labelIsName name="C4" copySource="B2"/>
+    <point name="C5" copySource="B2"/>
+    <point name="C6" copySource="B2"><label>C</label></point>
+    <point labelIsName name="C7" copySource="B3"/>
+    <point name="C8" copySource="B3"/>
+    <point name="C9" copySource="B3"><label>C</label></point>
+    <point labelIsName name="C10" copySource="B4"/>
+    <point name="C11" copySource="B4"/>
+    <point name="C12" copySource="B4"><label>C</label></point>
+    <point labelIsName name="C13" copySource="B5"/>
+    <point name="C14" copySource="B5"/>
+    <point name="C15" copySource="B5"><label>C</label></point>
+    <point labelIsName name="C16" copySource="B6"/>
+    <point name="C17" copySource="B6"/>
+    <point name="C18" copySource="B6"><label>C</label></point>
     `}, "*");
     });
 
@@ -179,9 +224,32 @@ describe('Copy Tag Tests', function () {
 
       expect(stateVariables['/A'].stateValues.label).eq("A");
       expect(stateVariables['/A2'].stateValues.label).eq("A");
+      expect(stateVariables['/A3'].stateValues.label).eq("A");
+      expect(stateVariables['/A4'].stateValues.label).eq("A");
       expect(stateVariables['/B'].stateValues.label).eq("B");
+      expect(stateVariables['/B2'].stateValues.label).eq("A");
+      expect(stateVariables['/B3'].stateValues.label).eq("B");
+      expect(stateVariables['/B4'].stateValues.label).eq("A");
+      expect(stateVariables['/B5'].stateValues.label).eq("A");
+      expect(stateVariables['/B6'].stateValues.label).eq("B");
       expect(stateVariables['/C'].stateValues.label).eq("C");
-      expect(stateVariables['/C2'].stateValues.label).eq("C");
+      expect(stateVariables['/C2'].stateValues.label).eq("B");
+      expect(stateVariables['/C3'].stateValues.label).eq("C");
+      expect(stateVariables['/C4'].stateValues.label).eq("C4");
+      expect(stateVariables['/C5'].stateValues.label).eq("A");
+      expect(stateVariables['/C6'].stateValues.label).eq("C");
+      expect(stateVariables['/C7'].stateValues.label).eq("B");
+      expect(stateVariables['/C8'].stateValues.label).eq("B");
+      expect(stateVariables['/C9'].stateValues.label).eq("C");
+      expect(stateVariables['/C10'].stateValues.label).eq("A");
+      expect(stateVariables['/C11'].stateValues.label).eq("A");
+      expect(stateVariables['/C12'].stateValues.label).eq("C");
+      expect(stateVariables['/C13'].stateValues.label).eq("A");
+      expect(stateVariables['/C14'].stateValues.label).eq("A");
+      expect(stateVariables['/C15'].stateValues.label).eq("C");
+      expect(stateVariables['/C16'].stateValues.label).eq("B");
+      expect(stateVariables['/C17'].stateValues.label).eq("B");
+      expect(stateVariables['/C18'].stateValues.label).eq("C");
 
     })
   });
@@ -200,11 +268,7 @@ describe('Copy Tag Tests', function () {
     <copy name="cr6" assignNames="r6" source="cr2" modifyIndirectly="3&gt;4" />
     <copy name="cr7" assignNames="r7" source="cr3" modifyIndirectly="3&gt;4" />
 
-    <point label="A" name="A">(1,2)</point>
-    <copy name="cA2" assignNames="A2" source="A"/>
-    <copy label="B" name="cB"  assignNames="B" source="A"/>
-    <copy label="C" name="cC"  assignNames="C" source="cB"/>
-    <copy name="cC2" assignNames="C2" source="cC"/>
+
     `}, "*");
     });
 
@@ -221,12 +285,6 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables['/r5'].stateValues.modifyIndirectly).eq(true);
       expect(stateVariables['/r6'].stateValues.modifyIndirectly).eq(false);
       expect(stateVariables['/r7'].stateValues.modifyIndirectly).eq(false);
-
-      expect(stateVariables['/A'].stateValues.label).eq("A");
-      expect(stateVariables['/A2'].stateValues.label).eq("A");
-      expect(stateVariables['/B'].stateValues.label).eq("B");
-      expect(stateVariables['/C'].stateValues.label).eq("C");
-      expect(stateVariables['/C2'].stateValues.label).eq("C");
 
     })
   });
@@ -245,11 +303,6 @@ describe('Copy Tag Tests', function () {
     <math name="r6" copySource="r2" modifyIndirectly="3&gt;4" />
     <math name="r7" copySource="r3" modifyIndirectly="3&gt;4" />
 
-    <point label="A" name="A">(1,2)</point>
-    <point name="A2" copySource="A"/>
-    <point label="B" name="B" copySource="A"/>
-    <point label="C" name="C" copySource="B"/>
-    <point name="C2" copySource="C"/>
     `}, "*");
     });
 
@@ -267,12 +320,6 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables['/r6'].stateValues.modifyIndirectly).eq(false);
       expect(stateVariables['/r7'].stateValues.modifyIndirectly).eq(false);
 
-      expect(stateVariables['/A'].stateValues.label).eq("A");
-      expect(stateVariables['/A2'].stateValues.label).eq("A");
-      expect(stateVariables['/B'].stateValues.label).eq("B");
-      expect(stateVariables['/C'].stateValues.label).eq("C");
-      expect(stateVariables['/C2'].stateValues.label).eq("C");
-
     })
   });
 
@@ -289,7 +336,7 @@ describe('Copy Tag Tests', function () {
     <copy assignNames="frmt2" prop="format" source="x" hide />
     <copy assignNames="frmt3" hide source="frmt"/>
 
-    <point name="A" label="A">(1,2)</point>
+    <point name="A" labelIsName>(1,2)</point>
     <copy assignNames="cA" prop="coords" source="A"/>
     <copy assignNames="l" prop="latex" source="cA"/>
     <copy assignNames="lmr" prop="latex" modifyIndirectly="false" source="cA"/>
@@ -358,7 +405,7 @@ describe('Copy Tag Tests', function () {
     <copy assignNames="frmt2" source="x.format" hide />
     <copy assignNames="frmt3" hide source="frmt"/>
 
-    <point name="A" label="A">(1,2)</point>
+    <point name="A" labelIsName>(1,2)</point>
     <copy assignNames="cA" source="A.coords"/>
     <copy assignNames="l" source="cA.latex"/>
     <copy assignNames="lmr" modifyIndirectly="false" source="cA.latex"/>
@@ -427,7 +474,7 @@ describe('Copy Tag Tests', function () {
     <text name="frmt2" copyProp="format" copySource="x" hide />
     <text name="frmt3" hide copySource="frmt"/>
 
-    <point name="A" label="A">(1,2)</point>
+    <point name="A" labelIsName>(1,2)</point>
     <coords name="cA" copyProp="coords" copySource="A"/>
     <text name="l" copyProp="latex" copySource="cA"/>
     <text name="lmr" copyProp="latex" modifyIndirectly="false" copySource="cA"/>
@@ -496,7 +543,7 @@ describe('Copy Tag Tests', function () {
     <text name="frmt2" copySource="x.format" hide />
     <text name="frmt3" hide copySource="frmt"/>
 
-    <point name="A" label="A">(1,2)</point>
+    <point name="A" labelIsName>(1,2)</point>
     <coords name="cA" copySource="A.coords"/>
     <text name="l" copySource="cA.latex"/>
     <text name="lmr" modifyIndirectly="false" copySource="cA.latex"/>
@@ -951,14 +998,14 @@ describe('Copy Tag Tests', function () {
     <math>x</math>
     <copy prop="label" source="_math1"/>
 
-    <point label="A" source="x</point>
+    <point />
     <copy source="_point1"/>
     <copy prop="format" source="_ref1"/>
 
     <copy name="A2" source="A"/>
     <copy name="cA2" prop="coords" source="A2"/>
     <copy name="lcA2" prop="label" source="cA2"/>
-    <copy name="llcA2" label="B" source="cA2"/>
+    <copy name="llcA2" labelIsName source="cA2"/>
 
     `}, "*");
     });
@@ -2124,8 +2171,12 @@ describe('Copy Tag Tests', function () {
 
     <text name="source">hello</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first copy" />
-    <booleaninput name='h2' prefill="true" label="Hide second copy" />
+    <booleaninput name='h1' prefill="false">
+      <label>Hide first copy</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true">
+      <label>Hide second copy</label>
+    </booleaninput>
 
     <p name="c1">copy 1: <copy hide="$h1" source="source" /></p>
     <p name="c2">copy 2: <copy hide="$h2" source="source" /></p>
@@ -2159,8 +2210,12 @@ describe('Copy Tag Tests', function () {
 
     <text name="source">hello</text>
 
-    <booleaninput name='h1' prefill="false" label="Hide first copy" />
-    <booleaninput name='h2' prefill="true" label="Hide second copy" />
+    <booleaninput name='h1' prefill="false">
+      <label>Hide first copy</label>
+    </booleaninput>
+    <booleaninput name='h2' prefill="true">
+      <label>Hide second copy</label>
+    </booleaninput>
 
     <p name="c1">copy 1: <text hide="$h1" copySource="source" /></p>
     <p name="c2">copy 2: <text hide="$h2" copySource="source" /></p>
@@ -2739,9 +2794,15 @@ describe('Copy Tag Tests', function () {
 
     <p>Linked copy: <copy source="m" simplify="$s2" assignNames="m3" /></p>
     
-    <p>Double value of original: <updateValue target="m" newValue="2$m" name="doubleOriginal" label="double original" /></p>
-    <p>Double value of copy 1: <updateValue target="m2" newValue="2$m2" name="doubleCopy1" label="double copy 1" /></p>
-    <p>Double value of copy 2: <updateValue target="m3" newValue="2$m3" name="doubleCopy2" label="double copy 2" /></p>
+    <p>Double value of original: <updateValue target="m" newValue="2$m" name="doubleOriginal" >
+      <label>double original</label>
+    </updateValue></p>
+    <p>Double value of copy 1: <updateValue target="m2" newValue="2$m2" name="doubleCopy1" >
+      <label>double copy 1</label>
+    </updateValue></p>
+    <p>Double value of copy 2: <updateValue target="m3" newValue="2$m3" name="doubleCopy2" >
+      <label>double copy 2</label>
+    </updateValue></p>
 
     `}, "*");
     });
@@ -2921,9 +2982,15 @@ describe('Copy Tag Tests', function () {
 
     <p>Linked copy: <math copySource="m" simplify="$s2" name="m3" /></p>
     
-    <p>Double value of original: <updateValue target="m" newValue="2$m" name="doubleOriginal" label="double original" /></p>
-    <p>Double value of copy 1: <updateValue target="m2" newValue="2$m2" name="doubleCopy1" label="double copy 1" /></p>
-    <p>Double value of copy 2: <updateValue target="m3" newValue="2$m3" name="doubleCopy2" label="double copy 2" /></p>
+    <p>Double value of original: <updateValue target="m" newValue="2$m" name="doubleOriginal" >
+      <label>double original</label>
+    </updateValue></p>
+    <p>Double value of copy 1: <updateValue target="m2" newValue="2$m2" name="doubleCopy1" >
+      <label>double copy 1</label>
+    </updateValue></p>
+    <p>Double value of copy 2: <updateValue target="m3" newValue="2$m3" name="doubleCopy2" >
+      <label>double copy 2</label>
+    </updateValue></p>
 
     `}, "*");
     });
@@ -5477,7 +5544,7 @@ describe('Copy Tag Tests', function () {
 
     <group name="g" newNamespace>
       <copy source="/external.value" assignNames="w" />
-      <point label="$(/external)" name="P">(a,b)</point>
+      <point name="P"><label>$(/external)</label>(a,b)</point>
       <copy source="P.label" assignNames="Plabel" />
     </group>
     
@@ -5576,7 +5643,7 @@ describe('Copy Tag Tests', function () {
       <map assignNames="a">
         <template newNamespace>
           <copy source="x" assignNames="w" />
-          <point label="$x" name="P">(a,b)</point>
+          <point name="P"><label>$x</label>(a,b)</point>
           <copy prop="label" source="P" assignNames="Plabel" />
 
 
@@ -5757,8 +5824,12 @@ describe('Copy Tag Tests', function () {
         <number name="n">2</number>
       </setup>
 
-      <updateValue name="addP" label="Add p" target="n" newValue="$n+1" />
-      <updateValue name="removeP" label="Remove p" target="n" newValue="$n-1" />
+      <updateValue name="addP" target="n" newValue="$n+1" >
+        <label>Add P</label>
+      </updateValue>
+      <updateValue name="removeP" target="n" newValue="$n-1" >
+        <label>Remove P</label>
+      </updateValue>
       <map assignNames="(p1) (p2) (p3) (p4)">
         <template><p>i=$i, v=$v</p></template>
         <sources indexAlias="i" alias="v"><sequence length="$n" from="11" /></sources>
@@ -5999,8 +6070,12 @@ describe('Copy Tag Tests', function () {
         <number name="n">2</number>
       </setup>
 
-      <updateValue name="addP" label="Add p" target="n" newValue="$n+1" />
-      <updateValue name="removeP" label="Remove p" target="n" newValue="$n-1" />
+      <updateValue name="addP" target="n" newValue="$n+1" >
+        <label>Add P</label>
+      </updateValue>
+      <updateValue name="removeP" target="n" newValue="$n-1" >
+        <label>Remove P</label>
+      </updateValue>
       <map assignNames="(p1) (p2) (p3) (p4)">
         <template><p>i=$i, v=$v</p></template>
         <sources indexAlias="i" alias="v"><sequence length="$n" from="11" /></sources>
@@ -6228,6 +6303,146 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/section7/p4')).should('not.exist');
 
 
+  });
+
+  it('copy map source with no link', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Number of iterations: <mathinput name="n" /></p>
+
+    <graph>
+    
+      <map name="map1" assignNames="(A B C) (D E F)">
+      <template>
+      
+      <point x="$i{link='false'}" y='$i.value{link="false"}+1'>
+      </point>
+      <point>
+        (<number copySource="i" link="false" /> + 2, <number copySource="i.value" link="false" /> +3)
+      </point>
+      <point>
+        (<copy source="i" link="false" /> + 4, <copy source="i.value" link="false" /> +5)
+      </point>
+      </template>
+      
+      <sources alias="i"><sequence from="1" to="$n" /></sources>
+      </map>
+        
+    </graph>
+
+    <p>A: <copy source="A" assignNames="A2" /></p>
+    <p>B: <copy source="B" assignNames="B2" /></p>
+    <p>C: <copy source="C" assignNames="C2" /></p>
+    <p>D: <copy source="D" assignNames="D2" /></p>
+    <p>E: <copy source="E" assignNames="E2" /></p>
+    <p>F: <copy source="F" assignNames="F2" /></p>
+  
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/A2')).should('not.exist')
+    cy.get(cesc('#/B2')).should('not.exist')
+    cy.get(cesc('#/C2')).should('not.exist')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.get('#\\/n textarea').type("1{enter}", {force:true});
+
+    cy.get(cesc('#/A2') + ' .mjx-mrow').should('contain.text', '(1,2)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 9, y: 0 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: 1, y: 8 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/C",
+        args: { x: 7, y: 2 }
+      })
+    })
+
+    cy.get(cesc('#/C2') + ' .mjx-mrow').should('contain.text', '(7,2)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force:true});
+
+    cy.get(cesc('#/D2') + ' .mjx-mrow').should('contain.text', '(2,3)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)')
+    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(4,5)')
+    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/D",
+        args: { x: 0, y: 10 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/E",
+        args: { x: 9, y: 1 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/F",
+        args: { x: 2, y: 8 }
+      })
+    })
+
+    cy.get(cesc('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
+    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
+    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", {force:true});
+
+    cy.get(cesc('#/A2')).should('not.exist')
+    cy.get(cesc('#/B2')).should('not.exist')
+    cy.get(cesc('#/C2')).should('not.exist')
+    cy.get(cesc('#/D2')).should('not.exist')
+    cy.get(cesc('#/E2')).should('not.exist')
+    cy.get(cesc('#/F2')).should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force:true});
+
+    cy.get(cesc('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
+    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
+    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
+    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
   });
 
   it('external content cannot reach outside namespace', () => {

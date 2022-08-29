@@ -17,15 +17,15 @@ $message = "";
 $legitAccessKey = 0;
 
 $sql = "
-SELECT driveId,
+SELECT courseId,
 isReleased
-FROM drive_content
+FROM course_content
 WHERE doenetId = '$doenetId'
 ";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $driveId = $row['driveId'];
+    $courseId = $row['courseId'];
 }else{
   $success = FALSE;
   $message = "Couldn't find course.";
@@ -34,8 +34,8 @@ if ($result->num_rows > 0) {
 if ($success){
   $sql = "
   SELECT browserExamKeys
-  FROM drive
-  WHERE driveId = '$driveId'
+  FROM course
+  WHERE courseId = '$courseId'
   ";
   $result = $conn->query($sql);
   $row = $result->fetch_assoc();

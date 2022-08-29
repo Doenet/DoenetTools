@@ -22,7 +22,7 @@ const LogoButton = styled.button`
   // border-radius: 50%;
   // margin-top: 8px;
   // margin-left: 90px;
-  cursor: pointer;
+  cursor: ${props => props.hasLink ? "pointer" : "default"};
   &:focus {
     outline: 2px solid var(--canvastext);
     outline-offset: 2px;
@@ -35,7 +35,7 @@ export const profileToolViewStashAtom = atom({
 })
 
  
-export default function Logo(props){
+export default function Logo({hasLink=true}){
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   // if (profile.state === "loading"){ return null;}
@@ -47,5 +47,11 @@ export default function Logo(props){
   // let profilePicName = "cat";
 // return <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
 return <LogoButton
-onClick={()=>setPageToolView({page:'home',tool:'',view:''})}/>
+hasLink={hasLink}
+onClick={()=>{
+  if (hasLink){
+    setPageToolView({page:'home',tool:'',view:''})
+  }
+}
+}/>
 }

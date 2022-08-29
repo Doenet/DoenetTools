@@ -1,7 +1,10 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
+import { scrollableContainerAtom } from '../ActivityViewer';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function Ref(props) {
@@ -9,6 +12,11 @@ export default React.memo(function Ref(props) {
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
+  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
+
+  let { search } = useLocation();
+  let navigate = useNavigate();
+
 
   if (SVs.hidden) {
     return null;
@@ -22,6 +30,7 @@ export default React.memo(function Ref(props) {
   let url = "";
   let targetForATag = "_blank";
   let haveValidTarget = false;
+  let externalUri = false;
   if (SVs.cid || SVs.doenetId) {
     if (SVs.cid) {
       url = `cid=${SVs.cid}`
@@ -54,17 +63,21 @@ export default React.memo(function Ref(props) {
     } else {
       if (SVs.page) {
         url += `#page${SVs.page}`
-      }
-      if (SVs.targetName) {
-        url += SVs.targetName;
+        if (SVs.targetName) {
+          url += SVs.targetName;
+        }
+      } else if (SVs.targetName) {
+        url += '#' + SVs.targetName;
       }
     }
   } else if (SVs.uri) {
     url = SVs.uri;
     if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
       haveValidTarget = true;
+      externalUri = true;
     }
   } else {
+    url += search;
 
     if (SVs.page) {
       url += `#page${SVs.page}`
@@ -81,12 +94,23 @@ export default React.memo(function Ref(props) {
 
   if (SVs.createButton) {
     return <span id={id}><a name={id} />
-      <button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
+      <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
     </span>;
 
   } else {
     if (haveValidTarget) {
-      return <a target={targetForATag} id={id} name={id} href={url}>{linkContent}</a>
+
+      if (externalUri || url === "#") {
+        // for some reason, if url = "#", the <Link>, below, causes a refresh
+        // as it removes the # from the url.  So we use a <a> directly in this case.
+        return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
+      } else {
+
+        let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
+        let stateObj = { fromLink: true }
+        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () =>scrollableContainer[scrollAttribute], enumerable: true });
+        return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
+      }
     } else {
       return <span id={id}>{linkContent}</span>
     }

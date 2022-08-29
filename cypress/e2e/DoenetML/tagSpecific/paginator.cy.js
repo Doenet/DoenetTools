@@ -43,10 +43,14 @@ describe('Paginator Tag Tests', function () {
       </section>
     </paginator>
     <p>
-    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" target="pgn" number="$pageNum -1" />
+    <callAction name="prevPage" disabled="$pageNum = 1" actionName="setPage" target="pgn" number="$pageNum -1"  >
+      <label>prev</label>
+    </callAction>
     Page <copy prop="currentPage" target="pgn" assignNames="pageNum" />
     of <copy prop="nPages" target="pgn" assignNames="nPages" />
-    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1" />
+    <callAction name="nextPage" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1"  >
+      <label>next</label>
+    </callAction>
     
     </p>
     <p>What is 2+2? <answer>4</answer></p>

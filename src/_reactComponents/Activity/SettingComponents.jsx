@@ -11,7 +11,7 @@ import { useActivity } from './ActivityActions';
 import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
 import Increment from '../PanelHeaderComponents/IncrementMenu';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
-import { useRecoilValue } from 'recoil';
+import { atomFamily, useRecoilState, useRecoilValue } from 'recoil';
 import {
   peopleByCourseId,
   itemByDoenetId,
@@ -24,6 +24,8 @@ import ActionButton from '../PanelHeaderComponents/ActionButton';
 import { toastType, useToast } from '@Toast';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { useSaveDraft } from '../../Tools/_framework/ToolPanels/DoenetMLEditor';
+import { prerenderActivity } from '../../_utils/activityUtils';
+import Textfield from '../PanelHeaderComponents/Textfield';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -46,63 +48,137 @@ const InputControl = styled.div`
   align-items: center;
 `;
 
+const initializingWorkersAtom = atomFamily({
+  key: 'initializingWorkersAtom',
+  default: null,
+})
+
 export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
   const { saveDraft } = useSaveDraft();
   const { compileActivity, updateAssignItem } = useCourse(courseId);
-  const { isAssigned } = useRecoilValue(itemByDoenetId(doenetId));
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
+  const isAssigned = itemObj.isAssigned;
   const addToast = useToast();
+  const [initializeStatus, setInitializeStatus] = useState("");
 
   let assignActivityText = 'Assign Activity';
+  let assignActivityToast = 'Activity Assigned';
   if (isAssigned) {
     // if (assignedCid != null) {
     assignActivityText = 'Update Assigned Activity';
+    assignActivityToast = 'Assigned Activity Updated';
+  }
+
+  let [initializingWorker, setInitializingWorker] = useRecoilState(initializingWorkersAtom(doenetId));
+
+
+  let assignButton = <ActionButton
+    width="menu"
+    data-test="Assign Activity"
+    value={assignActivityText}
+    onClick={async () => {
+      if (pageId) {
+        await saveDraft({ pageId, courseId });
+      }
+      compileActivity({
+        activityDoenetId: doenetId,
+        isAssigned: true,
+        courseId,
+        // successCallback: () => {
+        //   addToast('Activity Assigned.', toastType.INFO);
+        // },
+      });
+      updateAssignItem({
+        doenetId,
+        isAssigned: true,
+        successCallback: () => {
+          addToast(assignActivityToast, toastType.INFO);
+        },
+      });
+    }}
+  />
+
+  let unAssignButton = null;
+  let prerenderButton = null;
+
+  if (isAssigned) {
+    unAssignButton = <ActionButton
+      width="menu"
+      data-test="Unassign Activity"
+      value="Unassign Activity"
+      alert
+      onClick={() => {
+        updateAssignItem({
+          doenetId,
+          isAssigned: false,
+          successCallback: () => {
+            addToast('Activity Unassigned', toastType.INFO);
+          },
+        });
+      }}
+    />
+
+    if (initializingWorker) {
+      prerenderButton = <ActionButton
+        width="menu"
+        data-test="Cancel prerendering"
+        value={`${initializeStatus} (Cancel)`}
+        onClick={() => {
+          initializingWorker.terminate();
+          setInitializingWorker(null)
+        }}
+      />
+    } else {
+
+      let initializePrerender = async () => {
+        let flags = {
+          showCorrectness: itemObj.showCorrectness,
+          readOnly: false,
+          solutionDisplayMode: itemObj.showSolution ? 'button' : "none",
+          showFeedback: itemObj.showFeedback,
+          showHints: itemObj.showHints,
+          allowLoadState: false,
+          allowSaveState: false,
+          allowLocalState: false,
+          allowSaveSubmissions: false,
+          allowSaveEvents: false,
+        }
+        let resp = await axios.get(
+          `/api/getCidForAssignment.php`,
+          { params: { doenetId } },
+        );
+        if (resp.data.cid) {
+          setInitializeStatus("");
+          let worker = prerenderActivity({ cid: resp.data.cid, doenetId, flags })
+          setInitializingWorker(worker);
+          worker.onmessage = e => {
+            if (e.data.messageType === "status") {
+              setInitializeStatus(`${e.data.stage} ${Math.round(e.data.complete*100)}%`)
+            } else {
+              worker.terminate();
+              setInitializingWorker(null);
+            }
+          }
+        }
+      }
+
+      prerenderButton = <ActionButton
+        width="menu"
+        data-test="Prerender activity"
+        value="Prerender activity"
+        onClick={initializePrerender}
+      />
+
+    }
+
   }
 
   return (
     <ActionButtonGroup vertical>
-      <ActionButton
-        width="menu"
-        data-test="Assign Activity"
-        value={assignActivityText}
-        onClick={async () => {
-          if (pageId) {
-            await saveDraft({ pageId, courseId });
-          }
-          compileActivity({
-            activityDoenetId: doenetId,
-            isAssigned: true,
-            courseId,
-            // successCallback: () => {
-            //   addToast('Activity Assigned.', toastType.INFO);
-            // },
-          });
-          updateAssignItem({
-            doenetId,
-            isAssigned: true,
-            successCallback: () => {
-              addToast('Activity Assigned', toastType.INFO);
-            },
-          });
-        }}
-      />
-      {isAssigned ? (
-        <ActionButton
-          width="menu"
-          data-test="Unassign Activity"
-          value="Unassign Activity"
-          alert
-          onClick={() => {
-            updateAssignItem({
-              doenetId,
-              isAssigned: false,
-              successCallback: () => {
-                addToast('Activity Unassigned', toastType.INFO);
-              },
-            });
-          }}
-        />
-      ) : null}
+      {assignButton}
+      {unAssignButton}
+      {prerenderButton}
     </ActionButtonGroup>
   );
 };
@@ -385,7 +461,7 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
             updateAssignmentSettings({
               keyToUpdate: 'numberOfAttemptsAllowed',
               value,
-              description: 'Attempts Allowe',
+              description: 'Attempts Allowed',
               valueDescription,
             });
           }}
@@ -495,8 +571,8 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
                 setTotalPointsOrPercent(0);
                 totalPointsOrPercentLocal = 0;
               } else {
-                totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
-                setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
+                totalPointsOrPercentLocal = parseFloat(totalPointsOrPercent);
+                setTotalPointsOrPercent(parseFloat(totalPointsOrPercent));
               }
 
               updateAssignmentSettings(doenetId, {
@@ -554,6 +630,46 @@ export const GradeCategory = ({ courseId, doenetId }) => {
               keyToUpdate: 'gradeCategory',
               value: val,
               description: 'Grade Category',
+            });
+          }
+        }}
+      />
+    </InputWrapper>
+  );
+};
+
+export const ItemWeights = ({ courseId, doenetId }) => {
+  const {
+    value: { itemWeights: recoilValue },
+    updateAssignmentSettings,
+  } = useActivity(courseId, doenetId);
+  const [textValue, setTextValue] = useState("");
+
+  useEffect(() => {
+    setTextValue(recoilValue?.join(" "))
+  }, [recoilValue]);
+
+  return (
+    <InputWrapper>
+      <LabelText>Item Weights</LabelText>
+      <Textfield
+        vertical
+        width="menu"
+        value={textValue}
+        dataTest="Item Weights"
+        onChange={(e) => {
+          setTextValue(e.target.value);
+        }}
+        onBlur={() => {
+          let parsedValue = textValue.split(" ").filter(x => x).map(Number).map(x => x >= 0 ? x : 0);
+
+          if (recoilValue.length !== parsedValue.length
+            || recoilValue.some((v, i) => v !== parsedValue[i])
+          ) {
+            updateAssignmentSettings({
+              keyToUpdate: 'itemWeights',
+              value: parsedValue,
+              description: 'Item Weights',
             });
           }
         }}

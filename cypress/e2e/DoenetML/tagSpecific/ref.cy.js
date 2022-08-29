@@ -115,7 +115,7 @@ describe('ref Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/section1_title').should('have.text', 'Section 1')
+    cy.get('#\\/section1_title').should('include.text', 'Section 1')
 
     cy.get('#\\/section1\\/toFour').click();
     cy.url().should('include', '#/section4')

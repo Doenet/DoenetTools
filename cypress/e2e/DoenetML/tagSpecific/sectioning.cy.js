@@ -1323,26 +1323,30 @@ describe('Sectioning Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-      <section name="sec">
+      <section includeAutoName includeAutoNumber name="sec">
         <title>A title</title>
         <p>Hello</p>
       </section>
     
-      <section name="revised" copySource="sec">
+      <section includeAutoName includeAutoNumber name="revised" copySource="sec">
         <title>A better title</title>
         <p>Good day!</p>
       </section>
 
       <p>Copy of original title: <text copySource="sec.title" name="title1" /></p>
       <p>Copy of revised title: <text copySource="revised.title" name="title2" /></p>
-    
+      <p>Original section number: <text copySource="sec.sectionNumber" name="sectionNumber1" /></p>
+      <p>Revised section number: <text copySource="revised.sectionNumber" name="sectionNumber2" /></p>
+   
     `}, "*");
     });
 
-    cy.get('#\\/sec_title').should('have.text', 'A title');
-    cy.get('#\\/revised_title').should('have.text', 'A better title');
+    cy.get('#\\/sec_title').should('have.text', 'Section 1: A title');
+    cy.get('#\\/revised_title').should('have.text', 'Section 2: A better title');
     cy.get('#\\/title1').should('have.text', 'A title');
     cy.get('#\\/title2').should('have.text', 'A better title');
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
 
     cy.get('#\\/_p1').should('have.text', 'Hello');
     cy.get('#\\/revised p:first-of-type').should('have.text', 'Hello');
@@ -1354,35 +1358,903 @@ describe('Sectioning Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-      <section name="sec" newNamespace>
+      <section includeAutoName includeAutoNumber name="sec" newNamespace>
         <title>A title</title>
         <p>Hello</p>
       </section>
     
-      <section name="revised" copySource="sec" newNamespace>
+      <section includeAutoName includeAutoNumber name="revised" copySource="sec" newNamespace>
         <title>A better title</title>
         <p>Good day!</p>
       </section>
 
       <p>Copy of original title: <text copySource="sec.title" name="title1" /></p>
       <p>Copy of revised title: <text copySource="revised.title" name="title2" /></p>
+      <p>Original section number: <text copySource="sec.sectionNumber" name="sectionNumber1" /></p>
+      <p>Revised section number: <text copySource="revised.sectionNumber" name="sectionNumber2" /></p>
     
     `}, "*");
     });
 
-    cy.get('#\\/sec_title').should('have.text', 'A title');
-    cy.get('#\\/revised_title').should('have.text', 'A better title');
+    cy.get('#\\/sec_title').should('have.text', 'Section 1: A title');
+    cy.get('#\\/revised_title').should('have.text', 'Section 2: A better title');
     cy.get('#\\/sec\\/_title1').should('have.text', 'A title');
     cy.get('#\\/revised\\/_title').should('not.exist');
     cy.get('#\\/revised\\/_title2').should('have.text', 'A better title');
     cy.get('#\\/title1').should('have.text', 'A title');
     cy.get('#\\/title2').should('have.text', 'A better title');
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
 
     cy.get('#\\/sec\\/_p1').should('have.text', 'Hello');
     cy.get('#\\/revised\\/_p1').should('have.text', 'Hello');
     cy.get('#\\/revised\\/_p2').should('have.text', 'Good day!');
 
   });
+
+  it('Auto naming of section titles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec1">
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section name="sec2">
+        <p><lorem generateSentences="1" /></p>
+
+        <section name="sec21">
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section name="sec22">
+          <p><lorem generateSentences="1" /></p>
+          <section name="sec221">
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec222">
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec223">
+            <p><lorem generateSentences="1" /></p>
+
+            <section name="sec2231">
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section name="sec23">
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1');
+    cy.get('#\\/sec2_title').should('have.text', 'Section 2');
+    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1');
+    cy.get('#\\/sec22_title').should('have.text', 'Section 2.2');
+    cy.get('#\\/sec221_title').should('have.text', 'Section 2.2.1');
+    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2.2');
+    cy.get('#\\/sec223_title').should('have.text', 'Section 2.2.3');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1');
+    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3');
+
+    cy.get('#\\/title1').should('have.text', 'Section 1');
+    cy.get('#\\/title2').should('have.text', 'Section 2');
+    cy.get('#\\/title21').should('have.text', 'Section 2.1');
+    cy.get('#\\/title22').should('have.text', 'Section 2.2');
+    cy.get('#\\/title221').should('have.text', 'Section 2.2.1');
+    cy.get('#\\/title222').should('have.text', 'Section 2.2.2');
+    cy.get('#\\/title223').should('have.text', 'Section 2.2.3');
+    cy.get('#\\/title2231').should('have.text', 'Section 2.2.3.1');
+    cy.get('#\\/title23').should('have.text', 'Section 2.3');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+  it('Not auto naming of section titles with custom titles, by default', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+    
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'A');
+    cy.get('#\\/sec2_title').should('have.text', 'B');
+    cy.get('#\\/sec21_title').should('have.text', 'BA');
+    cy.get('#\\/sec22_title').should('have.text', 'BB');
+    cy.get('#\\/sec221_title').should('have.text', 'BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+  it('Add auto number to section titles with custom titles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section includeAutoNumber name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section includeAutoNumber name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section includeAutoNumber name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section includeAutoNumber name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section includeAutoNumber name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoNumber name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoNumber name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section includeAutoNumber name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section includeAutoNumber name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', '1. A');
+    cy.get('#\\/sec2_title').should('have.text', '2. B');
+    cy.get('#\\/sec21_title').should('have.text', '2.1. BA');
+    cy.get('#\\/sec22_title').should('have.text', '2.2. BB');
+    cy.get('#\\/sec221_title').should('have.text', '2.2.1. BBA');
+    cy.get('#\\/sec222_title').should('have.text', '2.2.2. BBB');
+    cy.get('#\\/sec223_title').should('have.text', '2.2.3. BBC');
+    cy.get('#\\/sec2231_title').should('have.text', '2.2.3.1. BBCA');
+    cy.get('#\\/sec23_title').should('have.text', '2.3. BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+  it('Add auto name and number to section titles with custom titles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section includeAutoNumber includeAutoName name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section includeAutoNumber includeAutoName name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section includeAutoNumber includeAutoName name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section includeAutoNumber includeAutoName name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section includeAutoNumber includeAutoName name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoNumber includeAutoName name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoNumber includeAutoName name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section includeAutoNumber includeAutoName name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section includeAutoNumber includeAutoName name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1: A');
+    cy.get('#\\/sec2_title').should('have.text', 'Section 2: B');
+    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1: BA');
+    cy.get('#\\/sec22_title').should('have.text', 'Section 2.2: BB');
+    cy.get('#\\/sec221_title').should('have.text', 'Section 2.2.1: BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2.2: BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'Section 2.2.3: BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1: BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+  it('Add auto name to section titles with custom titles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section includeAutoName name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section includeAutoName name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section includeAutoName name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section includeAutoName name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section includeAutoName name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoName name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoName name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section includeAutoName name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section includeAutoName name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+      
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section: A');
+    cy.get('#\\/sec2_title').should('have.text', 'Section: B');
+    cy.get('#\\/sec21_title').should('have.text', 'Section: BA');
+    cy.get('#\\/sec22_title').should('have.text', 'Section: BB');
+    cy.get('#\\/sec221_title').should('have.text', 'Section: BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'Section: BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'Section: BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section: BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'Section: BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+  it('Add auto name and number to section titles with custom titles, turning off include parent number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section includeAutoNumber includeAutoName name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section includeAutoNumber includeAutoName name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section includeAutoNumber includeAutoName name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+          <section includeAutoNumber includeAutoName name="sec211" includeParentNumber="false">
+            <title>BAA</title>
+            <p><lorem generateSentences="1" /></p>
+            <section includeAutoNumber includeAutoName name="sec2111">
+              <title>BAAA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+            <section includeAutoNumber includeAutoName name="sec2112">
+              <title>BAAB</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+        </section>
+        <section includeAutoNumber includeAutoName name="sec22" includeParentNumber="false">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section includeAutoNumber includeAutoName name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoNumber includeAutoName name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section includeAutoNumber includeAutoName name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section includeAutoNumber includeAutoName name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section includeAutoNumber includeAutoName name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+      <p>Title 1: <text name="title1" copySource="sec1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="sec2.title" /></p>
+      <p>Title 2.1: <text name="title21" copySource="sec21.title" /></p>
+      <p>Title 2.1.1: <text name="title211" copySource="sec211.title" /></p>
+      <p>Title 2.1.1.1: <text name="title2111" copySource="sec2111.title" /></p>
+      <p>Title 2.1.1.2: <text name="title2112" copySource="sec2112.title" /></p>
+      <p>Title 2.2: <text name="title22" copySource="sec22.title" /></p>
+      <p>Title 2.2.1: <text name="title221" copySource="sec221.title" /></p>
+      <p>Title 2.2.2: <text name="title222" copySource="sec222.title" /></p>
+      <p>Title 2.2.3: <text name="title223" copySource="sec223.title" /></p>
+      <p>Title 2.2.3.1: <text name="title2231" copySource="sec2231.title" /></p>
+      <p>Title 2.3: <text name="title23" copySource="sec23.title" /></p>
+
+      <p>Number for 1: <text name="sectionNumber1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for 2: <text name="sectionNumber2" copySource="sec2.sectionNumber" /></p>
+      <p>Number for 2.1: <text name="sectionNumber21" copySource="sec21.sectionNumber" /></p>
+      <p>Number for 2.1.1: <text name="sectionNumber211" copySource="sec211.sectionNumber" /></p>
+      <p>Number for 2.1.1.1: <text name="sectionNumber2111" copySource="sec2111.sectionNumber" /></p>
+      <p>Number for 2.1.1.2: <text name="sectionNumber2112" copySource="sec2112.sectionNumber" /></p>
+      <p>Number for 2.2: <text name="sectionNumber22" copySource="sec22.sectionNumber" /></p>
+      <p>Number for 2.2.1: <text name="sectionNumber221" copySource="sec221.sectionNumber" /></p>
+      <p>Number for 2.2.2: <text name="sectionNumber222" copySource="sec222.sectionNumber" /></p>
+      <p>Number for 2.2.3: <text name="sectionNumber223" copySource="sec223.sectionNumber" /></p>
+      <p>Number for 2.2.3.1: <text name="sectionNumber2231" copySource="sec2231.sectionNumber" /></p>
+      <p>Number for 2.3: <text name="sectionNumber23" copySource="sec23.sectionNumber" /></p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1: A');
+    cy.get('#\\/sec2_title').should('have.text', 'Section 2: B');
+    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1: BA');
+    cy.get('#\\/sec211_title').should('have.text', 'Section 1: BAA');
+    cy.get('#\\/sec2111_title').should('have.text', 'Section 1.1: BAAA');
+    cy.get('#\\/sec2112_title').should('have.text', 'Section 1.2: BAAB');
+    cy.get('#\\/sec22_title').should('have.text', 'Section 2: BB');
+    cy.get('#\\/sec221_title').should('have.text', 'Section 2.1: BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2: BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'Section 2.3: BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.3.1: BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+
+    cy.get('#\\/title1').should('have.text', 'A');
+    cy.get('#\\/title2').should('have.text', 'B');
+    cy.get('#\\/title21').should('have.text', 'BA');
+    cy.get('#\\/title211').should('have.text', 'BAA');
+    cy.get('#\\/title2111').should('have.text', 'BAAA');
+    cy.get('#\\/title2112').should('have.text', 'BAAB');
+    cy.get('#\\/title22').should('have.text', 'BB');
+    cy.get('#\\/title221').should('have.text', 'BBA');
+    cy.get('#\\/title222').should('have.text', 'BBB');
+    cy.get('#\\/title223').should('have.text', 'BBC');
+    cy.get('#\\/title2231').should('have.text', 'BBCA');
+    cy.get('#\\/title23').should('have.text', 'BC');
+
+    cy.get('#\\/sectionNumber1').should('have.text', '1');
+    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber211').should('have.text', '1');
+    cy.get('#\\/sectionNumber2111').should('have.text', '1.1');
+    cy.get('#\\/sectionNumber2112').should('have.text', '1.2');
+    cy.get('#\\/sectionNumber22').should('have.text', '2');
+    cy.get('#\\/sectionNumber221').should('have.text', '2.1');
+    cy.get('#\\/sectionNumber222').should('have.text', '2.2');
+    cy.get('#\\/sectionNumber223').should('have.text', '2.3');
+    cy.get('#\\/sectionNumber2231').should('have.text', '2.3.1');
+    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec211'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2111'].stateValues.level).eq(4);
+      expect(stateVariables['/sec2112'].stateValues.level).eq(4);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+  it('Add auto name to aside', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <aside name="aside1">
+        <p><lorem generateSentences="1" /></p>
+      </aside>
+      <aside includeAutoName name="aside2">
+        <title>Side point</title>
+        <p><lorem generateSentences="1" /></p>
+      </aside>
+      <aside includeAutoName name="aside3" includeAutoNumber>
+        <title>Another side point</title>
+        <p><lorem generateSentences="1" /></p>
+        <aside name="aside31">
+          <title>Subpoint</title>
+          <p><lorem generateSentences="1" /></p>
+        </aside>
+        <aside name="aside32">
+          <p><lorem generateSentences="1" /></p>
+        </aside>
+        <aside name="aside33" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </aside>
+      </aside>
+  
+      <p>Title 1: <text name="title1" copySource="aside1.title" /></p>
+      <p>Title 2: <text name="title2" copySource="aside2.title" /></p>
+      <p>Title 3: <text name="title3" copySource="aside3.title" /></p>
+      <p>Title 3.1: <text name="title31" copySource="aside31.title" /></p>
+      <p>Title 3.2: <text name="title32" copySource="aside32.title" /></p>
+      <p>Title 3.3: <text name="title33" copySource="aside33.title" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/aside1_title').should('contain.text', 'Aside 1');
+    cy.get('#\\/aside1_title').should('not.contain.text', ':');
+    cy.get('#\\/aside2_title').should('contain.text', 'Aside: Side point');
+    cy.get('#\\/aside3_title').should('contain.text', 'Aside 3: Another side point');
+    cy.get('#\\/title1').should('have.text', 'Aside 1');
+    cy.get('#\\/title2').should('have.text', 'Side point');
+    cy.get('#\\/title3').should('have.text', 'Another side point');
+
+    cy.get('#\\/aside3_title').click();
+
+    cy.get('#\\/aside31_title').should('contain.text', 'Subpoint');
+    cy.get('#\\/aside31_title').should('not.contain.text', '1');
+    cy.get('#\\/aside31_title').should('not.contain.text', ':');
+    cy.get('#\\/aside32_title').should('contain.text', 'Aside 2 ');
+    cy.get('#\\/aside32_title').should('not.contain.text', ':');
+    cy.get('#\\/aside33_title').should('contain.text', 'Aside 3.3 ');
+    cy.get('#\\/aside33_title').should('not.contain.text', ':');
+
+
+    cy.get('#\\/title31').should('have.text', 'Subpoint');
+    cy.get('#\\/title32').should('have.text', 'Aside 2');
+    cy.get('#\\/title33').should('have.text', 'Aside 3.3');
+
+  });
+
+  it('Example, problems, exercise no not include parent number by default', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec1">
+        <problem name="prob11">
+          <p><lorem generateSentences="1" /></p>
+        </problem>
+        <exercise name="exer11">
+          <p><lorem generateSentences="1" /></p>
+        </exercise>
+        <example name="exam11">
+          <p><lorem generateSentences="1" /></p>
+        </example>
+        <problem name="prob12">
+          <p><lorem generateSentences="1" /></p>
+        </problem>
+        <exercise name="exer12">
+          <p><lorem generateSentences="1" /></p>
+        </exercise>
+        <example name="exam12">
+          <p><lorem generateSentences="1" /></p>
+        </example>
+        <problem name="prob13" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </problem>
+        <exercise name="exer13" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </exercise>
+        <example name="exam13" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </example>
+
+      </section>
+  
+
+      <p>Title Section 1: <text name="titleSec1" copySource="sec1.title" /></p>
+      <p>Title Problem 1.1: <text name="titleProb11" copySource="prob11.title" /></p>
+      <p>Title Exercise 1.1: <text name="titleExer11" copySource="exer11.title" /></p>
+      <p>Title Example 1.1: <text name="titleExam11" copySource="exam11.title" /></p>
+      <p>Title Problem 1.2: <text name="titleProb12" copySource="prob12.title" /></p>
+      <p>Title Exercise 1.2: <text name="titleExer12" copySource="exer12.title" /></p>
+      <p>Title Example 1.2: <text name="titleExam12" copySource="exam12.title" /></p>
+      <p>Title Problem 1.3: <text name="titleProb13" copySource="prob13.title" /></p>
+      <p>Title Exercise 1.3: <text name="titleExer13" copySource="exer13.title" /></p>
+      <p>Title Example 1.3: <text name="titleExam13" copySource="exam13.title" /></p>
+
+
+      <p>Number for Section 1: <text name="sectionNumberSec1" copySource="sec1.sectionNumber" /></p>
+      <p>Number for Problem 1.1: <text name="sectionNumberProb11" copySource="prob11.sectionNumber" /></p>
+      <p>Number for Exercise 1.1: <text name="sectionNumberExer11" copySource="exer11.sectionNumber" /></p>
+      <p>Number for Example 1.1: <text name="sectionNumberExam11" copySource="exam11.sectionNumber" /></p>
+      <p>Number for Problem 1.2: <text name="sectionNumberProb12" copySource="prob12.sectionNumber" /></p>
+      <p>Number for Exercise 1.2: <text name="sectionNumberExer12" copySource="exer12.sectionNumber" /></p>
+      <p>Number for Example 1.2: <text name="sectionNumberExam12" copySource="exam12.sectionNumber" /></p>
+      <p>Number for Problem 1.3: <text name="sectionNumberProb13" copySource="prob13.sectionNumber" /></p>
+      <p>Number for Exercise 1.3: <text name="sectionNumberExer13" copySource="exer13.sectionNumber" /></p>
+      <p>Number for Example 1.3: <text name="sectionNumberExam13" copySource="exam13.sectionNumber" /></p>
+
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1');
+    cy.get('#\\/prob11_title').should('have.text', 'Problem 1');
+    cy.get('#\\/exer11_title').should('have.text', 'Exercise 1');
+    cy.get('#\\/exam11_title').should('have.text', 'Example 1');
+    cy.get('#\\/prob12_title').should('have.text', 'Problem 2');
+    cy.get('#\\/exer12_title').should('have.text', 'Exercise 2');
+    cy.get('#\\/exam12_title').should('have.text', 'Example 2');
+    cy.get('#\\/prob13_title').should('have.text', 'Problem 1.3');
+    cy.get('#\\/exer13_title').should('have.text', 'Exercise 1.3');
+    cy.get('#\\/exam13_title').should('have.text', 'Example 1.3');
+
+    cy.get('#\\/titleProb11').should('have.text', 'Problem 1');
+    cy.get('#\\/titleExer11').should('have.text', 'Exercise 1');
+    cy.get('#\\/titleExam11').should('have.text', 'Example 1');
+    cy.get('#\\/titleProb12').should('have.text', 'Problem 2');
+    cy.get('#\\/titleExer12').should('have.text', 'Exercise 2');
+    cy.get('#\\/titleExam12').should('have.text', 'Example 2');
+    cy.get('#\\/titleProb13').should('have.text', 'Problem 1.3');
+    cy.get('#\\/titleExer13').should('have.text', 'Exercise 1.3');
+    cy.get('#\\/titleExam13').should('have.text', 'Example 1.3');
+
+    cy.get('#\\/sectionNumberProb11').should('have.text', '1');
+    cy.get('#\\/sectionNumberExer11').should('have.text', '1');
+    cy.get('#\\/sectionNumberExam11').should('have.text', '1');
+    cy.get('#\\/sectionNumberProb12').should('have.text', '2');
+    cy.get('#\\/sectionNumberExer12').should('have.text', '2');
+    cy.get('#\\/sectionNumberExam12').should('have.text', '2');
+    cy.get('#\\/sectionNumberProb13').should('have.text', '1.3');
+    cy.get('#\\/sectionNumberExer13').should('have.text', '1.3');
+    cy.get('#\\/sectionNumberExam13').should('have.text', '1.3');
+
+  });
+
 
 
 });
