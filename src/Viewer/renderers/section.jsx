@@ -89,7 +89,7 @@ export default React.memo(function Section(props) {
     case 2: heading = <h3 id={headingId}>{title}</h3>; break;
     case 3: heading = <h4 id={headingId}>{title}</h4>; break;
     case 4: heading = <h5 id={headingId}>{title}</h5>; break;
-    case 5: heading = <h6 id={headingId}>{title}</h6>; break;
+    default: heading = <h6 id={headingId}>{title}</h6>; break;
   }
   // if (SVs.level === 0) {
   //   heading = <span id={headingId} style={{fontSize:'2em'}}>{title}</span>;
