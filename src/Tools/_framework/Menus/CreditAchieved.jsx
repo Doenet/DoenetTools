@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue, useRecoilCallback } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
-// import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
 import { creditAchievedAtom, currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import styled from "styled-components";
@@ -22,7 +21,7 @@ const ScoreOnRight = styled.div`
 
 const ScoreContainer = styled.div`
   position: relative;
-  background: ${props => props.highlight ? "var(--mainGray)" : "var(--canvas)"}
+  background: ${props => props.highlight ? "var(--mainGray)" : "var(--canvas)"};
 `
 
 

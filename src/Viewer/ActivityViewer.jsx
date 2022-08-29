@@ -1216,6 +1216,7 @@ export default function ActivityViewer(props) {
     let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
 
     let pageViewer = <PageViewer
+      userId = {props.userId}
       doenetId={props.doenetId}
       activityCid={cid}
       cid={page.cid}
