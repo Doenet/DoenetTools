@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, Suspense } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useTable, useSortBy, useFilters, useGlobalFilter } from 'react-table';
 
@@ -28,11 +28,11 @@ import {
 } from '../NewToolRoot';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
-// // React Table Styling
+// React Table Styling
 export const Styles = styled.div`
   padding: 1rem;
   table {
-    border-collapse: collapse;
+    /* border-collapse: collapse; */
     border-spacing: 0;
 
     thead {
@@ -83,9 +83,9 @@ export const Styles = styled.div`
       }
     }
 
-    th > p {
+    /* th > p {
       height: 100%;
-    }
+    } */
 
     tr:not(:first-child) th:not(:first-child) > p {
       writing-mode: vertical-rl;
@@ -122,51 +122,24 @@ export const Styles = styled.div`
   }
 `;
 
-export const driveId = atom({
-  key: 'driveId',
-  default: '',
-});
-
-const coursesDataQuerry = atom({
-  key: 'coursesDataQuerry',
-  default: selector({
-    key: 'coursesDataQuerry/Default',
-    get: async () => {
-      try {
-        const { data } = await axios.get('/api/loadUserCourses.php');
-        return data;
-      } catch (error) {
-        console.log('Error loading users course list', error.message);
-        return {};
-      }
-    },
-  }),
-});
-
-const coursesData = selector({
-  key: 'coursesData',
-  get: ({ get }) => {
-    let data = get(coursesDataQuerry);
-    return data;
-  },
-});
-
 const assignmentDataQuerry = atom({
   key: 'assignmentDataQuerry',
   default: selector({
     key: 'assignmentDataQuerry/Default',
     get: async ({ get }) => {
+      const courseId = get(searchParamAtomFamily('courseId'));
       try {
-        const courseId = get(searchParamAtomFamily('courseId'));
-        const driveIdPayload = { params: { driveId: courseId } };
-        const { data } = await axios.get(
-          '/api/loadAssignments.php',
-          driveIdPayload,
-        );
-
-        return data;
+        const {
+          data: { success, message, assignments },
+        } = await axios.get('/api/loadAssignments.php', {
+          params: { courseId },
+        });
+        if (success) {
+          return assignments;
+        }
+        throw new Error(message);
       } catch (error) {
-        console.log('No assignments associated with drive ID: ', get(driveId));
+        console.warn('No assignments associated with courseId ID: ', courseId);
         return {};
       }
     },
@@ -196,9 +169,6 @@ export const assignmentData = selector({
 
     return assignmentArray;
   },
-  set: ({ set, get }, newValue) => {
-    //console.log("New Value: ", newValue);
-  },
 });
 
 export const studentDataQuerry = atom({
@@ -207,20 +177,23 @@ export const studentDataQuerry = atom({
     key: 'studentDataQuerry/Default',
     get: async ({ get }) => {
       const courseId = get(searchParamAtomFamily('courseId'));
-      const driveIdPayload = { params: { driveId: courseId } };
       try {
-        const { data } = await axios.get(
-          '/api/loadGradebookEnrollment.php',
-          driveIdPayload,
-        );
-        return data;
+        const {
+          data: { success, message, gradebookEnrollment },
+        } = await axios.get('/api/loadGradebookEnrollment.php', {
+          params: { courseId },
+        });
+        if (success) {
+          return gradebookEnrollment;
+        }
+        throw new Error(message);
       } catch (error) {
-        console.log(
+        console.warn(
           'No students associated with course ID: ',
-          get(driveId),
+          courseId,
           error,
         );
-        return {};
+        return [];
       }
     },
   }),
@@ -240,7 +213,6 @@ export const studentData = selector({
         courseCredit,
         courseGrade,
         overrideCourseGrade,
-        role,
       ] = row;
 
       students[userId] = {
@@ -249,7 +221,6 @@ export const studentData = selector({
         courseCredit,
         courseGrade,
         overrideCourseGrade,
-        role,
       };
     }
     return students;
@@ -261,21 +232,19 @@ export const overViewDataQuerry = atom({
   default: selector({
     key: 'overViewDataQuerry/Default',
     get: async ({ get }) => {
+      const courseId = get(searchParamAtomFamily('courseId'));
       try {
-        const courseId = get(searchParamAtomFamily('courseId'));
-
-        const driveIdPayload = { params: { driveId: courseId } };
-        let { data } = await axios.get(
-          '/api/loadGradebookOverview.php',
-          driveIdPayload,
-        );
-        return data;
+        let {
+          data: { success, message, overviewData },
+        } = await axios.get('/api/loadGradebookOverview.php', {
+          params: { courseId },
+        });
+        if (success) {
+          return overviewData;
+        }
+        throw new Error(message);
       } catch (error) {
-        console.log(
-          'Error loading overview data for courdse ID: ',
-          get(driveId),
-          error.message,
-        );
+        console.warn(error.message);
         return {};
       }
     },
@@ -317,23 +286,29 @@ export const attemptDataQuerry = atomFamily({
   key: 'attemptDataQuerry',
   default: selectorFamily({
     key: 'attemptDataQuerry/Default',
-    get: (doenetId) => async () => {
-      try {
-        let doenetIdPayload = { params: { doenetId } };
-        let { data } = await axios.get(
-          '/api/loadGradebookAssignmentAttempts.php',
-          doenetIdPayload,
-        );
-        return data;
-      } catch (error) {
-        console.log(
-          'Error loading attempts data for doenetId: ',
-          doenetId,
-          error.message,
-        );
-        return {};
-      }
-    },
+    get:
+      (doenetId) =>
+      async ({ get }) => {
+        const courseId = get(searchParamAtomFamily('courseId'));
+        try {
+          let {
+            data: { success, message, assignmentAttemptsData },
+          } = await axios.get('/api/loadGradebookAssignmentAttempts.php', {
+            params: { courseId, doenetId },
+          });
+          if (success) {
+            return assignmentAttemptsData;
+          }
+          throw new Error(message);
+        } catch (error) {
+          console.warn(
+            'Error loading attempts data for doenetId: ',
+            doenetId,
+            error.message,
+          );
+          return {};
+        }
+      },
   }),
 });
 
@@ -378,28 +353,26 @@ const specificAttemptDataQuerry = atomFamily({
   key: 'specificAttemptDataQuerry',
   default: selectorFamily({
     key: 'specificAttemptDataQuerry/Default',
-    get:
-      (params) =>
-      async ({ get }) => {
-        try {
-          let assignmentAttemptPayload = { params: params };
-          //console.log("payload: ", assignmentAttemptPayload);
-          //TODO: Make sure variant is the most recent in content_interactions
-          let { data } = await axios.get(
-            '/api/loadAssignmentAttempt.php',
-            assignmentAttemptPayload,
-          );
-
-          return data;
-        } catch (error) {
-          console.log(
-            'Error loading specific attempt data for assignmentId: ',
-            assignmentId,
-            error.message,
-          );
-          return {};
+    get: (params) => async () => {
+      try {
+        //TODO: Make sure variant is the most recent in content_interactions
+        let {
+          data: { success, message, attemptData },
+        } = await axios.get('/api/loadAssignmentAttempt.php', { ...params });
+        if (success) {
+          return attemptData;
+        } else {
+          throw new Error(message);
         }
-      },
+      } catch (error) {
+        console.warn(
+          'Error loading specific attempt data for assignmentId: ',
+          params?.doenetId,
+          error.message,
+        );
+        return {};
+      }
+    },
   }),
 });
 
@@ -500,8 +473,10 @@ export function Table({ columns, data }) {
     <table {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
               <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                 <p>{column.render('Header')}</p>
                 <div>{column.canFilter ? column.render('Filter') : null}</div>
@@ -525,11 +500,13 @@ export function Table({ columns, data }) {
       </thead>
 
       <tbody {...getTableBodyProps()}>
-        {rows.map((row, i) => {
+        {rows.map((row) => {
           prepareRow(row);
           return (
+            // eslint-disable-next-line react/jsx-key
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
+                // eslint-disable-next-line react/jsx-key
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
             </tr>
@@ -544,7 +521,8 @@ export function Table({ columns, data }) {
 
         <tr>
           {footerGroups[0].headers.map((column) => (
-            <td>
+            // eslint-disable-next-line react/jsx-key
+            <td {...column.getFooterProps()}>
               <p>{column.render('Footer')}</p>
             </td>
           ))}
@@ -589,13 +567,14 @@ function DefaultColumnFilter({
 
 function GradebookOverview() {
   //const { openOverlay, activateMenuPanel } = useToolControlHelper();
-  let driveIdValue = useRecoilValue(driveId);
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let students = useRecoilValueLoadable(studentData);
   let assignments = useRecoilValueLoadable(assignmentData);
   let overView = useRecoilValueLoadable(overViewData);
-  let {canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  let { canViewAndModifyGrades } = useRecoilValue(
+    effectivePermissionsByCourseId(courseId),
+  );
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
   useEffect(() => {
@@ -671,12 +650,12 @@ function GradebookOverview() {
                   whiteSpace: 'nowrap',
                   textOverflow: 'ellipsis',
                 }}
-                onClick={(e) => {
+                onClick={() => {
                   setPageToolView({
                     page: 'course',
                     tool: 'gradebookAssignment',
                     view: '',
-                    params: { driveId: driveIdValue, doenetId },
+                    params: { courseId, doenetId },
                   });
                 }}
               >
@@ -761,12 +740,7 @@ function GradebookOverview() {
 
   for (let userId in students.contents) {
     let firstName = students.contents[userId].firstName,
-      lastName = students.contents[userId].lastName,
-      role = students.contents[userId].role;
-    //TODO: need a switch to filter this in the future
-    if (role !== 'Student') {
-      continue;
-    }
+      lastName = students.contents[userId].lastName;
 
     // let grade = overrideGrade ? overrideGrade : generatedGrade
 
@@ -776,12 +750,12 @@ function GradebookOverview() {
     row['name'] = (
       <a
         style={{ cursor: 'pointer' }}
-        onClick={(e) => {
+        onClick={() => {
           setPageToolView({
             page: 'course',
             tool: 'gradebookStudent',
             view: '',
-            params: { driveId: driveIdValue, userId },
+            params: { courseId, userId },
           });
         }}
       >
@@ -815,13 +789,13 @@ function GradebookOverview() {
         score = Math.round(score * 100) / 100;
         row[doenetId] = (
           <a
-            onClick={(e) => {
+            onClick={() => {
               setPageToolView({
                 page: 'course',
                 tool: 'gradebookStudentAssignment',
                 view: '',
                 params: {
-                  driveId: driveIdValue,
+                  courseId,
                   doenetId,
                   userId,
                   previousCrumb: 'student',
@@ -879,8 +853,8 @@ function GradebookOverview() {
   );
 }
 
-export default function Gradebook(props) {
-  // let specificAttempt = useRecoilValueLoadable(specificAttemptData({doenetId: 'ass1', userId: 'temp1', attemptNumber: 1}))
+export default function Gradebook() {
+  // let specificAttempt = useRecoilValueLoadable(specificAttemptData({courseId, doenetId: 'ass1', userId: 'temp1', attemptNumber: 1}))
 
   // if(specificAttempt.state === 'hasValue'){
   //     console.log(">>> specificAttempt", specificAttempt.contents)
@@ -905,12 +879,6 @@ export default function Gradebook(props) {
   //   },[urlParamsObj]);
   // let courseList = useRecoilValueLoadable(coursesData);
   // console.log(courseList.contents)
-
-  //console.log(">>> driveId", driveIdVal);
-
-  const setDriveId = useSetRecoilState(driveId);
-
-  setDriveId(useRecoilValue(searchParamAtomFamily('courseId')));
 
   //console.log("driveId: ", useRecoilValue(driveId))
   return <GradebookOverview />;

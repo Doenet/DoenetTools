@@ -121,6 +121,15 @@ if (behavior == 'select'){
           }
           value="Add Order"
         />
+        <Button
+          width="menu"
+          onClick={() =>
+            create({itemType:"collectionLink"})
+          }
+          value="Add Collection Link"
+          data-test="Add Collection Link"
+
+        />
     </ButtonGroup>
     <br />
     <Button

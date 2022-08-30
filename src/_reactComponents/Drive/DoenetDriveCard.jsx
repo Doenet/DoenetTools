@@ -81,9 +81,7 @@ const DriveCard = (props) => {
         }}>
           <b data-test="driveCardLabel">{props.label}</b>
         </LabelContainer>
-        {props?.role?.map((item) => {
-          return <LabelContainer id="role-label" key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;
-        })}
+          <LabelContainer id="role-label" style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{props.roleLabel}</LabelContainer>
       </Info>
     </DriveCardContainer>
   );
