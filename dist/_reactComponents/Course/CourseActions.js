@@ -5,6 +5,7 @@ import {
   atomFamily,
   selectorFamily,
   useRecoilCallback,
+  useRecoilState,
   useRecoilValue,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
@@ -300,7 +301,7 @@ export function useInitCourseItems(courseId) {
   }, [getDataAndSetRecoil, courseId]);
 }
 export function useSetCourseIdFromDoenetId(doenetId) {
-  const item = useRecoilValue(itemByDoenetId("doenetId"));
+  const [item, setItem] = useRecoilState(itemByDoenetId(doenetId));
   const setCourseId = useSetRecoilState(courseIdAtom);
   useEffect(() => {
     if (Object.keys(item).length > 0) {
@@ -310,6 +311,9 @@ export function useSetCourseIdFromDoenetId(doenetId) {
       params: {doenetId}
     }).then(({data}) => {
       if (data.success) {
+        if (data.item) {
+          setItem(data.item);
+        }
         setCourseId(data.courseId);
       } else {
         setCourseId("__not_found__");
