@@ -52,7 +52,7 @@ function getCourseItemFunction($conn,$type,$doenetId){
     a.proctorMakesAvailable,
     a.numberOfAttemptsAllowed
     FROM course_content AS cc
-    INNER JOIN
+    LEFT JOIN
     assignment AS a
     ON cc.doenetId=a.doenetId
     WHERE cc.doenetId = '$doenetId'
