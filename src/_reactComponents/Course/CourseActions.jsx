@@ -5,6 +5,7 @@ import {
   atomFamily,
   selectorFamily,
   useRecoilCallback,
+  useRecoilState,
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
@@ -378,7 +379,7 @@ export function useInitCourseItems(courseId) {
 }
 
 export function useSetCourseIdFromDoenetId(doenetId) {
-  const item = useRecoilValue(itemByDoenetId('doenetId'));
+  const [item, setItem] = useRecoilState(itemByDoenetId(doenetId));
   const setCourseId = useSetRecoilState(courseIdAtom);
 
   useEffect(() => {
@@ -393,6 +394,11 @@ export function useSetCourseIdFromDoenetId(doenetId) {
     }).then(({data}) => {
       // console.log(`getCourseIdFromDoenetId donetId ${doenetId} data`,data)
       if(data.success) {
+        if(data.item) {
+          // this is needed for an exam
+          // when a user is not logged in
+          setItem(data.item)
+        }
         setCourseId(data.courseId);
       } else {
         setCourseId("__not_found__")

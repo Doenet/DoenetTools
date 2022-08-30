@@ -7,7 +7,6 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 include "permissionsAndSettingsForOneCourseFunction.php";
-include "getCourseItemFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
