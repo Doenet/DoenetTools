@@ -1,4 +1,4 @@
-import React, {useState, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
+import React, {useState, lazy, Suspense, useRef, useEffect} from "../_snowpack/pkg/react.js";
 import {
   atom,
   selector,
@@ -10,7 +10,7 @@ import {
 } from "../_snowpack/pkg/recoil.js";
 import styled, {keyframes} from "../_snowpack/pkg/styled-components.js";
 import Toast from "./Toast.js";
-import ContentPanel from "./Panels/NewContentPanel.js";
+import ContentPanel, {panelsInfoAtom} from "./Panels/NewContentPanel.js";
 import axios from "../_snowpack/pkg/axios.js";
 import MainPanel from "./Panels/NewMainPanel.js";
 import SupportPanel from "./Panels/NewSupportPanel.js";
@@ -87,7 +87,7 @@ export default function ToolRoot() {
     AccountSettings: lazy(() => import("./ToolPanels/AccountSettings.js")),
     HomePanel: lazy(() => import("./ToolPanels/HomePanel.js")),
     PublicActivityViewer: lazy(() => import("./ToolPanels/PublicActivityViewer.js")),
-    DriveCards: lazy(() => import("./ToolPanels/DriveCards.js")),
+    CourseCards: lazy(() => import("./ToolPanels/CourseCards.js")),
     SignIn: lazy(() => import("./ToolPanels/SignIn.js")),
     SignOut: lazy(() => import("./ToolPanels/SignOut.js")),
     NavigationPanel: lazy(() => import("./ToolPanels/NavigationPanel.js")),
@@ -314,7 +314,7 @@ let navigationObj = {
     },
     courseChooser: {
       pageName: "Course",
-      currentMainPanel: "DriveCards",
+      currentMainPanel: "CourseCards",
       currentMenus: ["CreateCourse"],
       menusTitles: ["Create Course"],
       menusInitOpen: [true],
@@ -400,11 +400,13 @@ let navigationObj = {
       currentMainPanel: "EditorViewer",
       currentMenus: [
         "PageVariant",
+        "PageLink",
         "AssignmentSettingsMenu",
         "SupportingFilesMenu"
       ],
       menusTitles: [
         "Page Variant",
+        "Page Link",
         "Assignment Settings",
         "Supporting Files"
       ],
@@ -426,7 +428,8 @@ let navigationObj = {
       supportPanelOptions: ["RolesEditor"],
       supportPanelTitles: ["Roles Editor"],
       supportPanelIndex: 0,
-      headerControls: ["PeopleBreadCrumb"]
+      headerControls: ["PeopleBreadCrumb"],
+      initialProportion: 1
     },
     data: {
       pageName: "data",
@@ -588,6 +591,7 @@ function RootController(props) {
   const [recoilPageToolView, setRecoilPageToolView] = useRecoilState(pageToolViewAtom);
   const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
   const [suppressMenus, setSuppressMenus] = useRecoilState(suppressMenusAtom);
+  const setPanelsInfoAtom = useSetRecoilState(panelsInfoAtom);
   let lastPageToolView = useRef({page: "init", tool: "", view: ""});
   let backPageToolView = useRef({page: "init", tool: "", view: ""});
   let backParams = useRef({});
@@ -613,6 +617,18 @@ function RootController(props) {
   let locationStr = `${location.pathname}${location.search}`;
   let nextPageToolView = {page: "", tool: "", view: ""};
   let nextMenusAndPanels = null;
+  let initialProportion = navigationObj[recoilPageToolView.page]?.[recoilPageToolView.tool]?.initialProportion;
+  useEffect(() => {
+    let nextInitialProportion = initialProportion;
+    if (!nextInitialProportion) {
+      nextInitialProportion = 0.5;
+    }
+    setPanelsInfoAtom((prev) => {
+      let next = {...prev};
+      next.proportion = nextInitialProportion;
+      return next;
+    });
+  }, [initialProportion]);
   let isSuppressMenuChange = !arraysEqual(suppressMenus, lastSuppressMenu.current);
   lastSuppressMenu.current = suppressMenus;
   if (isSuppressMenuChange && suppressMenus !== null) {

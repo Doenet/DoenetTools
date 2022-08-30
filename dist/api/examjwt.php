@@ -11,20 +11,25 @@ $code = mysqli_real_escape_string($conn, $_REQUEST['code']);
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 $userId = mysqli_real_escape_string($conn, $_REQUEST['userId']);
 
+
+
+//TODO: code should be by proctor someday
 $sql = "
-SELECT driveId,
-isReleased
-FROM drive_content
-WHERE doenetId = '$doenetId'
+SELECT c.courseId
+FROM course_content AS cc
+INNER JOIN course AS c
+ON c.courseId = cc.courseId
+WHERE cc.doenetId = '$doenetId'
+AND c.examPasscode = '$code'
 ";
+
 $result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $driveId = $row['driveId'];
-    $isReleased = $row['isReleased'];
-}else{
+if ($result->num_rows < 1) {
     //Error!
     return;
+    // $row = $result->fetch_assoc();
+    // $courseId = $row['courseId'];
+    // $isAssigned = $row['isAssigned'];
 }
 
 //Valid code and not expired
@@ -71,7 +76,7 @@ setcookie(
     $isSecure,
     false
 );
-header("Location: /#/exam?tool=assessment&doenetId=$doenetId");
+header("Location: /exam?tool=assessment&doenetId=$doenetId&hideLinks=true");
 // setcookie("EJWT", $value, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
 // setcookie("EJWT_JS", 1, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
 

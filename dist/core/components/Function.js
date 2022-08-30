@@ -53,9 +53,6 @@ export default class Function extends InlineComponent {
     // include attributes of graphical components
     // for case when function is adapted into a curve
 
-    attributes.label = {
-      createComponentOfType: "label",
-    };
     attributes.labelIsName = {
       createComponentOfType: "boolean",
       createStateVariable: "labelIsName",

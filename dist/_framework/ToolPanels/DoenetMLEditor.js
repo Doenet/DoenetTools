@@ -34,11 +34,18 @@ export function useSaveDraft() {
   }, []);
   return {saveDraft};
 }
-export default function DoenetMLEditor(props) {
+export default function DoenetMLEditor() {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily("pageId"));
+  const paramlinkPageId = useRecoilValue(searchParamAtomFamily("linkPageId"));
+  let effectivePageId = paramPageId;
+  let readOnly = false;
+  if (paramlinkPageId) {
+    readOnly = true;
+    effectivePageId = paramlinkPageId;
+  }
   const courseId = useRecoilValue(courseIdAtom);
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
@@ -69,12 +76,13 @@ export default function DoenetMLEditor(props) {
       timeout.current = null;
     }
   }, [viewerDoenetML]);
-  if (paramPageId !== initializedPageId) {
+  if (effectivePageId !== initializedPageId) {
     backupOldDraft.current = true;
     return null;
   }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(CodeMirror, {
     key: "codemirror",
+    readOnly,
     editorRef,
     setInternalValue: updateInternalValue,
     onBeforeChange: (value) => {

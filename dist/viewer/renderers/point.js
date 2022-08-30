@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default React.memo(function Point(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Point.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let pointJXG = useRef(null);
@@ -34,9 +34,9 @@ export default React.memo(function Point(props) {
     let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
     let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
     let fixed = !SVs.draggable || SVs.fixed;
-    let withlabel = SVs.showLabel && SVs.label !== "";
+    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
     let jsxPointAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withlabel,
       fixed: true,
@@ -259,8 +259,8 @@ export default React.memo(function Point(props) {
       if (sourceOfUpdate.sourceInformation && name in sourceOfUpdate.sourceInformation) {
         board.updateInfobox(pointJXG.current);
       }
-      pointJXG.current.name = SVs.label;
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      pointJXG.current.name = SVs.labelForGraph;
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         pointJXG.current.setAttribute({withlabel});
         previousWithLabel.current = withlabel;
@@ -323,7 +323,7 @@ export default React.memo(function Point(props) {
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     });
   }
   if (SVs.hidden) {
@@ -331,9 +331,9 @@ export default React.memo(function Point(props) {
   }
   let mathJaxify = "\\(" + SVs.latex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement(MathJax, {
     hideUntilTypeset: "first",
     inline: true,

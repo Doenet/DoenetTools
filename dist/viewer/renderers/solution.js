@@ -4,7 +4,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {faPuzzlePiece as puzzle} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Solution(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -69,12 +69,12 @@ export default React.memo(function Solution(props) {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("aside", {
-    id: name,
+    id,
     style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
-    id: name + "_button",
+    id: id + "_button",
     style: {
       display: "block",
       margin: SVs.open ? "12px 4px 0px 4px" : "12px 4px 12px 4px",

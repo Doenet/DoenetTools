@@ -32,6 +32,7 @@ function nullishCoalesce(&$value, $default) {
 }
 
 $containingDoenetIds = [];
+$activityDoenetIds = [];
 	//Can the user edit content?
 	if ($permissions["canEditContent"] == '1'){
 		//Yes then all items and json
@@ -62,6 +63,7 @@ $containingDoenetIds = [];
 		a.showHints AS showHints,
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.paginate AS paginate,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -102,11 +104,15 @@ $containingDoenetIds = [];
           "showHints" => nullishCoalesce($row['showHints'], '1') == '1' ? true : false,
           "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
           "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
+          "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
           "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
 				);
 
 				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
 					array_push($containingDoenetIds,$row['doenetId']);
+				}
+				if ($row['type'] == 'activity' ){
+					array_push($activityDoenetIds,$row['doenetId']);
 				}
 				
 				$json = json_decode($row['json'],true);
@@ -136,6 +142,38 @@ $containingDoenetIds = [];
 							"type"=>"page",
 							"doenetId"=>$row['doenetId'],
 							"containingDoenetId"=>$row['containingDoenetId'],
+							"label"=>$row['label']
+						);
+						$item['isSelected'] = false; //Note: no isOpen
+						array_push($items,$item);
+
+					}
+				}
+
+			}
+			//page links
+			foreach($activityDoenetIds as $activityDoenetId){
+				$sql = "
+				SELECT 
+				doenetId,
+				containingDoenetId,
+				parentDoenetId,
+				sourceCollectionDoenetId,
+				sourcePageDoenetId,
+				label
+				FROM link_pages
+				WHERE containingDoenetId = '$activityDoenetId'
+				";
+				$result = $conn->query($sql);
+				if ($result->num_rows > 0) {
+					while($row = $result->fetch_assoc()){
+						$item = array(
+							"type"=>"pageLink",
+							"doenetId"=>$row['doenetId'],
+							"containingDoenetId"=>$row['containingDoenetId'],
+							"parentDoenetId"=>$row['parentDoenetId'],
+							"sourceCollectionDoenetId"=>$row['sourceCollectionDoenetId'],
+							"sourcePageDoenetId"=>$row['sourcePageDoenetId'],
 							"label"=>$row['label']
 						);
 						$item['isSelected'] = false; //Note: no isOpen
@@ -175,6 +213,7 @@ $containingDoenetIds = [];
 		a.showHints AS showHints,
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.paginate AS paginate,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -218,6 +257,7 @@ $containingDoenetIds = [];
 					"showHints" => $row['showHints'] == '1' ? true : false,
 					"showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
 					"showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
+					"paginate" => $row['paginate'] == '1' ? true : false,
 					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
 				);
 

@@ -1,107 +1,107 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include "db_connection.php";
+include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
+$jwtArray = include 'jwtArray.php';
+$requestorUserId = $jwtArray['userId'];
+$allUsers = true;
+$success = true;
+$message = '';
 
-//TODO: Check if $userId is an Instructor who has access
+if (!isset($_REQUEST['courseId'])) {
+    $success = false;
+    $message = 'Request error, missing courseId';
+} elseif (!isset($_GET['doenetId'])) {
+    $success = false;
+    $message = 'Request error, missing doenetId';
+}
 
-if (!isset($_GET["doenetId"])) {
-    http_response_code(400);
-    echo "Database Retrieval Error: No assignment specified!";
-} else {
-    $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
+//Check permissions
+if ($success) {
+    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
-    $sql = "
-    SELECT du.role AS role
-    FROM drive_user AS du
-    LEFT JOIN drive_content AS dc
-    ON dc.driveId = du.driveId
-    WHERE dc.doenetId = '$doenetId'
-    and du.userId = '$userId'
-    ";
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
 
-    $result = $conn->query($sql);  
-    $row = $result->fetch_assoc();
-    $role = $row['role'];
-    // echo($doenetId);
-    // check to make sure assignment exists
-    $sql = "
-        SELECT doenetId
-        FROM assignment
-        WHERE assignment.doenetId = '$doenetId'
-    ";
+    if ($requestorPermissions == false) {
+        $success = false;
+        $message = 'You are not authorized to view or modify grade data';
+    } elseif ($requestorPermissions['canViewAndModifyGrades'] != '1') {
+        $allUsers = false;
+        $message = 'You are only allowed to view your own data';
+    }
+}
 
-    $result = $conn->query($sql);
-    if ($result->num_rows == 1) {
-        // do the actual query
+if ($success) {
+    $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 
-        if ($role == 'Student'){
-            $sql = "
-            SELECT 
-            ua.userId as userId,
-            ua.credit as assignmentCredit,
-            uaa.attemptNumber as attemptNumber,
-            uaa.credit as attemptCredit,
-            uaa.creditOverride as creditOverride
+    if ($allUsers) {
+        $result = $conn->query(
+            "SELECT 
+                ua.userId as userId,
+                ua.credit as assignmentCredit,
+                uaa.attemptNumber as attemptNumber,
+                uaa.credit as attemptCredit,
+                uaa.creditOverride as creditOverride
             FROM user_assignment_attempt AS uaa
             RIGHT JOIN user_assignment AS ua
-            ON ua.doenetId = uaa.doenetId 
-            AND ua.userId = uaa.userId
-            WHERE uaa.doenetId = '$doenetId'
-            AND uaa.userId = '$userId'
-            ";
-        }else{
-            $sql = "
-            SELECT 
-            ua.userId as userId,
-            ua.credit as assignmentCredit,
-            uaa.attemptNumber as attemptNumber,
-            uaa.credit as attemptCredit,
-            uaa.creditOverride as creditOverride
-            FROM user_assignment_attempt AS uaa
-            RIGHT JOIN user_assignment AS ua
-            ON ua.doenetId = uaa.doenetId 
-            AND ua.userId = uaa.userId
-            WHERE uaa.doenetId = '$doenetId'
-            ";
-        }
-
-        
-    
-        $result = $conn->query($sql);
-        $response_arr = array();
-
-        while ($row = $result->fetch_assoc()) {
-            array_push($response_arr,
-                array(
-                    $row['userId'],
-                    $row['attemptNumber'],
-                    $row['assignmentCredit'],
-                    $row['attemptCredit'],
-                    $row['creditOverride'],
-                )
-            );
-        }
-    
-        // set response code - 200 OK
-        http_response_code(200);
-    
-        // make it json format
-        echo json_encode($response_arr);
+                ON ua.doenetId = uaa.doenetId 
+                AND ua.userId = uaa.userId
+            WHERE uaa.doenetId = '$doenetId'"
+        );
     } else {
-        http_response_code(404);
-        echo "Database Retrieval Error: No such assignment: '$doenetId', or doenetId exists more than once.";
+        $result = $conn->query(
+            "SELECT 
+                ua.userId as userId,
+                ua.credit as assignmentCredit,
+                uaa.attemptNumber as attemptNumber,
+                uaa.credit as attemptCredit,
+                uaa.creditOverride as creditOverride
+            FROM user_assignment_attempt AS uaa
+            RIGHT JOIN user_assignment AS ua
+                ON ua.doenetId = uaa.doenetId 
+                AND ua.userId = uaa.userId
+            WHERE uaa.doenetId = '$doenetId'
+                AND uaa.userId = '$requestorUserId'
+        "
+        );
     }
 
-    
+    $response_arr = [];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            array_push($response_arr, [
+                $row['userId'],
+                $row['attemptNumber'],
+                $row['assignmentCredit'],
+                $row['attemptCredit'],
+                $row['creditOverride'],
+            ]);
+        }
+    } else {
+        $success = false;
+        $message = "No such assignment '$doenetId'";
+    }
 }
+
+// set response code - 200 OK
+http_response_code(200);
+
+// make it json format
+echo json_encode([
+    'success' => $success,
+    'message' => $message,
+    'assignmentAttemptsData' => $response_arr,
+]);
 
 $conn->close();
 ?>

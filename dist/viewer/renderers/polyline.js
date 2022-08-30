@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function Polyline(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Polyline.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let polylineJXG = useRef(null);
@@ -38,9 +38,9 @@ export default React.memo(function Polyline(props) {
     }
     let fixed = !SVs.draggable || SVs.fixed;
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + 7,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -278,7 +278,7 @@ export default React.memo(function Polyline(props) {
       if (polylineJXG.current.visProp.dash !== newDash) {
         polylineJXG.current.visProp.dash = newDash;
       }
-      polylineJXG.current.name = SVs.label;
+      polylineJXG.current.name = SVs.labelForGraph;
       if (polylineJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
           polylineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
@@ -310,7 +310,7 @@ export default React.memo(function Polyline(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });
 function styleToDash(style) {

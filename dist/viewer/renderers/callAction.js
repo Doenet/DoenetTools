@@ -2,17 +2,17 @@ import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 export default React.memo(function CallAction(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
   return /* @__PURE__ */ React.createElement("div", {
-    id: name,
+    id,
     style: {margin: "12px 0", display: "inline-block"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement(Button, {
-    id: name + "_button",
+    id: id + "_button",
     onClick: () => callAction({action: actions.callAction}),
     disabled: SVs.disabled,
     value: SVs.label,

@@ -3,46 +3,103 @@ import {retrieveTextFileForCid} from "../core/utils/retrieveTextFile.js";
 import PageViewer from "./PageViewer.js";
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faExclamationCircle} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {prng_alea} from "../_snowpack/pkg/esm-seedrandom.js";
-import {returnAllPossibleVariants} from "../core/utils/returnAllPossibleVariants.js";
 import axios from "../_snowpack/pkg/axios.js";
 import {get as idb_get, set as idb_set} from "../_snowpack/pkg/idb-keyval.js";
 import {cidFromText} from "../core/utils/cid.js";
 import {useToast, toastType} from "../_framework/Toast.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
-import {enumerateCombinations} from "../core/utils/enumeration.js";
-import {determineNumberOfActivityVariants, parseActivityDefinition} from "../_utils/activityUtils.js";
-import createComponentInfoObjects from "../core/utils/componentInfoObjects.js";
-import {addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSerializedComponents} from "../core/utils/serializedStateProcessing.js";
-let rngClass = prng_alea;
+import {calculateOrderAndVariants, parseActivityDefinition} from "../_utils/activityUtils.js";
+import VisibilitySensor from "../_snowpack/pkg/react-visibility-sensor-v2.js";
+import {useLocation, useNavigate} from "../_snowpack/pkg/react-router.js";
+import cssesc from "../_snowpack/pkg/cssesc.js";
+import {atom, useRecoilCallback, useRecoilState, useSetRecoilState} from "../_snowpack/pkg/recoil.js";
+import Button from "../_reactComponents/PanelHeaderComponents/Button.js";
+export const saveStateToDBTimerIdAtom = atom({
+  key: "saveStateToDBTimerIdAtom",
+  default: null
+});
+export const scrollableContainerAtom = atom({
+  key: "scollParentAtom",
+  default: null
+});
+export const currentPageAtom = atom({
+  key: "currentPageAtom",
+  default: 0
+});
+export const activityAttemptNumberSetUpAtom = atom({
+  key: "activityAttemptNumberSetUpAtom",
+  default: 0
+});
+export const itemWeightsAtom = atom({
+  key: "itemWeightsAtom",
+  default: []
+});
 export default function ActivityViewer(props) {
   const toast = useToast();
   const [errMsg, setErrMsg] = useState(null);
-  const [cidFromProps, setCidFromProps] = useState(null);
-  const [activityDefinitionFromProps, setActivityDefinitionFromProps] = useState(null);
+  const [
+    {
+      cidFromProps,
+      activityDefinitionFromProps,
+      attemptNumber,
+      requestedVariantIndex
+    },
+    setInfoFromProps
+  ] = useState({
+    cidFromProps: null,
+    activityDefinitionFromProps: null,
+    attemptNumber: null,
+    requestedVariantIndex: null
+  });
   const [cid, setCid] = useState(null);
   const activityDefinitionDoenetML = useRef(null);
   const [activityDefinition, setActivityDefinition] = useState(null);
-  const [attemptNumber, setAttemptNumber] = useState(null);
-  const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
   const [variantIndex, setVariantIndex] = useState(null);
   const [stage, setStage] = useState("initial");
+  const settingUp = useRef(true);
   const [activityContentChanged, setActivityContentChanged] = useState(false);
   const [order, setOrder] = useState(null);
   const [flags, setFlags] = useState(props.flags);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [nPages, setNPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const setRecoilCurrentPage = useSetRecoilState(currentPageAtom);
+  const currentPageRef = useRef(currentPage);
+  currentPageRef.current = currentPage;
+  const setActivityAttemptNumberSetUp = useSetRecoilState(activityAttemptNumberSetUpAtom);
+  const [nPages, setNPages] = useState(0);
   const [variantsByPage, setVariantsByPage] = useState(null);
-  const [itemWeights, setItemWeights] = useState(null);
+  const [itemWeights, setItemWeights] = useRecoilState(itemWeightsAtom);
   const previousComponentTypeCountsByPage = useRef([]);
-  const [cidChanged, setCidChanged] = useState(props.cidChanged);
   const serverSaveId = useRef(null);
   const activityStateToBeSavedToDatabase = useRef(null);
   const changesToBeSaved = useRef(false);
-  const saveStateToDBTimerId = useRef(null);
+  const setSaveStateToDBTimerId = useSetRecoilState(saveStateToDBTimerIdAtom);
+  const [scrollableContainer, setScrollableContainer] = useRecoilState(scrollableContainerAtom);
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
   const pageAtPreviousSave = useRef(null);
+  const [pageInfo, setPageInfo] = useState({
+    pageIsVisible: [],
+    pageIsActive: [],
+    pageHasCore: [],
+    waitingForPagesCore: null
+  });
+  const [renderedPages, setRenderedPages] = useState([]);
+  const allPagesRendered = useRef(false);
+  const nodeRef = useRef(null);
+  const ignoreNextScroll = useRef(false);
+  const stillNeedToScrollTo = useRef(null);
+  let location = useLocation();
+  let hash = location.hash;
+  const previousLocations = useRef({});
+  const currentLocationKey = useRef(null);
+  const viewerWasUnmounted = useRef(false);
+  let navigate = useNavigate();
+  useEffect(() => {
+    return () => {
+      saveState({overrideThrottle: true});
+      viewerWasUnmounted.current = true;
+    };
+  }, []);
   useEffect(() => {
     let newFlags = {...props.flags};
     if (props.userId) {
@@ -67,10 +124,116 @@ export default function ActivityViewer(props) {
         itemWeights
       };
     };
-  });
+  }, [
+    activityDefinition,
+    requestedVariantIndex,
+    variantIndex,
+    cid,
+    order,
+    currentPage,
+    nPages,
+    variantsByPage,
+    itemWeights
+  ]);
+  useEffect(() => {
+    if (nodeRef.current) {
+      let newScrollableContainer = nodeRef.current.parentNode.id === "mainPanel" ? nodeRef.current.parentNode : window;
+      setScrollableContainer(newScrollableContainer);
+      if (!props.paginate && nPages > 1) {
+        newScrollableContainer.addEventListener("scroll", (event) => {
+          if (ignoreNextScroll.current) {
+            ignoreNextScroll.current = false;
+          } else {
+            let topPage;
+            for (let ind = 0; ind < nPages - 1; ind++) {
+              let thePage = document.getElementById(`page${ind + 1}`);
+              if (thePage) {
+                let {bottom} = thePage.getBoundingClientRect();
+                if (bottom < 50) {
+                  topPage = ind + 2;
+                } else if (!topPage) {
+                  topPage = 1;
+                }
+              }
+            }
+            if (topPage && topPage !== currentPageRef.current) {
+              setCurrentPage(topPage);
+              setRecoilCurrentPage(topPage);
+            }
+          }
+        });
+      }
+    }
+  }, [nodeRef.current, nPages]);
   useEffect(() => {
     props.pageChangedCallback?.(currentPage);
   }, [currentPage]);
+  useEffect(() => {
+    if (hash && nPages) {
+      let match = hash.match(/^#page(\d+)/);
+      if (match) {
+        let newPage = Math.max(1, Math.min(nPages, match[1]));
+        if (newPage !== currentPage) {
+          setCurrentPage(newPage);
+          setRecoilCurrentPage(newPage);
+        }
+      }
+    }
+  }, [hash, nPages]);
+  useEffect(() => {
+    if (currentPage > 0 && nPages > 1) {
+      let hashPage = Number(hash?.match(/^#page(\d+)/)?.[1]);
+      if (hashPage !== currentPage) {
+        let pageAnchor = `#page${currentPage}`;
+        let navigateAttrs = {replace: true};
+        if (!props.paginate) {
+          navigateAttrs.state = {doNotScroll: true};
+        }
+        navigate(location.search + pageAnchor, navigateAttrs);
+      }
+      if (stillNeedToScrollTo.current) {
+        document.getElementById(stillNeedToScrollTo.current)?.scrollIntoView();
+        stillNeedToScrollTo.current = null;
+      }
+    }
+  }, [currentPage, nPages]);
+  useEffect(() => {
+    if (allPagesRendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
+      ignoreNextScroll.current = true;
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    }
+  }, [allPagesRendered.current]);
+  useEffect(() => {
+    let foundNewInPrevious = false;
+    if (currentLocationKey.current !== location.key) {
+      if (location.state?.previousScrollPosition !== void 0 && currentLocationKey.current) {
+        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition;
+      }
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+        if (previousLocations.current[location.key]?.lastScrollPosition !== void 0) {
+          scrollableContainer.scroll({top: previousLocations.current[location.key].lastScrollPosition});
+        }
+      }
+      previousLocations.current[location.key] = {...location};
+      currentLocationKey.current = location.key;
+    }
+    stillNeedToScrollTo.current = null;
+    if (!location.state?.doNotScroll && (location.key === "default" || !foundNewInPrevious)) {
+      let scrollTo = cssesc(hash.slice(1));
+      if (props.paginate && hash.match(/^#page(\d+)$/)) {
+        scrollTo = "activityTop";
+      }
+      if (props.paginate && Number(hash.match(/^#page(\d+)/)?.[1]) !== currentPage) {
+        stillNeedToScrollTo.current = scrollTo;
+      } else {
+        document.getElementById(scrollTo)?.scrollIntoView();
+      }
+    }
+  }, [location]);
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({snapshot}) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom);
+  }, [saveStateToDBTimerIdAtom]);
   function resetActivity({changedOnDevice, newCid, newAttemptNumber}) {
     console.log("resetActivity", changedOnDevice, newCid, newAttemptNumber);
     if (newAttemptNumber !== attemptNumber) {
@@ -156,8 +319,8 @@ export default function ActivityViewer(props) {
   async function loadState() {
     let loadedState = false;
     let newItemWeights;
-    let newCurrentPage;
     let newVariantIndex;
+    let loadedFromInitialState = false;
     if (props.flags.allowLocalState) {
       let localInfo;
       try {
@@ -185,8 +348,10 @@ export default function ActivityViewer(props) {
           }
         }
         serverSaveId.current = localInfo.saveId;
-        newCurrentPage = localInfo.activityState.currentPage;
-        setCurrentPage(newCurrentPage);
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(localInfo.activityState.currentPage);
+          setRecoilCurrentPage(localInfo.activityState.currentPage);
+        }
         let newActivityInfo = localInfo.activityInfo;
         newVariantIndex = localInfo.variantIndex;
         setVariantIndex(newVariantIndex);
@@ -195,7 +360,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
-        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts || [];
         activityInfo.current = newActivityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
         loadedState = true;
@@ -237,8 +402,10 @@ export default function ActivityViewer(props) {
       if (resp.data.loadedState) {
         let newActivityInfo = JSON.parse(resp.data.activityInfo);
         let activityState = JSON.parse(resp.data.activityState);
-        newCurrentPage = activityState.currentPage;
-        setCurrentPage(newCurrentPage);
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(activityState.currentPage);
+          setRecoilCurrentPage(activityState.currentPage);
+        }
         newVariantIndex = resp.data.variantIndex;
         setVariantIndex(variantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
@@ -246,14 +413,17 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
-        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts || [];
         activityInfo.current = newActivityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
       } else {
-        newCurrentPage = 1;
-        setCurrentPage(1);
+        loadedFromInitialState = true;
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(1);
+          setRecoilCurrentPage(1);
+        }
         let results;
-        results = await calculateOrderAndVariants();
+        results = await calculateOrderAndVariants({activityDefinition, requestedVariantIndex});
         if (!results.success) {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true);
@@ -268,12 +438,12 @@ export default function ActivityViewer(props) {
         setVariantsByPage(results.variantsByPage);
         setItemWeights(results.itemWeights);
         newItemWeights = results.itemWeights;
-        previousComponentTypeCountsByPage.current = results.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = results.previousComponentTypeCounts || [];
         activityInfo.current = results.activityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
       }
     }
-    return {newItemWeights, newVariantIndex};
+    return {newItemWeights, newVariantIndex, loadedFromInitialState};
   }
   async function saveLoadedLocalStateToDatabase(localInfo) {
     let serverSaveId2 = await idb_get(`${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`);
@@ -295,7 +465,9 @@ export default function ActivityViewer(props) {
     } catch (e) {
       return {localInfo, cid, attemptNumber};
     }
-    setCidChanged(resp.data.cidChanged === true);
+    if (resp.data.cidChanged === true) {
+      props.cidChangedCallback();
+    }
     let data = resp.data;
     if (!data.success) {
       return {localInfo, cid, attemptNumber};
@@ -318,120 +490,11 @@ export default function ActivityViewer(props) {
     }
     return {localInfo, cid, attemptNumber};
   }
-  async function calculateOrderAndVariants() {
-    let activityVariantResult = await determineNumberOfActivityVariants(activityDefinition);
-    let variantIndex2 = (requestedVariantIndex - 1) % activityVariantResult.numberOfVariants + 1;
-    if (variantIndex2 < 1) {
-      variantIndex2 += activityVariantResult.numberOfVariants;
-    }
-    let rng = new rngClass(variantIndex2.toString());
-    let orderResult = determineOrder(activityDefinition.order, rng);
-    if (!orderResult.success) {
-      return orderResult;
-    }
-    let originalOrder = orderResult.pages;
-    let itemWeights2 = activityDefinition.itemWeights || [];
-    if (!Array.isArray(itemWeights2) || !itemWeights2.every((x) => x >= 0)) {
-      return {success: false, message: "Invalid itemWeights"};
-    }
-    let nPages2 = originalOrder.length;
-    itemWeights2 = itemWeights2.slice(0, nPages2);
-    if (itemWeights2.length < nPages2) {
-      itemWeights2.push(...Array(nPages2 - itemWeights2.length).fill(1));
-    }
-    let totalWeight = itemWeights2.reduce((a, c) => a + c);
-    if (totalWeight > 0) {
-      itemWeights2 = itemWeights2.map((x) => x / totalWeight);
-    }
-    let pageVariantsResult;
-    if (activityVariantResult.pageVariants) {
-      pageVariantsResult = [activityVariantResult.pageVariants];
-    } else {
-      let promises = [];
-      for (let page of originalOrder) {
-        promises.push(returnAllPossibleVariants({
-          cid: page.cid,
-          doenetML: page.doenetML
-        }));
-      }
-      try {
-        pageVariantsResult = await Promise.all(promises);
-      } catch (e) {
-        return {success: false, message: `Error retrieving content for activity. ${e.message}`};
-      }
-    }
-    let variantForEachPage;
-    let allPossibleNonIgnoredPerPage = [], indicesToIgnorePerPage = [];
-    let numberOfVariantsPerPage = [];
-    for (let pageResult of pageVariantsResult) {
-      let allPossibleVariants = [...pageResult.allPossibleVariants];
-      let indicesToIgnore = [...pageResult.variantIndicesToIgnore];
-      for (let ind of indicesToIgnore) {
-        delete allPossibleVariants[ind];
-      }
-      let numberOfVariants = allPossibleVariants.filter((x) => x !== void 0).length;
-      allPossibleNonIgnoredPerPage.push(allPossibleVariants);
-      indicesToIgnorePerPage.push(indicesToIgnore);
-      numberOfVariantsPerPage.push(numberOfVariants);
-    }
-    let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1);
-    if (numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants) {
-      let pageVariantCombinationIndex = (variantIndex2 - 1) % numberOfPageVariantCombinations + 1;
-      variantForEachPage = enumerateCombinations({
-        numberOfOptionsByIndex: numberOfVariantsPerPage,
-        maxNumber: pageVariantCombinationIndex
-      })[pageVariantCombinationIndex - 1].map((x) => x + 1);
-    } else {
-      variantForEachPage = [...Array(nPages2).keys()].map((i) => Math.floor(rng() * numberOfVariantsPerPage[i]) + 1);
-    }
-    let variantsByPage2 = [];
-    let newOrder = [];
-    for (let [ind, possibleVariants] of pageVariantsResult.entries()) {
-      let pageVariantIndex = variantForEachPage[ind];
-      let indicesToIgnore = indicesToIgnorePerPage[ind];
-      for (let i of indicesToIgnore) {
-        if (pageVariantIndex >= i) {
-          pageVariantIndex++;
-        } else {
-          break;
-        }
-      }
-      variantsByPage2.push(pageVariantIndex);
-      let page = originalOrder[ind];
-      if (page.doenetML === void 0) {
-        page = {...page};
-        page.doenetML = possibleVariants.doenetML;
-      } else if (!page.cid) {
-        page = {...page};
-        page.cid = possibleVariants.cid;
-      }
-      newOrder.push(page);
-    }
-    let orderWithCids = [...originalOrder];
-    newOrder.forEach((v, i) => orderWithCids[i].cid = v.cid);
-    let previousComponentTypeCounts = await initializeComponentTypeCounts(newOrder);
-    let activityInfo2 = {
-      orderWithCids,
-      variantsByPage: variantsByPage2,
-      itemWeights: itemWeights2,
-      numberOfVariants: activityVariantResult.numberOfVariants,
-      previousComponentTypeCounts
-    };
-    return {
-      success: true,
-      order: newOrder,
-      itemWeights: itemWeights2,
-      variantsByPage: variantsByPage2,
-      variantIndex: variantIndex2,
-      activityInfo: activityInfo2,
-      previousComponentTypeCounts
-    };
-  }
-  async function saveState() {
+  async function saveState({overrideThrottle = false, overrideStage = false} = {}) {
     if (!props.flags.allowSaveState && !props.flags.allowLocalState) {
       return;
     }
-    if (stage !== "saving" || currentPage === pageAtPreviousSave.current) {
+    if (stage !== "saving" && !overrideStage || currentPage === pageAtPreviousSave.current) {
       return;
     }
     pageAtPreviousSave.current = currentPage;
@@ -459,17 +522,26 @@ export default function ActivityViewer(props) {
       updateDataOnContentChange: props.updateDataOnContentChange
     };
     changesToBeSaved.current = true;
-    saveChangesToDatabase();
+    saveChangesToDatabase(overrideThrottle);
   }
-  async function saveChangesToDatabase() {
-    if (saveStateToDBTimerId.current !== null || !changesToBeSaved.current) {
+  async function saveChangesToDatabase(overrideThrottle) {
+    if (!changesToBeSaved.current) {
       return;
     }
+    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+    if (oldTimeoutId !== null) {
+      if (overrideThrottle) {
+        clearTimeout(oldTimeoutId);
+      } else {
+        return;
+      }
+    }
     changesToBeSaved.current = false;
-    saveStateToDBTimerId.current = setTimeout(() => {
-      saveStateToDBTimerId.current = null;
+    let newTimeoutId = setTimeout(() => {
+      setSaveStateToDBTimerId(null);
       saveChangesToDatabase();
-    }, 1e4);
+    }, 6e4);
+    setSaveStateToDBTimerId(newTimeoutId);
     let resp;
     try {
       console.log("activity state params", activityStateToBeSavedToDatabase.current);
@@ -497,19 +569,11 @@ export default function ActivityViewer(props) {
     }
     if (data.stateOverwritten) {
       if (attemptNumber !== Number(data.attemptNumber)) {
-        if (props.flags.allowLocalState) {
-          idb_set(`${props.doenetId}|${data.attemptNumber}|${data.cid}`, {
-            activityState: JSON.parse(data.activityState),
-            activityInfo: JSON.parse(data.activityInfo),
-            saveId: data.saveId,
-            variantIndex: data.variantIndex
-          });
-          resetActivity({
-            changedOnDevice: data.device,
-            newCid: data.cid,
-            newAttemptNumber: Number(data.attemptNumber)
-          });
-        }
+        resetActivity({
+          changedOnDevice: data.device,
+          newCid: data.cid,
+          newAttemptNumber: Number(data.attemptNumber)
+        });
       } else if (cid !== data.cid) {
         if (props.setIsInErrorState) {
           props.setIsInErrorState(true);
@@ -521,11 +585,10 @@ export default function ActivityViewer(props) {
   }
   async function initializeUserAssignmentTables(newItemWeights) {
     if (flags.allowSaveSubmissions) {
-      let weights = newItemWeights.filter((x) => x);
       try {
         let resp = await axios.post("/api/initAssignmentAttempt.php", {
           doenetId: props.doenetId,
-          weights,
+          weights: newItemWeights,
           attemptNumber
         });
         if (resp.status === null) {
@@ -537,10 +600,11 @@ export default function ActivityViewer(props) {
         toast(`Could not initialize assignment tables: ${e.message}.`, toastType.ERROR);
       }
     }
-    setStage("continue");
   }
   async function receivedSaveFromPage() {
-    setStage("saving");
+    if (stage !== "saving" && !settingUp.current) {
+      setStage("saving");
+    }
     try {
       let resp = await axios.get("/api/checkForChangedAssignment.php", {
         params: {
@@ -548,12 +612,18 @@ export default function ActivityViewer(props) {
           doenetId: props.doenetId
         }
       });
-      setCidChanged(resp.data.cidChanged === true);
+      if (resp.data.cidChanged === true) {
+        props.cidChangedCallback();
+      }
     } catch (e) {
+    }
+    if (viewerWasUnmounted.current) {
+      saveState({overrideThrottle: true, overrideStage: true});
     }
   }
   function clickNext() {
     setCurrentPage((was) => Math.min(nPages, was + 1));
+    setRecoilCurrentPage((was) => Math.min(nPages, was + 1));
     let event = {
       verb: "interacted",
       object: {objectType: "button", objectname: "next page button"},
@@ -564,6 +634,7 @@ export default function ActivityViewer(props) {
   }
   function clickPrevious() {
     setCurrentPage((was) => Math.max(1, was - 1));
+    setRecoilCurrentPage((was) => Math.max(1, was - 1));
     let event = {
       verb: "interacted",
       object: {objectType: "button", objectname: "previous page button"},
@@ -593,6 +664,48 @@ export default function ActivityViewer(props) {
       console.error(`Error saving event: ${e.message}`);
     });
   }
+  function onChangeVisibility(isVisible, pageInd) {
+    if (!props.paginate) {
+      setPageInfo((was) => {
+        let newObj = {...was};
+        let newVisible = [...newObj.pageIsVisible];
+        newVisible[pageInd] = isVisible;
+        newObj.pageIsVisible = newVisible;
+        if (!isVisible && newObj.pageIsActive[pageInd]) {
+          let newActive = [...newObj.pageIsActive];
+          newActive[pageInd] = false;
+          newObj.pageIsActive = newActive;
+          if (newObj.waitingForPagesCore === pageInd) {
+            newObj.waitingForPagesCore = null;
+          }
+        }
+        return newObj;
+      });
+    }
+  }
+  function coreCreatedCallback(pageInd) {
+    setPageInfo((was) => {
+      let newObj = {...was};
+      if (newObj.waitingForPagesCore === pageInd) {
+        newObj.waitingForPagesCore = null;
+      }
+      let newHasCore = [...newObj.pageHasCore];
+      newHasCore[pageInd] = true;
+      newObj.pageHasCore = newHasCore;
+      return newObj;
+    });
+  }
+  function pageRenderedCallback(pageInd) {
+    let newRenderedPages;
+    setRenderedPages((was) => {
+      newRenderedPages = [...was];
+      newRenderedPages[pageInd] = true;
+      return newRenderedPages;
+    });
+    if (newRenderedPages.length === nPages && newRenderedPages.every((x) => x)) {
+      allPagesRendered.current = true;
+    }
+  }
   if (errMsg !== null) {
     let errorIcon = /* @__PURE__ */ React.createElement("span", {
       style: {fontSize: "1em", color: "#C1292E"}
@@ -603,32 +716,45 @@ export default function ActivityViewer(props) {
       style: {fontSize: "1.3em", marginLeft: "20px", marginTop: "20px"}
     }, errorIcon, " ", errMsg);
   }
-  let changedState = false;
-  if (activityDefinitionFromProps !== props.activityDefinition) {
-    setActivityDefinitionFromProps(props.activityDefinition);
-    changedState = true;
-  }
-  if (cidFromProps !== props.cid) {
-    setCidFromProps(props.cid);
-    changedState = true;
+  if (pageInfo.waitingForPagesCore === null) {
+    if (currentPage) {
+      for (let pageInd of [currentPage - 1, ...Array(nPages).keys()]) {
+        let isVisible = pageInfo.pageIsVisible[pageInd];
+        if ((isVisible || currentPage === pageInd + 1) && !pageInfo.pageIsActive[pageInd]) {
+          let waitingAgain = !pageInfo.pageHasCore[pageInd];
+          setPageInfo((was) => {
+            let newObj = {...was};
+            let newActive = [...newObj.pageIsActive];
+            newActive[pageInd] = true;
+            newObj.pageIsActive = newActive;
+            if (!newObj.pageHasCore[pageInd]) {
+              newObj.waitingForPagesCore = pageInd;
+            }
+            return newObj;
+          });
+          if (waitingAgain) {
+            break;
+          }
+        }
+      }
+    }
   }
   let propAttemptNumber = props.attemptNumber;
   if (propAttemptNumber === void 0) {
     propAttemptNumber = 1;
   }
-  if (propAttemptNumber !== attemptNumber) {
-    setAttemptNumber(propAttemptNumber);
-    changedState = true;
-  }
   let adjustedRequestedVariantIndex = props.requestedVariantIndex;
   if (adjustedRequestedVariantIndex === void 0) {
     adjustedRequestedVariantIndex = propAttemptNumber;
   }
-  if (requestedVariantIndex !== adjustedRequestedVariantIndex) {
-    setRequestedVariantIndex(adjustedRequestedVariantIndex);
-    changedState = true;
-  }
-  if (changedState) {
+  if (activityDefinitionFromProps !== props.activityDefinition || cidFromProps !== props.cid || propAttemptNumber !== attemptNumber || requestedVariantIndex !== adjustedRequestedVariantIndex) {
+    settingUp.current = true;
+    setInfoFromProps({
+      activityDefinitionFromProps: props.activityDefinition,
+      cidFromProps: props.cid,
+      attemptNumber: propAttemptNumber,
+      requestedVariantIndex: adjustedRequestedVariantIndex
+    });
     setStage("recalcParams");
     setActivityContentChanged(true);
     return null;
@@ -650,39 +776,38 @@ export default function ActivityViewer(props) {
   }
   if (activityContentChanged) {
     setActivityContentChanged(false);
+    setActivityAttemptNumberSetUp(0);
     previousComponentTypeCountsByPage.current = [];
     setStage("wait");
-    loadState().then((results) => {
+    loadState().then(async (results) => {
       if (results) {
-        initializeUserAssignmentTables(results.newItemWeights);
+        if (results.loadedFromInitialState) {
+          await initializeUserAssignmentTables(results.newItemWeights);
+        }
+        setStage("continue");
+        setActivityAttemptNumberSetUp(attemptNumber);
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
+      settingUp.current = false;
     });
     return null;
   }
   saveState();
   let title = /* @__PURE__ */ React.createElement("h1", null, activityDefinition.title);
   let pages = [];
-  let lastItemNumber = 0;
   for (let [ind, page] of order.entries()) {
-    let itemNumber;
-    if (itemWeights[ind] > 0) {
-      lastItemNumber++;
-      itemNumber = lastItemNumber;
-    } else {
-      itemNumber = 0;
-    }
-    pages.push(/* @__PURE__ */ React.createElement("div", {
-      key: `page${ind}`
-    }, /* @__PURE__ */ React.createElement(PageViewer, {
+    let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
+    let prefixForIds = nPages > 1 ? `page${ind + 1}` : "";
+    let pageViewer = /* @__PURE__ */ React.createElement(PageViewer, {
+      userId: props.userId,
       doenetId: props.doenetId,
       activityCid: cid,
       cid: page.cid,
       doenetML: page.doenetML,
       pageNumber: (ind + 1).toString(),
       previousComponentTypeCounts: previousComponentTypeCountsByPage.current[ind],
-      pageIsActive: ind + 1 === currentPage,
-      itemNumber,
+      pageIsActive: thisPageIsActive,
+      itemNumber: ind + 1,
       attemptNumber,
       flags,
       activityVariantIndex: variantIndex,
@@ -692,183 +817,64 @@ export default function ActivityViewer(props) {
       setIsInErrorState: props.setIsInErrorState,
       updateAttemptNumber: props.updateAttemptNumber,
       saveStateCallback: receivedSaveFromPage,
-      updateDataOnContentChange: props.updateDataOnContentChange
-    })));
+      updateDataOnContentChange: props.updateDataOnContentChange,
+      coreCreatedCallback: () => coreCreatedCallback(ind),
+      renderersInitializedCallback: () => pageRenderedCallback(ind),
+      hideWhenInactive: props.paginate,
+      prefixForIds
+    });
+    if (!props.paginate) {
+      pageViewer = /* @__PURE__ */ React.createElement(VisibilitySensor, {
+        partialVisibility: true,
+        offset: {top: -200, bottom: -200},
+        requireContentsSize: false,
+        onChange: (isVisible) => onChangeVisibility(isVisible, ind)
+      }, /* @__PURE__ */ React.createElement("div", null, pageViewer));
+    }
+    pages.push(/* @__PURE__ */ React.createElement("div", {
+      key: `page${ind + 1}`,
+      id: `page${ind + 1}`
+    }, pageViewer));
   }
-  let cidChangedAlert = null;
-  if (cidChanged) {
-    cidChangedAlert = /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
-      onClick: () => alert("Hey, content changed")
-    }, "content changed"));
-  }
-  let pageControls = null;
-  if (nPages > 1) {
-    pageControls = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
+  let pageControlsTop = null;
+  let pageControlsBottom = null;
+  if (props.paginate && nPages > 1) {
+    pageControlsTop = /* @__PURE__ */ React.createElement("div", {
+      style: {display: "flex", alignItems: "center", marginLeft: "5px"}
+    }, /* @__PURE__ */ React.createElement(Button, {
       "data-test": "previous",
       disabled: currentPage === 1,
-      onClick: clickPrevious
-    }, "Previous page"), /* @__PURE__ */ React.createElement("button", {
+      onClick: clickPrevious,
+      value: "Previous page"
+    }), /* @__PURE__ */ React.createElement("p", {
+      style: {margin: "5px"}
+    }, " Page ", currentPage, " of ", nPages, " "), /* @__PURE__ */ React.createElement(Button, {
       "data-test": "next",
       disabled: currentPage === nPages,
-      onClick: clickNext
-    }, "Next page"), /* @__PURE__ */ React.createElement("p", null, "Page ", currentPage, " of ", nPages));
+      onClick: clickNext,
+      value: "Next page"
+    }));
+    if (renderedPages[currentPage - 1]) {
+      pageControlsBottom = /* @__PURE__ */ React.createElement("div", {
+        style: {display: "flex", alignItems: "center", marginLeft: "5px"}
+      }, /* @__PURE__ */ React.createElement(Button, {
+        "data-test": "previous-bottom",
+        disabled: currentPage === 1,
+        onClick: clickPrevious,
+        value: "Previous page"
+      }), /* @__PURE__ */ React.createElement("p", {
+        style: {margin: "5px"}
+      }, " Page ", currentPage, " of ", nPages, " "), /* @__PURE__ */ React.createElement(Button, {
+        "data-test": "next-bottom",
+        disabled: currentPage === nPages,
+        onClick: clickNext,
+        value: "Next page"
+      }));
+    }
   }
   return /* @__PURE__ */ React.createElement("div", {
-    style: {marginBottom: "200px"}
-  }, cidChangedAlert, pageControls, title, pages);
-}
-function determineOrder(order, rng) {
-  if (order?.type?.toLowerCase() !== "order") {
-    return {success: false, message: "invalid order"};
-  }
-  let behavior = order.behavior?.toLowerCase();
-  if (behavior === void 0) {
-    behavior = "sequence";
-  }
-  switch (behavior) {
-    case "sequence":
-      return processSequenceOrder(order, rng);
-    case "select":
-      return processSelectOrder(order, rng);
-    case "shuffle":
-      return processShuffleOrder(order, rng);
-    default:
-      return {success: false, message: `Have not implemented behavior: ${behavior}`};
-  }
-}
-function processSequenceOrder(order, rng) {
-  let pages = [];
-  for (let item of order.content) {
-    let type = item.type.toLowerCase();
-    if (type === "page") {
-      pages.push(item);
-    } else if (type === "order") {
-      let orderResult = determineOrder(item, rng);
-      if (orderResult.success) {
-        pages.push(...orderResult.pages);
-      } else {
-        return orderResult;
-      }
-    } else {
-      return {success: false, message: "Unrecognized item in order."};
-    }
-  }
-  return {success: true, pages};
-}
-function processSelectOrder(order, rng) {
-  let numberToSelect = order.numberToSelect;
-  let nItems = order.content.length;
-  if (!(Number.isInteger(numberToSelect) && numberToSelect > 0)) {
-    numberToSelect = 1;
-  }
-  let numberUniqueRequired = 1;
-  if (!order.withReplacement) {
-    numberUniqueRequired = numberToSelect;
-  }
-  if (numberUniqueRequired > nItems) {
-    return {
-      success: false,
-      message: "Cannot select " + numberUniqueRequired + " components from only " + nItems
-    };
-  }
-  let selectWeights = order.selectWeights || [];
-  if (!Array.isArray(selectWeights) || !selectWeights.every((x) => x >= 0)) {
-    return {success: false, message: "Invalid selectWeights"};
-  }
-  selectWeights = selectWeights.slice(0, nItems);
-  if (selectWeights.length < nItems) {
-    selectWeights.push(...Array(nItems - selectWeights.length).fill(1));
-  }
-  let totalWeight = selectWeights.reduce((a, c) => a + c);
-  selectWeights = selectWeights.map((x) => x / totalWeight);
-  let cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-  let indsRemaining = [...Array(cumulativeWeights.length).keys()];
-  let selectedItems = [];
-  for (let ind = 0; ind < numberToSelect; ind++) {
-    let rand = rng();
-    let start = -1, end = cumulativeWeights.length - 1;
-    while (start < end - 1) {
-      let mid = Math.floor((start + end) / 2);
-      if (cumulativeWeights[mid] > rand) {
-        end = mid;
-      } else {
-        start = mid;
-      }
-    }
-    selectedItems.push(order.content[indsRemaining[end]]);
-    if (!order.withReplacement && ind < numberToSelect - 1) {
-      selectWeights.splice(end, 1);
-      indsRemaining.splice(end, 1);
-      totalWeight = selectWeights.reduce((a, c) => a + c);
-      selectWeights = selectWeights.map((x) => x / totalWeight);
-      cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-    }
-  }
-  let pages = [];
-  for (let item of selectedItems) {
-    let type = item.type.toLowerCase();
-    if (type === "page") {
-      pages.push(item);
-    } else if (type === "order") {
-      let orderResult = determineOrder(item);
-      if (orderResult.success) {
-        pages.push(...orderResult.pages);
-      } else {
-        return orderResult;
-      }
-    } else {
-      return {success: false, message: "Unrecognized item in order."};
-    }
-  }
-  return {success: true, pages};
-}
-function processShuffleOrder(order, rng) {
-  let newOrder = [...order.content];
-  for (let i = order.content.length - 1; i > 0; i--) {
-    const rand = rng();
-    const j = Math.floor(rand * (i + 1));
-    [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
-  }
-  let pages = [];
-  for (let item of newOrder) {
-    let type = item.type.toLowerCase();
-    if (type === "page") {
-      pages.push(item);
-    } else if (type === "order") {
-      let orderResult = determineOrder(item, rng);
-      if (orderResult.success) {
-        pages.push(...orderResult.pages);
-      } else {
-        return orderResult;
-      }
-    } else {
-      return {success: false, message: "Unrecognized item in order."};
-    }
-  }
-  return {success: true, pages};
-}
-async function initializeComponentTypeCounts(order) {
-  let previousComponentTypeCountsByPage = [{}];
-  let componentInfoObjects = createComponentInfoObjects();
-  for (let [ind, page] of order.slice(0, order.length - 1).entries()) {
-    let {fullSerializedComponents} = await expandDoenetMLsToFullSerializedComponents({
-      contentIds: [page.cid],
-      doenetMLs: [page.doenetML],
-      componentInfoObjects
-    });
-    let serializedComponents = fullSerializedComponents[0];
-    addDocumentIfItsMissing(serializedComponents);
-    let documentChildren = serializedComponents[0].children;
-    let componentTypeCounts = countComponentTypes(documentChildren);
-    let countsSoFar = previousComponentTypeCountsByPage[ind];
-    for (let cType in countsSoFar) {
-      if (cType in componentTypeCounts) {
-        componentTypeCounts[cType] += countsSoFar[cType];
-      } else {
-        componentTypeCounts[cType] = countsSoFar[cType];
-      }
-    }
-    previousComponentTypeCountsByPage.push(componentTypeCounts);
-  }
-  return previousComponentTypeCountsByPage;
+    style: {paddingBottom: "50vh"},
+    id: "activityTop",
+    ref: nodeRef
+  }, pageControlsTop, title, pages, pageControlsBottom);
 }

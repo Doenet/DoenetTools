@@ -15,6 +15,7 @@ import {
   pageVariantPanelAtom
 } from "../ToolHandlers/CourseToolHandler.js";
 import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
+import axios from "../../_snowpack/pkg/axios.js";
 export const viewerDoenetMLAtom = atom({
   key: "viewerDoenetMLAtom",
   default: ""
@@ -53,26 +54,33 @@ export const useUpdateViewer = () => {
 export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily("pageId"));
-  const courseId = useRecoilValue(courseIdAtom);
+  const paramlinkPageId = useRecoilValue(searchParamAtomFamily("linkPageId"));
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  let effectivePageId = paramPageId;
+  let effectiveDoenetId = doenetId;
+  if (paramlinkPageId) {
+    effectivePageId = paramlinkPageId;
+    effectiveDoenetId = paramlinkPageId;
+  }
+  const courseId = useRecoilValue(courseIdAtom);
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  const pageObj = useRecoilValue(itemByDoenetId(paramPageId));
+  const pageObj = useRecoilValue(itemByDoenetId(effectivePageId));
   const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const updateViewer = useUpdateViewer();
-  useSetCourseIdFromDoenetId(doenetId);
+  useSetCourseIdFromDoenetId(effectiveDoenetId);
   useInitCourseItems(courseId);
   let pageInitiated = false;
   let label = null;
   if (Object.keys(pageObj).length > 0) {
     pageInitiated = true;
-    if (activityObj.isSinglePage) {
-      label = activityObj.label;
+    if (activityObj?.isSinglePage && !paramlinkPageId) {
+      label = activityObj?.label;
     } else {
       label = pageObj.label;
     }
@@ -87,10 +95,10 @@ export default function EditorViewer() {
     };
   }, [label]);
   let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageId) => {
-    let response = await snapshot.getPromise(fileByPageId(pageId));
+    let {data: doenetML} = await axios.get(`/media/byPageId/${pageId}.doenet`);
+    doenetML = doenetML.toString();
     let pageObj2 = await snapshot.getPromise(itemByDoenetId(pageId));
     let containingObj = await snapshot.getPromise(itemByDoenetId(pageObj2.containingDoenetId));
-    const doenetML = response;
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML);
     set(viewerDoenetMLAtom, doenetML);
@@ -99,16 +107,21 @@ export default function EditorViewer() {
     if (containingObj.type == "bank") {
       suppress.push("AssignmentSettingsMenu");
     }
+    if (pageObj2.type == "pageLink") {
+      suppress.push("AssignmentSettingsMenu");
+      suppress.push("PageLink");
+      suppress.push("SupportingFilesMenu");
+    }
     setSuppressMenus(suppress);
   }, [setSuppressMenus]);
   useEffect(() => {
-    if (paramPageId !== "" && pageInitiated) {
-      initDoenetML(paramPageId);
+    if (effectivePageId !== "" && pageInitiated) {
+      initDoenetML(effectivePageId);
     }
     return () => {
       setEditorInit("");
     };
-  }, [paramPageId, pageInitiated]);
+  }, [effectivePageId, pageInitiated]);
   useEventListener("keydown", (e) => {
     if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
       e.preventDefault();
@@ -117,7 +130,7 @@ export default function EditorViewer() {
   });
   if (courseId === "__not_found__") {
     return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
-  } else if (paramPageId !== initializedPageId) {
+  } else if (effectivePageId !== initializedPageId) {
     return null;
   }
   let attemptNumber = 1;
@@ -138,7 +151,6 @@ export default function EditorViewer() {
     doenetML: viewerDoenetML,
     flags: {
       showCorrectness: true,
-      readOnly: false,
       solutionDisplayMode,
       showFeedback: true,
       showHints: true,

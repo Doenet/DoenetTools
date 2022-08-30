@@ -57,6 +57,7 @@ export default function DateTime(props) {
       ref: inputRef,
       "aria-labelledby": "checkbox-label",
       "aria-haspopup": "true",
+      "data-test": props.dataTest,
       onChange: (e) => {
         setCursorStart(e.target.selectionStart);
         setCursorEnd(e.target.selectionEnd);
@@ -82,6 +83,7 @@ export default function DateTime(props) {
       onClick: props.disabledOnClick,
       value: props.disabledText,
       readOnly: true,
+      "data-test": props.dataTest,
       style: {
         cursor: "not-allowed",
         color: "var(--canvastext)",

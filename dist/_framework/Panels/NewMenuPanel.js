@@ -10,12 +10,11 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {
   faChevronLeft,
   faCog,
-  faHome,
   faSun,
   faMoon
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import Logo from "../Logo.js";
-import {pageToolViewAtom} from "../NewToolRoot.js";
+import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
 import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
 import {darkModeAtom} from "../DarkmodeController.js";
 export const selectedMenuPanelAtom = atom({
@@ -197,6 +196,7 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, displayProfile}) {
+  const hideLinks = useRecoilValue(searchParamAtomFamily("hideLinks"));
   const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -217,6 +217,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     SelectedActivity: lazy(() => import("../Menus/SelectedActivity.js")),
     SelectedOrder: lazy(() => import("../Menus/SelectedOrder.js")),
     SelectedPage: lazy(() => import("../Menus/SelectedPage.js")),
+    SelectedPageLink: lazy(() => import("../Menus/SelectedPageLink.js")),
+    SelectedCollectionLink: lazy(() => import("../Menus/SelectedCollectionLink.js")),
     CreateCourse: lazy(() => import("../Menus/CreateCourse.js")),
     CourseEnroll: lazy(() => import("../Menus/CourseEnroll.js")),
     AddDriveItems: lazy(() => import("../Menus/AddDriveItems.js")),
@@ -225,6 +227,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     DoenetMLSettings: lazy(() => import("../Menus/DoenetMLSettings.js")),
     VersionHistory: lazy(() => import("../Menus/VersionHistory.js")),
     PageVariant: lazy(() => import("../Menus/PageVariant.js")),
+    PageLink: lazy(() => import("../Menus/PageLink.js")),
     ActivityVariant: lazy(() => import("../Menus/ActivityVariant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadPeople: lazy(() => import("../Menus/LoadPeople.js")),
@@ -271,6 +274,14 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
     }, React.createElement(LazyMenuObj[type], {mKey}))));
   }
+  let settingsButton = null;
+  if (hideLinks != "true") {
+    settingsButton = /* @__PURE__ */ React.createElement(SettingsButton, {
+      onClick: () => setPageToolView({page: "settings", tool: "", view: ""})
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faCog
+    }));
+  }
   return /* @__PURE__ */ React.createElement(MenuPanelsWrapper, {
     hide,
     "aria-label": "menus"
@@ -279,7 +290,9 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     role: "banner"
   }, /* @__PURE__ */ React.createElement(Branding, {
     style: {marginLeft: "5px"}
-  }, /* @__PURE__ */ React.createElement(Logo, null), /* @__PURE__ */ React.createElement("p", null, "Doenet")), /* @__PURE__ */ React.createElement(IconsGroup, null, /* @__PURE__ */ React.createElement(Checkbox, {
+  }, /* @__PURE__ */ React.createElement(Logo, {
+    hasLink: hideLinks != "true"
+  }), /* @__PURE__ */ React.createElement("p", null, "Doenet")), /* @__PURE__ */ React.createElement(IconsGroup, null, /* @__PURE__ */ React.createElement(Checkbox, {
     checked: darkModeToggle === "dark",
     onClick: () => setDarkModeToggle(darkModeToggle === "dark" ? "light" : "dark"),
     checkedIcon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -288,11 +301,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     uncheckedIcon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faMoon
     })
-  }), /* @__PURE__ */ React.createElement(SettingsButton, {
-    onClick: () => setPageToolView({page: "settings", tool: "", view: ""})
-  }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: faCog
-  }))), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
+  }), settingsButton), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
     onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronLeft

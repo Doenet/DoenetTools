@@ -4,7 +4,7 @@ import {sizeToCSS} from "./utils/css.js";
 import CodeMirror from "../../_framework/CodeMirror.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function CodeEditor(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRenderer(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRenderer(props);
   let currentValue = useRef(SVs.immediateValue);
   let updateValueTimer = useRef(null);
   let editorRef = useRef(null);
@@ -35,8 +35,8 @@ export default React.memo(function CodeEditor(props) {
   if (SVs.hidden) {
     return null;
   }
-  const editorKey = name + "_editor";
-  const codemirrorKey = name + "_codemirror";
+  const editorKey = id + "_editor";
+  const codemirrorKey = id + "_codemirror";
   if (SVs.immediateValue !== currentValue.current) {
     currentValue.current = SVs.immediateValue;
     updateInternalValue.current = SVs.immediateValue;
@@ -88,7 +88,7 @@ export default React.memo(function CodeEditor(props) {
   }, /* @__PURE__ */ React.createElement("div", {
     style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("div", {
     style: {
       padding: "0",
@@ -100,6 +100,6 @@ export default React.memo(function CodeEditor(props) {
       display: "flex",
       flexDirection: "column"
     },
-    id: name
+    id
   }, editor, viewer)));
 });

@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
@@ -39,38 +39,38 @@ if ($permissions["canModifyActivitySettings"] != '1'){
 $settingKeys = array(
   "makeContnet", "isSubmitted", "role", "dueDate", "assignedDate", 
   "timeLimit", "numberOfAttemptsAllowed", "attemptAggregation", "totalPointsOrPercent",
-  "gradeCategory", "individualize", "showSolution", "showSolutionInGradebook", 
-  "showFeedback", "showHints", "showCorrectness", "showCreditAchievedMenu", 
+  "gradeCategory","individualize", "showSolution", "showSolutionInGradebook", 
+  "showFeedback", "showHints", "showCorrectness", "showCreditAchievedMenu", "paginate",  
   "proctorMakesAvailable", "pinnedUntilDate", "pinnedAfterDate"
 );
 
-$proviedValues = [];
+$providedValues = [];
 
 foreach ($settingKeys as $key) {
   if(array_key_exists($key, $_POST)) {
-    $proviedValues[$key] = mysqli_real_escape_string($conn,$_POST[$key]);
+    $providedValues[$key] = mysqli_real_escape_string($conn,$_POST[$key]);
   }
 }
 unset($key, $value);
 
 //protect against invalid empty string values
-if (array_key_exists("pinnedUntilDate", $proviedValues) && $proviedValues["pinnedUntilDate"] == ''){$proviedValues["pinnedUntilDate"] = 'NULL';}
-if (array_key_exists("pinnedAfterDate", $proviedValues) && $proviedValues["pinnedAfterDate"] == ''){$proviedValues["pinnedAfterDate"] = 'NULL';}
-if (array_key_exists("timeLimit", $proviedValues) && $proviedValues["timeLimit"] == ''){$proviedValues["timeLimit"] = 'NULL';}
-if (array_key_exists("dueDate", $proviedValues) && $proviedValues["dueDate"] == ''){$proviedValues["dueDate"] = 'NULL';}
-if (array_key_exists("assignedDate", $proviedValues) && $proviedValues["assignedDate"] == ''){$proviedValues["assignedDate"] = 'NULL';}
-if (array_key_exists("numberOfAttemptsAllowed", $proviedValues) && $proviedValues["numberOfAttemptsAllowed"] == ''){$proviedValues["numberOfAttemptsAllowed"] = 'NULL';}
-if (array_key_exists("totalPointsOrPercent", $proviedValues) && $proviedValues["totalPointsOrPercent"] == '') { $proviedValues["totalPointsOrPercent"] = 'NULL';}
+if (array_key_exists("pinnedUntilDate", $providedValues) && $providedValues["pinnedUntilDate"] == ''){$providedValues["pinnedUntilDate"] = 'NULL';}
+if (array_key_exists("pinnedAfterDate", $providedValues) && $providedValues["pinnedAfterDate"] == ''){$providedValues["pinnedAfterDate"] = 'NULL';}
+if (array_key_exists("timeLimit", $providedValues) && $providedValues["timeLimit"] == ''){$providedValues["timeLimit"] = 'NULL';}
+if (array_key_exists("dueDate", $providedValues) && $providedValues["dueDate"] == ''){$providedValues["dueDate"] = 'NULL';}
+if (array_key_exists("assignedDate", $providedValues) && $providedValues["assignedDate"] == ''){$providedValues["assignedDate"] = 'NULL';}
+if (array_key_exists("numberOfAttemptsAllowed", $providedValues) && $providedValues["numberOfAttemptsAllowed"] == ''){$providedValues["numberOfAttemptsAllowed"] = 'NULL';}
+if (array_key_exists("totalPointsOrPercent", $providedValues) && $providedValues["totalPointsOrPercent"] == '') { $providedValues["totalPointsOrPercent"] = 'NULL';}
 
 //protect against invalid boolean values
 $boolKeys = array(
   "individualize", "showSolution", "showSolutionInGradebook", "showFeedback",
-  "showHints","showCorrectness","showCreditAchievedMenu","proctorMakesAvailable"
+  "showHints","showCorrectness","showCreditAchievedMenu","paginate","proctorMakesAvailable"
 );
 
 foreach ($boolKeys as $key) {
-  if (array_key_exists($key, $proviedValues)) {
-    if ($proviedValues[$key]) {$proviedValues[$key] = '1';} else {$proviedValues[$key] = '0';}
+  if (array_key_exists($key, $providedValues)) {
+    if ($providedValues[$key]) {$providedValues[$key] = '1';} else {$providedValues[$key] = '0';}
   }
 }
 
@@ -92,30 +92,57 @@ $updates = implode(
         return "$key = '$value'";
       }
     },
-    $proviedValues
+    $providedValues
   )
 );
 
 if ($success){
-$sql = "INSERT INTO `assignment` SET
-    doenetId='$doenetId',
-    courseId = '$courseId',
-    $updates
-  ON DUPLICATE KEY UPDATE
-    $updates
-";
+  http_response_code(200);
 
-$result = $conn->query($sql);
+  if(count($providedValues) > 0) {
+
+    $sql = "INSERT INTO `assignment` SET
+        doenetId='$doenetId',
+        courseId = '$courseId',
+        $updates
+      ON DUPLICATE KEY UPDATE
+        $updates
+    ";
+
+    $result = $conn->query($sql);
 
 
-if ($result == false) {
-  $success = FALSE;
-  $message = "Database error";
-  http_response_code(500);
-} else {
-  // set response code - 200 OK
-  http_response_code(202);
+    if ($result == false) {
+      $success = FALSE;
+      $message = "Database error";
+      http_response_code(500);
+    }
+  }
 }
+
+if($success) {
+
+  if(array_key_exists("itemWeights", $_POST)) {
+
+    // $itemWeights = mysqli_real_escape_string($conn,$_POST['itemWeights']);
+    // $itemWeights = json_encode($_POST['itemWeights']);
+    $itemWeights = implode(",",$_POST['itemWeights']);
+
+    $sql = "
+    UPDATE course_content
+    SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.itemWeights',JSON_ARRAY($itemWeights))
+    WHERE doenetId='$doenetId'
+    AND courseId='$courseId'
+    ";
+    $result = $conn->query($sql);
+
+    if ($result == false) {
+      $success = FALSE;
+      $message = "Database error";
+      http_response_code(500);
+    }
+
+  }
 
 }
 // echo $sql;

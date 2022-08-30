@@ -14,7 +14,7 @@ const TextNoSelect = styled.text`
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 `;
 export default React.memo(function subsetOfReals(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props, false);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props, false);
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
@@ -268,7 +268,7 @@ export default React.memo(function subsetOfReals(props) {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("div", {
     ref: bounds,
     style: {display: "flex", gap: "12px"}

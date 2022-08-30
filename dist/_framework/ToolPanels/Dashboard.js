@@ -14,11 +14,21 @@ import Next7Days from "../Widgets/Next7Days.js";
 import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {suppressMenusAtom} from "../NewToolRoot.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faCode, faUser, faChartPie} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {
+  faCode,
+  faUser,
+  faChartPie,
+  faTasks
+} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
-  const {canModifyCourseSettings, canManageUsers, dataAccessPermission} = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const {
+    canModifyCourseSettings,
+    canManageUsers,
+    dataAccessPermission,
+    canViewAndModifyGrades
+  } = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
   let profile = loadProfile.contents;
@@ -72,7 +82,38 @@ export default function Dashboard(props) {
       view: "",
       params: {courseId}
     })
-  }) : null)), /* @__PURE__ */ React.createElement("div", {
+  }) : null, canViewAndModifyGrades === "1" ? /* @__PURE__ */ React.createElement(Card, {
+    name: "Gradebook",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faTasks
+    }),
+    value: "Gradebook",
+    onClick: () => setPageToolView((was) => {
+      return {
+        page: "course",
+        tool: "gradebook",
+        view: was.view,
+        params: {courseId}
+      };
+    })
+  }) : /* @__PURE__ */ React.createElement(Card, {
+    name: "Gradebook",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faTasks
+    }),
+    style: {marginLeft: "-600px"},
+    value: "Gradebook",
+    onClick: () => setPageToolView((was) => {
+      return {
+        page: "course",
+        tool: "gradebookStudent",
+        view: was.view,
+        params: {courseId, userId: profile.userId}
+      };
+    })
+  }))), /* @__PURE__ */ React.createElement("div", {
     style: {marginTop: "10px", margin: "10px"}
-  }));
+  }, /* @__PURE__ */ React.createElement(Next7Days, {
+    courseId
+  })));
 }

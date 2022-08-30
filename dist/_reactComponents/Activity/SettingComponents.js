@@ -11,7 +11,7 @@ import {useActivity} from "./ActivityActions.js";
 import Checkbox from "../PanelHeaderComponents/Checkbox.js";
 import Increment from "../PanelHeaderComponents/IncrementMenu.js";
 import DropdownMenu from "../PanelHeaderComponents/DropdownMenu.js";
-import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {atomFamily, useRecoilState, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {
   peopleByCourseId,
   itemByDoenetId,
@@ -24,6 +24,8 @@ import ActionButton from "../PanelHeaderComponents/ActionButton.js";
 import {toastType, useToast} from "../../_framework/Toast.js";
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {useSaveDraft} from "../../_framework/ToolPanels/DoenetMLEditor.js";
+import {prerenderActivity} from "../../_utils/activityUtils.js";
+import Textfield from "../PanelHeaderComponents/Textfield.js";
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
   display: ${(props) => props.flex ? "flex" : "block"};
@@ -41,19 +43,26 @@ const InputControl = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
+const initializingWorkersAtom = atomFamily({
+  key: "initializingWorkersAtom",
+  default: null
+});
 export const AssignUnassignActivity = ({doenetId, courseId}) => {
   const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
   const {saveDraft} = useSaveDraft();
   const {compileActivity, updateAssignItem} = useCourse(courseId);
-  const {isAssigned} = useRecoilValue(itemByDoenetId(doenetId));
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
+  const isAssigned = itemObj.isAssigned;
   const addToast = useToast();
+  const [initializeStatus, setInitializeStatus] = useState("");
   let assignActivityText = "Assign Activity";
+  let assignActivityToast = "Activity Assigned";
   if (isAssigned) {
     assignActivityText = "Update Assigned Activity";
+    assignActivityToast = "Assigned Activity Updated";
   }
-  return /* @__PURE__ */ React.createElement(ActionButtonGroup, {
-    vertical: true
-  }, /* @__PURE__ */ React.createElement(ActionButton, {
+  let [initializingWorker, setInitializingWorker] = useRecoilState(initializingWorkersAtom(doenetId));
+  let assignButton = /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     "data-test": "Assign Activity",
     value: assignActivityText,
@@ -70,25 +79,79 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
         doenetId,
         isAssigned: true,
         successCallback: () => {
-          addToast("Activity Assigned", toastType.INFO);
+          addToast(assignActivityToast, toastType.INFO);
         }
       });
     }
-  }), isAssigned ? /* @__PURE__ */ React.createElement(ActionButton, {
-    width: "menu",
-    "data-test": "Unassign Activity",
-    value: "Unassign Activity",
-    alert: true,
-    onClick: () => {
-      updateAssignItem({
-        doenetId,
-        isAssigned: false,
-        successCallback: () => {
-          addToast("Activity Unassigned", toastType.INFO);
+  });
+  let unAssignButton = null;
+  let prerenderButton = null;
+  if (isAssigned) {
+    unAssignButton = /* @__PURE__ */ React.createElement(ActionButton, {
+      width: "menu",
+      "data-test": "Unassign Activity",
+      value: "Unassign Activity",
+      alert: true,
+      onClick: () => {
+        updateAssignItem({
+          doenetId,
+          isAssigned: false,
+          successCallback: () => {
+            addToast("Activity Unassigned", toastType.INFO);
+          }
+        });
+      }
+    });
+    if (initializingWorker) {
+      prerenderButton = /* @__PURE__ */ React.createElement(ActionButton, {
+        width: "menu",
+        "data-test": "Cancel prerendering",
+        value: `${initializeStatus} (Cancel)`,
+        onClick: () => {
+          initializingWorker.terminate();
+          setInitializingWorker(null);
         }
       });
+    } else {
+      let initializePrerender = async () => {
+        let flags = {
+          showCorrectness: itemObj.showCorrectness,
+          readOnly: false,
+          solutionDisplayMode: itemObj.showSolution ? "button" : "none",
+          showFeedback: itemObj.showFeedback,
+          showHints: itemObj.showHints,
+          allowLoadState: false,
+          allowSaveState: false,
+          allowLocalState: false,
+          allowSaveSubmissions: false,
+          allowSaveEvents: false
+        };
+        let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId}});
+        if (resp.data.cid) {
+          setInitializeStatus("");
+          let worker = prerenderActivity({cid: resp.data.cid, doenetId, flags});
+          setInitializingWorker(worker);
+          worker.onmessage = (e) => {
+            if (e.data.messageType === "status") {
+              setInitializeStatus(`${e.data.stage} ${Math.round(e.data.complete * 100)}%`);
+            } else {
+              worker.terminate();
+              setInitializingWorker(null);
+            }
+          };
+        }
+      };
+      prerenderButton = /* @__PURE__ */ React.createElement(ActionButton, {
+        width: "menu",
+        "data-test": "Prerender activity",
+        value: "Prerender activity",
+        onClick: initializePrerender
+      });
     }
-  }) : null);
+  }
+  return /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+    vertical: true
+  }, assignButton, unAssignButton, prerenderButton);
 };
 export const AssignedDate = ({doenetId, courseId, editable = false}) => {
   const addToast = useToast();
@@ -104,6 +167,7 @@ export const AssignedDate = ({doenetId, courseId, editable = false}) => {
     onClick: (e) => e.preventDefault()
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
+    dataTest: "Assigned Date Checkbox",
     checkedIcon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faCalendarPlus
     }),
@@ -129,6 +193,7 @@ export const AssignedDate = ({doenetId, courseId, editable = false}) => {
   }), /* @__PURE__ */ React.createElement(DateTime, {
     disabled: assignedDate === null || assignedDate === void 0,
     value: assignedDate ? new Date(assignedDate) : null,
+    dataTest: "Assigned Date",
     disabledText: "No Assigned Date",
     disabledOnClick: () => {
       let valueDescription = "Now";
@@ -174,6 +239,7 @@ export const DueDate = ({courseId, doenetId}) => {
     onClick: (e) => e.preventDefault()
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
+    dataTest: "Due Date Checkbox",
     checkedIcon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faCalendarPlus
     }),
@@ -201,6 +267,7 @@ export const DueDate = ({courseId, doenetId}) => {
   }), /* @__PURE__ */ React.createElement(DateTime, {
     disabled: dueDate === null || dueDate === void 0,
     value: dueDate ? new Date(dueDate) : null,
+    dataTest: "Due Date",
     onBlur: ({valid, value}) => {
       if (valid) {
         try {
@@ -248,6 +315,7 @@ export const TimeLimit = ({courseId, doenetId}) => {
     onClick: (e) => e.preventDefault()
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
+    dataTest: "Time Limit Checkbox",
     checked: timeLimit !== null,
     onClick: () => {
       let valueDescription = "Not Limited";
@@ -267,6 +335,7 @@ export const TimeLimit = ({courseId, doenetId}) => {
   }), /* @__PURE__ */ React.createElement(Increment, {
     disabled: timeLimit === null,
     value: timeLimit,
+    dataTest: "Time Limit",
     min: 0,
     onBlur: () => {
       if (recoilValue !== timeLimit) {
@@ -290,7 +359,7 @@ export const TimeLimit = ({courseId, doenetId}) => {
     onChange: (newValue) => setTimeLimit(newValue)
   })));
 };
-export const AttempLimit = ({courseId, doenetId}) => {
+export const AttemptLimit = ({courseId, doenetId}) => {
   const {
     value: {numberOfAttemptsAllowed: recoilValue},
     updateAssignmentSettings
@@ -303,6 +372,7 @@ export const AttempLimit = ({courseId, doenetId}) => {
     onClick: (e) => e.preventDefault()
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
+    dataTest: "Attempt Limit Checkbox",
     checked: numberOfAttemptsAllowed !== null,
     onClick: () => {
       let valueDescription = "Not Limited";
@@ -315,13 +385,14 @@ export const AttempLimit = ({courseId, doenetId}) => {
       updateAssignmentSettings({
         keyToUpdate: "numberOfAttemptsAllowed",
         value,
-        description: "Attempts Allowe",
+        description: "Attempts Allowed",
         valueDescription
       });
     }
   }), /* @__PURE__ */ React.createElement(Increment, {
     disabled: numberOfAttemptsAllowed === null,
     value: numberOfAttemptsAllowed,
+    dataTest: "Attempt Limit",
     min: 0,
     onBlur: () => {
       if (recoilValue !== numberOfAttemptsAllowed) {
@@ -384,6 +455,7 @@ export const TotalPointsOrPercent = ({courseId, doenetId}) => {
   }, [recoilValue]);
   return /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(LabelText, null, "Total Points Or Percent"), /* @__PURE__ */ React.createElement(InputControl, null, /* @__PURE__ */ React.createElement(Increment, {
     value: totalPointsOrPercent,
+    dataTest: "Total Points Or Percent",
     min: 0,
     onBlur: () => {
       if (recoilValue !== totalPointsOrPercent) {
@@ -392,8 +464,8 @@ export const TotalPointsOrPercent = ({courseId, doenetId}) => {
           setTotalPointsOrPercent(0);
           totalPointsOrPercentLocal = 0;
         } else {
-          totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
-          setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
+          totalPointsOrPercentLocal = parseFloat(totalPointsOrPercent);
+          setTotalPointsOrPercent(parseFloat(totalPointsOrPercent));
         }
         updateAssignmentSettings(doenetId, {
           keyToUpdate: "totalPointsOrPercent",
@@ -443,13 +515,43 @@ export const GradeCategory = ({courseId, doenetId}) => {
     }
   }));
 };
+export const ItemWeights = ({courseId, doenetId}) => {
+  const {
+    value: {itemWeights: recoilValue},
+    updateAssignmentSettings
+  } = useActivity(courseId, doenetId);
+  const [textValue, setTextValue] = useState("");
+  useEffect(() => {
+    setTextValue(recoilValue?.join(" "));
+  }, [recoilValue]);
+  return /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(LabelText, null, "Item Weights"), /* @__PURE__ */ React.createElement(Textfield, {
+    vertical: true,
+    width: "menu",
+    value: textValue,
+    dataTest: "Item Weights",
+    onChange: (e) => {
+      setTextValue(e.target.value);
+    },
+    onBlur: () => {
+      let parsedValue = textValue.split(" ").filter((x) => x).map(Number).map((x) => x >= 0 ? x : 0);
+      if (recoilValue.length !== parsedValue.length || recoilValue.some((v, i) => v !== parsedValue[i])) {
+        updateAssignmentSettings({
+          keyToUpdate: "itemWeights",
+          value: parsedValue,
+          description: "Item Weights"
+        });
+      }
+    }
+  }));
+};
 export const CheckedSetting = ({
   courseId,
   doenetId,
   keyToUpdate,
   description,
   label,
-  invert
+  invert,
+  dataTest
 }) => {
   const {
     value: {[keyToUpdate]: recoilValue},
@@ -463,6 +565,7 @@ export const CheckedSetting = ({
     flex: true
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
+    dataTest,
     checked: invert ? !localValue : localValue,
     onClick: () => {
       let valueDescription = invert ? "True" : "False";
@@ -487,7 +590,8 @@ export const CheckedFlag = ({
   keyToUpdate,
   description,
   label,
-  invert
+  invert,
+  dataTest
 }) => {
   const {
     value: {[keyToUpdate]: recoilValue},
@@ -501,6 +605,7 @@ export const CheckedFlag = ({
     flex: true
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
+    dataTest,
     checked: invert ? !localValue : localValue,
     onClick: () => {
       let valueDescription = invert ? "True" : "False";
@@ -524,7 +629,8 @@ export const Individualize = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "individualize",
-    description: "Individualize"
+    description: "Individualize",
+    dataTest: "Individualize"
   });
 };
 export const ShowSolution = ({courseId, doenetId}) => {
@@ -532,7 +638,8 @@ export const ShowSolution = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "showSolution",
-    description: "Show Solution"
+    description: "Show Solution",
+    dataTest: "Show Solution"
   });
 };
 export const ShowSolutionInGradebook = ({courseId, doenetId}) => {
@@ -540,7 +647,8 @@ export const ShowSolutionInGradebook = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "showSolutionInGradebook",
-    description: "Show Solution In Gradebook"
+    description: "Show Solution In Gradebook",
+    dataTest: "Show Solution In Gradebook"
   });
 };
 export const ShowFeedback = ({courseId, doenetId}) => {
@@ -548,7 +656,8 @@ export const ShowFeedback = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "showFeedback",
-    description: "Show Feedback"
+    description: "Show Feedback",
+    dataTest: "Show Feedback"
   });
 };
 export const ShowHints = ({courseId, doenetId}) => {
@@ -556,7 +665,8 @@ export const ShowHints = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "showHints",
-    description: "Show Hints"
+    description: "Show Hints",
+    dataTest: "Show Hints"
   });
 };
 export const ShowCorrectness = ({courseId, doenetId}) => {
@@ -564,7 +674,8 @@ export const ShowCorrectness = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "showCorrectness",
-    description: "Show Correctness"
+    description: "Show Correctness",
+    dataTest: "Show Correctness"
   });
 };
 export const ShowCreditAchieved = ({courseId, doenetId}) => {
@@ -572,7 +683,17 @@ export const ShowCreditAchieved = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "showCreditAchievedMenu",
-    description: "Show Credit Achieved Menu"
+    description: "Show Credit Achieved Menu",
+    dataTest: "Show Credit Achieved Menu"
+  });
+};
+export const Paginate = ({courseId, doenetId}) => {
+  return /* @__PURE__ */ React.createElement(CheckedSetting, {
+    courseId,
+    doenetId,
+    keyToUpdate: "paginate",
+    description: "Paginate",
+    dataTest: "Paginate"
   });
 };
 export const MakePublic = ({courseId, doenetId}) => {
@@ -580,7 +701,8 @@ export const MakePublic = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "isPublic",
-    description: "Make Publicly Visible"
+    description: "Make Publicly Visible",
+    dataTest: "Make Publicly Visible"
   });
 };
 export const ShowDoenetMLSource = ({courseId, doenetId}) => {
@@ -588,7 +710,8 @@ export const ShowDoenetMLSource = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "userCanViewSource",
-    description: "Show DoenetML Source"
+    description: "Show DoenetML Source",
+    dataTest: "Show DoenetML Source"
   });
 };
 export const ProctorMakesAvailable = ({courseId, doenetId}) => {
@@ -596,7 +719,8 @@ export const ProctorMakesAvailable = ({courseId, doenetId}) => {
     courseId,
     doenetId,
     keyToUpdate: "proctorMakesAvailable",
-    description: "Proctor Makes Available"
+    description: "Proctor Makes Available",
+    dataTest: "Proctor Makes Available"
   });
 };
 export const PinAssignment = ({courseId, doenetId}) => {

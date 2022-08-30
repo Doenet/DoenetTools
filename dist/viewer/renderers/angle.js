@@ -4,7 +4,7 @@ import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default React.memo(function Angle(props) {
-  let {name, SVs} = useDoenetRender(props);
+  let {name, id, SVs} = useDoenetRender(props);
   const board = useContext(BoardContext);
   let point1JXG = useRef(null);
   let point2JXG = useRef(null);
@@ -34,9 +34,9 @@ export default React.memo(function Angle(props) {
     }
     let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
     var jsxAngleAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
       radius: SVs.numericalRadius,
@@ -50,7 +50,7 @@ export default React.memo(function Angle(props) {
     if (SVs.labelHasLatex) {
       jsxAngleAttributes.label.useMathJax = true;
     }
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
     let through;
     if (SVs.swapPointOrder) {
       through = [
@@ -100,8 +100,8 @@ export default React.memo(function Angle(props) {
       angleJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, through[1]);
       angleJXG.current.point3.coords.setCoordinates(JXG.COORDS_BY_USER, through[2]);
       angleJXG.current.setAttribute({radius: SVs.numericalRadius, visible: !SVs.hidden});
-      angleJXG.current.name = SVs.label;
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      angleJXG.current.name = SVs.labelForGraph;
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         angleJXG.current.setAttribute({withlabel});
         previousWithLabel.current = withlabel;
@@ -115,14 +115,14 @@ export default React.memo(function Angle(props) {
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }));
   }
   let mathJaxify = "\\(" + SVs.latexForRenderer + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement(MathJax, {
     hideUntilTypeset: "first",
     inline: true,

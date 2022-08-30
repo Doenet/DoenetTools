@@ -8,16 +8,18 @@ import {
   AssignedDate,
   AssignTo,
   AssignUnassignActivity,
-  AttempLimit,
+  AttemptLimit,
   AttemptAggregation,
   DueDate,
   GradeCategory,
+  ItemWeights,
   Individualize,
   MakePublic,
   PinAssignment,
   ProctorMakesAvailable,
   ShowCorrectness,
   ShowCreditAchieved,
+  Paginate,
   ShowDoenetMLSource,
   ShowFeedback,
   ShowHints,
@@ -153,17 +155,25 @@ export default function SelectedActivity() {
     }, /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       onClick: () => create({itemType: "page"}),
-      value: "Add Page"
+      value: "Add Page",
+      "data-test": "Add Page"
     }), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       onClick: () => create({itemType: "order"}),
-      value: "Add Order"
+      value: "Add Order",
+      "data-test": "Add Order"
+    }), /* @__PURE__ */ React.createElement(Button, {
+      width: "menu",
+      onClick: () => create({itemType: "collectionLink"}),
+      "data-test": "Add Collection Link",
+      value: "Add Collection Link"
     })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
       doenetId,
       courseId
     }), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       value: "Delete Activity",
+      "data-test": "Delete Activity",
       alert: true,
       onClick: (e) => {
         e.preventDefault();
@@ -220,13 +230,15 @@ export function AssignmentSettings({doenetId, courseId}) {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(TimeLimit, {
       ...sharedProps
-    }), /* @__PURE__ */ React.createElement(AttempLimit, {
+    }), /* @__PURE__ */ React.createElement(AttemptLimit, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(AttemptAggregation, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(TotalPointsOrPercent, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(GradeCategory, {
+      ...sharedProps
+    }), /* @__PURE__ */ React.createElement(ItemWeights, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement("div", {
       style: {margin: "16px 0"}
@@ -243,6 +255,8 @@ export function AssignmentSettings({doenetId, courseId}) {
     }), /* @__PURE__ */ React.createElement(ShowCorrectness, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(ShowCreditAchieved, {
+      ...sharedProps
+    }), /* @__PURE__ */ React.createElement(Paginate, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(ProctorMakesAvailable, {
       ...sharedProps

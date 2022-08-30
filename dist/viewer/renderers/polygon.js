@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function Polygon(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Polygon.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let polygonJXG = useRef(null);
@@ -50,9 +50,9 @@ export default React.memo(function Polygon(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle)
     };
     let jsxPolygonAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 7,
       fillColor: SVs.selectedStyle.fillColor,
@@ -250,7 +250,7 @@ export default React.memo(function Polygon(props) {
       if (layerChanged) {
         polygonJXG.current.setAttribute({layer: polygonLayer});
       }
-      polygonJXG.current.name = SVs.label;
+      polygonJXG.current.name = SVs.labelForGraph;
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
           polygonJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
@@ -313,7 +313,7 @@ export default React.memo(function Polygon(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });
 function styleToDash(style) {

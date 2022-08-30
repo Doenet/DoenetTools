@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
 export default React.memo(function CobwebPolyline(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   CobwebPolyline.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let curveJXG = useRef(null);
@@ -57,9 +57,9 @@ export default React.memo(function CobwebPolyline(props) {
       }
     }
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -269,7 +269,7 @@ export default React.memo(function CobwebPolyline(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });
 function styleToDash(style) {

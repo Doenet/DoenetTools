@@ -10,74 +10,84 @@ include 'db_connection.php';
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
-$_POST = json_decode(file_get_contents("php://input"),true);
+$_POST = json_decode(file_get_contents('php://input'), true);
 
-$driveId =  mysqli_real_escape_string($conn,$_POST["driveId"]);
+$courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
+// $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
-$success = TRUE;
-$message = "";
+$success = true;
+$message = '';
 
-if ($driveId == ""){
-  $success = FALSE;
-  $message = "Internal Error: missing versionId";
+if ($courseId == '') {
+    // check for courseId
+    $success = false;
+    $message = 'Internal Error: missing courseId';
 }
-$dotwIndexes = array_map(function($item) use($conn) {
+
+$dotwIndexes = array_map(function ($item) use ($conn) {
     return mysqli_real_escape_string($conn, $item);
 }, $_POST['dotwIndexes']);
-$startTimes = array_map(function($item) use($conn) {
+$startTimes = array_map(function ($item) use ($conn) {
     return mysqli_real_escape_string($conn, $item);
 }, $_POST['startTimes']);
-$endTimes = array_map(function($item) use($conn) {
+$endTimes = array_map(function ($item) use ($conn) {
     return mysqli_real_escape_string($conn, $item);
 }, $_POST['endTimes']);
 
-if ($success){
+if ($success) {
+    // check if allowed to edit
 
-$sql = "SELECT canEditContent
-        FROM drive_user
+    $sql = "SELECT canEditContent
+        FROM course_user
         WHERE userId = '$userId'
-        AND driveId = '$driveId'
+        AND courseId = '$courseId'
         ";
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $allowed = $row['canEditContent'];
-            if (!$allowed) {
-                // http_response_code(403); //User if forbidden from operation
-                $success = FALSE;
-                $message = 'Not allowed';
-            }
-        }else{
-            $success = FALSE;
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $allowed = $row['canEditContent'];
+        if (!$allowed) {
+            // http_response_code(403); //User if forbidden from operation
+            $success = false;
             $message = 'Not allowed';
         }
+    } else {
+        $success = false;
+        $message = 'Not allowed';
+    }
 }
 
-if ($success){
+if ($success) {
+    // delete prev classTimes
     $sql = "
     DELETE FROM class_times
-    WHERE driveId='$driveId'
+    WHERE courseId='$courseId'
     ";
 
-$result = $conn->query($sql);
+    $result = $conn->query($sql);
 
-    $values = "";
+    $values = '';
     foreach ($dotwIndexes as $key => $value) {
+        echo $key . ', ' . $value . "\n";
         $dotwIndex = $value;
         $startTime = $startTimes[$key];
         $endTime = $endTimes[$key];
-        if ($key > 0){
-            $values = $values . ','; 
+        if ($key > 0) {
+            $values = $values . ',';
         }
-        $values = $values . "('$driveId','$dotwIndex','$startTime','$endTime','$key')";
+        $values =
+            $values .
+            "('$courseId','$dotwIndex','$startTime','$endTime','$key')";
     }
+    var_dump($values);
     $sql = "
-        INSERT INTO class_times(driveId,dotwIndex,startTime,endTime,sortOrder)
+        INSERT INTO class_times(courseId,dotwIndex,startTime,endTime,sortOrder)
         VALUES
         $values
         ";
-        $result = $conn->query($sql);
-
+    $result = $conn->query($sql);
+    echo $sql;
 }
 
 http_response_code(200);

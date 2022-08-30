@@ -62,10 +62,12 @@ export default function SelectedBank() {
     }, /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       onClick: () => create({itemType: "page"}),
-      value: "Add Page"
+      value: "Add Page",
+      "data-test": "Add Page"
     })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       value: "Delete Collection",
+      "data-test": "Delete Collection",
       alert: true,
       onClick: (e) => {
         e.preventDefault();

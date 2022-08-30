@@ -7,7 +7,7 @@ import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/fr
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Hint(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -81,10 +81,10 @@ export default React.memo(function Hint(props) {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("aside", {
-    id: name,
-    key: name
+    id,
+    key: id
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
     style: {
       display: "block",
