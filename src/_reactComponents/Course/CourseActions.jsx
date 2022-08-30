@@ -2043,12 +2043,12 @@ export const useCourse = (courseId) => {
 
   const updateContentLinksToSources = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({collectionDoenetId = null, pages, failureCallback = defaultFailure}) => {
+      async ({collectionObj, pages, failureCallback = defaultFailure}) => {
 
 
       //update pages to latest ones in the source collection
-      if (collectionDoenetId){
-        let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionDoenetId))
+      if (collectionObj){
+        let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionObj.collectionDoenetId))
         let collectionSourcePages = sourceCollectionObj.pages;
         let sourcePagesOfPageLinks = []
         for (let doenetId of pages){
