@@ -270,6 +270,7 @@ CREATE TABLE `course` (
   `defaultRoleId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `browserExamKeys` text COLLATE utf8_unicode_ci,
+  `lastSeenExamKey` varchar(66) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1004,4 +1005,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-27 20:36:32
+-- Dump completed on 2022-08-30 20:52:29
