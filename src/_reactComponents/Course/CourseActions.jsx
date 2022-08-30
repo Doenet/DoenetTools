@@ -2043,49 +2043,65 @@ export const useCourse = (courseId) => {
 
   const updateContentLinksToSources = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({collectionObj, pages, failureCallback = defaultFailure}) => {
-
+      async ({collectionLinkObj, pages, failureCallback = defaultFailure}) => {
+        let timeOfLastUpdate = new Date(); //Only update the time when we copy over the changes
 
       //update pages to latest ones in the source collection
-      if (collectionObj){
-        let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionObj.collectionDoenetId))
+      if (collectionLinkObj){
+        let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.collectionDoenetId))
         let collectionSourcePages = sourceCollectionObj.pages;
-        let sourcePagesOfPageLinks = []
+        let sourcePagesOfPageLinks = [];
+        let labels = []; //TODO!!!!!!!!!!!!!!!!!!!
         for (let doenetId of pages){
           let linkPageObj = await snapshot.getPromise(itemByDoenetId(doenetId))
           sourcePagesOfPageLinks.push(linkPageObj.sourcePageDoenetId);
         }
-        // TODO: toast new and deleted pages
+        // TODO: preview new and deleted pages before updating them
 
-        //TODO: create the new link pages
-        //TODO: delete the deleted pages
-        //TODO: update recoil for the activity, collection link and added page links
-        let newPages = collectionSourcePages.filter((doenetId)=>{
+        let newSourcePageDoenetIds = collectionSourcePages.filter((doenetId)=>{
           return !sourcePagesOfPageLinks.includes(doenetId);
         })
-        // let newPages = [];
-        // for (let sourcePage of collectionSourcePages){
+        let pageLinksToDelete = [];
+        let sourcePagesWhichWereDeleted = [];
+        for (let [i,sourcePageLink] of Object.entries(sourcePagesOfPageLinks)){
+          if (!collectionSourcePages.includes(sourcePageLink)){
+            sourcePagesWhichWereDeleted.push(sourcePageLink);
+            pageLinksToDelete.push(pages[i])
+          }
+        }
 
-        // }
-        let deletedPages = sourcePagesOfPageLinks.filter((doenetId)=>{
-          return !collectionSourcePages.includes(doenetId);
-        })
+        let { data } = await axios.post('/api/createAndDeletePageLinks.php', {
+          courseId,
+          containingDoenetId:collectionLinkObj.containingDoenetId,
+          parentDoenetId:collectionLinkObj.doenetId,
+          sourceCollectionDoenetId:collectionLinkObj.collectionDoenetId,
+          newSourcePageDoenetIds,
+          pageLinksToDelete,
+          labels,
+        });
+        console.log("createAndDeletePageLinks",data)
+
+        //TODO: recoil new page links
+
+        //TODO: recoil new collection link
+
+        //TODO: recoil new activity
+
         let nextLinkPages = [];
         //Remove deleted pages from pages
         for (let [i,linkPageId] of Object.entries(pages)){
           const sourcePage = sourcePagesOfPageLinks[i];
           // console.log("link",linkPageId,"source",sourcePage)
-          if (!deletedPages.includes(sourcePage)){
+          if (!sourcePagesWhichWereDeleted.includes(sourcePage)){
             nextLinkPages.push(linkPageId);
           }
         }
-        // console.log("newPages",newPages)
         // console.log("deletedPages",deletedPages)
         // console.log("nextLinkPages",nextLinkPages)
         pages = nextLinkPages;
       }
 
-      let timeOfLastUpdate = new Date(); //Only update the time when we copy over the changes
+      
         let { data } = await axios.post('/api/updatePageLinks.php', {
           courseId,
           pages,
