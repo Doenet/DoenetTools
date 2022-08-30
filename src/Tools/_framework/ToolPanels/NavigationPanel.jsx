@@ -89,7 +89,7 @@ export default function NavigationPanel() {
     ({ set, snapshot }) =>
       async ({ singleItem }) => {
 
-        // console.log(`singleItem doenetId:${singleItem.doenetId}`,singleItem)
+        console.log(`singleItem doenetId:${singleItem?.doenetId}`,singleItem)
         if (singleItem !== null) {
           if (singleItem.type == "activity"){
             set(selectedMenuPanelAtom,"SelectedActivity");
