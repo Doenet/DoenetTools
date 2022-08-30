@@ -7,9 +7,6 @@ export default class GraphicalComponent extends BaseComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.label = {
-      createComponentOfType: "label",
-    };
     attributes.labelIsName = {
       createComponentOfType: "boolean",
       createStateVariable: "labelIsName",

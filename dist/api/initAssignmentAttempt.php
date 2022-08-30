@@ -109,33 +109,39 @@ if ($success) {
         }
     }
 
-    $sql = "SELECT userId
+    $sql = "SELECT itemNumber
         FROM  user_assignment_attempt_item
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
         AND attemptNumber = '$attemptNumber'
-";
+        ";
 
     $result = $conn->query($sql);
 
-    //Only insert if not stored
-    if ($result->num_rows < 1) {
-        //Insert weights
-        for (
-            $itemNumber = 1;
-            $itemNumber < count($weights) + 1;
-            $itemNumber++
-        ) {
-            //Store Item  weights
-            $weight = $weights[$itemNumber - 1];
-
-            $sql = "INSERT INTO user_assignment_attempt_item 
-                (userId,doenetId,attemptNumber,itemNumber,weight)
-                values
-                ('$userId','$doenetId','$attemptNumber','$itemNumber','$weight')
+    while ($row = $result->fetch_assoc()) {
+        $itemNumber = $row["itemNumber"];
+        if ($itemNumber > count($weights)) {
+            $sql = "DELETE FROM user_assignment_attempt_item
+                WHERE userId = '$userId'
+                AND doenetId = '$doenetId'
+                AND attemptNumber = '$attemptNumber'  
+                AND itemNumber = '$itemNumber'
                 ";
-            $result = $conn->query($sql);
+            $conn->query($sql);
         }
+    }
+
+    for ($itemNumber = 1; $itemNumber < count($weights) + 1; $itemNumber++) {
+        // insert or update item weights
+        $weight = $weights[$itemNumber - 1];
+
+        $sql = "INSERT INTO user_assignment_attempt_item 
+                    (userId,doenetId,attemptNumber,itemNumber,weight)
+                    values
+                    ('$userId','$doenetId','$attemptNumber','$itemNumber','$weight')
+                    ON DUPLICATE KEY UPDATE weight='$weight'
+                    ";
+        $result = $conn->query($sql);
     }
 }
 

@@ -8,7 +8,7 @@ margin: 2px;
 outline: none;
 `;
 export default React.memo(function orbitalDiagram(props) {
-  let {name, SVs, actions, callAction} = useDoenetRenderer(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRenderer(props);
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
   let onChangeVisibility = (isVisible) => {
@@ -37,7 +37,7 @@ export default React.memo(function orbitalDiagram(props) {
       rowNumber,
       orbitalText: row.orbitalText,
       boxes: row.boxes,
-      name
+      name: id
     }));
   }
   return /* @__PURE__ */ React.createElement(VisibilitySensor, {

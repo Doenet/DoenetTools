@@ -86,6 +86,7 @@ export default function MainPanel({
   }, controls), /* @__PURE__ */ React.createElement(ContentWrapper, {
     onClick: mpOnClick,
     role: "main",
-    "data-test": "Main Panel"
+    "data-test": "Main Panel",
+    id: "mainPanel"
   }, contents));
 }

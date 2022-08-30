@@ -5,9 +5,16 @@ import {
   useRecoilValueLoadable
 } from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
-import {Styles, Table, studentData, assignmentData, overViewData, gradeSorting} from "./Gradebook.js";
+import {
+  Styles,
+  Table,
+  studentData,
+  assignmentData,
+  overViewData,
+  gradeSorting
+} from "./Gradebook.js";
 export default function GradebookStudent() {
-  let driveId = useRecoilValue(searchParamAtomFamily("driveId"));
+  let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let userId = useRecoilValue(searchParamAtomFamily("userId"));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let assignments = useRecoilValueLoadable(assignmentData);
@@ -26,25 +33,20 @@ export default function GradebookStudent() {
   overviewTable.rows = [];
   if (assignments.state == "hasValue" && students.state === "hasValue" && overView.state === "hasValue" && userId !== null && userId !== "") {
     let gradeCategories = [
-      {
-        category: "Gateway",
-        scaleFactor: 0
-      },
+      {category: "Gateway", scaleFactor: 0},
       {category: "Exams"},
-      {
-        category: "Quizzes",
-        maximumNumber: 10
-      },
-      {
-        category: "Problem sets",
-        maximumNumber: 30
-      },
+      {category: "Quizzes", maximumNumber: 10},
+      {category: "Problem sets", maximumNumber: 30},
       {category: "Projects"},
       {category: "Participation"}
     ];
     let totalScore = 0;
     let totalPossiblePoints = 0;
-    for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
+    for (let {
+      category,
+      scaleFactor = 1,
+      maximumNumber = Infinity
+    } of gradeCategories) {
       overviewTable.rows.push({
         assignment: category
       });
@@ -63,12 +65,17 @@ export default function GradebookStudent() {
         score = Math.round(score * 100) / 100;
         let percentage = Math.round(credit * 1e3) / 10 + "%";
         let assignment = /* @__PURE__ */ React.createElement("a", {
-          onClick: (e) => {
+          onClick: () => {
             setPageToolView({
               page: "course",
               tool: "gradebookStudentAssignment",
               view: "",
-              params: {driveId, userId, doenetId, previousCrumb: "student"}
+              params: {
+                courseId,
+                userId,
+                doenetId,
+                previousCrumb: "student"
+              }
             });
           },
           style: {paddingLeft: "15px"}
@@ -133,7 +140,6 @@ export default function GradebookStudent() {
     });
   }
   let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`;
-  console.log("rows", overviewTable.rows);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {marginLeft: "18px"}
   }, /* @__PURE__ */ React.createElement("b", null, "Gradebook for ", studentName)), /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {

@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function LineSegment(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   LineSegment.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let lineSegmentJXG = useRef(null);
@@ -32,9 +32,9 @@ export default React.memo(function LineSegment(props) {
     }
     let fixed = !SVs.draggable || SVs.fixed;
     var jsxSegmentAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -143,7 +143,7 @@ export default React.memo(function LineSegment(props) {
         [...point2JXG.current.coords.scrCoords]
       ];
     });
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
     return lineSegmentJXG.current;
   }
   function onDragHandler(i, e) {
@@ -267,8 +267,8 @@ export default React.memo(function LineSegment(props) {
       if (lineSegmentJXG.current.visProp.dash !== newDash) {
         lineSegmentJXG.current.visProp.dash = newDash;
       }
-      lineSegmentJXG.current.name = SVs.label;
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      lineSegmentJXG.current.name = SVs.labelForGraph;
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         lineSegmentJXG.current.setAttribute({withlabel});
         previousWithLabel.current = withlabel;
@@ -291,14 +291,14 @@ export default React.memo(function LineSegment(props) {
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }));
   }
   if (SVs.hidden) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });
 function styleToDash(style) {

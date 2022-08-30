@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default React.memo(function Ndash(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+  let {SVs} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }

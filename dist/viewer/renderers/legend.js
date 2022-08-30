@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function Legend(props) {
-  let {name, SVs} = useDoenetRender(props);
+  let {name, id, SVs} = useDoenetRender(props);
   const board = useContext(BoardContext);
   let swatches = useRef([]);
   let labels = useRef([]);
@@ -165,14 +165,14 @@ export default React.memo(function Legend(props) {
     }
     createLegend();
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }));
   }
   if (SVs.hidden) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });
 function styleToDash(style) {

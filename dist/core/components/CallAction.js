@@ -28,9 +28,6 @@ export default class CallAction extends InlineComponent {
     let attributes = super.createAttributesObject();
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
-    attributes.label = {
-      createComponentOfType: "label",
-    };
 
     attributes.labelIsName = {
       createComponentOfType: "boolean",

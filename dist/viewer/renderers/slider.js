@@ -283,7 +283,7 @@ function nearestValue(refval, points, SVs) {
   return [val, index];
 }
 export default React.memo(function Slider(props) {
-  let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   Slider.baseStateVariable = "index";
   const containerRef = useRef(null);
   const setRendererState = useSetRecoilState(rendererState(rendererName));
@@ -366,15 +366,15 @@ export default React.memo(function Slider(props) {
       noTicked: SVs.showTicks === false,
       ref: containerRef
     }, /* @__PURE__ */ React.createElement("div", {
-      id: `${name}-label`,
+      id: `${id}-label`,
       style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
     }, myLabel2), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
       width: `${SVs.width.size}px`,
-      id: name
+      id
     }, /* @__PURE__ */ React.createElement(StyledThumb, {
       disabled: true,
       style: {left: `${thumbXPos - 4}px`},
-      id: `${name}-handle`
+      id: `${id}-handle`
     }), ticksAndLabels2)), /* @__PURE__ */ React.createElement("div", {
       style: {height: SVs.showControls ? "20px" : "0px"}
     }, controls2));
@@ -558,11 +558,11 @@ export default React.memo(function Slider(props) {
     }, /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Prev",
       onClick: (e) => handlePrevious(e),
-      id: `${name}-prevbutton`
+      id: `${id}-prevbutton`
     }), /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Next",
       onClick: (e) => handleNext(e),
-      id: `${name}-nextbutton`
+      id: `${id}-nextbutton`
     }));
   } else {
     null;
@@ -600,16 +600,16 @@ export default React.memo(function Slider(props) {
     onKeyDown: handleKeyDown,
     tabIndex: "0"
   }, /* @__PURE__ */ React.createElement("div", {
-    id: `${name}-label`,
+    id: `${id}-label`,
     style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
   }, myLabel), /* @__PURE__ */ React.createElement(SubContainer2, {
     onMouseDown: handleDragEnter
   }, /* @__PURE__ */ React.createElement(StyledSlider, {
     width: `${SVs.width.size}px`,
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement(StyledThumb, {
     style: {left: `${thumbXPos - 4}px`},
-    id: `${name}-handle`
+    id: `${id}-handle`
   }), ticksAndLabels)), /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.showControls ? "20px" : "0px"}
   }, controls));

@@ -11,6 +11,8 @@ import axios from "../../_snowpack/pkg/axios.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faTimes, faPlus} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {recoilAddToast} from "../Toast.js";
+import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
 const TimeEntry = ({parentValue, valueCallback = () => {
 }}) => {
   let [time, setTime] = useState(parentValue);
@@ -85,6 +87,7 @@ export default function ClassTimes() {
     newArr = sortClassTimes(newArr);
     set(classTimesAtom, newArr);
     let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
+    console.log(courseId);
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -93,7 +96,14 @@ export default function ClassTimes() {
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
-    let {data} = await axios.post("/api/updateClassTimes.php", {driveId: courseId, dotwIndexes, startTimes, endTimes});
+    let resp = await axios.post("/api/updateClassTimes.php", {
+      courseId,
+      dotwIndexes,
+      startTimes,
+      endTimes
+    });
+    let {data} = resp;
+    console.log("resp: ", resp);
     console.log(">>>>data", data);
   });
   const updateClassTime = useRecoilCallback(({set, snapshot}) => async ({index, newClassTime}) => {
@@ -101,6 +111,7 @@ export default function ClassTimes() {
     let newArr = [...was];
     newArr[index] = {...newClassTime};
     newArr = sortClassTimes(newArr);
+    console.log("update");
     set(classTimesAtom, newArr);
     let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
     let dotwIndexes = [];
@@ -111,7 +122,13 @@ export default function ClassTimes() {
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
-    let {data} = await axios.post("/api/updateClassTimes.php", {driveId: courseId, dotwIndexes, startTimes, endTimes});
+    let resp = await axios.post("/api/updateClassTimes.php", {
+      courseId,
+      dotwIndexes,
+      startTimes,
+      endTimes
+    });
+    let {data} = resp;
     console.log(">>>>data", data);
   });
   const deleteClassTime = useRecoilCallback(({set, snapshot}) => async ({index}) => {
@@ -129,7 +146,13 @@ export default function ClassTimes() {
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
-    let {data} = await axios.post("/api/updateClassTimes.php", {driveId: courseId, dotwIndexes, startTimes, endTimes});
+    let resp = await axios.post("/api/updateClassTimes.php", {
+      courseId,
+      dotwIndexes,
+      startTimes,
+      endTimes
+    });
+    let {data} = resp;
     console.log(">>>>data", data);
   });
   const dotwItems = [
@@ -143,7 +166,9 @@ export default function ClassTimes() {
   ];
   let timesJSX = [];
   for (let [index, timeObj] of Object.entries(timesObj)) {
-    timesJSX.push(/* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
+    console.log("timeObj ", timeObj);
+    console.log("timeObj.startTime", timeObj.startTime);
+    timesJSX.push(/* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
       style: {width: "190px"}
     }, /* @__PURE__ */ React.createElement(DropdownMenu, {
       width: "180px",
@@ -162,16 +187,15 @@ export default function ClassTimes() {
       onClick: () => {
         deleteClassTime({index});
       }
-    })));
-    timesJSX.push(/* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("tr", {
+    })), /* @__PURE__ */ React.createElement("tr", {
       style: {width: "190px", display: "flex", alignItems: "center"}
     }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement(DateTime, {
       datePicker: false,
       width: "74px",
-      parentValue: timeObj.startTime,
-      valueCallback: (value) => {
+      value: new Date(timeObj.startTime),
+      onBlur: (value, valid) => {
         let newClassTime = {...timeObj};
-        newClassTime.startTime = value;
+        newClassTime.startTime = DateToUTCDateString(new Date(value.value._d));
         updateClassTime({index, newClassTime});
       }
     })), /* @__PURE__ */ React.createElement("td", {
@@ -181,10 +205,10 @@ export default function ClassTimes() {
     }, /* @__PURE__ */ React.createElement(DateTime, {
       datePicker: false,
       width: "74px",
-      parentValue: timeObj.endTime,
-      valueCallback: (value) => {
+      value: new Date(timeObj.endTime),
+      onBlur: (value, valid) => {
         let newClassTime = {...timeObj};
-        newClassTime.endTime = value;
+        newClassTime.endTime = DateToUTCDateString(new Date(value.value._d));
         updateClassTime({index, newClassTime});
       }
     }))), /* @__PURE__ */ React.createElement("div", {

@@ -205,7 +205,7 @@ const CourseCardWrapper = (props) => {
       color: item.color,
       label: item.label,
       isSelected,
-      role: item.roleLabels
+      roleLabel: item.roleLabel
     })));
   })));
 };

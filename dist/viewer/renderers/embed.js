@@ -4,7 +4,7 @@ import cssesc from "../../_snowpack/pkg/cssesc.js";
 import {sizeToCSS} from "./utils/css.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Figure(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -22,7 +22,7 @@ export default React.memo(function Figure(props) {
   useEffect(() => {
     if (SVs.encodedGeogebraContent) {
       let doenetSvData = SVs;
-      let cName = cssesc(name);
+      let cName = cssesc(id);
       let width2 = sizeToCSS(SVs.width);
       let height2 = sizeToCSS(SVs.height);
       window.MathJax.Hub.Register.StartupHook("End", function() {
@@ -70,9 +70,9 @@ export default React.memo(function Figure(props) {
       onChange: onChangeVisibility
     }, /* @__PURE__ */ React.createElement("div", {
       className: "geogebra",
-      id: name
+      id
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), /* @__PURE__ */ React.createElement("iframe", {
       scrolling: "no",
       title: "",
@@ -87,10 +87,10 @@ export default React.memo(function Figure(props) {
       onChange: onChangeVisibility
     }, /* @__PURE__ */ React.createElement("div", {
       className: "javascriptapplet",
-      id: cssesc(name)
+      id: cssesc(id)
     }, /* @__PURE__ */ React.createElement("div", {
       className: "geogebrawebapplet",
-      id: "container_" + cssesc(name),
+      id: "container_" + cssesc(id),
       style: {minWidth: width, minHeight: height}
     })));
   }

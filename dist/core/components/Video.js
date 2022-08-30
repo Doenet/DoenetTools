@@ -203,7 +203,7 @@ export default class Video extends BlockComponent {
       hasEssential: true,
       defaultValue: "initializing",
       forRenderer: true,
-      public:true,
+      public: true,
       shadowingInstructions: {
         createComponentOfType: "text"
       },
@@ -231,7 +231,7 @@ export default class Video extends BlockComponent {
       hasEssential: true,
       defaultValue: 0,
       forRenderer: true,
-      public:true,
+      public: true,
       shadowingInstructions: {
         createComponentOfType: "number"
       },
@@ -241,7 +241,7 @@ export default class Video extends BlockComponent {
       },
       inverseDefinition({ desiredStateVariableValues }) {
         let desiredTime = desiredStateVariableValues.time;
-        if(!(desiredTime >= 0)) {
+        if (!(desiredTime >= 0)) {
           return { success: false }
         }
         return {
@@ -278,7 +278,8 @@ export default class Video extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "state",
         value: "playing",
-      }]
+      }],
+      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -316,7 +317,8 @@ export default class Video extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "state",
         value: "stopped",
-      }]
+      }],
+      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -350,7 +352,8 @@ export default class Video extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "state",
         value: "stopped",
-      }]
+      }],
+      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -374,7 +377,8 @@ export default class Video extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "state",
         value: "stopped",
-      }]
+      }],
+      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -385,7 +389,8 @@ export default class Video extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "state",
         value: "playing",
-      }]
+      }],
+      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -396,18 +401,20 @@ export default class Video extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "state",
         value: "stopped",
-      }]
+      }],
+      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
-  setTime({time}) {
+  setTime({ time }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "time",
         value: time,
-      }]
+      }],
+      doNotSave: true  // video actions don't count as changing page state
     })
   }
 

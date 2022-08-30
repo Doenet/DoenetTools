@@ -9,11 +9,12 @@ import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js
 import {formatAMPM, UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let [stage, setStage] = useState("request password");
   let [code, setCode] = useState("");
   let [learners, setLearners] = useState([]);
   let [exams, setExams] = useState([]);
+  let [examsById, setExamsById] = useState({});
   let [choosenLearner, setChoosenLearner] = useState(null);
   let [filter, setFilter] = useState("");
   let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
@@ -26,13 +27,13 @@ export default function ChooseLearnerPanel(props) {
     }
     location.href = `/api/examjwt.php?userId=${encodeURIComponent(choosenLearner.userId)}&doenetId=${encodeURIComponent(doenetId2)}&code=${encodeURIComponent(code2)}`;
   });
-  const setDoenetId = useRecoilCallback(({set}) => async (doenetId2, driveId2) => {
+  const setDoenetId = useRecoilCallback(({set}) => async (doenetId2, courseId2) => {
     set(pageToolViewAtom, (was) => {
       let newObj = {...was};
       if (doenetId2) {
-        newObj.params = {doenetId: doenetId2, driveId: driveId2};
+        newObj.params = {doenetId: doenetId2, courseId: courseId2};
       } else {
-        newObj.params = {driveId: driveId2};
+        newObj.params = {courseId: courseId2};
       }
       return newObj;
     });
@@ -77,15 +78,16 @@ export default function ChooseLearnerPanel(props) {
   }
   if (stage === "check code") {
     const checkCode = async (code2) => {
-      let {data} = await axios.get("/api/checkPasscode.php", {params: {code: code2, doenetId, driveId}});
+      let {data} = await axios.get("/api/checkPasscode.php", {params: {code: code2, doenetId, courseId}});
       if (data.success) {
-        if (driveId === "") {
-          setStage("choose learner");
-        } else {
-          setStage("choose exam");
-        }
+        setStage("choose exam");
         setLearners(data.learners);
         setExams(data.exams);
+        let nextExamsById = {};
+        for (let examInfo of data.exams) {
+          nextExamsById[examInfo.doenetId] = examInfo;
+        }
+        setExamsById(nextExamsById);
       } else {
         addToast(data.message);
         setStage("problem with code");
@@ -105,7 +107,7 @@ export default function ChooseLearnerPanel(props) {
         style: {textAlign: "center"}
       }, /* @__PURE__ */ React.createElement("button", {
         onClick: () => {
-          setDoenetId(exam.doenetId, driveId);
+          setDoenetId(exam.doenetId, courseId);
           setStage("choose learner");
         }
       }, "Choose"))));
@@ -117,10 +119,14 @@ export default function ChooseLearnerPanel(props) {
     }, "Choose")), /* @__PURE__ */ React.createElement("tbody", null, examRows)));
   }
   if (stage === "choose learner") {
+    if (!doenetId) {
+      return null;
+    }
     if (learners.length < 1) {
       return /* @__PURE__ */ React.createElement("h1", null, "No One is Enrolled!");
     }
     let learnerRows = [];
+    let examTimeLimit = examsById[doenetId].timeLimit;
     for (let learner of learners) {
       if (!learner.firstName.toLowerCase().includes(filter.toLowerCase()) && !learner.lastName.toLowerCase().includes(filter.toLowerCase())) {
         continue;
@@ -128,8 +134,7 @@ export default function ChooseLearnerPanel(props) {
       let timeZoneCorrectLastExamDate = null;
       if (learner.exam_to_date[doenetId]) {
         let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
-        let exam_to_timeLimit = learner.exam_to_timeLimit[doenetId];
-        let users_timeLimit_minutes = Number(exam_to_timeLimit) * Number(learner.timeLimit_multiplier);
+        let users_timeLimit_minutes = Number(examTimeLimit) * Number(learner.timeLimitMultiplier);
         let minutes_remaining;
         if (users_timeLimit_minutes) {
           let users_exam_end_DT = new Date(lastExamDT.getTime() + users_timeLimit_minutes * 60 * 1e3);
@@ -210,7 +215,7 @@ export default function ChooseLearnerPanel(props) {
         setStage("request password");
         setCode("");
         setChoosenLearner(null);
-        setDoenetId(null, driveId);
+        setDoenetId(null, courseId);
         setResumeAttemptFlag(false);
       }
     }), /* @__PURE__ */ React.createElement(Button, {

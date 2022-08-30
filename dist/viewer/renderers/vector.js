@@ -4,7 +4,7 @@ import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default React.memo(function Vector(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Vector.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let vectorJXG = useRef({});
@@ -37,9 +37,9 @@ export default React.memo(function Vector(props) {
     let layer = 10 * SVs.layer + 7;
     let fixed = !SVs.draggable || SVs.fixed;
     var jsxVectorAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -316,8 +316,8 @@ export default React.memo(function Vector(props) {
       if (vectorJXG.current.visProp.dash !== newDash) {
         vectorJXG.current.visProp.dash = newDash;
       }
-      vectorJXG.current.name = SVs.label;
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      vectorJXG.current.name = SVs.labelForGraph;
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         vectorJXG.current.setAttribute({withlabel});
         previousWithLabel.current = withlabel;
@@ -340,7 +340,7 @@ export default React.memo(function Vector(props) {
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }));
   }
   if (SVs.hidden) {
@@ -348,9 +348,9 @@ export default React.memo(function Vector(props) {
   }
   let mathJaxify = "\\(" + SVs.latex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement(MathJax, {
     hideUntilTypeset: "first",
     inline: true,

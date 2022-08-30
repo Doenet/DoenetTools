@@ -2,7 +2,7 @@ import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Figure(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -47,11 +47,11 @@ export default React.memo(function Figure(props) {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("figure", {
-    id: name,
+    id,
     style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), childrenToRender, /* @__PURE__ */ React.createElement("figcaption", {
-    id: name + "_caption"
+    id: id + "_caption"
   }, caption)));
 });

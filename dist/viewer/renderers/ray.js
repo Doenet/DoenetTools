@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pk
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function Ray(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Ray.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let rayJXG = useRef(null);
@@ -29,9 +29,9 @@ export default React.memo(function Ray(props) {
     }
     let fixed = !SVs.draggable || SVs.fixed;
     var jsxRayAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + 7,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -100,7 +100,7 @@ export default React.memo(function Ray(props) {
         [...newRayJXG.point2.coords.scrCoords]
       ];
     });
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
     rayJXG.current = newRayJXG;
   }
   function deleteRayJXG() {
@@ -173,8 +173,8 @@ export default React.memo(function Ray(props) {
       if (rayJXG.current.visProp.dash !== newDash) {
         rayJXG.current.visProp.dash = newDash;
       }
-      rayJXG.current.name = SVs.label;
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      rayJXG.current.name = SVs.labelForGraph;
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         rayJXG.current.setAttribute({withlabel});
         previousWithLabel.current = withlabel;
@@ -197,7 +197,7 @@ export default React.memo(function Ray(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });
 function styleToDash(style) {

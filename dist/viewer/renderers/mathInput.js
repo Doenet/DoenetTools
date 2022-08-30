@@ -41,7 +41,7 @@ const Button = styled.button`
     };
   `;
 export default function MathInput(props) {
-  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   MathInput.baseStateVariable = "rawRendererValue";
   const [mathField, setMathField] = useState(null);
   const setRendererState = useSetRecoilState(rendererState(rendererName));
@@ -159,7 +159,7 @@ export default function MathInput(props) {
         checkWorkStyle.cursor = "not-allowed";
       }
       checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-        id: name + "_submit",
+        id: id + "_submit",
         tabIndex: "0",
         disabled: SVs.disabled,
         style: checkWorkStyle,
@@ -182,7 +182,7 @@ export default function MathInput(props) {
         if (validationState.current === "correct") {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-            id: name + "_correct",
+            id: id + "_correct",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCheck
@@ -193,13 +193,13 @@ export default function MathInput(props) {
           checkWorkStyle.width = "50px";
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-            id: name + "_partial",
+            id: id + "_partial",
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-            id: name + "_incorrect",
+            id: id + "_incorrect",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faTimes
@@ -208,7 +208,7 @@ export default function MathInput(props) {
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-          id: name + "_saved",
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -224,10 +224,10 @@ export default function MathInput(props) {
     }
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
     className: "textInputSurroundingBox",
-    id: name,
+    id,
     style: {marginBottom: "12px"}
   }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(EditableMathField, {
     style: {border: "var(--mainBorder)"},

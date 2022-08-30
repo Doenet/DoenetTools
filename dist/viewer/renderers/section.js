@@ -6,7 +6,7 @@ import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-
 import useDoenetRender from "./useDoenetRenderer.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Section(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -50,11 +50,13 @@ export default React.memo(function Section(props) {
       }
     }
   }
-  if (!title) {
+  if (title) {
+    title = /* @__PURE__ */ React.createElement(React.Fragment, null, SVs.titlePrefix, title);
+  } else {
     title = SVs.title;
   }
   let heading = null;
-  let headingId = name + "_title";
+  let headingId = id + "_title";
   if (SVs.collapsible) {
     if (SVs.open) {
       title = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -68,39 +70,33 @@ export default React.memo(function Section(props) {
   }
   switch (SVs.level) {
     case 0:
-      heading = /* @__PURE__ */ React.createElement("span", {
-        id: headingId,
-        style: {fontSize: "2em"}
+      heading = /* @__PURE__ */ React.createElement("h1", {
+        id: headingId
       }, title);
       break;
     case 1:
-      heading = /* @__PURE__ */ React.createElement("span", {
-        id: headingId,
-        style: {fontSize: "1.5em"}
+      heading = /* @__PURE__ */ React.createElement("h2", {
+        id: headingId
       }, title);
       break;
     case 2:
-      heading = /* @__PURE__ */ React.createElement("span", {
-        id: headingId,
-        style: {fontSize: "1.17em"}
+      heading = /* @__PURE__ */ React.createElement("h3", {
+        id: headingId
       }, title);
       break;
     case 3:
-      heading = /* @__PURE__ */ React.createElement("span", {
-        id: headingId,
-        style: {fontSize: "1em"}
+      heading = /* @__PURE__ */ React.createElement("h4", {
+        id: headingId
       }, title);
       break;
     case 4:
-      heading = /* @__PURE__ */ React.createElement("span", {
-        id: headingId,
-        style: {fontSize: ".83em"}
+      heading = /* @__PURE__ */ React.createElement("h5", {
+        id: headingId
       }, title);
       break;
-    case 5:
-      heading = /* @__PURE__ */ React.createElement("span", {
-        id: headingId,
-        style: {fontSize: ".67em"}
+    default:
+      heading = /* @__PURE__ */ React.createElement("h6", {
+        id: headingId
       }, title);
       break;
   }
@@ -121,7 +117,7 @@ export default React.memo(function Section(props) {
       checkWorkText = SVs.submitLabelNoCorrectness;
     }
     checkworkComponent = /* @__PURE__ */ React.createElement("button", {
-      id: name + "_submit",
+      id: id + "_submit",
       tabIndex: "0",
       style: checkWorkStyle,
       onClick: submitAllAnswers,
@@ -138,7 +134,7 @@ export default React.memo(function Section(props) {
       if (validationState.current === "correct") {
         checkWorkStyle.backgroundColor = "var(--mainGreen)";
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_correct",
+          id: id + "_correct",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCheck
@@ -146,7 +142,7 @@ export default React.memo(function Section(props) {
       } else if (validationState.current === "incorrect") {
         checkWorkStyle.backgroundColor = "var(--mainRed)";
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_incorrect",
+          id: id + "_incorrect",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faTimes
@@ -156,7 +152,7 @@ export default React.memo(function Section(props) {
         let percent = Math.round(SVs.creditAchieved * 100);
         let partialCreditContents = `${percent}% Correct`;
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_partial",
+          id: id + "_partial",
           style: checkWorkStyle
         }, partialCreditContents);
       }
@@ -164,7 +160,7 @@ export default React.memo(function Section(props) {
       if (validationState.current !== "unvalidated") {
         checkWorkStyle.backgroundColor = "var(--mainPurple)";
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_saved",
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -174,13 +170,13 @@ export default React.memo(function Section(props) {
     checkworkComponent = /* @__PURE__ */ React.createElement("div", null, checkworkComponent);
   }
   let content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
-  }), heading, " ", /* @__PURE__ */ React.createElement("br", null), children, checkworkComponent);
+    name: id
+  }), heading, children, checkworkComponent);
   if (SVs.collapsible) {
     let innerContent = null;
     if (SVs.open) {
       innerContent = /* @__PURE__ */ React.createElement("div", {
-        style: {display: "block", padding: SVs.boxed && "6px"}
+        style: {display: "block", padding: "6px"}
       }, children, checkworkComponent);
     }
     content = /* @__PURE__ */ React.createElement("div", {
@@ -189,7 +185,7 @@ export default React.memo(function Section(props) {
       style: {backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: SVs.open ? "var(--mainBorder)" : "none", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)"},
       onClick: () => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), heading), innerContent);
   } else if (SVs.boxed) {
     content = /* @__PURE__ */ React.createElement("div", {
@@ -197,7 +193,7 @@ export default React.memo(function Section(props) {
     }, /* @__PURE__ */ React.createElement("div", {
       style: {padding: "6px", borderBottom: "var(--mainBorder)", backgroundColor: "var(--mainGray)", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)"}
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), heading, /* @__PURE__ */ React.createElement("br", null)), /* @__PURE__ */ React.createElement("div", {
       style: {display: "block", padding: "6px"}
     }, children, checkworkComponent));
@@ -208,7 +204,7 @@ export default React.memo(function Section(props) {
         partialVisibility: true,
         onChange: onChangeVisibility
       }, /* @__PURE__ */ React.createElement("aside", {
-        id: name,
+        id,
         style: {margin: "12px 0"}
       }, " ", content, " "));
     case "div":
@@ -216,7 +212,7 @@ export default React.memo(function Section(props) {
         partialVisibility: true,
         onChange: onChangeVisibility
       }, /* @__PURE__ */ React.createElement("div", {
-        id: name,
+        id,
         style: {margin: "12px 0"}
       }, " ", content, " "));
     case "none":
@@ -226,7 +222,7 @@ export default React.memo(function Section(props) {
         partialVisibility: true,
         onChange: onChangeVisibility
       }, /* @__PURE__ */ React.createElement("section", {
-        id: name,
+        id,
         style: {margin: "12px 0"}
       }, " ", content, " "));
   }

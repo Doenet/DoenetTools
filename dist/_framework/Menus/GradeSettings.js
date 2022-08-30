@@ -1,12 +1,13 @@
 import axios from "../../_snowpack/pkg/axios.js";
 import React, {useState} from "../../_snowpack/pkg/react.js";
-import {useRecoilState, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import CalendarButton from "../../_reactComponents/PanelHeaderComponents/CalendarToggle.js";
 import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {useToast, toastType} from "../Toast.js";
 import {UTCDateStringToDate, DateToDisplayDateString, DateToDateString, DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
 export default function GradeSettings() {
+  let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   let userId = useRecoilValue(searchParamAtomFamily("userId"));
   let [dueDateOverride, setDueDateOverride] = useState(null);
@@ -15,7 +16,7 @@ export default function GradeSettings() {
   const addToast = useToast();
   const loadDueDates = async (doenetId2, userId2) => {
     try {
-      let {data} = await axios.get(`/api/loadDueDateInfo.php`, {params: {doenetId: doenetId2, userId: userId2}});
+      let {data} = await axios.get(`/api/loadDueDateInfo.php`, {params: {courseId, doenetId: doenetId2, userId: userId2}});
       setInitialized(true);
       if (data.success) {
         const dataDueDateOverride = data.dueDateInfo.dueDateOverride;
@@ -72,7 +73,7 @@ export default function GradeSettings() {
     }
   }, /* @__PURE__ */ React.createElement(CalendarButton, {
     checked: dueDateOverride !== null,
-    onClick: (e) => {
+    onClick: () => {
       let value = null;
       if (dueDateOverride === null) {
         let nextWeek = new Date();

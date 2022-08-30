@@ -4,7 +4,7 @@ import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default React.memo(function Line(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   Line.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let lineJXG = useRef({});
@@ -29,9 +29,9 @@ export default React.memo(function Line(props) {
     }
     let fixed = !SVs.draggable || SVs.fixed;
     var jsxLineAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -106,7 +106,7 @@ export default React.memo(function Line(props) {
         [...newLineJXG.point2.coords.scrCoords]
       ];
     });
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
     lineJXG.current = newLineJXG;
   }
   function calculatePointPositions(e) {
@@ -178,8 +178,8 @@ export default React.memo(function Line(props) {
       if (lineJXG.current.visProp.dash !== newDash) {
         lineJXG.current.visProp.dash = newDash;
       }
-      lineJXG.current.name = SVs.label;
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      lineJXG.current.name = SVs.labelForGraph;
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         lineJXG.current.setAttribute({withlabel});
         previousWithLabel.current = withlabel;
@@ -198,7 +198,7 @@ export default React.memo(function Line(props) {
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }));
   }
   if (SVs.hidden) {
@@ -206,9 +206,9 @@ export default React.memo(function Line(props) {
   }
   let mathJaxify = "\\(" + SVs.latex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement(MathJax, {
     hideUntilTypeset: "first",
     inline: true,

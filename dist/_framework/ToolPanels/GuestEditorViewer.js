@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import PageViewer from "../../viewer/PageViewer.js";
+import useEventListener from "../../_utils/hooks/useEventListener.js";
 import {
   useRecoilValue,
   useRecoilCallback,
@@ -13,7 +14,7 @@ import {
 } from "../ToolHandlers/CourseToolHandler.js";
 import {findFirstPageOfActivity} from "../../_reactComponents/Course/CourseActions.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import {editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom} from "./EditorViewer.js";
+import {editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom, useUpdateViewer} from "./EditorViewer.js";
 import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
 import {parseActivityDefinition} from "../../_utils/activityUtils.js";
 export default function EditorViewer() {
@@ -25,39 +26,43 @@ export default function EditorViewer() {
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const [pageCid, setPageCid] = useState(null);
+  const updateViewer = useUpdateViewer();
   const [errMsg, setErrMsg] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const prevTitle = document.title;
-    let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true}});
-    let activityCid;
-    if (!resp.data.success || !resp.data.cid) {
-      if (resp.data.cid) {
-        setErrMsg(`Error loading activity: ${resp.data.message}`);
+    const setTitle = async () => {
+      let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true}});
+      let activityCid;
+      if (!resp.data.success || !resp.data.cid) {
+        if (resp.data.cid) {
+          setErrMsg(`Error loading activity: ${resp.data.message}`);
+        } else {
+          setErrMsg(`Error loading activity: public content with public source not found`);
+        }
+        return;
       } else {
-        setErrMsg(`Error loading activity: public content with public source not found`);
+        activityCid = resp.data.cid;
       }
-      return;
-    } else {
-      activityCid = resp.data.cid;
-    }
-    let activityDefinition;
-    try {
-      activityDefinition = await retrieveTextFileForCid(activityCid, "doenet");
-    } catch (e) {
-      setErrMsg(`Error loading activity: activity file not found`);
-      return;
-    }
-    let parseResult = parseActivityDefinition(activityDefinition);
-    if (!parseResult.success) {
-      setErrMsg(`Invalid activity definition: ${parseResult.message}`);
-      return;
-    }
-    let activityJSON = parseResult.activityJSON;
-    setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
-    if (errMsg) {
-      setErrMsg(null);
-    }
-    document.title = `${resp.data.label} - Doenet`;
+      let activityDefinition;
+      try {
+        activityDefinition = await retrieveTextFileForCid(activityCid, "doenet");
+      } catch (e) {
+        setErrMsg(`Error loading activity: activity file not found`);
+        return;
+      }
+      let parseResult = parseActivityDefinition(activityDefinition);
+      if (!parseResult.success) {
+        setErrMsg(`Invalid activity definition: ${parseResult.message}`);
+        return;
+      }
+      let activityJSON = parseResult.activityJSON;
+      setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
+      if (errMsg) {
+        setErrMsg(null);
+      }
+      document.title = `${resp.data.label} - Doenet`;
+    };
+    setTitle().catch(console.error);
     return () => {
       document.title = prevTitle;
     };
@@ -76,6 +81,12 @@ export default function EditorViewer() {
       setEditorInit("");
     };
   }, [pageCid]);
+  useEventListener("keydown", (e) => {
+    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+      e.preventDefault();
+      updateViewer();
+    }
+  });
   if (errMsg) {
     return /* @__PURE__ */ React.createElement("h1", null, errMsg);
   }

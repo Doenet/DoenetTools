@@ -11,21 +11,24 @@ export default function Public(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const [cid, setCid] = useState(null);
   const [errMsg, setErrMsg] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const prevTitle = document.title;
-    let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId, latestAttemptOverrides: false, publicOnly: true}});
-    if (!resp.data.success || !resp.data.cid) {
-      setCid(null);
-      if (resp.data.cid) {
-        setErrMsg(`Error loading activity: ${resp.data.message}`);
+    const setTitle = async () => {
+      let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId, latestAttemptOverrides: false, publicOnly: true}});
+      if (!resp.data.success || !resp.data.cid) {
+        setCid(null);
+        if (resp.data.cid) {
+          setErrMsg(`Error loading activity: ${resp.data.message}`);
+        } else {
+          setErrMsg(`Error loading activity: public content not found`);
+        }
       } else {
-        setErrMsg(`Error loading activity: public content not found`);
+        setCid(resp.data.cid);
+        setErrMsg(null);
+        document.title = `${resp.data.label} - Doenet`;
       }
-    } else {
-      setCid(resp.data.cid);
-      setErrMsg(null);
-      document.title = `${resp.data.label} - Doenet`;
-    }
+    };
+    setTitle().catch(console.error);
     return () => {
       document.title = prevTitle;
     };
@@ -51,6 +54,7 @@ export default function Public(props) {
       allowLocalState: false,
       allowSaveSubmissions: false,
       allowSaveEvents: false
-    }
+    },
+    paginate: true
   }));
 }

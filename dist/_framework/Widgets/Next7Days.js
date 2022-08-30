@@ -27,6 +27,7 @@ import {
   faChevronRight,
   faThumbtack
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {findFirstPageOfActivity, itemByDoenetId, useInitCourseItems} from "../../_reactComponents/Course/CourseActions.js";
 export const classTimesAtom = atom({
   key: "classTimesAtom",
   default: []
@@ -304,6 +305,7 @@ export default function Next7Days({courseId}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const showCompleted = useRecoilValue(showCompletedAtom);
   const showOverdue = useRecoilValue(showOverdueAtom);
+  useInitCourseItems(courseId);
   let [assignmentArray, setAssignmentArray] = useState([]);
   let [pinnedArray, setPinnedArray] = useState([]);
   let [completedArray, setCompletedArray] = useState([]);
@@ -316,14 +318,14 @@ export default function Next7Days({courseId}) {
   if (selected[0]?.driveInstanceId === "currentContent") {
     selectedItemId = selected[0].itemId;
   }
-  let loadAssignmentArray = useRecoilCallback(({set}) => async (driveId) => {
+  let loadAssignmentArray = useRecoilCallback(({set}) => async (courseId2) => {
     set(mainPanelClickAtom, (was) => [
       ...was,
       {atom: clearDriveAndItemSelections, value: null},
       {atom: selectedMenuPanelAtom, value: null}
     ]);
     const {data} = await axios.get("/api/loadTODO.php", {
-      params: {driveId}
+      params: {courseId: courseId2}
     });
     if (!data.success) {
       setProblemMessage(data.message);
@@ -368,59 +370,26 @@ export default function Next7Days({courseId}) {
   const doubleClickCallback = useRecoilCallback(({snapshot}) => async ({type, doenetId, path}) => {
     let {canEditContent} = await snapshot.getPromise(effectivePermissionsByCourseId(courseId));
     if (canEditContent === "1") {
-      switch (type) {
-        case itemType.DOENETML:
-          setPageToolView({
-            page: "course",
-            tool: "editor",
-            view: "",
-            params: {
-              doenetId,
-              path
-            }
-          });
-          break;
-        case itemType.COLLECTION:
-          setPageToolView({
-            page: "course",
-            tool: "editor",
-            view: "",
-            params: {
-              doenetId,
-              path,
-              isCollection: true
-            }
-          });
-          break;
-        default:
-          throw new Error("NavigationPanel doubleClick info type not defined");
-      }
+      let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+      let pageId = findFirstPageOfActivity(itemObj.content);
+      setPageToolView({
+        page: "course",
+        tool: "editor",
+        view: "",
+        params: {
+          doenetId,
+          pageId
+        }
+      });
     } else {
-      switch (type) {
-        case itemType.DOENETML:
-          setPageToolView({
-            page: "course",
-            tool: "assignment",
-            view: "",
-            params: {
-              doenetId
-            }
-          });
-          break;
-        case itemType.COLLECTION:
-          setPageToolView({
-            page: "course",
-            tool: "assignment",
-            view: "",
-            params: {
-              doenetId,
-              isCollection: true
-            }
-          });
-          break;
-        default:
-          throw new Error("NavigationPanel doubleClick info type not defined");
-      }
+      setPageToolView({
+        page: "course",
+        tool: "assignment",
+        view: "",
+        params: {
+          doenetId
+        }
+      });
     }
   }, [courseId, setPageToolView]);
   if (!initialized && courseId !== "") {

@@ -21,7 +21,7 @@ const Button = styled.button`
   };
 `;
 export default React.memo(function Answer(props) {
-  let {name, SVs, actions, children, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, children, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
@@ -61,7 +61,7 @@ export default React.memo(function Answer(props) {
       checkWorkText = SVs.submitLabelNoCorrectness;
     }
     let checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
-      id: name + "_submit",
+      id: id + "_submit",
       tabIndex: "0",
       disabled,
       style: checkWorkStyle,
@@ -80,7 +80,7 @@ export default React.memo(function Answer(props) {
       if (validationState === "correct") {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
         checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
-          id: name + "_correct",
+          id: id + "_correct",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCheck
@@ -88,7 +88,7 @@ export default React.memo(function Answer(props) {
       } else if (validationState === "incorrect") {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
         checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
-          id: name + "_incorrect",
+          id: id + "_incorrect",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faTimes
@@ -98,7 +98,7 @@ export default React.memo(function Answer(props) {
         let percent = Math.round(SVs.creditAchieved * 100);
         let partialCreditContents = `${percent}% Correct`;
         checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
-          id: name + "_partial",
+          id: id + "_partial",
           style: checkWorkStyle
         }, partialCreditContents);
       }
@@ -106,7 +106,7 @@ export default React.memo(function Answer(props) {
       if (validationState !== "unvalidated") {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
-          id: name + "_saved",
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -121,17 +121,17 @@ export default React.memo(function Answer(props) {
       checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(", SVs.numberOfAttemptsLeft, " attempts remaining)"));
     }
     return /* @__PURE__ */ React.createElement("span", {
-      id: name,
+      id,
       style: {display: "flex"}
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), inputChildrenToRender, checkworkComponent);
   } else {
     return /* @__PURE__ */ React.createElement("span", {
-      id: name,
+      id,
       style: {marginBottom: "12px"}
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), inputChildrenToRender);
   }
 });

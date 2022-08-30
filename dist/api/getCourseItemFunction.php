@@ -1,5 +1,9 @@
 <?php
 
+function nullishCoalesce(&$value, $default) {
+	return isset($value) ? $value : $default;
+}
+
 function getCourseItemFunction($conn,$type,$doenetId){
 
   if ($type == 'page'){
@@ -27,17 +31,32 @@ function getCourseItemFunction($conn,$type,$doenetId){
 
     $sql = "
     SELECT 
-    doenetId,
-    type,
-    parentDoenetId,
-    label,
-    creationDate,
-    isAssigned,
-    isGloballyAssigned,
-    isPublic,
-    CAST(jsonDefinition as CHAR) AS json
-    FROM course_content
-    WHERE doenetId = '$doenetId'
+    cc.doenetId,
+    cc.type,
+    cc.parentDoenetId,
+    cc.label,
+    cc.creationDate,
+    cc.isAssigned,
+    cc.isGloballyAssigned,
+    cc.isPublic,
+    CAST(cc.jsonDefinition as CHAR) AS json,
+    a.timeLimit,
+    a.assignedDate,
+    a.dueDate,
+    a.showCorrectness,
+    a.showCreditAchievedMenu,
+    a.paginate,
+    a.showFeedback,
+    a.showHints,
+    a.showSolution,
+    a.proctorMakesAvailable,
+    a.numberOfAttemptsAllowed
+    FROM course_content AS cc
+    LEFT JOIN
+    assignment AS a
+    ON cc.doenetId=a.doenetId
+    WHERE cc.doenetId = '$doenetId'
+    AND cc.isDeleted = '0'
     ";
     $result = $conn->query($sql); 
     $row = $result->fetch_assoc();
@@ -52,7 +71,18 @@ function getCourseItemFunction($conn,$type,$doenetId){
       "isAssigned"=>$row['isAssigned'],
       "isGloballyAssigned"=>$row['isGloballyAssigned'],
       "isPublic"=>$row['isPublic'],
-    );
+      "assignedDate" => $row['assignedDate'],
+      "dueDate" => $row['dueDate'],
+      "timeLimit" => $row['timeLimit'],
+      "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
+      "showSolution" => nullishCoalesce($row['showSolution'], "1") == '1' ? true : false,
+      "showFeedback" => nullishCoalesce($row['showFeedback'], '1') == '1' ? true : false,
+      "showHints" => nullishCoalesce($row['showHints'], '1') == '1' ? true : false,
+      "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
+      "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
+      "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
+      "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
+      );
     
     $json = json_decode($row['json'],true);
     // var_dump($json);

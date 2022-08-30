@@ -4,7 +4,7 @@ import {sizeToCSS} from "./utils/css.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Video(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   let player = useRef(null);
   let postSkipTime = useRef(null);
   let preSkipTime = useRef(null);
@@ -31,7 +31,7 @@ export default React.memo(function Video(props) {
   }, []);
   useEffect(() => {
     if (SVs.youtube) {
-      let cName = cssesc(name);
+      let cName = cssesc(id);
       player.current = new window.YT.Player(cName, {
         playerVars: {
           autoplay: 0,
@@ -205,7 +205,7 @@ export default React.memo(function Video(props) {
       rate: event.data
     });
   }
-  if (player.current) {
+  if (player.current?.getPlayerState) {
     let playerState = player.current.getPlayerState();
     if (SVs.state === "playing") {
       if (playerState === window.YT.PlayerState.UNSTARTED || playerState === window.YT.PlayerState.PAUSED || playerState === window.YT.PlayerState.CUED || playerState === window.YT.PlayerState.ENDED) {
@@ -256,7 +256,7 @@ export default React.memo(function Video(props) {
   let videoTag;
   if (SVs.youtube) {
     videoTag = /* @__PURE__ */ React.createElement("iframe", {
-      id: name,
+      id,
       style: videoStyle,
       src: "https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1&rel=0&modestbranding=1",
       allow: "autoplay; fullscreen"
@@ -264,7 +264,7 @@ export default React.memo(function Video(props) {
   } else if (SVs.source) {
     videoTag = /* @__PURE__ */ React.createElement("video", {
       className: "video",
-      id: name,
+      id,
       controls: true,
       style: videoStyle
     }, /* @__PURE__ */ React.createElement("source", {
@@ -273,7 +273,7 @@ export default React.memo(function Video(props) {
     }), "Your browser does not support the <video> tag.");
   } else {
     videoTag = /* @__PURE__ */ React.createElement("span", {
-      id: name
+      id
     });
   }
   return /* @__PURE__ */ React.createElement(VisibilitySensor, {
@@ -281,8 +281,8 @@ export default React.memo(function Video(props) {
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("div", {
     style: outerStyle,
-    id: name + "_outer"
+    id: id + "_outer"
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), videoTag));
 });

@@ -1,43 +1,38 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
-import {useRecoilCallback, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilCallback, useRecoilState, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
-import {currentAttemptNumber} from "../ToolPanels/AssignmentViewer.js";
+import {cidChangedAtom, currentAttemptNumber, numberOfAttemptsAllowedAdjustmentAtom} from "../ToolPanels/AssignmentViewer.js";
+import axios from "../../_snowpack/pkg/axios.js";
 export default function AssignmentNewAttempt() {
-  const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
-  let [buttonEnabled, setButtonEnabled] = useState(null);
-  const initButtonEnabled = useRecoilCallback(({snapshot}) => async () => {
-    let doenetId = await snapshot.getPromise(searchParamAtomFamily("doenetId"));
-    const userAttemptNumber = await snapshot.getPromise(currentAttemptNumber);
-    const {numberOfAttemptsAllowed} = await snapshot.getPromise(loadAssignmentSelector(doenetId));
-    if (numberOfAttemptsAllowed !== null && userAttemptNumber >= numberOfAttemptsAllowed) {
-      setButtonEnabled(false);
-    } else {
-      setButtonEnabled(true);
-    }
-  });
-  const newAttempt = useRecoilCallback(({set, snapshot}) => async () => {
-    let doenetId = await snapshot.getPromise(searchParamAtomFamily("doenetId"));
-    let userAttemptNumber = await snapshot.getPromise(currentAttemptNumber);
-    const {numberOfAttemptsAllowed} = await snapshot.getPromise(loadAssignmentSelector(doenetId));
-    if (numberOfAttemptsAllowed === null || userAttemptNumber < numberOfAttemptsAllowed) {
-      userAttemptNumber++;
-      set(currentAttemptNumber, userAttemptNumber);
-    }
-    if (numberOfAttemptsAllowed !== null && userAttemptNumber >= numberOfAttemptsAllowed) {
-      setButtonEnabled(false);
-    } else {
-      setButtonEnabled(true);
-    }
-  });
-  if (buttonEnabled === null && recoilAttemptNumber !== null) {
-    initButtonEnabled();
-    return null;
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const [numberOfAttemptsAllowedAdjustment, setNumberOfAttemptsAllowedAdjustment] = useRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
+  const [attemptNumber, setAttemptNumber] = useRecoilState(currentAttemptNumber);
+  const {numberOfAttemptsAllowed: baseNumberOfAttemptsAllowed} = useRecoilValue(loadAssignmentSelector(doenetId));
+  const cidChanged = useRecoilValue(cidChangedAtom);
+  let numberOfAttemptsAllowed = null;
+  if (baseNumberOfAttemptsAllowed !== null) {
+    numberOfAttemptsAllowed = Number(baseNumberOfAttemptsAllowed) + Number(numberOfAttemptsAllowedAdjustment);
   }
+  const buttonEnabled = numberOfAttemptsAllowed === null || attemptNumber < numberOfAttemptsAllowed;
+  const newAttempt = async function() {
+    if (buttonEnabled) {
+      if (cidChanged) {
+        let resp = await axios.post("/api/incrementAttemptsAllowedIfCidChanged.php", {
+          doenetId
+        });
+        if (resp.data.cidChanged) {
+          setNumberOfAttemptsAllowedAdjustment(Number(resp.data.newNumberOfAttemptsAllowedAdjustment));
+        }
+      }
+      setAttemptNumber((was) => was + 1);
+    }
+  };
   return /* @__PURE__ */ React.createElement(Button, {
     value: "New Attempt",
+    "data-test": "New Attempt",
     disabled: !buttonEnabled,
-    onClick: () => newAttempt()
+    onClick: newAttempt
   });
 }

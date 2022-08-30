@@ -3,7 +3,7 @@ import {createFunctionFromDefinition} from "../../core/utils/function.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function Curve(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Curve.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let curveJXG = useRef(null);
@@ -44,9 +44,9 @@ export default React.memo(function Curve(props) {
       return null;
     }
     var curveAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -56,7 +56,7 @@ export default React.memo(function Curve(props) {
       highlight: false,
       lineCap: "butt"
     };
-    if (SVs.showLabel && SVs.label !== "") {
+    if (SVs.showLabel && SVs.labelForGraph !== "") {
       let anchorx, offset, position;
       if (SVs.labelPosition === "upperright") {
         position = "urt";
@@ -462,15 +462,15 @@ export default React.memo(function Curve(props) {
       deleteCurveJXG();
       curveJXG.current = createCurveJXG();
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = curveJXG.current;
+        board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
     } else {
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = curveJXG.current;
+        board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
       updateSinceDown.current = true;
       let visible = !SVs.hidden;
-      curveJXG.current.name = SVs.label;
+      curveJXG.current.name = SVs.labelForGraph;
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;
       let curveLayer = 10 * SVs.layer + 5;
@@ -532,7 +532,7 @@ export default React.memo(function Curve(props) {
       curveJXG.current.updateCurve();
       if (curveJXG.current.hasLabel) {
         curveJXG.current.label.needsUpdate = true;
-        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.label !== "";
+        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.labelForGraph !== "";
         if (SVs.applyStyleToLabel) {
           curveJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
         } else {
@@ -543,7 +543,7 @@ export default React.memo(function Curve(props) {
       if (SVs.curveType !== "bezier") {
         board.updateRenderer();
         return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-          name
+          name: id
         }));
       }
       if (!SVs.draggable || SVs.fixed) {
@@ -552,7 +552,7 @@ export default React.memo(function Curve(props) {
         }
         board.updateRenderer();
         return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-          name
+          name: id
         }));
       }
       if (segmentsJXG.current.length === 0) {
@@ -561,7 +561,7 @@ export default React.memo(function Curve(props) {
         previousVectorControlDirections.current = [...SVs.vectorControlDirections];
         board.updateRenderer();
         return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-          name
+          name: id
         }));
       }
       if (SVs.numericalThroughPoints.length > previousNumberOfPoints.current) {
@@ -675,7 +675,7 @@ export default React.memo(function Curve(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });
 function styleToDash(style, dash) {

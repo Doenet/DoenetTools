@@ -69,20 +69,23 @@ export default function NavigationPanel() {
   useLayoutEffect(() => {
     setSuppressMenus(canEditContent == "1" ? [] : ["AddDriveItems", "CutCopyPasteMenu"]);
   }, [canEditContent, setSuppressMenus]);
-  const updateSelectMenu = useRecoilCallback(({set, snapshot}) => async ({selectedItems}) => {
-    if (selectedItems.length == 1) {
-      let selectedDoenetId = selectedItems[0];
-      let selectedItem = await snapshot.getPromise(itemByDoenetId(selectedDoenetId));
-      if (selectedItem.type == "activity") {
+  const updateSelectMenu = useRecoilCallback(({set, snapshot}) => async ({singleItem}) => {
+    console.log(`singleItem doenetId:${singleItem?.doenetId}`, singleItem);
+    if (singleItem !== null) {
+      if (singleItem.type == "activity") {
         set(selectedMenuPanelAtom, "SelectedActivity");
-      } else if (selectedItem.type == "order") {
+      } else if (singleItem.type == "order") {
         set(selectedMenuPanelAtom, "SelectedOrder");
-      } else if (selectedItem.type == "page") {
+      } else if (singleItem.type == "page") {
         set(selectedMenuPanelAtom, "SelectedPage");
-      } else if (selectedItem.type == "section") {
+      } else if (singleItem.type == "section") {
         set(selectedMenuPanelAtom, "SelectedSection");
-      } else if (selectedItem.type == "bank") {
+      } else if (singleItem.type == "bank") {
         set(selectedMenuPanelAtom, "SelectedBank");
+      } else if (singleItem.type == "collectionLink") {
+        set(selectedMenuPanelAtom, "SelectedCollectionLink");
+      } else if (singleItem.type == "pageLink") {
+        set(selectedMenuPanelAtom, "SelectedPageLink");
       } else {
         set(selectedMenuPanelAtom, null);
       }
@@ -102,6 +105,17 @@ export default function NavigationPanel() {
           params: {
             pageId: doenetId,
             doenetId: clickedItem.containingDoenetId
+          }
+        };
+      });
+    } else if (clickedItem.type == "pageLink") {
+      set(pageToolViewAtom, (prev) => {
+        return {
+          page: "course",
+          tool: "editor",
+          view: prev.view,
+          params: {
+            linkPageId: doenetId
           }
         };
       });

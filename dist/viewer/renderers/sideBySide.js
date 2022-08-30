@@ -2,7 +2,7 @@ import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function sideBySide(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -47,9 +47,9 @@ export default React.memo(function sideBySide(props) {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("div", {
-    id: name,
+    id,
     style: {display: "flex", maxWidth: "850px", margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), styledChildren));
 });
