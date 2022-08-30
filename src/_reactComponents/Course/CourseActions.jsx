@@ -962,7 +962,7 @@ export const useCourse = (courseId) => {
         //SET parentDoenetId, previousDoenetId and previousContainingDoenetId 
         //for when there was no selection
         if (previousDoenetId == undefined){
-          console.log("no items in section!!!!!")
+          console.log("not a single selection!!!!!")
           //Find last item in section
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
           let lastItemInSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
@@ -975,7 +975,7 @@ export const useCourse = (courseId) => {
             //Nothing selected 
             previousDoenetId = lastItemInSectionDoenetId; 
             let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemInSectionDoenetId));
-            if (lastItemObj.type == 'page' || lastItemObj.type == 'order' || lastItemObj.type == 'collectionLink' || lastItemObj.type == 'pageAlias'){
+            if (lastItemObj.type == 'page' || lastItemObj.type == 'order' || lastItemObj.type == 'collectionLink' || lastItemObj.type == 'pageLink'){
               previousContainingDoenetId = lastItemObj.containingDoenetId;
             }else if (lastItemObj.type == 'activity' || lastItemObj.type == 'bank' || lastItemObj.type == 'section'){
               previousContainingDoenetId = lastItemObj.doenetId;
@@ -1104,7 +1104,7 @@ export const useCourse = (courseId) => {
                     selectedItemObj.type == 'page'){
             containingDoenetId = selectedItemObj.containingDoenetId;
           } 
-          console.log("containingDoenetId",containingDoenetId)
+          // console.log("containingDoenetId",containingDoenetId)
           //Create a page.  Get the new page object.
           let { data } = await axios.get('/api/createPageOrOrder.php', {
               params: {
@@ -2036,9 +2036,48 @@ export const useCourse = (courseId) => {
   });
 
   const updateContentLinksToSources = useRecoilCallback(
-    ({ set }) =>
-      async ({pages, failureCallback = defaultFailure}) => {
+    ({ set, snapshot }) =>
+      async ({collectionDoenetId = null, pages, failureCallback = defaultFailure}) => {
 
+
+      //update pages to latest ones in the source collection
+      if (collectionDoenetId){
+        let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionDoenetId))
+        let collectionSourcePages = sourceCollectionObj.pages;
+        let sourcePagesOfPageLinks = []
+        for (let doenetId of pages){
+          let linkPageObj = await snapshot.getPromise(itemByDoenetId(doenetId))
+          sourcePagesOfPageLinks.push(linkPageObj.sourcePageDoenetId);
+        }
+        // TODO: toast new and deleted pages
+
+        //TODO: create the new link pages
+        //TODO: delete the deleted pages
+        //TODO: update recoil for the activity, collection link and added page links
+        let newPages = collectionSourcePages.filter((doenetId)=>{
+          return !sourcePagesOfPageLinks.includes(doenetId);
+        })
+        // let newPages = [];
+        // for (let sourcePage of collectionSourcePages){
+
+        // }
+        let deletedPages = sourcePagesOfPageLinks.filter((doenetId)=>{
+          return !collectionSourcePages.includes(doenetId);
+        })
+        let nextLinkPages = [];
+        //Remove deleted pages from pages
+        for (let [i,linkPageId] of Object.entries(pages)){
+          const sourcePage = sourcePagesOfPageLinks[i];
+          // console.log("link",linkPageId,"source",sourcePage)
+          if (!deletedPages.includes(sourcePage)){
+            nextLinkPages.push(linkPageId);
+          }
+        }
+        // console.log("newPages",newPages)
+        // console.log("deletedPages",deletedPages)
+        // console.log("nextLinkPages",nextLinkPages)
+        pages = nextLinkPages;
+      }
 
       let timeOfLastUpdate = new Date(); //Only update the time when we copy over the changes
         let { data } = await axios.post('/api/updatePageLinks.php', {
