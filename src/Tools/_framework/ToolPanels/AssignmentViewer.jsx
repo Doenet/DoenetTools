@@ -121,6 +121,7 @@ export default function AssignmentViewer() {
       attemptNumber,
       showCorrectness,
       paginate,
+      showFinishButton,
       showFeedback,
       showHints,
       cid,
@@ -188,6 +189,7 @@ export default function AssignmentViewer() {
         showCorrectness,
         showCreditAchievedMenu,
         paginate,
+        showFinishButton,
         showFeedback,
         showHints,
         showSolution,
@@ -342,6 +344,7 @@ export default function AssignmentViewer() {
             attemptNumber,
             showCorrectness,
             paginate,
+            showFinishButton,
             showFeedback,
             showHints,
             cid,
@@ -401,6 +404,7 @@ export default function AssignmentViewer() {
           attemptNumber,
           showCorrectness,
           paginate,
+          showFinishButton,
           showFeedback,
           showHints,
           cid,
@@ -625,6 +629,7 @@ export default function AssignmentViewer() {
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}
+        showFinishButton={showFinishButton}
         cidChangedCallback={() => setCidChanged(true)}
       // generatedVariantCallback={variantCallback}
       />

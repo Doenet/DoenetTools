@@ -64,6 +64,7 @@ $activityDoenetIds = [];
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
 		a.paginate AS paginate,
+		a.showFinishButton AS showFinishButton,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -105,6 +106,7 @@ $activityDoenetIds = [];
           "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
           "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
           "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
+          "showFinishButton" => nullishCoalesce($row['showFinishButton'], '1') == '1' ? true : false,
           "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
 				);
 
@@ -214,6 +216,7 @@ $activityDoenetIds = [];
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
 		a.paginate AS paginate,
+		a.showFinishButton AS showFinishButton,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -258,6 +261,7 @@ $activityDoenetIds = [];
 					"showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
 					"showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
 					"paginate" => $row['paginate'] == '1' ? true : false,
+					"showFinishButton" => $row['showFinishButton'] == '1' ? true : false,
 					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
 				);
 

@@ -93,10 +93,16 @@ export default React.memo(function Ref(props) {
 
 
   if (SVs.createButton) {
-    return <span id={id}><a name={id} />
-      <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
-    </span>;
-
+    if (externalUri) {
+      return <span id={id}><a name={id} />
+        <button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
+      </span>;
+    } else {
+      return <span id={id}><a name={id} />
+        <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
+      </span>;
+    }
+    
   } else {
     if (haveValidTarget) {
 
@@ -108,7 +114,7 @@ export default React.memo(function Ref(props) {
 
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = { fromLink: true }
-        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () =>scrollableContainer[scrollAttribute], enumerable: true });
+        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer[scrollAttribute], enumerable: true });
         return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
       }
     } else {

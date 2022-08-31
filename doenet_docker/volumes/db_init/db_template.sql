@@ -88,6 +88,7 @@ CREATE TABLE `assignment` (
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
   `paginate` tinyint(1) NOT NULL DEFAULT '1',
+  `showFinishButton` tinyint(1) NOT NULL DEFAULT '0',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
@@ -100,7 +101,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0);
+INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0,0);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1005,4 +1006,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-30 20:52:29
+-- Dump completed on 2022-08-31  3:10:19
