@@ -601,6 +601,10 @@ export default function PageViewer(props) {
           userId: props.userId,
           requestedVariantIndex,
           allowLoadState: props.flags.allowLoadState,
+          showCorrectness: props.flags.showCorrectness,
+          solutionDisplayMode: props.flags.solutionDisplayMode,
+          showFeedback: props.flags.showFeedback,
+          showHints: props.flags.showHints,
         }
       }
 

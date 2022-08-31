@@ -86,6 +86,10 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
   let payload = {
     doenetId,
     cids: allCids,
+    showCorrectness: flags.showCorrectness,
+    solutionDisplayMode: flags.solutionDisplayMode,
+    showFeedback: flags.showFeedback,
+    showHints: flags.showHints,
   }
 
 
@@ -132,6 +136,10 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
 
       let payload = {
         doenetId, cid, variantIndex: requestedVariantIndex,
+        showCorrectness: flags.showCorrectness,
+        solutionDisplayMode: flags.solutionDisplayMode,
+        showFeedback: flags.showFeedback,
+        showHints: flags.showHints,
         rendererState: JSON.stringify(rendererState, serializedComponentsReplacer),
         coreInfo: JSON.stringify(coreInfo, serializedComponentsReplacer)
       }
@@ -151,6 +159,7 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
 
       nFinished++;
       postMessage({ messageType: "status", stage: "Rendering", complete: nFinished / totalNVariants });
+      console.log(`progress rendering: ${Math.round(nFinished / totalNVariants * 100)}%`)
     }
   }
 

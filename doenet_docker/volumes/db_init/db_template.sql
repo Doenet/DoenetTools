@@ -640,10 +640,14 @@ CREATE TABLE `initial_renderer_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `variantIndex` int(11) NOT NULL,
+  `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
+  `solutionDisplayMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'button',
+  `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
+  `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `rendererState` mediumtext COLLATE utf8_unicode_ci,
   `coreInfo` mediumtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `cid-variantIndex` (`cid`,`variantIndex`)
+  UNIQUE KEY `uniquekey` (`cid`,`variantIndex`,`showCorrectness`,`solutionDisplayMode`,`showFeedback`,`showHints`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1006,4 +1010,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-31  3:10:19
+-- Dump completed on 2022-08-31 19:45:34
