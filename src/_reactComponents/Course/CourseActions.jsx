@@ -2041,6 +2041,18 @@ export const useCourse = (courseId) => {
         
   });
 
+  function replaceCollectionLinkInActivityContent({content,updateCollectionLink}){
+    let needleDoenetId = updateCollectionLink.doenetId;
+    let nextContent = [...content];
+    for (let item of content){
+      if (item?.type == 'order'){
+        let subContent = replaceCollectionLinkInActivityContent({content:item.content,updateCollectionLink})
+      }else if (item?.doenetId == needleDoenetId){
+        console.log("FOUND IT!")
+    }
+    return nextContent;
+  }
+
   const updateContentLinksToSources = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({collectionLinkObj, pages, failureCallback = defaultFailure}) => {
@@ -2116,31 +2128,42 @@ export const useCourse = (courseId) => {
           }
         }
 
-        //TODO: recoil new collection link
+        //recoil new collection link
         let nextPagesByCollectionSource = []; 
         for (let sourceDoenetId of collectionSourcePages){
             nextPagesByCollectionSource.push(sourceToPageLink[sourceDoenetId])
         }
-        console.log("nextPagesByCollectionSource",nextPagesByCollectionSource)
         let nextCollectionLinkObj = {...collectionLinkObj}
         nextCollectionLinkObj.pagesByCollectionSource = {...collectionLinkObj.pagesByCollectionSource}
         nextCollectionLinkObj.pagesByCollectionSource[collectionLinkObj.collectionDoenetId] = nextPagesByCollectionSource;
-        //Figure out nextCollectionLinkObj.pages
-        console.log("nextCollectionLinkObj",nextCollectionLinkObj)
+        
         //Remove deleted from manually filtered
-
-        // set(itemByDoenetId(collectionLinkObj.doenetId),nextCollectionLinkObj);
+        let nextManuallyFilteredPages = [];
+        for (let manualPage of nextCollectionLinkObj.manuallyFilteredPages){
+          if (nextPagesByCollectionSource.includes(manualPage)){
+            nextManuallyFilteredPages.push(manualPage);
+          }
+        }
+        nextCollectionLinkObj.manuallyFilteredPages = [...nextManuallyFilteredPages];
+        //Set nextCollectionLinkObj.pages
+        if (nextCollectionLinkObj.isManuallyFiltered){
+          nextCollectionLinkObj.pages = [...nextManuallyFilteredPages];
+        }else{
+          nextCollectionLinkObj.pages = nextPagesByCollectionSource
+        }
+        set(itemByDoenetId(collectionLinkObj.doenetId),nextCollectionLinkObj);
 
 
         //TODO: recoil new activity
+        let previousActivityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
+        console.log("previousActivityObj",previousActivityObj)
+        const nextActivityObj = replaceCollectionLinkInActivityContent({content:previousActivityObj.content,updateCollectionLink:nextCollectionLinkObj})
+        console.log("nextActivityObj",nextActivityObj)
+        // set(itemByDoenetId(nextActivityObj.doenetId),nextActivityObj);
 
         
-        // console.log("deletedPages",deletedPages)
-        // console.log("nextLinkPages",nextLinkPages)
-        pages = nextLinkPages;
-      }
-
-      
+      }else{
+        //Update one page
         let { data } = await axios.post('/api/updatePageLinks.php', {
           courseId,
           pages,
@@ -2158,6 +2181,10 @@ export const useCourse = (courseId) => {
         }else{
           failureCallback(data.message);
         }
+
+      }
+
+      
         
   });
 
