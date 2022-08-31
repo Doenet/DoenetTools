@@ -543,7 +543,7 @@ export default function ActivityViewer(props) {
       // if didn't load core state from local storage, try to load from database
 
       // even if allowLoadState is false,
-      // still call loadPageState, in which case it will only retrieve the initial page state
+      // still call loadActivityState, in which case it will only retrieve the initial activity state
 
 
       const payload = {
