@@ -2051,16 +2051,23 @@ export const useCourse = (courseId) => {
         let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.collectionDoenetId))
         let collectionSourcePages = sourceCollectionObj.pages;
         let sourcePagesOfPageLinks = [];
-        let labels = []; //TODO!!!!!!!!!!!!!!!!!!!
+        let labels = []; 
         for (let doenetId of pages){
           let linkPageObj = await snapshot.getPromise(itemByDoenetId(doenetId))
           sourcePagesOfPageLinks.push(linkPageObj.sourcePageDoenetId);
         }
         // TODO: preview new and deleted pages before updating them
 
-        let newSourcePageDoenetIds = collectionSourcePages.filter((doenetId)=>{
-          return !sourcePagesOfPageLinks.includes(doenetId);
-        })
+        let newSourcePageDoenetIds = [];
+        for (let sourceDoenetId of collectionSourcePages){
+          if (!sourcePagesOfPageLinks.includes(sourceDoenetId)){
+            newSourcePageDoenetIds.push(sourceDoenetId);
+            let newSourcdeObj = await snapshot.getPromise(itemByDoenetId(sourceDoenetId))
+            labels.push(newSourcdeObj.label)
+          }
+        }
+        
+
         let pageLinksToDelete = [];
         let sourcePagesWhichWereDeleted = [];
         for (let [i,sourcePageLink] of Object.entries(sourcePagesOfPageLinks)){
@@ -2069,6 +2076,16 @@ export const useCourse = (courseId) => {
             pageLinksToDelete.push(pages[i])
           }
         }
+
+        console.log("prams",{
+          courseId,
+          containingDoenetId:collectionLinkObj.containingDoenetId,
+          parentDoenetId:collectionLinkObj.doenetId,
+          sourceCollectionDoenetId:collectionLinkObj.collectionDoenetId,
+          newSourcePageDoenetIds,
+          pageLinksToDelete,
+          labels,
+        })
 
         let { data } = await axios.post('/api/createAndDeletePageLinks.php', {
           courseId,
