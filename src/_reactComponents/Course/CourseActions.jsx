@@ -2062,11 +2062,10 @@ export const useCourse = (courseId) => {
         for (let sourceDoenetId of collectionSourcePages){
           if (!sourcePagesOfPageLinks.includes(sourceDoenetId)){
             newSourcePageDoenetIds.push(sourceDoenetId);
-            let newSourcdeObj = await snapshot.getPromise(itemByDoenetId(sourceDoenetId))
-            labels.push(newSourcdeObj.label)
+            let newSourceObj = await snapshot.getPromise(itemByDoenetId(sourceDoenetId))
+            labels.push(newSourceObj.label)
           }
         }
-        
 
         let pageLinksToDelete = [];
         let sourcePagesWhichWereDeleted = [];
@@ -2089,6 +2088,8 @@ export const useCourse = (courseId) => {
         // console.log("createAndDeletePageLinks",data)
 
         //recoil new page links
+        //Build sourceToPageLink as we go through
+        let sourceToPageLink = {}
         for (let [i,newLinkPageDoenetId] of Object.entries(Object.keys(data.linkPageObjs))){
           let newLinkPageObj = {...data.linkPageObjs[newLinkPageDoenetId]};
           
@@ -2100,12 +2101,9 @@ export const useCourse = (courseId) => {
           newLinkPageObj.type = "pageLink";
           newLinkPageObj.isSelected = false;
           newLinkPageObj.timeOfLastUpdate = timeOfLastUpdate;
+          sourceToPageLink[newLinkPageObj.sourcePageDoenetId] = newLinkPageDoenetId; //need this to help update the collection link
           set(itemByDoenetId(newLinkPageDoenetId),newLinkPageObj);
         }
-
-        //TODO: recoil new collection link
-
-        //TODO: recoil new activity
 
         let nextLinkPages = [];
         //Remove deleted pages from pages
@@ -2114,8 +2112,29 @@ export const useCourse = (courseId) => {
           // console.log("link",linkPageId,"source",sourcePage)
           if (!sourcePagesWhichWereDeleted.includes(sourcePage)){
             nextLinkPages.push(linkPageId);
+            sourceToPageLink[sourcePage] = linkPageId;
           }
         }
+
+        //TODO: recoil new collection link
+        let nextPagesByCollectionSource = []; 
+        for (let sourceDoenetId of collectionSourcePages){
+            nextPagesByCollectionSource.push(sourceToPageLink[sourceDoenetId])
+        }
+        console.log("nextPagesByCollectionSource",nextPagesByCollectionSource)
+        let nextCollectionLinkObj = {...collectionLinkObj}
+        nextCollectionLinkObj.pagesByCollectionSource = {...collectionLinkObj.pagesByCollectionSource}
+        nextCollectionLinkObj.pagesByCollectionSource[collectionLinkObj.collectionDoenetId] = nextPagesByCollectionSource;
+        //Figure out nextCollectionLinkObj.pages
+        console.log("nextCollectionLinkObj",nextCollectionLinkObj)
+        //Remove deleted from manually filtered
+
+        // set(itemByDoenetId(collectionLinkObj.doenetId),nextCollectionLinkObj);
+
+
+        //TODO: recoil new activity
+
+        
         // console.log("deletedPages",deletedPages)
         // console.log("nextLinkPages",nextLinkPages)
         pages = nextLinkPages;
