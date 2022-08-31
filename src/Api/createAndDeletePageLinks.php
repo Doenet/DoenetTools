@@ -86,32 +86,29 @@ if ($success){
     //Copy the original file to the doenetId
     $sourceFile = "../media/byPageId/$sourcePage.doenet";
     $destinationFile = "../media/byPageId/$doenetId.doenet";
-    echo "label $label \n";
-    echo "sourceFile $sourceFile \n";
-    echo "destinationFile $destinationFile \n";
-    // $dirname = dirname($destinationFile);
-    // if (!is_dir($dirname)) {
-    //     mkdir($dirname, 0755, true);
-    // }
-    // if (!copy($sourceFile, $destinationFile)) {
-    //     $success = FALSE;
-    //     $message = "failed to copy";
-    // }
+    $dirname = dirname($destinationFile);
+    if (!is_dir($dirname)) {
+        mkdir($dirname, 0755, true);
+    }
+    if (!copy($sourceFile, $destinationFile)) {
+        $success = FALSE;
+        $message = "failed to copy";
+    }
     
 
-    // //TODO: make this more efficient
-    // if ($success){
+    //TODO: make this more efficient
+    if ($success){
 
-    //   $sql = "
-    //   INSERT INTO link_pages 
-    //   (courseId,containingDoenetId,parentDoenetId,doenetId,sourceCollectionDoenetId,sourcePageDoenetId,label,timeOfLastUpdate)
-    //   VALUES
-    //   ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$collectionDoenetId','$sourcePage','$label',NOW())
-    //   ";
-    //   $conn->query($sql);
+      $sql = "
+      INSERT INTO link_pages 
+      (courseId,containingDoenetId,parentDoenetId,doenetId,sourceCollectionDoenetId,sourcePageDoenetId,label,timeOfLastUpdate)
+      VALUES
+      ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$sourceCollectionDoenetId','$sourcePage','$label',NOW())
+      ";
+      $conn->query($sql);
 
-    //   $linkPageObjs[$doenetId] = Array("sourcePage"=>$sourcePage,"label"=>$label);
-    // }
+      $linkPageObjs[$doenetId] = Array("sourcePage"=>$sourcePage,"label"=>$label);
+    }
 
   }
   
