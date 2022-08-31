@@ -114,6 +114,24 @@ if ($success){
   
 }
 
+if ($success){
+
+  if (count($pageLinksToDelete) > 0){
+    $list_of_pageLinksToDelete = join("','",$pageLinksToDelete);
+    $list_of_pageLinksToDelete = "'" . $list_of_pageLinksToDelete . "'";  
+    $sql = "
+    DELETE FROM link_pages
+    WHERE doenetId IN ($list_of_pageLinksToDelete)
+    AND courseId='$courseId'
+    ";
+    $conn->query($sql); 
+    //Delete collection link files
+    foreach($pageLinksToDelete AS &$pageLinkDoenetId){
+        $fileLocation = "../media/byPageId/$pageLinkDoenetId.doenet";
+        unlink($fileLocation);
+    }
+  }
+}
 
 $response_arr = array(
   "success"=>$success,
