@@ -20,6 +20,7 @@ import {
   ShowCorrectness,
   ShowCreditAchieved,
   Paginate,
+  ShowFinishButton,
   ShowDoenetMLSource,
   ShowFeedback,
   ShowHints,
@@ -286,6 +287,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
           <ShowCorrectness {...sharedProps} />
           <ShowCreditAchieved {...sharedProps} />
           <Paginate {...sharedProps} />
+          <ShowFinishButton {...sharedProps} />
           <ProctorMakesAvailable {...sharedProps} />
           <MakePublic {...sharedProps} />
           <ShowDoenetMLSource {...sharedProps} />
