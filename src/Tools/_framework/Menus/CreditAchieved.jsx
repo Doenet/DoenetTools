@@ -47,27 +47,28 @@ export default function CreditAchieved() {
 
     const { data } = await axios.get(`/api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
 
-    const creditByItem = data.creditByItem.map(Number);
-    const creditForAssignment = Number(data.creditForAssignment)
-    const creditForAttempt = Number(data.creditForAttempt)
-    const showCorrectness = data.showCorrectness === "1";
-    const totalPointsOrPercent = Number(data.totalPointsOrPercent)
+    if (data.success) {
+      const creditByItem = data.creditByItem.map(Number);
+      const creditForAssignment = Number(data.creditForAssignment)
+      const creditForAttempt = Number(data.creditForAttempt)
+      const showCorrectness = data.showCorrectness === "1";
+      const totalPointsOrPercent = Number(data.totalPointsOrPercent)
 
-    if (!showCorrectness && tool.substring(0, 9) !== 'gradebook') {
-      setDisabled(true);
-    } else {
-      set(creditAchievedAtom, (was) => {
-        let newObj = { ...was };
-        newObj.creditByItem = creditByItem;
-        newObj.creditForAssignment = creditForAssignment;
-        newObj.creditForAttempt = creditForAttempt;
-        newObj.totalPointsOrPercent = totalPointsOrPercent;
-        return newObj;
-      })
+      if (!showCorrectness && tool.substring(0, 9) !== 'gradebook') {
+        setDisabled(true);
+      } else {
+        set(creditAchievedAtom, (was) => {
+          let newObj = { ...was };
+          newObj.creditByItem = creditByItem;
+          newObj.creditForAssignment = creditForAssignment;
+          newObj.creditForAttempt = creditForAttempt;
+          newObj.totalPointsOrPercent = totalPointsOrPercent;
+          return newObj;
+        })
+      }
+
+      lastAttemptNumber.current = attemptNumber;
     }
-
-    lastAttemptNumber.current = attemptNumber;
-
   }, [])
 
   if (!creditByItem) { return null; }
