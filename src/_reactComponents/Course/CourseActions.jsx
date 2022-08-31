@@ -1704,7 +1704,7 @@ export const useCourse = (courseId) => {
 
         let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
 
-        console.log("activityDoenetML",activityDoenetML)
+        // console.log("activityDoenetML",activityDoenetML)
         try {
           let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId: activityDoenetId, isAssigned, activityDoenetML });
          
@@ -2077,16 +2077,6 @@ export const useCourse = (courseId) => {
           }
         }
 
-        console.log("prams",{
-          courseId,
-          containingDoenetId:collectionLinkObj.containingDoenetId,
-          parentDoenetId:collectionLinkObj.doenetId,
-          sourceCollectionDoenetId:collectionLinkObj.collectionDoenetId,
-          newSourcePageDoenetIds,
-          pageLinksToDelete,
-          labels,
-        })
-
         let { data } = await axios.post('/api/createAndDeletePageLinks.php', {
           courseId,
           containingDoenetId:collectionLinkObj.containingDoenetId,
@@ -2096,9 +2086,22 @@ export const useCourse = (courseId) => {
           pageLinksToDelete,
           labels,
         });
-        console.log("createAndDeletePageLinks",data)
+        // console.log("createAndDeletePageLinks",data)
 
-        //TODO: recoil new page links
+        //recoil new page links
+        for (let [i,newLinkPageDoenetId] of Object.entries(Object.keys(data.linkPageObjs))){
+          let newLinkPageObj = {...data.linkPageObjs[newLinkPageDoenetId]};
+          
+          newLinkPageObj.containingDoenetId = collectionLinkObj.containingDoenetId;
+          newLinkPageObj.doenetId = newLinkPageDoenetId;
+          newLinkPageObj.parentDoenetId = collectionLinkObj.doenetId;
+          newLinkPageObj.sourceCollectionDoenetId = collectionLinkObj.collectionDoenetId;
+          newLinkPageObj.label = labels[i];
+          newLinkPageObj.type = "pageLink";
+          newLinkPageObj.isSelected = false;
+          newLinkPageObj.timeOfLastUpdate = timeOfLastUpdate;
+          set(itemByDoenetId(newLinkPageDoenetId),newLinkPageObj);
+        }
 
         //TODO: recoil new collection link
 

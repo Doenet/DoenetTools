@@ -107,7 +107,10 @@ if ($success){
       ";
       $conn->query($sql);
 
-      $linkPageObjs[$doenetId] = Array("sourcePage"=>$sourcePage,"label"=>$label);
+      $linkPageObjs[$doenetId] = Array(
+        "sourcePageDoenetId"=>$sourcePage,
+        "label"=>$label
+      );
     }
 
   }
