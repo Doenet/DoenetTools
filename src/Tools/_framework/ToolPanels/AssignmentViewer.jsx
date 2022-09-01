@@ -26,6 +26,7 @@ import { useLocation, useNavigate } from 'react-router';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton'
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button'
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Banner from '../../../_reactComponents/PanelHeaderComponents/Banner';
 
 
 export const currentAttemptNumber = atom({
@@ -584,7 +585,7 @@ export default function AssignmentViewer() {
       if (baseNumberOfAttemptsAllowed > 1) {
         attemptNumberPhrase = " and the number of available attempts";
       }
-      cidChangedAlert = <div style={{border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}}>
+      cidChangedAlert = <Banner type="ACTION" value={<div style={{border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}}>
         A new version of this activity is available.
         Do you want to start a new attempt using the new version?
         (This will reset the activity{attemptNumberPhrase}.)
@@ -595,11 +596,11 @@ export default function AssignmentViewer() {
           </ButtonGroup>
         </div>
         
-      </div>
+      </div>}></Banner>
     } else {
-      cidChangedAlert = <div style={{marginLeft: "1px", marginRight: "5px", marginBottom: "5px"}}>
+      cidChangedAlert = <Banner type="ACTION" value={<div style={{marginLeft: "1px", marginRight: "5px"}}>
         <ActionButton onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable" value="New version available!"></ActionButton>
-      </div>
+      </div>}></Banner>
     }
   }
 
