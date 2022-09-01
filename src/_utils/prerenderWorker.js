@@ -123,6 +123,7 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
 
   let nFinished = 0;
 
+  postMessage({ messageType: "status", stage: "Rendering", complete: 0 });
 
   for (let cid in variantsNeededByPage) {
     console.log(`prerendering page with cid: ${cid}`);

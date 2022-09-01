@@ -1233,7 +1233,27 @@ export default function ActivityViewer(props) {
 
   for (let [ind, page] of order.entries()) {
 
-    let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
+
+    let thisPageIsActive = false;
+    if (props.paginate) {
+      if (ind === currentPage - 1) {
+        // the current page is always active
+        thisPageIsActive = true;
+      } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
+        // if the current page already has core created, activate next page
+        thisPageIsActive = true;
+      } else if (pageInfo.pageCoreWorker[currentPage - 1]
+        && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
+        && ind === currentPage - 2
+      ) {
+        // if current page and page after current page (if exists) already have current page
+        // activate previous page
+        thisPageIsActive = true;
+      }
+    } else {
+      // pageIsActive is used only if not paginated
+      thisPageIsActive = pageInfo.pageIsActive[ind];
+    }
 
     let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
 
@@ -1246,6 +1266,7 @@ export default function ActivityViewer(props) {
       pageNumber={(ind + 1).toString()}
       previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
       pageIsActive={thisPageIsActive}
+      pageIsCurrent={ind === currentPage - 1}
       itemNumber={ind + 1}
       attemptNumber={attemptNumber}
       flags={flags}
@@ -1259,7 +1280,7 @@ export default function ActivityViewer(props) {
       updateDataOnContentChange={props.updateDataOnContentChange}
       coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
       renderersInitializedCallback={() => pageRenderedCallback(ind)}
-      hideWhenInactive={props.paginate}
+      hideWhenNotCurrent={props.paginate}
       prefixForIds={prefixForIds}
     />
 
@@ -1313,7 +1334,7 @@ export default function ActivityViewer(props) {
 
       </div>
     } else {
-      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "5px"}}>
+      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "5px" }}>
         <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
       </div>
     }
