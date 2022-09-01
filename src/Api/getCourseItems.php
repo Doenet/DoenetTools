@@ -162,6 +162,7 @@ $activityDoenetIds = [];
 				parentDoenetId,
 				sourceCollectionDoenetId,
 				sourcePageDoenetId,
+				timeOfLastUpdate,
 				label
 				FROM link_pages
 				WHERE containingDoenetId = '$activityDoenetId'
@@ -176,6 +177,7 @@ $activityDoenetIds = [];
 							"parentDoenetId"=>$row['parentDoenetId'],
 							"sourceCollectionDoenetId"=>$row['sourceCollectionDoenetId'],
 							"sourcePageDoenetId"=>$row['sourcePageDoenetId'],
+							"timeOfLastUpdate"=>$row['timeOfLastUpdate'],
 							"label"=>$row['label']
 						);
 						$item['isSelected'] = false; //Note: no isOpen
