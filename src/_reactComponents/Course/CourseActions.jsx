@@ -2094,7 +2094,7 @@ export const useCourse = (courseId) => {
           }
         }
 
-        let { data } = await axios.post('/api/createAndDeletePageLinks.php', {
+        let { data } = await axios.post('/api/updateCreateAndDeletePageLinks.php', {
           courseId,
           containingDoenetId:collectionLinkObj.containingDoenetId,
           parentDoenetId:collectionLinkObj.doenetId,
@@ -2159,7 +2159,7 @@ export const useCourse = (courseId) => {
         }
         set(itemByDoenetId(collectionLinkObj.doenetId),nextCollectionLinkObj);
 
-
+        
         //recoil new activity
         let previousActivityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
         const nextActivityContent = replaceCollectionLinkInActivityContent({content:previousActivityObj.content,updateCollectionLink:nextCollectionLinkObj})
@@ -2172,7 +2172,7 @@ export const useCourse = (courseId) => {
           doenetId:previousActivityObj.doenetId,
           newJSON:nextActivityContent
         });
-        console.log("activityData",activityData)
+        // console.log("activityData",activityData)
         
       }else{
         //Update one page
