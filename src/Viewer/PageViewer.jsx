@@ -935,7 +935,7 @@ export default function PageViewer(props) {
 
   }
 
-  if (props.hideWhenInactive && !props.pageIsActive) {
+  if (props.hideWhenNotCurrent && !props.pageIsCurrent) {
     return null;
   }
 
