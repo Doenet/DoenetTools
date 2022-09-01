@@ -8,7 +8,7 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import { searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
+import { profileAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
 import {
   fileByPageId,
   pageVariantInfoAtom,
@@ -90,6 +90,7 @@ export default function EditorViewer() {
   const pageObj = useRecoilValue(itemByDoenetId(effectivePageId))
   const activityObj = useRecoilValue(itemByDoenetId(doenetId))
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const {canUpload} = useRecoilValue(profileAtom);
   const updateViewer = useUpdateViewer();
 
 
@@ -145,7 +146,7 @@ export default function EditorViewer() {
       suppress.push('PageLink');
       suppress.push('SupportingFilesMenu');
     }
-
+    if (canUpload !== '1') suppress.push('SupportingFilesMenu');
     setSuppressMenus(suppress);
   }, [setSuppressMenus])
 

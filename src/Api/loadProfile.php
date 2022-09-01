@@ -17,7 +17,8 @@ $result = $conn->query(
         lastName, 
         firstName, 
         profilePicture, 
-        trackingConsent
+        trackingConsent,
+        canUpload
     FROM user
     WHERE userId = '$userId'"
 );
@@ -35,6 +36,7 @@ if ($result->num_rows > 0) {
         'trackingConsent' => $row['trackingConsent'],
         'signedIn' => '1',
         'device' => $jwtArray['deviceName'],
+        'canUpload' => $row['canUpload']
     ];
 
     $response_arr = [
@@ -52,6 +54,7 @@ if ($result->num_rows > 0) {
         'trackingConsent' => true,
         'signedIn' => '0',
         'userId' => $userId,
+        'canUpload' => '0'
     ];
     $profile['device'] = 'N/A';
 
