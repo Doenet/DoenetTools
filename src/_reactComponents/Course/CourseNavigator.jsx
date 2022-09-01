@@ -64,7 +64,7 @@ export default function CourseNavigator(props) {
   // console.log("=== CourseNavigator")
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
-  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const {canViewUnassignedContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
 
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
@@ -92,10 +92,10 @@ export default function CourseNavigator(props) {
     })
   },[clearSelections, setMainPanelClick])
 
-  if (canEditContent == '0' || props.displayRole == 'student'){
+  if (canViewUnassignedContent == '0' || props.displayRole == 'student'){
     return <StudentCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
-  if (canEditContent == '1' || props.displayRole == 'instructor'){
+  if (canViewUnassignedContent == '1' || props.displayRole == 'instructor'){
     return <AuthorCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
   return null;
