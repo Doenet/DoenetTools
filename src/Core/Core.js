@@ -103,7 +103,8 @@ export default class Core {
       saveTimerId: null,
       suspendDelay: 3 * 60000,
       suspendTimerId: null,
-      suspended: false
+      suspended: false,
+      documentHasBeenVisible: false
     }
 
     // console.time('serialize doenetML');
@@ -323,6 +324,12 @@ export default class Core {
 
     this.messageViewerReady()
 
+    this.resolveInitialized();
+
+
+  }
+
+  async onDocumentFirstVisible() {
     this.requestRecordEvent({
       verb: "experienced",
       object: {
@@ -357,12 +364,10 @@ export default class Core {
       this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
     }
 
-    this.resolveInitialized();
 
     setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
 
   }
-
 
   async messageViewerReady() {
 
@@ -8589,6 +8594,12 @@ export default class Core {
     if (isVisible) {
       if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
         this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
+      }
+      if(componentName === this.documentName) {
+        if(!this.visibilityInfo.documentHasBeenVisible) {
+          this.visibilityInfo.documentHasBeenVisible = true;
+          this.onDocumentFirstVisible();
+        }
       }
     } else {
       let begin = this.visibilityInfo.componentsCurrentlyVisible[componentName]

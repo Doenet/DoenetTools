@@ -158,7 +158,7 @@ export default function PageViewer(props) {
           coreCreated.current = true;
           preventMoreAnimations.current = false;
           setStage('coreCreated');
-          props.coreCreatedCallback?.();
+          props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
             // we already initialized renderers before core was created
@@ -601,6 +601,10 @@ export default function PageViewer(props) {
           userId: props.userId,
           requestedVariantIndex,
           allowLoadState: props.flags.allowLoadState,
+          showCorrectness: props.flags.showCorrectness,
+          solutionDisplayMode: props.flags.solutionDisplayMode,
+          showFeedback: props.flags.showFeedback,
+          showHints: props.flags.showHints,
         }
       }
 
@@ -931,7 +935,7 @@ export default function PageViewer(props) {
 
   }
 
-  if (props.hideWhenInactive && !props.pageIsActive) {
+  if (props.hideWhenNotCurrent && !props.pageIsCurrent) {
     return null;
   }
 

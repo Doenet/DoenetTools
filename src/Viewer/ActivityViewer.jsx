@@ -14,6 +14,8 @@ import { useLocation, useNavigate } from 'react-router';
 import cssesc from 'cssesc';
 import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
 import Button from '../_reactComponents/PanelHeaderComponents/Button';
+import ActionButton from '../_reactComponents/PanelHeaderComponents/ActionButton';
+import ButtonGroup from '../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
@@ -109,7 +111,7 @@ export default function ActivityViewer(props) {
   const [pageInfo, setPageInfo] = useState({
     pageIsVisible: [],
     pageIsActive: [],
-    pageHasCore: [],
+    pageCoreWorker: [],
     waitingForPagesCore: null
   })
 
@@ -126,6 +128,8 @@ export default function ActivityViewer(props) {
   const previousLocations = useRef({});
   const currentLocationKey = useRef(null);
   const viewerWasUnmounted = useRef(false);
+
+  const [finishAssessmentMessageOpen, setFinishAssessmentMessageOpen] = useState(false);
 
 
   let navigate = useNavigate();
@@ -539,7 +543,7 @@ export default function ActivityViewer(props) {
       // if didn't load core state from local storage, try to load from database
 
       // even if allowLoadState is false,
-      // still call loadPageState, in which case it will only retrieve the initial page state
+      // still call loadActivityState, in which case it will only retrieve the initial activity state
 
 
       const payload = {
@@ -1048,15 +1052,15 @@ export default function ActivityViewer(props) {
 
   }
 
-  function coreCreatedCallback(pageInd) {
+  function coreCreatedCallback(pageInd, coreWorker) {
     setPageInfo(was => {
       let newObj = { ...was };
       if (newObj.waitingForPagesCore === pageInd) {
         newObj.waitingForPagesCore = null;
       }
-      let newHasCore = [...newObj.pageHasCore];
-      newHasCore[pageInd] = true;
-      newObj.pageHasCore = newHasCore;
+      let newPageCoreWorker = [...newObj.pageCoreWorker];
+      newPageCoreWorker[pageInd] = coreWorker;
+      newObj.pageCoreWorker = newPageCoreWorker;
 
       return newObj;
 
@@ -1079,6 +1083,24 @@ export default function ActivityViewer(props) {
 
   }
 
+  async function submitAllAndFinishAssessment() {
+    for (let coreWorker of pageInfo.pageCoreWorker) {
+      coreWorker?.postMessage({
+        messageType: "submitAllAnswers"
+      })
+
+      // posting terminate will make sure page state gets saved
+      // (as navigating to another URL will not initiate a state save)
+      coreWorker?.postMessage({
+        messageType: "terminate"
+      })
+    }
+
+    // TODO: what should this do in general?
+    window.location.href = "/exam?tool=endExam";
+
+  }
+
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
     return <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>{errorIcon} {errMsg}</div>
@@ -1096,14 +1118,14 @@ export default function ActivityViewer(props) {
 
           // if we need to create core
           // then stop here to not create multiple cores at once
-          let waitingAgain = !pageInfo.pageHasCore[pageInd];
+          let waitingAgain = !pageInfo.pageCoreWorker[pageInd];
 
           setPageInfo(was => {
             let newObj = { ...was };
             let newActive = [...newObj.pageIsActive];
             newActive[pageInd] = true;
             newObj.pageIsActive = newActive;
-            if (!newObj.pageHasCore[pageInd]) {
+            if (!newObj.pageCoreWorker[pageInd]) {
               newObj.waitingForPagesCore = pageInd;
             }
             return newObj;
@@ -1211,12 +1233,32 @@ export default function ActivityViewer(props) {
 
   for (let [ind, page] of order.entries()) {
 
-    let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
+
+    let thisPageIsActive = false;
+    if (props.paginate) {
+      if (ind === currentPage - 1) {
+        // the current page is always active
+        thisPageIsActive = true;
+      } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
+        // if the current page already has core created, activate next page
+        thisPageIsActive = true;
+      } else if (pageInfo.pageCoreWorker[currentPage - 1]
+        && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
+        && ind === currentPage - 2
+      ) {
+        // if current page and page after current page (if exists) already have current page
+        // activate previous page
+        thisPageIsActive = true;
+      }
+    } else {
+      // pageIsActive is used only if not paginated
+      thisPageIsActive = pageInfo.pageIsActive[ind];
+    }
 
     let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
 
     let pageViewer = <PageViewer
-      userId = {props.userId}
+      userId={props.userId}
       doenetId={props.doenetId}
       activityCid={cid}
       cid={page.cid}
@@ -1224,6 +1266,7 @@ export default function ActivityViewer(props) {
       pageNumber={(ind + 1).toString()}
       previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
       pageIsActive={thisPageIsActive}
+      pageIsCurrent={ind === currentPage - 1}
       itemNumber={ind + 1}
       attemptNumber={attemptNumber}
       flags={flags}
@@ -1235,9 +1278,9 @@ export default function ActivityViewer(props) {
       updateAttemptNumber={props.updateAttemptNumber}
       saveStateCallback={receivedSaveFromPage}
       updateDataOnContentChange={props.updateDataOnContentChange}
-      coreCreatedCallback={() => coreCreatedCallback(ind)}
+      coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
       renderersInitializedCallback={() => pageRenderedCallback(ind)}
-      hideWhenInactive={props.paginate}
+      hideWhenNotCurrent={props.paginate}
       prefixForIds={prefixForIds}
     />
 
@@ -1260,20 +1303,41 @@ export default function ActivityViewer(props) {
   let pageControlsTop = null;
   let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
-    pageControlsTop = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
+    pageControlsTop = <div style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}>
       <Button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
-      <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
-      <Button  data-test={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+      <p style={{ margin: '5px' }}>{ } Page {currentPage} of {nPages} { }</p>
+      <Button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
     </div>
 
-    if(renderedPages[currentPage-1]){
-      pageControlsBottom = <div style={{display: "flex", alignItems: "center", marginLeft: "5px"}}>
-      <Button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
-      <p style={{margin: '5px'}}>{ } Page {currentPage} of {nPages} { }</p>
-      <Button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
-    </div>
+    if (renderedPages[currentPage - 1]) {
+      pageControlsBottom = <div style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}>
+        <Button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+        <p style={{ margin: '5px' }}>{ } Page {currentPage} of {nPages} { }</p>
+        <Button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+      </div>
     }
-    
+
+  }
+
+  let finishAssessmentPrompt = null;
+
+  if (props.showFinishButton) {
+    if (finishAssessmentMessageOpen) {
+      finishAssessmentPrompt = <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap" }}>
+        Are you sure you want to finish this assessment?
+        <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
+          <ButtonGroup>
+            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes"></Button>
+            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert></Button>
+          </ButtonGroup>
+        </div>
+
+      </div>
+    } else {
+      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "5px" }}>
+        <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
+      </div>
+    }
   }
 
   return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
@@ -1281,5 +1345,6 @@ export default function ActivityViewer(props) {
     {title}
     {pages}
     {pageControlsBottom}
+    {finishAssessmentPrompt}
   </div>
 }
