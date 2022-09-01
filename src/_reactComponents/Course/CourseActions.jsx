@@ -2043,12 +2043,18 @@ export const useCourse = (courseId) => {
 
   function replaceCollectionLinkInActivityContent({content,updateCollectionLink}){
     let needleDoenetId = updateCollectionLink.doenetId;
-    let nextContent = [...content];
+    let nextContent = [];
     for (let item of content){
       if (item?.type == 'order'){
         let subContent = replaceCollectionLinkInActivityContent({content:item.content,updateCollectionLink})
+        let nextItem = {...item}
+        nextItem.content = subContent;
+        item = nextItem;
       }else if (item?.doenetId == needleDoenetId){
-        console.log("FOUND IT!")
+        item = updateCollectionLink;
+      }
+      nextContent.push(item);
+
     }
     return nextContent;
   }
@@ -2154,13 +2160,19 @@ export const useCourse = (courseId) => {
         set(itemByDoenetId(collectionLinkObj.doenetId),nextCollectionLinkObj);
 
 
-        //TODO: recoil new activity
+        //recoil new activity
         let previousActivityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
-        console.log("previousActivityObj",previousActivityObj)
-        const nextActivityObj = replaceCollectionLinkInActivityContent({content:previousActivityObj.content,updateCollectionLink:nextCollectionLinkObj})
-        console.log("nextActivityObj",nextActivityObj)
-        // set(itemByDoenetId(nextActivityObj.doenetId),nextActivityObj);
-
+        const nextActivityContent = replaceCollectionLinkInActivityContent({content:previousActivityObj.content,updateCollectionLink:nextCollectionLinkObj})
+        let nextActivityObj = {...previousActivityObj};
+        nextActivityObj.content = nextActivityContent;
+        set(itemByDoenetId(nextActivityObj.doenetId),nextActivityObj);
+        //Store activity in db
+        let { data:activityData } = await axios.post('/api/updateActivityStructure.php', {
+          courseId,
+          doenetId:previousActivityObj.doenetId,
+          newJSON:nextActivityContent
+        });
+        console.log("activityData",activityData)
         
       }else{
         //Update one page
