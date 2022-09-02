@@ -514,7 +514,7 @@ describe('Point Tag Tests', function () {
 
   })
 
-  it('labels from labelIsName, copy with link=false', () => {
+  it.skip('labels from labelIsName, copy with link=false', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -555,15 +555,25 @@ describe('Point Tag Tests', function () {
       let Q5Name = stateVariables["/g5"].activeChildren[1].componentName;
 
       expect(stateVariables['/P'].stateValues.label).eq('P')
-      expect(stateVariables['/_point2'].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables['/P'].stateValues.labelForGraph).eq('P')
+      expect(stateVariables['/_point2'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/_point2'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P2Name].stateValues.label).eq('P')
-      expect(stateVariables[Q2Name].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables[P2Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q2Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q2Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables['/P3'].stateValues.label).eq('P')
-      expect(stateVariables['/Q3'].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables['/P3'].stateValues.labelForGraph).eq('P')
+      expect(stateVariables['/Q3'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/Q3'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P4Name].stateValues.label).eq('P')
-      expect(stateVariables[Q4Name].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables[P4Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q4Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q4Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P5Name].stateValues.label).eq('P')
-      expect(stateVariables[Q5Name].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables[P5Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q5Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q5Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
     })
 
   })

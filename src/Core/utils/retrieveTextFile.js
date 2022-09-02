@@ -1,6 +1,12 @@
 import { cidFromText } from "./cid";
 
+const textByCid = {};
+
 export function retrieveTextFileForCid(cid, ext = "doenet") {
+
+  if (textByCid[cid] !== undefined) {
+    return Promise.resolve(textByCid[cid]);
+  }
 
   return new Promise((resolve, reject) => {
 
@@ -26,6 +32,7 @@ export function retrieveTextFileForCid(cid, ext = "doenet") {
         if (controllerServer && !rejectedServer) {
           controllerServer.abort();
         }
+        textByCid[cid] = res;
         resolve(res);
       })
       .catch(e => {
@@ -53,6 +60,7 @@ export function retrieveTextFileForCid(cid, ext = "doenet") {
           if (!rejectedIPFS) {
             controllerIPFS.abort();
           }
+          textByCid[cid] = res;
           resolve(res);
         })
         .catch(e => {
