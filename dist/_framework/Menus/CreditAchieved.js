@@ -6,6 +6,7 @@ import {creditAchievedAtom, currentAttemptNumber} from "../ToolPanels/Assignment
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {itemByDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 import {activityAttemptNumberSetUpAtom, currentPageAtom, itemWeightsAtom} from "../../viewer/ActivityViewer.js";
+import {useLocation, useNavigate} from "../../_snowpack/pkg/react-router.js";
 const Line = styled.div`
   border-bottom: 2px solid var(--canvastext);
   height: 2px;
@@ -19,6 +20,7 @@ const ScoreOnRight = styled.div`
 const ScoreContainer = styled.div`
   position: relative;
   background: ${(props) => props.highlight ? "var(--mainGray)" : "var(--canvas)"};
+  cursor: ${(props) => props.isLink ? "pointer" : "auto"};
 `;
 export default function CreditAchieved() {
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
@@ -29,29 +31,33 @@ export default function CreditAchieved() {
   const itemWeights = useRecoilValue(itemWeightsAtom);
   const currentPage = useRecoilValue(currentPageAtom);
   const activityAttemptNumberSetUp = useRecoilValue(activityAttemptNumberSetUpAtom);
+  let {search} = useLocation();
+  let navigate = useNavigate();
   const lastAttemptNumber = useRef(null);
   let [disabled, setDisabled] = useState(false);
   const {creditByItem, creditForAttempt, creditForAssignment, totalPointsOrPercent} = useRecoilValue(creditAchievedAtom);
   const initialize = useRecoilCallback(({set}) => async (attemptNumber, doenetId, userId, tool) => {
     const {data} = await axios.get(`/api/loadAssessmentCreditAchieved.php`, {params: {attemptNumber, doenetId, userId, tool}});
-    const creditByItem2 = data.creditByItem.map(Number);
-    const creditForAssignment2 = Number(data.creditForAssignment);
-    const creditForAttempt2 = Number(data.creditForAttempt);
-    const showCorrectness = data.showCorrectness === "1";
-    const totalPointsOrPercent2 = Number(data.totalPointsOrPercent);
-    if (!showCorrectness && tool.substring(0, 9) !== "gradebook") {
-      setDisabled(true);
-    } else {
-      set(creditAchievedAtom, (was) => {
-        let newObj = {...was};
-        newObj.creditByItem = creditByItem2;
-        newObj.creditForAssignment = creditForAssignment2;
-        newObj.creditForAttempt = creditForAttempt2;
-        newObj.totalPointsOrPercent = totalPointsOrPercent2;
-        return newObj;
-      });
+    if (data.success) {
+      const creditByItem2 = data.creditByItem.map(Number);
+      const creditForAssignment2 = Number(data.creditForAssignment);
+      const creditForAttempt2 = Number(data.creditForAttempt);
+      const showCorrectness = data.showCorrectness === "1";
+      const totalPointsOrPercent2 = Number(data.totalPointsOrPercent);
+      if (!showCorrectness && tool.substring(0, 9) !== "gradebook") {
+        setDisabled(true);
+      } else {
+        set(creditAchievedAtom, (was) => {
+          let newObj = {...was};
+          newObj.creditByItem = creditByItem2;
+          newObj.creditForAssignment = creditForAssignment2;
+          newObj.creditForAttempt = creditForAttempt2;
+          newObj.totalPointsOrPercent = totalPointsOrPercent2;
+          return newObj;
+        });
+      }
+      lastAttemptNumber.current = attemptNumber;
     }
-    lastAttemptNumber.current = attemptNumber;
   }, []);
   if (!creditByItem) {
     return null;
@@ -85,7 +91,9 @@ export default function CreditAchieved() {
     }
     return /* @__PURE__ */ React.createElement(ScoreContainer, {
       key: `creditByItem${i}`,
-      highlight: currentPage === i + 1
+      highlight: currentPage === i + 1,
+      onClick: () => navigate(search + `#page${i + 1}`),
+      isLink: true
     }, "Item ", i + 1, ": ", /* @__PURE__ */ React.createElement(ScoreOnRight, {
       "data-test": `Item ${i + 1} Credit`
     }, scoreDisplay));

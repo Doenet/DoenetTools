@@ -142,7 +142,7 @@ export default function SelectedCollectionLink() {
     onClick: (e) => {
       e.preventDefault();
       e.stopPropagation();
-      updateContentLinksToSources({collectionDoenetId: itemObj.collectionDoenetId, pages: itemObj.pages});
+      updateContentLinksToSources({collectionLinkObj: itemObj, pages: itemObj.pages});
     }
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",

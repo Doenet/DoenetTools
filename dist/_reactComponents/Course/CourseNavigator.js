@@ -46,7 +46,7 @@ const ToggleCloseIconStyling = styled.button`
 export default function CourseNavigator(props) {
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const sectionId = useRecoilValue(searchParamAtomFamily("sectionId"));
-  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const {canViewUnassignedContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns, setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
@@ -69,7 +69,7 @@ export default function CourseNavigator(props) {
       return newObj;
     });
   }, [clearSelections, setMainPanelClick]);
-  if (canEditContent == "0" || props.displayRole == "student") {
+  if (canViewUnassignedContent == "0" || props.displayRole == "student") {
     return /* @__PURE__ */ React.createElement(StudentCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -78,7 +78,7 @@ export default function CourseNavigator(props) {
       setNumberOfVisibleColumns
     });
   }
-  if (canEditContent == "1" || props.displayRole == "instructor") {
+  if (canViewUnassignedContent == "1" || props.displayRole == "instructor") {
     return /* @__PURE__ */ React.createElement(AuthorCourseNavigation, {
       courseNavigatorProps: props,
       courseId,

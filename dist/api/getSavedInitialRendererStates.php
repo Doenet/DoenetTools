@@ -13,6 +13,14 @@ $userId = $jwtArray["userId"];
 
 $_POST = json_decode(file_get_contents("php://input"), true);
 $doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
+$showCorrectness = mysqli_real_escape_string($conn, $_POST['showCorrectness']);
+$solutionDisplayMode = mysqli_real_escape_string($conn, $_POST['solutionDisplayMode']);
+$showFeedback = mysqli_real_escape_string($conn, $_POST['showFeedback']);
+$showHints = mysqli_real_escape_string($conn, $_POST['showHints']);
+
+if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
+if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
+if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
 
 $cids = array_map(function($item) use($conn) {
   return mysqli_real_escape_string($conn, $item);
@@ -24,6 +32,9 @@ $message = "";
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
+} elseif ($solutionDisplayMode == '') {
+    $success = false;
+    $message = 'Internal Error: missing solutionDisplayMode';
 } elseif ($userId == "") {
     $success = false;
     $message = "No access - Need to sign in";
@@ -64,7 +75,12 @@ if ($success) {
     foreach($cids AS $cid) {
 
         $sql = "SELECT variantIndex FROM initial_renderer_state
-        WHERE cid = '$cid'";
+        WHERE cid = '$cid'
+        AND showCorrectness = '$showCorrectness'
+        AND solutionDisplayMode = '$solutionDisplayMode'
+        AND showFeedback = '$showFeedback'
+        AND showHints = '$showHints'
+        ";
 
         $result = $conn->query($sql);
 

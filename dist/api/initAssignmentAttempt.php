@@ -55,13 +55,14 @@ if ($success) {
     $conn->query($sql);
 
     $sql = "SELECT 
-            began,
+            began
             FROM user_assignment_attempt
             WHERE userId = '$userId'
             AND doenetId = '$doenetId'
             AND attemptNumber = '$attemptNumber'
             ";
-    $conn->query($sql);
+    $result = $conn->query($sql);
+
 
     if ($result->num_rows < 1) {
         $sql = "INSERT INTO user_assignment_attempt

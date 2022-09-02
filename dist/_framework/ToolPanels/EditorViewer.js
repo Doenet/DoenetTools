@@ -8,7 +8,7 @@ import {
   useRecoilState,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
-import {searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
+import {profileAtom, searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
 import {
   fileByPageId,
   pageVariantInfoAtom,
@@ -72,6 +72,7 @@ export default function EditorViewer() {
   const pageObj = useRecoilValue(itemByDoenetId(effectivePageId));
   const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const {canUpload} = useRecoilValue(profileAtom);
   const updateViewer = useUpdateViewer();
   useSetCourseIdFromDoenetId(effectiveDoenetId);
   useInitCourseItems(courseId);
@@ -112,6 +113,8 @@ export default function EditorViewer() {
       suppress.push("PageLink");
       suppress.push("SupportingFilesMenu");
     }
+    if (canUpload !== "1")
+      suppress.push("SupportingFilesMenu");
     setSuppressMenus(suppress);
   }, [setSuppressMenus]);
   useEffect(() => {

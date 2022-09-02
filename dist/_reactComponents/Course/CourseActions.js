@@ -771,6 +771,7 @@ export const useCourse = (courseId) => {
         showCorrectness: true,
         showCreditAchievedMenu: true,
         paginate: true,
+        showFinishButton: false,
         proctorMakesAvailable: false,
         pinnedAfterDate: null,
         pinnedUntilDate: null,
@@ -1284,7 +1285,6 @@ ${contentStrings}${indentSpacing}</order>
     }
     let activityDoenetML = `<document${attributeString}>
 ${childrenString}</document>`;
-    console.log("activityDoenetML", activityDoenetML);
     try {
       let resp = await axios.post("/api/saveCompiledActivity.php", {courseId: courseId2, doenetId: activityDoenetId, isAssigned, activityDoenetML});
       if (resp.status < 300) {
@@ -1534,45 +1534,126 @@ ${childrenString}</document>`;
       return next;
     });
   });
-  const updateContentLinksToSources = useRecoilCallback(({set, snapshot}) => async ({collectionDoenetId = null, pages, failureCallback = defaultFailure}) => {
-    if (collectionDoenetId) {
-      let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionDoenetId));
+  function replaceCollectionLinkInActivityContent({content, updateCollectionLink: updateCollectionLink2}) {
+    let needleDoenetId = updateCollectionLink2.doenetId;
+    let nextContent = [];
+    for (let item of content) {
+      if (item?.type == "order") {
+        let subContent = replaceCollectionLinkInActivityContent({content: item.content, updateCollectionLink: updateCollectionLink2});
+        let nextItem = {...item};
+        nextItem.content = subContent;
+        item = nextItem;
+      } else if (item?.doenetId == needleDoenetId) {
+        item = updateCollectionLink2;
+      }
+      nextContent.push(item);
+    }
+    return nextContent;
+  }
+  const updateContentLinksToSources = useRecoilCallback(({set, snapshot}) => async ({collectionLinkObj, pages, failureCallback = defaultFailure}) => {
+    let timeOfLastUpdate = new Date();
+    if (collectionLinkObj) {
+      let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.collectionDoenetId));
       let collectionSourcePages = sourceCollectionObj.pages;
       let sourcePagesOfPageLinks = [];
+      let labels = [];
       for (let doenetId of pages) {
         let linkPageObj = await snapshot.getPromise(itemByDoenetId(doenetId));
         sourcePagesOfPageLinks.push(linkPageObj.sourcePageDoenetId);
       }
-      let newPages = collectionSourcePages.filter((doenetId) => {
-        return !sourcePagesOfPageLinks.includes(doenetId);
+      let newSourcePageDoenetIds = [];
+      for (let sourceDoenetId of collectionSourcePages) {
+        if (!sourcePagesOfPageLinks.includes(sourceDoenetId)) {
+          newSourcePageDoenetIds.push(sourceDoenetId);
+          let newSourceObj = await snapshot.getPromise(itemByDoenetId(sourceDoenetId));
+          labels.push(newSourceObj.label);
+        }
+      }
+      let pageLinksToDelete = [];
+      let sourcePagesWhichWereDeleted = [];
+      for (let [i, sourcePageLink] of Object.entries(sourcePagesOfPageLinks)) {
+        if (!collectionSourcePages.includes(sourcePageLink)) {
+          sourcePagesWhichWereDeleted.push(sourcePageLink);
+          pageLinksToDelete.push(pages[i]);
+        }
+      }
+      let {data} = await axios.post("/api/updateCreateAndDeletePageLinks.php", {
+        courseId,
+        containingDoenetId: collectionLinkObj.containingDoenetId,
+        parentDoenetId: collectionLinkObj.doenetId,
+        sourceCollectionDoenetId: collectionLinkObj.collectionDoenetId,
+        newSourcePageDoenetIds,
+        pageLinksToDelete,
+        labels
       });
-      let deletedPages = sourcePagesOfPageLinks.filter((doenetId) => {
-        return !collectionSourcePages.includes(doenetId);
-      });
+      let sourceToPageLink = {};
+      for (let [i, newLinkPageDoenetId] of Object.entries(Object.keys(data.linkPageObjs))) {
+        let newLinkPageObj = {...data.linkPageObjs[newLinkPageDoenetId]};
+        newLinkPageObj.containingDoenetId = collectionLinkObj.containingDoenetId;
+        newLinkPageObj.doenetId = newLinkPageDoenetId;
+        newLinkPageObj.parentDoenetId = collectionLinkObj.doenetId;
+        newLinkPageObj.sourceCollectionDoenetId = collectionLinkObj.collectionDoenetId;
+        newLinkPageObj.label = labels[i];
+        newLinkPageObj.type = "pageLink";
+        newLinkPageObj.isSelected = false;
+        newLinkPageObj.timeOfLastUpdate = timeOfLastUpdate;
+        sourceToPageLink[newLinkPageObj.sourcePageDoenetId] = newLinkPageDoenetId;
+        set(itemByDoenetId(newLinkPageDoenetId), newLinkPageObj);
+      }
       let nextLinkPages = [];
       for (let [i, linkPageId] of Object.entries(pages)) {
         const sourcePage = sourcePagesOfPageLinks[i];
-        if (!deletedPages.includes(sourcePage)) {
+        if (!sourcePagesWhichWereDeleted.includes(sourcePage)) {
           nextLinkPages.push(linkPageId);
+          sourceToPageLink[sourcePage] = linkPageId;
         }
       }
-      pages = nextLinkPages;
-    }
-    let timeOfLastUpdate = new Date();
-    let {data} = await axios.post("/api/updatePageLinks.php", {
-      courseId,
-      pages
-    });
-    if (data.success) {
-      for (let pageDoenetId of pages) {
-        set(itemByDoenetId(pageDoenetId), (prev) => {
-          let next = {...prev};
-          next.timeOfLastUpdate = timeOfLastUpdate;
-          return next;
-        });
+      let nextPagesByCollectionSource = [];
+      for (let sourceDoenetId of collectionSourcePages) {
+        nextPagesByCollectionSource.push(sourceToPageLink[sourceDoenetId]);
       }
+      let nextCollectionLinkObj = {...collectionLinkObj};
+      nextCollectionLinkObj.pagesByCollectionSource = {...collectionLinkObj.pagesByCollectionSource};
+      nextCollectionLinkObj.pagesByCollectionSource[collectionLinkObj.collectionDoenetId] = nextPagesByCollectionSource;
+      let nextManuallyFilteredPages = [];
+      for (let manualPage of nextCollectionLinkObj.manuallyFilteredPages) {
+        if (nextPagesByCollectionSource.includes(manualPage)) {
+          nextManuallyFilteredPages.push(manualPage);
+        }
+      }
+      nextCollectionLinkObj.manuallyFilteredPages = [...nextManuallyFilteredPages];
+      if (nextCollectionLinkObj.isManuallyFiltered) {
+        nextCollectionLinkObj.pages = [...nextManuallyFilteredPages];
+      } else {
+        nextCollectionLinkObj.pages = nextPagesByCollectionSource;
+      }
+      set(itemByDoenetId(collectionLinkObj.doenetId), nextCollectionLinkObj);
+      let previousActivityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId));
+      const nextActivityContent = replaceCollectionLinkInActivityContent({content: previousActivityObj.content, updateCollectionLink: nextCollectionLinkObj});
+      let nextActivityObj = {...previousActivityObj};
+      nextActivityObj.content = nextActivityContent;
+      set(itemByDoenetId(nextActivityObj.doenetId), nextActivityObj);
+      let {data: activityData} = await axios.post("/api/updateActivityStructure.php", {
+        courseId,
+        doenetId: previousActivityObj.doenetId,
+        newJSON: nextActivityContent
+      });
     } else {
-      failureCallback(data.message);
+      let {data} = await axios.post("/api/updatePageLinks.php", {
+        courseId,
+        pages
+      });
+      if (data.success) {
+        for (let pageDoenetId of pages) {
+          set(itemByDoenetId(pageDoenetId), (prev) => {
+            let next = {...prev};
+            next.timeOfLastUpdate = timeOfLastUpdate;
+            return next;
+          });
+        }
+      } else {
+        failureCallback(data.message);
+      }
     }
   });
   const updateOrderBehavior = useRecoilCallback(({set, snapshot}) => async ({doenetId, behavior, numberToSelect, withReplacement, successCallback, failureCallback = defaultFailure}) => {

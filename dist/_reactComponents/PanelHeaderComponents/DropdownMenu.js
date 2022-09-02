@@ -105,7 +105,8 @@ const DropdownMenu = (props) => {
   }
   ;
   return /* @__PURE__ */ React.createElement(Container, {
-    align
+    align,
+    "data-test": props.dataTest
   }, /* @__PURE__ */ React.createElement(Label, {
     labelVisible,
     align
