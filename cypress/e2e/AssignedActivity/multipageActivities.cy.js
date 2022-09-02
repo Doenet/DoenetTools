@@ -107,13 +107,13 @@ describe('Multipage activity tests', function () {
 
     cy.get('#page2\\/top').scrollIntoView();
 
-    cy.url().should('match', /#page2$/)
+    cy.waitUntil(() => cy.url().should('match', /#page2$/))
 
     cy.get('#page2\\/bottom').scrollIntoView();
     cy.url().should('match', /#page2$/)
 
     cy.get('#page1\\/bottom').scrollIntoView();
-    cy.url().should('match', /#page1$/)
+    cy.waitUntil(() => cy.url().should('match', /#page1$/))
 
     cy.go('back')
 
@@ -200,7 +200,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('#page2\\/bottom').scrollIntoView();
 
-    cy.url().should('match', /#page2$/)
+    cy.waitUntil(() => cy.url().should('match', /#page2$/))
 
     cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 1:')
 

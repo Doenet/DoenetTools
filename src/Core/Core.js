@@ -1489,6 +1489,10 @@ export default class Core {
       }
     }
 
+    if(serializedComponent.unlinkedCopySource) {
+      newComponent.unlinkedCopySource = serializedComponent.unlinkedCopySource;
+    }
+
 
     await this.deriveChildResultsFromDefiningChildren({ parent: newComponent, expandComposites: false });
 
