@@ -3,6 +3,7 @@
 
 describe('Multipage activity tests', function () {
   const userId = "cyuserId";
+  const studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
   const doenetId = "activity1id";
@@ -18,12 +19,14 @@ describe('Multipage activity tests', function () {
     // cy.clearAllOfAUsersActivities({userId})
     cy.signin({ userId });
     cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.createCourse({ userId, courseId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
+    cy.createCourse({ userId, courseId, studentUserId });
   })
   beforeEach(() => {
     cy.signin({ userId });
     cy.clearIndexedDB();
     cy.clearAllOfAUsersActivities({ userId })
+    cy.clearAllOfAUsersActivities({ userId: studentUserId })
   })
 
 
@@ -135,8 +138,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/top').should('contain.text', 'top 1')
 
@@ -185,8 +189,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/top').should('contain.text', 'top 1')
     cy.get('#page2\\/top').should('contain.text', 'top 2')
@@ -268,7 +273,16 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+
+        
+    cy.signin({userId: studentUserId})
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.get('#page2\\/_section1_title').should('not.exist')
@@ -480,8 +494,14 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.signin({userId: studentUserId})
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
@@ -690,8 +710,14 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.signin({userId: studentUserId})
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
@@ -712,13 +738,26 @@ describe('Multipage activity tests', function () {
     cy.go('back')
     cy.url().should('contain', `course?tool=navigation&courseId=${courseId}`);
 
+    cy.signin({userId})
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
+
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.signin({userId: studentUserId})
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#\\/_p1').should('have.text', 'Link to page 1');
 
@@ -893,8 +932,14 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.signin({userId: studentUserId})
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
@@ -915,13 +960,25 @@ describe('Multipage activity tests', function () {
     cy.go('back')
     cy.url().should('contain', `course?tool=navigation&courseId=${courseId}`);
 
+    cy.signin({userId})
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.signin({userId: studentUserId})
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#\\/_p1').should('have.text', 'Link to page 1');
 
@@ -1094,6 +1151,12 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.signin({userId: studentUserId})
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.log('go to page 1 url')
     cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page1`)
@@ -1225,8 +1288,14 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.signin({userId: studentUserId})
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
@@ -1493,8 +1562,14 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.signin({userId: studentUserId})
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
@@ -1518,7 +1593,7 @@ describe('Multipage activity tests', function () {
 
     cy.log('remembers were last on page 2')
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
     cy.get('#page1\\/_section1_title').should('not.exist')
@@ -1576,8 +1651,14 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
+    cy.signin({userId: studentUserId})
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
@@ -1600,7 +1681,7 @@ describe('Multipage activity tests', function () {
 
     cy.log('remembers were last on page 2')
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
@@ -1637,7 +1718,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/ans textarea').type("2{enter}", { force: true });
     cy.get('#page1\\/credit').should('have.text', '1')
@@ -1650,7 +1733,7 @@ describe('Multipage activity tests', function () {
     cy.go("back");
 
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/cr').should("contain.text", '2')
     cy.get('#page1\\/credit').should('have.text', '1')
@@ -1670,6 +1753,9 @@ describe('Multipage activity tests', function () {
 
     cy.go("back");
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
@@ -1682,9 +1768,11 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/cr').should('contain.text', '1');
     cy.get('#page1\\/ans2').should('not.exist');
@@ -1730,6 +1818,8 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
@@ -1742,10 +1832,12 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.log('immediately get new version')
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '50%')
@@ -1769,7 +1861,7 @@ describe('Multipage activity tests', function () {
     cy.go("back")
 
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page2\\/cr').should("contain.text", '4')
     cy.get('#page2\\/credit').should('have.text', '1')
@@ -1788,6 +1880,8 @@ describe('Multipage activity tests', function () {
 
     cy.go("back");
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+
     cy.get('[data-test="folderToggleOpenIcon"]').click();
 
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
@@ -1802,9 +1896,11 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page2\\/cr').should('contain.text', '1');
     cy.get('#page2\\/ans2').should('not.exist');
@@ -1859,6 +1955,7 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
 
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Page"]').click();
@@ -1872,9 +1969,11 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/cr').should('contain.text', '\uff3f');
 
@@ -1924,7 +2023,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/sect_title').should('have.text', 'Section 1: Info only')
 
@@ -1944,6 +2045,7 @@ describe('Multipage activity tests', function () {
     cy.wait(2000);  // wait for debounce
     cy.get('[data-test="Crumb 2"]').click();
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
 
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
@@ -1975,9 +2077,11 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get("#page1\\/extra1").should('have.text', 'Extra content 1');
 
@@ -2011,7 +2115,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
 
     cy.get('#\\/sect_title').should('have.text', 'Info only')
@@ -2027,6 +2133,8 @@ describe('Multipage activity tests', function () {
 
 
     cy.go("back");
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
 
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
@@ -2046,9 +2154,11 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/sect_title').should('have.text', 'Info only')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
@@ -2098,7 +2208,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
 
     cy.get('#\\/prob_title').should('have.text', 'Problem 1')
@@ -2114,6 +2226,8 @@ describe('Multipage activity tests', function () {
 
 
     cy.go("back");
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
 
     cy.log("increase to two pages, no new version prompt")
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2134,9 +2248,11 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/prob_title').should('have.text', 'Problem 1')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
@@ -2160,6 +2276,8 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+
     cy.log("decrease to one page, no new version prompt")
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Delete Page"]').click();
@@ -2169,7 +2287,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#\\/prob_title').should('have.text', 'Problem 1')
 
@@ -2186,6 +2306,8 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
     cy.go("back");
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
 
     cy.log('Add second page, get new version prompt')
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2205,9 +2327,11 @@ describe('Multipage activity tests', function () {
 
     cy.go("back")
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#\\/prob_title').should('have.text', 'Problem 1')
 
@@ -2244,6 +2368,8 @@ describe('Multipage activity tests', function () {
 
     cy.log('Delete second page, get new version prompt')
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Delete Page"]').click();
 
@@ -2252,7 +2378,9 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page2\\/prob_title').should('have.text', 'Problem 2')
 

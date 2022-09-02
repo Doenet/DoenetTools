@@ -62,8 +62,12 @@ export default function ActivityViewer(props) {
     requestedVariantIndex: null
   })
 
+  const attemptNumberRef = useRef(null);
+  attemptNumberRef.current = attemptNumber;
 
   const [cid, setCid] = useState(null);
+  const cidRef = useRef(null);
+  cidRef.current = cid;
 
   const activityDefinitionDoenetML = useRef(null);
 
@@ -71,8 +75,13 @@ export default function ActivityViewer(props) {
 
 
   const [variantIndex, setVariantIndex] = useState(null);
+  const variantIndexRef = useRef(null);
+  variantIndexRef.current = variantIndex;
 
   const [stage, setStage] = useState('initial');
+  const stageRef = useRef(null);
+  stageRef.current = stage;
+
   const settingUp = useRef(true);
 
   const [activityContentChanged, setActivityContentChanged] = useState(false);
@@ -106,6 +115,7 @@ export default function ActivityViewer(props) {
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
   const pageAtPreviousSave = useRef(null);
+  const pageAtPreviousSaveToDatabase = useRef(null);
 
 
   const [pageInfo, setPageInfo] = useState({
@@ -738,23 +748,26 @@ export default function ActivityViewer(props) {
     }
 
 
-    if ((stage !== "saving" && !overrideStage) || currentPage === pageAtPreviousSave.current) {
+    if ((stageRef.current !== "saving" && !overrideStage)
+      || (!overrideThrottle && currentPageRef.current === pageAtPreviousSave.current)
+      || (overrideThrottle && currentPageRef.current === pageAtPreviousSaveToDatabase.current)
+    ) {
       // haven't gotten a save event from page or no change to be saved
       return;
     }
 
-    pageAtPreviousSave.current = currentPage;
+    pageAtPreviousSave.current = currentPageRef.current;
 
     let saveId = nanoid();
 
     if (props.flags.allowLocalState) {
       idb_set(
-        `${props.doenetId}|${attemptNumber}|${cid}`,
+        `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}`,
         {
           activityInfo: activityInfo.current,
-          activityState: { currentPage },
+          activityState: { currentPage: currentPageRef.current },
           saveId,
-          variantIndex,
+          variantIndex: variantIndexRef.current,
         }
       )
     }
@@ -765,11 +778,11 @@ export default function ActivityViewer(props) {
 
 
     activityStateToBeSavedToDatabase.current = {
-      cid: cid,
+      cid: cidRef.current,
       activityInfo: activityInfoString.current,
-      activityState: JSON.stringify({ currentPage }),
-      variantIndex,
-      attemptNumber: attemptNumber,
+      activityState: JSON.stringify({ currentPage: currentPageRef.current }),
+      variantIndex: variantIndexRef.current,
+      attemptNumber: attemptNumberRef.current,
       doenetId: props.doenetId,
       saveId,
       serverSaveId: serverSaveId.current,
@@ -810,6 +823,8 @@ export default function ActivityViewer(props) {
 
 
     changesToBeSaved.current = false;
+    pageAtPreviousSaveToDatabase.current = currentPageRef.current;
+
 
     // check for changes again after 60 seconds
     let newTimeoutId = setTimeout(() => {
@@ -863,7 +878,7 @@ export default function ActivityViewer(props) {
 
     if (props.flags.allowLocalState) {
       idb_set(
-        `${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`,
+        `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}|ServerSaveId`,
         data.saveId
       )
     }
@@ -872,7 +887,7 @@ export default function ActivityViewer(props) {
 
       // if a new attempt number was generated,
       // then we reset the activity to the new state
-      if (attemptNumber !== Number(data.attemptNumber)) {
+      if (attemptNumberRef.current !== Number(data.attemptNumber)) {
 
         resetActivity({
           changedOnDevice: data.device,
@@ -880,7 +895,7 @@ export default function ActivityViewer(props) {
           newAttemptNumber: Number(data.attemptNumber),
         })
 
-      } else if (cid !== data.cid) {
+      } else if (cidRef.current !== data.cid) {
 
         // if the cid changed without the attemptNumber changing, something went wrong
         if (props.setIsInErrorState) {
@@ -1076,8 +1091,7 @@ export default function ActivityViewer(props) {
       return newRenderedPages;
     })
 
-
-    if (newRenderedPages.length === nPages && newRenderedPages.every(x => x)) {
+    if (newRenderedPages?.length === nPages && newRenderedPages.every(x => x)) {
       allPagesRendered.current = true;
     }
 

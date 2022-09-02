@@ -53,7 +53,7 @@ export default React.memo(function Ref(props) {
       }
       url = `/public?${url}`
     } else {
-      url = `/course?tool=assignment&${url}`
+      url = `?tool=assignment&${url}`
     }
 
     haveValidTarget = true;

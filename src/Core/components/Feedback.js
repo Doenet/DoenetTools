@@ -86,11 +86,15 @@ export default class Feedback extends BlockComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        if (!dependencyValues.showFeedback) {
+          return { setValue: { hideWhenUpdated: true } }
+        }
+
         let hideWhenUpdated;
         if (dependencyValues.condition === null) {
           hideWhenUpdated = false;
         } else {
-          hideWhenUpdated = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
+          hideWhenUpdated = !dependencyValues.condition.stateValues.value;
         }
 
         return { setValue: { hideWhenUpdated } }
@@ -120,14 +124,15 @@ export default class Feedback extends BlockComponent {
         }
       },
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.showFeedback) {
-          return { setValue: { hide: true } }
-        }
 
         if (!("condition" in dependencyValues)) {
           return {
             useEssentialOrDefaultValue: { hide: true }
           }
+        }
+
+        if (!dependencyValues.showFeedback) {
+          return { setValue: { hide: true } }
         }
 
         let hide;

@@ -56,6 +56,7 @@ export function RoleDropdown({
       onChange={onChange}
       vertical={vertical}
       disabled={disabled}
+      dataTest="RoleDropDown"
     />
   );
 }

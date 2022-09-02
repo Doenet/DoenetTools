@@ -124,7 +124,7 @@ const DropdownMenu = (props) => {
 
   //   console.log(options, props.def);
   return (
-    <Container align={align}>
+    <Container align={align} data-test={props.dataTest}>
             <Label labelVisible={labelVisible} align={align}>{label}</Label>
     <Select
       aria-haspopup="true"
