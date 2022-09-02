@@ -121,6 +121,7 @@ if ($success){
     AND cc.isAssigned = '1'
     AND cc.isGloballyAssigned = '1'
     AND a.proctorMakesAvailable = '1'
+    AND cc.isDeleted = '0'
     ORDER BY cc.label
     ";
     // AND (a.assignedDate <= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.assignedDate IS NULL)

@@ -696,6 +696,15 @@ export const Paginate = ({courseId, doenetId}) => {
     dataTest: "Paginate"
   });
 };
+export const ShowFinishButton = ({courseId, doenetId}) => {
+  return /* @__PURE__ */ React.createElement(CheckedSetting, {
+    courseId,
+    doenetId,
+    keyToUpdate: "showFinishButton",
+    description: "Show Finish Button",
+    dataTest: "Show Finish Button"
+  });
+};
 export const MakePublic = ({courseId, doenetId}) => {
   return /* @__PURE__ */ React.createElement(CheckedFlag, {
     courseId,

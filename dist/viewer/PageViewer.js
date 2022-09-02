@@ -104,7 +104,7 @@ export default function PageViewer(props) {
           coreCreated.current = true;
           preventMoreAnimations.current = false;
           setStage("coreCreated");
-          props.coreCreatedCallback?.();
+          props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
           } else {
@@ -419,7 +419,11 @@ export default function PageViewer(props) {
           doenetId: props.doenetId,
           userId: props.userId,
           requestedVariantIndex,
-          allowLoadState: props.flags.allowLoadState
+          allowLoadState: props.flags.allowLoadState,
+          showCorrectness: props.flags.showCorrectness,
+          solutionDisplayMode: props.flags.solutionDisplayMode,
+          showFeedback: props.flags.showFeedback,
+          showHints: props.flags.showHints
         }
       };
       try {
@@ -649,7 +653,7 @@ export default function PageViewer(props) {
     coreWorker.current = null;
     setStage("readyToCreateCore");
   }
-  if (props.hideWhenInactive && !props.pageIsActive) {
+  if (props.hideWhenNotCurrent && !props.pageIsCurrent) {
     return null;
   }
   let noCoreWarning = null;

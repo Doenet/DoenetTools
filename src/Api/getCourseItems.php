@@ -33,8 +33,8 @@ function nullishCoalesce(&$value, $default) {
 
 $containingDoenetIds = [];
 $activityDoenetIds = [];
-	//Can the user edit content?
-	if ($permissions["canEditContent"] == '1'){
+	//Can the user View Unassigned Content?
+	if ($permissions["canViewUnassignedContent"] == '1'){
 		//Yes then all items and json
 		$sql = "
 		SELECT cc.type,
@@ -190,7 +190,7 @@ $activityDoenetIds = [];
 		}
 
 	}else if($permissions != false){
-		//TODO: check that user can view content
+		//TODO: check that user is in the course
 		$sql = "
 		SELECT cc.type,
 		cc.doenetId,

@@ -21,7 +21,7 @@ export default function ChooseLearnerPanel(props) {
   const addToast = useToast();
   const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId, resumeAttemptFlag2) => {
     if (!resumeAttemptFlag2) {
-      const {data} = await axios.get("/api/incrementAttemptNumber.php", {
+      const {data} = await axios.get("/api/incrementAttemptNumberForExam.php", {
         params: {doenetId: doenetId2, code: code2, userId}
       });
     }
@@ -132,17 +132,30 @@ export default function ChooseLearnerPanel(props) {
         continue;
       }
       let timeZoneCorrectLastExamDate = null;
+      let allowResume = false;
       if (learner.exam_to_date[doenetId]) {
         let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
-        let users_timeLimit_minutes = Number(examTimeLimit) * Number(learner.timeLimitMultiplier);
-        let minutes_remaining;
-        if (users_timeLimit_minutes) {
-          let users_exam_end_DT = new Date(lastExamDT.getTime() + users_timeLimit_minutes * 60 * 1e3);
-          let now = new Date();
-          minutes_remaining = (users_exam_end_DT.getTime() - now.getTime()) / (1e3 * 60);
+        allowResume = examTimeLimit === null;
+        let minutesRemainingPhrase = null;
+        if (!allowResume) {
+          let users_timeLimit_minutes = Number(examTimeLimit) * Number(learner.timeLimitMultiplier);
+          let minutes_remaining;
+          if (users_timeLimit_minutes) {
+            let users_exam_end_DT = new Date(lastExamDT.getTime() + users_timeLimit_minutes * 60 * 1e3);
+            let now = new Date();
+            minutes_remaining = (users_exam_end_DT.getTime() - now.getTime()) / (1e3 * 60);
+          }
+          if (minutes_remaining && minutes_remaining > 1) {
+            allowResume = true;
+            minutesRemainingPhrase = `${Math.round(minutes_remaining)} mins remain`;
+          }
+          ;
         }
-        if (minutes_remaining && minutes_remaining > 1) {
-          minutes_remaining = Math.round(minutes_remaining);
+        if (allowResume) {
+          if (!minutesRemainingPhrase) {
+            let time = formatAMPM(lastExamDT);
+            minutesRemainingPhrase = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+          }
           timeZoneCorrectLastExamDate = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
             value: "Resume",
             onClick: () => {
@@ -150,7 +163,7 @@ export default function ChooseLearnerPanel(props) {
               setStage("student final check");
               setResumeAttemptFlag(true);
             }
-          }), `${minutes_remaining} mins remain`);
+          }), minutesRemainingPhrase);
         } else if (lastExamDT) {
           let time = formatAMPM(lastExamDT);
           timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
@@ -167,7 +180,7 @@ export default function ChooseLearnerPanel(props) {
       }, timeZoneCorrectLastExamDate), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
       }, /* @__PURE__ */ React.createElement(Button, {
-        value: "Choose",
+        value: "Start",
         onClick: () => {
           setChoosenLearner(learner);
           setStage("student final check");
