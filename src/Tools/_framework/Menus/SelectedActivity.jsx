@@ -221,7 +221,7 @@ export default function SelectedActivity() {
       {heading}
       <ActionButton
         width="menu"
-        data-test="Edit Activity"
+        data-test="View Activity"
         value="View Activity"
         onClick={() => {
           setPageToolView({

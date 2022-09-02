@@ -1835,7 +1835,7 @@ export default class Core {
           inheritedComponentType: componentType,
           baseComponentType: typeFromGroup
         })) {
-          if(group.matchAfterAdapters && !afterAdapters) {
+          if (group.matchAfterAdapters && !afterAdapters) {
             continue;
           }
           // don't match composites to the base component
@@ -8595,8 +8595,8 @@ export default class Core {
       if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
         this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
       }
-      if(componentName === this.documentName) {
-        if(!this.visibilityInfo.documentHasBeenVisible) {
+      if (componentName === this.documentName) {
+        if (!this.visibilityInfo.documentHasBeenVisible) {
           this.visibilityInfo.documentHasBeenVisible = true;
           this.onDocumentFirstVisible();
         }
@@ -10112,6 +10112,11 @@ export default class Core {
   async recordSolutionView() {
 
     // TODO: check if student was actually allowed to view solution.
+
+    // if not allowed to save submissions, then allow view but don't record it
+    if (!this.flags.allowSaveSubmissions) {
+      return { allowView: true, message: "", scoredComponent: this.documentName };
+    }
 
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {

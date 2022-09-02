@@ -3,21 +3,24 @@
 
 describe('doenetEditor test', function () {
   const userId = "cyuserId";
+  const studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
 
-  before(()=>{
+  before(() => {
     // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({userId});
-    cy.clearAllOfAUsersCoursesAndItems({userId});
-    cy.createCourse({userId,courseId});
+    cy.signin({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
+    cy.createCourse({ userId, courseId, studentUserId });
   })
   beforeEach(() => {
-    cy.signin({userId});
+    cy.signin({ userId });
     cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({userId})
+    cy.clearAllOfAUsersActivities({ userId })
+    cy.clearAllOfAUsersActivities({ userId: studentUserId })
     cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId});
     cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
   })
@@ -144,7 +147,17 @@ it('Assign two-page activity',()=>{
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
   cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-  cy.get('[data-test="View Assigned Activity"]').click();
+
+          
+  cy.signin({userId: studentUserId})
+
+  cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+  cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+  cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+  cy.get('[data-test="View Activity"]').click();
 
   cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
 

@@ -52,8 +52,18 @@ describe('video events test', function () {
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
+    cy.get('[data-test="Crumb Menu"]').click({force:true});
+    cy.get('[data-test="Crumb Menu Item 2"]').click();
+    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
+
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
+
     //Interact with content
 
     cy.get('#\\/state').contains("stopped")

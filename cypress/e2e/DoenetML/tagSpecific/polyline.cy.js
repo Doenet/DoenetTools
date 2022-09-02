@@ -981,6 +981,9 @@ describe('Polyline Tag Tests', function () {
     let B = [3, 4];
     let C = [-5, 6];
     let D = [A[0] + C[0] - B[0], A[1] + C[1] - B[1]];
+
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
