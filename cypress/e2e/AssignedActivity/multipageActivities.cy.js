@@ -632,8 +632,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('#page2\\/insideAside').should('not.exist');
 
-    cy.wait(500);  // this wait should not be necessary, but wondering if this will prevent random failures
-    cy.url().should('match', /#page2$/)
+    cy.waitUntil(() => cy.url().should('match', /#page2$/))
 
     // Note sure why the rect of page2 does not appear to be at the top
     // cy.get('#page2').then(el => {

@@ -9,6 +9,8 @@ describe('doenetEditor test', function () {
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
 
+  const headerPixels = 40;
+
   before(() => {
     // cy.clearAllOfAUsersActivities({userId})
     cy.signin({ userId });
@@ -332,4 +334,149 @@ it('animation stopped when click update button',()=>{
   
 })
   
+
+it('Repeatedly select same internal link', () => {
+  const doenetMLString = `
+<section>
+<p><ref name="toAside" target="aside">Link to aside</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<aside name="aside">
+  <title name="asideTitle">The aside</title>
+  <p name="insideAside">Content in aside</p>
+</aside>
+
+<lorem generateParagraphs="8" />
+
+</section>`
+
+  cy.get('.cm-content').type(doenetMLString)
+  cy.get('[data-test="Viewer Update Button"]').click();
+
+  cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+  cy.url().should('match', /[^#]/)
+
+  cy.get('[data-test="Main Panel"]').then(el => {
+    expect(el.scrollTop()).eq(0);
+  })
+
+
+  cy.get('#\\/asideTitle').should('have.text', 'The aside');
+  cy.get('#\\/insideAside').should('not.exist');
+
+
+  cy.get('#\\/toAside').click();
+  cy.url().should('match', /#\/aside$/)
+
+  cy.get('#\\/aside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+  cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+
+  cy.get('#\\/asideTitle').click();
+  cy.get('#\\/insideAside').should('not.exist');
+
+  cy.get('#\\/toAside').scrollIntoView();
+
+  cy.get('#\\/toAside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+  cy.url().should('match', /#\/aside$/)
+
+
+  cy.get('#\\/toAside').click();
+  cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+
+  cy.url().should('match', /#\/aside$/)
+
+  cy.get('#\\/aside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+
+})
+
+
+it('Navigating back remembers position where clicked internal link', () => {
+  const doenetMLString = `
+<section>
+<lorem generateParagraphs="8" />
+
+<p><ref name="toAside" target="aside">Link to aside</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<aside name="aside">
+  <title name="asideTitle">The aside</title>
+  <p name="insideAside">Content in aside</p>
+</aside>
+
+<lorem generateParagraphs="8" />
+
+<p name="bottom">bottom</p>
+
+<lorem generateParagraphs="8" />
+
+</section>`
+
+  cy.get('.cm-content').type(doenetMLString)
+  cy.get('[data-test="Viewer Update Button"]').click();
+
+  cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+  cy.url().should('match', /[^#]/)
+
+  cy.get('[data-test="Main Panel"]').then(el => {
+    expect(el.scrollTop()).eq(0);
+  })
+
+
+  cy.get('#\\/asideTitle').should('have.text', 'The aside');
+  cy.get('#\\/insideAside').should('not.exist');
+
+  cy.get('#\\/toAside').scrollIntoView();
+
+  cy.get('#\\/toAside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+  cy.get('#\\/toAside').click();
+  cy.url().should('match', /#\/aside$/)
+
+  cy.get('#\\/aside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+  cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+
+
+  cy.get('#\\/bottom').scrollIntoView();
+
+  cy.get('#\\/bottom').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+  cy.go("back");
+  cy.url().should('match', /[^#]/)
+
+  cy.get('#\\/toAside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+
+})
+
 })
