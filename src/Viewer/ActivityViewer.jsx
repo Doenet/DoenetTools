@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
-import PageViewer from './PageViewer';
+import PageViewer, { scrollableContainerAtom } from './PageViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
@@ -22,10 +22,6 @@ export const saveStateToDBTimerIdAtom = atom({
   default: null
 })
 
-export const scrollableContainerAtom = atom({
-  key: "scollParentAtom",
-  default: null
-})
 
 export const currentPageAtom = atom({
   key: "currentPageAtom",

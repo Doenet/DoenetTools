@@ -5,7 +5,7 @@ import { serializedComponentsReplacer, serializedComponentsReviver } from '../Co
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererState } from './renderers/useDoenetRenderer';
-import { atomFamily, useRecoilCallback } from 'recoil';
+import { atom, atomFamily, useRecoilCallback } from 'recoil';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
@@ -17,6 +17,11 @@ import cssesc from 'cssesc';
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
   default: {},
+})
+
+export const scrollableContainerAtom = atom({
+  key: "scollParentAtom",
+  default: null
 })
 
 // Two notes about props.flags of PageViewer
