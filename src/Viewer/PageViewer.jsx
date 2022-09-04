@@ -341,10 +341,25 @@ export default function PageViewer(props) {
     }
   }
 
+  function forceRendererStateDisabledShowCorrectness(rendererState) {
+    for (let componentName in rendererState) {
+      let stateValues = rendererState[componentName].stateValues;
+      if(stateValues.disabled === false) {
+        stateValues.disabled = true;
+      }
+      if(stateValues.showCorrectness === false) {
+        stateValues.showCorrectness = true;
+      }
+
+    }
+  }
 
   function initializeRenderers(args) {
 
     if (args.rendererState) {
+      if (props.snapshotOnly) {
+        forceRendererStateDisabledShowCorrectness(args.rendererState)
+      }
       for (let componentName in args.rendererState) {
         updateRendererSVsWithRecoil({
           coreId: coreId.current,
@@ -743,6 +758,14 @@ export default function PageViewer(props) {
 
   function startCore() {
 
+    // don't create core if snapshot only
+    if (props.snapshotOnly) {
+      if (stage !== 'readyToCreateCore') {
+        setStage('readyToCreateCore');
+      }
+      return;
+    }
+
     //Kill the current core if it exists
     if (coreWorker.current) {
       terminateCoreAndAnimations();
@@ -947,7 +970,7 @@ export default function PageViewer(props) {
 
   let noCoreWarning = null;
   let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
-  if (!coreCreated.current) {
+  if (!coreCreated.current && !props.snapshotOnly) {
     if (!documentRenderer) {
       noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
         <p>Initializing....</p>
