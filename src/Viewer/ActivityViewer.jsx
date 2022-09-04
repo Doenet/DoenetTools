@@ -1279,6 +1279,7 @@ export default function ActivityViewer(props) {
       pageIsCurrent={ind === currentPage - 1}
       itemNumber={ind + 1}
       attemptNumber={attemptNumber}
+      snapshotOnly={props.snapshotOnly}
       flags={flags}
       activityVariantIndex={variantIndex}
       requestedVariantIndex={variantsByPage[ind]}
