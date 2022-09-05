@@ -9,26 +9,13 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    /* position: relative;
-    width: 30px;
-    height: 24px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #ffffff;
-    display: inline-block;
-    text-align: center;
-    top: 3px;
-    padding: 2px;
-    background-color: var(--mainBlue);
-    border: var(--mainBorder);
-    border-radius: var(--mainBorderRadius); */
 }
 
 .button-container {
     display: inline-block;
     /* position: relative; */
     /* padding-left: 30px; */
-    margin-right: 10px;
+    margin-right: 12px;
     margin-bottom: 12px;
     cursor: pointer;
     -webkit-user-select: none;

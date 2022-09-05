@@ -22,6 +22,28 @@ import {
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
 
+// Moved most of checkWorkStyle styling into Button
+const Button = styled.button `
+  position: relative;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  background-color: var(--mainBlue);
+  display: inline-block;
+  text-align: center;
+  padding: 2px;
+  z-index: 0;
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 12px 12px 0px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
+
 export default function MathInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } =
     useDoenetRender(props);
@@ -175,28 +197,6 @@ export default function MathInput(props) {
       cursor: 'pointer',
   }
 
-  // Moved most of checkWorkStyle styling into Button
-  const Button = styled.button `
-    position: relative;
-    width: 24px;
-    height: 24px;
-    color: #ffffff;
-    background-color: var(--mainBlue);
-    display: inline-block;
-    text-align: center;
-    padding: 2px;
-    z-index: 0;
-    /* border: var(--mainBorder); */
-    border: none;
-    border-radius: var(--mainBorderRadius);
-    margin: 0px 10px 12px 0px;
-
-    &:hover {
-      background-color: var(--lightBlue);
-      color: black;
-    };
-  `;
-
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
@@ -298,7 +298,7 @@ export default function MathInput(props) {
       <span className="textInputSurroundingBox" id={name}>
         <span>
           <EditableMathField
-            style={{border: "var(--mainBorder)", marginRight: "10px", marginBottom: "12px"}}
+            style={{border: "var(--mainBorder)", marginRight: "12px", marginBottom: "12px"}}
             latex={rendererValue.current}
             config={{
               autoCommands:

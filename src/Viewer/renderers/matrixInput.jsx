@@ -49,10 +49,10 @@ const Matrix = styled.div`
     color: white;
     background-color: var(--mainBlue);
     /* border: var(--mainBorder); */
-    /* padding: 2px; */
+    padding: 2px;
     border: none;
     border-radius: var(--mainBorderRadius);
-    margin: 0px 10px 12px 10px;
+    margin: 0px 12px 12px 0px;
 
 
     &:hover {
@@ -208,7 +208,7 @@ export default React.memo(function MatrixInput(props) {
 
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(
-        <td style={{ margin: "10px"}} key={colInd} id={name + "_component_" + rowInd + "_" + colInd}>
+        <td style={{ margin: "12px"}} key={colInd} id={name + "_component_" + rowInd + "_" + colInd}>
           {children[rowInd * SVs.numColumns + colInd]}
         </td>
       )
@@ -224,7 +224,7 @@ export default React.memo(function MatrixInput(props) {
 
   let rowNumControls = null;
   if (SVs.showSizeControls) {
-    rowNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
+    rowNumControls = <span style={{margin: "0px 12px 12px 0px"}}>
       <ActionButtonGroup>
       <ActionButton id={name + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
@@ -243,7 +243,7 @@ export default React.memo(function MatrixInput(props) {
   }
   let colNumControls = null;
   if (SVs.showSizeControls) {
-    colNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
+    colNumControls = <span style={{margin: "0px 12px 12px 0px"}}>
       <ActionButtonGroup>
       <ActionButton id={name + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
@@ -265,11 +265,12 @@ export default React.memo(function MatrixInput(props) {
   return <React.Fragment>
     <a name={name} />
       <div style={{display: "flex", marginBottom: "12px"}}>
-        <Matrix className="matrixInputSurroundingBox" id={name} style={{paddingLeft: "10px", paddingTop: "10px"}}>
+        <Matrix className="matrixInputSurroundingBox" id={name} style={{paddingLeft: "12px", paddingTop: "12px"}}>
           <table><tbody>
             {matrixInputs}
           </tbody></table>
         </Matrix>
+        <div style={{marginRight: "12px"}}></div>
         {rowNumControls}
         {colNumControls}
         {checkWorkButton}

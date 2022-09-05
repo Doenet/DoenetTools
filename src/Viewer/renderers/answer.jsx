@@ -4,6 +4,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
+ // Moved most of checkWorkStyle styling into Button
+ const Button = styled.button `
+  position: relative;
+  height: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  /* padding: 2px; */
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 12px 12px 0px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
+
 export default React.memo(function Answer(props) {
   let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
@@ -53,25 +72,6 @@ export default React.memo(function Answer(props) {
       cursor: 'pointer',
     }
 
-    // Moved most of checkWorkStyle styling into Button
-    const Button = styled.button `
-      position: relative;
-      height: 24px;
-      display: inline-block;
-      color: white;
-      background-color: var(--mainBlue);
-      /* padding: 2px; */
-      /* border: var(--mainBorder); */
-      border: none;
-      border-radius: var(--mainBorderRadius);
-      margin: 0px 10px 12px 0px;
-
-      &:hover {
-        background-color: var(--lightBlue);
-        color: black;
-      };
-    `;
-
     if (disabled) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     }
@@ -92,7 +92,7 @@ export default React.memo(function Answer(props) {
           }
         }}
       >
-        <FontAwesomeIcon style={{marginRight: "4px", paddingLeft: "2px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        <FontAwesomeIcon style={{paddingLeft: "2px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         &nbsp;
         {checkWorkText}
       </Button>);
@@ -168,7 +168,7 @@ export default React.memo(function Answer(props) {
       </>
     }
 
-    return <span id={name} style={{display: "flex"}}>
+    return <span id={name}>
       <a name={name} />
       {inputChildrenToRender}
       {checkworkComponent}
