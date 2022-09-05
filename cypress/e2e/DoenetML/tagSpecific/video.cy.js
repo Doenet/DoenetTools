@@ -237,6 +237,9 @@ describe('Video Tag Tests', function () {
 
   <p>State: <copy prop="state" target="v" assignNames="state" /></p>
   <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
+  <p>Duration: <copy prop="duration" target="v" assignNames="duration" /></p>
+  <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" /></p>
+  <p>Fraction watched:  <copy prop="fractionWatched" target="v" assignNames="fractionWatched" displayDecimals="2" /></p>
 
   <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
 
@@ -265,14 +268,20 @@ describe('Video Tag Tests', function () {
 
     cy.get('#\\/state').contains("initializing")
     
-    cy.log('clikcing play action too early does not do anything (no error)')
+    cy.log('clicking play action too early does not do anything (no error)')
     cy.get('#\\/playAction').click();
     cy.get('#\\/state').contains("stopped")
     cy.get('#\\/time').contains("0")
+    cy.get('#\\/duration').should('have.text', '300');
+    cy.get('#\\/secondsWatched').should('have.text', '0')
+    cy.get('#\\/fractionWatched').should('have.text', '0')
 
     cy.wait(2000);
     cy.get('#\\/state').contains("stopped")
     cy.get('#\\/time').contains("0")
+    cy.get('#\\/secondsWatched').should('have.text', '0')
+    cy.get('#\\/fractionWatched').should('have.text', '0')
+
 
     cy.log('play via action')
     cy.get('#\\/playAction').click();
@@ -287,6 +296,8 @@ describe('Video Tag Tests', function () {
 
     cy.get('#\\/state').contains("stopped")
     cy.get('#\\/time').contains("3")
+    cy.get('#\\/secondsWatched').should('have.text', '3')
+    cy.get('#\\/fractionWatched').should('have.text', '0.01')
 
 
     cy.log('cue to first minute')
@@ -294,6 +305,8 @@ describe('Video Tag Tests', function () {
 
     cy.get('#\\/state').contains("stopped")
     cy.get('#\\/time').contains("60")
+    cy.get('#\\/secondsWatched').should('have.text', '3')
+    cy.get('#\\/fractionWatched').should('have.text', '0.01')
 
     cy.log('play via update')
     cy.get('#\\/playUpdate').click();
@@ -307,6 +320,9 @@ describe('Video Tag Tests', function () {
 
     cy.get('#\\/state').contains("stopped")
     cy.get('#\\/time').contains("62")
+    cy.get('#\\/secondsWatched').contains(/5|6/)
+
+    cy.get('#\\/fractionWatched').should('have.text', '0.02')
 
 
   })
