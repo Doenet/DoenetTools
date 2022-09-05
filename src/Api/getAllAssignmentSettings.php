@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 
 // $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 $doenetId =  mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
-// $contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+// $cid =  mysqli_real_escape_string($conn,$_REQUEST["cid"]);
 // $versionId =  mysqli_real_escape_string($conn,$_REQUEST["versionId"]);
 
 // $assignment_arr = array();
@@ -38,13 +38,14 @@ $assignment = array();
   a.totalPointsOrPercent AS totalPointsOrPercent,
   a.gradeCategory AS gradeCategory,
   a.individualize AS individualize,
-  a.multipleAttempts AS multipleAttempts,
   a.showSolution AS showSolution,
   a.showSolutionInGradebook AS showSolutionInGradebook,
   a.showFeedback AS showFeedback,
   a.showHints AS showHints,
   a.showCorrectness AS showCorrectness,
   a.showCreditAchievedMenu AS showCreditAchievedMenu,
+  a.paginate AS paginate,
+  a.showFinishButton AS showFinishButton,
   a.proctorMakesAvailable AS proctorMakesAvailable,
   a.doenetId AS doenetId
   FROM assignment AS a
@@ -53,6 +54,7 @@ $assignment = array();
   $result = $conn->query($sql);
   if ($result->num_rows > 0){
     $row = $result->fetch_assoc();
+
     $assignment = array(
           "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],
@@ -65,13 +67,14 @@ $assignment = array();
           "totalPointsOrPercent" => $row['totalPointsOrPercent'],
           "gradeCategory" => $row['gradeCategory'],
           "individualize" => $row['individualize'] == '1' ? true : false,
-          "multipleAttempts" => $row['multipleAttempts']  == '1' ? true : false,
           "showSolution" => $row['showSolution'] == '1' ? true : false,
           "showSolutionInGradebook" => $row['showSolutionInGradebook'] == '1' ? true : false,
           "showFeedback" => $row['showFeedback'] == '1' ? true : false,
           "showHints" => $row['showHints'] == '1' ? true : false,
           "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
           "showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
+          "paginate" => $row['paginate'] == '1' ? true : false,
+          "showFinishButton" => $row['showFinishButton'] == '1' ? true : false,
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "doenetId" => $row['doenetId']
     );

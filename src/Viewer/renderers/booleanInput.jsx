@@ -2,13 +2,19 @@ import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
+import { rendererState } from './useDoenetRenderer';
+import { useSetRecoilState } from 'recoil';
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import { MathJax } from "better-react-mathjax";
 
-export default function BooleanInput(props) {
-  let { name, SVs, actions, ignoreUpdate, callAction } = useDoenetRender(props);
+export default React.memo(function BooleanInput(props) {
+  let { name, id, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   BooleanInput.baseStateVariable = "value";
 
   const [rendererValue, setRendererValue] = useState(SVs.value);
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let valueWhenSetState = useRef(null);
 
@@ -36,10 +42,16 @@ export default function BooleanInput(props) {
 
   function onChangeHandler(e) {
 
-    let newValue = e.target.checked;
+    let newValue = !rendererValue;
 
     setRendererValue(newValue);
     valueWhenSetState.current = SVs.value;
+
+    setRendererState((was) => {
+      let newObj = { ...was };
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
 
     callAction({
       action: actions.updateBoolean,
@@ -58,7 +70,7 @@ export default function BooleanInput(props) {
 
   let disabled = SVs.disabled;
 
-  const inputKey = name + '_input';
+  const inputKey = id + '_input';
 
   let checkWorkStyle = {
     position: "relative",
@@ -84,7 +96,7 @@ export default function BooleanInput(props) {
         checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
       }
       checkWorkButton = <button
-        id={name + '_submit'}
+        id={id + '_submit'}
         tabIndex="0"
         disabled={disabled}
         // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
@@ -107,7 +119,7 @@ export default function BooleanInput(props) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = <span
-            id={name + '_correct'}
+            id={id + '_correct'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
@@ -121,14 +133,14 @@ export default function BooleanInput(props) {
 
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = <span
-            id={name + '_partial'}
+            id={id + '_partial'}
             style={checkWorkStyle}
           >{partialCreditContents}</span>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = <span
-            id={name + '_incorrect'}
+            id={id + '_incorrect'}
             style={checkWorkStyle}
           ><FontAwesomeIcon icon={faTimes} /></span>
 
@@ -137,7 +149,7 @@ export default function BooleanInput(props) {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = <span
-          id={name + '_saved'}
+          id={id + '_saved'}
           style={checkWorkStyle}
         ><FontAwesomeIcon icon={faCloud} /></span>
 
@@ -162,22 +174,43 @@ export default function BooleanInput(props) {
     }
   }
 
+
+  let input;
+  if (SVs.asToggleButton) {
+    input =
+      <ToggleButton
+        id={inputKey}
+        key={inputKey}
+        isSelected={rendererValue}
+        onClick={onChangeHandler}
+        value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
+        disabled={disabled}
+      />;
+  } else {
+    let label = SVs.label;
+    if (SVs.labelHasLatex) {
+      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    }
+    input = <label>
+      <input
+        type="checkbox"
+        key={inputKey}
+        id={inputKey}
+        checked={rendererValue}
+        onChange={onChangeHandler}
+        disabled={disabled}
+      />
+      {label}
+    </label>;
+  }
+
   return <React.Fragment>
-    <span id={name}>
-      <a name={name} />
-      <label>
-        <input
-          type="checkbox"
-          key={inputKey}
-          id={inputKey}
-          checked={rendererValue}
-          onChange={onChangeHandler}
-          disabled={disabled}
-        />
-        {SVs.label}
-      </label>
+    <span id={id}>
+      <a name={id} />
+      {input}
       {checkWorkButton}
     </span>
   </React.Fragment>
 
-}
+})

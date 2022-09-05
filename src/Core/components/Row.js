@@ -6,8 +6,8 @@ export default class Row extends BaseComponent {
   static rendererType = "row";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.rowNum = {
       createComponentOfType: "text",
       createStateVariable: "rowNum",
@@ -52,7 +52,9 @@ export default class Row extends BaseComponent {
 
     stateVariableDefinitions.halign = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       defaultValue: "left",
       hasEssential: true,
       returnDependencies: () => ({
@@ -84,7 +86,9 @@ export default class Row extends BaseComponent {
 
     stateVariableDefinitions.valign = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       defaultValue: "middle",
       hasEssential: true,
@@ -117,7 +121,9 @@ export default class Row extends BaseComponent {
 
     stateVariableDefinitions.left = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       defaultValue: "none",
       hasEssential: true,
@@ -150,7 +156,9 @@ export default class Row extends BaseComponent {
 
     stateVariableDefinitions.bottom = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       defaultValue: "none",
       hasEssential: true,
       returnDependencies: () => ({
@@ -201,7 +209,9 @@ export default class Row extends BaseComponent {
     //   isArray: true,
     //   entryPrefixes: ["cellMath"],
     //   public: true,
-    //   componentType: "math",
+    //   shadowingInstructions: {
+      //   createComponentOfType: "math",
+      // },
     //   returnDependencies: function ({ arrayKeys }) {
 
     //     if (arrayKeys === undefined) {
@@ -387,7 +397,9 @@ export default class Row extends BaseComponent {
     //   isArray: true,
     //   entryPrefixes: ["cellNumber"],
     //   public: true,
-    //   componentType: "number",
+    //   shadowingInstructions: {
+      //   createComponentOfType: "number",
+      // },
     //   returnDependencies: function ({ arrayKeys }) {
 
     //     if (arrayKeys === undefined) {
@@ -573,7 +585,9 @@ export default class Row extends BaseComponent {
     //   isArray: true,
     //   entryPrefixes: ["cellText"],
     //   public: true,
-    //   componentType: "text",
+    //   shadowingInstructions: {
+      //   createComponentOfType: "text",
+      // },
     //   returnDependencies: function ({ arrayKeys }) {
 
     //     if (arrayKeys === undefined) {

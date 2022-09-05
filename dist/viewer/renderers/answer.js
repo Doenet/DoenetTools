@@ -1,9 +1,27 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-export default function Answer(props) {
-  let {name, SVs, actions, children, callAction} = useDoenetRender(props);
+import {faCheck, faLevelDownAlt, faTimes, faCloud} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const Button = styled.button`
+  position: relative;
+  height: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  /* padding: 2px; */
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 10px 12px 10px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
+export default React.memo(function Answer(props) {
+  let {name, id, SVs, actions, children, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
@@ -33,22 +51,17 @@ export default function Answer(props) {
       }
     }
     let checkWorkStyle = {
-      height: "23px",
-      display: "inline-block",
-      backgroundColor: "rgb(2, 117, 216)",
-      padding: "1px 6px 1px 6px",
-      color: "white",
-      fontWeight: "bold"
+      cursor: "pointer"
     };
     if (disabled) {
-      checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+      checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     }
-    let checkWorkText = "Check Work";
+    let checkWorkText = SVs.submitLabel;
     if (!SVs.showCorrectness) {
-      checkWorkText = "Submit Response";
+      checkWorkText = SVs.submitLabelNoCorrectness;
     }
-    let checkworkComponent = /* @__PURE__ */ React.createElement("button", {
-      id: name + "_submit",
+    let checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
+      id: id + "_submit",
       tabIndex: "0",
       disabled,
       style: checkWorkStyle,
@@ -59,22 +72,23 @@ export default function Answer(props) {
         }
       }
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      style: {marginRight: "4px", paddingLeft: "2px"},
       icon: faLevelDownAlt,
       transform: {rotate: 90}
     }), " ", checkWorkText);
     if (SVs.showCorrectness) {
       if (validationState === "correct") {
-        checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-        checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_correct",
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+        checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
+          id: id + "_correct",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCheck
         }), "  Correct");
       } else if (validationState === "incorrect") {
-        checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-        checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_incorrect",
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+        checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
+          id: id + "_incorrect",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faTimes
@@ -83,16 +97,16 @@ export default function Answer(props) {
         checkWorkStyle.backgroundColor = "#efab34";
         let percent = Math.round(SVs.creditAchieved * 100);
         let partialCreditContents = `${percent}% Correct`;
-        checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_partial",
+        checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
+          id: id + "_partial",
           style: checkWorkStyle
         }, partialCreditContents);
       }
     } else {
       if (validationState !== "unvalidated") {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_saved",
+        checkworkComponent = /* @__PURE__ */ React.createElement(Button, {
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -101,19 +115,23 @@ export default function Answer(props) {
     }
     if (SVs.numberOfAttemptsLeft < 0) {
       checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(1 attempt remaining)"));
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-      checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
+      checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(", SVs.numberOfAttemptsLeft, " attempts remaining)"));
     }
     return /* @__PURE__ */ React.createElement("span", {
-      id: name
+      id,
+      style: {display: "flex"}
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), inputChildrenToRender, checkworkComponent);
   } else {
     return /* @__PURE__ */ React.createElement("span", {
-      id: name
+      id,
+      style: {marginBottom: "12px"}
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), inputChildrenToRender);
   }
-}
+});

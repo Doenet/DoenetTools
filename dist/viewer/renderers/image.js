@@ -1,60 +1,63 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import {retrieveMediaForCID} from "../../core/utils/retrieveMedia.js";
+import {retrieveMediaForCid} from "../../core/utils/retrieveMedia.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
-export default function Image(props) {
-  let {name, SVs} = useDoenetRender(props, false);
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
+export default React.memo(function Image(props) {
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props, false);
   let [url, setUrl] = useState(null);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   useEffect(() => {
     if (SVs.cid) {
-      retrieveMediaForCID(SVs.cid, SVs.mimeType).then((result) => {
+      retrieveMediaForCid(SVs.cid, SVs.mimeType).then((result) => {
         setUrl(result.mediaURL);
       }).catch((e) => {
       });
     }
   }, []);
-  if (SVs.hidden) {
+  if (SVs.hidden)
     return null;
+  let outerStyle = {};
+  if (SVs.displayMode === "inline") {
+    outerStyle = {display: "inline-block", verticalAlign: "middle", margin: "12px 0"};
+  } else {
+    outerStyle = {display: "flex", justifyContent: SVs.horizontalAlign, margin: "12px 0"};
   }
-  if (url) {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
-    }), /* @__PURE__ */ React.createElement("img", {
-      id: name,
-      src: url,
-      style: {maxWidth: "850px"},
-      width: sizeToCSS(SVs.width),
-      height: sizeToCSS(SVs.height),
-      alt: SVs.description
-    }));
-  } else if (!SVs.cid && SVs.source) {
-    let src = SVs.source;
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
-    }), /* @__PURE__ */ React.createElement("img", {
-      id: name,
-      src,
-      style: {maxWidth: "850px"},
-      width: sizeToCSS(SVs.width),
-      height: sizeToCSS(SVs.height),
-      alt: SVs.description
-    }));
-  } else if (SVs.height && SVs.width) {
-    /* @__PURE__ */ React.createElement("a", {
-      name
-    });
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
-    }), /* @__PURE__ */ React.createElement("div", {
-      id: name,
-      style: {
-        display: "inline-block",
-        maxWidth: "850px",
-        width: sizeToCSS(SVs.width),
-        height: sizeToCSS(SVs.height),
-        border: "solid black 1px"
-      }
-    }, SVs.description));
+  let imageStyle = {
+    maxWidth: "100%",
+    width: sizeToCSS(SVs.width),
+    aspectRatio: String(SVs.aspectRatio)
+  };
+  if (!(url || SVs.source)) {
+    imageStyle.border = "var(--mainBorder)";
   }
-  return null;
-}
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
+    style: outerStyle
+  }, /* @__PURE__ */ React.createElement("a", {
+    name: id
+  }), url || SVs.source ? /* @__PURE__ */ React.createElement("img", {
+    id,
+    src: url ? url : SVs.source ? SVs.source : "",
+    style: imageStyle,
+    alt: SVs.description
+  }) : /* @__PURE__ */ React.createElement("div", {
+    id,
+    style: imageStyle
+  }, SVs.description)));
+});

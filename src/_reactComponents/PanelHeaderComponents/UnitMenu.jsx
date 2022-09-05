@@ -13,6 +13,10 @@ const Textfield = styled.input`
   text-align: center;
   resize: none;
   cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+  &:focus {
+    outline: ${props => props.alert};
+    outline-offset: 2px;
+  }
 `;
 
 const Label = styled.p`
@@ -43,22 +47,27 @@ const Units = styled.button`
   height: 24px;
   width: 34px;
   position: relative;
-  color: ${props => props.disabled ? 'black' : 'white'};
+  color: ${props => props.disabled ? 'var(--canvastext)' : 'var(--canvas)'};
   font-size: 12px;
   right: 36px;
 
   &:hover { // Button color lightens on hover
-    color: black;
+    color: var(--canvastext);
     background-color: ${props => props.disabled ? 'none' : 'var(--lightBlue)'};
     cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   };
+
+  &:focus {
+    outline: ${props => props.alert};
+    outline-offset: 4px;
+  }
 `;
 
 const Unit = styled.div`
   display: none;
   position: relative;
   background-color: var(--mainGray);
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 8px 16px 0px var(--mainGray);
   z-index: 9999;
   border: var(--mainBorder);
   border-radius: var(--mainBorderRadius);
@@ -72,7 +81,7 @@ const Unitoption = styled.button`
   display: block;
   width: 48px;
   height: 24px;
-  border: 1px black solid;
+  border: 1px var(--canvastext) solid;
   :hover {
     cursor: pointer;
   };
@@ -80,7 +89,7 @@ const Unitoption = styled.button`
     props.selected === "True" &&
     css`
       background: var(--solidLightBlue);
-      color: black;
+      color: var(--canvastext);
   `};
 `;
 
@@ -226,6 +235,7 @@ export default function UnitMenu(props) {
       <>
         <LabelContainer align={align}>
           <Label
+            id="unitmenu-label"
             visible={labelVisible}
             onMouseDown={(e) => {
               initialClickLabelPosition.current = [e.clientX, e.clientY]
@@ -237,6 +247,8 @@ export default function UnitMenu(props) {
           </Label>
           <Container>
             <Textfield
+              aria-labelledby="unitmenu-label"
+              aria-disabled={props.disabled ? true : false}
               disabled={disabled}
               id="text"
               type="text"
@@ -250,7 +262,7 @@ export default function UnitMenu(props) {
               }}
               onChange={() => {changeValue(event)}}
             ></Textfield>
-              <Units disabled={disabled}>
+              <Units aria-disabled={props.disabled ? true : false} disabled={disabled} alert={alert} aria-haspopup="true">
                 {currentUnit}
                 <Unit id="unit" disabled={disabled}>{unitComponents}</Unit>
               </Units>

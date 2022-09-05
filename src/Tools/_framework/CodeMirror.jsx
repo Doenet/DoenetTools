@@ -4,11 +4,13 @@ import { EditorState, Transaction, StateEffect } from '@codemirror/state';
 import { selectLine, deleteLine, cursorLineUp } from '@codemirror/commands';
 import { EditorView, keymap } from '@codemirror/view';
 import { styleTags, tags as t } from "@codemirror/highlight";
-import { lineNumbers } from "@codemirror/gutter";
-import { LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp } from '@codemirror/language';
+import { gutter, lineNumbers } from "@codemirror/gutter";
+import { LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp, } from '@codemirror/language';
+import {HighlightStyle } from '@codemirror/highlight';
 import { completeFromSchema } from '@codemirror/lang-xml';
 import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
+import { getRenderer } from 'handsontable/renderers';
 
 const editorConfigStateAtom = atom({
     key: 'editorConfigStateAtom',
@@ -23,6 +25,50 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     if(readOnly === undefined){
         readOnly = false;
     }
+
+    let colorTheme = EditorView.theme({
+        "&": {
+          color: "var(--canvastext)",
+          //backgroundColor: "var(--canvas)",
+        },
+        ".cm-content": {
+          caretColor: "#0e9",
+          borderDownColor: "var(--canvastext)"
+         
+         
+        },
+        ".cm-editor": {
+            caretColor: "#0e9",
+            backgroundColor: "var(--canvas)",
+           
+          },
+        "&.cm-focused .cm-cursor": {
+          backgroundColor:"var(--lightBlue)",
+          borderLeftColor: "var(--canvastext)",
+          
+        },
+        "&.cm-focused .cm-selectionBackground, ::selection": {
+          backgroundColor: "var(--lightBlue)",
+         
+        },
+        "&.cm-focused":{
+            color:"var(--canvastext)",
+        },
+        "cm-selectionLayer":{
+            backgroundColor: "var(--mainGreen)"
+        },
+        ".cm-gutters": {
+          backgroundColor: "var(--mainGray)",
+          color: "black",
+          border: "none",
+        },
+        ".cm-activeLine":{
+            backgroundColor: "var(--lightBlue)",
+            color:"black",
+        }
+       
+      })
+      
 
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
@@ -74,6 +120,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         basicSetup,
         doenet(doenetSchema),
         EditorView.lineWrapping,
+        colorTheme,
         tabExtension,
         cutExtension,
         copyExtension,
@@ -179,7 +226,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     //should rewrite using compartments once a more formal config component is established
     return (
         <>
-        <div ref={parent} ></div>
+        <div ref={parent} style={{paddingBottom: "50vh"}}></div>
         </>
     )
 }
@@ -259,7 +306,7 @@ props : [
         //the indent wont have time to update and you're going right back to the left side of the screen.
         Element(context) {
             let closed = /^\s*<\//.test(context.textAfter)
-            console.log("youuuhj",context.state.doc.lineAt(context.node.from))
+            // console.log("youuuhj",context.state.doc.lineAt(context.node.from))
             return context.lineIndent(context.node.from) + (closed ? 0 : context.unit)
         },
         "OpenTag CloseTag SelfClosingTag"(context) {
@@ -290,7 +337,8 @@ props : [
         Is: t.definitionOperator,
         "EntityReference CharacterReference": t.character,
         Comment: t.blockComment,
-        Macro: t.macroName
+        Macro: t.macroName,
+        
         })
 ]
 });

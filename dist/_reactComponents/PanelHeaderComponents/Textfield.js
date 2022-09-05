@@ -1,25 +1,34 @@
 import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
-import {doenetComponentForegroundInactive} from "./theme.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const TextfieldStyling = styled.input`
+  margin: 0px 4px 0px 0px;
+  height: 24px;
+  border: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+  font-family: Arial;
+  border-radius: var(--mainBorderRadius);
+  color: var(--canvastext);
+  resize: none;
+  white-space: nowrap;
+  padding: 0px 5px 0px 5px;
+  line-height: 24px;
+  font-size: 14px;
+  background-color: var(--canvas);
+  cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+  pointer-events: ${(props) => props.disabled ? "none" : "auto"};
+  width: ${(props) => props.inputWidth};
+  &:focus {
+    outline: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+    outline-offset: 2px;
+  }
+`;
 export default function Textfield(props) {
-  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
-  const [text, setText] = useState("");
-  const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  const labelVisible = props.label ? "static" : "none";
+  const align = props.vertical ? "initial" : "flex";
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
   const inputRef = useRef(null);
-  var textfield = {
-    margin: "0px 4px 0px 0px",
-    height: "24px",
-    border: `2px solid ${doenetComponentForegroundInactive}`,
-    fontFamily: "Arial",
-    borderRadius: "5px",
-    color: "#000",
-    value: `${text}`,
-    resize: "none",
-    whiteSpace: "nowrap",
-    padding: "0px 5px 0px 5px",
-    lineHeight: "24px",
-    fontSize: "14px"
+  var textfieldValue = {
+    value: `${props.value}`
   };
   var label = {
     value: "Label:",
@@ -37,60 +46,71 @@ export default function Textfield(props) {
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });
-  if (props.alert) {
-    textfield.border = "2px solid #C1292E";
-  }
   if (props.label) {
     label.value = props.label;
   }
+  ;
   if (props.value) {
-    textfield.value = props.value;
+    textfieldValue.value = props.value;
   }
+  ;
   if (props.placeholder) {
-    textfield.placeholder = props.placeholder;
+    textfieldValue.placeholder = props.placeholder;
   }
-  if (props.ariaLabel) {
-    textfield.ariaLabel = props.ariaLabel;
-  }
+  ;
   var disable = "";
+  var read_only = false;
   if (props.disabled) {
-    textfield.border = "2px solid #e2e2e2";
-    textfield.cursor = "not-allowed";
     disable = "disabled";
+    read_only = true;
   }
+  ;
+  var inputWidth = "";
   if (props.width) {
     if (props.width === "menu") {
-      textfield.width = "200px";
+      inputWidth = "200px";
       if (props.label) {
         container.width = "200px";
       }
     }
   }
+  ;
   function handleChange(e) {
     if (props.onChange)
       props.onChange(e);
     setCursorStart(e.target.selectionStart);
     setCursorEnd(e.target.selectionEnd);
   }
+  ;
   function handleBlur(e) {
     if (props.onBlur)
       props.onBlur(e);
   }
+  ;
   function handleKeyDown(e) {
     if (props.onKeyDown)
       props.onKeyDown(e);
   }
+  ;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
-    style: label
-  }, label.value), /* @__PURE__ */ React.createElement("input", {
+    style: label,
+    id: "textfield-label"
+  }, label.value), /* @__PURE__ */ React.createElement(TextfieldStyling, {
+    "aria-disabled": props.disabled ? true : false,
+    "aria-labelledby": "textfield-label",
     type: "text",
+    inputWidth,
+    readOnly: read_only,
+    alert: props.alert,
+    disabled: props.disabled,
     ref: inputRef,
-    placeholder: textfield.placeholder,
-    defaultValue: textfield.value,
-    "aria-label": textfield.ariaLabel,
-    style: textfield,
+    value: props.value,
+    placeholder: textfieldValue.placeholder,
+    "aria-label": textfieldValue.ariaLabel,
+    style: textfieldValue,
+    "data-test": props.dataTest,
     onChange: (e) => {
       handleChange(e);
     },
@@ -99,7 +119,7 @@ export default function Textfield(props) {
     },
     onKeyDown: (e) => {
       handleKeyDown(e);
-    },
-    disabled: disable
+    }
   })));
 }
+;

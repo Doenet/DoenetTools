@@ -3,13 +3,17 @@ import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
+import { rendererState } from './useDoenetRenderer';
+import { useSetRecoilState } from 'recoil';
 
 export default function TextInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   TextInput.baseStateVariable = "immediateValue";
 
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let valueToRevertTo = useRef(SVs.immediateValue);
   let focused = useRef(null);
@@ -96,11 +100,17 @@ export default function TextInput(props) {
 
     let newValue = e.target.value;
 
-    // console.log(`on change handler for ${name}, desired value: ${newValue}`)
+    // console.log(`on change handler for ${id}, desired value: ${newValue}`)
 
     if (newValue !== rendererValue) {
 
       setRendererValue(newValue);
+
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
       immediateValueWhenSetState.current = SVs.immediateValue;
 
       callAction({
@@ -122,7 +132,7 @@ export default function TextInput(props) {
 
   let disabled = SVs.disabled;
 
-  const inputKey = name + '_input';
+  const inputKey = id + '_input';
 
   let surroundingBorderColor = "#efefef";
   if (focused.current) {
@@ -154,7 +164,7 @@ export default function TextInput(props) {
         checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
       }
       checkWorkButton = <button
-        id={name + '_submit'}
+        id={id + '_submit'}
         tabIndex="0"
         disabled={disabled}
         style={checkWorkStyle}
@@ -176,7 +186,7 @@ export default function TextInput(props) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = <span
-            id={name + '_correct'}
+            id={id + '_correct'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
@@ -190,14 +200,14 @@ export default function TextInput(props) {
 
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = <span
-            id={name + '_partial'}
+            id={id + '_partial'}
             style={checkWorkStyle}
           >{partialCreditContents}</span>
         } else {
           //incorrect
           checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
           checkWorkButton = <span
-            id={name + '_incorrect'}
+            id={id + '_incorrect'}
             style={checkWorkStyle}
           ><FontAwesomeIcon icon={faTimes} /></span>
 
@@ -206,7 +216,7 @@ export default function TextInput(props) {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = <span
-          id={name + '_saved'}
+          id={id + '_saved'}
           style={checkWorkStyle}
         ><FontAwesomeIcon icon={faCloud} /></span>
 
@@ -277,8 +287,8 @@ export default function TextInput(props) {
 
 
   return <React.Fragment>
-    <a name={name} />
-    <span className="textInputSurroundingBox" id={name}>
+    <a name={id} />
+    <span className="textInputSurroundingBox" id={id}>
       {input}
       {checkWorkButton}
     </span>

@@ -29,24 +29,24 @@ const DragHandle = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: hsl(0, 0%, 99%);
+  color: white;
   padding: 0;
   cursor: ew-resize;
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   width: 8px;
   box-sizing: border-box;
 `;
 
 export const panelsInfoAtom = atom({
   key: 'panelsInfoAtom',
-  default: { propotion: 0.5, isActive: false },
+  default: { proportion: 0.5, isActive: false },
 });
 
-const panelPropotion = selector({
-  key: 'panelPropotion',
+const panelProportionSelector = selector({
+  key: 'panelProportionSelector',
   get: ({ get }) => {
     const info = get(panelsInfoAtom);
-    return info.isActive ? info.propotion : 1;
+    return info.isActive ? info.proportion : 1;
   },
 });
 
@@ -60,9 +60,9 @@ export const useSupportDividerController = () => {
         set(panelsInfoAtom, (oldInfo) => ({
           isActive:
             newProportion === 1 ? false : newIsActive ?? !oldInfo.isActive,
-          propotion:
+          proportion:
             (newProportion ?? 1) === 1
-              ? oldInfo.propotion
+              ? oldInfo.proportion
               : calcInfo(newProportion),
         }));
       },
@@ -81,7 +81,7 @@ export default function ContentPanel({ main, support, hasNoHeaderPanel }) {
   // const [hasRespCont, setHasRespCont] = useState(true);
   const hasRespCont = true;
   const setDivider = useSupportDividerController();
-  const panelProportion = useRecoilValue(panelPropotion);
+  let panelProportion = useRecoilValue(panelProportionSelector);
   const dragHandleRef = useRef();
   const setHandleLeft = useSetRecoilState(supportPanelHandleLeft);
   // const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -179,7 +179,7 @@ export default function ContentPanel({ main, support, hasNoHeaderPanel }) {
         <DragHandle
           ref={dragHandleRef}
           onMouseDown={onMouseDown}
-          data-cy="contentPanelDragHandle"
+          data-test="contentPanelDragHandle"
           key={`SupportHandle`}
         >
           <FontAwesomeIcon icon={faGripLinesVertical} />

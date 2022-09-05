@@ -1,25 +1,45 @@
 import BlockComponent from './abstract/BlockComponent';
+import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size';
 
 export default class Video extends BlockComponent {
   static componentType = "video";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",
     };
-    attributes.height = {
-      createComponentOfType: "_componentSize",
-      // createStateVariable: "height",
-      // defaultValue: null,
-      // public: true,
-      // forRenderer: true,
-    };
+    attributes.size = {
+      createComponentOfType: "text",
+    }
     attributes.aspectRatio = {
       createComponentOfType: "number",
-      // createStateVariable: "aspectRatio",
     };
+
+    // Note: height attribute is deprecated and will be removed in the future
+    attributes.height = {
+      createComponentOfType: "_componentSize",
+    };
+
+    attributes.displayMode = {
+      createComponentOfType: "text",
+      createStateVariable: "displayMode",
+      validValues: ["block", "inline"],
+      defaultValue: "block",
+      forRenderer: true,
+      public: true,
+    }
+
+    attributes.horizontalAlign = {
+      createComponentOfType: "text",
+      createStateVariable: "horizontalAlign",
+      validValues: ["center", "left", "right"],
+      defaultValue: "center",
+      forRenderer: true,
+      public: true,
+    }
+
     attributes.youtube = {
       createComponentOfType: "text",
       createStateVariable: "youtube",
@@ -43,164 +63,273 @@ export default class Video extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.width = {
-      defaultValue: {size:720,isAbsolute:true},
-      public: true,
-      hasEssential: true,
-      componentType: "_componentSize",
-      forRenderer: true,
-      additionalStateVariablesDefined:[{
-        variableName:'height',
-        componentType: "_componentSize",
-        defaultValue: {size:405,isAbsolute:true},
-        public: true,
-        forRenderer: true,
-        hasEssential: true,
 
+    stateVariableDefinitions.size = {
+      public: true,
+      defaultValue: "full",
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
       },
-      {
-        variableName:'aspectRatio',
-        componentType: "number",
-        defaultValue: 16/9,
-        public: true,
-        forRenderer: true,
-        hasEssential: true,
-      }
-    ],
-      returnDependencies:()=>({
+      returnDependencies: () => ({
+        sizeAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "size",
+          variableNames: ["value"],
+        },
         widthAttr: {
-          dependencyType:'attributeComponent',
-          attributeName:'width',
-          variableNames:['componentSize'],
+          dependencyType: "attributeComponent",
+          attributeName: "width",
+          variableNames: ["componentSize"],
         },
-        heightAttr: {
-          dependencyType:'attributeComponent',
-          attributeName:'height',
-          variableNames:['componentSize'],
-        },
-        aspectRatioAttr: {
-          dependencyType:'attributeComponent',
-          attributeName:'aspectRatio',
-          variableNames:['value'],
+      }),
+      definition({ dependencyValues }) {
+        const defaultSize = 'full';
+
+        if (dependencyValues.sizeAttr) {
+          let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
+
+          if (!sizePossibilities.includes(size)) {
+            size = defaultSize;
+          }
+          return {
+            setValue: { size }
+          }
+        } else if (dependencyValues.widthAttr) {
+          let componentSize = dependencyValues.widthAttr.stateValues.componentSize;
+          if (componentSize === null) {
+
+            return {
+              setValue: { size: defaultSize }
+            }
+          }
+          let { isAbsolute, size: widthSize } = componentSize;
+          let size;
+
+          if (isAbsolute) {
+            for (let [ind, pixels] of orderedWidthMidpoints.entries()) {
+              if (widthSize <= pixels) {
+                size = sizePossibilities[ind];
+                break
+              }
+            }
+            if (!size) {
+              size = defaultSize
+            }
+          } else {
+            for (let [ind, percent] of orderedPercentWidthMidpoints.entries()) {
+              if (widthSize <= percent) {
+                size = sizePossibilities[ind];
+                break
+              }
+            }
+            if (!size) {
+              size = defaultSize
+            }
+          }
+          return {
+            setValue: { size }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { size: true }
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.width = {
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize"
+      },
+      returnDependencies: () => ({
+        size: {
+          dependencyType: "stateVariable",
+          variableName: "size",
         }
       }),
-      definition:({dependencyValues})=>{
-        console.log("dependencyValues",dependencyValues)
-      
-        if (dependencyValues.widthAttr){
-          let width = dependencyValues.widthAttr.stateValues.componentSize;
-          if (!width.isAbsolute){ throw Error("Have not implemented relative width for video")}
-          if (dependencyValues.heightAttr){
-            //Have width and height so override aspectRatio even if it exists
-            let height = dependencyValues.heightAttr.stateValues.componentSize;
-            if (!height.isAbsolute){ throw Error("Have not implemented relative height for video")}
-            let aspectRatio = width.size/height.size;
-            return {
-              setValue:{
-                width,
-                height,
-                aspectRatio
-              }
-            }
-          }else if(dependencyValues.aspectRatioAttr){
-            //Have width and aspectRatio but not height
-            let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-            let height = {isAbsolute:true,size:width.size/aspectRatio}
-            return {
-              setValue:{
-                width,
-                height,
-                aspectRatio
-              }
-            }
-          }else{
-            //Have width and not height or aspectRatio
-            let height = {isAbsolute:true,size:width.size/(16/9)}
-            return {
-              setValue:{
-                width,
-                height
-              },
-              useEssentialOrDefaultValue:{
-                aspectRatio:true,
-              }
-            }
-          }
-        }else{
-          //Don't have width
+      definition({ dependencyValues }) {
 
-          if (dependencyValues.heightAttr){
-            let height = dependencyValues.heightAttr.stateValues.componentSize;
-            if (!height.isAbsolute){ throw Error("Have not implemented relative height for video")}
+        let width = { isAbsolute: true, size: widthsBySize[dependencyValues.size] }
 
-            if(dependencyValues.aspectRatioAttr){
-              //Have height and aspectRatio, No width
-              let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-              let width = {isAbsolute:true,size:height.size*aspectRatio}
-              return {
-                setValue:{
-                  width,
-                  height,
-                  aspectRatio
-                }
-              }
-            }else{
-              //Have height, no width, no aspectRatio
-              let width = {isAbsolute:true,size:height.size*(16/9)}
-              return {
-                setValue:{
-                  width,
-                  height
-                },
-                useEssentialOrDefaultValue:{
-                  aspectRatio:true,
-                }
-              }
-            }
-          }else{
-            
-            if(dependencyValues.aspectRatioAttr){
-              //Have aspectRatio, No height, no width
-              let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-              let height = {isAbsolute:true,size:720/aspectRatio}
-              return {
-                setValue:{
-                  aspectRatio,
-                  height
-                },
-                useEssentialOrDefaultValue:{
-                  width:true,
-                }
-              }
-            }else{
-              //No aspectRatio, No height, no width
-              return {
-                useEssentialOrDefaultValue:{
-                  width:true,
-                  height:true,
-                  aspectRatio:true,
-                }
-              }
-            }
-          }
-          
-
+        return {
+          setValue: { width }
         }
+
       }
 
+    }
+
+    stateVariableDefinitions.aspectRatio = {
+      public: true,
+      forRenderer: true,
+      defaultValue: "16 / 9",
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({
+        aspectRatioAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "aspectRatio",
+          variableNames: ["value"]
+        },
+        width: {
+          dependencyType: "stateVariable",
+          variableName: "width"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.aspectRatioAttr !== null) {
+          let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
+          if (!Number.isFinite(aspectRatio)) {
+            aspectRatio = 1;
+          }
+          return {
+            setValue: { aspectRatio }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { aspectRatio: true }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.state = {
+      hasEssential: true,
+      defaultValue: "initializing",
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { state: true } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let desiredState = desiredStateVariableValues.state.toLowerCase();
+        let validValues = ["stopped", "playing"];
+        if (!validValues.includes(desiredState)) {
+          return { success: false }
+        }
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "state",
+            value: desiredState
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.time = {
+      hasEssential: true,
+      defaultValue: 0,
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { time: true } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let desiredTime = desiredStateVariableValues.time;
+        if (!(desiredTime >= 0)) {
+          return { success: false }
+        }
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "time",
+            value: desiredTime
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.duration = {
+      hasEssential: true,
+      defaultValue: null,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { duration: true } }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setEssentialValue: "duration",
+          value: desiredStateVariableValues.duration
+        }]
+      })
+    }
+
+    stateVariableDefinitions.segmentsWatched = {
+      hasEssential: true,
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { segmentsWatched: true } }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setEssentialValue: "segmentsWatched",
+          value: desiredStateVariableValues.segmentsWatched
+        }]
+      })
+    }
+
+    stateVariableDefinitions.secondsWatched = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({
+        segmentsWatched: {
+          dependencyType: "stateVariable",
+          variableName: "segmentsWatched"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let secondsWatched = 0;
+        if (dependencyValues.segmentsWatched) {
+          secondsWatched = dependencyValues.segmentsWatched.reduce((a, c) => a + c[1] - c[0], 0);
+        }
+        return { setValue: { secondsWatched } }
+      }
+    }
+
+    stateVariableDefinitions.fractionWatched = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({
+        secondsWatched: {
+          dependencyType: "stateVariable",
+          variableName: "secondsWatched"
+        },
+        duration: {
+          dependencyType: "stateVariable",
+          variableName: "duration"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { fractionWatched: dependencyValues.secondsWatched / dependencyValues.duration } }
+      }
     }
 
     return stateVariableDefinitions;
   }
 
 
-  actions = {
-    recordVideoStarted: this.recordVideoStarted.bind(this),
-    recordVideoWatched: this.recordVideoWatched.bind(this),
-    recordVideoPaused: this.recordVideoPaused.bind(this),
-    recordVideoSkipped: this.recordVideoSkipped.bind(this),
-    recordVideoCompleted: this.recordVideoCompleted.bind(this),
-  }
 
   recordVideoStarted({ beginTime, duration, rate }) {
     this.coreFunctions.requestRecordEvent({
@@ -215,9 +344,17 @@ export default class Video extends BlockComponent {
         rate: rate
       }
     })
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "playing",
+      }],
+    })
   }
 
-  recordVideoWatched({ beginTime, endTime, duration, rates }) {
+  async recordVideoWatched({ beginTime, endTime, duration, rates }) {
     this.coreFunctions.requestRecordEvent({
       verb: "watched",
       object: {
@@ -231,6 +368,48 @@ export default class Video extends BlockComponent {
         rates
       }
     })
+
+    let previousSegments = await this.stateValues.segmentsWatched;
+    let segmentsWatched;
+    if (!previousSegments) {
+      segmentsWatched = [[beginTime, endTime]]
+    } else {
+      segmentsWatched = [];
+      let addedNew = false;
+      for (let [ind, seg] of previousSegments.entries()) {
+        if (endTime < seg[0]) {
+          segmentsWatched.push([beginTime, endTime])
+          segmentsWatched.push(...previousSegments.slice(ind));
+          addedNew = true;
+          break;
+        } else if (beginTime > seg[1]) {
+          segmentsWatched.push(seg);
+          continue;
+        }
+        // have overlap with segment
+        beginTime = Math.min(seg[0], beginTime);
+        endTime = Math.max(seg[1], endTime)
+      }
+
+      if (!addedNew) {
+        segmentsWatched.push([beginTime, endTime])
+      }
+    }
+
+
+    await this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "segmentsWatched",
+        value: segmentsWatched,
+      }],
+      canSkipUpdatingRenderer: true,
+    })
+
+    return await this.coreFunctions.triggerChainedActions({
+      componentName: this.componentName,
+    });
   }
 
   recordVideoPaused({ endTime, duration }) {
@@ -244,6 +423,14 @@ export default class Video extends BlockComponent {
       context: {
         endingPoint: endTime
       }
+    })
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "stopped",
+      }],
     })
   }
 
@@ -271,6 +458,91 @@ export default class Video extends BlockComponent {
         duration: duration
       },
     })
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "stopped",
+      }],
+    })
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+
+  recordVideoReady({ duration }) {
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "stopped",
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "duration",
+        value: duration,
+      }],
+      doNotSave: true  // video actions don't count as changing page state
+    })
+  }
+
+  playVideo() {
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "playing",
+      }],
+    })
+  }
+
+  pauseVideo() {
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "stopped",
+      }],
+    })
+  }
+
+  setTime({ time }) {
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "time",
+        value: time,
+      }],
+    })
+  }
+
+  actions = {
+    recordVideoStarted: this.recordVideoStarted.bind(this),
+    recordVideoWatched: this.recordVideoWatched.bind(this),
+    recordVideoPaused: this.recordVideoPaused.bind(this),
+    recordVideoSkipped: this.recordVideoSkipped.bind(this),
+    recordVideoCompleted: this.recordVideoCompleted.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    recordVideoReady: this.recordVideoReady.bind(this),
+    playVideo: this.playVideo.bind(this),
+    pauseVideo: this.pauseVideo.bind(this),
+    setTime: this.setTime.bind(this),
   }
 
 }

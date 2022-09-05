@@ -2,11 +2,11 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class Choice extends InlineComponent {
   static componentType = "choice";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.credit = {
       createComponentOfType: "number",
       createStateVariable: "credit",
@@ -51,7 +51,9 @@ export default class Choice extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -77,7 +79,9 @@ export default class Choice extends InlineComponent {
     stateVariableDefinitions.selected = {
       defaultValue: false,
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         countAmongSiblings: {
           dependencyType: "countAmongSiblingsOfSameType"
@@ -89,9 +93,14 @@ export default class Choice extends InlineComponent {
       }),
       definition({ dependencyValues }) {
 
-        let selected = dependencyValues.childIndicesSelected.includes(
-          dependencyValues.countAmongSiblings
-        );
+        let selected
+        if (dependencyValues.childIndicesSelected) {
+          selected = dependencyValues.childIndicesSelected.includes(
+            dependencyValues.countAmongSiblings
+          );
+        } else {
+          selected = false;
+        }
 
         return { setValue: { selected } }
 
@@ -112,7 +121,9 @@ export default class Choice extends InlineComponent {
       defaultValue: false,
       hasEssential: true,
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -133,7 +144,9 @@ export default class Choice extends InlineComponent {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedbacktext",
+      shadowingInstructions: {
+        createComponentOfType: "feedbacktext",
+      },
       // isArray: true,
       // entireArrayAtOnce: true,
       // entryPrefixes: ['feedback'],

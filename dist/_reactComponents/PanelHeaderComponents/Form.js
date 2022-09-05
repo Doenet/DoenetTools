@@ -1,13 +1,86 @@
 import React, {useState, useRef, useEffect} from "../../_snowpack/pkg/react.js";
-import {doenetComponentForegroundInactive, doenetComponentForegroundActive} from "./theme.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faSearch, faTimes} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faTimes} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const FormInput = styled.input`
+  margin: 0px -${(props) => props.formWidth}px 0px 0px;
+  height: 24px;
+  width: ${(props) => props.inputWidth};
+  border: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+  border-radius: var(--mainBorderRadius);
+  position: relative;
+  padding: 0px 30px 0px 5px;
+  color: var(--canvastext);
+  overflow: hidden;
+  width: 175px;
+  resize: none;
+  align-items: center;
+  white-space: nowrap;
+  outline: none;
+  font-family: 'Open Sans';
+  font-size: 14px;
+  line-height: 20px;
+  cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+  &:focus {
+    outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+    outline-offset: 2px;
+  }
+`;
+const CancelButton = styled.button`
+  float: right;
+  margin: 5px 0px 0px -30px;
+  position: absolute;
+  z-index: 4;
+  border: 0px;
+  background-color: transparent;
+  visibility: ${(props) => props.cancelShown};
+  color: var(--canvastext);
+  overflow: hidden;
+  border-radius: 5px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+  }
+`;
+const SubmitButton = styled.button`
+  position: absolute;
+  display: inline;
+  margin: 0px -5px 0px -5px;
+  z-index: 2;
+  height: 28px;
+  border: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+  border-radius: 0px 5px 5px 0px;
+  background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"};
+  color: ${(props) => props.disabled ? "var(--canvastext)" : "var(--canvas)"};
+  cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
+  font-size: 12px;
+  overflow: hidden;
+
+  &:hover {
+    color: var(--canvastext);
+    background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
+  }
+  &:focus {
+    outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+    outline-offset: 2px;
+  }
+`;
+const Label = styled.p`
+  font-size: 14px;
+  display: ${(props) => props.labelVisible};
+  margin: 0px 5px 2px 0px;
+`;
+const Container = styled.div`
+  display: ${(props) => props.align};
+  width: 235px;
+  align-items: center;
+`;
 export default function Form(props) {
   const [text, setText] = useState(props.value ? props.value : "");
   const [cancelShown, setCancelShown] = useState("hidden");
-  const [formwidth, setformWidth] = useState("0px");
-  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
-  const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  const [formWidth, setFormWidth] = useState(props.formWidth ? props.formWidth : "0px");
+  const labelVisible = props.label ? "static" : "none";
+  const align = props.vertical ? "static" : "flex";
+  const alert = props.alert ? props.alert : null;
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
   const inputRef = useRef(null);
@@ -16,111 +89,45 @@ export default function Form(props) {
   useEffect(() => {
     if (formRef && props.submitButton) {
       let button = document.querySelector("#submitButton");
+      let buttonWidth = button.clientWidth;
       setTimeout(function() {
-        setformWidth(button.clientWidth);
+        setFormWidth(235 - buttonWidth + "px");
       }, 1e3);
+      console.log(buttonWidth);
     }
   }, [formRef, props]);
   useEffect(() => {
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });
-  var textfield = {
-    margin: `0px -${formwidth}px 0px 0px`,
-    height: "24px",
-    border: `2px solid black`,
-    borderRadius: "5px",
-    position: "relative",
-    padding: "0px 30px 0px 5px",
-    color: "#000",
-    overflow: "hidden",
-    width: "175px",
-    resize: "none",
-    alignItems: "center",
-    value: `${text}`,
-    whiteSpace: "nowrap",
-    outline: "none",
-    fontFamily: "Open Sans",
-    fontSize: "14px",
-    lineHeight: "20px"
-  };
-  var container = {
-    display: `${align}`,
-    width: "235px",
-    alignItems: "center"
-  };
-  var tableCellContainer = {};
-  var cancelButton = {
-    float: "right",
-    margin: "5px 0px 0px -30px",
-    position: "absolute",
-    zIndex: "4",
-    border: "0px",
-    backgroundColor: "transparent",
-    visibility: `${cancelShown}`,
-    color: "#000",
-    overflow: "hidden",
-    outline: "none"
-  };
-  var submitButton = {
-    position: "absolute",
-    display: "inline",
-    margin: `0px -5px 0px -5px`,
-    zIndex: "2",
-    height: "28px",
-    border: `2px solid black`,
-    borderRadius: "0px 5px 5px 0px",
-    backgroundColor: `${doenetComponentForegroundActive}`,
-    color: "#FFFFFF",
-    cursor: "pointer",
-    fontSize: "12px",
-    overflow: "hidden"
-  };
-  var label = {
-    value: "Label:",
-    fontSize: "14px",
-    marginRight: "5px",
-    display: `${labelVisible}`,
-    margin: "0px 5px 2px 0px"
-  };
   var disable = "";
   if (props.disabled) {
-    submitButton.backgroundColor = "#e2e2e2";
-    submitButton.color = "black";
-    submitButton.cursor = "not-allowed";
-    textfield.cursor = "not-allowed";
     disable = "disabled";
   }
+  ;
+  var inputWidth = "175px";
   if (props.width) {
     if (props.width === "menu") {
-      container.width = "235px";
-      textfield.width = "100px";
+      inputWidth = "100px";
       if (props.submitButton) {
-        container.width = "235px";
-        textfield.width = "auto";
+        inputWidth = "auto";
       }
       if (props.label) {
-        container.width = "235px";
-        textfield.width = "auto";
+        inputWidth = "auto";
       }
     }
   }
-  if (props.value) {
-    textfield.value = props.value;
-  }
+  ;
+  var placeholder = "";
   if (props.placeholder) {
-    textfield.placeholder = props.placeholder;
+    placeholder = props.placeholder;
   }
+  ;
+  var label = "";
   if (props.label) {
-    label.value = props.label;
+    label = props.label;
   }
-  if (props.alert) {
-    textfield.border = "2px solid #C1292E";
-    submitButton.border = "2px solid #C1292E";
-  }
-  if (props.ariaLabel) {
-    textfield.ariaLabel = props.ariaLabel;
-  }
+  ;
   function handleChange(e) {
     if (cleared) {
       setText("");
@@ -133,10 +140,12 @@ export default function Form(props) {
     setCursorStart(e.target.selectionStart);
     setCursorEnd(e.target.selectionEnd);
   }
+  ;
   function handleClick(e) {
     if (props.onClick)
       props.onClick(e);
   }
+  ;
   function clearInput(e) {
     if (props.clearInput)
       props.clearInput(e);
@@ -144,24 +153,25 @@ export default function Form(props) {
     cleared = true;
     handleChange(e);
   }
+  ;
   function changeTextTerm() {
     setCancelShown("visible");
-    console.log("cancelShown", cancelShown);
   }
+  ;
   function handleBlur(e) {
     if (props.onBlur)
       props.onBlur(e);
   }
+  ;
   function handleKeyDown(e) {
     if (props.onKeyDown)
       props.onKeyDown(e);
-    console.log("cancelShown", cancelShown);
   }
+  ;
   let clearButton = null;
   if (props.clearInput) {
-    clearButton = /* @__PURE__ */ React.createElement("button", {
-      id: "clearButton",
-      style: cancelButton,
+    clearButton = /* @__PURE__ */ React.createElement(CancelButton, {
+      cancelShown,
       onClick: (e) => {
         clearInput(e);
       }
@@ -169,19 +179,21 @@ export default function Form(props) {
       icon: faTimes
     }));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    style: container
-  }, /* @__PURE__ */ React.createElement("p", {
-    style: label
-  }, label?.value), /* @__PURE__ */ React.createElement("div", {
-    style: tableCellContainer
-  }, /* @__PURE__ */ React.createElement("input", {
+  ;
+  return /* @__PURE__ */ React.createElement(Container, {
+    align
+  }, /* @__PURE__ */ React.createElement(Label, {
+    id: "form-label",
+    labelVisible,
+    align
+  }, label), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(FormInput, {
     id: "textarea",
     value: text,
-    placeholder: textfield.placeholder,
+    placeholder,
     type: "text",
     ref: inputRef,
-    style: textfield,
+    inputWidth,
+    formWidth,
     onKeyUp: () => {
       changeTextTerm();
     },
@@ -195,13 +207,17 @@ export default function Form(props) {
       handleKeyDown(e);
     },
     disabled: disable,
-    "aria-label": textfield.ariaLabel
-  }), clearButton, /* @__PURE__ */ React.createElement("button", {
+    alert,
+    "aria-labelledby": "form-label",
+    "aria-disabled": props.disabled ? true : false
+  }), clearButton, /* @__PURE__ */ React.createElement(SubmitButton, {
     id: "submitButton",
-    style: submitButton,
     ref: formRef,
+    disabled: disable,
+    alert,
     onClick: (e) => {
       handleClick(e);
     }
-  }, props.submitButton ? props.submitButton : "Submit"))));
+  }, props.submitButton ? props.submitButton : "Submit")));
 }
+;

@@ -1,7 +1,7 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Footnote(props) {
-  let {name, SVs} = useDoenetRender(props, false);
+export default React.memo(function Footnote(props) {
+  let {name, id, SVs} = useDoenetRender(props, false);
   let [isVisible, setIsVisible] = useState(false);
   if (SVs.hidden) {
     return null;
@@ -27,9 +27,9 @@ export default function Footnote(props) {
     color: "#1A5A99"
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("sup", null, /* @__PURE__ */ React.createElement("button", {
     style: buttonStyle,
     onClick: () => setIsVisible((was) => !was)
@@ -38,4 +38,4 @@ export default function Footnote(props) {
     title: SVs.text,
     style: footnoteStyle
   }, "[", SVs.footnoteTag, "]")))), footnoteMessage);
-}
+});

@@ -4,6 +4,7 @@ import axios from "../../_snowpack/pkg/axios.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import {useToast, toastType} from "../Toast.js";
+import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
 export default function SignIn(props) {
   let [email, setEmail] = useState("");
   let [nineCode, setNineCode] = useState("");
@@ -33,7 +34,6 @@ export default function SignIn(props) {
       setSendEmailAlert(true);
     }
   }
-  ;
   useEffect(() => {
     if (/\d{9}/.test(nineCode)) {
       setSignInDisabled(false);
@@ -185,7 +185,7 @@ export default function SignIn(props) {
       label: "Code (9 digit code):",
       ref: codeRef,
       value: nineCode,
-      "data-cy": "signinCodeInput",
+      "data-test": "signinCodeInput",
       alert: signInAlert,
       onKeyDown: (e) => {
         if (e.key === "Enter" && validCode) {
@@ -209,7 +209,7 @@ export default function SignIn(props) {
           setSignInStage("check code");
         }
       },
-      "data-cy": "signInButton",
+      "data-test": "signInButton",
       value: "Sign In"
     })));
   }
@@ -242,7 +242,7 @@ export default function SignIn(props) {
       ref: emailRef,
       value: email,
       alert: sendEmailAlert,
-      "data-cy": "signinEmailInput",
+      "data-test": "signinEmailInput",
       onKeyDown: (e) => {
         validateEmail(email);
         if (e.key === "Enter" && validEmail) {
@@ -262,11 +262,10 @@ export default function SignIn(props) {
       }
     })), /* @__PURE__ */ React.createElement("p", {
       style: {fontSize: "14px"}
-    }, /* @__PURE__ */ React.createElement("input", {
-      type: "checkbox",
+    }, /* @__PURE__ */ React.createElement(Checkbox, {
       checked: stay,
-      onChange: (e) => {
-        if (e.target.checked) {
+      onClick: (e) => {
+        if (!stay) {
           setMaxAge(24e4);
         } else {
           setMaxAge(0);
@@ -279,7 +278,7 @@ export default function SignIn(props) {
           setSignInStage("enter code");
         }
       },
-      "data-cy": "sendEmailButton",
+      "data-test": "sendEmailButton",
       value: "Send Email"
     }))));
   }

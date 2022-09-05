@@ -9,25 +9,35 @@ const LogoButton = styled.button`
   background-repeat: no-repeat;
   background-size: 50px 25px;
   transition: 300ms;
-  background-color: white;
+  background-color: var(--canvas);
   width: 50px;
   height: 25px;
   display: inline-block;
   justify-content: center;
+  border-radius: 10px;
   align-items: center;
   border-style: none;
   // border-radius: 50%;
   // margin-top: 8px;
   // margin-left: 90px;
-  cursor: pointer;
+  cursor: ${(props) => props.hasLink ? "pointer" : "default"};
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 export const profileToolViewStashAtom = atom({
   key: "profileToolViewStashAtom",
   default: {}
 });
-export default function Logo(props) {
+export default function Logo({hasLink = true}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   return /* @__PURE__ */ React.createElement(LogoButton, {
-    onClick: () => setPageToolView({page: "home", tool: "", view: ""})
+    hasLink,
+    onClick: () => {
+      if (hasLink) {
+        setPageToolView({page: "home", tool: "", view: ""});
+      }
+    }
   });
 }

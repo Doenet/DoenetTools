@@ -4,8 +4,8 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 
-export default function Curve(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+export default React.memo(function Curve(props) {
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Curve.ignoreActionsWithoutCore = true;
 
@@ -26,7 +26,7 @@ export default function Curve(props) {
   let throughPointHoverVisible = useRef(null);
   let controlPointAttributes = useRef(null);
   let previousNumberOfPoints = useRef(null);
-  let segmentsJXG = useRef(null);
+  let segmentsJXG = useRef([]);
   let vectorControlsVisible = useRef(null);
   let hitObject = useRef(null);
   let vectorControlDirections = useRef(null);
@@ -65,21 +65,22 @@ export default function Curve(props) {
     }
 
     //things to be passed to JSXGraph as attributes
-
     var curveAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       strokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
+      highlight: false,
+      lineCap: "butt"
     };
 
 
-    if (SVs.showLabel && SVs.label !== "") {
+    if (SVs.showLabel && SVs.labelForGraph !== "") {
       let anchorx, offset, position;
       if (SVs.labelPosition === "upperright") {
         position = 'urt';
@@ -120,7 +121,25 @@ export default function Curve(props) {
         offset,
         position,
         anchorx,
+        highlight: false
       };
+
+      if (SVs.labelHasLatex) {
+        curveAttributes.label.useMathJax = true;
+      }
+
+      if (SVs.applyStyleToLabel) {
+        curveAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        curveAttributes.label.strokeColor = "#000000";
+      }
+    } else {
+      curveAttributes.label = {
+        highlight: false
+      }
+      if (SVs.labelHasLatex) {
+        curveAttributes.label.useMathJax = true;
+      }
     }
 
 
@@ -169,10 +188,15 @@ export default function Curve(props) {
     newCurveJXG.on('up', function (e) {
       // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
       // as useEffect will not be rerun
-      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null
-        && SVs.switchable && !SVs.fixed) {
+      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null) {
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchCurve
+          });
+        }
         callAction({
-          action: actions.switchCurve
+          action: actions.curveClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -186,8 +210,8 @@ export default function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: true,
-        strokeColor: 'lightgray',
-        highlightStrokeColor: 'lightgray',
+        strokeColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         layer: 10 * SVs.layer + 7,
         strokeWidth: 1,
         highlightStrokeWidth: 1,
@@ -198,16 +222,16 @@ export default function Curve(props) {
         fixed: false,
         fillColor: 'none',
         strokeColor: 'none',
-        highlightFillColor: 'lightgray',
-        highlightStrokeColor: 'lightgray',
+        highlightFillColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 7,
         size: 3,
       };
       throughPointAlwaysVisible.current = {
-        fillcolor: 'lightgray',
-        strokecolor: 'lightgray',
+        fillcolor: 'var(--mainGray)',
+        strokecolor: 'var(--mainGray)',
       };
       throughPointHoverVisible.current = {
         fillcolor: 'none',
@@ -218,10 +242,10 @@ export default function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: false,
-        fillColor: 'gray',
-        strokeColor: 'gray',
-        highlightFillColor: 'gray',
-        highlightStrokeColor: 'gray',
+        fillColor: 'var(--mainGray)',
+        strokeColor: 'var(--mainGray)',
+        highlightFillColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 8,
@@ -294,7 +318,7 @@ export default function Curve(props) {
   }
 
   function deleteControls() {
-    if (segmentsJXG.current) {
+    if (segmentsJXG.current.length > 0) {
       segmentsJXG.current.forEach(x => x.forEach(y => {
         if (y) {
           y.off('down');
@@ -556,28 +580,40 @@ export default function Curve(props) {
 
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = curveJXG.current;
+        board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
 
     } else {
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = curveJXG.current;
+        board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
 
       updateSinceDown.current = true;
 
       let visible = !SVs.hidden;
 
-      curveJXG.current.name = SVs.label;
+      curveJXG.current.name = SVs.labelForGraph;
 
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;
 
+      let curveLayer = 10 * SVs.layer + 5;
+      let layerChanged = curveJXG.current.visProp.layer !== curveLayer;
+
+      if (layerChanged) {
+        curveJXG.current.setAttribute({ layer: curveLayer });
+        segmentAttributes.current.layer = curveLayer + 2;
+        throughPointAttributes.current.layer = curveLayer + 2;
+        controlPointAttributes.current.layer = curveLayer + 3;
+      }
 
       if (curveJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         curveJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         curveJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (curveJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        curveJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
       }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (curveJXG.current.visProp.dash !== newDash) {
@@ -629,37 +665,43 @@ export default function Curve(props) {
       curveJXG.current.updateCurve();
       if (curveJXG.current.hasLabel) {
         curveJXG.current.label.needsUpdate = true;
-        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.label !== "";
+        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.labelForGraph !== "";
+        if (SVs.applyStyleToLabel) {
+          curveJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          curveJXG.current.label.visProp.strokecolor = "#000000";
+        }
         curveJXG.current.label.update();
       }
 
 
       if (SVs.curveType !== "bezier") {
         board.updateRenderer();
-        return <><a name={name} /></>
+        return <><a name={id} /></>
       }
 
 
       if (!SVs.draggable || SVs.fixed) {
-        if (segmentsJXG.current) {
+        if (segmentsJXG.current.length > 0) {
           deleteControls();
         }
         board.updateRenderer();
-        return <><a name={name} /></>
+        return <><a name={id} /></>
       }
 
-      if (!segmentsJXG.current) {
+      if (segmentsJXG.current.length === 0) {
         createControls();
 
         previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
         previousVectorControlDirections.current = [...SVs.vectorControlDirections];
 
         board.updateRenderer();
-        return <><a name={name} /></>
+        return <><a name={id} /></>
       }
 
       // add or delete segments and points if number changed
       if (SVs.numericalThroughPoints.length > previousNumberOfPoints.current) {
+        // add new segments and point
 
         let iPreviousLast = previousNumberOfPoints.current - 1;
 
@@ -709,6 +751,8 @@ export default function Curve(props) {
           makeVectorControlVisible(iPreviousLast);
         }
       } else if (SVs.numericalThroughPoints.length < previousNumberOfPoints.current) {
+        // delete old segments and points
+
         for (let i = previousNumberOfPoints.current - 1; i >= SVs.numericalThroughPoints.length; i--) {
 
           segmentsJXG.current[i][0].off('down')
@@ -742,7 +786,7 @@ export default function Curve(props) {
 
       }
 
-      // move old points
+      // move old points and modify attributes, if needed
       let nOld = Math.min(SVs.numericalThroughPoints.length, previousNumberOfPoints.current);
 
       for (let i = 0; i < nOld; i++) {
@@ -752,6 +796,14 @@ export default function Curve(props) {
         ) {
           // refresh visibility
           makeVectorControlVisible(i);
+        }
+
+        if (layerChanged) {
+          throughPointsJXG.current[i].setAttribute({ layer: curveLayer + 2 });
+          segmentsJXG.current[i][0].setAttribute({ layer: curveLayer + 2 });
+          controlPointsJXG.current[i][0].setAttribute({ layer: curveLayer + 3 });
+          segmentsJXG.current[i][1].setAttribute({ layer: curveLayer + 2 });
+          controlPointsJXG.current[i][1].setAttribute({ layer: curveLayer + 3 });
         }
 
         throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalThroughPoints[i]]);
@@ -802,9 +854,9 @@ export default function Curve(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 
-}
+})
 
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {

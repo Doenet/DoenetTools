@@ -56,7 +56,9 @@ export default class VariantNames extends BaseComponent {
 
     stateVariableDefinitions.nVariants = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         stringChildren: {
           dependencyType: "child",
@@ -70,7 +72,9 @@ export default class VariantNames extends BaseComponent {
 
     stateVariableDefinitions.variantNames = {
       public: true,
-      componentType: "variantName",
+      shadowingInstructions: {
+        createComponentOfType: "variantName",
+      },
       isArray: true,
       entryPrefixes: ["variantName"],
       returnArraySizeDependencies: () => ({

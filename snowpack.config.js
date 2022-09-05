@@ -8,6 +8,7 @@ module.exports = {
     'react-spring': '@react-spring/web',
   },
   mount: {
+    'cypress_php/api': '/cyapi',
     'src/Viewer': '/viewer',
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
@@ -16,6 +17,7 @@ module.exports = {
     'src/Tools/uiDocs': '/uiDocs',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
+    'src/Media/byPageId': '/media/byPageId',
     'src/Parser': '/parser',
     'src/Api': '/api',
     'src/Tools/_framework': '/_framework',
@@ -49,6 +51,15 @@ module.exports = {
       },
     },
     {
+      src: '/cyapi/.*',
+      dest: (req, res) => {
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
+      },
+    },
+    {
       src: '/media/.*',
       dest: (req, res) => {
         return proxy.web(req, res, {
@@ -56,6 +67,45 @@ module.exports = {
           port: 80,
         });
       },
+    },
+    {
+      src: '/media/byPageId/.*',
+      dest: (req, res) => {
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
+      },
+    },
+    {
+      match: 'routes',
+      src: '/temp.*',
+      dest: '/temp/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/test.*',
+      dest: '/test/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/uiDocs.*',
+      dest: '/uiDocs/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/cypressTest.*',
+      dest: '/cypressTest/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/chat.*',
+      dest: '/chat/index.html',
+    },
+    {
+      match: 'routes',
+      src: '.*',
+      dest: '/index.html',
     },
   ],
 

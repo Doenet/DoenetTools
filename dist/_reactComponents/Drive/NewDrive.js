@@ -19,6 +19,7 @@ import {
   faChalkboard
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
 import {Link} from "../../_snowpack/pkg/react-router-dom.js";
 import {
   atom,
@@ -259,10 +260,53 @@ export const dragStateAtom = atom({
     copyMode: false
   }
 });
+const movingGradient = keyframes`
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+const Table = styled.table`
+  width: 850px;
+  border-radius: 5px;
+`;
+const Tr = styled.tr`
+  border-bottom: 2px solid black;
+`;
+const Td = styled.td`
+  height: 40px;
+  vertical-align: middle;
+  padding: 8px;
+
+  &.Td2 {
+    width: 50px;
+  }
+
+  &.Td3 {
+    width: 400px;
+  }
+
+`;
+const TBody = styled.tbody``;
+const Td2Span = styled.span`
+  background-color: var(--mainGray);
+  width: 70px;
+  height: 16px;
+  border-radius: 5px;
+`;
+const Td3Span = styled.span`
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
 export default function Drive(props) {
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(":");
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  const drivesAvailable = useRecoilValueLoadable(fetchCoursesQuery);
   const {driveIdsAndLabels} = drivesAvailable.getValue();
   const [numColumns, setNumColumns] = useState(1);
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(driveId));
@@ -305,7 +349,11 @@ export default function Drive(props) {
       });
     }
     return /* @__PURE__ */ React.createElement(Suspense, {
-      fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
+      fallback: /* @__PURE__ */ React.createElement(Table, null, /* @__PURE__ */ React.createElement(TBody, null, /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }, /* @__PURE__ */ React.createElement(Td2Span, null)), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null)))))
     }, heading, /* @__PURE__ */ React.createElement(Folder, {
       driveId,
       folderId: rootFolderId,
@@ -404,17 +452,17 @@ export const folderDictionaryFilterSelector = selectorFamily({
     fDreturn.contentIds = {...fD.contentIds};
     if (filter === "Released Only") {
       let newDefaultOrder = [];
-      for (let contentId of fD.contentIds.defaultOrder) {
-        if (fD.contentsDictionary[contentId].isReleased === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
-          newDefaultOrder.push(contentId);
+      for (let cid of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[cid].isReleased === "1" || fD.contentsDictionary[cid].itemType === "Folder") {
+          newDefaultOrder.push(cid);
         }
       }
       fDreturn.contentIds.defaultOrder = newDefaultOrder;
     } else if (filter === "Assigned Only") {
       let newDefaultOrder = [];
-      for (let contentId of fD.contentIds.defaultOrder) {
-        if (fD.contentsDictionary[contentId].isAssigned === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
-          newDefaultOrder.push(contentId);
+      for (let cid of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[cid].isAssigned === "1" || fD.contentsDictionary[cid].itemType === "Folder") {
+          newDefaultOrder.push(cid);
         }
       }
       fDreturn.contentIds.defaultOrder = newDefaultOrder;
@@ -580,23 +628,23 @@ export function DriveHeader({
     style: {textAlign: "center"}
   }, columnTypes[3]) : null)));
 }
-export const fetchDrivesQuery = atom({
-  key: "fetchDrivesQuery",
+export const fetchCoursesQuery = atom({
+  key: "fetchCoursesQuery",
   default: selector({
-    key: "fetchDrivesQuery/Default",
+    key: "fetchCoursesQuery/Default",
     get: async () => {
-      const {data} = await axios.get(`/api/loadAvailableDrives.php`);
-      return data;
+      const {data: oldData} = await axios.get(`/api/loadAvailableDrives.php`);
+      return oldData;
     }
   })
 });
 export const fetchDrivesSelector = selector({
   key: "fetchDrivesSelector",
   get: ({get}) => {
-    return get(fetchDrivesQuery);
+    return get(fetchCoursesQuery);
   },
   set: ({get, set}, labelTypeDriveIdColorImage) => {
-    let driveData = get(fetchDrivesQuery);
+    let driveData = get(fetchCoursesQuery);
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
     let params = {
@@ -615,7 +663,7 @@ export const fetchDrivesSelector = selector({
         type: "content"
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/addDrive.php", payload).then((resp) => console.log(">>>resp", resp.data));
     } else if (labelTypeDriveIdColorImage.type === "new course drive") {
@@ -629,7 +677,7 @@ export const fetchDrivesSelector = selector({
         subType: "Administrator"
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/addDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive label") {
@@ -641,7 +689,7 @@ export const fetchDrivesSelector = selector({
           break;
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive color") {
@@ -654,7 +702,7 @@ export const fetchDrivesSelector = selector({
           break;
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive image") {
@@ -667,7 +715,7 @@ export const fetchDrivesSelector = selector({
           break;
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "delete drive") {
@@ -680,7 +728,7 @@ export const fetchDrivesSelector = selector({
           }
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     }
@@ -791,7 +839,7 @@ function Folder(props) {
     setInstanceParentId(props.pathItemId);
   }, [props.pathItemId, setInstanceParentId]);
   const indentPx = 25;
-  let bgcolor = "#ffffff";
+  let bgcolor = "var(--canvas)";
   let borderSide = "0px";
   let marginSize = "0";
   let widthSize = "60vw";
@@ -800,18 +848,18 @@ function Folder(props) {
     widthSize = "224px";
   }
   if (isSelected) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = "#e2e2e2";
+    bgcolor = "var(--mainGray)";
   }
   const isDraggedOver = dropState.activeDropTargetId === itemId && !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
-    bgcolor = "#f0f0f0";
+    bgcolor = "var(--mainGray)";
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   useEffect(() => {
     isOpenRef.current = isOpen;
@@ -824,11 +872,11 @@ function Folder(props) {
     borderSide = "8px solid #1A5A99";
   }
   let openCloseText = isOpen ? /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleCloseIcon"
+    "data-test": "folderToggleCloseIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronDown
   })) : /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleOpenIcon"
+    "data-test": "folderToggleOpenIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronRight
   }));
@@ -923,14 +971,14 @@ function Folder(props) {
     folder = /* @__PURE__ */ React.createElement("div", {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
-      "data-cy": "driveItem",
-      tabIndex: 0,
+      "data-test": "driveItem",
+      tabIndex: "0",
       className: "noselect nooutline",
       style: {
         cursor: "pointer",
         padding: "8px",
         border: "0px",
-        borderBottom: "2px solid black",
+        borderBottom: "2px solid var(--canvastext)",
         backgroundColor: bgcolor,
         marginLeft: marginSize,
         borderLeft: borderSide
@@ -1011,11 +1059,11 @@ function Folder(props) {
     }, /* @__PURE__ */ React.createElement("div", {
       style: {display: "inline", margin: "0px"}
     }, openCloseButton, /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderIcon"
+      "data-test": "folderIcon"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faFolder
     })), /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderLabel"
+      "data-test": "folderLabel"
     }, label))));
   } else if (props.driveObj && props.isNav) {
     let driveIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -1030,14 +1078,14 @@ function Folder(props) {
     folder = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
-      "data-cy": "navDriveHeader",
-      tabIndex: 0,
+      "data-test": "navDriveHeader",
+      tabIndex: "0",
       className: "noselect nooutline",
       style: {
         cursor: "pointer",
         padding: "12.5px",
         border: "0px",
-        borderBottom: "2px solid black",
+        borderBottom: "2px solid var(--canvastext)",
         backgroundColor: bgcolor,
         marginLeft: marginSize,
         fontSize: "24px",
@@ -1076,13 +1124,13 @@ function Folder(props) {
       folder = /* @__PURE__ */ React.createElement("div", {
         role: "button",
         "data-doenet-driveinstanceid": props.driveInstanceId,
-        tabIndex: 0,
+        tabIndex: "0",
         className: "noselect nooutline",
         style: {
           cursor: "pointer",
           padding: "12.5px",
           border: "0px",
-          borderBottom: "2px solid black",
+          borderBottom: "2px solid var(--canvastext)",
           backgroundColor: bgcolor,
           marginLeft: marginSize,
           fontSize: "24px",
@@ -1250,7 +1298,7 @@ function Folder(props) {
     }
   }
   return /* @__PURE__ */ React.createElement("div", {
-    "data-cy": "drive"
+    "data-test": "drive"
   }, folder, items);
 }
 export const EmptyNode = React.memo(function Node() {
@@ -1267,16 +1315,16 @@ export const EmptyNode = React.memo(function Node() {
 export const DragShadow = React.memo(function Node2(props) {
   const indentPx = 30;
   return /* @__PURE__ */ React.createElement("div", {
-    "data-cy": "dragShadow",
+    "data-test": "dragShadow",
     style: {
       width: "100%",
       height: "33px",
       marginLeft: `${props.indentLevel * indentPx}px`,
       padding: "0px",
-      backgroundColor: "#f5f5f5",
-      color: "#f5f5f5",
-      boxShadow: "0 0 3px rgba(0, 0, 0, .2)",
-      border: "2px dotted #14c6ff"
+      backgroundColor: "var(--mainGray)",
+      color: "var(--mainGray)",
+      boxShadow: "0 0 3px var(--canvastext)",
+      border: "2px dotted var(--solidLightBlue)"
     }
   }, /* @__PURE__ */ React.createElement("div", {
     className: "noselect"
@@ -1288,6 +1336,7 @@ export const selectedDriveItemsAtom = atomFamily({
 });
 export const clearDriveAndItemSelections = selector({
   key: "clearDriveAndItemSelections",
+  get: () => null,
   set: ({get, set}) => {
     const globalItemsSelected = get(globalSelectedNodesAtom);
     for (let itemObj of globalItemsSelected) {
@@ -1523,7 +1572,7 @@ export const DoenetML = React.memo(function DoenetML2(props) {
   } else if (props.numColumns === 1) {
     columns = "100%";
   }
-  let bgcolor = "#ffffff";
+  let bgcolor = "var(--canvas)";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "auto";
   let marginSize = "0";
@@ -1542,10 +1591,10 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     columns = "1fr";
   }
   if (isSelected || props.isNav && props.item.itemId === props.pathItemId) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = "#e2e2e2";
+    bgcolor = "var(--mainGray)";
   }
   useEffect(() => {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
@@ -1574,16 +1623,16 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     }
   };
   let doenetMLJSX = /* @__PURE__ */ React.createElement("div", {
-    role: "button",
     "data-doenet-driveinstanceid": props.driveInstanceId,
-    "data-cy": "driveItem",
-    tabIndex: 0,
+    role: "button",
+    "data-test": "driveItem",
+    tabIndex: "0",
     className: "noselect nooutline",
     style: {
       cursor: "pointer",
       padding: "8px",
       border: "0px",
-      borderBottom: "2px solid black",
+      borderBottom: "2px solid var(--canvas)",
       backgroundColor: bgcolor,
       width: widthSize,
       marginLeft: marginSize
@@ -1646,11 +1695,11 @@ export const DoenetML = React.memo(function DoenetML2(props) {
   }, /* @__PURE__ */ React.createElement("p", {
     style: {display: "inline", margin: "0px"}
   }, /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "doenetMLIcon"
+    "data-test": "doenetMLIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
   })), /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "doenetMLLabel"
+    "data-test": "doenetMLLabel"
   }, label, " ")), props.numColumns >= 2 ? column2 : null, props.numColumns >= 3 ? column3 : null, props.numColumns >= 4 ? column4 : null, props.numColumns >= 5 ? column5 : null));
   if (!props.isNav) {
     const onDragStartCallback = () => {
@@ -1898,7 +1947,7 @@ function useUpdateBreadcrumb(props) {
     let breadcrumbStack = [];
     const breadcrumbItemStyle = {
       fontSize: "24px",
-      color: "#040F1A",
+      color: "var(--canvastext)",
       textDecoration: "none"
     };
     for (let currentNode of nodesOnPath) {
@@ -1958,7 +2007,7 @@ function useUpdateBreadcrumb(props) {
         }
       }
     }, /* @__PURE__ */ React.createElement(Link, {
-      "data-cy": "breadcrumbDriveColumn",
+      "data-test": "breadcrumbDriveColumn",
       style: breadcrumbItemStyle,
       to: driveDestinationLink
     }, props.driveLabel));
@@ -1975,21 +2024,21 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
   const containerStyle = {
     transform: "rotate(-5deg)",
     zIndex: "10",
-    background: "#e2e2e2",
+    background: "var(--mainGray)",
     width: "40vw",
-    border: "2px solid black",
+    border: "2px solid var(--canvastext)",
     padding: "0px",
     height: "38px",
     overflow: "hidden"
   };
   const singleItemStyle = {
     boxShadow: "rgba(0, 0, 0, 0.20) 5px 5px 3px 3px",
-    borderRadius: "2px solid black",
+    borderRadius: "2px solid var(--canvastext)",
     animation: "dragAnimation 2s",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "#e2e2e2"
+    background: "var(--mainGray)"
   };
   const multipleItemsNumCircleContainerStyle = {
     position: "absolute",
@@ -1997,9 +2046,9 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
     top: "6px",
     right: "5px",
     borderRadius: "25px",
-    background: "#1A5A99",
+    background: "var(--mainBlue)",
     fontSize: "12px",
-    color: "white",
+    color: "var(--canvas)",
     width: "25px",
     height: "25px",
     display: "flex",
@@ -2012,9 +2061,9 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
     top: "6px",
     left: "5px",
     borderRadius: "25px",
-    background: "#08ed00",
+    background: "var(--mainGreen)",
     fontSize: "23px",
-    color: "white",
+    color: "var(--canvas)",
     width: "25px",
     height: "25px",
     display: "flex",
@@ -2038,7 +2087,7 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
   }
   dragGhost = /* @__PURE__ */ React.createElement("div", {
     id,
-    "data-cy": "dragGhost",
+    "data-test": "dragGhost",
     style: containerStyle
   }, dragGhost);
   return dragGhost;

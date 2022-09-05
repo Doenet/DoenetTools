@@ -6,8 +6,8 @@ export class Ol extends BlockComponent {
   static rendererType = "list";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.label = {
       createComponentOfType: "text",
       createStateVariable: "label",
@@ -40,6 +40,22 @@ export class Ol extends BlockComponent {
 
     return stateVariableDefinitions;
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }
@@ -95,6 +111,22 @@ export class Li extends BaseComponent {
 
     return stateVariableDefinitions;
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

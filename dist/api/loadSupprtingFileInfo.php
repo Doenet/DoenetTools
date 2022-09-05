@@ -24,19 +24,16 @@ list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
 $canUpload = FALSE;
 $sql = "
-SELECT du.canUpload 
-FROM drive_user AS du
-LEFT JOIN drive_content AS dc
-ON dc.driveId = du.driveId
-WHERE du.userId = '$userId'
-AND dc.doenetId = '$doenetId'
+SELECT canUpload 
+FROM user 
+WHERE userId = '$userId'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 if ($row['canUpload'] == '1'){$canUpload = TRUE;}
 
 $sql = "
-SELECT contentId, fileType, description, asFileName, widthPixels, heightPixels
+SELECT cid, fileType, description, asFileName, widthPixels, heightPixels
 FROM support_files
 WHERE doenetId='$doenetId'
 ORDER BY timestamp
@@ -47,8 +44,8 @@ $result = $conn->query($sql);
     
     array_push($supportingFiles,
         array(
-            "contentId" => $row['contentId'],
-            "fileName" => getFileName($row['contentId'],$row['fileType']),
+            "cid" => $row['cid'],
+            "fileName" => getFileName($row['cid'],$row['fileType']),
             "fileType" => $row['fileType'],
             "width" => $row['widthPixels'],
             "height" => $row['heightPixels'],

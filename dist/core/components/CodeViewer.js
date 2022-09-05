@@ -4,8 +4,10 @@ export default class CodeViewer extends BlockComponent {
   static componentType = "codeViewer";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static includeBlankStringChildren = true;
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.codeSource = {
       createPrimitiveOfType: "string",
@@ -45,12 +47,15 @@ export default class CodeViewer extends BlockComponent {
 
       let renderDoenetML = {
         componentType: "renderDoenetML",
-        attributes: {
+      };
+
+      if (componentAttributes.codeSource) {
+        renderDoenetML.attributes = {
           codeSource: {
             primitive: componentAttributes.codeSource
           }
         }
-      };
+      }
 
       if (componentAttributes.renderedName) {
         renderDoenetML.props = { name: componentAttributes.renderedName }
@@ -83,7 +88,9 @@ export default class CodeViewer extends BlockComponent {
 
     stateVariableDefinitions.hasCodeEditorParent = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         codeEditorParent: {
@@ -104,7 +111,9 @@ export default class CodeViewer extends BlockComponent {
 
     stateVariableDefinitions.width = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       hasEssential: true,
       forRenderer: true,
       defaultValue: { size: 600, isAbsolute: true },
@@ -136,7 +145,9 @@ export default class CodeViewer extends BlockComponent {
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       hasEssential: true,
       forRenderer: true,
       defaultValue: { size: 400, isAbsolute: true },
@@ -232,8 +243,22 @@ export default class CodeViewer extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+
   actions = {
     updateComponents: this.updateComponents.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

@@ -1,53 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { atomFamily, useRecoilValue, useSetRecoilState } from 'recoil';
 // import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
-import { renderersloadComponent } from '../DoenetViewer';
+import { renderersloadComponent } from '../PageViewer';
 
 export const rendererState = atomFamily({
-  key:'rendererState',
-  default:{stateValues:{},sourceOfUpdate:{},ignoreUpdate:false,childrenInstructions:[]},
+  key: 'rendererState',
+  default: { stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: [], prefixForIds: '' },
   // dangerouslyAllowMutability: true,
 })
 
 // TODO: potentially remove initializeChildrenOnConstruction
-export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true){
+export default function useDoenetRenderer(props, initializeChildrenOnConstruction = true) {
   let actions = props.componentInstructions.actions;
-  let name =  props.componentInstructions.componentName;
-  let [renderersToLoad,setRenderersToLoad] = useState({})
-  
-  let {stateValues,sourceOfUpdate={},ignoreUpdate,childrenInstructions} = useRecoilValue(rendererState(name));
+  let componentName = props.componentInstructions.componentName;
+  let effectiveName = props.componentInstructions.effectiveName;
+  let rendererName = props.coreId + componentName;
+  let [renderersToLoad, setRenderersToLoad] = useState({})
+
+  let { stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions, prefixForIds } = useRecoilValue(rendererState(rendererName));
 
 
   //TODO: Fix this for graph
   // if (initializeChildrenOnConstruction
   let children = [];
   const loadMoreRenderers = Object.keys(renderersToLoad).length === 0;
-  for (let childInstructions of childrenInstructions) {   
-    let child = createChildFromInstructions(childInstructions,loadMoreRenderers);
+  for (let childInstructions of childrenInstructions) {
+    let child = createChildFromInstructions(childInstructions, loadMoreRenderers);
     children.push(child);
   }
 
-  useEffect(()=>{
-    if (Object.keys(renderersToLoad).length > 0){
-      renderersloadComponent(Object.values(renderersToLoad), Object.keys(renderersToLoad)).then((newRendererClasses)=>{
-        Object.assign(props.rendererClasses,newRendererClasses)
+  useEffect(() => {
+    if (Object.keys(renderersToLoad).length > 0) {
+      renderersloadComponent(Object.values(renderersToLoad), Object.keys(renderersToLoad)).then((newRendererClasses) => {
+        Object.assign(props.rendererClasses, newRendererClasses)
         setRenderersToLoad({})
       })
     }
-  },[renderersToLoad,props.rendererClasses])
+  }, [renderersToLoad, props.rendererClasses])
 
 
-  function createChildFromInstructions(childInstructions,loadMoreRenderers) {
+  function createChildFromInstructions(childInstructions, loadMoreRenderers) {
 
-    if(typeof childInstructions === "string") {
+    if (typeof childInstructions === "string") {
       return childInstructions;
     }
-    
+
     let propsForChild = {
-      key: childInstructions.componentName,
+      key: props.coreId + childInstructions.componentName,
       componentInstructions: childInstructions,
       rendererClasses: props.rendererClasses,
       flags: props.flags,
+      coreId: props.coreId,
       callAction: props.callAction,
     };
 
@@ -55,18 +58,18 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
 
     if (!rendererClass) {
       //If we don't have the component then attempt to load it
-      if (loadMoreRenderers){
-        setRenderersToLoad((old)=>{
-          let rendererPromises = {...old};
-          if (!(childInstructions.rendererType in rendererPromises)){
+      if (loadMoreRenderers) {
+        setRenderersToLoad((old) => {
+          let rendererPromises = { ...old };
+          if (!(childInstructions.rendererType in rendererPromises)) {
             rendererPromises[childInstructions.rendererType] = import(`./${childInstructions.rendererType}.js`);
           }
           return rendererPromises;
         })
       }
-      
+
       return null;  //skip the child for now
-     
+
     }
 
     let child = React.createElement(rendererClass, propsForChild);
@@ -75,9 +78,9 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
 
   let rendererType = props.componentInstructions.rendererType;
   const callAction = argObj => {
-    if (!argObj.name) {
+    if (!argObj.componentName) {
       argObj = { ...argObj };
-      argObj.name = name;
+      argObj.componentName = componentName;
     }
     if (!argObj.rendererType) {
       argObj = { ...argObj };
@@ -86,5 +89,9 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     return props.callAction(argObj);
   }
 
-  return {name,SVs:stateValues,actions,children,sourceOfUpdate,ignoreUpdate,initializeChildren:()=>{}, callAction};
+  return {
+    name: effectiveName, id: prefixForIds + effectiveName, SVs: stateValues, actions, children,
+    sourceOfUpdate, ignoreUpdate, rendererName,
+    initializeChildren: () => { }, callAction
+  };
 }

@@ -1,3 +1,4 @@
+import { returnLabelStateVariableDefinitions } from '../utils/label.js';
 import { normalizeMathExpression } from '../utils/math.js';
 import InlineComponent from './abstract/InlineComponent.js';
 
@@ -6,16 +7,16 @@ export default class UpdateValue extends InlineComponent {
 
   static acceptTarget = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
-    attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "update value",
+
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true,
     };
 
     attributes.type = {
@@ -35,8 +36,15 @@ export default class UpdateValue extends InlineComponent {
     }
 
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.propIndex = {
+      createComponentOfType: "numberList",
+      createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
     };
@@ -48,7 +56,11 @@ export default class UpdateValue extends InlineComponent {
       triggerActionOnChange: "updateValueIfTriggerNewlyTrue"
     }
 
-    attributes.triggerWithTargets = {
+    attributes.triggerWith = {
+      createPrimitiveOfType: "string"
+    }
+
+    attributes.triggerWhenObjectsClicked = {
       createPrimitiveOfType: "string"
     }
 
@@ -68,10 +80,23 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({
@@ -165,7 +190,7 @@ export default class UpdateValue extends InlineComponent {
 
     stateVariableDefinitions.targets = {
       stateVariablesDeterminingDependencies: [
-        "targetIdentities", "propName"
+        "targetIdentities", "propName", "propIndex"
       ],
       returnDependencies: function ({ stateValues }) {
 
@@ -183,13 +208,20 @@ export default class UpdateValue extends InlineComponent {
             let thisTarget;
 
             if (stateValues.propName) {
+              let propIndex = stateValues.propIndex;
+              if (propIndex) {
+                // make propIndex be a shallow copy
+                // so that can detect if it changed
+                // when update dependencies
+                propIndex = [...propIndex]
+              }
               thisTarget = {
                 dependencyType: "stateVariable",
                 componentName: source.componentName,
                 variableName: stateValues.propName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
-                propIndex: stateValues.propIndex,
+                propIndex,
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,
@@ -283,11 +315,15 @@ export default class UpdateValue extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.triggerWithTargets = {
+    stateVariableDefinitions.triggerWith = {
       returnDependencies: () => ({
-        triggerWithTargets: {
+        triggerWith: {
           dependencyType: "attributePrimitive",
-          attributeName: "triggerWithTargets"
+          attributeName: "triggerWith"
+        },
+        triggerWhenObjectsClicked: {
+          dependencyType: "attributePrimitive",
+          attributeName: "triggerWhenObjectsClicked"
         },
         triggerWhen: {
           dependencyType: "attributeComponent",
@@ -299,48 +335,74 @@ export default class UpdateValue extends InlineComponent {
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet
-          || dependencyValues.triggerWithTargets === null
-        ) {
-          return { setValue: { triggerWithTargets: null } }
+        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet) {
+          return { setValue: { triggerWith: null } }
         } else {
-          return {
-            setValue: {
-              triggerWithTargets: dependencyValues.triggerWithTargets
-                .split(/\s+/).filter(s => s)
+
+          let triggerWith = [];
+          if (dependencyValues.triggerWith !== null) {
+            for (let target of dependencyValues.triggerWith.split(/\s+/).filter(s => s)) {
+              triggerWith.push({ target })
             }
           }
+          if (dependencyValues.triggerWhenObjectsClicked !== null) {
+            for (let target of dependencyValues.triggerWhenObjectsClicked.split(/\s+/).filter(s => s)) {
+              triggerWith.push({ target, triggeringAction: "click" })
+            }
+          }
+
+          if (triggerWith.length === 0) {
+            triggerWith = null;
+          }
+
+          return { setValue: { triggerWith } }
         }
       }
     }
 
-    stateVariableDefinitions.triggerWithTargetComponentNames = {
+    stateVariableDefinitions.triggerWithTargetIds = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateValue"
       },
-      stateVariablesDeterminingDependencies: ["triggerWithTargets"],
+      stateVariablesDeterminingDependencies: ["triggerWith"],
       returnDependencies({ stateValues }) {
-        let dependencies = {};
-        if (stateValues.triggerWithTargets) {
-          for (let [ind, target] of stateValues.triggerWithTargets.entries()) {
+        let dependencies = {
+          triggerWith: {
+            dependencyType: "stateVariable",
+            variableName: "triggerWith"
+          }
+        };
+        if (stateValues.triggerWith) {
+          for (let [ind, targetObj] of stateValues.triggerWith.entries()) {
 
             dependencies[`triggerWithTargetComponentName${ind}`] = {
               dependencyType: "expandTargetName",
-              target
+              target: targetObj.target
             }
           }
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-        let triggerWithTargetComponentNames = [];
-        let n = Object.keys(dependencyValues).length - 1;
+        let triggerWithTargetIds = [];
 
-        for (let i = 0; i < n; i++) {
-          triggerWithTargetComponentNames.push(dependencyValues[`triggerWithTargetComponentName${i}`])
+        if (dependencyValues.triggerWith) {
+          for (let [ind, targetObj] of dependencyValues.triggerWith.entries()) {
+
+            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
+
+            if (targetObj.triggeringAction) {
+              id += "|" + targetObj.triggeringAction;
+            };
+
+            if (!triggerWithTargetIds.includes(id)) {
+              triggerWithTargetIds.push(id);
+            }
+
+          }
         }
 
-        return { setValue: { triggerWithTargetComponentNames } }
+        return { setValue: { triggerWithTargetIds } }
       },
       markStale() {
         return { updateActionChaining: true }
@@ -357,9 +419,9 @@ export default class UpdateValue extends InlineComponent {
         dependencyType: "attributeComponent",
         attributeName: "triggerWhen"
       };
-      dependencies.triggerWithTargets = {
+      dependencies.triggerWith = {
         dependencyType: "stateVariable",
-        variableName: "triggerWithTargets"
+        variableName: "triggerWith"
       }
       dependencies.insideTriggerSet = {
         dependencyType: "stateVariable",
@@ -370,7 +432,7 @@ export default class UpdateValue extends InlineComponent {
 
     stateVariableDefinitions.hidden.definition = function (args) {
       if (args.dependencyValues.triggerWhen ||
-        args.dependencyValues.triggerWithTargets ||
+        args.dependencyValues.triggerWith ||
         args.dependencyValues.insideTriggerSet
       ) {
         return { setValue: { hidden: true } }
@@ -384,7 +446,7 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
-  async updateValue() {
+  async updateValue({ actionId }) {
 
     let targets = await this.stateValues.targets;
     let newValue = await this.stateValues.newValue;
@@ -416,6 +478,7 @@ export default class UpdateValue extends InlineComponent {
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "selected",
         object: {
@@ -434,17 +497,17 @@ export default class UpdateValue extends InlineComponent {
     });
 
 
-
-
   }
 
-  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (await stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !await this.stateValues.insideTriggerSet
     ) {
-      return await this.updateValue();
+      return await this.updateValue({ actionId });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

@@ -1,5 +1,5 @@
 import BlockComponent from './BlockComponent.js';
-import { getVariantsForDescendants } from '../../utils/variants.js';
+import { getVariantsForDescendantsForUniqueVariants, setUpVariantSeedAndRng } from '../../utils/variants.js';
 import { numberToLetters } from '../../utils/sequence.js';
 import { returnStyleDefinitionStateVariables } from '../../utils/style.js';
 import { returnFeedbackDefinitionStateVariables } from '../../utils/feedback.js';
@@ -8,10 +8,10 @@ export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningComponent";
   static renderChildren = true;
 
-  static setUpVariantIfVariantControlChild = true;
+  static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.aggregateScores = {
       createComponentOfType: "boolean",
       createStateVariable: "aggregateScores",
@@ -24,12 +24,28 @@ export default class SectioningComponent extends BlockComponent {
       defaultValue: 1,
       public: true,
     };
+
     attributes.sectionWideCheckWork = {
       createComponentOfType: "boolean",
       createStateVariable: "sectionWideCheckWork",
       defaultValue: false,
       public: true,
     };
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+    }
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+    }
+
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.boxed = {
@@ -39,6 +55,48 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+
+    attributes.suppressAutoName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "suppressAutoName",
+      defaultValue: false,
+      public: true,
+    }
+
+    attributes.suppressAutoNumber = {
+      createComponentOfType: "boolean",
+      createStateVariable: "suppressAutoNumber",
+      defaultValue: false,
+      public: true,
+    }
+
+    attributes.includeAutoName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeAutoName",
+      defaultValue: false,
+      public: true,
+    }
+
+    attributes.includeAutoNumber = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeAutoNumber",
+      defaultValue: false,
+      public: true,
+    }
+
+    attributes.includeParentNumber = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeParentNumber",
+      defaultValue: false,
+      public: true,
+    }
+
+    attributes.level = {
+      createComponentOfType: "integer",
+    }
+
+
+
     return attributes;
   }
 
@@ -63,8 +121,6 @@ export default class SectioningComponent extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let sectioningClass = this;
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
@@ -74,7 +130,13 @@ export default class SectioningComponent extends BlockComponent {
     Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
 
     stateVariableDefinitions.enumeration = {
-      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "sectionNumber",
+        public: true,
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
+      }],
       returnDependencies: () => ({
         countAmongSiblings: {
           dependencyType: "countAmongSiblingsOfSameType"
@@ -83,17 +145,23 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "ancestor",
           componentType: "_sectioningComponent",
           variableNames: ["enumeration"]
+        },
+        includeParentNumber: {
+          dependencyType: "stateVariable",
+          variableName: "includeParentNumber"
         }
       }),
       definition({ dependencyValues }) {
 
         let enumeration = [];
-        if (dependencyValues.sectionAncestor) {
+        if (dependencyValues.includeParentNumber && dependencyValues.sectionAncestor) {
           enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
         }
 
         enumeration.push(dependencyValues.countAmongSiblings)
-        return { setValue: { enumeration } }
+
+
+        return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
 
       }
     }
@@ -115,7 +183,7 @@ export default class SectioningComponent extends BlockComponent {
       definition({ dependencyValues }) {
         let titleChildName = null;
         if (dependencyValues.titleChild.length > 0) {
-          titleChildName = dependencyValues.titleChild[0].componentName
+          titleChildName = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].componentName
         }
         return {
           setValue: { titleChildName }
@@ -123,12 +191,53 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
-    stateVariableDefinitions.title = {
-      public: true,
-      componentType: "text",
-      forRenderer: true,
-      shadowVariable: true,
+    stateVariableDefinitions.childIndicesToRender = {
       returnDependencies: () => ({
+        titleChildren: {
+          dependencyType: "child",
+          childGroups: ["titles"],
+        },
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["anything", "variantControls", "titles", "setups"],
+        },
+        titleChildName: {
+          dependencyType: "stateVariable",
+          variableName: "titleChildName"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+
+        let allTitleChildNames = dependencyValues.titleChildren.map(x => x.componentName);
+
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (typeof child !== "object"
+            || !allTitleChildNames.includes(child.componentName)
+            || child.componentName === dependencyValues.titleChildName
+          ) {
+            childIndicesToRender.push(ind)
+          }
+        }
+
+        return { setValue: { childIndicesToRender } }
+
+      }
+    }
+
+    stateVariableDefinitions.title = {
+      additionalStateVariablesDefined: [{
+        variableName: "titlePrefix",
+        forRenderer: true,
+        alwaysUpdateRenderer: true,
+      }],
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      forRenderer: true,
+      alwaysUpdateRenderer: true,
+      returnDependencies: ({ sharedParameters }) => ({
         titleChild: {
           dependencyType: "child",
           childGroups: ["titles"],
@@ -138,25 +247,63 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "sectionName",
         },
-        enumeration: {
+        sectionNumber: {
           dependencyType: "stateVariable",
-          variableName: "enumeration"
+          variableName: "sectionNumber"
+        },
+        includeAutoName: {
+          dependencyType: "stateVariable",
+          variableName: "includeAutoName"
+        },
+        includeAutoNumber: {
+          dependencyType: "stateVariable",
+          variableName: "includeAutoNumber"
+        },
+        prerender: {
+          dependencyType: "value",
+          value: sharedParameters.prerender
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.titleChild.length === 0) {
 
-          let title = sectioningClass.defaultTitle;
+        let titlePrefix = "";
+        let title = "";
 
-          if (!title) {
-            title = dependencyValues.sectionName + " "
-              + dependencyValues.enumeration.join(".")
+        const haveTitleChild = dependencyValues.titleChild.length > 0;
+
+        let includeAutoNumber = (dependencyValues.includeAutoNumber || !haveTitleChild)
+          && !dependencyValues.prerender;
+
+        let includeAutoName = dependencyValues.includeAutoName || !haveTitleChild;
+
+        if (includeAutoNumber) {
+          if(includeAutoName) {
+            titlePrefix = dependencyValues.sectionName + " ";
+          }
+          titlePrefix += dependencyValues.sectionNumber;
+        } else {
+          if (includeAutoName) {
+            titlePrefix = dependencyValues.sectionName;
+          }
+        }
+
+        if (!haveTitleChild) {
+          title = titlePrefix;
+        } else {
+
+          if (titlePrefix) {
+            if (dependencyValues.includeAutoName) {
+              titlePrefix += ": "
+            } else {
+              titlePrefix += ". "
+            }
           }
 
-          return { setValue: { title } };
-        } else {
-          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
+          title = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].stateValues.text;
+
         }
+
+        return { setValue: { title, titlePrefix } };
       }
     }
 
@@ -168,8 +315,27 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.level = {
       forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { level: 1 } })
+      returnDependencies: () => ({
+        ancestorLevel: {
+          dependencyType: "ancestor",
+          componentType: "_sectioningComponent",
+          variableNames: ["level"]
+        },
+        levelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "level",
+          variableNames: ["value"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        let level = dependencyValues.levelAttr?.stateValues.value;
+
+        if (!(level > 0)) {
+          level = (dependencyValues.ancestorLevel?.stateValues.level || 0) + 1;
+        }
+
+        return { setValue: { level } }
+      }
     }
 
     stateVariableDefinitions.viewedSolution = {
@@ -280,22 +446,30 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          }
+        },
+      },
       forRenderer: true,
       defaultValue: 0,
       hasEssential: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigitsForCreditAchieved",
-      },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
-        componentType: "number",
+        shadowingInstructions: {
+          createComponentOfType: "number",
+          addAttributeComponentsShadowingStateVariables: {
+            displayDigits: {
+              stateVariableToShadow: "displayDigitsForCreditAchieved",
+            }
+          },
+        },
         defaultValue: 0,
         hasEssential: true,
-        stateVariablesPrescribingAdditionalAttributes: {
-          displayDigits: "displayDigitsForCreditAchieved",
-        }
       }],
       stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
       returnDependencies({ stateValues }) {
@@ -406,14 +580,14 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
-    stateVariableDefinitions.suppressAutomaticVariants = {
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { suppressAutomaticVariants: true } })
-    }
 
     stateVariableDefinitions.generatedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
       returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
         variantIndex: {
           dependencyType: "value",
           value: sharedParameters.variantIndex,
@@ -429,7 +603,7 @@ export default class SectioningComponent extends BlockComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -437,12 +611,8 @@ export default class SectioningComponent extends BlockComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMatchedComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
-        suppressAutomaticVariants: {
-          dependencyType: "stateVariable",
-          variableName: "suppressAutomaticVariants"
-        }
 
       }),
       definition({ dependencyValues, componentName }) {
@@ -450,18 +620,8 @@ export default class SectioningComponent extends BlockComponent {
         let generatedVariantInfo = {};
 
         if (dependencyValues.variantControlChild.length === 0) {
-          if (dependencyValues.suppressAutomaticVariants) {
-            return {
-              setValue: {
-                generatedVariantInfo: null,
-                isVariantComponent: false
-              }
-            }
-          } else {
-            generatedVariantInfo.index = dependencyValues.variantIndex;
-            generatedVariantInfo.name = dependencyValues.variantName;
+          generatedVariantInfo.seed = dependencyValues.variantSeed;
 
-          }
         } else {
           generatedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex;
           generatedVariantInfo.name = dependencyValues.variantControlChild[0].stateValues.selectedVariantName;
@@ -494,7 +654,6 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     stateVariableDefinitions.collapsible = {
-      componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({}),
       definition() {
@@ -504,7 +663,9 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: true,
       hasEssential: true,
@@ -588,9 +749,10 @@ export default class SectioningComponent extends BlockComponent {
     submitAllAnswers: this.submitAllAnswers.bind(this),
     revealSection: this.revealSection.bind(this),
     closeSection: this.closeSection.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this)
   }
 
-  async submitAllAnswers() {
+  async submitAllAnswers({ actionId }) {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -611,9 +773,12 @@ export default class SectioningComponent extends BlockComponent {
         })
       }
     }
+
+    this.coreFunctions.resolveAction({ actionId });
+
   }
 
-  async revealSection() {
+  async revealSection({ actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -622,6 +787,7 @@ export default class SectioningComponent extends BlockComponent {
         stateVariable: "open",
         value: true
       }],
+      actionId,
       event: {
         verb: "viewed",
         object: {
@@ -632,7 +798,7 @@ export default class SectioningComponent extends BlockComponent {
     })
   }
 
-  async closeSection() {
+  async closeSection({ actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -641,6 +807,7 @@ export default class SectioningComponent extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {
@@ -651,11 +818,23 @@ export default class SectioningComponent extends BlockComponent {
     })
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   static async setUpVariant({
     serializedComponent, sharedParameters, definingChildrenSoFar,
     descendantVariantComponents,
-    allComponentClasses
   }) {
+
     let variantControlChild;
     for (let child of definingChildrenSoFar) {
       if (child !== undefined && child.componentType === "variantControl") {
@@ -666,76 +845,13 @@ export default class SectioningComponent extends BlockComponent {
 
     if (variantControlChild === undefined) {
       // no variant control child
-      // so just use default of 100 variants
-      // with variant names a, b, c, ...
-      // and seeds 1,2,3,...
+      // so don't actually control variants
+      // just calculate a seed
 
-      let nVariants = 100;
-
-      // if (serializedComponent.variants.uniqueVariants) {
-      //   nVariants = serializedComponent.variants.numberOfVariants;
-      // }
-
-      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
-
-      let variantIndex;
-      // check if desiredVariant was specified
-      let desiredVariant;
-      if (serializedComponent.variants) {
-        desiredVariant = serializedComponent.variants.desiredVariant;
-      }
-      if (desiredVariant !== undefined) {
-        if (desiredVariant.index !== undefined) {
-          let desiredVariantIndex = Number(desiredVariant.index);
-          if (!Number.isFinite(desiredVariantIndex)) {
-            console.warn("Variant index " + desiredVariant.index + " must be a number");
-            variantIndex = 1;
-          } else {
-            if (!Number.isInteger(desiredVariantIndex)) {
-              console.warn("Variant index " + desiredVariant.index + " must be an integer");
-              desiredVariantIndex = Math.round(desiredVariantIndex);
-            }
-            let indexFrom0 = (desiredVariantIndex - 1) % nVariants;
-            if (indexFrom0 < 0) {
-              indexFrom0 += nVariants;
-            }
-            variantIndex = indexFrom0 + 1;
-          }
-        } else if (desiredVariant.name !== undefined) {
-          if (typeof desiredVariant.name === "string") {
-            // want case insensitive test, so convert to lower case
-            let desiredNumber = sharedParameters.allPossibleVariants.indexOf(desiredVariant.name.toLowerCase());
-            if (desiredNumber !== -1) {
-              variantIndex = desiredNumber + 1;
-            }
-          }
-          if (variantIndex === undefined) {
-            console.warn("Variant name " + desiredVariant.name + " is not valid");
-            variantIndex = 1;
-          }
-        }
-      }
-
-      if (variantIndex === undefined) {
-        // if variant index wasn't specifed
-
-        // if variantRng exists
-        // randomly pick variant index
-        if (sharedParameters.variantRng) {
-          // random number in [0, 1)
-          let rand = sharedParameters.variantRng();
-          // random integer from 1 to nVariants
-          variantIndex = Math.floor(rand * nVariants) + 1;
-        } else {
-          // if variantRng does not exist, we are in document
-          // Just choose the first variant
-          variantIndex = 1;
-        }
-      }
-      sharedParameters.variantSeed = variantIndex.toString();
-      sharedParameters.variantIndex = variantIndex;
-      sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
-      sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+      setUpVariantSeedAndRng({
+        serializedComponent, sharedParameters,
+        descendantVariantComponents
+      });
 
 
     } else {
@@ -744,10 +860,11 @@ export default class SectioningComponent extends BlockComponent {
       sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
       sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
+      sharedParameters.variantIndicesToIgnore = await variantControlChild.state.variantIndicesToIgnore.value;
     }
 
     // console.log("****Variant for sectioning component****")
-    // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
+    // console.log("Selected seed: " + variantControlChild.stateValues.selectedSeed);
     // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants
@@ -785,123 +902,168 @@ export default class SectioningComponent extends BlockComponent {
 
   }
 
-  static determineNumberOfUniqueVariants({ serializedComponent }) {
-    if (serializedComponent.children === undefined) {
-      return { success: true };
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
+
+    if (serializedComponent.variants === undefined) {
+      serializedComponent.variants = {};
     }
 
-    let variantControlInd;
-    let variantControlChild
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "variantControl" || (
-        child.createdComponent && components[child.componentName].componentType === "variantControl"
-      )) {
-        variantControlInd = ind;
+    let variantControlChild;
+    for (let child of serializedComponent.children) {
+      if (child.componentType === "variantControl") {
         variantControlChild = child;
         break;
       }
     }
 
-    if (variantControlInd === undefined) {
-      return { success: true };
+    if (!variantControlChild) {
+      return super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
+    }
+
+    let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
+
+    if (numberOfVariants === undefined) {
+      numberOfVariants = 100;
+    }
+
+    let numberOfVariantsPreIgnore = numberOfVariants;
+
+    let indicesToIgnore = [];
+    if (variantControlChild.attributes.variantIndicesToIgnore) {
+      indicesToIgnore = variantControlChild.attributes.variantIndicesToIgnore.component
+        .children.map(Number)
+        .filter(x => Number.isInteger(x) && x >= 1 && x <= numberOfVariants)
+        .sort((a, b) => a - b);
+    }
+
+    if (!variantControlChild.attributes.uniqueVariants?.primitive) {
+      if (indicesToIgnore.length > 0) {
+        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+        numberOfVariants -= indicesToIgnore.length;
+      }
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+      serializedComponent.variants.numberOfVariants = numberOfVariants;
+      return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
     }
 
 
-    // Find number of variants from variantControl
-    let numberOfVariants = 100;
-    if (variantControlChild.attributes &&
-      variantControlChild.attributes.nVariants !== undefined
-    ) {
-      let nVariantsComp = variantControlChild.attributes.nVariants;
-      // calculate nVariants only if has its value set directly 
-      // or if has a single child that is a string
-      let foundValid = false;
-      if (nVariantsComp.state !== undefined && nVariantsComp.state.value !== undefined) {
-        numberOfVariants = Math.round(Number(nVariantsComp.state.value));
-        foundValid = true;
+    let result = super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
+
+    if (!result.success) {
+      // even if didn't successfully determine number of unique variants
+      // still report it as a success, as will have exactly number of variants
+      // given by the variant control
+      if (indicesToIgnore.length > 0) {
+        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+        numberOfVariants -= indicesToIgnore.length;
       }
-      // children overwrite state
-      if (nVariantsComp.children !== undefined && nVariantsComp.children.length === 1 &&
-        typeof nVariantsComp.children[0] === "string") {
-        numberOfVariants = Math.round(Number(nVariantsComp.children[0].state.value));
-        foundValid = true;
-      }
-      if (!foundValid) {
-        return { success: false }
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+      serializedComponent.variants.numberOfVariants = numberOfVariants;
+      return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
+    }
+
+    numberOfVariants = Math.min(result.numberOfVariants, numberOfVariants);
+    numberOfVariantsPreIgnore = numberOfVariants;
+
+    if (indicesToIgnore.length > 0) {
+      indicesToIgnore = indicesToIgnore.filter(x => x <= numberOfVariants);
+      if (indicesToIgnore.length > 0) {
+        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+        numberOfVariants -= indicesToIgnore.length;
       }
     }
 
-    // check if uniqueVariants is already be defined in variants
-    if (serializedComponent.variants === undefined) {
-      serializedComponent.variants = {};
-    }
+    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.uniqueVariants = true;
 
-    let uniqueVariantData;
-    if (serializedComponent.variants.uniqueVariants) {
-      // max number of variants is the product of 
-      // number of variants for each descendantVariantComponent
-      let maxNumberOfVariants = 1;
-      let numberOfVariantsByDescendant = []
-      if (serializedComponent.variants.descendantVariantComponents !== undefined) {
-        numberOfVariantsByDescendant = serializedComponent.variants.descendantVariantComponents
-          .map(x => x.variants.numberOfVariants);
-        maxNumberOfVariants = numberOfVariantsByDescendant.reduce((a, c) => a * c, 1);
-        uniqueVariantData = {
-          numberOfVariantsByDescendant: numberOfVariantsByDescendant,
-        }
-      }
-
-      numberOfVariants = Math.min(maxNumberOfVariants, numberOfVariants)
-    }
+    // console.log("Actual number of variants for section is " + numberOfVariants)
 
     return {
       success: true,
-      numberOfVariants: numberOfVariants,
-      uniqueVariantData: uniqueVariantData
-    }
+      numberOfVariants,
+      numberOfVariantsPreIgnore
+    };
+
 
   }
 
-  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
-    if (serializedComponent.variants === undefined) {
-      return { succes: false }
-    }
-    let numberOfVariants = serializedComponent.variants.numberOfVariants;
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
     if (numberOfVariants === undefined) {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
+    if (serializedComponent.variants.desiredVariantFromDocument) {
+      numberOfVariants = serializedComponent.variants.numberOfVariantsPreIgnore;
+    }
+
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
       return { success: false }
     }
 
-    let desiredVariant = {
-      index: variantIndex,
-    }
 
-    if (serializedComponent.variants.uniqueVariants) {
 
-      let result = getVariantsForDescendants({
-        variantIndex: variantIndex,
-        serializedComponent: serializedComponent,
-        allComponentClasses: allComponentClasses
-      })
-
-      if (result.success) {
-        desiredVariant.subvariants = result.desiredVariants
-      } else {
-        console.log("Failed to get unique variant for " + serializedComponent.componentType);
+    let variantControlChild;
+    for (let child of serializedComponent.children) {
+      if (child.componentType === "variantControl") {
+        variantControlChild = child;
+        break;
       }
-
     }
 
-    return { success: true, desiredVariant: desiredVariant }
+    if (!variantControlChild) {
+      return super.getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects });
+    }
+
+    if (!serializedComponent.variants.desiredVariantFromDocument) {
+      if (serializedComponent.variants.indicesToIgnore) {
+        // adjust variantIndex so it counts only non-ignored indices
+        for (let ind of serializedComponent.variants.indicesToIgnore) {
+          if (variantIndex >= ind) {
+            variantIndex++;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+
+    if (!serializedComponent.variants.uniqueVariants) {
+      // it don't have unique variants, then just return variantIndex
+      return {
+        success: true,
+        desiredVariant: {
+          index: variantIndex,
+        }
+      }
+    }
+
+    let result = getVariantsForDescendantsForUniqueVariants({
+      variantIndex,
+      serializedComponent,
+      componentInfoObjects
+    })
+
+    if (!result.success) {
+      console.log("Failed to get unique variant for section.");
+
+      return { success: false }
+    }
+
+    serializedComponent.variants.selectedUniqueVariant = true;
+
+    return {
+      success: true,
+      desiredVariant: {
+        index: variantIndex,
+        subvariants: result.desiredVariants
+      }
+    }
+
   }
 
   static includeBlankStringChildren = true;
 
-}
-
-function indexToLowercaseLetters(index) {
-  return numberToLetters(index, true)
 }

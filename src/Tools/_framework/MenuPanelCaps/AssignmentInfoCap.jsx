@@ -1,90 +1,91 @@
 import React, { useEffect, useState } from 'react';
+import { find_image_label, find_color_label } from './util'
 import { useRecoilValue } from 'recoil';
-import { folderDictionary, fetchDrivesQuery, loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
-import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-import axios from 'axios';
-import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
+// import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
+// import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+// import axios from 'axios';
+// import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
+import { 
+  // itemByDoenetId, 
+  courseIdAtom, 
+  coursePermissionsAndSettingsByCourseId, 
+  // useCourse 
+} from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function AssignmentInfoCap(){
-  let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  let { page } = useRecoilValue(pageToolViewAtom);
-  const { numberOfAttemptsAllowed } = useRecoilValue(loadAssignmentSelector(doenetId));
-  const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
+  const courseId = useRecoilValue(courseIdAtom);
 
-  let [driveId,setDriveId] = useState("");
-  let [folderId,setFolderId] = useState("");
-  let [doenetIdLabel,setDoenetIdLabel] = useState("");
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  useEffect(()=>{
-    axios.get('/api/findDriveIdFolderId.php', {
-      params: { doenetId },
-    }).then((resp)=>{
-      setDriveId(resp.data.driveId);
-      setFolderId(resp.data.parentFolderId)
-    })
-    if (page === 'exam'){
-  axios.get('/api/getExamLabel.php', {
-      params: { doenetId },
-    }).then((resp)=>{
-      setDoenetIdLabel(resp.data.label);
-    })
-    }
-   
-
-  },[doenetId])
-  const driveInfo = useRecoilValue(fetchDrivesQuery)
-
-  let contentLabel = '';
-
-  if (page === 'course'){
-  let folderInfo = useRecoilValue(folderDictionary({driveId,folderId}))
-  const docInfo = folderInfo?.contentsDictionaryByDoenetId?.[doenetId]
-  contentLabel = docInfo?.label;
-  }else if (page === 'exam'){
-
-    contentLabel = doenetIdLabel
-  }
-  // if (contentLabel)
-  // if (!docInfo){ return null;}
-
-  let image;
-  let color;
-  let driveLabel = "";
- for (let info of driveInfo.driveIdsAndLabels){
-   if (info.driveId === driveId){
-     image = info.image;
-     color = info.color;
-     driveLabel = info.label;
-     break;
-   }
- }
+if (!course || Object.keys(course).length == 0){
+  return null;
+}
+// let roles = [...course.roleLabels];
+let color = course.color;
+let image = course.image;
+// let label = course.label;
+ 
+let accessible_name = "course"
 
  if (image != 'none'){
-  image = '/media/drive_pictures/' + image;
+  accessible_name = find_image_label(image);
+  image = 'url(/media/drive_pictures/' + image + ')';
  }
+
  if (color != 'none'){
+  accessible_name = find_color_label(color);
   color = '#' + color;
  }
-//  let imageURL = `/media/drive_pictures/${image}`
- let attemptsAllowedDescription = numberOfAttemptsAllowed;
- if (!numberOfAttemptsAllowed){
-  attemptsAllowedDescription = "Unlimited";
- }
+  // let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  // let { page } = useRecoilValue(pageToolViewAtom);
+  // const { numberOfAttemptsAllowed } = useRecoilValue(loadAssignmentSelector(doenetId));
+  // const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
+  
+  // let [courseId,setCourseId] = useState("");
+  // let [contentLabel,setContentLabel] = useState("");
+  // const { image, label: courseLabel}  = useCourse(courseId);
+  // const {label: itemLabel} = useRecoilValue(itemByDoenetId(doenetId));
 
- let attemptInfo = null;
- if (recoilAttemptNumber){
-  attemptInfo = <div>{recoilAttemptNumber} out of {attemptsAllowedDescription}</div>
- }
+  // useEffect(()=>{
+  //   axios.get('/api/findCourseIdAndParentDoenetId.php', {
+  //     params: { doenetId },
+  //   }).then((resp)=>{
+  //     setCourseId(resp.data.courseId);
+  //   })
+  //   if (page === 'exam'){
+  // axios.get('/api/getExamLabel.php', {
+  //     params: { doenetId },
+  //   }).then((resp)=>{
+  //     setContentLabel(resp.data.label);
+  //   })
+  //   } else if (page === 'course') {
+  //     setContentLabel(itemLabel)
+  //   }
+   
 
-  return <div>
-    <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
+  // },[doenetId, itemLabel, page])
+
+//  let attemptsAllowedDescription = numberOfAttemptsAllowed;
+//  if (!numberOfAttemptsAllowed){
+//   attemptsAllowedDescription = "Unlimited";
+//  }
+
+//  let attemptInfo = null;
+//  if (recoilAttemptNumber){
+//   attemptInfo = <div>{recoilAttemptNumber} out of {attemptsAllowedDescription}</div>
+//  }
+  //TODO: image and color defaults
+  return (
+  <div>
+    <div style={{ position: "relative", width: "100%", height: "165px", overflow: "hidden"}}>
+      <img aria-label={accessible_name} style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
-    <div style={{ padding:'16px 12px' }}>
-      <span style={{ marginBottom: "15px" }}>{driveLabel}</span> <br />
+    <b>Assignment</b>
+    {/* <div style={{ padding:'16px 12px' }}>
+      <span style={{ marginBottom: "15px" }}>{courseLabel ?? ''}</span> <br />
       <span style={{ marginBottom: "15px" }}>{contentLabel}</span> <br />
       <span>{ attemptInfo }</span>
-    </div>
-  </div>
+    </div> */}
+  </div>)
 }

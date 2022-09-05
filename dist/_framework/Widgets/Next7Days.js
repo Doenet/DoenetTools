@@ -1,31 +1,33 @@
-import React, {useState, Suspense, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
+import React, {useState} from "../../_snowpack/pkg/react.js";
 import {
   useRecoilCallback,
-  useRecoilState,
   useRecoilValue,
   useSetRecoilState,
   atom
 } from "../../_snowpack/pkg/recoil.js";
-import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
+import {pageToolViewAtom} from "../NewToolRoot.js";
 import {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
-  clearDriveAndItemSelections,
-  folderDictionary,
-  DoenetML,
-  DriveHeader
+  clearDriveAndItemSelections
 } from "../../_reactComponents/Drive/NewDrive.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import {globalSelectedNodesAtom} from "../../_reactComponents/Drive/NewDrive.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
-import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faChevronLeft, faChevronRight, faThumbtack} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {
+  faChevronLeft,
+  faChevronRight,
+  faThumbtack
+} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {findFirstPageOfActivity, itemByDoenetId, useInitCourseItems} from "../../_reactComponents/Course/CourseActions.js";
 export const classTimesAtom = atom({
   key: "classTimesAtom",
   default: []
@@ -64,7 +66,11 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
       }
     }
   }
-  let time = dt.toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true});
+  let time = dt.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true
+  });
   if (time === "Invalid Date") {
     time = null;
   }
@@ -78,7 +84,15 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
     if (dt.getMonth() == tomorrow.getMonth() && dt.getDate() == tomorrow.getDate() && dt.getFullYear() == tomorrow.getFullYear()) {
       return `Tomorrow - ${time}`;
     }
-    const dotwLabel = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const dotwLabel = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ];
     return `${dotwLabel[dt.getDay()]} - ${time}`;
   }
   let returnValue = `${dt.getMonth() + 1}/${dt.getDate()} ${time}`;
@@ -107,7 +121,11 @@ function formatDueDate(dt, classTimes) {
       }
     }
   }
-  let returnValue = dt.toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true});
+  let returnValue = dt.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true
+  });
   returnValue = `${dt.getMonth() + 1}/${dt.getDate()} ${returnValue}`;
   if (returnValue === "Invalid Date") {
     returnValue = null;
@@ -174,13 +192,16 @@ function buildRows({
         });
       };
       let path = `${assignment.driveId}:${assignment.parentFolderId}:${assignment.itemId}:${assignment.itemType}`;
-      let doubleClick = () => doubleClickCallback({type: assignment.itemType, doenetId: assignment.doenetId, path});
+      let doubleClick = () => doubleClickCallback({
+        type: assignment.itemType,
+        doenetId: assignment.doenetId,
+        path
+      });
       let checked = completedArray.includes(assignment.doenetId);
       if (!showCompleted && checked) {
         continue;
       }
-      let checkbox = /* @__PURE__ */ React.createElement("input", {
-        type: "checkbox",
+      let checkbox = /* @__PURE__ */ React.createElement(Checkbox, {
         checked,
         onClick: (e) => {
           e.stopPropagation();
@@ -196,13 +217,9 @@ function buildRows({
               return newObj;
             });
           }
-          axios.get("/api/saveCompleted.php", {params: {doenetId: assignment.doenetId}});
-        },
-        style: {
-          height: "18px",
-          width: "177px",
-          border: "2px solid black",
-          borderRadius: "5px"
+          axios.get("/api/saveCompleted.php", {
+            params: {doenetId: assignment.doenetId}
+          });
         }
       });
       if (isFirstRow) {
@@ -213,47 +230,82 @@ function buildRows({
           style: {borderBottom: "2px solid black", padding: "8px"},
           rowSpan: numberOfVisibleRows
         }, effectiveRowLabel), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black"
+          },
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, assignment.label), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black"
+          },
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayAssignedDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black"
+          },
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayDueDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black", textAlign: "center"}
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black",
+            textAlign: "center"
+          }
         }, checkbox)));
       } else {
         newRows.push(/* @__PURE__ */ React.createElement("tr", {
           key: `${effectiveRowLabel}${assignment.doenetId}${i}`
         }, /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black"
+          },
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, assignment.label), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black"
+          },
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayAssignedDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black"
+          },
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayDueDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black", textAlign: "center"}
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black",
+            textAlign: "center"
+          }
         }, checkbox)));
       }
     }
   }
   return newRows;
 }
-export default function Next7Days({driveId}) {
+export default function Next7Days({courseId}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const showCompleted = useRecoilValue(showCompletedAtom);
   const showOverdue = useRecoilValue(showOverdueAtom);
+  useInitCourseItems(courseId);
   let [assignmentArray, setAssignmentArray] = useState([]);
   let [pinnedArray, setPinnedArray] = useState([]);
   let [completedArray, setCompletedArray] = useState([]);
@@ -266,13 +318,15 @@ export default function Next7Days({driveId}) {
   if (selected[0]?.driveInstanceId === "currentContent") {
     selectedItemId = selected[0].itemId;
   }
-  let loadAssignmentArray = useRecoilCallback(({set}) => async (driveId2) => {
+  let loadAssignmentArray = useRecoilCallback(({set}) => async (courseId2) => {
     set(mainPanelClickAtom, (was) => [
       ...was,
       {atom: clearDriveAndItemSelections, value: null},
       {atom: selectedMenuPanelAtom, value: null}
     ]);
-    const {data} = await axios.get("/api/loadTODO.php", {params: {driveId: driveId2}});
+    const {data} = await axios.get("/api/loadTODO.php", {
+      params: {courseId: courseId2}
+    });
     if (!data.success) {
       setProblemMessage(data.message);
       return;
@@ -314,66 +368,33 @@ export default function Next7Days({driveId}) {
     set(selectedDriveAtom, info.driveId);
   }, []);
   const doubleClickCallback = useRecoilCallback(({snapshot}) => async ({type, doenetId, path}) => {
-    let role = await snapshot.getPromise(effectiveRoleAtom);
-    if (role === "instructor") {
-      switch (type) {
-        case itemType.DOENETML:
-          setPageToolView({
-            page: "course",
-            tool: "editor",
-            view: "",
-            params: {
-              doenetId,
-              path
-            }
-          });
-          break;
-        case itemType.COLLECTION:
-          setPageToolView({
-            page: "course",
-            tool: "editor",
-            view: "",
-            params: {
-              doenetId,
-              path,
-              isCollection: true
-            }
-          });
-          break;
-        default:
-          throw new Error("NavigationPanel doubleClick info type not defined");
-      }
+    let {canEditContent} = await snapshot.getPromise(effectivePermissionsByCourseId(courseId));
+    if (canEditContent === "1") {
+      let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+      let pageId = findFirstPageOfActivity(itemObj.content);
+      setPageToolView({
+        page: "course",
+        tool: "editor",
+        view: "",
+        params: {
+          doenetId,
+          pageId
+        }
+      });
     } else {
-      switch (type) {
-        case itemType.DOENETML:
-          setPageToolView({
-            page: "course",
-            tool: "assignment",
-            view: "",
-            params: {
-              doenetId
-            }
-          });
-          break;
-        case itemType.COLLECTION:
-          setPageToolView({
-            page: "course",
-            tool: "assignment",
-            view: "",
-            params: {
-              doenetId,
-              isCollection: true
-            }
-          });
-          break;
-        default:
-          throw new Error("NavigationPanel doubleClick info type not defined");
-      }
+      setPageToolView({
+        page: "course",
+        tool: "assignment",
+        view: "",
+        params: {
+          doenetId
+        }
+      });
     }
-  }, [setPageToolView]);
-  if (!initialized && driveId !== "") {
+  }, [courseId, setPageToolView]);
+  if (!initialized && courseId !== "") {
     setInitialized(true);
-    loadAssignmentArray(driveId);
+    loadAssignmentArray(courseId);
     return null;
   }
   if (problemMessage !== "") {
@@ -392,7 +413,7 @@ export default function Next7Days({driveId}) {
   let overdueRows = [];
   let pinnedName = /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faThumbtack
-  }), "  Pinned");
+  }), " Pinned");
   if (weekShift == 0) {
     pinnedRows.push(...buildRows({
       rowLabel: pinnedName,
@@ -451,7 +472,15 @@ export default function Next7Days({driveId}) {
     dueByDOTW[assignmentDOTW].push({...assignment});
   }
   dueByDOTW.push(dueByDOTW.shift());
-  const dotwLabel = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const dotwLabel = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+  ];
   for (let [index, dayAssignments] of Object.entries(dueByDOTW)) {
     dayRows.push(...buildRows({
       dotw: dotwLabel[index],
@@ -492,14 +521,39 @@ export default function Next7Days({driveId}) {
   })))), /* @__PURE__ */ React.createElement("table", {
     style: {width: "850px", borderSpacing: "0em .2em"}
   }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", {
-    style: {width: "150px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
+    style: {
+      width: "150px",
+      padding: "8px",
+      textAlign: "left",
+      borderBottom: "2px solid black"
+    }
   }, "Day"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "200px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
+    style: {
+      width: "200px",
+      padding: "8px",
+      textAlign: "left",
+      borderBottom: "2px solid black"
+    }
   }, "Name"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "200px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
+    style: {
+      width: "200px",
+      padding: "8px",
+      textAlign: "left",
+      borderBottom: "2px solid black"
+    }
   }, "Assigned"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "200px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
+    style: {
+      width: "200px",
+      padding: "8px",
+      textAlign: "left",
+      borderBottom: "2px solid black"
+    }
   }, "Due"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "100px", padding: "8px", textAlign: "center", borderBottom: "2px solid black"}
+    style: {
+      width: "100px",
+      padding: "8px",
+      textAlign: "center",
+      borderBottom: "2px solid black"
+    }
   }, "Completed")), pinnedRows, overdueRows, dayRows));
 }

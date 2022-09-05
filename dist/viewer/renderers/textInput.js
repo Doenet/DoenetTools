@@ -3,10 +3,13 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {sizeToCSS} from "./utils/css.js";
+import {rendererState} from "./useDoenetRenderer.js";
+import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 export default function TextInput(props) {
-  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   TextInput.baseStateVariable = "immediateValue";
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
   let valueToRevertTo = useRef(SVs.immediateValue);
   let focused = useRef(null);
   let immediateValueWhenSetState = useRef(null);
@@ -72,6 +75,11 @@ export default function TextInput(props) {
     let newValue = e.target.value;
     if (newValue !== rendererValue) {
       setRendererValue(newValue);
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      });
       immediateValueWhenSetState.current = SVs.immediateValue;
       callAction({
         action: actions.updateImmediateValue,
@@ -86,7 +94,7 @@ export default function TextInput(props) {
     return null;
   }
   let disabled = SVs.disabled;
-  const inputKey = name + "_input";
+  const inputKey = id + "_input";
   let surroundingBorderColor = "#efefef";
   if (focused.current) {
     surroundingBorderColor = "#82a5ff";
@@ -112,7 +120,7 @@ export default function TextInput(props) {
         checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
       }
       checkWorkButton = /* @__PURE__ */ React.createElement("button", {
-        id: name + "_submit",
+        id: id + "_submit",
         tabIndex: "0",
         disabled,
         style: checkWorkStyle,
@@ -135,7 +143,7 @@ export default function TextInput(props) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_correct",
+            id: id + "_correct",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCheck
@@ -146,13 +154,13 @@ export default function TextInput(props) {
           checkWorkStyle.width = "50px";
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_partial",
+            id: id + "_partial",
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
           checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_incorrect",
+            id: id + "_incorrect",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faTimes
@@ -161,7 +169,7 @@ export default function TextInput(props) {
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_saved",
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -216,9 +224,9 @@ export default function TextInput(props) {
     });
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
     className: "textInputSurroundingBox",
-    id: name
+    id
   }, input, checkWorkButton));
 }

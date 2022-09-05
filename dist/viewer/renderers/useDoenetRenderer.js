@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {atomFamily, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {renderersloadComponent} from "../DoenetViewer.js";
+import {renderersloadComponent} from "../PageViewer.js";
 export const rendererState = atomFamily({
   key: "rendererState",
-  default: {stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: []}
+  default: {stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: [], prefixForIds: ""}
 });
 export default function useDoenetRenderer(props, initializeChildrenOnConstruction = true) {
   let actions = props.componentInstructions.actions;
-  let name = props.componentInstructions.componentName;
+  let componentName = props.componentInstructions.componentName;
+  let effectiveName = props.componentInstructions.effectiveName;
+  let rendererName = props.coreId + componentName;
   let [renderersToLoad, setRenderersToLoad] = useState({});
-  let {stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions} = useRecoilValue(rendererState(name));
+  let {stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions, prefixForIds} = useRecoilValue(rendererState(rendererName));
   let children = [];
   const loadMoreRenderers = Object.keys(renderersToLoad).length === 0;
   for (let childInstructions of childrenInstructions) {
@@ -29,10 +31,11 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
       return childInstructions;
     }
     let propsForChild = {
-      key: childInstructions.componentName,
+      key: props.coreId + childInstructions.componentName,
       componentInstructions: childInstructions,
       rendererClasses: props.rendererClasses,
       flags: props.flags,
+      coreId: props.coreId,
       callAction: props.callAction
     };
     let rendererClass = props.rendererClasses[childInstructions.rendererType];
@@ -53,9 +56,9 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
   }
   let rendererType = props.componentInstructions.rendererType;
   const callAction = (argObj) => {
-    if (!argObj.name) {
+    if (!argObj.componentName) {
       argObj = {...argObj};
-      argObj.name = name;
+      argObj.componentName = componentName;
     }
     if (!argObj.rendererType) {
       argObj = {...argObj};
@@ -63,6 +66,17 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
     }
     return props.callAction(argObj);
   };
-  return {name, SVs: stateValues, actions, children, sourceOfUpdate, ignoreUpdate, initializeChildren: () => {
-  }, callAction};
+  return {
+    name: effectiveName,
+    id: prefixForIds + effectiveName,
+    SVs: stateValues,
+    actions,
+    children,
+    sourceOfUpdate,
+    ignoreUpdate,
+    rendererName,
+    initializeChildren: () => {
+    },
+    callAction
+  };
 }

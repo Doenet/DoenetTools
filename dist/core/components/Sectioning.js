@@ -2,52 +2,21 @@ import SectioningComponent from './abstract/SectioningComponent.js';
 
 export class Section extends SectioningComponent {
   static componentType = "section";
+  static rendererType = "section";
 
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 1 }
-    });
-
-    return stateVariableDefinitions;
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.includeParentNumber.defaultValue = true;
+    return attributes;
   }
+
 }
 
-export class Subsection extends SectioningComponent {
+export class Subsection extends Section {
   static componentType = "subsection";
-  static rendererType = "section";
-
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 2 }
-    });
-
-    return stateVariableDefinitions;
-  }
-
 }
-
-export class Subsubsection extends SectioningComponent {
+export class Subsubsection extends Section {
   static componentType = "subsubsection";
-  static rendererType = "section";
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 3 }
-    });
-
-    return stateVariableDefinitions;
-  }
-
 }
 
 export class Paragraphs extends SectioningComponent {
@@ -62,6 +31,10 @@ export class Paragraphs extends SectioningComponent {
       setValue: { level: 4 }
     });
 
+    stateVariableDefinitions.sectionName.definition = () => ({
+      setValue: { sectionName: "Paragraphs" }
+    });
+    
     return stateVariableDefinitions;
   }
 
@@ -71,8 +44,8 @@ export class Aside extends SectioningComponent {
   static componentType = "aside";
   static rendererType = "section";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.collapsible = {
       createComponentOfType: "boolean",
@@ -86,6 +59,7 @@ export class Aside extends SectioningComponent {
       createStateVariable: "startOpen",
       defaultValue: false,
     }
+
     return attributes;
   }
 
@@ -118,6 +92,10 @@ export class Aside extends SectioningComponent {
       setValue: { containerTag: "aside" }
     });
 
+    stateVariableDefinitions.sectionName.definition = () => ({
+      setValue: { sectionName: "Aside" }
+    });
+
     return stateVariableDefinitions;
   }
 
@@ -127,16 +105,9 @@ export class Problem extends SectioningComponent {
   static componentType = "problem";
   static rendererType = "section";
 
-  static setUpVariantUnlessAttributePrimitive = "suppressAutomaticVariants";
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.aggregateScores.defaultValue = true;
-    attributes.suppressAutomaticVariants = {
-      createPrimitiveOfType: "boolean",
-      createStateVariable: "suppressAutomaticVariants",
-      defaultValue: false,
-    }
     return attributes;
   }
 
@@ -145,16 +116,8 @@ export class Problem extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    // Delete the suppressAutomaticVariants state variable definition that inherited
-    // so that will instead use the state variable created from the attribute, above
-    delete stateVariableDefinitions.suppressAutomaticVariants;
-
     stateVariableDefinitions.sectionName.definition = () => ({
       setValue: { sectionName: "Problem" }
-    });
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 3 }
     });
 
     return stateVariableDefinitions;
@@ -191,10 +154,6 @@ export class Example extends SectioningComponent {
 
     stateVariableDefinitions.sectionName.definition = () => ({
       setValue: { sectionName: "Example" }
-    });
-
-    stateVariableDefinitions.level.definition = () => ({
-      setValue: { level: 3 }
     });
 
     return stateVariableDefinitions;

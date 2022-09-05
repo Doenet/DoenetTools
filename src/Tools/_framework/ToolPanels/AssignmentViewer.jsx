@@ -1,30 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
-import { serializedComponentsReviver } from '../../../Core/utils/serializedStateProcessing';
+import ActivityViewer, { saveStateToDBTimerIdAtom } from '../../../Viewer/ActivityViewer';
 import {
   useRecoilValue,
   atom,
   atomFamily,
   useRecoilCallback,
   useSetRecoilState,
+  useRecoilValueLoadable,
+  useRecoilState,
   // useRecoilState,
   // useSetRecoilState,
 } from 'recoil';
 import {
   searchParamAtomFamily,
   pageToolViewAtom,
+  suppressMenusAtom,
+  profileAtom,
 } from '../NewToolRoot';
-import {
-  itemHistoryAtom,
-  fileByContentId,
-  // variantInfoAtom,
-  // variantPanelAtom,
-} from '../ToolHandlers/CourseToolHandler';
-//  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
-import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
-import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
-import { suppressMenusAtom } from '../NewToolRoot';
+import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
+import { prng_alea } from 'esm-seedrandom';
+import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
+import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { useLocation, useNavigate } from 'react-router';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton'
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button'
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Banner from '../../../_reactComponents/PanelHeaderComponents/Banner';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -34,102 +38,188 @@ export const currentAttemptNumber = atom({
 export const creditAchievedAtom = atom({
   key: 'creditAchievedAtom',
   default: {
-    creditByItem: [1, 0, 0.5],
-    // creditByItem:[],
+    creditByItem: [],
     creditForAttempt: 0,
     creditForAssignment: 0,
     totalPointsOrPercent: 0,
   },
 });
 
-function randomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+export const numberOfAttemptsAllowedAdjustmentAtom = atom({
+  key: 'numberOfAttemptsAllowedAdjustment',
+  default: 0,
+})
+
+export const cidChangedAtom = atom({
+  key: 'cidChanged',
+  default: false,
+})
+
+
 
 //Randomly pick next variant
 //If all were picked then start random picks over
-function pushRandomVariantOfRemaining({ previous, from }) {
-  let usersVariantAttempts = [...previous];
-  let possible = [];
-  let numRemaining = previous.length % from.length;
+function generateNewVariant({ previousVariants, allPossibleVariants, individualize, userId, doenetId, attemptNumber }) {
 
-  let latestSetOfWas = [];
+  let possible = [];
+  let numRemaining = (attemptNumber - 1) % allPossibleVariants.length;
+
+  let mostRecentPreviousVariants = [];
+
   if (numRemaining > 0) {
-    latestSetOfWas = previous.slice(-numRemaining);
+    for (let aNum = attemptNumber - numRemaining; aNum < attemptNumber; aNum++) {
+      if (previousVariants[aNum - 1]) {
+        mostRecentPreviousVariants.push(previousVariants[aNum - 1])
+      } else {
+        // variant number was never saved, so generate it first
+        let oldVariant = generateNewVariant({
+          previousVariants: previousVariants.slice(0, aNum - 1),
+          allPossibleVariants, individualize, userId, doenetId,
+          attemptNumber: aNum
+        });
+        previousVariants[aNum - 1] = oldVariant;
+        mostRecentPreviousVariants.push(oldVariant);
+
+      }
+
+    }
   }
-  for (let variant of from) {
-    if (!latestSetOfWas.includes(variant)) {
+
+  for (let variant of allPossibleVariants) {
+    if (!mostRecentPreviousVariants.includes(variant)) {
       possible.push(variant);
     }
   }
-  const nextVariant = possible[randomInt(0, possible.length - 1)];
-  usersVariantAttempts.push(nextVariant);
-  return usersVariantAttempts;
+
+  // seed random number generator with doenetId, attemptNumber, and (if individualize) userId
+  // so that it will be consistent
+
+  let seed = doenetId + "|" + attemptNumber;
+  if (individualize) {
+    seed += "|" + userId;
+  }
+
+  let rng = new prng_alea(seed);
+
+  const ind = Math.floor(rng() * possible.length);
+
+  const nextVariant = possible[ind];
+
+  return nextVariant;
 }
 
 export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const courseId = useRecoilValue(courseIdAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
-  const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
+  const [recoilAttemptNumber, setRecoilAttemptNumber] = useRecoilState(currentAttemptNumber);
+  const [cidChanged, setCidChanged] = useRecoilState(cidChangedAtom);
   const [
     {
-      requestedVariant,
+      requestedVariantIndex,
       attemptNumber,
       showCorrectness,
+      paginate,
+      showFinishButton,
       showFeedback,
       showHints,
-      CID,
+      cid,
       doenetId,
       solutionDisplayMode,
+      baseNumberOfAttemptsAllowed,
     },
     setLoad,
   ] = useState({});
-  let startedInitOfDoenetId = useRef(null);
-  let storedAllPossibleVariants = useRef([]);
 
-  // console.log(`storedAllPossibleVariants -${storedAllPossibleVariants}-`)
+  const setNumberOfAttemptsAllowedAdjustment = useSetRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
+
+  const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
+
+  let allPossibleVariants = useRef([]);
+  let userId = useRef(null);
+  let individualize = useRef(null);
+
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+  }, [saveStateToDBTimerIdAtom])
+
+  useSetCourseIdFromDoenetId(recoilDoenetId);
+  useInitCourseItems(courseId);
+
+  const effectivePermissions = useRecoilValue(effectivePermissionsByCourseId(courseId));
+
+  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
+  let label = itemObj.label;
+
+  let { search, hash } = useLocation();
+  let navigate = useNavigate();
+
+
+  useEffect(() => {
+    const prevTitle = document.title;
+    if (label) {
+      document.title = `${label} - Doenet`;
+    }
+    return () => {
+      document.title = prevTitle;
+    }
+  }, [label])
+
+
+  useEffect(() => {
+    if (Object.keys(itemObj).length > 0 && Object.keys(effectivePermissions).length > 0) {
+      initializeValues(recoilDoenetId, itemObj);
+    }
+  }, [itemObj, recoilDoenetId, effectivePermissions])
+
+  // console.log("itemObj",itemObj)
+  // console.log(`allPossibleVariants -${allPossibleVariants}-`)
+
+
+  const loadProfile = useRecoilValueLoadable(profileAtom);
+  userId.current = loadProfile.contents.userId;
+
+
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (doenetId) => {
-        //Prevent duplicate inits
-        if (startedInitOfDoenetId.current === doenetId) {
+      async (doenetId, {
+        type,
+        timeLimit,
+        assignedDate,
+        dueDate,
+        showCorrectness,
+        showCreditAchievedMenu,
+        paginate,
+        showFinishButton,
+        showFeedback,
+        showHints,
+        showSolution,
+        proctorMakesAvailable,
+        numberOfAttemptsAllowed: baseNumberOfAttemptsAllowed
+      }) => {
+
+        // if itemObj has not yet been loaded, don't process yet
+        if (type === undefined) {
           return;
         }
-        const isCollection = await snapshot.getPromise(
-          searchParamAtomFamily('isCollection'),
-        );
-        startedInitOfDoenetId.current = doenetId;
 
-        const {
-          timeLimit,
-          assignedDate,
-          dueDate,
-          showCorrectness,
-          showCreditAchievedMenu,
-          showFeedback,
-          showHints,
-          showSolution,
-          proctorMakesAvailable,
-        } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
         let suppress = [];
         if (timeLimit === null) {
           suppress.push('TimerMenu');
         }
 
-        if (!showCorrectness || !showCreditAchievedMenu) {
+        if (!showCorrectness || !showCreditAchievedMenu || effectivePermissions.canViewUnassignedContent !== '0') {
           suppress.push('CreditAchieved');
         }
 
         setSuppressMenus(suppress);
 
         let solutionDisplayMode = 'button';
-        if (!showSolution) {
+        if (!showSolution && effectivePermissions.canViewUnassignedContent === '0') {
           solutionDisplayMode = 'none';
         }
         if (proctorMakesAvailable) {
@@ -153,64 +243,34 @@ export default function AssignmentViewer() {
         }
         //TODO: test if assignment should be shown here
 
-        let contentId = null;
-        let isAssigned = false;
-        let assignedVariant = null;
-        if (isCollection) {
-          try {
-            const { data } = await axios.get(
-              '/api/getAssignedCollectionData.php',
-              { params: { doenetId } },
-            );
-            contentId = data.contentId;
-            isAssigned = data.isAssigned;
-            assignedVariant = JSON.parse(
-              data.assignedVariant,
-              serializedComponentsReviver,
-            );
-          } catch (error) {
-            console.error(error);
-          }
-        } else {
-          //First try to find if they have a previously assigned contentId
-          //for the current attempt
+        let cid = null;
 
-          const { data } = await axios.get(
-            `/api/getContentIdFromAssignmentAttempt.php`,
-            { params: { doenetId } },
-          );
 
-          if (data.foundAttempt) {
-            contentId = data.contentId;
-            isAssigned = true;
-          } else {
-            //If this is the first attempt then give them the
-            //currently released
+        // determine cid
+        // the cid from the latest attempt takes precedence over assigned cid
+        // If assigned cid differs from latest attempt cid,
+        // set cidChanged=true
+        let resp = await axios.get(
+          `/api/getCidForAssignment.php`,
+          { params: { doenetId, latestAttemptOverrides: true } },
+        );
 
-            const versionHistory = await snapshot.getPromise(
-              itemHistoryAtom(doenetId),
-            );
-            //Find Assigned ContentId
-            //Use isReleased as isAssigned for now
-            //TODO: refactor isReleased to isAssigned
-
-            //Set contentId and isAssigned
-            for (let version of versionHistory.named) {
-              if (version.isReleased === '1') {
-                isAssigned = true;
-                contentId = version.contentId;
-                break;
-              }
-            }
-          }
-        }
-
-        // console.log('>>>>initializeValues contentId', contentId);
-        if (!isAssigned) {
+        if (!resp.data.success) {
+          setStage('Problem');
+          setMessage(`Error loading assignment: ${resp.data.message}`);
+          return;
+        } else if (!resp.data.cid) {
           setStage('Problem');
           setMessage('Assignment is not assigned.');
           return;
+        } else {
+          cid = resp.data.cid;
         }
+
+        console.log(`retrieved cid: ${cid}`);
+
+        setCidChanged(resp.data.cidChanged);
+
 
         // TODO: add a flag to enable the below feature
         // where a assignment is not available until the assigned date
@@ -231,161 +291,239 @@ export default function AssignmentViewer() {
         //   return;
         // }
 
-        //Find allPossibleVariants
-        returnAllPossibleVariants({
-          CID: contentId,
-        }).then(isCollection ? setCollectionVariant : setVariantsFromDoenetML);
 
-        async function setVariantsFromDoenetML({ allPossibleVariants }) {
-          storedAllPossibleVariants.current = allPossibleVariants;
-          //Find attemptNumber
-          const { data } = await axios.get('/api/loadTakenVariants.php', {
-            params: { doenetId },
-          });
-
-          let usersVariantAttempts = [];
-
-          for (let variant of data.variants) {
-            let obj = JSON.parse(variant, serializedComponentsReviver);
-            if (obj) {
-              usersVariantAttempts.push(obj.name);
-            }
-          }
-
-          let attemptNumber = Math.max(...data.attemptNumbers);
-          let needNewVariant = false;
-
-          if (attemptNumber < 1) {
-            attemptNumber = 1;
-            needNewVariant = true;
-          } else if (!data.variants[data.variants.length - 1]) {
-            //Starting a proctored exam so we need a variant
-            needNewVariant = true;
-          }
-
-          set(currentAttemptNumber, attemptNumber);
-
-          if (needNewVariant) {
-            //Find requestedVariant
-            usersVariantAttempts = pushRandomVariantOfRemaining({
-              previous: [...usersVariantAttempts],
-              from: allPossibleVariants,
-            });
-          }
-          let requestedVariant = {
-            name: usersVariantAttempts[usersVariantAttempts.length - 1],
-          };
-
-          setLoad({
-            requestedVariant,
-            attemptNumber,
-            showCorrectness,
-            showFeedback,
-            showHints,
-            CID: contentId,
-            doenetId,
-            solutionDisplayMode,
-          });
-          setStage('Ready');
-        }
-        async function setCollectionVariant() {
-          //TODO: no more attemtps?
-          const { data } = await axios.get('/api/loadTakenVariants.php', {
-            params: { doenetId },
-          });
-          let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
-          if (numberOfCompletedAttempts === -1) {
-            numberOfCompletedAttempts = 0;
-          }
-          let attemptNumber = numberOfCompletedAttempts + 1;
-          set(currentAttemptNumber, attemptNumber);
-          setLoad({
-            requestedVariant: assignedVariant,
-            attemptNumber,
-            showCorrectness,
-            showFeedback,
-            showHints,
-            CID: contentId,
-            doenetId,
-            solutionDisplayMode,
-          });
-          setStage('Ready');
-        }
-      },
-    [],
-  );
-
-  const updateAttemptNumberAndRequestedVariant = useRecoilCallback(
-    ({ snapshot }) =>
-      async (newAttemptNumber) => {
-        //TODO: Exit properly if we are a collection
-        const isCollection = await snapshot.getPromise(
-          searchParamAtomFamily('isCollection'),
-        );
-
-        if (isCollection) {
-          console.error('How did you get here?');
-          // return; //Would cause an infinite loop!
-        }
-
-        let doenetId = await snapshot.getPromise(
-          searchParamAtomFamily('doenetId'),
-        );
-
-        //Check if contentId has changed (if not a collection)
-        const versionHistory = await snapshot.getPromise(
-          itemHistoryAtom(doenetId),
-        );
-        // console.log(">>>>versionHistory",versionHistory)
-
-        //Find Assigned ContentId
-        //Use isReleased as isAssigned for now
-        //TODO: refactor isReleased to isAssigned
-        let contentId = null;
-        //Set contentId and isAssigned
-        for (let version of versionHistory.named) {
-          if (version.isReleased === '1') {
-            contentId = version.contentId;
-            break;
-          }
-        }
-        //TESTING set contentId to null
-        // console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
-
-        const { data } = await axios.get('/api/loadTakenVariants.php', {
+        //Find attemptNumber
+        resp = await axios.get('/api/loadTakenVariants.php', {
           params: { doenetId },
         });
-        let usersVariantAttempts = [];
 
-        for (let variant of data.variants) {
-          let obj = JSON.parse(variant, serializedComponentsReviver);
-          if (obj) {
-            usersVariantAttempts.push(obj.name);
+        if (!resp.data.success) {
+          setStage('Problem');
+          if (resp.data.message) {
+            setMessage(`Could not load assignment: ${resp.data.message}`);
+          } else {
+            setMessage(`Could not load assignment: ${resp.data}`);
           }
+          return;
         }
 
-        //Find requestedVariant
-        usersVariantAttempts = pushRandomVariantOfRemaining({
-          previous: [...usersVariantAttempts],
-          from: storedAllPossibleVariants.current,
+        let usersVariantAttempts = resp.data.variants.map(Number)
+
+        let attemptNumber = Math.max(...resp.data.attemptNumbers.map(Number));
+        let needNewVariant = false;
+
+        if (attemptNumber < 1) {
+          attemptNumber = 1;
+          needNewVariant = true;
+        } else if (resp.data.variants[resp.data.variants.length - 1] === null) {
+          // have not yet saved the variant to the database
+          // (either a proctored exam or student loaded but did not interact with new attempt)
+          needNewVariant = true;
+        }
+
+        set(currentAttemptNumber, attemptNumber);
+
+        resp = await axios.get('/api/loadAttemptsAllowedAdjustment.php', {
+          params: { doenetId },
         });
 
-        // name: usersVariantAttempts[newAttemptNumber - 1],
+        if (!resp.data.success) {
+          setStage('Problem');
+          if (resp.data.message) {
+            setMessage(`Could not load assignment: ${resp.data.message}`);
+          } else {
+            setMessage(`Could not load assignment: ${resp.data}`);
+          }
+          return;
+        }
 
-        let newRequestedVariant = {
-          name: usersVariantAttempts[usersVariantAttempts.length - 1],
-        };
+        let numberOfAttemptsAllowedAdjustment = Number(resp.data.numberOfAttemptsAllowedAdjustment)
+        set(numberOfAttemptsAllowedAdjustmentAtom, numberOfAttemptsAllowedAdjustment);
 
-        setLoad((was) => {
-          let newObj = { ...was };
-          newObj.attemptNumber = newAttemptNumber;
-          newObj.requestedVariant = newRequestedVariant;
-          newObj.CID = contentId;
-          return newObj;
+
+        let result = await returnNumberOfActivityVariants(cid);
+
+        if (!result.success) {
+          setLoad({
+            requestedVariantIndex: 0,
+            attemptNumber,
+            showCorrectness,
+            paginate,
+            showFinishButton,
+            showFeedback,
+            showHints,
+            cid,
+            doenetId,
+            solutionDisplayMode,
+            baseNumberOfAttemptsAllowed,
+          });
+          setStage('Problem');
+          setMessage(result.message);
+          return;
+        }
+
+        allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map(x => (x + 1));
+
+
+        if (needNewVariant) {
+
+          // determine if should individualize
+
+          // TODO: do we cache this somewhere so don't hit the database so many times?
+
+          resp = await axios.get('/api/getIndividualizeForAssignment.php', {
+            params: { doenetId },
+          });
+
+          if (!resp.data.success) {
+            setStage('Problem');
+            if (resp.data.message) {
+              setMessage(`Could not load assignment: ${resp.data.message}`);
+            } else {
+              setMessage(`Could not load assignment: ${resp.data}`);
+            }
+            return;
+          }
+
+          individualize.current = resp.data.individualize === '1';
+
+          usersVariantAttempts = usersVariantAttempts.slice(0, attemptNumber - 1);
+
+          //Find requestedVariant
+          usersVariantAttempts.push(generateNewVariant({
+            previousVariants: usersVariantAttempts,
+            allPossibleVariants: allPossibleVariants.current,
+            individualize: individualize.current,
+            userId: userId.current,
+            doenetId,
+            attemptNumber,
+          }));
+        }
+
+        let requestedVariantIndex = usersVariantAttempts[usersVariantAttempts.length - 1];
+
+        console.log(`requestedVariantIndex: ${requestedVariantIndex}`)
+
+        setLoad({
+          requestedVariantIndex,
+          attemptNumber,
+          showCorrectness,
+          paginate,
+          showFinishButton,
+          showFeedback,
+          showHints,
+          cid,
+          doenetId,
+          solutionDisplayMode,
+          baseNumberOfAttemptsAllowed,
         });
+
+        setStage('Ready');
+
       },
-    [],
+    [setSuppressMenus, effectivePermissions],
   );
+
+  async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
+
+    if (hash && hash !== "#page1") {
+      navigate(search, { replace: true });
+    }
+
+    // don't attempt to save data from old attempt number
+    // (which would triggered a reset and error message);
+    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+    if (oldTimeoutId !== null) {
+      clearTimeout(oldTimeoutId)
+    }
+
+    //Check if cid has changed
+
+    let cid = null;
+
+    // since this is a new attempt,
+    // get assigned cid, ignoring cid from latest attempt
+
+    let resp = await axios.get(
+      `/api/getCidForAssignment.php`,
+      { params: { doenetId, latestAttemptOverrides: false } },
+    );
+
+    if (!resp.data.success) {
+      setStage('Problem');
+      setMessage(`Error loading assignment: ${resp.data.message}`);
+      return;
+    } else if (!resp.data.cid) {
+      setStage('Problem');
+      setMessage('Assignment is not assigned.');
+      return;
+    } else {
+      cid = resp.data.cid;
+    }
+
+    console.log(`retrieved cid: ${cid}`);
+
+
+    const { data } = await axios.get('/api/loadTakenVariants.php', {
+      params: { doenetId },
+    });
+
+    if (!data.success) {
+      setStage('Problem');
+      if (data.message) {
+        setMessage(`Could not load assignment: ${data.message}`);
+      } else {
+        setMessage(`Could not load assignment: ${data}`);
+      }
+      return;
+    }
+
+    let usersVariantAttempts = data.variants.map(Number).slice(0, newAttemptNumber - 1);
+
+    if (individualize.current === null) {
+      resp = await axios.get('/api/getIndividualizeForAssignment.php', {
+        params: { doenetId },
+      });
+
+      if (!resp.data.success) {
+        setStage('Problem');
+        if (resp.data.message) {
+          setMessage(`Could not load assignment: ${resp.data.message}`);
+        } else {
+          setMessage(`Could not load assignment: ${resp.data}`);
+        }
+        return;
+      }
+
+      individualize.current = resp.data.individualize === '1';
+      setStage('Ready');
+
+    }
+
+
+
+    //Find requestedVariant
+    usersVariantAttempts.push(generateNewVariant({
+      previousVariants: usersVariantAttempts,
+      allPossibleVariants: allPossibleVariants.current,
+      individualize: individualize.current,
+      userId: userId.current,
+      doenetId,
+      attemptNumber: newAttemptNumber,
+    }));
+
+    let newRequestedVariantIndex = usersVariantAttempts[usersVariantAttempts.length - 1];
+
+
+    setLoad((was) => {
+      let newObj = { ...was };
+      newObj.attemptNumber = newAttemptNumber;
+      newObj.requestedVariantIndex = newRequestedVariantIndex;
+      newObj.cid = cid;
+      return newObj;
+    });
+    setCidChanged(false);
+  }
 
   const updateCreditAchieved = useRecoilCallback(
     ({ set }) =>
@@ -405,6 +543,22 @@ export default function AssignmentViewer() {
       },
   );
 
+  function pageChanged(pageNumber) {
+    console.log(`page changed to ${pageNumber}`)
+  }
+
+  async function incrementAttemptNumberAndAttemptsAllowed() {
+
+    let resp = await axios.post('/api/incrementAttemptsAllowedIfCidChanged.php', {
+      doenetId,
+    });
+
+    if (resp.data.cidChanged) {
+      setNumberOfAttemptsAllowedAdjustment(Number(resp.data.newNumberOfAttemptsAllowedAdjustment))
+      setRecoilAttemptNumber(was => was + 1)
+    }
+  }
+
   // console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
@@ -416,21 +570,52 @@ export default function AssignmentViewer() {
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
-  if (stage === 'Initializing') {
-    initializeValues(recoilDoenetId);
+  if (courseId === "__not_found__") {
+    return <h1>Content not found or no permission to view content</h1>;
+  } else if (stage === 'Initializing') {
+    // initializeValues(recoilDoenetId, itemObj);
+    return null;
+  } else if (recoilAttemptNumber > attemptNumber) {
+    updateAttemptNumberAndRequestedVariant(recoilAttemptNumber, recoilDoenetId);
     return null;
   } else if (stage === 'Problem') {
     return <h1>{message}</h1>;
-  } else if (recoilAttemptNumber > attemptNumber) {
-    updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
-    return null;
   }
+
+  let cidChangedAlert = null;
+  if (cidChanged) {
+    if (cidChangedMessageOpen) {
+      let attemptNumberPhrase = null;
+      if (baseNumberOfAttemptsAllowed > 1) {
+        attemptNumberPhrase = " and the number of available attempts";
+      }
+      cidChangedAlert = <Banner type="ACTION" value={<div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap" }}>
+        A new version of this activity is available.
+        Do you want to start a new attempt using the new version?
+        (This will reset the activity{attemptNumberPhrase}.)
+        <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
+          <ButtonGroup>
+            <Button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion" value="Yes"></Button>
+            <Button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion" value="No" alert></Button>
+          </ButtonGroup>
+        </div>
+
+      </div>}></Banner>
+    } else {
+      cidChangedAlert = <Banner type="ACTION" value={<div style={{ marginLeft: "1px", marginRight: "5px" }}>
+        <ActionButton onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable" value="New version available!"></ActionButton>
+      </div>}></Banner>
+    }
+  }
+
+  const allowLoadAndSave = effectivePermissions.canViewUnassignedContent === '0';
 
   return (
     <>
-      <DoenetViewer
-        key={`doenetviewer${doenetId}`}
-        CID={CID}
+      {cidChangedAlert}
+      <ActivityViewer
+        key={`activityViewer${doenetId}`}
+        cid={cid}
         doenetId={doenetId}
         flags={{
           showCorrectness,
@@ -438,18 +623,50 @@ export default function AssignmentViewer() {
           solutionDisplayMode,
           showFeedback,
           showHints,
-          isAssignment: true,
-          allowLoadPageState: true,
-          allowSavePageState: true,
-          allowLocalPageState: true,
-          allowSaveSubmissions: true,
-          allowSaveEvents: true,
+          allowLoadState: allowLoadAndSave,
+          allowSaveState: allowLoadAndSave,
+          allowLocalState: allowLoadAndSave,
+          allowSaveSubmissions: allowLoadAndSave,
+          allowSaveEvents: allowLoadAndSave,
         }}
         attemptNumber={attemptNumber}
-        requestedVariant={requestedVariant}
+        requestedVariantIndex={requestedVariantIndex}
         updateCreditAchievedCallback={updateCreditAchieved}
-        // generatedVariantCallback={variantCallback}
+        updateAttemptNumber={setRecoilAttemptNumber}
+        pageChangedCallback={pageChanged}
+        paginate={paginate}
+        showFinishButton={showFinishButton}
+        cidChangedCallback={() => setCidChanged(true)}
+      // generatedVariantCallback={variantCallback}
       />
     </>
   );
+}
+
+
+
+
+async function returnNumberOfActivityVariants(cid) {
+
+  let activityDefinitionDoenetML;
+
+  try {
+    activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
+  } catch (e) {
+    return { success: false, message: "Could not retrieve file" }
+  }
+
+  let result = parseActivityDefinition(activityDefinitionDoenetML);
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    result = await determineNumberOfActivityVariants(result.activityJSON);
+  } catch (e) {
+    return { success: false, message: e.message }
+  }
+
+  return { success: true, numberOfVariants: result.numberOfVariants };
 }

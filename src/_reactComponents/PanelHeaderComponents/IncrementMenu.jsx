@@ -6,15 +6,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const FONT_SIZES = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
 
 const Container = styled.div`
+  display: ${(props) => props.label && !props.vertical && 'flex' };
+  align-items: ${(props) => props.label && !props.vertical && 'center' };
+`
+
+const IncrementBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 20px;
-  max-width: 210px;
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+  background-color: var(--canvas);
+  `
 
+
+const IncrementContainer = styled.div`
+  position: relative;
+  max-width: 210px;
 `;
 
 const IncreaseButton = styled.button`
@@ -29,6 +39,10 @@ const IncreaseButton = styled.button`
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
+  }
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 4px;
   }
 `;
 
@@ -46,6 +60,10 @@ const DecreaseButton = styled.button`
     color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 4px;
+  }
 `;
 
 const TextField = styled.input`
@@ -56,32 +74,36 @@ const TextField = styled.input`
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
   outline: none;
   border: none;
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 6px;
+  }
 `;
 
-const Label = styled.div`
+const Label = styled.span`
   font-size: 14px;
   margin-right: 5px;
 `;
 
 const Menu = styled.div`
-  background-color: 'var(--mainGray)';
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  border: 'var(--mainBorder)';
-  border-top: none;
-  border-radius: 'var(--mainBorderRadius)';
-  position: relative;
+  background-color: var(--canvas);
+  border: var(--mainBorder);
+  border-radius: var(--mainBorderRadius);
+  position: absolute;
+  left: 0;
+  right: 0;
   overflow: scroll;
   max-height: ${(props) => props.maxHeight};
-  width: fit-content;
+  z-index: 100;
 `;
 
 const MenuOption = styled.button`
-  background-color: 'var(--mainGray)';
+  background-color: var(--canvas);
   display: block;
-  width: 146px;
+  width: 100%;
   height: 24px;
   border: none;
-  border-bottom: 1px black solid;
+  border-bottom: 2px var(--canvastext) solid;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -89,6 +111,7 @@ const MenuOption = styled.button`
     cursor: pointer;
   }
 `;
+
 
 const findClosestIndex = (arr, value) => {
   if (arr === null) {
@@ -117,7 +140,7 @@ export default function Increment(props) {
   };
 
   const [index, setIndex] = useState(0);
-  const [value, setValue] = useState(props.value);
+  const [value, setValue] = useState(props.value ?? '');
   const [menuToggle, setMenuToggle] = useState(false);
   const [values, setValues] = useState(props.values);
   const [numericValue, setNumericValues] = useState(false);
@@ -339,72 +362,101 @@ export default function Increment(props) {
         {size}
       </MenuOption>
     ));
-  };
-
-  if (values) {
+  } else if (values) {
     menuOptions = values.map((value, index) => (
       <MenuOption key={index} value={value} onClick={onMenuClick}>
         {value}
       </MenuOption>
     ));
-  };
+  } else {
+    let generalChoices = []
+    let min = props.min !== undefined ? props.min : 1;
+    let max = props.max !== undefined ? props.max : 100;
+    let count = min;
+    for (let i=0; i <= max-min; i++) {
+      generalChoices[i] = count;
+      count++;
+    }
+    menuOptions =  generalChoices.map((choice, index) => (
+      <MenuOption key={index} value={choice} onClick={onMenuClick}>
+        {choice}
+      </MenuOption>
+    ));
+  }
 
-  // console.log('props.disabled', props.disabled);
+  // console.log(props.menuOptions);
 
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
-      {props.vertical && props.label && <Label>{props.label}</Label> }
-      <Container
-        ref={containerRef}
-        onBlur={containerOnBlur}
-        alert={props.alert}
-      >
-        <DecreaseButton
-          ref={decrementRef}
-          disabled={props.disabled}
-          onClick={decrementOnClick}
+    <Container label={props.label} vertical={props.vertical}>
+      {props.label && <Label id="increment-label">{props.label}</Label> }
+      {props.label && props.vertical && <br /> }
+      <IncrementContainer >
+        <IncrementBox 
+          ref={containerRef}
+          onBlur={containerOnBlur}
+          alert={props.alert}
         >
-          {decreaseIcon}
-        </DecreaseButton>
-        <TextField
-          placeholder={props.placeholder}
-          value={value}
-          ref={textFieldRef}
-          disabled={props.disabled ? props.disabled : false}
-          onChange={onTextFieldChange}
-          onClick={(e) => {
-            setMenuToggle(true);
-          }}
-          onKeyDown={(e) => {
-            if (props.onKeyDown) {
-              props.onKeyDown(e);
-            };
-            if (e.key === 'Enter') {
-              onTextFieldEnter(e);
-            };
-          }}
-        />
-        <IncreaseButton
-          ref={incrementRef}
-          disabled={props.disabled}
-          onClick={incrementOnClick}
-        >
-          {increaseIcon}
-        </IncreaseButton>
-      </Container>
-      {menuOptions && menuToggle && (
-        <div style={{ display: 'flex' }}>
-          {!props.vertical && props.label ? (
-            <Label style={{ opacity: 0 }}>{props.label}</Label>
-          ) : null}
+          <DecreaseButton
+            aria-label="Decrease"
+            aria-labelledby='increment-label'
+            aria-disabled={props.disabled ? true : false}
+            ref={decrementRef}
+            alert={props.alert}
+            disabled={props.disabled}
+            onClick={decrementOnClick}
+          >
+            {decreaseIcon}
+          </DecreaseButton>
+          <TextField
+            aria-labelledby='increment-label'
+            aria-haspopup="true"
+            aria-disabled={props.disabled ? true : false}
+            placeholder={props.placeholder}
+            value={value}
+            data-test={props.dataTest}
+            ref={textFieldRef}
+            alert={props.alert}
+            disabled={props.disabled ? props.disabled : false}
+            onChange={onTextFieldChange}
+            onClick={(e) => {
+              setMenuToggle(true);
+            }}
+            onKeyDown={(e) => {
+              if (props.onKeyDown) {
+                props.onKeyDown(e);
+              };
+              if (e.key === 'Enter') {
+                onTextFieldEnter(e);
+                if (menuToggle) {
+                  setMenuToggle(false);
+                } else {
+                  setMenuToggle(true);
+                }
+              };
+            }}
+          />
+          <IncreaseButton
+            alert={props.alert}
+            ref={incrementRef}
+            disabled={props.disabled}
+            onClick={incrementOnClick}
+            aria-labelledby="increment-label"
+            aria-label="Increase"
+            aria-disabled={props.disabled ? true : false}
+          >
+            {increaseIcon}
+          </IncreaseButton>
+        </IncrementBox>
+        {!props.deactivateDropdown && menuOptions && menuToggle && (
           <Menu
             ref={menuRef}
             maxHeight={props.maxHeight ? props.maxHeight : '150px'}
           >
             {menuOptions}
           </Menu>
-        </div>
-      )}
-    </div>
+        )}
+      </IncrementContainer>
+      
+    </Container>
   );
 };

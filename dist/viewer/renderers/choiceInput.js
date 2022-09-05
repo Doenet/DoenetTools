@@ -2,10 +2,13 @@ import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-export default function ChoiceInput(props) {
-  let {name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+import {rendererState} from "./useDoenetRenderer.js";
+import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+export default React.memo(function ChoiceInput(props) {
+  let {name, id, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   ChoiceInput.baseStateVariable = "selectedIndices";
   const [rendererSelectedIndices, setRendererSelectedIndices] = useState(SVs.selectedIndices);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
   let selectedIndicesWhenSetState = useRef(null);
   if (!ignoreUpdate && selectedIndicesWhenSetState.current !== SVs.selectedIndices) {
     setRendererSelectedIndices(SVs.selectedIndices);
@@ -51,6 +54,11 @@ export default function ChoiceInput(props) {
     if (rendererSelectedIndices.length !== newSelectedIndices.length || rendererSelectedIndices.some((v, i) => v != newSelectedIndices[i])) {
       setRendererSelectedIndices(newSelectedIndices);
       selectedIndicesWhenSetState.current = SVs.selectedIndices;
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      });
       callAction({
         action: actions.updateSelectedIndices,
         args: {
@@ -86,7 +94,7 @@ export default function ChoiceInput(props) {
           checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
         }
         checkWorkButton = /* @__PURE__ */ React.createElement("button", {
-          id: name + "_submit",
+          id: id + "_submit",
           disabled,
           tabIndex: "0",
           style: checkWorkStyle,
@@ -109,7 +117,7 @@ export default function ChoiceInput(props) {
           if (validationState === "correct") {
             checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
             checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: name + "_correct",
+              id: id + "_correct",
               style: checkWorkStyle
             }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
               icon: faCheck
@@ -120,13 +128,13 @@ export default function ChoiceInput(props) {
             checkWorkStyle.width = "50px";
             checkWorkStyle.backgroundColor = "#efab34";
             checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: name + "_partial",
+              id: id + "_partial",
               style: checkWorkStyle
             }, partialCreditContents);
           } else {
             checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
             checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: name + "_incorrect",
+              id: id + "_incorrect",
               style: checkWorkStyle
             }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
               icon: faTimes
@@ -135,7 +143,7 @@ export default function ChoiceInput(props) {
         } else {
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_saved",
+            id: id + "_saved",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCloud
@@ -169,9 +177,9 @@ export default function ChoiceInput(props) {
       }
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), /* @__PURE__ */ React.createElement("select", {
-      id: name,
+      id,
       onChange: onChangeHandler,
       value,
       disabled,
@@ -192,15 +200,15 @@ export default function ChoiceInput(props) {
     let checkworkComponent = null;
     if (SVs.includeCheckWork) {
       if (validationState === "unvalidated") {
-        let checkWorkText = "Check Work";
+        let checkWorkText = SVs.submitLabel;
         if (!SVs.showCorrectness) {
-          checkWorkText = "Submit Response";
+          checkWorkText = SVs.submitLabelNoCorrectness;
         }
         if (disabled) {
           checkWorkStyle.backgroundColor = "rgb(200,200,200)";
         }
         checkworkComponent = /* @__PURE__ */ React.createElement("button", {
-          id: name + "_submit",
+          id: id + "_submit",
           tabIndex: "0",
           disabled,
           style: checkWorkStyle,
@@ -223,7 +231,7 @@ export default function ChoiceInput(props) {
           if (validationState === "correct") {
             checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
             checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-              id: name + "_correct",
+              id: id + "_correct",
               style: checkWorkStyle
             }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
               icon: faCheck
@@ -231,7 +239,7 @@ export default function ChoiceInput(props) {
           } else if (validationState === "incorrect") {
             checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
             checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-              id: name + "_incorrect",
+              id: id + "_incorrect",
               style: checkWorkStyle
             }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
               icon: faTimes
@@ -241,14 +249,14 @@ export default function ChoiceInput(props) {
             let percent = Math.round(SVs.creditAchieved * 100);
             let partialCreditContents = `${percent}% Correct`;
             checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-              id: name + "_partial",
+              id: id + "_partial",
               style: checkWorkStyle
             }, partialCreditContents);
           }
         } else {
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkworkComponent = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_saved",
+            id: id + "_saved",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCloud
@@ -261,7 +269,7 @@ export default function ChoiceInput(props) {
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
       checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
     }
-    let inputKey = name;
+    let inputKey = id;
     let listStyle = {
       listStyleType: "none"
     };
@@ -293,7 +301,7 @@ export default function ChoiceInput(props) {
       id: inputKey,
       style: listStyle
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), choiceDoenetTags), checkworkComponent);
   }
-}
+});

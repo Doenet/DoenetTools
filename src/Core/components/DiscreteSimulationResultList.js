@@ -6,8 +6,8 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   static componentType = "DiscreteSimulationResultList";
   static rendererType = "spreadsheet";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
@@ -91,9 +91,6 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
     attributes.displayDecimals = {
       createComponentOfType: "integer",
@@ -118,6 +115,58 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+  
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not used default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+  
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return { useEssentialOrDefaultValue: { displayDigits: { defaultValue: dependencyValues.displayDigitsAttr.stateValues.value } } }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
+    }
 
     stateVariableDefinitions.cells = {
       forRenderer: true,
@@ -198,7 +247,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.numRows = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumRows: {
           dependencyType: "stateVariable",
@@ -221,7 +272,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.numColumns = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumColumns: {
           dependencyType: "stateVariable",
@@ -249,7 +302,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         heightAttr: {
@@ -287,7 +342,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   }
 
 
-  async onChange({ changes, source }) {
+  async onChange({ changes, source, actionId, }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -303,6 +358,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           stateVariable: "cells",
           value: cellChanges,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -312,15 +368,29 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           result: cellChanges
         }
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     onChange: this.onChange.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
-
 
 
 }

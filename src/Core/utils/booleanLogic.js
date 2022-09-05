@@ -1,6 +1,7 @@
 import checkEquality from './checkEquality';
 import me from 'math-expressions';
 import { textToAst, getFromText, appliedFunctionSymbolsDefault } from './math';
+import { deepCompare } from './deepFunctions';
 
 const appliedFunctionSymbolsWithBooleanOperators = [
   ...appliedFunctionSymbolsDefault,
@@ -189,6 +190,7 @@ export function evaluateLogic({ logicTree,
   let foundMath = false;
   let foundText = false;
   let foundBoolean = false;
+  let foundOther = false;
 
   operands.forEach(function (x) {
     if (typeof x === "string") {
@@ -202,6 +204,8 @@ export function evaluateLogic({ logicTree,
         foundText = true;
       } else if (x in dependencyValues.booleanChildrenByCode || x in dependencyValues.booleanListChildrenByCode) {
         foundBoolean = true;
+      } else if (x in dependencyValues.otherChildrenByCode) {
+        foundOther = true;
       }
     }
   });
@@ -238,7 +242,7 @@ export function evaluateLogic({ logicTree,
 
 
   if (operator === "apply" && ["isnumber", "isinteger"].includes(operands[0])) {
-    if (foundText || foundBoolean) {
+    if (foundText || foundBoolean || foundOther) {
       return 0;
     }
 
@@ -271,7 +275,7 @@ export function evaluateLogic({ logicTree,
   // TODO: other set operations
 
   if (!(["=", "ne", "<", ">", "le", "ge", "lts", "gts", "in", "notin"].includes(operator))) {
-    if (foundText || foundBoolean) {
+    if (foundText || foundBoolean || foundOther) {
       console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
@@ -293,12 +297,12 @@ export function evaluateLogic({ logicTree,
 
 
   if (foundBoolean) {
-    if (foundMath || foundText) {
+    if (foundMath || foundText || foundOther) {
       console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
 
-    let foundInvalidWhen = false;
+    let foundInvalidFormat = false;
     let foundUnorderedList = false;
     // every operand must be a boolean, booleanlist, or a string that is true or false
     operands = operands.map(function (x) {
@@ -322,15 +326,15 @@ export function evaluateLogic({ logicTree,
           return false;
         }
         console.warn("Invalid format for boolean condition");
-        foundInvalidWhen = true;
+        foundInvalidFormat = true;
         return valueOnInvalid;
       }
       console.warn("Invalid format for boolean condition");
-      foundInvalidWhen = true;
+      foundInvalidFormat = true;
       return valueOnInvalid;
     });
 
-    if (foundInvalidWhen) {
+    if (foundInvalidFormat) {
       return valueOnInvalid;
     }
 
@@ -389,26 +393,26 @@ export function evaluateLogic({ logicTree,
     }
 
   } else if (foundText) {
-    if (foundMath) {
+    if (foundMath || foundOther) {
       console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
 
-    let foundInvalidWhen = false;
+    let foundInvalidFormat = false;
     let foundUnorderedList = false;
 
     let extractText = function (tree, recurse = false) {
       if (typeof tree === "string") {
         let child = dependencyValues.textChildrenByCode[tree];
         if (child !== undefined) {
-          return child.stateValues.value.trim();
+          return child.stateValues.value.trim().replace(/\s+/, ' ');
         }
         child = dependencyValues.textListChildrenByCode[tree];
         if (child !== undefined) {
           if (child.stateValues.unordered) {
             foundUnorderedList = true;
           }
-          return child.stateValues.texts.map(x => x.trim());
+          return child.stateValues.texts.map(x => x.trim().replace(/\s+/, ' '));
         }
         return tree.trim();
       }
@@ -420,7 +424,7 @@ export function evaluateLogic({ logicTree,
       // multiple words would become multiplication
       if (!(recurse && Array.isArray(tree) && tree[0] === "*")) {
         console.warn("Invalid format for boolean condition");
-        foundInvalidWhen = true;
+        foundInvalidFormat = true;
         return '';
       }
 
@@ -431,7 +435,7 @@ export function evaluateLogic({ logicTree,
     operands = operands.map(x => extractText(x, true));
 
 
-    if (foundInvalidWhen) {
+    if (foundInvalidFormat) {
       return valueOnInvalid;
     }
 
@@ -451,6 +455,7 @@ export function evaluateLogic({ logicTree,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
           matchByExactPositions: dependencyValues.matchByExactPositions,
+          caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
         }));
 
         // return average of fraction_equal
@@ -464,6 +469,7 @@ export function evaluateLogic({ logicTree,
             isUnordered: unorderedCompare,
             partialMatches: dependencyValues.matchPartial,
             matchByExactPositions: dependencyValues.matchByExactPositions,
+            caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
           }
         ).fraction_equal === 1) ? 1 : 0;
       }
@@ -480,6 +486,7 @@ export function evaluateLogic({ logicTree,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
           matchByExactPositions: dependencyValues.matchByExactPositions,
+          caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
         }
       ).fraction_equal;
 
@@ -489,6 +496,59 @@ export function evaluateLogic({ logicTree,
       console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
+  } else if (foundOther) {
+
+    if (foundMath) {
+      console.warn("Invalid format for boolean condition");
+      return valueOnInvalid;
+    }
+
+    let foundInvalidFormat = false;
+
+    operands = operands.map(function (x) {
+      if (typeof x === "string") {
+        let child = dependencyValues.otherChildrenByCode[x];
+        if (child !== undefined) {
+          return child.stateValues.value;
+        }
+      }
+
+      console.warn("Invalid format for boolean condition");
+      foundInvalidFormat = true;
+      return null;
+
+    });
+
+
+    if (foundInvalidFormat) {
+      return valueOnInvalid;
+    }
+
+    if (operator === "=") {
+      if (operands.slice(1).every(x => deepCompare(x, operands[0]))) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+
+    if (operator === "ne") {
+      if (operands.length !== 2) {
+        console.warn("Invalid format for boolean condition");
+        return 0;
+      }
+
+      if (deepCompare(operands[0], operands[1])) {
+        return 0;
+      } else {
+        return 1;
+      }
+    }
+
+
+    console.warn("Invalid format for boolean condition");
+    return 0;
+
   }
 
   // no boolean or text, just math, mathList, number, numberList, and strings
@@ -570,6 +630,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }));
 
       // return average of fraction_equal
@@ -591,6 +653,8 @@ export function evaluateLogic({ logicTree,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
           nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
           nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+          caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+          matchBlanks: dependencyValues.matchBlanks,
         }
       ).fraction_equal === 1) ? 1 : 0;
     }
@@ -612,6 +676,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }
     ).fraction_equal;
 
@@ -643,6 +709,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }));
 
       let max_fraction = results.reduce((a, c) => Math.max(a, c.fraction_equal), 0);
@@ -668,6 +736,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }).fraction_equal === 1);
 
       if (operator === "in") {

@@ -9,7 +9,7 @@ import {
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
 import { 
-  editorDoenetIdInitAtom, 
+  editorPageIdInitAtom, 
   updateTextEditorDoenetMLAtom,
   textEditorDoenetMLAtom,
   viewerDoenetMLAtom,
@@ -27,8 +27,6 @@ import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
-import { CIDFromDoenetML } from '../../../Core/utils/cid';
-import { update } from '@react-spring/web';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -45,7 +43,7 @@ console.log(">>>===VersionHistory")
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const path = decodeURIComponent(useRecoilValue(searchParamAtomFamily('path')));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
-  const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
   const selectedVersionId = useRecoilValue(selectedVersionIdAtom);
   const addToast = useToast();
   const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom)
@@ -140,7 +138,7 @@ console.log(">>>===VersionHistory")
     set(itemHistoryAtom(doenetId),newItemHistory)
 
     //set viewer's and text editor's doenetML (Currently not needed)
-    // let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
+    // let doenetML = await snapshot.getPromise(fileByContentId(newDraft.cid));
     // set(viewerDoenetMLAtom,doenetML)
     // set(updateTextEditorDoenetMLAtom,doenetML)
     // set(textEditorDoenetMLAtom,doenetML)
@@ -153,7 +151,7 @@ console.log(">>>===VersionHistory")
       let newDBVersion = {...newDraft,
         isSetAsCurrent:'1',
         newDraftVersionId,
-        newDraftContentId:newDraft.contentId,
+        newDraftContentId:newDraft.cid,
         doenetId,
         newTitle:title,
       }
@@ -167,7 +165,7 @@ console.log(">>>===VersionHistory")
 
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const timestamp = buildTimestamp();
-    const contentId = await CIDFromDoenetML(doenetML);
+    const cid = await cidFromText(doenetML);
     const versionId = nanoid();
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
@@ -181,7 +179,7 @@ console.log(">>>===VersionHistory")
       isReleased:'0',
       isDraft:'0',
       isNamed:'1',
-      contentId
+      cid
     }
     let newDBVersion = {...newVersion,
       doenetML,
@@ -192,7 +190,7 @@ console.log(">>>===VersionHistory")
     newVersions.named = [newVersion,...oldVersions.named];
 
     set(itemHistoryAtom(doenetId),newVersions)
-    set(fileByContentId(contentId),doenetML);
+    set(fileByContentId(cid),doenetML);
     
     //TODO: Errors don't seem to fire when offline
     axios.post("/api/saveNewVersion.php",newDBVersion)
@@ -217,7 +215,7 @@ console.log(">>>===VersionHistory")
 
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const timestamp = DateToUTCDateString(new Date());
-      const contentId = await CIDFromDoenetML(doenetML);
+      const cid = await cidFromText(doenetML);
       const versionId = nanoid();
 
       const { data } = await axios.post("/api/releaseDraft.php",{
@@ -234,7 +232,7 @@ console.log(">>>===VersionHistory")
           addToast(message, toastType.ERROR)
       }
 
-      set(fileByContentId(contentId),doenetML);
+      set(fileByContentId(cid),doenetML);
 
       //Update data structures 
     set(itemHistoryAtom(doenetId),(was)=>{
@@ -254,7 +252,7 @@ console.log(">>>===VersionHistory")
         isReleased:'1',
         isDraft:'0',
         isNamed:'1',
-        contentId
+        cid
       }
       newNamed.unshift(newVersion);
 
@@ -296,18 +294,18 @@ console.log(">>>===VersionHistory")
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
 
-    let oldDraftContentId = oldVersions.draft.contentId;
+    let oldDraftContentId = oldVersions.draft.cid;
     if (!isCurrentDraft){
       const wasDraftSelected = await snapshot.getPromise(currentDraftSelectedAtom);
       if (wasDraftSelected){
         //we left the draft and it needs to be saved
         const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const newDraftContentId = await CIDFromDoenetML(newDraftDoenetML);
+        const newDraftContentId = await cidFromText(newDraftDoenetML);
         if (newDraftContentId !== oldDraftContentId){
 
           //Save new draft
           let newDraft = {...oldVersions.draft};
-          newDraft.contentId = newDraftContentId;
+          newDraft.cid = newDraftContentId;
           newDraft.timestamp = buildTimestamp();
           
 
@@ -335,16 +333,17 @@ console.log(">>>===VersionHistory")
       }
     }
     //Assume user just selected the draft version
-    let displayContentId = newVersions.draft.contentId;
-    //If selected version is named use that contentId
+    let displayContentId = newVersions.draft.cid;
+    //If selected version is named use that cid
     for (let version of newVersions.named){
       if (version.versionId === versionId){
-        displayContentId = version.contentId;
+        displayContentId = version.cid;
         break;
       }
     }
 
-    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId));
+    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId)).toString();
+
 
     //Display doenetML in viewer and text editor
     set(viewerDoenetMLAtom,doenetML)
@@ -426,7 +425,7 @@ if (initializedDoenetId !== doenetId){
       {/* {options} */}
     </RelatedItems>
   <div>Name: {version?.title}</div>
-  <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} doenetId={doenetId} />
+  <ClipboardLinkButtons disabled={currentDraftSelected} cid={version?.cid} doenetId={doenetId} />
         <div><RenameVersionControl key={version?.versionId} disabled={currentDraftSelected} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
        {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
        <div><Button disabled={currentDraftSelected} onClick={()=>setAsCurrent({doenetId,versionId:version.versionId})} value="Set As Current" /></div> 

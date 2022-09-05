@@ -1,6 +1,7 @@
-import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import {
   faCheck,
   faLevelDownAlt,
@@ -18,11 +19,35 @@ import {
   handleRef
 } from "../../_framework/Footers/MathInputSelector.js";
 import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {rendererState} from "./useDoenetRenderer.js";
+const Button = styled.button`
+    position: relative;
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+    background-color: var(--mainBlue);
+    display: inline-block;
+    text-align: center;
+    padding: 2px;
+    z-index: 0;
+    /* border: var(--mainBorder); */
+    border: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
+    };
+  `;
 export default function MathInput(props) {
-  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   MathInput.baseStateVariable = "rawRendererValue";
   const [mathField, setMathField] = useState(null);
-  let rendererValue = useRef(null);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
+  let rendererValue = useRef(SVs.rawRendererValue);
+  let includeCheckWork = useRef(SVs.includeCheckWork);
+  includeCheckWork.current = SVs.includeCheckWork;
   if (!ignoreUpdate) {
     rendererValue.current = SVs.rawRendererValue;
   }
@@ -72,7 +97,7 @@ export default function MathInput(props) {
       action: actions.updateValue,
       baseVariableValue: rendererValue.current
     });
-    if (SVs.includeCheckWork && validationState.current === "unvalidated") {
+    if (includeCheckWork.current && validationState.current === "unvalidated") {
       callAction({
         action: actions.submitAnswer
       });
@@ -103,8 +128,13 @@ export default function MathInput(props) {
     }
   };
   const onChangeHandler = (text) => {
-    if (text !== rendererValue.current) {
+    if (text.replace(/\s/g, "").replace(/\^{(\w)}/g, "^$1") !== rendererValue.current?.replace(/\s/g, "").replace(/\^{(\w)}/g, "^$1")) {
       rendererValue.current = text;
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      });
       callAction({
         action: actions.updateRawValue,
         args: {
@@ -121,26 +151,15 @@ export default function MathInput(props) {
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
     let checkWorkStyle = {
-      position: "relative",
-      width: "30px",
-      height: "24px",
-      fontSize: "20px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      display: "inline-block",
-      textAlign: "center",
-      top: "3px",
-      padding: "2px",
-      zIndex: "0"
+      cursor: "pointer"
     };
     if (validationState.current === "unvalidated") {
       if (SVs.disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-      } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.cursor = "not-allowed";
       }
-      checkWorkButton = /* @__PURE__ */ React.createElement("button", {
-        id: name + "_submit",
+      checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+        id: id + "_submit",
         tabIndex: "0",
         disabled: SVs.disabled,
         style: checkWorkStyle,
@@ -161,9 +180,9 @@ export default function MathInput(props) {
     } else {
       if (SVs.showCorrectness) {
         if (validationState.current === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_correct",
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+            id: id + "_correct",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCheck
@@ -173,14 +192,14 @@ export default function MathInput(props) {
           let partialCreditContents = `${percent} %`;
           checkWorkStyle.width = "50px";
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_partial",
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+            id: id + "_partial",
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_incorrect",
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+            id: id + "_incorrect",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faTimes
@@ -188,8 +207,8 @@ export default function MathInput(props) {
         }
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_saved",
+        checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -198,18 +217,20 @@ export default function MathInput(props) {
     }
     if (SVs.numberOfAttemptsLeft < 0) {
       checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(1 attempt remaining)"));
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(", SVs.numberOfAttemptsLeft, " attempts remaining)"));
     }
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
     className: "textInputSurroundingBox",
-    id: name
-  }, /* @__PURE__ */ React.createElement("span", {
-    style: {margin: "10px"}
-  }, /* @__PURE__ */ React.createElement(EditableMathField, {
+    id,
+    style: {marginBottom: "12px"}
+  }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(EditableMathField, {
+    style: {border: "var(--mainBorder)"},
     latex: rendererValue.current,
     config: {
       autoCommands: "alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity",

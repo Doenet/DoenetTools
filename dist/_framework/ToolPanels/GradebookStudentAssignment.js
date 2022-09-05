@@ -6,11 +6,12 @@ import {
   useRecoilValueLoadable
 } from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
-import DoenetViewer from "../../viewer/DoenetViewer.js";
 import {serializedComponentsReviver} from "../../core/utils/serializedStateProcessing.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {currentAttemptNumber} from "./AssignmentViewer.js";
-import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import PageViewer from "../../viewer/PageViewer.js";
+import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import ActivityViewer from "../../viewer/ActivityViewer.js";
 const getUserId = (students, name) => {
   for (let userId in students) {
     if (students[userId].firstName + " " + students[userId].lastName == name) {
@@ -21,16 +22,16 @@ const getUserId = (students, name) => {
 };
 export default function GradebookStudentAssignmentView() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  let source = useRecoilValue(searchParamAtomFamily("source"));
+  let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   let userId = useRecoilValue(searchParamAtomFamily("userId"));
-  let driveIdValue = useRecoilValue(searchParamAtomFamily("driveId"));
   let paramAttemptNumber = useRecoilValue(searchParamAtomFamily("attemptNumber"));
+  let previousCrumb = useRecoilValue(searchParamAtomFamily("previousCrumb"));
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let students = useRecoilValueLoadable(studentData);
   const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
   let assignments = useRecoilValueLoadable(assignmentData);
-  let effectiveRole = useRecoilValue(effectiveRoleAtom);
+  let {canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent);
   const label = assignments.contents[doenetId]?.label;
@@ -53,49 +54,51 @@ export default function GradebookStudentAssignmentView() {
     }
   }, [attemptsObj, setAttemptNumber, setRecoilAttemptNumber, paramAttemptNumber]);
   useEffect(() => {
-    if (effectiveRole === "student") {
+    if (canViewAndModifyGrades !== "1") {
       setSuppressMenus(["GradeSettings"]);
     } else {
       setSuppressMenus([]);
     }
-  }, [effectiveRole, setSuppressMenus]);
+  }, [canViewAndModifyGrades, setSuppressMenus]);
   if (!doenetId || !userId) {
     return null;
   }
-  async function loadAssignmentInfo(doenetId2, userId2) {
-    const {data} = await axios.get(`/api/getGradebookAssignmentAttempts.php`, {params: {doenetId: doenetId2, userId: userId2}});
+  async function loadAssignmentInfo(courseId2, doenetId2, userId2) {
+    const {data: {success, message, foundAttempt, attemptInfo, showSolutionInGradebook, paginate}} = await axios.get(`/api/getGradebookAssignmentAttempts.php`, {params: {courseId: courseId2, doenetId: doenetId2, userId: userId2}});
     let dataAttemptInfo = {};
     let contentIdToDoenetML = {};
     let solutionDisplayMode = "none";
-    if (data.showSolutionInGradebook === "1") {
+    if (showSolutionInGradebook === "1") {
       solutionDisplayMode = "button";
     }
-    for (let attempt of data.attemptInfo) {
+    for (let attempt of attemptInfo) {
       let attemptNumber2 = attempt.attemptNumber;
-      let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
-      let doenetML = contentIdToDoenetML[attempt.contentId];
+      let variantIndex = attempt.variantIndex;
+      let doenetML = contentIdToDoenetML[attempt.cid];
       if (doenetML) {
         dataAttemptInfo[attemptNumber2] = {
-          contentId: attempt.contentId,
-          variant: {name: gvariant?.name},
+          cid: attempt.cid,
+          variantIndex,
           doenetML,
-          solutionDisplayMode
+          solutionDisplayMode,
+          paginate
         };
       } else {
-        const {data: data2} = await axios.get(`/media/${attempt.contentId}.doenet`);
-        contentIdToDoenetML[attempt.contentId] = data2;
+        const {data} = await axios.get(`/media/${attempt.cid}.doenet`);
+        contentIdToDoenetML[attempt.cid] = data;
         dataAttemptInfo[attemptNumber2] = {
-          contentId: attempt.contentId,
-          variant: {name: gvariant?.name},
-          doenetML: data2,
-          solutionDisplayMode
+          cid: attempt.cid,
+          variantIndex,
+          doenetML: data,
+          solutionDisplayMode,
+          paginate
         };
       }
     }
     setAttemptsInfo(dataAttemptInfo);
   }
   if (attemptsInfo === null) {
-    loadAssignmentInfo(doenetId, userId);
+    loadAssignmentInfo(courseId, doenetId, userId);
     return null;
   }
   if (attempts.state == "hasValue" && userId !== null && userId !== "") {
@@ -140,12 +143,12 @@ export default function GradebookStudentAssignmentView() {
       accessor: "a" + i,
       disableFilters: true,
       Cell: (row) => /* @__PURE__ */ React.createElement("a", {
-        onClick: (e) => {
+        onClick: () => {
           setPageToolView({
             page: "course",
             tool: "gradebookStudentAssignment",
             view: "",
-            params: {driveId: driveIdValue, doenetId, userId, attemptNumber: i, source}
+            params: {courseId, doenetId, userId, attemptNumber: i, previousCrumb}
           });
         }
       }, " ", row.value, " ")
@@ -153,13 +156,15 @@ export default function GradebookStudentAssignmentView() {
   }
   let dViewer = null;
   let attemptNumberJSX = null;
-  if (attemptNumber > 0 && attemptsInfo[attemptNumber] && attemptsInfo[attemptNumber].contentId !== "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855") {
-    let variant = attemptsInfo[attemptNumber].variant;
-    let doenetML = attemptsInfo[attemptNumber].doenetML;
+  console.log, "userId", userId;
+  if (attemptNumber > 0 && attemptsInfo[attemptNumber] && attemptsInfo[attemptNumber].cid !== "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855") {
+    let cid = attemptsInfo[attemptNumber].cid;
+    let requestedVariantIndex = attemptsInfo[attemptNumber].variantIndex;
     let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
-    dViewer = /* @__PURE__ */ React.createElement(DoenetViewer, {
-      key: `doenetviewer${doenetId}`,
-      doenetML,
+    let paginate = attemptsInfo[attemptNumber].paginate;
+    dViewer = /* @__PURE__ */ React.createElement(ActivityViewer, {
+      key: `activityViewer${doenetId}`,
+      cid,
       doenetId,
       userId,
       flags: {
@@ -168,16 +173,15 @@ export default function GradebookStudentAssignmentView() {
         solutionDisplayMode,
         showFeedback: true,
         showHints: true,
-        isAssignment: true,
-        allowLoadPageState: true,
-        allowSavePageState: false,
-        allowLocalPageState: false,
+        allowLoadState: true,
+        allowSaveState: false,
+        allowLocalState: false,
         allowSaveSubmissions: false,
-        allowSaveEvents: false,
-        pageStateSource: "submissions"
+        allowSaveEvents: false
       },
       attemptNumber,
-      requestedVariant: variant
+      requestedVariantIndex,
+      paginate
     });
     attemptNumberJSX = /* @__PURE__ */ React.createElement("div", {
       style: {paddingLeft: "8px"}

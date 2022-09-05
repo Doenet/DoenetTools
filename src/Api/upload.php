@@ -9,7 +9,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-include "randomId.php";
+// include "randomId.php";
 include "userQuotaBytesAvailable.php";
 include "getFilename.php";
 include "cidFromSHA.php";
@@ -37,18 +37,17 @@ $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id,$type);
 
 //Test if user has permission to upload files
 
+$canUpload = FALSE;
 $sql = "
-SELECT du.canUpload as canUpload
-FROM drive_user AS du
-LEFT JOIN drive_content AS dc
-ON dc.driveId = du.driveId
-WHERE du.userId = '$userId'
-AND dc.doenetId = '$doenetId'
-AND du.canEditContent = '1'
+SELECT canUpload 
+FROM user 
+WHERE userId = '$userId'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
-if ($row['canUpload'] == '0'){
+if ($row['canUpload'] == '1'){$canUpload = TRUE;}
+
+if (!$canUpload){
   $success = false;
   $msg = "You don't have permission to upload files.";
 }
@@ -88,15 +87,15 @@ if ($success){
   $width = 0;
   $height = 0;
   if ($mime_type == 'image/jpeg' || $mime_type == 'image/png'){
-    [$width,$height] = getimagesize($destination);
+    list($width,$height) = getimagesize($destination);
   }
 
   //Test if user already has this file in this activity
   $sql = "
-  SELECT contentId
+  SELECT cid
   FROM support_files 
   WHERE userId = '$userId'
-  AND contentId = '$cid'
+  AND cid = '$cid'
   AND doenetId = '$doenetId'
   ";
   $result = $conn->query($sql);
@@ -112,10 +111,10 @@ if ($success){
 if ($success){
         //Test if user has file in another activity
         $sql = "
-        SELECT contentId
+        SELECT cid
         FROM support_files 
         WHERE userId = '$userId'
-        AND contentId = '$cid'
+        AND cid = '$cid'
         AND doenetId != '$doenetId'
         ";
         $result = $conn->query($sql);
@@ -126,13 +125,16 @@ if ($success){
         }
 }
 
+
+$escapedType = str_replace('\/', '/', $type);
+
 if ($success && !$already_have_file){
   //track upload for IPFS upload nanny to upload later
   $sql = "
   INSERT INTO ipfs_to_upload 
-  (contentId,fileType,sizeInBytes,timestamp)
+  (cid,fileType,sizeInBytes,timestamp)
   VALUES
-  ('$cid','$type','$size',NOW())
+  ('$cid','$escapedType','$size',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
   ";
   $result = $conn->query($sql);
 }
@@ -140,14 +142,14 @@ if ($success && !$already_have_file){
 if ($success){
         $sql = "
         INSERT INTO support_files 
-        (userId,contentId,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
+        (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
         VALUES
-        ('$userId','$cid','$doenetId','$type','$description','$original_file_name','$size','$width','$height',NOW())
+        ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
         ";
         $result = $conn->query($sql);
 }
 if ($success){
-  //TODO: test at the top as well for over quota
+//   //TODO: test at the top as well for over quota
   list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 }
 
@@ -155,7 +157,7 @@ if ($success){
 http_response_code(200);
 
 $response_arr = array("success" => $success,
-                       "contentId" => $cid,
+                       "cid" => $cid,
                         "fileName" => $newFileName,
                         "description" => $description,
                         "asFileName" => $original_file_name,

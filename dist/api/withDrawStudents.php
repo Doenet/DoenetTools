@@ -6,38 +6,45 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
+$success = TRUE;
+$message = "";
+
 $_POST = json_decode(file_get_contents("php://input"),true);
-$driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
+$courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 
 $email = mysqli_real_escape_string($conn,$_POST["email"]);
 
-//TODO: Need a permission related to see grades (not du.canChangeAllDriveSettings)
-$sql = "
-SELECT du.canChangeAllDriveSettings 
-FROM drive_user AS du
-WHERE du.userId = '$userId'
-AND du.driveId = '$driveId'
-AND du.canChangeAllDriveSettings = '1'
-";
+$permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+if ($permissions["canManageUsers"] != '1'){
+  $success = FALSE;
+  $message = "You need permission to manage users.";
+}
  
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
+if ($success) {
 
 
-	$sql = "
-	UPDATE enrollment SET dateEnrolled = NOW() , withDrew = 1 WHERE driveId = '$driveId' AND email='$email';
-	";
+	$sql = "UPDATE course_user AS cu
+    LEFT JOIN user AS u
+    ON u.userId = cu.userId
+    SET 
+    cu.dateWithdrew = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'), 
+    cu.withDrew = 1 
+    WHERE cu.courseId = '$courseId' 
+    AND u.email='$email';
+	  ";
   $result = $conn->query($sql);
-$response_arr = array(
-	"success" => 1
-);
          
 }
-         
+     
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message,
+  );
 
  http_response_code(200);
 

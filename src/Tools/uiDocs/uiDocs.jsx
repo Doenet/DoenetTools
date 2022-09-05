@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { HashRouter as Router, Link, Route } from 'react-router-dom';
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Link,
+  Route,
+  Outlet,
+  useParams,
+} from 'react-router-dom';
 import styled from 'styled-components';
 
 //=== COMPONENT IMPORTS ===
@@ -15,17 +22,17 @@ import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.js
 import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
-import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
+// import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
-
+import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -50,8 +57,8 @@ const NavBar = styled.div`
   width: 240px;
   height: 100vh;
   position: fixed;
-  background-color: #8fb8de;
-  color: #000;
+  background-color: var(--solidLightBlue);
+  color: var(--canvastext);
   top: 0;
   left: 0;
   overflow-x: hidden;
@@ -62,7 +69,7 @@ const Content = styled.div`
 `;
 
 const List = styled.ul`
-  color: black;
+  color: var(--canvastext);
 `;
 
 export default function attempt() {
@@ -310,7 +317,7 @@ export default function attempt() {
         {
           name: 'Icon',
           propPreview: '<Card icon={<FontAwesomeIcon icon={faCode}}/>',
-          propCode: { icon: <FontAwesomeIcon icon={faCode} />},
+          propCode: { icon: <FontAwesomeIcon icon={faCode} /> },
           description:
             'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
         },
@@ -347,6 +354,58 @@ export default function attempt() {
       ],
     },
     {
+      name: 'Checkbox',
+      id: 'checkbox',
+      code: Checkbox,
+      codePreview: '<Checkbox/>',
+      req_props: null,
+      req_children: null,
+      use: 'Shows state of item',
+      props: [
+        {
+          name: 'Checked',
+          propPreview: '<Checkbox checked></Checkbox>',
+          propCode: { checked: 'true' },
+          description: 'Sets state of checkbox',
+        },
+        {
+          name: 'Checked Icon',
+          propPreview:
+            '<Checkbox checked checkedIcon={icon: <FontAwesomeIcon icon={faCode} />}></Checkbox>',
+          propCode: {
+            checkedIcon: <FontAwesomeIcon icon={faCode} />,
+            checked: 'true',
+          },
+          description: 'Sets icon when checked',
+        },
+        {
+          name: 'Unchecked Icon',
+          propPreview:
+            '<Checkbox uncheckedIcon={icon: <FontAwesomeIcon icon={faFish} />}></Checkbox>',
+          propCode: { uncheckedIcon: <FontAwesomeIcon icon={faFish} /> },
+          description: 'Sets icon when unchecked',
+        },
+        {
+          name: 'Label',
+          propPreview: '<Checkbox label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to button',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<Checkbox label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<Checkbox disabled></Checkbox>',
+          propCode: { disabled: 'true' },
+          description: 'Sets to disabled',
+        },
+      ],
+    },
+    {
       name: 'CollapseSection',
       id: 'collapsesection',
       code: CollapseSection,
@@ -379,12 +438,6 @@ export default function attempt() {
           propCode: { disabled },
           description: 'Makes collapse section not able to be used',
         },
-        {
-          name: 'Aria Label',
-            propPreview: '<CollapseSection ariaLabel="Collapse Section"/>',
-            propCode: { ariaLabel: 'Collapse Section' },
-            description: 'Adds aria label to component'
-        }
       ],
     },
     {
@@ -518,6 +571,33 @@ export default function attempt() {
             defaultIndex: '1',
           },
           description: 'Sets default value index. Indexing starts at 1',
+        },
+        {
+          name: 'Label',
+          propPreview:
+            '<DropdownMenu items = {[[1, "one"], [2, "two"]]} label="Dropdown Menu" />',
+          propCode: {
+            items: [
+              [1, 'one'],
+              [2, 'two'],
+            ],
+            label: 'Dropdown Menu',
+          },
+          description: 'Sets a label',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview:
+            '<DropdownMenu items = {[[1, "one"], [2, "two"]]} label = "Datetime" vertical/>',
+          propCode: {
+            items: [
+              [1, 'one'],
+              [2, 'two'],
+            ],
+            label: 'Dropdown Menu',
+            vertical: true,
+          },
+          description: 'Sets a vertical label',
         },
         {
           name: 'Title',
@@ -657,7 +737,7 @@ export default function attempt() {
         {
           name: 'Max',
           propPreview: '<Increment max={5}/>',
-          propCode: { min: 5 },
+          propCode: { max: 5 },
           description:
             'Restricts the menu to have values smaller or equal to max',
         },
@@ -725,7 +805,7 @@ export default function attempt() {
         },
         {
           name: 'onKeyDown',
-          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propPreview: '<Increment onKeyDown={(e) => console.log(e.key)} />',
           propCode: { onKeyDown: (e) => console.log(e.key) },
           description: 'Function called when a key is pressed',
         },
@@ -734,6 +814,13 @@ export default function attempt() {
           propPreview: '<Increment placeholder = "Type a number" />',
           propCode: { placeholder: 'Type a number' },
           description: 'Add a placeholder for the field',
+        },
+        {
+          name: 'Deactivate Dropdown',
+          propPreview: '<Increment deactivateDropdown />',
+          propCode: { deactivateDropdown: true },
+          description:
+            'Deactivates the default dropdown when the increment menu is clicked.',
         },
         {
           name: 'Disabled',
@@ -768,7 +855,8 @@ export default function attempt() {
           name: 'Width',
           propPreview: '<ProgressBar width=400 />',
           propCode: { width: 400, progress: 0.4 },
-          description: 'Changes the width of the component in px; pass in the number without any units',
+          description:
+            'Changes the width of the component in px; pass in the number without any units',
         },
         {
           name: 'Progress Label',
@@ -788,12 +876,6 @@ export default function attempt() {
           propCode: { label: 'What: ', vertical, progress: 0.4 },
           description: 'Adds label to component on top',
         },
-        {
-          name: 'Aria Label',
-            propPreview: '<ProgressBar ariaLabel="Progress Bar"/>',
-            propCode: { ariaLabel: 'Progress Bar', progress: 0.4 },
-            description: 'Adds aria label to component'
-        }
       ],
     },
     {
@@ -807,8 +889,15 @@ export default function attempt() {
       props: [
         {
           name: 'Options',
-          propPreview: "<RelatedItems options={[<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>]} />",
-          propCode: { options: [<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>] },
+          propPreview:
+            "<RelatedItems options={[<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>]} />",
+          propCode: {
+            options: [
+              <option key="apple" value="apple">apple</option>,
+              <option key="pear" value="pear">pear</option>,
+              <option key="banana" value="banana">banana</option>,
+            ],
+          },
           description: 'Adds options to the select component',
         },
         {
@@ -842,46 +931,43 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-            propPreview: '<RelatedItems ariaLabel="Related Items"/>',
-            propCode: { ariaLabel: 'Related Items' },
-            description: 'Adds aria label to component'
-        },
-        {
           name: 'onChange',
-          propPreview: '<RelatedItems onChange={(data) => console.log(data)} />',
-          propCode: {onChange: (data) => console.log(data)},
-          description: 'Function called when data changes'
+          propPreview:
+            '<RelatedItems onChange={(data) => console.log(data)} />',
+          propCode: { onChange: (data) => console.log(data) },
+          description: 'Function called when data changes',
         },
         {
           name: 'onClick',
-          propPreview: '<RelatedItems onClick={() => console.log("clicked")} />',
-          propCode: {onClick: () => console.log("clicked")},
-          description: 'Function called when component is clicked'
+          propPreview:
+            '<RelatedItems onClick={() => console.log("clicked")} />',
+          propCode: { onClick: () => console.log('clicked') },
+          description: 'Function called when component is clicked',
         },
         {
           name: 'onBlur',
-          propPreview: '<RelatedItems onBlur={(e) => console.log(e.target.value)} />',
-          propCode: {onBlur: (e) => console.log(e.target.value)},
-          description: 'Function called when component blurs'
+          propPreview:
+            '<RelatedItems onBlur={(e) => console.log(e.target.value)} />',
+          propCode: { onBlur: (e) => console.log(e.target.value) },
+          description: 'Function called when component blurs',
         },
         {
           name: 'onKeyDown',
           propPreview: '<RelatedItems onKeyDown={(e) => console.log(e.key)} />',
-          propCode: {onKeyDown: (e) => console.log(e.key)},
-          description: 'Function called when key hit with focus on component'
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when key hit with focus on component',
         },
         {
           name: 'Alert',
           propPreview: '<RelatedItems alert/>',
-          propCode: {alert},
-          description: 'Changes to alert mode (border is red)'
+          propCode: { alert },
+          description: 'Changes to alert mode (border is red)',
         },
         {
           name: 'Disabled',
           propPreview: '<RelatedItems disabled />',
-          propCode: {disabled},
-          description: 'Makes component not able to be used'
+          propCode: { disabled },
+          description: 'Makes component not able to be used',
         },
       ],
     },
@@ -903,14 +989,14 @@ export default function attempt() {
         {
           name: 'No Search Button',
           propPreview: '<SearchBar noSearchButton />',
-          propCode: { noSearchButton, width: "menu" },
+          propCode: { noSearchButton, width: 'menu' },
           description: 'Removes button from search bar',
         },
         {
           name: 'Placeholder',
           propPreview: '<SearchBar placeholder="Enter cat names..."/>',
           propCode: { placeholder: 'Enter cat names...' },
-          description: 'Adds placeholder to component'
+          description: 'Adds placeholder to component',
         },
         {
           name: 'Label',
@@ -925,28 +1011,23 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-            propPreview: '<SearchBar ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
-            description: 'Adds aria label to component'
-        },
-        {
           name: 'onChange',
           propPreview: '<SearchBar onChange={(data) => console.log(data)} />',
-          propCode: {onChange: (data) => console.log(data)},
-          description: 'Function called when data changes'
+          propCode: { onChange: (data) => console.log(data) },
+          description: 'Function called when data changes',
         },
         {
           name: 'onBlur',
-          propPreview: '<SearchBar onBlur={(e) => console.log(e.target.value)} />',
-          propCode: {onBlur: (e) => console.log(e.target.value)},
-          description: 'Function called when component blurs'
+          propPreview:
+            '<SearchBar onBlur={(e) => console.log(e.target.value)} />',
+          propCode: { onBlur: (e) => console.log(e.target.value) },
+          description: 'Function called when component blurs',
         },
         {
           name: 'onKeyDown',
           propPreview: '<SearchBar onKeyDown={(e) => console.log(e.key)} />',
-          propCode: {onKeyDown: (e) => console.log(e.key)},
-          description: 'Function called when key hit with focus on component'
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when key hit with focus on component',
         },
         {
           name: 'Alert',
@@ -1002,12 +1083,6 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-          propPreview: '<TextArea ariaLabel="Text"/>',
-          propCode: { ariaLabel: 'Text' },
-          description: 'Adds aria label to component',
-        },
-        {
           name: 'Alert',
           propPreview: '<TextArea alert/>',
           propCode: { alert },
@@ -1021,7 +1096,8 @@ export default function attempt() {
         },
         {
           name: 'onBlur',
-          propPreview: '<Textfield onBlur={(e) => console.log(e.target.value)} />',
+          propPreview:
+            '<Textfield onBlur={(e) => console.log(e.target.value)} />',
           propCode: { onBlur: (e) => console.log(e.target.value) },
           description: 'Function called when component blurs',
         },
@@ -1079,12 +1155,6 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-          propPreview: '<Textfield ariaLabel="Text"/>',
-          propCode: { ariaLabel: 'Text' },
-          description: 'Adds aria label to component',
-        },
-        {
           name: 'Alert',
           propPreview: '<Textfield alert/>',
           propCode: { alert },
@@ -1127,64 +1197,87 @@ export default function attempt() {
       req_children: null,
       use: 'This is where you can enter text.',
       props: [
-        {name: 'Width - Menu Panel',
-        propPreview: '<Form width="menu" />',
-        propCode: {width: 'menu'},
-        description: 'Sets width to fill menu panel width'},
-        {name: 'Submit Button Text',
-        propPreview: '<Form submitButton="add Text" />',
-        propCode: {submitButton:"add Text"},
-        description: 'Changes the button text'},
-        {name: 'Value',
-        propPreview: '<Form value="Sprinkles"/>',
-        propCode: {value: 'Sprinkles'},
-        description: 'Changes the text'},
-        {name: 'Placeholder',
-        propPreview: '<Form placeholder="Enter cat names"/>',
-        propCode: {placeholder: 'Enter cat names'},
-        description: 'Adds placeholder to component'},
-        {name: 'Label',
-            propPreview: '<Form label="What: "/>',
-            propCode: {label: 'What: '},
-            description: 'Adds label to component'},
-            {name: 'Vertical Label',
-            propPreview: '<Form label="What: " vertical/>',
-            propCode: {label: 'What: ', vertical},
-            description: 'Adds label to component on top'},
-            {name: 'Aria Label',
-            propPreview: '<Form ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
-            description: 'Adds aria label to component'},
-        {name: 'Alert',
-        propPreview: '<Form alert/>',
-        propCode: {alert},
-        description: 'Changes to alert mode (border is red)'},
-        {name: 'onChange',
-        propPreview: '<Form onChange={(data) => console.log(data)} />',
-        propCode: {onChange: (data) => console.log(data)},
-        description: 'Function called when data changes'},
-        {name: 'onClick',
-        propPreview: '<Form onClick={() => console.log("clicked")} />',
-        propCode: {onClick: () => console.log("clicked")},
-        description: 'Function called when form button is clicked'},
-        {name: 'onBlur',
-        propPreview: '<Form onBlur={(e) => console.log(e.target.value)} />',
-        propCode: {onBlur: (e) => console.log(e.target.value)},
-        description: 'Function called when component blurs'},
-        {name: 'onKeyDown',
-        propPreview: '<Form onKeyDown={(e) => console.log(e.key)} />',
-        propCode: {onKeyDown: (e) => console.log(e.key)},
-        description: 'Function called when key hit with focus on component'},
-        {name: 'Disabled',
-        propPreview: '<Form disabled />',
-        propCode: {disabled},
-        description: 'Makes component not able to be used'},
-        {name: 'clearInput',
-        propPreview: '<Form clearInput={(e) => {console.log(e.target.value)} />',
-        propCode: {clearInput: (e) => console.log("clear")},
-        description: 'Makes clear button available'},
-        ]
-      },
+        {
+          name: 'Width - Menu Panel',
+          propPreview: '<Form width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Submit Button Text',
+          propPreview: '<Form submitButton="add Text" />',
+          propCode: { submitButton: 'add Text' },
+          description: 'Changes the button text',
+        },
+        {
+          name: 'Value',
+          propPreview: '<Form value="Sprinkles"/>',
+          propCode: { value: 'Sprinkles' },
+          description: 'Changes the text',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<Form placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
+          name: 'Label',
+          propPreview: '<Form label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to component',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<Form label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Alert',
+          propPreview: '<Form alert/>',
+          propCode: { alert },
+          description: 'Changes to alert mode (border is red)',
+        },
+        {
+          name: 'onChange',
+          propPreview: '<Form onChange={(data) => console.log(data)} />',
+          propCode: { onChange: (data) => console.log(data) },
+          description: 'Function called when data changes',
+        },
+        {
+          name: 'onClick',
+          propPreview: '<Form onClick={() => console.log("clicked")} />',
+          propCode: { onClick: () => console.log('clicked') },
+          description: 'Function called when form button is clicked',
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<Form onBlur={(e) => console.log(e.target.value)} />',
+          propCode: { onBlur: (e) => console.log(e.target.value) },
+          description: 'Function called when component blurs',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<Form onKeyDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when key hit with focus on component',
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<Form disabled />',
+          propCode: { disabled },
+          description: 'Makes component not able to be used',
+        },
+        {
+          name: 'clearInput',
+          propPreview:
+            '<Form clearInput={(e) => {console.log(e.target.value)} />',
+          propCode: { clearInput: () => console.log('clear') },
+          description: 'Makes clear button available',
+        },
+      ],
+    },
     {
       name: 'ToggleButton',
       id: 'togglebutton',
@@ -1206,16 +1299,11 @@ export default function attempt() {
           propCode: { value: 'Select me' },
           description: 'Changes the value',
         },
-        {name: 'isSelected',
-        propPreview: '<ToggleButton isSelected=true/>',
-        propCode: {isSelected: true},
-        description: 'Sets state of toggle button'},
         {
-          name: 'Switch Value',
-          propPreview: '<ToggleButton switch_value="frog"/>',
-          propCode: { switch_value: 'frog' },
-          description:
-            'Sets different text value for when the button is selected',
+          name: 'isSelected',
+          propPreview: '<ToggleButton isSelected=true/>',
+          propCode: { isSelected: true },
+          description: 'Sets state of toggle button',
         },
         {
           name: 'Label',
@@ -1255,7 +1343,7 @@ export default function attempt() {
           propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
           propCode: { onClick: (data) => console.log(data) },
           description:
-            'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)',
+            'Function called when toggle button is clicked. Use with isSelected to change state on click',
         },
         {
           name: 'Disabled',
@@ -1386,14 +1474,16 @@ export default function attempt() {
       req_props: null,
       req_children: null,
       use: 'Creates visual separation.',
-      props: [{
-        name: 'Height',
-        propPreview: '<VerticalDivider height="200px" />',
-        propCode: {
-          height: '200px'
+      props: [
+        {
+          name: 'Height',
+          propPreview: '<VerticalDivider height="200px" />',
+          propCode: {
+            height: '200px',
+          },
+          description: 'Changes height of divider',
         },
-        description: 'Changes height of divider',
-      },]
+      ],
     },
   ];
   // === END OF DATA STRUCTURE SECTION ===
@@ -1435,11 +1525,54 @@ export default function attempt() {
           <a
             href="https://docs.google.com/spreadsheets/d/16aaVroOz-l_DX3QGsVN9m-z0yE5LGFPH9HHLsUQKZCs/edit?usp=sharing"
             target="_blank"
+            rel='noreferrer'
           >
             {' '}
             here
           </a>
           .{' '}
+        </p>
+        <hr />
+
+        <h2>Comments on Accessibility</h2>
+        <p>
+          All clickable elements need to have a focus indicator. Our standard is
+          a 2px border that matches the element's current border with a 2px
+          offset. See styling
+          <a
+            href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84"
+            target="_blank"
+            rel='noreferrer'
+          >
+            {' '}
+            here{' '}
+          </a>{' '}
+        </p>
+        <p>
+          All clickable elements also need an aria-label. Some elements, like
+          buttons, do this for you, so adding an additional aria-label is
+          considered bad practice. The naming techniques and accessible name
+          guidance sections will be the most helpful. Read more
+          <a
+            href="https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/"
+            target="_blank"
+            rel='noreferrer'
+          >
+            {' '}
+            here{' '}
+          </a>
+        </p>
+        <p>
+          All components must follow standard keyboard and aria practices for
+          that specific element. Find the element you are working on here and
+          add the required keyboard interactions and aria information that it
+          lists. Here is the
+          <a href="https://www.w3.org/WAI/ARIA/apg/patterns/" target="_blank"
+            rel='noreferrer'
+            >
+            {' '}
+            link{' '}
+          </a>
         </p>
         <hr />
 
@@ -1450,6 +1583,8 @@ export default function attempt() {
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.997keaoy7se2"
             target="_blank"
+            rel='noreferrer'
+
           >
             {' '}
             here
@@ -1461,6 +1596,8 @@ export default function attempt() {
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.tptn3i5d03g0"
             target="_blank"
+            rel='noreferrer'
+
           >
             {' '}
             here
@@ -1483,6 +1620,8 @@ export default function attempt() {
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.lsq5rugnowwg"
             target="_blank"
+            rel='noreferrer'
+
           >
             {' '}
             here
@@ -1550,6 +1689,8 @@ export default function attempt() {
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.i1tjp0kzqemb"
             target="_blank"
+            rel='noreferrer'
+
           >
             {' '}
             Style Guide!!{' '}
@@ -1561,6 +1702,8 @@ export default function attempt() {
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.53fu07uoic4t"
             target="_blank"
+            rel='noreferrer'
+
           >
             {' '}
             here{' '}
@@ -1575,10 +1718,9 @@ export default function attempt() {
   }
 
   //COMPONENT PAGES
-  function Components({ match }) {
-    const component = dataStructure.find(
-      ({ id }) => id === match.params.componentId,
-    );
+  function Components() {
+    const { componentId } = useParams();
+    const component = dataStructure.find(({ id }) => id === componentId);
     var display = component.code;
     var children = component.req_children;
 
@@ -1624,24 +1766,24 @@ export default function attempt() {
     );
   }
 
-  //ROUTER SECTION
-  return (
-    <Router>
-      <div>
+  //CENTRAL LAYOUT
+  function Layout() {
+    return (
+      <>
         <NavBar>
           <div style={{ marginLeft: '10px' }}>
             <h1>Components</h1>
             {/* <SearchBar width='110px'/> */}
           </div>
           <h3>
-            <Link to={`/new_components`} style={{ color: 'black' }}>
+            <Link to={`new_components`} style={{ color: 'black' }}>
               New Component Guidelines
             </Link>
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
               <li key={id}>
-                <Link to={`/component/${id}`} style={{ color: 'black' }}>
+                <Link to={`component/${id}`} style={{ color: 'black' }}>
                   {name}
                 </Link>
               </li>
@@ -1649,11 +1791,22 @@ export default function attempt() {
           </List>
         </NavBar>
         <Content>
-          <Route exact path="/" component={Home} />
-          <Route path={`/new_components`} component={New} />
-          <Route path={`/component/:componentId`} component={Components} />
+          <Outlet />
         </Content>
-      </div>
+      </>
+    );
+  }
+
+  //ROUTER SECTION
+  return (
+    <Router>
+      <Routes>
+        <Route path="/uiDocs" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path={`new_components`} element={<New />} />
+          <Route path={`component/:componentId`} element={<Components />} />
+        </Route>
+      </Routes>
     </Router>
   );
 }

@@ -1,17 +1,25 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
-import {doenetComponentForegroundInactive} from "./theme.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const Textarea = styled.textarea`
+  margin: 0px 4px 0px 0px;
+  height: 24px;
+  border: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+  border-radius: var(--mainBorderRadius);
+  font-family: Arial;
+  font-size: 14px;
+  color: var(--canvastext);
+  cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+  width: ${(props) => props.inputWidth};
+  &:focus {
+    outline: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+    outline-offset: 2px;
+  }
+`;
 export default function TextArea(props) {
-  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
-  const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  const labelVisible = props.label ? "static" : "none";
+  const align = props.vertical ? "static" : "flex";
   const [text, setText] = useState("");
-  var textarea = {
-    margin: "0px 4px 0px 0px",
-    height: "24px",
-    border: `2px solid ${doenetComponentForegroundInactive}`,
-    fontFamily: "Arial",
-    fontSize: "14px",
-    borderRadius: "5px",
-    color: "#000",
+  var textareaValue = {
     value: `${text}`
   };
   var label = {
@@ -26,57 +34,61 @@ export default function TextArea(props) {
     width: "auto",
     alignItems: "center"
   };
-  if (props.alert) {
-    textarea.border = "2px solid #C1292E";
-  }
   if (props.label) {
     label.value = props.label;
   }
+  ;
   if (props.placeholder) {
-    textarea.placeholder = props.placeholder;
+    textareaValue.placeholder = props.placeholder;
   }
-  if (props.ariaLabel) {
-    textarea.ariaLabel = props.ariaLabel;
-  }
+  ;
   var disable = "";
   if (props.disabled) {
-    textarea.border = "2px solid #e2e2e2";
-    textarea.cursor = "not-allowed";
     disable = "disabled";
   }
+  ;
   if (props.value) {
-    textarea.value = props.value;
+    textareaValue.value = props.value;
   }
+  ;
+  var inputWidth = "";
   if (props.width) {
     if (props.width === "menu") {
-      textarea.width = "235px";
+      inputWidth = "235px";
       if (props.label) {
         container.width = "235px";
-        textarea.width = "100%";
+        inputWidth = "100%";
       }
     }
   }
+  ;
   function handleChange(e) {
     if (props.onChange)
       props.onChange(e.target.value);
   }
+  ;
   function handleBlur(e) {
     if (props.onBlur)
       props.onBlur(e);
   }
+  ;
   function handleKeyDown(e) {
     if (props.onKeyDown)
       props.onKeyDown(e);
   }
+  ;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
-    style: label
-  }, label.value), /* @__PURE__ */ React.createElement("textarea", {
-    defaultValue: textarea.value,
-    style: textarea,
-    "aria-label": textarea.ariaLabel,
-    placeholder: textarea.placeholder,
+    style: label,
+    id: "textarea-label"
+  }, label.value), /* @__PURE__ */ React.createElement(Textarea, {
+    "aria-disabled": props.disabled ? true : false,
+    "aria-labelledby": "textarea-label",
+    defaultValue: textareaValue.value,
+    width: inputWidth,
+    "aria-label": textareaValue.ariaLabel,
+    placeholder: textareaValue.placeholder,
     onChange: (e) => {
       handleChange(e);
     },
@@ -86,6 +98,8 @@ export default function TextArea(props) {
     onBlur: (e) => {
       handleBlur(e);
     },
-    disabled: disable
+    disabled: disable,
+    alert: props.alert
   })));
 }
+;

@@ -3,11 +3,13 @@ import styled from 'styled-components';
 import {
   useRecoilCallback,
 } from 'recoil';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 const SupportWrapper = styled.div`
   overflow: auto;
   grid-area: supportPanel;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   height: 100%;
   display: ${({$hide})=> $hide ? 'none' : 'block' }
   // border-radius: 0 0 4px 4px;
@@ -18,10 +20,10 @@ const ControlsWrapper = styled.div`
   grid-area: supportControls;
   display: flex;
   gap: 4px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   display: ${({$hide})=> $hide ? 'none' : 'block' }
   // border-radius: 4px 4px 0 0;
-  // border-bottom: 2px solid #e3e3e3;
+  // border-bottom: 2px solid var(--mainGray);
 
 `;
 
@@ -49,8 +51,20 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
   return (
     <>
       {/* <ControlsWrapper $hide={hide}>{panelSelector}</ControlsWrapper> */}
-      <ControlsWrapper $hide={hide}></ControlsWrapper>
-      <SupportWrapper  $hide={hide}>{children}</SupportWrapper>
+      <ControlsWrapper $hide={hide} aria-label="complementary controls" data-test="Support Panel Controls">
+        <a href="/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q" target="_blank">
+          <FontAwesomeIcon 
+            icon={faQuestionCircle} 
+            style={{fontDecoration: 'none', 
+              color: 'black', 
+              float:'right', 
+              marginTop: '8px', 
+              marginRight: '8px', 
+              height: '20px', 
+              width: '20px'}}/>
+        </a>
+      </ControlsWrapper>
+      <SupportWrapper  $hide={hide} role="complementary" data-test="Support Panel">{children}</SupportWrapper>
     </>
   );
 }

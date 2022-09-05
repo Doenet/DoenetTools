@@ -75,8 +75,8 @@ export class Product extends MathBaseOperator {
 export class ClampNumber extends MathBaseOperatorOneInput {
   static componentType = "clampNumber";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.lowerValue = {
       createComponentOfType: "number",
       createStateVariable: "lowerValue",
@@ -172,8 +172,8 @@ function clamp({ value, lowerValue, upperValue }) {
 export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
   static componentType = "wrapNumberPeriodic";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.lowerValue = {
       createComponentOfType: "number",
       createStateVariable: "lowerValue",
@@ -286,8 +286,8 @@ function makePeriodic({ value, lowerValue, upperValue }) {
 export class Round extends MathBaseOperatorOneInput {
   static componentType = "round";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.numberDecimals = {
       createComponentOfType: "number",
       createStateVariable: "numberDecimals",
@@ -357,8 +357,8 @@ export class Round extends MathBaseOperatorOneInput {
 export class ConvertSetToList extends MathBaseOperatorOneInput {
   static componentType = "convertSetToList";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     delete attributes.unordered;
     return attributes;
   }
@@ -637,8 +637,8 @@ export class Mean extends MathBaseOperator {
 export class Variance extends MathBaseOperator {
   static componentType = "variance";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.population = {
       createComponentOfType: "boolean",
       createStateVariable: "population",
@@ -953,8 +953,8 @@ export class Gcd extends MathBaseOperator {
 export class ExtractMath extends MathBaseOperatorOneInput {
   static componentType = "extractMath";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createComponentOfType: "text",
       createStateVariable: "type",

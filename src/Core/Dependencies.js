@@ -1,6 +1,7 @@
 import readOnlyProxyHandler from "./ReadOnlyProxyHandler";
 import { deepClone, deepCompare } from "./utils/deepFunctions";
 import { ancestorsIncludingComposites, gatherDescendants } from "./utils/descendants";
+import { retrieveTextFileForCid } from "./utils/retrieveTextFile";
 import { convertComponentTarget } from "./utils/serializedStateProcessing";
 
 const dependencyTypeArray = [];
@@ -189,8 +190,8 @@ export class DependencyHandler {
             // were other downstream components involved
             for (let upVarName of upDep.upstreamVariableNames) {
               if (this._components[upDep.upstreamComponentName].state[upVarName].initiallyResolved) {
-                await this.core.recordActualChangeInStateVariable({
-                  componentName: upDep.upstreamComponentName,
+                await this.core.markStateVariableAndUpstreamDependentsStale({
+                  component: this.components[upDep.upstreamComponentName],
                   varName: upVarName,
                 })
               }
@@ -2239,7 +2240,7 @@ export class DependencyHandler {
             inheritedComponentType: component.componentType,
             baseComponentType: "_composite"
           })
-          if (isComposite && !(component.attributes.componentType && component.attributes.componentType.primitive)) {
+          if (isComposite && !(component.attributes.createComponentOfType?.primitive)) {
             if (stateVariable === "readyToExpandWhenResolved") {
               compositesWithReadyToExpandWhenResolved.push(componentName)
             } else if (stateVariable === component.constructor.stateVariableToEvaluateAfterReplacements) {
@@ -2379,8 +2380,12 @@ class Dependency {
       this.useMappedVariableNames = true;
     }
 
-    if (Number.isInteger(dependencyDefinition.propIndex)) {
-      this.propIndex = dependencyDefinition.propIndex;
+    if (dependencyDefinition.propIndex) {
+      if (dependencyDefinition.propIndex.every(Number.isFinite)) {
+        this.propIndex = dependencyDefinition.propIndex.map(Math.round);
+      } else {
+        this.propIndex = [];
+      }
     }
 
     // if returnSingleVariableValue, then
@@ -2559,12 +2564,11 @@ class Dependency {
       }
 
       if (this.propIndex !== undefined) {
-        console.warn(`Need to implement propIndex!`)
-        // mappedVarNames = this.dependencyHandler.core.arrayEntryNameFromPropIndex({
-        //   stateVariables: mappedVarNames,
-        //   component: downComponent,
-        //   propIndex: this.propIndex
-        // });
+        mappedVarNames = await this.dependencyHandler.core.arrayEntryNamesFromPropIndex({
+          stateVariables: mappedVarNames,
+          component: downComponent,
+          propIndex: this.propIndex
+        });
       }
 
       // Note: mappedVarNames contains all original variables mapped with any aliases.
@@ -2659,8 +2663,8 @@ class Dependency {
 
     for (let upVarName of this.upstreamVariableNames) {
       if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].initiallyResolved) {
-        await this.dependencyHandler.core.recordActualChangeInStateVariable({
-          componentName: this.upstreamComponentName,
+        await this.dependencyHandler.core.markStateVariableAndUpstreamDependentsStale({
+          component: this.dependencyHandler.components[this.upstreamComponentName],
           varName: upVarName,
         })
       }
@@ -2733,8 +2737,8 @@ class Dependency {
     if (recordChange) {
       for (let upVarName of this.upstreamVariableNames) {
         if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].initiallyResolved) {
-          await this.dependencyHandler.core.recordActualChangeInStateVariable({
-            componentName: this.upstreamComponentName,
+          await this.dependencyHandler.core.markStateVariableAndUpstreamDependentsStale({
+            component: this.dependencyHandler.components[this.upstreamComponentName],
             varName: upVarName,
           })
         }
@@ -2764,8 +2768,8 @@ class Dependency {
 
     for (let upVarName of this.upstreamVariableNames) {
       if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].initiallyResolved) {
-        await this.dependencyHandler.core.recordActualChangeInStateVariable({
-          componentName: this.upstreamComponentName,
+        await this.dependencyHandler.core.markStateVariableAndUpstreamDependentsStale({
+          component: this.dependencyHandler.components[this.upstreamComponentName],
           varName: upVarName,
         })
       }
@@ -2822,6 +2826,17 @@ class Dependency {
               downCompUpDeps.splice(ind, 1);
             }
           }
+        }
+
+
+        for (let upVar of this.upstreamVariableNames) {
+          this.dependencyHandler.deleteFromNeededToResolve({
+            componentNameBlocked: this.componentName,
+            typeBlocked: "stateVariable",
+            stateVariableBlocked: upVar,
+            blockerType: "stateVariable",
+            blockerCode: downCompName + "|" + vName,
+          })
         }
 
 
@@ -2971,12 +2986,12 @@ class Dependency {
 
           } else {
             value = null;
-            changes.valuesChanged = {};
+            changes = {};
             usedDefault = false;
           }
         } else {
           value = null;
-          changes.valuesChanged = {};
+          changes = {};
           usedDefault = false;
         }
       } else if (this.returnSingleComponent) {
@@ -3200,8 +3215,8 @@ class MultipleStateVariablesDependency extends Dependency {
       this.componentName = this.upstreamComponentName;
     }
 
-    if (this.definition.variableNames === undefined) {
-      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames is not defined`);
+    if (!Array.isArray(this.definition.variableNames)) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
     }
     this.originalDownstreamVariableNames = this.definition.variableNames;
 
@@ -3321,7 +3336,7 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
 
             if (stateVarObj.isArray) {
               // if array, use componentType from wrapping components, if exist
-              if (stateVarObj.wrappingComponents && stateVarObj.wrappingComponents.length > 0) {
+              if (stateVarObj.wrappingComponents?.length > 0) {
                 let wrapCT = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1][0];
                 if (typeof wrapCT === "object") {
                   wrapCT = wrapCT.componentType;
@@ -3342,10 +3357,10 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
             }
             this.valuesChanged[0][mappedVarName] = {};
 
-            let hasVariableComponentType = stateVarObj.hasVariableComponentType;
+            let hasVariableComponentType = stateVarObj.shadowingInstructions?.hasVariableComponentType;
             if (!hasVariableComponentType && stateVarObj.isArrayEntry) {
               let arrayStateVarObj = depComponent.state[stateVarObj.arrayStateVariable];
-              hasVariableComponentType = arrayStateVarObj.hasVariableComponentType
+              hasVariableComponentType = arrayStateVarObj.shadowingInstructions?.hasVariableComponentType
             }
             if (!hasVariableComponentType) {
               // since this value won't change,
@@ -3479,13 +3494,13 @@ class RecursiveDependencyValuesDependency extends Dependency {
         for (let vName of result.components[componentName].variableNames) {
           if (component.state[vName]?.hasEssential) {
             essentialVarNames.push(vName)
-          } else if(component.state[vName]?.isArrayEntry) {
-            if(component.state[component.state[vName].arrayStateVariable].hasEssential) {
+          } else if (component.state[vName]?.isArrayEntry) {
+            if (component.state[component.state[vName].arrayStateVariable].hasEssential) {
               essentialVarNames.push(vName);
             }
           }
         }
-        if(essentialVarNames.length > 0) {
+        if (essentialVarNames.length > 0) {
           downstreamComponentNames.push(componentName)
           downstreamComponentTypes.push(result.components[componentName].componentType);
           this.originalDownstreamVariableNamesByComponent.push(essentialVarNames);
@@ -3850,12 +3865,9 @@ class AttributeComponentDependency extends Dependency {
 
     this.attributeName = this.definition.attributeName;
 
-    this.fallBackToAttributeFromShadow = true;
-    if (this.definition.fallBackToAttributeFromShadow !== undefined) {
-      this.fallBackToAttributeFromShadow = this.definition.fallBackToAttributeFromShadow;
-    }
-
     this.returnSingleComponent = true;
+
+    this.shadowDepth = 0;
 
   }
 
@@ -3901,6 +3913,7 @@ class AttributeComponentDependency extends Dependency {
     }
 
     let attribute = parent.attributes[this.attributeName];
+    this.shadowDepth = 0;
 
     if (attribute?.component) {
       // have an attribute that is a component
@@ -3911,42 +3924,56 @@ class AttributeComponentDependency extends Dependency {
       }
     }
 
-    if (this.fallBackToAttributeFromShadow) {
-      // if don't have an attribute component, i
-      // check if shadows a component with that attribute component
+    // if don't have an attribute component,
+    // check if shadows a component with that attribute component
 
-      let comp = parent;
+    let comp = parent;
 
-      while (comp.shadows) {
+    while (comp.shadows) {
+      let shadows = comp.shadows;
+      let propVariable = comp.shadows.propVariable;
 
-        let propVariable = comp.shadows.propVariable;
+      comp = this.dependencyHandler._components[shadows.componentName];
+      if (!comp) {
+        break;
+      }
 
-        comp = this.dependencyHandler._components[comp.shadows.componentName];
-        if (!comp) {
+      if (propVariable) {
+        if (!(
+          comp.state[propVariable]?.shadowingInstructions?.attributesToShadow?.includes(this.attributeName)
+          || comp.constructor.createAttributesObject()[this.attributeName]?.propagateToProps
+        )) {
           break;
         }
-
-        if (propVariable) {
-          if (!(
-            comp.state[propVariable]?.additionalAttributeComponentsToShadow
-            && comp.state[propVariable].additionalAttributeComponentsToShadow.includes(this.attributeName)
-          )) {
+      } else {
+        let composite = this.dependencyHandler._components[shadows.compositeName];
+        if ("sourceAttributesToIgnoreRecursively" in composite.state) {
+          let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
+          if (sourceAttributesToIgnoreRecursively.includes(this.attributeName)) {
             break;
           }
         }
-
-        attribute = comp.attributes[this.attributeName];
-
-        if (attribute?.component) {
-          return {
-            success: true,
-            downstreamComponentNames: [attribute.component.componentName],
-            downstreamComponentTypes: [attribute.component.componentType],
+        if (shadows.firstLevelReplacement && "sourceAttributesToIgnore" in composite.state) {
+          let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+          if (sourceAttributesToIgnore.includes(this.attributeName)) {
+            break;
           }
         }
       }
 
+      this.shadowDepth++;
+
+      attribute = comp.attributes[this.attributeName];
+
+      if (attribute?.component) {
+        return {
+          success: true,
+          downstreamComponentNames: [attribute.component.componentName],
+          downstreamComponentTypes: [attribute.component.componentType],
+        }
+      }
     }
+
 
     return {
       success: true,
@@ -3954,6 +3981,22 @@ class AttributeComponentDependency extends Dependency {
       downstreamComponentTypes: [],
     }
 
+  }
+
+  async getValue({ verbose } = {}) {
+
+    let result = await super.getValue({ verbose, skipProxy: true });
+
+
+    if (result.value) {
+      result.value.shadowDepth = this.shadowDepth;
+    }
+
+    // if (!this.doNotProxy) {
+    //   result.value = new Proxy(result.value, readOnlyProxyHandler)
+    // }
+
+    return result;
   }
 
 
@@ -3998,6 +4041,9 @@ class ChildDependency extends Dependency {
     }
 
     this.childGroups = this.definition.childGroups;
+    if (!Array.isArray(this.childGroups)) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: childGroups must be an array`)
+    }
 
     if (this.definition.childIndices !== undefined) {
       this.childIndices = this.definition.childIndices.map(x => Number(x))
@@ -4197,7 +4243,7 @@ class ChildDependency extends Dependency {
               }
             }
             let compositeComp = this.dependencyHandler._components[compositeNotReady];
-            if (compositeComp.attributes.componentType && compositeComp.attributes.componentType.primitive) {
+            if (compositeComp.attributes.createComponentOfType?.primitive) {
               compositesBlockingWithComponentType.push(compositeNotReady);
             } else {
               compositesBlockingWithoutComponentType.push(compositeNotReady)
@@ -4411,6 +4457,18 @@ class DescendantDependency extends Dependency {
     this.skipOverAdapters = this.definition.skipOverAdapters;
     this.ignoreReplacementsOfMatchedComposites = this.definition.ignoreReplacementsOfMatchedComposites;
 
+    // Note: ignoreReplacementsOfEncounteredComposites means ignore replacements
+    // of all composites except copies of external content
+    this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
+
+    if (this.definition.componentIndex !== null && this.definition.componentIndex !== undefined) {
+      if (Number.isInteger(this.definition.componentIndex)) {
+        this.componentIndex = this.definition.componentIndex;
+      } else {
+        this.componentIndex = NaN;
+      }
+    }
+
   }
 
   async determineDownstreamComponents() {
@@ -4545,8 +4603,18 @@ class DescendantDependency extends Dependency {
       includeNonActiveChildren: this.includeNonActiveChildren,
       skipOverAdapters: this.skipOverAdapters,
       ignoreReplacementsOfMatchedComposites: this.ignoreReplacementsOfMatchedComposites,
+      ignoreReplacementsOfEncounteredComposites: this.ignoreReplacementsOfEncounteredComposites,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
+
+    if (this.componentIndex !== undefined) {
+      let theDescendant = descendants[this.componentIndex - 1];
+      if (theDescendant) {
+        descendants = [theDescendant]
+      } else {
+        descendants = [];
+      }
+    }
 
     return {
       success: true,
@@ -4634,8 +4702,10 @@ class DescendantDependency extends Dependency {
     let adjustedUnexpanded = [];
     for (let compositeName of unexpandedComposites) {
       let composite = this.dependencyHandler._components[compositeName];
-      if (composite.attributes.componentType) {
-        let placeholderType = composite.attributes.componentType.primitive;
+      if (composite.attributes.createComponentOfType) {
+        let placeholderType = this.dependencyHandler.componentInfoObjects.
+          componentTypeLowerCaseMapping[composite.attributes.createComponentOfType.primitive.toLowerCase()];
+
         let matches = this.componentTypes.some(ct =>
           this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: placeholderType,
@@ -5376,8 +5446,24 @@ class ReplacementDependency extends Dependency {
 
     this.recurseNonStandardComposites = this.definition.recurseNonStandardComposites;
 
-    if (Number.isInteger(this.definition.componentIndex)) {
-      this.componentIndex = this.definition.componentIndex;
+    if (this.definition.componentIndex !== null && this.definition.componentIndex !== undefined) {
+      if (Number.isInteger(this.definition.componentIndex)) {
+        this.componentIndex = this.definition.componentIndex;
+      } else {
+        this.componentIndex = NaN;
+      }
+    }
+
+    if (this.definition.targetSubnames) {
+      this.targetSubnames = this.definition.targetSubnames;
+    }
+
+    if (this.definition.targetSubnamesComponentIndex) {
+      if (this.definition.targetSubnamesComponentIndex.every(Number.isInteger)) {
+        this.targetSubnamesComponentIndex = this.definition.targetSubnamesComponentIndex;
+      } else {
+        this.targetSubnamesComponentIndex = [NaN];
+      }
     }
 
     this.includeWithheldReplacements = this.definition.includeWithheldReplacements;
@@ -5560,6 +5646,68 @@ class ReplacementDependency extends Dependency {
       }
     }
 
+    if (this.targetSubnames) {
+      function replaceComponentsUsingSubname({ components, subNames, subNamesComponentIndex, dep }) {
+        if (subNames.length === 0) {
+          return components;
+        }
+        let remainingSubnames = subNames.slice(1);
+
+        let newComponents = [];
+
+        for (let comp of components) {
+          let newCname = comp.componentName + "/" + subNames[0];
+
+          let newComp = dep.dependencyHandler._components[newCname];
+          if (!newComp) {
+            let dependenciesMissingComponent = dep.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[newCname];
+            if (!dependenciesMissingComponent) {
+              dependenciesMissingComponent = dep.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[newCname] = [];
+            }
+            if (!dependenciesMissingComponent.includes(dep)) {
+              dependenciesMissingComponent.push(dep);
+            }
+
+          } else {
+
+            if (dep.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: newComp.componentType,
+              baseComponentType: "_composite",
+            })) {
+              // TODO: recurse to more composites
+
+              console.warn('Have not yet implemented recursing subnames to multiple levels of composites')
+
+            } else {
+              // don't have a composite
+              // so add only if there are no more subnames and either no more component indices
+              // or just one index of 1 left
+              if (remainingSubnames.length === 0 && (
+                subNamesComponentIndex?.length || 0 === 0
+                || (subNamesComponentIndex.lenght === 1 && subNamesComponentIndex[0] === 1)
+              )) {
+                newComponents.push(newComp)
+              }
+
+
+            }
+          }
+
+        }
+
+        return newComponents;
+
+      }
+
+      replacements = replaceComponentsUsingSubname({
+        components: replacements,
+        subNames: this.targetSubnames,
+        subNamesComponentIndex: this.targetSubnamesComponentIndex,
+        dep: this
+      })
+
+      
+    }
     let downstreamComponentNames = [];
     let downstreamComponentTypes = [];
 
@@ -5653,7 +5801,7 @@ class ReplacementDependency extends Dependency {
 
 dependencyTypeArray.push(ReplacementDependency);
 
-class SourceCompositeDependency extends Dependency {
+class SourceCompositeStateVariableDependency extends Dependency {
   static dependencyType = "sourceCompositeStateVariable";
 
   setUpParameters() {
@@ -5777,7 +5925,7 @@ class SourceCompositeDependency extends Dependency {
 
 }
 
-dependencyTypeArray.push(SourceCompositeDependency);
+dependencyTypeArray.push(SourceCompositeStateVariableDependency);
 
 class SourceCompositeIdentityDependency extends Dependency {
   static dependencyType = "sourceCompositeIdentity";
@@ -5873,8 +6021,244 @@ class SourceCompositeIdentityDependency extends Dependency {
 
 dependencyTypeArray.push(SourceCompositeIdentityDependency);
 
+class ShadowSourceDependency extends Dependency {
+  static dependencyType = "shadowSource";
 
-class AdapterSourceDependency extends Dependency {
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    if (this.definition.variableNames) {
+      if (!Array.isArray(this.definition.variableNames)) {
+        throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
+      }
+      this.originalDownstreamVariableNames = this.definition.variableNames;
+    } else {
+      this.originalDownstreamVariableNames = [];
+    }
+
+    this.returnSingleComponent = true;
+
+    // for shadow source
+    // always make variables optional so that don't get error
+    // depending on shadow source (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!component.shadows) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let shadowSourceComponentName = component.shadows.componentName;
+    let shadowSource = this.dependencyHandler._components[shadowSourceComponentName];
+
+    if (!shadowSource) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    return {
+      success: true,
+      downstreamComponentNames: [shadowSource.componentName],
+      downstreamComponentTypes: [shadowSource.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(ShadowSourceDependency);
+
+
+class UnlinkedCopySourceDependency extends Dependency {
+  static dependencyType = "unlinkedCopySource";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    if (this.definition.variableNames) {
+      if (!Array.isArray(this.definition.variableNames)) {
+        throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
+      }
+      this.originalDownstreamVariableNames = this.definition.variableNames;
+    } else {
+      this.originalDownstreamVariableNames = [];
+    }
+
+    this.returnSingleComponent = true;
+
+    // for shadow source
+    // always make variables optional so that don't get error
+    // depending on shadow source (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!component.unlinkedCopySource) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let unlinkedCopySourceComponentName = component.unlinkedCopySource;
+    let unlinkedCopySource = this.dependencyHandler._components[unlinkedCopySourceComponentName];
+
+    if (!unlinkedCopySource) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    return {
+      success: true,
+      downstreamComponentNames: [unlinkedCopySource.componentName],
+      downstreamComponentTypes: [unlinkedCopySource.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(UnlinkedCopySourceDependency);
+
+class AdapterSourceStateVariableDependency extends Dependency {
   static dependencyType = "adapterSourceStateVariable";
 
   setUpParameters() {
@@ -5894,9 +6278,117 @@ class AdapterSourceDependency extends Dependency {
 
     this.returnSingleVariableValue = true;
 
-    // for source composite state variable
+    // for adaptor source state variable
     // always make variables optional so that don't get error
-    // depending on source composite (which a component can't control)
+    // depending on adaptor source (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!component.adaptedFrom) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let sourceComposite = component.adaptedFrom;
+
+    return {
+      success: true,
+      downstreamComponentNames: [sourceComposite.componentName],
+      downstreamComponentTypes: [sourceComposite.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(AdapterSourceStateVariableDependency);
+
+class AdapterSourceDependency extends Dependency {
+  static dependencyType = "adapterSource";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName;
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    if (this.definition.variableNames) {
+      if (!Array.isArray(this.definition.variableNames)) {
+        throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
+      }
+      this.originalDownstreamVariableNames = this.definition.variableNames;
+    } else {
+      this.originalDownstreamVariableNames = [];
+    }
+
+    this.returnSingleComponent = true;
+
+    // for adaptor source state variable
+    // always make variables optional so that don't get error
+    // depending on adaptor source (which a component can't control)
     this.variablesOptional = true;
 
   }
@@ -5978,7 +6470,6 @@ class AdapterSourceDependency extends Dependency {
 }
 
 dependencyTypeArray.push(AdapterSourceDependency);
-
 
 class CountAmongSiblingsDependency extends Dependency {
   static dependencyType = "countAmongSiblingsOfSameType";
@@ -6241,6 +6732,13 @@ class CountAmongSiblingsDependency extends Dependency {
       .filter(x => x.componentType === childComponentType);
     let value = childrenOfSameType.map(x => x.componentName).indexOf(this.upstreamComponentName) + 1;
 
+    if(this.parentName === this.dependencyHandler.core.documentName) {
+      let previousCounts = this.dependencyHandler.core.previousComponentTypeCounts[childComponentType]
+      if(previousCounts) {
+        value += previousCounts;
+      }
+    }
+
     // don't need changes, as it is changed directly from core
     // and then upstream variables are marked as changed
     return { value, changes: {} };
@@ -6363,7 +6861,7 @@ class ExpandTargetNameDependency extends Dependency {
   async getValue() {
 
     let parent = this.dependencyHandler._components[this.parentName];
-    let parentCreatesNewNamespace = parent.attributes.newNamespace && parent.attributes.newNamespace.primitive;
+    let parentCreatesNewNamespace = parent.attributes.newNamespace?.primitive;
 
     let namespaceStack = this.parentName.split('/').map(x => ({ namespace: x }))
 
@@ -6478,8 +6976,8 @@ class AttributePrimitiveDependency extends StateVariableDependency {
 
     this.attributeName = this.definition.attributeName;
 
-    if (this.definition.componentName) {
-      this.componentName = this.definition.componentName;
+    if (this.definition.parentName) {
+      this.componentName = this.definition.parentName;
       this.specifiedComponentName = this.componentName;
     } else {
       this.componentName = this.upstreamComponentName;
@@ -6498,13 +6996,15 @@ class AttributePrimitiveDependency extends StateVariableDependency {
     }
 
     if (this.downstreamComponentNames.length === 1) {
-      let depComponent = this.dependencyHandler.components[this.downstreamComponentNames[0]];
+      let parent = this.dependencyHandler.components[this.componentName];
 
-      value = depComponent.attributes[this.attributeName];
-      if (value) {
-        value = value.primitive;
-      } else {
-        value = null;
+      if (parent) {
+        value = parent.attributes[this.attributeName];
+        if (value) {
+          value = value.primitive;
+        } else {
+          value = null;
+        }
       }
 
     }
@@ -6898,3 +7398,56 @@ class DetermineDependenciesDependency extends Dependency {
 }
 
 dependencyTypeArray.push(DetermineDependenciesDependency);
+
+class FileDependency extends Dependency {
+  static dependencyType = "file";
+
+  setUpParameters() {
+    this.cid = this.definition.cid;
+    this.uri = this.definition.uri;
+    this.fileType = this.definition.fileType;
+  }
+
+  async getValue() {
+
+    let extension;
+
+    if (this.cid) {
+      if (this.fileType.toLowerCase() === "csv") {
+        extension = "csv"
+      } else {
+        return {
+          value: null,
+          changes: {}
+        }
+      }
+
+      let fileContents = await retrieveTextFileForCid(this.cid, extension)
+
+      return {
+        value: fileContents,
+        changes: {}
+      }
+    } else {
+      // no cid.  Try to find from uri
+      let response = await fetch(this.uri);
+
+      if (response.ok) {
+        let fileContents = await response.text();
+        return {
+          value: fileContents,
+          changes: {}
+        }
+      } else {
+        return {
+          value: null,
+          changes: {}
+        }
+      }
+
+    }
+  }
+
+}
+
+dependencyTypeArray.push(FileDependency);

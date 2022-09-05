@@ -37,11 +37,13 @@ const ToggleButtonGroup = (props) => {
     } else if (index === elem.length - 1) {
       props2["num"] = last_prop;
     }
+    ;
     return React.cloneElement(element, props2);
   });
   return /* @__PURE__ */ React.createElement(Container, {
     style: {height: "fit-content"},
-    vertical: props.vertical
+    vertical: props.vertical,
+    role: "group"
   }, /* @__PURE__ */ React.createElement(ThemeProvider, {
     theme: props.vertical ? verticalToggleGroup : toggleGroup
   }, modElem));

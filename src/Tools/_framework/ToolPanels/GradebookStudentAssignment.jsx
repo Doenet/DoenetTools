@@ -8,11 +8,12 @@ import {
   } from "recoil";
  
 import { pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
 import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import  axios from 'axios';
 import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
-import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import PageViewer from "../../../Viewer/PageViewer";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import ActivityViewer from "../../../Viewer/ActivityViewer";
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -29,16 +30,16 @@ const getUserId = (students, name) => {
 } 
 export default function GradebookStudentAssignmentView(){
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
-    let source = useRecoilValue(searchParamAtomFamily('source'))
+    let courseId = useRecoilValue(searchParamAtomFamily('courseId'))
     let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
-    let driveIdValue = useRecoilValue(searchParamAtomFamily('driveId'))
     let paramAttemptNumber = useRecoilValue(searchParamAtomFamily('attemptNumber'))
+    let previousCrumb = useRecoilValue(searchParamAtomFamily('previousCrumb'))
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
     let assignments = useRecoilValueLoadable(assignmentData);
-    let effectiveRole = useRecoilValue(effectiveRoleAtom);
+    let { canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
     const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
 
@@ -50,7 +51,7 @@ export default function GradebookStudentAssignmentView(){
     // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
     const attemptsObj =  attempts?.contents?.[userId]?.attempts;
     let [attemptNumber,setAttemptNumber] = useState(null);
-    let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {contentId,variant}
+    let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {cid,variant}
     let assignmentsTable = {}
     let maxAttempts = 0;
 
@@ -70,13 +71,13 @@ export default function GradebookStudentAssignmentView(){
     },[attemptsObj,setAttemptNumber,setRecoilAttemptNumber,paramAttemptNumber])
 
     useEffect(()=>{
-        if (effectiveRole === 'student'){
+        if (canViewAndModifyGrades !== '1'){
             setSuppressMenus(["GradeSettings"])
         }else{
             setSuppressMenus([])
 
         }
-    },[effectiveRole,setSuppressMenus])
+    },[canViewAndModifyGrades, setSuppressMenus])
 
     //Wait for doenetId and userId and attemptsInfo
     if (!doenetId || !userId){
@@ -85,38 +86,42 @@ export default function GradebookStudentAssignmentView(){
 
 
 
-    async function loadAssignmentInfo(doenetId,userId){
-        
-        const { data } = await axios.get(`/api/getGradebookAssignmentAttempts.php`,{params:{doenetId,userId}})
+    async function loadAssignmentInfo(courseId,doenetId,userId){
+        const { data: {success, message,foundAttempt, attemptInfo, showSolutionInGradebook,paginate } } = await axios.get(`/api/getGradebookAssignmentAttempts.php`,{params:{courseId,doenetId,userId}})
         let dataAttemptInfo = {};
         let contentIdToDoenetML = {}; //Don't request from server more than once
         let solutionDisplayMode = 'none';
-        if(data.showSolutionInGradebook === '1') {
+        if(showSolutionInGradebook === '1') {
             solutionDisplayMode = 'button';
         }
 
-        for (let attempt of data.attemptInfo){
+        for (let attempt of attemptInfo){
             let attemptNumber = attempt.attemptNumber;
-            let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
-            let doenetML = contentIdToDoenetML[attempt.contentId];
+            let variantIndex = attempt.variantIndex;
+            // let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
+            let doenetML = contentIdToDoenetML[attempt.cid];
 
             if (doenetML){
                 dataAttemptInfo[attemptNumber] = {
-                    contentId:attempt.contentId,
-                    variant:{name:gvariant?.name},
+                    cid:attempt.cid,
+                    variantIndex,
+                    // variant:{name:gvariant?.name},
                     doenetML,
-                    solutionDisplayMode
+                    solutionDisplayMode,
+                    paginate
                     }
             }else{
-                const { data } = await axios.get(`/media/${attempt.contentId}.doenet`); 
+                const { data } = await axios.get(`/media/${attempt.cid}.doenet`); 
   
-                contentIdToDoenetML[attempt.contentId] = data;
+                contentIdToDoenetML[attempt.cid] = data;
            
                 dataAttemptInfo[attemptNumber] = {
-                    contentId:attempt.contentId,
-                    variant:{name:gvariant?.name},
+                    cid:attempt.cid,
+                    variantIndex,
+                    // variant:{name:gvariant?.name},
                     doenetML: data,
-                    solutionDisplayMode
+                    solutionDisplayMode,
+                    paginate
                     }
 
             }
@@ -127,7 +132,7 @@ export default function GradebookStudentAssignmentView(){
     }
 
     if (attemptsInfo === null){
-        loadAssignmentInfo(doenetId,userId)
+        loadAssignmentInfo(courseId,doenetId,userId)
         return null;
     }
 
@@ -220,16 +225,12 @@ export default function GradebookStudentAssignmentView(){
             Footer: totalPointsOrPercent,
             accessor: "a"+i,
             disableFilters: true,
-            Cell: row  =><a onClick = {(e) =>{
-                // setAttemptNumber(i);
-                // setRecoilAttemptNumber(i);
-                //e.stopPropagation()
-
+            Cell: row  =><a onClick = {() =>{
                 setPageToolView({
                     page: 'course',
                     tool: 'gradebookStudentAssignment',
                     view: '',
-                    params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
+                    params: { courseId, doenetId, userId, attemptNumber: i, previousCrumb},
                 })
             }}> {row.value} </a>
         })
@@ -237,20 +238,28 @@ export default function GradebookStudentAssignmentView(){
 
     let dViewer = null;
     let attemptNumberJSX = null;
+    console.log, ('userId',userId)
+
     if (attemptNumber > 0 && 
         attemptsInfo[attemptNumber] &&
-        attemptsInfo[attemptNumber].contentId !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+        attemptsInfo[attemptNumber].cid !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
         ){
-        // let contentId = attemptsInfo[attemptNumber].contentId
-        let variant = attemptsInfo[attemptNumber].variant;
-        let doenetML = attemptsInfo[attemptNumber].doenetML;
+        let cid = attemptsInfo[attemptNumber].cid
+        let requestedVariantIndex = attemptsInfo[attemptNumber].variantIndex;
+        // let doenetML = attemptsInfo[attemptNumber].doenetML;
         let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
-  
-        dViewer = <DoenetViewer
-        key={`doenetviewer${doenetId}`}
-        doenetML={doenetML}
+        let paginate = attemptsInfo[attemptNumber].paginate;
+        dViewer = <ActivityViewer
+
+
+        /** REAL below */
+        key={`activityViewer${doenetId}`}
+        cid={cid}
+        // cidChanged={cidChanged}
+        // doenetML={doenetML}
         doenetId={doenetId}
         userId={userId}
+        snapshotOnly={true}
 
         flags={{
           showCorrectness: true,
@@ -258,19 +267,22 @@ export default function GradebookStudentAssignmentView(){
           solutionDisplayMode,
           showFeedback: true,
           showHints: true,
-          isAssignment: true,
-          allowLoadPageState: true,
-          allowSavePageState: false,
-          allowLocalPageState: false,
+          allowLoadState: true,
+          allowSaveState: false,
+          allowLocalState: false,
           allowSaveSubmissions: false,
           allowSaveEvents: false,
-          pageStateSource: "submissions",
+        //   pageStateSource: "submissions",
         }}
         attemptNumber={attemptNumber}
-      //   requestedVariant={requestedVariant}
-        requestedVariant={variant}
-      //   updateCreditAchievedCallback={updateCreditAchieved}
+        // requestedVariant={requestedVariant}
+        // requestedVariant={variant}
+        requestedVariantIndex={requestedVariantIndex}
+        // updateAttemptNumber={setRecoilAttemptNumber}
+        // updateCreditAchievedCallback={updateCreditAchieved}
         // generatedVariantCallback={variantCallback}
+        // pageChangedCallback={pageChanged}
+        paginate={paginate}
       />
 
       attemptNumberJSX = <div style={{paddingLeft:"8px"}}>

@@ -2,8 +2,8 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
-export default function CobwebPolyline(props) {
-  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+export default React.memo(function CobwebPolyline(props) {
+  let {name, id, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   CobwebPolyline.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let curveJXG = useRef(null);
@@ -24,7 +24,6 @@ export default function CobwebPolyline(props) {
     };
   }, []);
   function createCobwebPolylineJXG() {
-    console.log("create cobweb polyline");
     let functionAttributes = {
       visible: !SVs.hidden,
       withLabel: false,
@@ -58,9 +57,9 @@ export default function CobwebPolyline(props) {
       }
     }
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -69,6 +68,12 @@ export default function CobwebPolyline(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle)
     };
+    jsxPolylineAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxPolylineAttributes.label.useMathJax = true;
+    }
     jsxPointAttributes.current = {
       fixed: !SVs.draggable || SVs.fixed,
       visible: !SVs.hidden && validCoords && SVs.draggable,
@@ -264,9 +269,9 @@ export default function CobwebPolyline(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

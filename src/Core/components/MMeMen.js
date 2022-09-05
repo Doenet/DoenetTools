@@ -14,8 +14,8 @@ export class M extends InlineComponent {
   static returnChildGroups() {
 
     return [{
-      group: "stringsTextsAndMaths",
-      componentTypes: ["string", "text", "math", "mathList", "m", "mathInput"]
+      group: "inline",
+      componentTypes: ["_inline"]
     }]
 
   }
@@ -27,20 +27,22 @@ export class M extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       defaultValue: "",
       hasEssential: true,
       returnDependencies: () => ({
-        stringTextMathChildren: {
+        inlineChildren: {
           dependencyType: "child",
-          childGroups: ["stringsTextsAndMaths"],
+          childGroups: ["inline"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },
       }),
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.stringTextMathChildren.length === 0) {
+        if (dependencyValues.inlineChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               latex: true
@@ -50,18 +52,80 @@ export class M extends InlineComponent {
 
         let latex = "";
 
-        for (let child of dependencyValues.stringTextMathChildren) {
-          if (typeof child === "string") {
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child !== "object") {
             latex += child;
-          } else if (child.stateValues.latex) {
+          } else if (typeof child.stateValues.latex === "string") {
             latex += child.stateValues.latex
-          } else if (child.stateValues.text) {
+          } else if (typeof child.stateValues.text === "string") {
             latex += child.stateValues.text
           }
         }
 
         return { setValue: { latex } }
 
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        console.log({desiredStateVariableValues, dependencyValues})
+        if (typeof desiredStateVariableValues.latex !== "string") {
+          return { success: false }
+        }
+
+        if (dependencyValues.inlineChildren.length === 0) {
+          return {
+            success: true,
+            instructions: [{
+              setStateVAriable: "latex",
+              value: desiredStateVariableValues.latex
+            }]
+          }
+        } else if (dependencyValues.inlineChildren.length === 1) {
+          let child = dependencyValues.inlineChildren[0];
+          if (typeof child !== "object") {
+            console.log({
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+              }]
+            })
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+              }]
+            }
+          } else if (typeof child.stateValues.latex === "string") {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+                variableIndex: 0  // "latex" state variable
+              }]
+            }
+
+          } else if (typeof child.stateValues.text === "string") {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+                variableIndex: 1  // "text" state variable
+              }]
+            }
+          } else {
+            return { success: false }
+          }
+        } else {
+          // more than one inline child
+          return { success: false }
+        }
       }
 
     }
@@ -69,9 +133,9 @@ export class M extends InlineComponent {
     stateVariableDefinitions.latexWithInputChildren = {
       forRenderer: true,
       returnDependencies: () => ({
-        stringTextMathChildren: {
+        inlineChildren: {
           dependencyType: "child",
-          childGroups: ["stringsTextsAndMaths"],
+          childGroups: ["inline"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },
@@ -82,7 +146,7 @@ export class M extends InlineComponent {
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
 
-        if (dependencyValues.stringTextMathChildren.length === 0) {
+        if (dependencyValues.inlineChildren.length === 0) {
           return {
             setValue: {
               latexWithInputChildren: [dependencyValues.latex]
@@ -93,12 +157,12 @@ export class M extends InlineComponent {
         let latexWithInputChildren = [];
         let lastLatex = "";
         let inputInd = 0;
-        for (let child of dependencyValues.stringTextMathChildren) {
-          if (typeof child === "string") {
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child !== "object") {
             lastLatex += child;
           } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
-            baseComponentType: "mathInput"
+            baseComponentType: "input"
           })) {
             if (lastLatex.length > 0) {
               latexWithInputChildren.push(lastLatex);
@@ -107,9 +171,9 @@ export class M extends InlineComponent {
             latexWithInputChildren.push(inputInd);
             inputInd++;
           } else {
-            if (child.stateValues.latex) {
+            if (typeof child.stateValues.latex === "string") {
               lastLatex += child.stateValues.latex
-            } else if (child.stateValues.text) {
+            } else if (typeof child.stateValues.text === "string") {
               lastLatex += child.stateValues.text
             }
           }
@@ -187,7 +251,9 @@ export class Men extends M {
 
     stateVariableDefinitions.equationTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         equationCounter: {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import CalendarButton from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 import { searchParamAtomFamily } from '../NewToolRoot';
@@ -9,6 +9,7 @@ import { useToast, toastType }  from '../Toast';
 import { UTCDateStringToDate, DateToDisplayDateString, DateToDateString, DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
 export default function GradeSettings(){
+  let courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
     let [dueDateOverride,setDueDateOverride] = useState(null)
@@ -19,7 +20,7 @@ export default function GradeSettings(){
       //get dueDate and dueDateOverride on init
     const loadDueDates = async (doenetId,userId)=>{
       try {
-        let { data } = await axios.get(`/api/loadDueDateInfo.php`,{params:{doenetId,userId}})
+        let { data } = await axios.get(`/api/loadDueDateInfo.php`,{params:{courseId,doenetId,userId}})
         setInitialized(true);
 
         if (data.success){
@@ -91,7 +92,7 @@ export default function GradeSettings(){
           >
     <CalendarButton
               checked={dueDateOverride !== null}
-              onClick={(e) => {
+              onClick={() => {
                 let value = null;
 
                 if (dueDateOverride === null) {

@@ -1,3 +1,4 @@
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 import Input from './abstract/Input';
 
 export default class BooleanInput extends Input {
@@ -30,35 +31,58 @@ export default class BooleanInput extends Input {
   static componentType = "booleanInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "boolean",
       createStateVariable: "prefill",
       defaultValue: false,
       public: true,
     };
-    attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "",
-      forRenderer: true,
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
     };
+    attributes.asToggleButton = {
+      createComponentOfType: "boolean",
+      createStateVariable: "asToggleButton",
+      defaultValue: false,
+      forRenderer: true,
+      public: true,
+    }
     attributes.bindValueTo = {
       createComponentOfType: "boolean"
     };
     return attributes;
   }
 
+
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
+
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
@@ -110,7 +134,9 @@ export default class BooleanInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -132,6 +158,8 @@ export default class BooleanInput extends Input {
 
   }
 
+  static adapters = ["value"];
+
   async updateBoolean({ boolean, actionId }) {
     if (!await this.stateValues.disabled) {
       let updateInstructions = [{
@@ -139,7 +167,6 @@ export default class BooleanInput extends Input {
         componentName: this.componentName,
         stateVariable: "value",
         value: boolean,
-        sourceInformation: { actionId }
       }];
 
       let event = {
@@ -165,6 +192,7 @@ export default class BooleanInput extends Input {
       await this.coreFunctions.performUpdate({
         updateInstructions,
         event,
+        actionId,
       });
 
       return await this.coreFunctions.triggerChainedActions({
@@ -172,6 +200,8 @@ export default class BooleanInput extends Input {
       });
 
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

@@ -3,8 +3,8 @@ import BlockComponent from './abstract/BlockComponent.js';
 export default class Embed extends BlockComponent {
   static componentType = "embed";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
@@ -44,5 +44,20 @@ export default class Embed extends BlockComponent {
     return attributes;
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
 
 }

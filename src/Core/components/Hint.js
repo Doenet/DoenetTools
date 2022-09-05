@@ -12,8 +12,8 @@ export default class Hint extends BlockComponent {
       group: "titles",
       componentTypes: ["title"]
     }, {
-      group: "inlinesBlocks",
-      componentTypes: ["_inline", "_block"]
+      group: "anything",
+      componentTypes: ["_base"]
     }]
 
   }
@@ -46,10 +46,13 @@ export default class Hint extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({}),
       definition() {
         return {
@@ -70,7 +73,7 @@ export default class Hint extends BlockComponent {
     }
 
 
-    stateVariableDefinitions.titleDefinedByChildren = {
+    stateVariableDefinitions.titleChildName = {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -79,17 +82,55 @@ export default class Hint extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
+        let titleChildName = null;
+        if (dependencyValues.titleChild.length > 0) {
+          titleChildName = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].componentName
+        }
         return {
-          setValue: {
-            titleDefinedByChildren: dependencyValues.titleChild.length > 0
+          setValue: { titleChildName }
+        }
+      }
+    }
+
+    stateVariableDefinitions.childIndicesToRender = {
+      returnDependencies: () => ({
+        titleChildren: {
+          dependencyType: "child",
+          childGroups: ["titles"],
+        },
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["anything", "titles"],
+        },
+        titleChildName: {
+          dependencyType: "stateVariable",
+          variableName: "titleChildName"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+
+        let allTitleChildNames = dependencyValues.titleChildren.map(x => x.componentName);
+
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (typeof child !== "object"
+            || !allTitleChildNames.includes(child.componentName)
+            || child.componentName === dependencyValues.titleChildName
+          ) {
+            childIndicesToRender.push(ind)
           }
         }
+
+        return { setValue: { childIndicesToRender } }
+
       }
     }
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -102,7 +143,7 @@ export default class Hint extends BlockComponent {
         if (dependencyValues.titleChild.length === 0) {
           return { setValue: { title: "Hint" } };
         } else {
-          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[dependencyValues.titleChild.length - 1].stateValues.text } };
         }
       }
     }
@@ -111,7 +152,7 @@ export default class Hint extends BlockComponent {
 
   }
 
-  async revealHint() {
+  async revealHint({actionId}) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -120,6 +161,7 @@ export default class Hint extends BlockComponent {
         stateVariable: "open",
         value: true
       }],
+      actionId,
       event: {
         verb: "viewed",
         object: {
@@ -130,7 +172,7 @@ export default class Hint extends BlockComponent {
     });
   }
 
-  async closeHint() {
+  async closeHint({actionId}) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -139,6 +181,7 @@ export default class Hint extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {
@@ -149,9 +192,22 @@ export default class Hint extends BlockComponent {
     });
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     revealHint: this.revealHint.bind(this),
     closeHint: this.closeHint.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

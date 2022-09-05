@@ -79,8 +79,8 @@ export class IsNumber extends BooleanBaseOperatorOfMath {
 export class IsBetween extends BooleanBaseOperatorOfMath {
   static componentType = "isBetween";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.limits = {
       createComponentOfType: "numberList",
       createStateVariable: "limits",

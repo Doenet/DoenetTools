@@ -1,16 +1,9 @@
 import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
+import { MathJax } from "better-react-mathjax";
 
-export default function Math(props) {
-  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
-
-  useEffect(() => {
-    if (window.MathJax) {
-      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  })
+export default React.memo(function Math(props) {
+  let { name, id, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
 
   if (SVs.hidden) {
@@ -45,16 +38,23 @@ export default function Math(props) {
   // instead, we want to be able to put the mathInput inside mathjax
   // This is just a stopgap solution that works in a few simple cases!!!
 
+
+  // Note: when a component type gets switched, sometimes state variables change before renderer
+  // so protect against case where the latexWithInputChildren is gone but renderer is still math
+  if(!SVs.latexWithInputChildren) {
+    return null;
+  }
+
   let latexOrInputChildren = SVs.latexWithInputChildren.map(
     x => typeof x === "number" ? this.children[x] : beginDelim + x + endDelim
   )
 
   let anchors = [
-    React.createElement('a', { name, key: name })
+    <a name={id} key={id} />
   ];
   if (SVs.mrowChildNames) {
-    anchors.push(SVs.mrowChildNames.map(x =>
-      React.createElement('a', { name: x, key: x })
+    anchors.push(...SVs.mrowChildNames.map(x =>
+     <a name={x} key={x} id={x} />
     ))
   }
 
@@ -63,14 +63,14 @@ export default function Math(props) {
   // so hard coded the only two cases using so far: with 1 or 2 entries
 
   if (latexOrInputChildren.length === 0) {
-    return <>{anchors}<span id={name}></span></>
+    return <>{anchors}<span id={id}></span></>
 
   } else if (latexOrInputChildren.length === 1) {
-    return <>{anchors}<span id={name}>{latexOrInputChildren[0]}</span></>
+    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
 
   } else if (latexOrInputChildren.length === 2) {
-    return <>{anchors}<span id={name}>{latexOrInputChildren[0]}{latexOrInputChildren[1]}</span></>
+    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
   } else {
-    return <>{anchors}<span id={name}>{latexOrInputChildren[0]}</span></>
+    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
   }
-}
+})

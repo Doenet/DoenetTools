@@ -6,8 +6,8 @@ export default class Constraints extends BaseComponent {
   static componentType = "constraints";
   static rendererType = undefined;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.baseOnGraph = {
       createPrimitiveOfType: "string",
@@ -116,7 +116,9 @@ export default class Constraints extends BaseComponent {
 
     stateVariableDefinitions.scales = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["graphComponentName"],
       returnDependencies({ stateValues }) {
         if (stateValues.graphComponentName) {
@@ -478,7 +480,9 @@ export default class Constraints extends BaseComponent {
 
     stateVariableDefinitions.constraintUsed = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         constraintUsedByComponent: {
           dependencyType: "stateVariable",

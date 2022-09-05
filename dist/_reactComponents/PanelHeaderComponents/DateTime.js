@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
 import Datetime from "../../_snowpack/pkg/react-datetime.js";
 import "../../_snowpack/pkg/react-datetime/css/react-datetime.css.proxy.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
@@ -15,9 +15,10 @@ export default function DateTime(props) {
   const inputRef = useRef(null);
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
-  let borderColor = props.alert ? "2px solid #C1292E" : "2px solid black";
-  borderColor = props.disabled ? "2px solid #e2e2e2" : borderColor;
+  let borderColor = props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)";
+  borderColor = props.disabled ? "2px solid var(--mainGray)" : borderColor;
   let cursorStyle = props.disabled ? "not-allowed" : "auto";
+  let width = props.width ? props.width : "170px";
   useEffect(() => {
     setLastValid(props.value);
     setValue(props.value);
@@ -40,14 +41,23 @@ export default function DateTime(props) {
     placeholder
   };
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
-    return /* @__PURE__ */ React.createElement("div", {
-      style: {width: "fit-content"}
-    }, props.label ? /* @__PURE__ */ React.createElement(Label, {
+    return /* @__PURE__ */ React.createElement("div", null, props.label ? /* @__PURE__ */ React.createElement(Label, {
+      id: "checkbox-label",
       vertical: props.vertical
     }, props.label) : null, /* @__PURE__ */ React.createElement("input", {
       ...propsRI,
-      style: {border: borderColor, cursor: cursorStyle},
+      style: {
+        border: borderColor,
+        cursor: cursorStyle,
+        width,
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
+        ...props.style
+      },
       ref: inputRef,
+      "aria-labelledby": "checkbox-label",
+      "aria-haspopup": "true",
+      "data-test": props.dataTest,
       onChange: (e) => {
         setCursorStart(e.target.selectionStart);
         setCursorEnd(e.target.selectionEnd);
@@ -67,18 +77,22 @@ export default function DateTime(props) {
       }
     }));
   };
-  if (props.disabled === true) {
+  if (props.disabled) {
     return /* @__PURE__ */ React.createElement("input", {
       ref: inputRef,
       onClick: props.disabledOnClick,
       value: props.disabledText,
+      readOnly: true,
+      "data-test": props.dataTest,
       style: {
         cursor: "not-allowed",
-        color: "#545454",
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
         height: "18px",
-        width: "177px",
-        border: "2px solid #e2e2e2",
-        borderRadius: "5px"
+        width: "170px",
+        border: "2px solid var(--mainGray)",
+        borderRadius: "var(--mainBorderRadius)",
+        ...props.style
       }
     });
   }

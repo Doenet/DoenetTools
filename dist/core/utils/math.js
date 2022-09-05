@@ -10,7 +10,7 @@ export var appliedFunctionSymbolsDefault = [
   'arg',
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
-  'sum', 'prod', 'var', 'std',
+  'sum', 'prod', 'variance', 'std',
   'count', 'mod'
 ];
 
@@ -103,11 +103,12 @@ export function findFiniteNumericalValue(value) {
 
 
 export function convertValueToMathExpression(value) {
-  if (value === undefined || value === null) {
-    return me.fromAst('\uFF3F');  // long underscore
-  } else if (value instanceof me.class) {
+  if (value instanceof me.class) {
     return value;
   } else if (typeof value === "number" || typeof value === "string") {
+    // let value be math-expression based on value
+    return me.fromAst(value);
+  } else if (Array.isArray(value)) {
     // let value be math-expression based on value
     return me.fromAst(value);
   } else {
@@ -438,7 +439,7 @@ export function mathStateVariableFromNumberStateVariable({
 
   if (isPublic) {
     mathDef.public = true;
-    mathDef.componentType = "math"
+    mathDef.shadowingInstructions = { createComponentOfType: "math" };
   }
 
   return mathDef;
@@ -448,17 +449,22 @@ export function mathStateVariableFromNumberStateVariable({
 export function roundForDisplay({ value, dependencyValues, usedDefault }) {
   let rounded;
 
-  if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-    if (Number.isFinite(dependencyValues.displayDecimals)) {
-      rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
-    } else {
-      rounded = value;
-    }
+  // displayDigits takes precedence
+  // use displayDecimals only if 
+  // - didn't specify displayDigits or specified invalid displayDigits, and
+  // - specified a valid displayDecimals
+  if (
+    (usedDefault.displayDigits || !(dependencyValues.displayDigits >= 1))
+    && !usedDefault.displayDecimals
+    && Number.isFinite(dependencyValues.displayDecimals)
+  ) {
+    rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
   } else {
     if (dependencyValues.displayDigits >= 1) {
       rounded = me.round_numbers_to_precision(value, dependencyValues.displayDigits);
     } else {
-      rounded = value;
+      // default behavior is round to 10 digits
+      rounded = me.round_numbers_to_precision(value, 10);
     }
     if (dependencyValues.displaySmallAsZero > 0) {
       rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: dependencyValues.displaySmallAsZero });
@@ -564,13 +570,14 @@ function wrapWordIncludingNumberWithVarSub(string) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      // start with backslash, so skip
+    if (match[1] === "\\" || match[1][0] === "^") {
+      // start with backslash or with a ^ and optional space
+      // so skip
       newString += string.substring(0, endMatch);
       string = string.substring(endMatch);
     } else {
@@ -592,3 +599,26 @@ function wrapWordIncludingNumberWithVarSub(string) {
 export function stripLatex(latex) {
   return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
 }
+
+export const mathjaxConfig = {
+  showProcessingMessages: false,
+  "fast-preview": {
+    disabled: true
+  },
+  jax: ["input/TeX", "output/CommonHTML"],
+  extensions: ["tex2jax.js", "MathMenu.js", "MathZoom.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+  TeX: {
+    extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"],
+    equationNumbers: {
+      autoNumber: "AMS"
+    },
+    Macros: {
+      lt: '<', gt: '>', amp: '&', var: ['\\mathrm{#1}', 1],
+      csch: '\\operatorname{csch}',
+      sech: '\\operatorname{sech}'
+    }
+  },
+  tex2jax: {
+    displayMath: [['\\[', '\\]']]
+  }
+};

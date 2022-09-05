@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
-import { useGesture } from 'react-use-gesture';
+import { useGesture } from '@use-gesture/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGripLinesVertical,
@@ -9,7 +9,6 @@ import {
   faKeyboard,
 } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilState, atomFamily, useSetRecoilState } from 'recoil';
-
 import { handleRef } from '../Footers/MathInputSelector';
 
 export const handleDirection = {
@@ -53,7 +52,7 @@ const Background = styled.div`
   height: ${({ $vertical }) => ($vertical ? '100%' : '')};
   width: ${({ $vertical }) => ($vertical ? '' : '100%')};
   border-radius: 4px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
 `;
 
 // const Notch = styled.div`
@@ -74,11 +73,11 @@ const DragHandle = styled.div`
   flex: 0 0 ${({ $handleSize }) => $handleSize}px;
   display: flex;
   justify-content: center;
-  color: rgb(246, 248, 255);
+  color: white;
   font-size: ${(props) => (props.id === 'keyboard' ? 16 : 12)};
   padding: 0;
   cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'ns-resize')};
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   height: ${({ $vertical }) => ($vertical ? '23%' : '')};
   width: ${({ $vertical }) => ($vertical ? '' : '25%')};
   box-sizing: border-box;
@@ -185,12 +184,15 @@ export default function DragPanel({
       <DragHandle
         tabIndex="0"
         ref={handle}
-        data-cy="panelDragHandle"
+        data-test="panelDragHandle"
         $vertical={direction.vertical}
         $rounding={direction.rounding}
         $handleSize={handleSize}
         {...bindX()}
-      >
+        onClick={() => {
+          setOpen(!open)
+        }}
+        >
         <FontAwesomeIcon
           icon={
             id === 'keyboard'

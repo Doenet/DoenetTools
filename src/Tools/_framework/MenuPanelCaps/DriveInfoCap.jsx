@@ -1,47 +1,58 @@
 import React from 'react';
-import { useRecoilValue } from 'recoil';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {  coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { effectiveRoleIdByCourseId, RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { find_image_label, find_color_label } from './util'
 
 export default function DriveInfoCap(){
-  let path = useRecoilValue(searchParamAtomFamily('path'));
-  let driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const tool = useRecoilValue(searchParamAtomFamily('tool'));
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  const [effectiveRoleId, setEffectiveRoleId] = useRecoilState(effectiveRoleIdByCourseId(courseId));
 
-  if (!driveId){
-    driveId = path.split(':')[0]
-  }
-  const driveInfo = useRecoilValue(fetchDrivesQuery)
-  let roles;
-  let image;
-  let color;
-  let label = "";
- for (let info of driveInfo.driveIdsAndLabels){
-   if (info.driveId === driveId){
-     roles = [...info.role];
-     color = info.color;
-     image = info.image;
-     label = info.label;
-     break;
-   }
- }
+if (!course || Object.keys(course).length == 0){
+  return null;
+}
+let role = course.roleLabel;
+let color = course.color;
+let image = course.image;
+let label = course.label;
 
+let accessible_name = "course";
  
  if (image != 'none'){
-  image = '/media/drive_pictures/' + image;
+  accessible_name = find_image_label(image);
+  image = 'url(/media/drive_pictures/' + image + ')';
  }
  if (color != 'none'){
+  accessible_name = find_color_label(color);
   color = '#' + color;
+ }
+
+ let toolText = ""
+ if (tool == "navigation"){
+   toolText = "Course Navigation"
+ }else if (tool == "dashboard"){
+   toolText = "Dashboard"
+ }else if (tool == "data"){
+    toolText = "Data"
  }
  
  return <>
-    <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
+    <div style={{ position: "relative", width: "100%", height: "165px", overflow: "hidden"}}>
+      <img aria-label={accessible_name} style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
+    <b>{toolText}</b>
     <div style={{ padding:'16px 12px' }}>
       <span style={{ marginBottom: "15px" }}>{label}</span> <br />
-      <span style={{ marginBottom: "15px" }}>{roles}</span> <br />
-      <RoleDropdown />
+      <span style={{ marginBottom: "15px" }}>{role}</span> <br />
+      <RoleDropdown
+        label="View as"
+        onChange={({ value: roleId }) => setEffectiveRoleId(roleId)}
+        valueRoleId={effectiveRoleId ?? course.roleId}
+        vertical
+      />
     </div>
   </>
 }

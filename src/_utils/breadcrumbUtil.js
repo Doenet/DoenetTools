@@ -1,400 +1,533 @@
-import { faTh } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
-import { selectorFamily, useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  selectorFamily,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
-import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
-import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { studentData, assignmentData } from '../Tools/_framework/ToolPanels/Gradebook';
+import { effectivePermissionsByCourseId } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import {
+  studentData,
+  assignmentData,
+} from '../Tools/_framework/ToolPanels/Gradebook';
+import {
+  itemByDoenetId,
+  coursePermissionsAndSettingsByCourseId,
+  findFirstPageOfActivity,
+} from '../_reactComponents/Course/CourseActions';
 
-export function useCourseChooserCrumb(){
-
+export function useCourseChooserCrumb() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
-  return {icon:faTh, onClick:()=>{
-        setPageToolView({
-          page: 'course',
-          tool: 'courseChooser',
-          view: '',
-        });
-  }}
+  return {
+    label: 'Courses',
+    onClick: () => {
+      setPageToolView({
+        page: 'course',
+        tool: 'courseChooser',
+        view: '',
+      });
+    },
+  };
 }
 
-export function useDashboardCrumb(driveId){
-  
+export function useDashboardCrumb(courseId) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const drives = useRecoilValue(fetchDrivesQuery);
+  const course = useRecoilValue(
+    coursePermissionsAndSettingsByCourseId(courseId),
+  );
 
-  let label;
+  let label = course?.label;
 
-  for (let driveIdLabel of drives.driveIdsAndLabels){
-    if (driveIdLabel.driveId == driveId){
-      label = driveIdLabel.label;
-      break;
-    }
-  }
-
-  let params = {
-    path: `${driveId}:${driveId}:${driveId}:Drive`,
-  }
-
-  return {label, onClick:()=>{
-        setPageToolView({
-          page: 'course',
-          tool: 'dashboard',
-          view: '',
-          params
-        });
-  }}
+  return {
+    label,
+    onClick: () => {
+      setPageToolView({
+        page: 'course',
+        tool: 'dashboard',
+        view: '',
+        params: {
+          courseId,
+        },
+      });
+    },
+  };
 }
 
 const navigationSelectorFamily = selectorFamily({
-  key:"navigationSelectorFamily/Default",
-  get:(driveIdFolderId)=> async ({get})=>{
-    let {driveId,folderId} = driveIdFolderId;
-
-    async function getFolder({driveId,folderId}){
-      let folderObj = await get(folderDictionary({driveId,folderId}))
-      let label = 'Content';
-      let itemType = 'Drive';
-      let parentFolderId  = driveId;
-      let itemId = folderId;
-      let results = []
-      if (driveId != folderId){
-        label = folderObj.folderInfo.label;
-        itemType = folderObj.folderInfo.itemType;
-        parentFolderId  = folderObj.folderInfo.parentFolderId;
-        results = await getFolder({driveId,folderId:parentFolderId})
-      }
-      //Don't add Collections as Folders in navigation
-      if (itemType === 'Collection'){
-        return [...results]
-      }else{
-        return [{label,itemId,itemType},...results]
-      }
-    }
-    
-  
-    return await getFolder({driveId,folderId})
-
-  }
-})
-
-export function useNavigationCrumbs(driveId,folderId){
-
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const folderInfoArray = useRecoilValue(navigationSelectorFamily({driveId,folderId}));
-
-  let crumbs = [];
-
-  for (let item of folderInfoArray){
-       let params = {
-        path: `${driveId}:${driveId}:${driveId}:Drive`,
-      }
-      if (item.itemType === 'Folder'){
-        params = {
-          path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
+  key: 'navigationSelectorFamily/Default',
+  get:
+    ({ courseId, parentDoenetId }) =>
+    async ({ get }) => {
+      async function getSections({ courseId, parentDoenetId }) {
+        if (parentDoenetId === '' || parentDoenetId === undefined) {
+          return [];
         }
+        const {
+          label,
+          parentDoenetId: itemParentDoenetId,
+          type,
+        } = await get(itemByDoenetId(parentDoenetId));
+        if (courseId === itemParentDoenetId) {
+          return [{ label, parentDoenetId, type }];
+        }
+        let results = await getSections({
+          courseId,
+          parentDoenetId: itemParentDoenetId,
+        });
+        return [...results, { label, parentDoenetId, type }];
       }
-       crumbs.unshift({
-        label:item.label,
-        onClick:()=>{
-          setPageToolView({
-            page: 'course',
-            tool: 'navigation',
-            view: '',
-            params
-          });
-      }});
 
+      return await getSections({ courseId, parentDoenetId });
+    },
+});
+
+export function useNavigationCrumbs(courseId, parentDoenetId) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const folderInfoArray = useRecoilValue(
+    navigationSelectorFamily({ courseId, parentDoenetId }),
+  );
+
+  const crumbs = [
+    {
+      label: 'Content',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'navigation',
+          view: '',
+          params: {
+            courseId,
+          },
+        });
+      },
+    },
+  ];
+
+  for (let { label, parentDoenetId, type } of folderInfoArray) {
+    switch (type) {
+      case 'section':
+        crumbs.push({
+          label,
+          onClick: () => {
+            setPageToolView({
+              page: 'course',
+              tool: 'navigation',
+              view: '',
+              params: {
+                courseId,
+                sectionId: parentDoenetId,
+              },
+            });
+          },
+        });
+        break;
+      // case 'activity':
+      //   crumbs.push({
+      //     label,
+      //     onClick: () => {
+      //       setPageToolView({
+      //         page: 'course',
+      //         tool: 'activity',
+      //         view: '',
+      //         params: {
+      //           courseId,
+      //           sectionId: parentDoenetId,
+      //         },
+      //       });
+      //     },
+      //   });
+      //   break;
+      default:
+        console.warn(`Unsupported navigration crumb type: ${type}`);
+    }
   }
 
-
-  return crumbs
+  return crumbs;
 }
 
-export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
-  
+export function useEditorCrumb({ pageId, doenetId, linkPageId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
-  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
-  if (!label){
-    label = '_';
+  const pageObj = useRecoilValue(itemByDoenetId(pageId));
+  let { label: pageLabel } = pageObj;
+  const linkPageObj = useRecoilValue(itemByDoenetId(linkPageId));
+  if (linkPageId){
+    ({ label: pageLabel } = linkPageObj);
   }
-  let params = {
-    doenetId,
-    path: `${driveId}:${folderId}:${itemId}:DoenetML`
-  }
-
-  return {label, onClick:()=>{
+  const activityObj = useRecoilValue(itemByDoenetId(doenetId));
+  let { label: activityLabel } = activityObj;
+  let crumbs = [
+    {
+      label: activityLabel ?? '_',
+      onClick: () => {
         setPageToolView({
           page: 'course',
           tool: 'editor',
           view: '',
-          params
+          params: {
+            doenetId,
+            pageId,
+          },
         });
-  }}
+      },
+    },
+  ];
+
+  if (!activityObj.isSinglePage && activityObj.type != 'bank' && !linkPageId) {
+    let firstPageDoenetId = findFirstPageOfActivity(activityObj.content);
+    crumbs = [
+      {
+        label: activityLabel ?? '_',
+        onClick: () => {
+          setPageToolView({
+            page: 'course',
+            tool: 'editor',
+            view: '',
+            params: {
+              doenetId,
+              pageId: firstPageDoenetId,
+            },
+          });
+        },
+      },
+      {
+        label: pageLabel ?? '_',
+        onClick: () => {
+          setPageToolView({
+            page: 'course',
+            tool: 'editor',
+            view: '',
+            params: {
+              doenetId,
+              pageId,
+            },
+          });
+        },
+      },
+    ];
+  }
+
+  if (activityObj.type == 'bank') {
+    crumbs = [
+      {
+        label: pageLabel ?? '_',
+        onClick: () => {
+          setPageToolView({
+            page: 'course',
+            tool: 'editor',
+            view: '',
+            params: {
+              doenetId,
+              pageId,
+            },
+          });
+        },
+      },
+    ];
+  }
+
+  if (linkPageId) {
+    crumbs = [
+      {
+        label: pageLabel ?? '_',
+        onClick: () => {
+          setPageToolView({
+            page: 'course',
+            tool: 'editor',
+            view: '',
+            params: {
+              linkPageId,
+            },
+          });
+        },
+      },
+    ];
+  }
+
+  return crumbs;
 }
 
-export function useCollectionCrumb(doenetId,path){
-  
+export function useAssignmentCrumb({ doenetId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  let [driveId,folderId] = path.split(':')
-  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
-  let label = folderInfo?.folderInfo?.label;
-  if (!label){
-    label = '_';
-  }
+  const { label } = useRecoilValue(itemByDoenetId(doenetId));
 
-  let params = {
-    doenetId,
-    path,
-  }
-
-
-  return {label, onClick:()=>{
-        setPageToolView({
-          page: 'course',
-          tool: 'collection',
-          view: '',
-          params
-        });
-  }}
-}
-
-export function useAssignmentCrumb({doenetId,driveId,folderId,itemId}){
-  
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
-  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
-  if (!label){
-    label = '_';
-  }
-
-  let params = {
-    doenetId,
-    // path: `${driveId}:${folderId}:${itemId}:DoenetML`
-  }
-
-  return {label, onClick:()=>{
-        setPageToolView({
-          page: 'course',
-          tool: 'assignment',
-          view: '',
-          params
-        });
-  }}
-}
-
-export function useEnrollmentCrumb(driveId){
-
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
-  let params = {
-    driveId,
-  }
-
-  return {label:'Enrollment', onClick:()=>{
-        setPageToolView({
-          page: 'course',
-          tool: 'enrollment',
-          view: '',
-          params
-        });
-  }}
-}
-
-export function useSurveyCrumb(driveId,doenetId){
-
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
-  
-  let params = {
-    driveId,
-  }
-
-  let firstCrumb = {label:'Surveys', onClick:()=>{
-    setPageToolView({
-      page: 'course',
-      tool: 'surveyList',
-      view: '',
-      params
-    });
-}}
-  if (doenetId){
-    let params2 = {
-      driveId,
-      doenetId
-    }
-    return [firstCrumb,{label:'Data', onClick:()=>{
+  return {
+    label: label ?? '_',
+    onClick: () => {
       setPageToolView({
         page: 'course',
-        tool: 'surveyData',
+        tool: 'assignment',
         view: '',
-        params:params2
+        params: {
+          doenetId,
+        },
       });
-  }}]
+    },
+  };
+}
 
-  }else{
-    return [firstCrumb]
+export function usePeopleCrumb(courseId) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
+  return {
+    label: 'People',
+    onClick: () => {
+      setPageToolView({
+        page: 'course',
+        tool: 'people',
+        view: '',
+        params: {
+          courseId,
+        },
+      });
+    },
+  };
+}
+
+export function useDataCrumb(courseId, parentDoenetId) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const folderInfoArray = useRecoilValue(
+    navigationSelectorFamily({ courseId, parentDoenetId }),
+  );
+  const crumbs = [
+    {
+      label: 'Data',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'data',
+          view: '',
+          params: {
+            courseId,
+          },
+        });
+      },
+    },
+  ];
+
+  for (let { label, parentDoenetId, type } of folderInfoArray) {
+    switch (type) {
+      case 'section':
+        crumbs.push({
+          label,
+          onClick: () => {
+            setPageToolView({
+              page: 'course',
+              tool: 'data',
+              view: '',
+              params: {
+                courseId,
+                sectionId: parentDoenetId,
+              },
+            });
+          },
+        });
+        break;
+
+      default:
+        console.warn(`Unsupported navigration crumb type: ${type}`);
+    }
+  }
+
+  return crumbs;
+}
+
+export function useSurveyCrumb(driveId, doenetId) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
+  let params = {
+    driveId,
+  };
+
+  let firstCrumb = {
+    label: 'Surveys',
+    onClick: () => {
+      setPageToolView({
+        page: 'course',
+        tool: 'surveyList',
+        view: '',
+        params,
+      });
+    },
+  };
+  if (doenetId) {
+    let params2 = {
+      driveId,
+      doenetId,
+    };
+    return [
+      firstCrumb,
+      {
+        label: 'Data',
+        onClick: () => {
+          setPageToolView({
+            page: 'course',
+            tool: 'surveyData',
+            view: '',
+            params: params2,
+          });
+        },
+      },
+    ];
+  } else {
+    return [firstCrumb];
   }
 }
 
-export function useGradebookCrumbs(){
-
-  const [pageToolView,setPageToolView] = useRecoilState(pageToolViewAtom);
+export function useGradebookCrumbs() {
+  const [{ params: pageToolParams, tool }, setPageToolView] =
+    useRecoilState(pageToolViewAtom);
   let crumbs = [];
-  const role = useRecoilValue(effectiveRoleAtom);
+  const { canViewAndModifyGrades } = useRecoilValue(
+    effectivePermissionsByCourseId(pageToolParams?.courseId),
+  );
   const students = useRecoilValue(studentData);
-  const assignments = useRecoilValue(assignmentData); 
+  const assignments = useRecoilValue(assignmentData);
 
-
-  let driveId = pageToolView.params?.driveId;
-  let doenetId = pageToolView.params?.doenetId;
-  let userId = pageToolView.params?.userId;
-  let previousCrumb = pageToolView.params?.previousCrumb;
-  let tool = pageToolView.tool;
-
-
-
-    //Define gradebook tool crumb 
-    if (role == 'instructor'){
+  //Define gradebook tool crumb
+  if (canViewAndModifyGrades == '1') {
     {
       let params = {
-        driveId,
-      }
+        courseId: pageToolParams?.courseId,
+      };
       crumbs.push({
-        label:'Gradebook', onClick:()=>{
+        label: 'Gradebook',
+        onClick: () => {
           setPageToolView({
             page: 'course',
             tool: 'gradebook',
             view: '',
-            params
+            params,
           });
-        }
-      })
+        },
+      });
     }
   }
 
-  if (tool == 'gradebook'){
-    return crumbs
+  if (tool == 'gradebook') {
+    return crumbs;
   }
 
-    //Handle gradebookStudent
-   if (tool == 'gradebookStudent' ||
-   role == 'student' && tool == 'gradebookStudentAssignment' ||
-   previousCrumb == 'student' && tool == 'gradebookStudentAssignment'
-   ){
-     let label = 'Gradebook';
-     if (role == 'instructor'){
-        const student = students[userId];
-        label = `${student.firstName} ${student.lastName}` 
-     }
-
-      let params = {
-        driveId,
-        userId
-      }
-      crumbs.push({
-        label, onClick:()=>{
-          setPageToolView({
-            page: 'course',
-            tool: 'gradebookStudent',
-            view: '',
-            params
-          });
-    }
-    })
+  //Handle gradebookStudent
+  if (
+    tool == 'gradebookStudent' ||
+    (canViewAndModifyGrades != '1' && tool == 'gradebookStudentAssignment') ||
+    (pageToolParams?.previousCrumb == 'student' &&
+      tool == 'gradebookStudentAssignment')
+  ) {
+    let label = 'Gradebook';
+    if (canViewAndModifyGrades == '1') {
+      const student = students[pageToolParams?.userId];
+      label = `${student.firstName} ${student.lastName}`;
     }
 
-    if (tool == 'gradebookStudent'){
-      return crumbs
-    }
+    let params = {
+      courseId: pageToolParams?.courseId,
+      userId: pageToolParams?.userId,
+    };
+    crumbs.push({
+      label,
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'gradebookStudent',
+          view: '',
+          params,
+        });
+      },
+    });
+  }
 
-    //Only instructors see this
-    if (tool == 'gradebookAssignment' ||
-    previousCrumb == 'assignment' && tool == 'gradebookStudentAssignment'
-    ){
-      if (role == 'student'){
-        crumbs.push({label:'Not Available'})
-      }else{
-        let assignmentName = assignments?.[doenetId]?.label;
-        if (!assignmentName){
-          assignmentName = '_';
-        }
+  if (tool == 'gradebookStudent') {
+    return crumbs;
+  }
 
-        let params = {
-          driveId,
-          doenetId
-        }
-        crumbs.push({
-          label:assignmentName, onClick:()=>{
-            setPageToolView({
-              page: 'course',
-              tool: 'gradebookAssignment',
-              view: '',
-              params
-            });
-      }
-      })
-      }
-    }
-
-    if (tool == 'gradebookAssignment'){
-      return crumbs
-    }
-
-    //tool is gradebookStudentAssignment
-    if (role == 'student'){
-      let assignmentName = assignments?.[doenetId]?.label;
-      if (!assignmentName){
+  //Only instructors see this
+  if (
+    tool == 'gradebookAssignment' ||
+    (pageToolParams?.previousCrumb == 'assignment' &&
+      tool == 'gradebookStudentAssignment')
+  ) {
+    if (canViewAndModifyGrades != '1') {
+      crumbs.push({ label: 'Not Available' });
+    } else {
+      let assignmentName = assignments?.[pageToolParams?.doenetId]?.label;
+      if (!assignmentName) {
         assignmentName = '_';
       }
-        let params = {
-          driveId,
-          userId,
-          doenetId
-        }
-        crumbs.push({
-          label:assignmentName, onClick:()=>{
-            setPageToolView({
-              page: 'course',
-              tool: 'gradebookStudentAssignment',
-              view: '',
-              params
-            });
-      }
-      })
-    }else{
-      let crumbLabel = '_';
-      if (previousCrumb == 'student'){
-        
-        crumbLabel = assignments[doenetId].label;
-      }
-      if (previousCrumb == 'assignment'){
-        const student = students[userId];
-        crumbLabel = `${student.firstName} ${student.lastName}` 
-        
-      }
-  
+
       let params = {
-        driveId,
-        userId,
-        doenetId,
-        previousCrumb
-      }
+        courseId: pageToolParams?.courseId,
+        doenetId: pageToolParams?.doenetId,
+      };
       crumbs.push({
-        label:crumbLabel, onClick:()=>{
+        label: assignmentName,
+        onClick: () => {
           setPageToolView({
             page: 'course',
-            tool: 'gradebookStudentAssignment',
+            tool: 'gradebookAssignment',
             view: '',
-            params
+            params,
           });
+        },
+      });
     }
-    })
+  }
 
+  if (tool == 'gradebookAssignment') {
+    return crumbs;
+  }
+
+  //tool is gradebookStudentAssignment
+  if (canViewAndModifyGrades != '1') {
+    let assignmentName = assignments?.[pageToolParams?.doenetId]?.label;
+    if (!assignmentName) {
+      assignmentName = '_';
+    }
+    let params = {
+      courseId: pageToolParams?.courseId,
+      userId: pageToolParams?.userId,
+      doenetId: pageToolParams?.doenetId,
+    };
+    crumbs.push({
+      label: assignmentName,
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'gradebookStudentAssignment',
+          view: '',
+          params,
+        });
+      },
+    });
+  } else {
+    let crumbLabel = '_';
+    if (pageToolParams?.previousCrumb == 'student') {
+      crumbLabel = assignments[pageToolParams?.doenetId].label;
+    }
+    if (pageToolParams?.previousCrumb == 'assignment') {
+      const student = students[pageToolParams?.userId];
+      crumbLabel = `${student.firstName} ${student.lastName}`;
     }
 
+    let params = {
+      courseId: pageToolParams?.courseId,
+      userId: pageToolParams?.userId,
+      doenetId: pageToolParams?.doenetId,
+      previousCrumb: pageToolParams?.previousCrumb,
+    };
+    crumbs.push({
+      label: crumbLabel,
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'gradebookStudentAssignment',
+          view: '',
+          params,
+        });
+      },
+    });
+  }
 
-  return crumbs
+  return crumbs;
 }

@@ -1,93 +1,220 @@
 import React, { useEffect, useRef } from 'react';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
-import { 
-  useRecoilValue, 
+import PageViewer, { scrollableContainerAtom } from '../../../Viewer/PageViewer';
+import useEventListener from '../../../_utils/hooks/useEventListener'
+import {
+  useRecoilValue,
   atom,
   useRecoilCallback,
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { 
-  itemHistoryAtom, 
-  fileByContentId, 
-  variantInfoAtom, 
-  variantPanelAtom,
- } from '../ToolHandlers/CourseToolHandler';
-//  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
+import { profileAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
+import {
+  fileByPageId,
+  pageVariantInfoAtom,
+  pageVariantPanelAtom,
+} from '../ToolHandlers/CourseToolHandler';
+import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import axios from 'axios';
+import { useLocation } from 'react-router';
 
 export const viewerDoenetMLAtom = atom({
-  key:"viewerDoenetMLAtom",
-  default:""
+  key: "viewerDoenetMLAtom",
+  default: ""
 })
 
 export const textEditorDoenetMLAtom = atom({
-  key:"textEditorDoenetMLAtom",
-  default:""
+  key: "textEditorDoenetMLAtom",
+  default: ""
 })
 
 export const updateTextEditorDoenetMLAtom = atom({
-  key:"updateTextEditorDoenetMLAtom",
-  default:""
+  key: "updateTextEditorDoenetMLAtom",
+  default: ""
 })
 
+// TODO: change to pageId
 //Boolean initialized editor tool start up
-export const editorDoenetIdInitAtom = atom({
-  key:"editorDoenetIdInitAtom",
-  default:""
+export const editorPageIdInitAtom = atom({
+  key: "editorPageIdInitAtom",
+  default: ""
 })
 
 export const refreshNumberAtom = atom({
-  key:"refreshNumberAtom",
-  default:0
+  key: "refreshNumberAtom",
+  default: 0
 })
 
 export const editorViewerErrorStateAtom = atom({
-  key:"editorViewerErrorStateAtom",
-  default:false
+  key: "editorViewerErrorStateAtom",
+  default: false
 })
 
-export default function EditorViewer(){
+export const useUpdateViewer = () => {
+  const updateViewer = useRecoilCallback(({ snapshot, set }) => async () => {
+    const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom)
+    const isErrorState = await snapshot.getPromise(editorViewerErrorStateAtom)
+
+    set(viewerDoenetMLAtom, textEditorDoenetML)
+
+    if (isErrorState) {
+      set(refreshNumberAtom, (was) => was + 1);
+    }
+
+  })
+  return updateViewer;
+};
+
+
+
+export default function EditorViewer() {
   // let refreshCount = useRef(1);
   // console.log(">>>>===EditorViewer",refreshCount.current)
   // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
-  const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
-  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
-  const setVariantPanel = useSetRecoilState(variantPanelAtom);
-  const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
+  const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
+  const paramlinkPageId = useRecoilValue(searchParamAtomFamily('linkPageId'))
+  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
+  let effectivePageId = paramPageId;
+  let effectiveDoenetId = doenetId;
+  if (paramlinkPageId) {
+    effectivePageId = paramlinkPageId;
+    effectiveDoenetId = paramlinkPageId;
+  }
+  const courseId = useRecoilValue(courseIdAtom)
+  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
+  const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
+  const pageObj = useRecoilValue(itemByDoenetId(effectivePageId))
+  const activityObj = useRecoilValue(itemByDoenetId(doenetId))
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const { canUpload } = useRecoilValue(profileAtom);
+  const updateViewer = useUpdateViewer();
 
 
-  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
-    const contentId = versionHistory.draft.contentId;
-    let response = await snapshot.getPromise(fileByContentId(contentId));
-    if (typeof response === "object"){
-      response = response.data;
+  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
+
+  let location = useLocation();
+
+  const previousLocations = useRef({});
+  const currentLocationKey = useRef(null);
+
+
+  useSetCourseIdFromDoenetId(effectiveDoenetId);
+  useInitCourseItems(courseId);
+
+  let pageInitiated = false;
+  let label = null;
+  if (Object.keys(pageObj).length > 0) {
+    pageInitiated = true;
+    if (activityObj?.isSinglePage && !paramlinkPageId) {
+      label = activityObj?.label;
+    } else {
+      label = pageObj.label;
     }
-    const doenetML = response;
+  }
 
-    set(updateTextEditorDoenetMLAtom,doenetML);
-    set(textEditorDoenetMLAtom,doenetML)
-    set(viewerDoenetMLAtom,doenetML)
-    set(editorDoenetIdInitAtom,doenetId);
-  },[])
+  useEffect(() => {
+    const prevTitle = document.title;
+    if (label) {
+      document.title = `${label} - Doenet`;
+    }
+    return () => {
+      document.title = prevTitle;
+    }
+  }, [label])
+
+
+  let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageId) => {
+    let { data: doenetML } = await axios.get(`/media/byPageId/${pageId}.doenet`);
+    doenetML = doenetML.toString(); //Numbers mess up codeMirror
+    //TODO: Problem with caching when contents change in pageLink
+    // let response = await snapshot.getPromise(fileByPageId(pageId));
+    let pageObj = await snapshot.getPromise(itemByDoenetId(pageId))
+    let containingObj = await snapshot.getPromise(itemByDoenetId(pageObj.containingDoenetId))
+    // if (typeof response === "object"){
+    //   response = response.data;
+    // }
+    // const doenetML = response;
+    // console.log("initDoenetML doenetML",doenetML)
+
+    set(updateTextEditorDoenetMLAtom, doenetML);
+    set(textEditorDoenetMLAtom, doenetML)
+    set(viewerDoenetMLAtom, doenetML)
+    set(editorPageIdInitAtom, pageId);
+    let suppress = [];
+    if (containingObj.type == 'bank') {
+      suppress.push('AssignmentSettingsMenu');
+    }
+
+    if (pageObj.type == 'pageLink') {
+      suppress.push('AssignmentSettingsMenu');
+      suppress.push('PageLink');
+      suppress.push('SupportingFilesMenu');
+    }
+    if (canUpload !== '1') suppress.push('SupportingFilesMenu');
+    setSuppressMenus(suppress);
+  }, [setSuppressMenus])
 
 
   useEffect(() => {
-      if (paramDoenetId !== ''){
-        initDoenetML(paramDoenetId)
-      }
+    if (effectivePageId !== '' && pageInitiated) {
+      initDoenetML(effectivePageId)
+    }
     return () => {
       setEditorInit("");
     }
-  }, [paramDoenetId]);
+  }, [effectivePageId, pageInitiated]);
 
-  if (paramDoenetId !== initilizedDoenetId){
-    //DoenetML is changing to another DoenetID
+  useEventListener("keydown", e => {
+    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+      e.preventDefault();
+      updateViewer();
+    }
+  });
+
+
+  useEffect(() => {
+    // Keep track of scroll position when clicked on a link
+    // If navigate back to that location (i.e., hit back button)
+    // then scroll back to the location when clicked
+
+    let foundNewInPrevious = false;
+
+    if (currentLocationKey.current !== location.key) {
+      if (location.state?.previousScrollPosition !== undefined && currentLocationKey.current) {
+        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
+      }
+
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+
+        if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
+          document.getElementById('mainPanel').scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+        }
+      }
+
+
+      previousLocations.current[location.key] = { ...location };
+      currentLocationKey.current = location.key;
+    }
+
+
+  }, [location])
+
+
+  useEffect(() => {
+    const mainPanel = document.getElementById("mainPanel");
+    setScrollableContainer(mainPanel);
+  }, [])
+
+  if (courseId === "__not_found__") {
+    return <h1>Content not found or no permission to view content</h1>;
+  } else if (effectivePageId !== initializedPageId) {
+    //DoenetML is changing to another PageId
     return null;
   }
 
@@ -95,76 +222,49 @@ export default function EditorViewer(){
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
 
-  if (variantInfo.lastUpdatedIndexOrName === 'Index'){
-    setVariantInfo((was)=>{
-      let newObj = {...was}; 
-      newObj.lastUpdatedIndexOrName = null; 
-      newObj.requestedVariant = {index:variantInfo.index};
-    return newObj})
 
-  }else if (variantInfo.lastUpdatedIndexOrName === 'Name'){
-    setVariantInfo((was)=>{
-      let newObj = {...was}; 
-      newObj.lastUpdatedIndexOrName = null; 
-      newObj.requestedVariant = {name:variantInfo.name};
-    return newObj})
-
-  }
-
-
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants){
+  function variantCallback(generatedVariantInfo, allPossibleVariants, variantIndicesToIgnore = []) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
-    cleanGeneratedVariant.lastUpdatedIndexOrName = null 
     setVariantPanel({
-      index:cleanGeneratedVariant.index,
-      name:cleanGeneratedVariant.name,
-      allPossibleVariants
+      index: cleanGeneratedVariant.index,
+      allPossibleVariants,
+      variantIndicesToIgnore,
     });
-    setVariantInfo((was)=>{
-      let newObj = {...was}
-      Object.assign(newObj,cleanGeneratedVariant)
-      return newObj;
+    setVariantInfo({
+      index: cleanGeneratedVariant.index,
     });
   }
 
 
 
-  // console.log(`>>>>Show DoenetViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
+  // console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
   // console.log(`>>>> refreshNumber -${refreshNumber}-`)
   // console.log(`>>>> attemptNumber -${attemptNumber}-`)
-  // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
-  // console.log('>>>>variantInfo.requestedVariant',variantInfo.requestedVariant)
+  // console.log('>>>PageViewer Read Only:',!isCurrentDraft)
+  // console.log('>>>>variantInfo.index',variantInfo.index)
 
-  return <MemoDoenetViewer
-  // return <DoenetViewer
-    key={`doenetviewer${refreshNumber}`}
+  return <PageViewer
+    key={`pageViewer${refreshNumber}`}
     doenetML={viewerDoenetML}
     flags={{
       showCorrectness: true,
-      readOnly: false,
       solutionDisplayMode: solutionDisplayMode,
       showFeedback: true,
       showHints: true,
-      allowLoadPageState: false,
-      allowSavePageState: false,
-      allowLocalPageState: false,
+      allowLoadState: false,
+      allowSaveState: false,
+      allowLocalState: false,
       allowSaveSubmissions: false,
       allowSaveEvents: false
     }}
+    doenetId={doenetId}
     attemptNumber={attemptNumber}
     generatedVariantCallback={variantCallback} //TODO:Replace
-    requestedVariant={variantInfo.requestedVariant}
+    requestedVariantIndex={variantInfo.index}
     setIsInErrorState={setIsInErrorState}
-    /> 
+    pageIsActive={true}
+  />
 }
 
-const MemoDoenetViewer = React.memo(DoenetViewer,(prev,next)=>{
-  //Only refresh if doenetML or variant changes
-  if (prev.doenetML !== next.doenetML){ return false;}
-  if (prev.requestedVariant?.name !== next.requestedVariant?.name){ return false;}
-  if (prev.requestedVariant?.index !== next.requestedVariant?.index){ return false;}
-  return true;
-});
 

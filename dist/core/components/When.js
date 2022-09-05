@@ -9,8 +9,8 @@ export default class When extends BooleanComponent {
 
   static stateVariableForAttributeValue = "conditionSatisfied";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.matchPartial = {
       createComponentOfType: "boolean",
       createStateVariable: "matchPartial",
@@ -24,7 +24,9 @@ export default class When extends BooleanComponent {
       "allowedErrorInNumbers", "includeErrorInNumberExponents",
       "allowedErrorIsAbsolute",
       "nSignErrorsMatched",
-      "nPeriodicSetMatchesRequired"
+      "nPeriodicSetMatchesRequired",
+      "caseInsensitiveMatch",
+      "matchBlanks"
     ]) {
       attributes[attrName].fallBackToParentStateVariable = attrName;
     }
@@ -40,16 +42,22 @@ export default class When extends BooleanComponent {
     // condition satisfied is just an alias to value
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       additionalStateVariablesDefined: [
         {
           variableName: "fractionSatisfied",
           public: true,
-          componentType: "number"
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
         }, {
           variableName: "conditionSatisfied",
           public: true,
-          componentType: "boolean"
+          shadowingInstructions: {
+            createComponentOfType: "boolean",
+          },
         }
       ],
       returnDependencies: () => ({
@@ -97,6 +105,14 @@ export default class When extends BooleanComponent {
           dependencyType: "stateVariable",
           variableName: "nPeriodicSetMatchesRequired",
         },
+        caseInsensitiveMatch: {
+          dependencyType: "stateVariable",
+          variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
+        },
         parsedExpression: {
           dependencyType: "stateVariable",
           variableName: "parsedExpression",
@@ -132,6 +148,10 @@ export default class When extends BooleanComponent {
         numberListChildrenByCode: {
           dependencyType: "stateVariable",
           variableName: "numberListChildrenByCode",
+        },
+        otherChildrenByCode: {
+          dependencyType: "stateVariable",
+          variableName: "otherChildrenByCode",
         },
       }),
       definition({ dependencyValues, usedDefault }) {

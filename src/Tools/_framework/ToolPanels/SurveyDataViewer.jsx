@@ -84,7 +84,7 @@ export default function SurveyDataViewer() {
         cellsJSX.unshift(<td>{svObj.email}</td>)
         cellsJSX.unshift(<td>{`${svObj.firstName} ${svObj.lastName}`}</td>)
 
-        rowsJSX.push(<tr style={{borderBottom:'1pt solid black'}}>
+        rowsJSX.push(<tr style={{borderBottom:'1pt solid var(--canvastext)'}}>
             {cellsJSX}
           </tr>)
 
@@ -101,7 +101,7 @@ export default function SurveyDataViewer() {
       {/* <CSVDownload data={csvData} target="_blank" /> */}
     <table style={{borderCollapse: "collapse"}}>
       <thead>
-        <tr style={{borderBottom:'2pt solid black'}}>
+        <tr style={{borderBottom:'2pt solid var(--canvastext)'}}>
           {thJSX}
         </tr>
       </thead>

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import styled from "styled-components";
+import { MathJax } from "better-react-mathjax";
 
 const ButtonStyling = styled.button`
   margin: ${props => props.theme.margin};
   height: 24px;
   border-style: hidden;
-  // border-color: black;
+  // border-color: var(--canvastext);
   // border-width: 2px;
   color: white;
   background-color: ${props => props.alert ? 'var(--mainRed)' : 'var(--mainBlue)'};
@@ -19,13 +20,18 @@ const ButtonStyling = styled.button`
     background-color: ${props => props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
     color: black;
   };
+
+  &:focus {
+    outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : props.disabled ? 'var(--canvastext)' : 'var(--mainBlue)'};
+    outline-offset: 2px;
+  }
 `;
 
 ButtonStyling.defaultProps = {
   theme: {
-    margin: '0px 4px 0px 4px',
+    margin: 0,
     borderRadius: 'var(--mainBorderRadius)',
-    padding: '0px 10px 0px 10px'
+    padding: '0 10px'
   }
 };
 
@@ -37,7 +43,7 @@ const Label = styled.p`
 `;
 
 const Container = styled.div`
-  display: ${props => props.align};
+  display: ${ props => props.align ? props.align : 'inline-block'};
   width: auto;
   align-items: center;
 `;
@@ -64,9 +70,9 @@ export default function Button(props) {
   //     };
   if (props.width) {
     if (props.width === "menu") {
-      button.width = '235px';
+      button.width = '100%';
       if (props.label) {
-        container.width = '235px';
+        container.width = 'menu';
         button.width = '100%';
       }
     } 
@@ -94,6 +100,9 @@ export default function Button(props) {
         icon = props.icon;
         button.value = ''
     }
+    if(props.value && props.valueHasLatex) {
+      button.value = <MathJax hideUntilTypeset={"first"} inline dynamic >{button.value}</MathJax>
+    }
   };
 
   // if (props.alert) {
@@ -102,7 +111,7 @@ export default function Button(props) {
 
   if (props.disabled) {
     button.backgroundColor = 'var(--mainGray)';
-    button.color = 'black';
+    button.color = 'var(--canvastext)';
     button.cursor = 'not-allowed';
   };
 
@@ -118,7 +127,7 @@ export default function Button(props) {
         <>
             <Container style={container} align={align}>
               <Label labelVisible={labelVisible} align={align}>{label}</Label>
-              <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
+              <ButtonStyling disabled={props.disabled} aria-disabled={props.disabled} aria-labelledby={label} aria-label={button.value} style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>
         </>
     )

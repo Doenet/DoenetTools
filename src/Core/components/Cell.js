@@ -11,8 +11,8 @@ export default class Cell extends BaseComponent {
 
   static primaryStateVariableForDefinition = "text";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.rowNum = {
       createComponentOfType: "text",
       createStateVariable: "rowNum",
@@ -70,7 +70,9 @@ export default class Cell extends BaseComponent {
 
     stateVariableDefinitions.halign = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       hasEssential: true,
       defaultValue: "left",
@@ -111,7 +113,9 @@ export default class Cell extends BaseComponent {
 
     stateVariableDefinitions.bottom = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       hasEssential: true,
       defaultValue: "none",
@@ -151,7 +155,9 @@ export default class Cell extends BaseComponent {
 
     stateVariableDefinitions.right = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       hasEssential: true,
       defaultValue: "none",
@@ -186,7 +192,9 @@ export default class Cell extends BaseComponent {
 
     stateVariableDefinitions.inHeader = {
       public: true,
-      componentType: "booloean",
+      shadowingInstructions: {
+        createComponentOfType: "booloean",
+      },
       forRenderer: true,
       defaultValue: false,
       returnDependencies: () => ({
@@ -221,7 +229,9 @@ export default class Cell extends BaseComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
@@ -294,7 +304,9 @@ export default class Cell extends BaseComponent {
 
     stateVariableDefinitions.math = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       stateVariablesDeterminingDependencies: ["onlyMathChild"],
       returnDependencies({ stateValues }) {
         if (stateValues.onlyMathChild) {
@@ -361,7 +373,9 @@ export default class Cell extends BaseComponent {
 
     stateVariableDefinitions.number = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         math: {
           dependencyType: "stateVariable",

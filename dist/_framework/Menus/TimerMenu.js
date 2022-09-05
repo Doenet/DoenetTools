@@ -14,22 +14,16 @@ export default function TimerMenu() {
   const [refresh, setRefresh] = useState(new Date());
   let timer = useRef(null);
   useEffect(() => {
-    async function setEndTimeAsync() {
-      let startDT = new Date();
-      const {data} = await axios.get("/api/loadTakenVariants.php", {
-        params: {doenetId}
-      });
-      for (let [i, attemptNumber] of Object.entries(data.attemptNumbers)) {
-        if (attemptNumber == userAttemptNumber) {
-          if (data.starts[i] !== null) {
-            startDT = UTCDateStringToDate(data.starts[i]);
-          }
-        }
+    let startDT = new Date();
+    axios.get("/api/loadAttemptStartTime.php", {
+      params: {doenetId, attemptNumber: userAttemptNumber}
+    }).then(({data}) => {
+      if (data.attemptStart !== null) {
+        startDT = UTCDateStringToDate(data.attemptStart);
       }
       let endDT = new Date(startDT.getTime() + timeLimit * 6e4 * data.timeLimitMultiplier);
       setEndTime(endDT);
-    }
-    setEndTimeAsync();
+    }).catch(console.error);
   }, [userAttemptNumber, timeLimit, doenetId, setEndTime]);
   useEffect(() => {
     clearTimeout(timer.current);

@@ -1,110 +1,98 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include "db_connection.php";
+include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
+$jwtArray = include 'jwtArray.php';
+$requestorUserId = $jwtArray['userId'];
 
-$success = TRUE;
-$foundAttempt = FALSE;
-$message = "";
+$success = true;
+$foundAttempt = false;
+$message = '';
 
-$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
-$studentUserId = mysqli_real_escape_string($conn,$_REQUEST["userId"]);
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
+$studentUserId = mysqli_real_escape_string($conn, $_REQUEST['userId']);
 
-if ($doenetId == ""){
-	$success = FALSE;
-	$message = 'Internal Error: missing doenetId';
+if (!isset($_REQUEST['courseId'])) {
+    $success = false;
+    $message = 'Request error, missing courseId';
+} elseif (!isset($_GET['doenetId'])) {
+    $success = false;
+    $message = 'Request error, missing doenetId';
 }
 
-//If javascript didn't send a userId use the signed in $userId
-if ($studentUserId == ""){
-  $studentUserId = $userId;
+//If javascript didn't send a userId use the signed in $requestorUserId
+if ($studentUserId == '') {
+    $studentUserId = $requestorUserId;
 }
 
-//We let users see their own grades
-//But if it's a different student you need to 
-//have permission
-if ($success && $studentUserId != $userId){
-  //TODO: Need a permission related to see grades (not du.canEditContent)
-  $sql = "
-  SELECT du.canEditContent 
-  FROM drive_user AS du
-  LEFT JOIN drive_content AS dc
-  ON dc.driveId = du.driveId
-  WHERE du.userId = '$userId'
-  AND dc.doenetId = '$doenetId'
-  AND du.canEditContent = '1'
-  ";
+//Permisson check to view others grades
+if ($success && $studentUserId != $requestorUserId) {
+    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
-  $result = $conn->query($sql);
-  if ($result->num_rows < 1) {
-    $success = FALSE;
-    $message = "You don't have permission to view $studentUserId ";
-  }
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
+
+    if ($requestorPermissions['canViewAndModifyGrades'] != '1') {
+        $success = false;
+        $message = 'You are only allowed to view your own data';
+    }
 }
 
+if ($success) {
+    // check if can show solution in gradebook
+    $result = $conn->query(
+        "SELECT showSolutionInGradebook, paginate
+		FROM assignment
+		WHERE doenetId = '$doenetId'"
+    );
+    $row = $result->fetch_assoc();
+    $showSolutionInGradebook = $row['showSolutionInGradebook'];
+    $paginate = $row['paginate'];
 
-if($success) {
-
-	// check if can show solution in gradebook
-	$sql = "
-  SELECT showSolutionInGradebook
-  FROM assignment
-  WHERE doenetId = '$doenetId'
-  ";
-  $result = $conn->query($sql);
-  $row = $result->fetch_assoc();
-  $showSolutionInGradebook = $row['showSolutionInGradebook'];
-
-	$sql = "
-		SELECT 
-		contentId,
-		generatedVariant,
-		attemptNumber
-		FROM user_assignment_attempt
+    $result = $conn->query(
+        "SELECT 
+			cid,
+			variantIndex,
+			attemptNumber
+		FROM activity_state
 		WHERE userId = '$studentUserId'
 		AND doenetId = '$doenetId'
-    ORDER BY attemptNumber ASC
-	";
+		ORDER BY attemptNumber ASC"
+    );
+    $attemptInfo = [];
+    if ($result->num_rows > 0) {
+        $foundAttempt = true;
 
-	$result = $conn->query($sql); 
-
-	$attemptInfo = [];
-	if ($result->num_rows > 0) {
-		$foundAttempt = TRUE;
-	
-		while($row = $result->fetch_assoc()){
-
-			array_push($attemptInfo,array(
-				"attemptNumber" => $row['attemptNumber'],
-				"contentId"=>$row['contentId'],
-				"variant"=>$row['generatedVariant']
-			));
-		}
-	}
+        while ($row = $result->fetch_assoc()) {
+            array_push($attemptInfo, [
+                'attemptNumber' => $row['attemptNumber'],
+                'cid' => $row['cid'],
+                'variant' => $row['variantIndex'],
+            ]);
+        }
+    }
 }
 
-$response_arr = array(
-	"success" => $success,
-	"message" => $message,
-	"foundAttempt" => $foundAttempt,
-	"attemptInfo" => $attemptInfo,
-	"showSolutionInGradebook" => $showSolutionInGradebook
-);
-         
+http_response_code(200);
 
- http_response_code(200);
-
- // make it json format
- echo json_encode($response_arr);
+// make it json format
+echo json_encode([
+    'success' => $success,
+    'message' => $message,
+    'foundAttempt' => $foundAttempt,
+    'attemptInfo' => $attemptInfo,
+    'showSolutionInGradebook' => $showSolutionInGradebook,
+    'paginate' => $paginate,
+]);
 
 $conn->close();
-
 ?>
-

@@ -2,13 +2,17 @@ import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
+import { rendererState } from './useDoenetRenderer';
+import { useSetRecoilState } from 'recoil';
 
-export default function ChoiceInput(props) {
-  let { name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
+export default React.memo(function ChoiceInput(props) {
+  let { name, id, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   ChoiceInput.baseStateVariable = "selectedIndices";
 
   const [rendererSelectedIndices, setRendererSelectedIndices] = useState(SVs.selectedIndices);
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let selectedIndicesWhenSetState = useRef(null);
 
@@ -69,6 +73,12 @@ export default function ChoiceInput(props) {
       setRendererSelectedIndices(newSelectedIndices);
       selectedIndicesWhenSetState.current = SVs.selectedIndices;
 
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+
       callAction({
         action: actions.updateSelectedIndices,
         args: {
@@ -114,7 +124,7 @@ export default function ChoiceInput(props) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
         }
         checkWorkButton = <button
-          id={name + '_submit'}
+          id={id + '_submit'}
           disabled={disabled}
           tabIndex="0"
           // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
@@ -137,7 +147,7 @@ export default function ChoiceInput(props) {
           if (validationState === "correct") {
             checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
             checkWorkButton = <span
-              id={name + '_correct'}
+              id={id + '_correct'}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCheck} />
@@ -151,14 +161,14 @@ export default function ChoiceInput(props) {
 
             checkWorkStyle.backgroundColor = "#efab34";
             checkWorkButton = <span
-              id={name + '_partial'}
+              id={id + '_partial'}
               style={checkWorkStyle}
             >{partialCreditContents}</span>
           } else {
             //incorrect
             checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
             checkWorkButton = <span
-              id={name + '_incorrect'}
+              id={id + '_incorrect'}
               style={checkWorkStyle}
             ><FontAwesomeIcon icon={faTimes} /></span>
 
@@ -167,7 +177,7 @@ export default function ChoiceInput(props) {
           // showCorrectness is false
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkWorkButton = <span
-            id={name + '_saved'}
+            id={id + '_saved'}
             style={checkWorkStyle}
           ><FontAwesomeIcon icon={faCloud} /></span>
 
@@ -213,9 +223,9 @@ export default function ChoiceInput(props) {
     }
 
     return <React.Fragment>
-      <a name={name} />
+      <a name={id} />
       <select
-        id={name}
+        id={id}
         onChange={onChangeHandler}
         value={value}
         disabled={disabled}
@@ -244,15 +254,15 @@ export default function ChoiceInput(props) {
 
       if (validationState === "unvalidated") {
 
-        let checkWorkText = "Check Work";
+        let checkWorkText = SVs.submitLabel;
         if (!SVs.showCorrectness) {
-          checkWorkText = "Submit Response";
+          checkWorkText = SVs.submitLabelNoCorrectness;
         }
         if (disabled) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         }
         checkworkComponent = (
-          <button id={name + "_submit"}
+          <button id={id + "_submit"}
             tabIndex="0"
             disabled={disabled}
             style={checkWorkStyle}
@@ -277,7 +287,7 @@ export default function ChoiceInput(props) {
           if (validationState === "correct") {
             checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
             checkworkComponent = (
-              <span id={name + "_correct"}
+              <span id={id + "_correct"}
                 style={checkWorkStyle}
               >
                 <FontAwesomeIcon icon={faCheck} />
@@ -287,7 +297,7 @@ export default function ChoiceInput(props) {
           } else if (validationState === "incorrect") {
             checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
             checkworkComponent = (
-              <span id={name + "_incorrect"}
+              <span id={id + "_incorrect"}
                 style={checkWorkStyle}
               >
                 <FontAwesomeIcon icon={faTimes} />
@@ -300,7 +310,7 @@ export default function ChoiceInput(props) {
             let partialCreditContents = `${percent}% Correct`;
 
             checkworkComponent = (
-              <span id={name + "_partial"}
+              <span id={id + "_partial"}
                 style={checkWorkStyle}
               >
                 {partialCreditContents}
@@ -309,7 +319,7 @@ export default function ChoiceInput(props) {
         } else {
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkworkComponent = (
-            <span id={name + "_saved"}
+            <span id={id + "_saved"}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCloud} />
@@ -337,7 +347,7 @@ export default function ChoiceInput(props) {
       </>
     }
 
-    let inputKey = name;
+    let inputKey = id;
     let listStyle = {
       listStyleType: "none"
     }
@@ -373,10 +383,10 @@ export default function ChoiceInput(props) {
       });
 
     return <React.Fragment>
-      <ol id={inputKey} style={listStyle}><a name={name} />{choiceDoenetTags}</ol>
+      <ol id={inputKey} style={listStyle}><a name={id} />{choiceDoenetTags}</ol>
       {checkworkComponent}
     </React.Fragment>
 
   }
 
-}
+})

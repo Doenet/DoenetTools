@@ -1,66 +1,79 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include "db_connection.php";
+include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
-if (!isset($_GET["driveId"])) {
-    http_response_code(400);
-    echo "Database Retrieval Error: No drive specified!";
-} else {
-    $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-    $sql = "
-    SELECT a.doenetId, 
-    dc.label, 
-    a.gradeCategory,
-    a.totalPointsOrPercent
-    FROM assignment AS a
-    LEFT JOIN drive_content as dc
-    ON a.doenetId = dc.doenetId
-    WHERE a.driveId = '$driveId'
-    AND dc.isReleased = '1'
-    AND dc.isDeleted = '0'
-    ORDER BY a.dueDate
-    ";
+$jwtArray = include 'jwtArray.php';
+$requestorUserId = $jwtArray['userId'];
+$success = true;
+$message = '';
 
-    $result = $conn->query($sql); 
-    $response_arr = array();
+if (!isset($_GET['courseId'])) {
+    $success = false;
+    $message = 'Request error, missing courseId';
+}
 
+//Permissions check
+if ($success) {
+    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
-    if ($result->num_rows > 0){
-        while ($row = $result->fetch_assoc()) {
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
 
-            $doenetId = $row['doenetId'];
-            $arr = array(
-                "label"=>$row['label'],
-                "category"=>$row['gradeCategory'],
-                "totalPointsOrPercent"=>$row['totalPointsOrPercent']
-            );
-             array_push($response_arr,
-                array(
-                    $doenetId,$arr
-                )
-            );
-        }
-
-        // set response code - 200 OK
-        http_response_code(200);
-
-        // make it json format
-        echo json_encode($response_arr);
-    } else {
-         // set response code - 200 OK
-         http_response_code(200);
-
-         // make it json format
-         echo json_encode($response_arr);
-        // http_response_code(404);
-        // echo "Database Retrieval Error: No such course: '$driveId'";
+    if ($requestorPermissions == false) {
+        $success = false;
+        $message = 'You are not authorized to view assignments for this course';
     }
 }
+
+if ($success) {
+    $result = $conn->query(
+        "SELECT a.doenetId, 
+            cc.label, 
+            a.gradeCategory,
+            a.totalPointsOrPercent
+        FROM assignment AS a
+        LEFT JOIN course_content as cc
+        ON a.doenetId = cc.doenetId
+        WHERE a.courseId = '$courseId'
+            AND cc.isAssigned = '1'
+            AND cc.isDeleted = '0'
+        ORDER BY a.dueDate"
+    );
+    $response_arr = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $doenetId = $row['doenetId'];
+            $arr = [
+                'label' => $row['label'],
+                'category' => $row['gradeCategory'],
+                'totalPointsOrPercent' => $row['totalPointsOrPercent'],
+            ];
+            array_push($response_arr, [$doenetId, $arr]);
+        }
+    } else {
+        $message = 'No assignments found for this course';
+    }
+}
+
+// set response code - 200 OK
+http_response_code(200);
+
+// make it json format
+echo json_encode([
+    'success' => $success,
+    'message' => $message,
+    'assignments' => $response_arr,
+]);
 
 $conn->close();
 ?>

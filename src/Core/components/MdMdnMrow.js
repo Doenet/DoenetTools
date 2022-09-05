@@ -39,7 +39,9 @@ export class Md extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       defaultValue: "",
       hasEssential: true,
       shadowVariable: true,
@@ -204,8 +206,8 @@ export class Mdn extends Md {
 export class Mrow extends M {
   static componentType = "mrow";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.number = {
       createComponentOfType: "boolean",
     };
@@ -250,7 +252,9 @@ export class Mrow extends M {
 
     stateVariableDefinitions.equationTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["numbered"],
       returnDependencies({ stateValues }) {

@@ -31,7 +31,7 @@ if ($success){
          //Insert completed
          $sql = "INSERT INTO user_assignment (doenetId,userId,completed,completedDate)
          VALUES
-         ('$doenetId','$userId',1,NOW())
+         ('$doenetId','$userId',1,CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
          ";
         $result = $conn->query($sql);
         
@@ -39,7 +39,7 @@ if ($success){
           $row = $result->fetch_assoc();
           $completed = $row['completed'];
           $sql = "UPDATE user_assignment 
-                SET completed=1,completedDate=NOW()
+                SET completed=1,completedDate=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
                 WHERE userId = '$userId'
                 AND doenetId = '$doenetId'
           ";

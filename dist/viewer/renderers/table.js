@@ -1,7 +1,22 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Table(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
+export default React.memo(function Table(props) {
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -21,7 +36,7 @@ export default function Table(props) {
   } else {
     title = SVs.title;
   }
-  if (!SVs.suppressTableNameInCaption) {
+  if (!SVs.suppressTableNameInTitle) {
     let tableName = /* @__PURE__ */ React.createElement("strong", null, SVs.tableName);
     if (title) {
       title = /* @__PURE__ */ React.createElement(React.Fragment, null, tableName, ": ", title);
@@ -30,11 +45,15 @@ export default function Table(props) {
     }
   }
   heading = /* @__PURE__ */ React.createElement("div", {
-    id: name + "_title"
+    id: id + "_title"
   }, title);
-  return /* @__PURE__ */ React.createElement("div", {
-    id: name
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
+    id,
+    style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
-  }), heading, childrenToRender);
-}
+    name: id
+  }), heading, childrenToRender));
+});

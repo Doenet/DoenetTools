@@ -6,8 +6,8 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.through = {
       createComponentOfType: "_pointListComponent",
     };
@@ -26,9 +26,7 @@ export default class Parabola extends Curve {
 
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
   static returnStateVariableDefinitions(args) {
@@ -37,8 +35,29 @@ export default class Parabola extends Curve {
 
     let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
 
-    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+    // also defines graphXmax, graphYmin, and graphYmax
     stateVariableDefinitions.graphXmin = curveStateVariableDefinitions.graphXmin;
+
+    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " parabola";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
 
     stateVariableDefinitions.curveType = {
       forRenderer: true,
@@ -48,7 +67,9 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.parMax = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMax: +Infinity } })
@@ -56,7 +77,9 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.parMin = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMin: -Infinity } })
@@ -113,20 +136,22 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "throughPointX") {
+            return [];
+          } else {
+            // through point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "throughPointX") {
-          return [];
-        } else {
-          // through point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
           // throughPointX1_2 is the 2nd component of the first through point
@@ -169,6 +194,25 @@ export default class Parabola extends Curve {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "throughPoints") {
+          if (propIndex.length === 1) {
+            return "throughPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${propIndex[0]}_${propIndex[1]}`
+          }
+        }
+        if (varName.slice(0, 12) === "throughPoint") {
+          // could be throughPoint or throughPointX
+          let throughPointNum = Number(varName.slice(12));
+          if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${throughPointNum}_${propIndex[0]}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nThroughPoints: {
@@ -398,18 +442,24 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.a = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [
         {
           variableName: "b",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           hasEssential: true,
           defaultValue: 0,
         }, {
           variableName: "c",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           hasEssential: true,
           defaultValue: 0,
         },
@@ -1008,18 +1058,20 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.vertex = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "vertexX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["vertexX"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "vertexX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       returnArraySizeDependencies: () => ({}),
       returnArraySize() {
         return [2];
@@ -1113,7 +1165,9 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.equation = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       // TODO: implement additional properties
       additionalProperties: { simplify: "numberspreserveorder", displaysmallaszero: true },
 
@@ -1153,6 +1207,11 @@ export default class Parabola extends Curve {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
+      additionalStateVariablesDefined: [{
+        variableName: "fDefinitions",
+        isArray: true,
+        forRenderer: true,
+      }],
       returnArraySizeDependencies: () => ({}),
       returnArraySize: () => [1],
       returnArrayDependenciesByKey() {
@@ -1179,7 +1238,20 @@ export default class Parabola extends Curve {
           return globalDependencyValues.a * x * x + globalDependencyValues.b * x + globalDependencyValues.c
         }
 
-        return { setValue: { fs: [f] } }
+        return {
+          setValue: {
+            fs: [f],
+            fDefinitions: [{
+              functionType: "formula",
+              formula: ['+', ['*', globalDependencyValues.a, 'x', 'x'], ['*', globalDependencyValues.b, 'x'], globalDependencyValues.c],
+              variables: ["x"],
+              nInputs: 1,
+              nOutputs: 1,
+              domain: null,
+
+            }]
+          }
+        }
 
       }
     }
@@ -1227,8 +1299,8 @@ export default class Parabola extends Curve {
               let xscale = scales[0];
               let yscale = scales[1];
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
               if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
                 return {};

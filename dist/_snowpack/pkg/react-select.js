@@ -1,11 +1,11 @@
-import { _ as _objectWithoutPropertiesLoose, b as _setPrototypeOf, a as _extends } from './common/setPrototypeOf-ac807fbe.js';
-import { r as react } from './common/index-f66788ca.js';
-import { m as memoize, u as unitlessKeys } from './common/unitless.browser.esm-a6d76afa.js';
-import { o as objectWithoutPropertiesLoose } from './common/defineProperty-76d58dac.js';
-import './common/hoist-non-react-statics.cjs-fd576625.js';
+import { _ as _extends } from './common/extends-b13c3e88.js';
+import { r as react } from './common/index-56a88a1e.js';
+import { u as unitlessKeys } from './common/unitless.browser.esm-569dc2db.js';
+import { o as objectWithoutPropertiesLoose } from './common/defineProperty-42ace2b1.js';
+import { _ as _objectWithoutPropertiesLoose, a as _setPrototypeOf } from './common/setPrototypeOf-e07fe23a.js';
 import { c as createCommonjsModule, g as getDefaultExportFromCjs } from './common/_commonjsHelpers-f5d70792.js';
-import { p as propTypes } from './common/index-4bda1d4e.js';
-import { r as reactDom } from './common/index-89dd978b.js';
+import { p as propTypes } from './common/index-d3677bfe.js';
+import { r as reactDom } from './common/index-c4ac9922.js';
 
 /*
 
@@ -68,7 +68,13 @@ var StyleSheet = /*#__PURE__*/function () {
       var before;
 
       if (_this.tags.length === 0) {
-        before = _this.prepend ? _this.container.firstChild : _this.before;
+        if (_this.insertionPoint) {
+          before = _this.insertionPoint.nextSibling;
+        } else if (_this.prepend) {
+          before = _this.container.firstChild;
+        } else {
+          before = _this.before;
+        }
       } else {
         before = _this.tags[_this.tags.length - 1].nextSibling;
       }
@@ -86,6 +92,7 @@ var StyleSheet = /*#__PURE__*/function () {
     this.key = options.key;
     this.container = options.container;
     this.prepend = options.prepend;
+    this.insertionPoint = options.insertionPoint;
     this.before = null;
   }
 
@@ -124,7 +131,7 @@ var StyleSheet = /*#__PURE__*/function () {
   _proto.flush = function flush() {
     // $FlowFixMe
     this.tags.forEach(function (tag) {
-      return tag.parentNode.removeChild(tag);
+      return tag.parentNode && tag.parentNode.removeChild(tag);
     });
     this.tags = [];
     this.ctr = 0;
@@ -594,6 +601,36 @@ function ve(c2, s2, u2, i2) {
     }
 }
 
+function memoize(fn) {
+  var cache = Object.create(null);
+  return function (arg) {
+    if (cache[arg] === undefined) cache[arg] = fn(arg);
+    return cache[arg];
+  };
+}
+
+var identifierWithPointTracking = function identifierWithPointTracking(begin, points, index) {
+  var previous = 0;
+  var character = 0;
+
+  while (true) {
+    previous = character;
+    character = N(); // &\f
+
+    if (previous === 38 && character === 12) {
+      points[index] = 1;
+    }
+
+    if (R(character)) {
+      break;
+    }
+
+    L();
+  }
+
+  return Q(begin, E);
+};
+
 var toRules = function toRules(parsed, points) {
   // pretend we've started with a comma
   var index = -1;
@@ -611,7 +648,7 @@ var toRules = function toRules(parsed, points) {
           points[index] = 1;
         }
 
-        parsed[index] += re(E - 1);
+        parsed[index] += identifierWithPointTracking(E - 1, points, index);
         break;
 
       case 2:
@@ -779,7 +816,8 @@ var createCache = function createCache(options) {
       container: container,
       nonce: options.nonce,
       speedy: options.speedy,
-      prepend: options.prepend
+      prepend: options.prepend,
+      insertionPoint: options.insertionPoint
     }),
     nonce: options.nonce,
     inserted: inserted,
@@ -1101,7 +1139,7 @@ var serializeStyles = function serializeStyles(args, registered, mergedProps) {
   };
 };
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+var hasOwnProperty = {}.hasOwnProperty;
 
 var EmotionCacheContext = /* #__PURE__ */react.createContext( // we're doing this to avoid preconstruct's dead code elimination in this one case
 // because this module is primarily intended for the browser and node
@@ -1112,6 +1150,7 @@ var EmotionCacheContext = /* #__PURE__ */react.createContext( // we're doing thi
 typeof HTMLElement !== 'undefined' ? /* #__PURE__ */createCache({
   key: 'css'
 }) : null);
+
 var CacheProvider = EmotionCacheContext.Provider;
 
 var withEmotionCache = function withEmotionCache(func) {
@@ -1140,6 +1179,11 @@ var createEmotionProps = function createEmotionProps(type, props) {
 
   return newProps;
 };
+
+var Noop = function Noop() {
+  return null;
+};
+
 var Emotion = /* #__PURE__ */withEmotionCache(function (props, cache, ref) {
   var cssProp = props.css; // so that using `css` from `emotion` and passing the result to the css prop works
   // not passing the registered cache to serializeStyles because it would
@@ -1159,7 +1203,7 @@ var Emotion = /* #__PURE__ */withEmotionCache(function (props, cache, ref) {
     className = props.className + " ";
   }
 
-  var serialized = serializeStyles(registeredStyles, undefined, typeof cssProp === 'function' || Array.isArray(cssProp) ? react.useContext(ThemeContext) : undefined);
+  var serialized = serializeStyles(registeredStyles, undefined, react.useContext(ThemeContext));
 
   var rules = insertStyles(cache, serialized, typeof type === 'string');
   className += cache.key + "-" + serialized.name;
@@ -1174,8 +1218,10 @@ var Emotion = /* #__PURE__ */withEmotionCache(function (props, cache, ref) {
   newProps.ref = ref;
   newProps.className = className;
   var ele = /*#__PURE__*/react.createElement(type, newProps);
+  var possiblyStyleElement = /*#__PURE__*/react.createElement(Noop, null);
 
-  return ele;
+
+  return /*#__PURE__*/react.createElement(react.Fragment, null, possiblyStyleElement, ele);
 });
 
 var jsx = function jsx(type, props) {
@@ -1280,6 +1326,10 @@ function merge(registered, css, className) {
   return rawClassName + css(registeredStyles);
 }
 
+var Noop$1 = function Noop() {
+  return null;
+};
+
 var ClassNames = /* #__PURE__ */withEmotionCache(function (props, cache) {
   var hasRendered = false;
 
@@ -1320,8 +1370,10 @@ var ClassNames = /* #__PURE__ */withEmotionCache(function (props, cache) {
   };
   var ele = props.children(content);
   hasRendered = true;
+  var possiblyStyleElement = /*#__PURE__*/react.createElement(Noop$1, null);
 
-  return ele;
+
+  return /*#__PURE__*/react.createElement(react.Fragment, null, possiblyStyleElement, ele);
 });
 
 function _taggedTemplateLiteral(strings, raw) {
@@ -1358,17 +1410,11 @@ function _objectWithoutProperties(source, excluded) {
 function _typeof(obj) {
   "@babel/helpers - typeof";
 
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function _typeof(obj) {
-      return typeof obj;
-    };
-  } else {
-    _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-  }
-
-  return _typeof(obj);
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, _typeof(obj);
 }
 
 var AutosizeInput_1 = createCommonjsModule(function (module, exports) {
@@ -1663,6 +1709,9 @@ function _defineProperties(target, props) {
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
   return Constructor;
 }
 
@@ -1677,6 +1726,9 @@ function _inherits(subClass, superClass) {
       writable: true,
       configurable: true
     }
+  });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
   });
   if (superClass) _setPrototypeOf(subClass, superClass);
 }
@@ -3196,7 +3248,7 @@ function _arrayWithoutHoles(arr) {
 }
 
 function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
 }
 
 function _unsupportedIterableToArray(o, minLen) {
@@ -6048,8 +6100,7 @@ function _arrayLikeToArray(arr, len) {
   return arr2;
 }
 
-module.exports = _arrayLikeToArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var arrayWithoutHoles = createCommonjsModule(function (module) {
@@ -6057,17 +6108,15 @@ function _arrayWithoutHoles(arr) {
   if (Array.isArray(arr)) return arrayLikeToArray(arr);
 }
 
-module.exports = _arrayWithoutHoles;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var iterableToArray = createCommonjsModule(function (module) {
 function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
 }
 
-module.exports = _iterableToArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var unsupportedIterableToArray = createCommonjsModule(function (module) {
@@ -6080,8 +6129,7 @@ function _unsupportedIterableToArray(o, minLen) {
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
 }
 
-module.exports = _unsupportedIterableToArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var nonIterableSpread = createCommonjsModule(function (module) {
@@ -6089,8 +6137,7 @@ function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
-module.exports = _nonIterableSpread;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var toConsumableArray = createCommonjsModule(function (module) {
@@ -6098,8 +6145,7 @@ function _toConsumableArray(arr) {
   return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
 }
 
-module.exports = _toConsumableArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var objectWithoutProperties = createCommonjsModule(function (module) {
@@ -6122,8 +6168,7 @@ function _objectWithoutProperties(source, excluded) {
   return target;
 }
 
-module.exports = _objectWithoutProperties;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var taggedTemplateLiteral = createCommonjsModule(function (module) {
@@ -6139,33 +6184,21 @@ function _taggedTemplateLiteral(strings, raw) {
   }));
 }
 
-module.exports = _taggedTemplateLiteral;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var _typeof_1 = createCommonjsModule(function (module) {
 function _typeof(obj) {
   "@babel/helpers - typeof";
 
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    module.exports = _typeof = function _typeof(obj) {
-      return typeof obj;
-    };
-
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  } else {
-    module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  }
-
-  return _typeof(obj);
+  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
 }
 
-module.exports = _typeof;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var index = manageState(Select);

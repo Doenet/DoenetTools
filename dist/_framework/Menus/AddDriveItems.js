@@ -1,34 +1,36 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-import useSockets, {itemType} from "../../_reactComponents/Sockets.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import {useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {useToast, toastType} from "../Toast.js";
 export default function AddDriveItems() {
-  const [driveId, parentFolderId] = useRecoilValue(searchParamAtomFamily("path")).split(":");
-  const {addItem} = useSockets("drive");
-  return /* @__PURE__ */ React.createElement(ButtonGroup, {
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const {create} = useCourse(courseId);
+  const addToast = useToast();
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ButtonGroup, {
     vertical: true
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    onClick: () => addItem({
-      driveIdFolderId: {driveId, folderId: parentFolderId},
-      type: itemType.DOENETML
+    "data-test": "Add Activity Button",
+    onClick: () => create({itemType: "activity"}, () => {
+      addToast("Activity Created!");
     }),
-    value: "Add DoenetML"
-  }, "Add DoenetML"), /* @__PURE__ */ React.createElement(Button, {
+    value: "Add Activity"
+  }, "Add Activity"), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    onClick: () => addItem({
-      driveIdFolderId: {driveId, folderId: parentFolderId},
-      type: itemType.COLLECTION
+    "data-test": "Add Collection Button",
+    onClick: () => create({itemType: "bank"}, () => {
+      addToast("Collection Created!");
     }),
     value: "Add Collection"
   }), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    onClick: () => addItem({
-      driveIdFolderId: {driveId, folderId: parentFolderId},
-      type: itemType.FOLDER
+    "data-test": "Add Section Button",
+    onClick: () => create({itemType: "section"}, () => {
+      addToast("Section Created!");
     }),
-    value: "Add Folder"
-  }, "Add Folder"));
+    value: "Add Section"
+  }, "Add Section")));
 }

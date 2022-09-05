@@ -32,9 +32,10 @@ export default class Textinput extends Input {
   static componentType = "textInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "text",
       createStateVariable: "prefill",
@@ -82,7 +83,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -134,7 +137,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
@@ -196,7 +201,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -227,10 +234,12 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-          sourceInformation: { actionId }
         }],
         transient: true,
+        actionId,
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -245,13 +254,12 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
-          sourceInformation: { actionId }
         },
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result
         // (hence the need to execute update first)
         // Also, this makes sure immediateValue is saved to the database,
-        // since in updateImmediateValue, immediateValue is note saved to database
+        // since in updateImmediateValue, immediateValue is not saved to database
         {
           updateType: "executeUpdate"
         },
@@ -283,6 +291,7 @@ export default class Textinput extends Input {
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event
         });
 
@@ -293,6 +302,9 @@ export default class Textinput extends Input {
       }
 
     }
+    
+    this.coreFunctions.resolveAction({ actionId });
+    
   }
 
 }

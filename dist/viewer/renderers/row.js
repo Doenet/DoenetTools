@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Row(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+export default React.memo(function Row(props) {
+  let {name, id, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
@@ -20,7 +20,7 @@ export default function Row(props) {
     }
   }
   return /* @__PURE__ */ React.createElement("tr", {
-    id: name,
+    id,
     style
   }, children);
-}
+});

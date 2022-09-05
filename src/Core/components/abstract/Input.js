@@ -3,8 +3,8 @@ import InlineComponent from './InlineComponent';
 export default class Input extends InlineComponent {
   static componentType = "_input";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.collaborateGroups = {
       createComponentOfType: "collaborateGroups",
       createStateVariable: "collaborateGroups",
@@ -72,7 +72,9 @@ export default class Input extends InlineComponent {
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {

@@ -1,8 +1,8 @@
 import InlineComponent from './abstract/InlineComponent';
+import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { normalizeMathExpression, returnNVariables } from '../utils/math';
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
-import { returnInterpolatedFunction, returnNumericalFunctionFromFormula } from '../utils/function';
+import { normalizeMathExpression, returnNVariables, roundForDisplay } from '../utils/math';
+import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula } from '../utils/function';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -11,8 +11,8 @@ export default class Function extends InlineComponent {
 
   static primaryStateVariableForDefinition = "numericalfShadow";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.simplify = {
       createComponentOfType: "text",
@@ -47,23 +47,29 @@ export default class Function extends InlineComponent {
       createComponentOfType: "integer",
     };
     attributes.domain = {
-      createComponentOfType: "_pointListComponent",
+      createComponentOfType: "_intervalListComponent",
     }
 
     // include attributes of graphical components
     // for case when function is adapted into a curve
 
-    attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "",
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true
     };
     attributes.showLabel = {
       createComponentOfType: "boolean",
       createStateVariable: "showLabel",
       defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.applyStyleToLabel = {
+      createComponentOfType: "boolean",
+      createStateVariable: "applyStyleToLabel",
+      defaultValue: false,
       public: true,
       forRenderer: true
     };
@@ -119,6 +125,15 @@ export default class Function extends InlineComponent {
       valueForTrue: 1E-14,
       valueForFalse: 0,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+    }
+
+    attributes.nearestPointAsCurve = {
+      createComponentOfType: "boolean",
+      createStateVariable: "nearestPointAsCurve",
+      defaultValue: false,
+    }
 
     return attributes;
   }
@@ -126,27 +141,63 @@ export default class Function extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let wrapStringOrMultipleChildrenWithMath = function ({ matchedChildren }) {
+    let wrapStringOrMultipleNonLabelChildrenWithMath = function ({ matchedChildren, componentInfoObjects }) {
 
-      // apply if have a single string or multiple children
-      if (matchedChildren.length === 1 && typeof matchedChildren[0] !== "string"
-        || matchedChildren.length === 0
+      // wrap first group of non-label children in <math>
+
+      let componentIsLabel = x => componentInfoObjects.componentIsSpecifiedType(x, "label");
+      let childIsLabel = matchedChildren.map(componentIsLabel);
+
+      let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToWrap = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotWrapBegin = matchedChildren.slice(0, firstNonLabelInd);
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToWrap = matchedChildren;
+        } else {
+          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotWrapEnd = matchedChildren.slice(firstLabelInd);
+        }
+
+      }
+
+      // apply if have a single string or multiple children to wrap
+      if (childrenToWrap.length === 1 && typeof childrenToWrap[0] !== "string"
+        || childrenToWrap.length === 0
       ) {
         return { success: false }
       }
 
       return {
         success: true,
-        newChildren: [{
-          componentType: "math",
-          children: matchedChildren
-        }],
+        newChildren: [
+          ...childrenToNotWrapBegin,
+          {
+            componentType: "math",
+            children: childrenToWrap
+          },
+          ...childrenToNotWrapEnd
+        ],
       }
 
     }
 
     sugarInstructions.push({
-      replacementFunction: wrapStringOrMultipleChildrenWithMath
+      replacementFunction: wrapStringOrMultipleNonLabelChildrenWithMath
     });
 
     return sugarInstructions;
@@ -162,6 +213,9 @@ export default class Function extends InlineComponent {
     }, {
       group: "functions",
       componentTypes: ["function"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -169,15 +223,13 @@ export default class Function extends InlineComponent {
 
   static returnStateVariableDefinitions({ numerics }) {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
-
-    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+    let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions();
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -186,33 +238,59 @@ export default class Function extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let curveDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          curveDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          curveDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          curveDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          curveDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        curveDescription += dependencyValues.selectedStyle.lineColor;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: curveDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " function";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 
     stateVariableDefinitions.displayDigits = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       defaultValue: 10,
       hasEssential: true,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
           variableNames: ["value"]
         },
         functionChild: {
@@ -222,16 +300,62 @@ export default class Function extends InlineComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
-          return {
-            setValue: {
-              displayDigits: dependencyValues.displayDecimalsAttr.stateValues.value
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
             }
           }
-        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
-          return {
-            setValue: {
-              displayDigits: dependencyValues.functionChild[0].stateValues.displayDigits
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+
+        } else if (dependencyValues.functionChild.length > 0) {
+
+          let displayDigitsFunctionChildUsedDefault = usedDefault.functionChild[0];
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsFunctionChildUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits (from function) and display decimals did not use default
+            // we'll regard display digits as using default 
+            displayDigitsFunctionChildUsedDefault = true;
+          }
+
+          if (displayDigitsFunctionChildUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.functionChild[0].stateValues.displayDigits
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.functionChild[0].stateValues.displayDigits
+              }
             }
           }
         } else {
@@ -244,8 +368,10 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.displayDecimals = {
       public: true,
-      componentType: "integer",
-      defaultValue: 10,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      defaultValue: null,
       hasEssential: true,
       returnDependencies: () => ({
         displayDecimalsAttr: {
@@ -282,11 +408,13 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.displaySmallAsZero = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
           variableNames: ["value"]
@@ -298,10 +426,10 @@ export default class Function extends InlineComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
-              displaySmallAsZero: dependencyValues.displayDecimalsAttr.stateValues.value
+              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
@@ -313,6 +441,46 @@ export default class Function extends InlineComponent {
         } else {
           return {
             useEssentialOrDefaultValue: { displaySmallAsZero: true }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["padZeros"],
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.padZerosAttr !== null) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.functionChild[0].stateValues.padZeros
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { padZeros: true }
           }
         }
       }
@@ -349,10 +517,10 @@ export default class Function extends InlineComponent {
     }
 
     stateVariableDefinitions.nInputs = {
-      defaultValue: 1,
       public: true,
-      componentType: "integer",
-      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         nInputsAttr: {
           dependencyType: "attributeComponent",
@@ -392,7 +560,7 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          return { useEssentialOrDefaultValue: { nInputs: true } }
+          return { setValue: { nInputs: 1 } }
         }
       }
     }
@@ -401,7 +569,9 @@ export default class Function extends InlineComponent {
       defaultValue: 1,
       hasEssential: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         nOutputsAttr: {
           dependencyType: "attributeComponent",
@@ -449,23 +619,38 @@ export default class Function extends InlineComponent {
     }
 
     stateVariableDefinitions.domain = {
-      defaultValue: null,
-      hasEssential: true,
       returnDependencies: () => ({
         domainAttr: {
           dependencyType: "attributeComponent",
           attributeName: "domain",
-          variableNames: ["points"]
+          variableNames: ["intervals"]
         },
         functionChild: {
           dependencyType: "child",
           childGroups: ["functions"],
           variableNames: ["domain"]
         },
+        nInputs: {
+          dependencyType: "stateVariable",
+          variableName: "nInputs"
+        }
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.domainAttr !== null) {
-          return { setValue: { domain: dependencyValues.domainAttr.stateValues.points } };
+          let nInputs = dependencyValues.nInputs;
+          let domain = dependencyValues.domainAttr.stateValues.intervals.slice(0, nInputs);
+          if (domain.length !== nInputs) {
+            return { setValue: { domain: null } }
+          }
+
+          if (!domain.every(interval =>
+            Array.isArray(interval.tree)
+            && interval.tree[0] === "interval"
+          )) {
+            return { setValue: { domain: null } }
+          }
+
+          return { setValue: { domain } };
         } else if (dependencyValues.functionChild.length > 0) {
           return {
             setValue: {
@@ -473,14 +658,16 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          return { useEssentialOrDefaultValue: { domain: true } }
+          return { setValue: { domain: null } }
         }
       }
     }
 
     stateVariableDefinitions.simplify = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         simplifySpecified: {
           dependencyType: "stateVariable",
@@ -528,7 +715,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.expand = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         expandSpecified: {
           dependencyType: "stateVariable",
@@ -599,7 +788,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.symbolic = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       defaultValue: false,
       hasEssential: true,
       returnDependencies: () => ({
@@ -640,7 +831,9 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
         nInputs: {
@@ -713,9 +906,7 @@ export default class Function extends InlineComponent {
       targetVariableName: "variable1"
     };
 
-    stateVariableDefinitions.formula = {
-      public: true,
-      componentType: "math",
+    stateVariableDefinitions.unnormalizedFormula = {
       defaultValue: me.fromAst(0),
       hasEssential: true,
       returnDependencies: () => ({
@@ -737,11 +928,11 @@ export default class Function extends InlineComponent {
       definition: function ({ dependencyValues, usedDefault }) {
 
         if (dependencyValues.isInterpolatedFunction) {
-          return { setValue: { formula: me.fromAst('\uff3f') } };
+          return { setValue: { unnormalizedFormula: me.fromAst('\uff3f') } };
         } else if (dependencyValues.mathChild.length > 0) {
           return {
             setValue: {
-              formula: dependencyValues.mathChild[0].stateValues.value
+              unnormalizedFormula: dependencyValues.mathChild[0].stateValues.value
             }
           }
         } else if (dependencyValues.functionChild.length > 0 &&
@@ -749,13 +940,57 @@ export default class Function extends InlineComponent {
         ) {
           return {
             setValue: {
-              formula: dependencyValues.functionChild[0].stateValues.formula
+              unnormalizedFormula: dependencyValues.functionChild[0].stateValues.formula
             }
           }
         } else {
           return {
+            useEssentialOrDefaultValue: { unnormalizedFormula: true }
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.formula = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      defaultValue: me.fromAst(0),
+      hasEssential: true,
+      returnDependencies: () => ({
+        unnormalizedFormula: {
+          dependencyType: "stateVariable",
+          variableName: "unnormalizedFormula"
+        },
+        simplify: {
+          dependencyType: "stateVariable",
+          variableName: "simplify"
+        },
+        expand: {
+          dependencyType: "stateVariable",
+          variableName: "expand"
+        }
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        // need to communicate the case when
+        // the default value of 0 was used
+        if (usedDefault.unnormalizedFormula) {
+          return {
             useEssentialOrDefaultValue: { formula: true }
           }
+        }
+
+        let formula = normalizeMathExpression({
+          value: dependencyValues.unnormalizedFormula,
+          simplify: dependencyValues.simplify,
+          expand: dependencyValues.expand,
+        });
+
+        return {
+          setValue: { formula }
         }
       }
 
@@ -1521,15 +1756,47 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         formula: {
           dependencyType: "stateVariable",
           variableName: "formula"
         },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        return { setValue: { latex: dependencyValues.formula.toLatex() } };
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let latex = roundForDisplay({
+          value: dependencyValues.formula,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+        return { setValue: { latex } };
       }
     }
 
@@ -1613,7 +1880,7 @@ export default class Function extends InlineComponent {
           }
         }
       },
-      definition: function ({ dependencyValues, componentName }) {
+      definition: function ({ dependencyValues }) {
 
         if (dependencyValues.isInterpolatedFunction) {
 
@@ -1630,21 +1897,28 @@ export default class Function extends InlineComponent {
           let minimumAtPreviousRight = false;
 
           let minx = -Infinity, maxx = Infinity;
+          let openMin = false, openMax = false;
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
               try {
-                minx = domain[0].evaluate_to_constant();
+                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
                 if (!Number.isFinite(minx)) {
                   minx = -Infinity;
+                } else {
+                  openMin = !domain.tree[2][1];
                 }
-                maxx = domain[1].evaluate_to_constant();
+                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
                 if (!Number.isFinite(maxx)) {
                   maxx = Infinity;
+                } else {
+                  openMax = !domain.tree[2][2];
                 }
               } catch (e) { }
             }
           }
+
+          let buffer = 1E-14 * Math.max(Math.abs(minx), Math.abs(maxx));
 
           // since extrapolate for x < xs[0], formula based on coeffs[0]
           // is valid for x < xs[1]
@@ -1655,9 +1929,11 @@ export default class Function extends InlineComponent {
             // have quadratic.  Minimum only if c[2] > 0
             if (c[2] > 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+              if (x + xs[0] >= minx - buffer && x + xs[0] <= maxx + buffer) {
                 if (x <= dx - eps) {
-                  minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[0] - minx) < buffer) || (openMax && Math.abs(x + xs[0] - maxx) < buffer))) {
+                    minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 } else if (Math.abs(x - dx) < eps) {
                   minimumAtPreviousRight = true;
                 }
@@ -1672,9 +1948,11 @@ export default class Function extends InlineComponent {
 
               // critical point where choose +sqrtdiscrim is minimum
               let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+              if (x + xs[0] >= minx - buffer && x + xs[0] <= maxx + buffer) {
                 if (x <= dx - eps) {
-                  minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[0] - minx) < buffer) || (openMax && Math.abs(x + xs[0] - maxx) < buffer))) {
+                    minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 } else if (Math.abs(x - dx) < eps) {
                   minimumAtPreviousRight = true;
                 }
@@ -1690,14 +1968,18 @@ export default class Function extends InlineComponent {
               // have quadratic.  Minimum only if c[2] > 0
               if (c[2] > 0) {
                 let x = -c[1] / (2 * c[2]);
-                if (x + xs[i] >= minx) {
-                  if (x + xs[i] <= maxx) {
+                if (x + xs[i] >= minx - buffer) {
+                  if (x + xs[i] <= maxx + buffer) {
                     if (Math.abs(x) < eps) {
                       if (minimumAtPreviousRight) {
-                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                          minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        }
                       }
                     } else if (x >= eps && x <= dx - eps) {
-                      minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
                     }
                     minimumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
@@ -1717,14 +1999,18 @@ export default class Function extends InlineComponent {
 
                 // critical point where choose +sqrtdiscrim is minimum
                 let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-                if (x + xs[i] >= minx) {
-                  if (x + xs[i] <= maxx) {
+                if (x + xs[i] >= minx - buffer) {
+                  if (x + xs[i] <= maxx + buffer) {
                     if (Math.abs(x) < eps) {
                       if (minimumAtPreviousRight) {
-                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                          minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        }
                       }
                     } else if (x >= eps && x <= dx - eps) {
-                      minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
                     }
                     minimumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
@@ -1746,13 +2032,17 @@ export default class Function extends InlineComponent {
             // have quadratic.  Minimum only if c[2] > 0
             if (c[2] > 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+              if (x + xs[xs.length - 2] >= minx - buffer && x + xs[xs.length - 2] <= maxx + buffer) {
                 if (Math.abs(x) < eps) {
                   if (minimumAtPreviousRight) {
-                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                      minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
                   }
                 } else if (x >= eps) {
-                  minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 }
               }
             }
@@ -1765,12 +2055,16 @@ export default class Function extends InlineComponent {
 
               // critical point where choose +sqrtdiscrim is minimum
               let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+              if (x + xs[xs.length - 2] >= minx - buffer && x + xs[xs.length - 2] <= maxx + buffer) {
                 if (x >= eps) {
-                  minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 } else if (Math.abs(x) < eps) {
                   if (minimumAtPreviousRight) {
-                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                      minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
                   }
                 }
               }
@@ -1829,25 +2123,31 @@ export default class Function extends InlineComponent {
             }
           }
 
-          let f = dependencyValues.numericalf;
+          // second argument is true to ignore domain
+          let f = x => dependencyValues.numericalf(x, true);
 
           // for now, look for minima in interval -100*xscale to 100*xscale,
           // or domain if specified,
           // dividing interval into 1000 subintervals
           let minx = -100 * dependencyValues.xscale;
           let maxx = 100 * dependencyValues.xscale;
+          let openMin = false, openMax = false;
 
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
               try {
-                minx = domain[0].evaluate_to_constant();
+                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
                 if (!Number.isFinite(minx)) {
                   minx = -100 * dependencyValues.xscale;
+                } else {
+                  openMin = !domain.tree[2][1];
                 }
-                maxx = domain[1].evaluate_to_constant();
+                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
                 if (!Number.isFinite(maxx)) {
                   maxx = 100 * dependencyValues.xscale;
+                } else {
+                  openMax = !domain.tree[2][2];
                 }
               } catch (e) { }
             }
@@ -1856,11 +2156,14 @@ export default class Function extends InlineComponent {
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
+          let buffer = 1E-10 * Math.max(Math.abs(minx), Math.abs(maxx));
+
           let minimaList = [];
           let minimumAtPreviousRight = false;
-          let fright = f(minx);
-          let dright = derivative(minx);
-          for (let i = 0; i < nIntervals; i++) {
+          let addedAtPreviousRightViaDeriv = false;
+          let fright = f(minx - dx);
+          let dright = derivative(minx - dx);
+          for (let i = -1; i < nIntervals + 1; i++) {
             let xleft = minx + i * dx;
             let xright = minx + (i + 1) * dx;
             let fleft = fright;
@@ -1875,20 +2178,39 @@ export default class Function extends InlineComponent {
             let foundFromDeriv = false;
 
             if (haveDerivative && dleft * dright <= 0) {
-              let x = numerics.fzero(derivative, [xleft, xright]);
+              let x;
+
+              if (dleft === 0) {
+                x = xleft;
+              } else if (dright === 0) {
+                x = xright;
+              } else {
+                x = numerics.fzero(derivative, [xleft, xright]);
+              }
 
               // calculate tolerance used in fzero:
               let eps = 1E-6;
               let tol_act = 0.5 * eps * (Math.abs(x) + 1);
 
-              if (derivative(x - tol_act) < 0 && derivative(x + tol_act) > 0 && x !== xright) {
+              if (derivative(x - tol_act) < 0 && derivative(x + tol_act) > 0) {
                 foundFromDeriv = true;
-                minimaList.push([x, f(x)]);
                 minimumAtPreviousRight = false;
+                if (x >= minx - buffer && x <= maxx + buffer
+                  && !((openMin && Math.abs(x - minx) < buffer) || (openMax && Math.abs(x - maxx) < buffer))
+                  && !(addedAtPreviousRightViaDeriv && Math.abs(x - xleft) < buffer)
+                ) {
+                  minimaList.push([x, f(x)]);
+                  addedAtPreviousRightViaDeriv = Math.abs(x - xright) < buffer;
+                } else {
+                  addedAtPreviousRightViaDeriv = false;
+                }
+
               }
             }
 
             if (!foundFromDeriv) {
+
+              addedAtPreviousRightViaDeriv = false;
 
               let result = numerics.fminbr(f, [xleft, xright]);
               if (result.success !== true) {
@@ -1927,7 +2249,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.numberMinima = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allMinima: {
           dependencyType: "stateVariable",
@@ -1945,22 +2269,25 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.minima = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "minimum" || prefix === undefined) {
+            // minimum or entire array
+            // These are points,
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          } else {
+            // don't wrap minimumLocation(s) or minimumValues(s)
+            return [];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["minimum", "minimumLocations", "minimumLocation", "minimumValues", "minimumValue"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "minimum" || prefix === undefined) {
-          // minimum or entire array
-          // These are points,
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        } else {
-          // don't wrap minimumLocation(s) or minimumValues(s)
-          return [];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
@@ -2019,6 +2346,45 @@ export default class Function extends InlineComponent {
         } else {
           return "minimumValue" + (Number(ind1) + 1)
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "minima") {
+          if (propIndex.length === 1) {
+            return "minimum" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            let componentNum = Number(propIndex[0]);
+            if (Number.isInteger(componentNum) && componentNum > 0) {
+              if (propIndex[1] === 1) {
+                return "minimumLocation" + componentNum;
+              } else if (propIndex[1] === 2) {
+                return "minimumValue" + componentNum;
+              }
+            }
+            return null;
+          }
+        }
+        if (varName === "minimumLocations") {
+            // if propIndex has additional entries, ignore them
+          return "minimumLocation" + propIndex[0];
+        }
+        if (varName === "minimumValues") {
+            // if propIndex has additional entries, ignore them
+          return "minimumValue" + propIndex[0];
+        }
+        if (varName.slice(0, 7) === "minimum") {
+          // could be minimum, minimumLocation, or minimumValue
+          let componentNum = Number(varName.slice(7));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            // if propIndex has additional entries, ignore them
+            if (propIndex[0] === 1) {
+              return "minimumLocation" + componentNum;
+            } else if (propIndex[0] === 2) {
+              return "minimumValue" + componentNum;
+            }
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         numberMinima: {
@@ -2142,21 +2508,28 @@ export default class Function extends InlineComponent {
           let maximumAtPreviousRight = false;
 
           let minx = -Infinity, maxx = Infinity;
+          let openMin = false, openMax = false;
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
               try {
-                minx = domain[0].evaluate_to_constant();
+                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
                 if (!Number.isFinite(minx)) {
                   minx = -Infinity;
+                } else {
+                  openMin = !domain.tree[2][1];
                 }
-                maxx = domain[1].evaluate_to_constant();
+                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
                 if (!Number.isFinite(maxx)) {
                   maxx = Infinity;
+                } else {
+                  openMax = !domain.tree[2][2];
                 }
               } catch (e) { }
             }
           }
+
+          let buffer = 1E-14 * Math.max(Math.abs(minx), Math.abs(maxx));
 
           // since extrapolate for x < xs[0], formula based on coeffs[0]
           // is valid for x < xs[1]
@@ -2167,9 +2540,11 @@ export default class Function extends InlineComponent {
             // have quadratic.  Maximum only if c[2] < 0
             if (c[2] < 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+              if (x + xs[0] >= minx - buffer && x + xs[0] <= maxx + buffer) {
                 if (x <= dx - eps) {
-                  maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[0] - minx) < buffer) || (openMax && Math.abs(x + xs[0] - maxx) < buffer))) {
+                    maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 } else if (Math.abs(x - dx) < eps) {
                   maximumAtPreviousRight = true;
                 }
@@ -2184,9 +2559,11 @@ export default class Function extends InlineComponent {
 
               // critical point where choose -sqrtdiscrim is maximum
               let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+              if (x + xs[0] >= minx - buffer && x + xs[0] <= maxx + buffer) {
                 if (x <= dx - eps) {
-                  maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[0] - minx) < buffer) || (openMax && Math.abs(x + xs[0] - maxx) < buffer))) {
+                    maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 } else if (Math.abs(x - dx) < eps) {
                   maximumAtPreviousRight = true;
                 }
@@ -2202,14 +2579,18 @@ export default class Function extends InlineComponent {
               // have quadratic.  Maximum only if c[2] < 0
               if (c[2] < 0) {
                 let x = -c[1] / (2 * c[2]);
-                if (x + xs[i] >= minx) {
-                  if (x + xs[i] <= maxx) {
+                if (x + xs[i] >= minx - buffer) {
+                  if (x + xs[i] <= maxx + buffer) {
                     if (Math.abs(x) < eps) {
                       if (maximumAtPreviousRight) {
-                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                          maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        }
                       }
                     } else if (x >= eps && x <= dx - eps) {
-                      maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
                     }
                     maximumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
@@ -2229,14 +2610,18 @@ export default class Function extends InlineComponent {
 
                 // critical point where choose -sqrtdiscrim is maximum
                 let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-                if (x + xs[i] >= minx) {
-                  if (x + xs[i] <= maxx) {
+                if (x + xs[i] >= minx - buffer) {
+                  if (x + xs[i] <= maxx + buffer) {
                     if (Math.abs(x) < eps) {
                       if (maximumAtPreviousRight) {
-                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                          maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                        }
                       }
                     } else if (x >= eps && x <= dx - eps) {
-                      maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      if (!((openMin && Math.abs(x + xs[i] - minx) < buffer) || (openMax && Math.abs(x + xs[i] - maxx) < buffer))) {
+                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
                     }
                     maximumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
@@ -2257,13 +2642,17 @@ export default class Function extends InlineComponent {
             // have quadratic.  Maximum only if c[2] < 0
             if (c[2] < 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+              if (x + xs[xs.length - 2] >= minx - buffer && x + xs[xs.length - 2] <= maxx + buffer) {
                 if (Math.abs(x) < eps) {
                   if (maximumAtPreviousRight) {
-                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                      maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
                   }
                 } else if (x >= eps) {
-                  maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 }
               }
             }
@@ -2276,12 +2665,16 @@ export default class Function extends InlineComponent {
 
               // critical point where choose -sqrtdiscrim is maximum
               let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+              if (x + xs[xs.length - 2] >= minx - buffer && x + xs[xs.length - 2] <= maxx + buffer) {
                 if (x >= eps) {
-                  maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 } else if (Math.abs(x) < eps) {
                   if (maximumAtPreviousRight) {
-                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    if (!((openMin && Math.abs(x + xs[xs.length - 2] - minx) < buffer) || (openMax && Math.abs(x + xs[xs.length - 2] - maxx) < buffer))) {
+                      maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
                   }
                 }
               }
@@ -2342,25 +2735,31 @@ export default class Function extends InlineComponent {
           }
 
 
-          let f = (x) => -dependencyValues.numericalf(x);
+          // second argument is true to ignore domain
+          let f = (x) => -dependencyValues.numericalf(x, true);
 
           // for now, look for maxima in interval -100*xscale to 100*xscale,
           // or domain if specified,
           // dividing interval into 1000 subintervals
           let minx = -100 * dependencyValues.xscale;
           let maxx = 100 * dependencyValues.xscale;
+          let openMin = false, openMax = false;
 
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
               try {
-                minx = domain[0].evaluate_to_constant();
+                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
                 if (!Number.isFinite(minx)) {
                   minx = -100 * dependencyValues.xscale;
+                } else {
+                  openMin = !domain.tree[2][1];
                 }
-                maxx = domain[1].evaluate_to_constant();
+                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
                 if (!Number.isFinite(maxx)) {
                   maxx = 100 * dependencyValues.xscale;
+                } else {
+                  openMax = !domain.tree[2][2];
                 }
               } catch (e) { }
             }
@@ -2369,12 +2768,15 @@ export default class Function extends InlineComponent {
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
+          let buffer = 1E-10 * Math.max(Math.abs(minx), Math.abs(maxx));
+
           let maximaList = [];
           let maximumAtPreviousRight = false;
-          let fright = f(minx);
-          let dright = derivative(minx);
+          let addedAtPreviousRightViaDeriv = false;
+          let fright = f(minx - dx);
+          let dright = derivative(minx - dx);
 
-          for (let i = 0; i < nIntervals; i++) {
+          for (let i = -1; i < nIntervals + 1; i++) {
             let xleft = minx + i * dx;
             let xright = minx + (i + 1) * dx;
             let fleft = fright;
@@ -2389,20 +2791,39 @@ export default class Function extends InlineComponent {
             let foundFromDeriv = false;
 
             if (haveDerivative && dleft * dright <= 0) {
-              let x = numerics.fzero(derivative, [xleft, xright]);
+
+              let x;
+
+              if (dleft === 0) {
+                x = xleft;
+              } else if (dright === 0) {
+                x = xright;
+              } else {
+                x = numerics.fzero(derivative, [xleft, xright]);
+              }
 
               // calculate tolerance used in fzero:
               let eps = 1E-6;
               let tol_act = 0.5 * eps * (Math.abs(x) + 1);
 
-              if (derivative(x - tol_act) > 0 && derivative(x + tol_act) < 0 && x !== xright) {
+              if (derivative(x - tol_act) > 0 && derivative(x + tol_act) < 0) {
                 foundFromDeriv = true;
-                maximaList.push([x, -f(x)]);
                 maximumAtPreviousRight = false;
+                if (x >= minx - buffer && x <= maxx + buffer
+                  && !((openMin && Math.abs(x - minx) < buffer) || (openMax && Math.abs(x - maxx) < buffer))
+                  && !(addedAtPreviousRightViaDeriv && Math.abs(x - xleft) < buffer)
+                ) {
+                  maximaList.push([x, -f(x)]);
+                  addedAtPreviousRightViaDeriv = Math.abs(x - xright) < buffer;
+                } else {
+                  addedAtPreviousRightViaDeriv = false;
+                }
               }
             }
 
             if (!foundFromDeriv) {
+
+              addedAtPreviousRightViaDeriv = false;
 
               let result = numerics.fminbr(f, [xleft, xright], undefined, 0.000001);
               if (result.success !== true) {
@@ -2443,7 +2864,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.numberMaxima = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allMaxima: {
           dependencyType: "stateVariable",
@@ -2461,22 +2884,25 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.maxima = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "maximum" || prefix === undefined) {
+            // maximum or entire array
+            // These are points,
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          } else {
+            // don't wrap maximumLocation(s) or maximumValues(s)
+            return [];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["maximum", "maximumLocations", "maximumLocation", "maximumValues", "maximumValue"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "maximum" || prefix === undefined) {
-          // maximum or entire array
-          // These are points,
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        } else {
-          // don't wrap maximumLocation(s) or maximumValues(s)
-          return [];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (["maximum", "maximumLocation", "maximumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
@@ -2536,6 +2962,45 @@ export default class Function extends InlineComponent {
           return "maximumValue" + (Number(ind1) + 1)
         }
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "maxima") {
+          if (propIndex.length === 1) {
+            return "maximum" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            let componentNum = Number(propIndex[0]);
+            if (Number.isInteger(componentNum) && componentNum > 0) {
+              if (propIndex[1] === 1) {
+                return "maximumLocation" + componentNum;
+              } else if (propIndex[1] === 2) {
+                return "maximumValue" + componentNum;
+              }
+            }
+            return null;
+          }
+        }
+        if (varName === "maximumLocations") {
+            // if propIndex has additional entries, ignore them
+          return "maximumLocation" + propIndex[0];
+        }
+        if (varName === "maximumValues") {
+            // if propIndex has additional entries, ignore them
+          return "maximumValue" + propIndex[0];
+        }
+        if (varName.slice(0, 7) === "maximum") {
+          // could be maximum, maximumLocation, or maximumValue
+          let componentNum = Number(varName.slice(7));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            // if propIndex has additional entries, ignore them
+            if (propIndex[0] === 1) {
+              return "maximumLocation" + componentNum;
+            } else if (propIndex[0] === 2) {
+              return "maximumValue" + componentNum;
+            }
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         numberMaxima: {
           dependencyType: "stateVariable",
@@ -2576,7 +3041,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.numberExtrema = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         numberMinima: {
           dependencyType: "stateVariable",
@@ -2621,22 +3088,25 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.extrema = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "extremum" || prefix === undefined) {
+            // extremum or entire array
+            // These are points,
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          } else {
+            // don't wrap extremumLocation(s) or extremumValues(s)
+            return [];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["extremum", "extremumLocations", "extremumLocation", "extremumValues", "extremumValue"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "extremum" || prefix === undefined) {
-          // extremum or entire array
-          // These are points,
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        } else {
-          // don't wrap extremumLocation(s) or extremumValues(s)
-          return [];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (["extremum", "extremumLocation", "extremumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
@@ -2696,6 +3166,45 @@ export default class Function extends InlineComponent {
           return "extremumValue" + (Number(ind1) + 1)
         }
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "extrema") {
+          if (propIndex.length === 1) {
+            return "extremum" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            let componentNum = Number(propIndex[0]);
+            if (Number.isInteger(componentNum) && componentNum > 0) {
+              if (propIndex[1] === 1) {
+                return "extremumLocation" + componentNum;
+              } else if (propIndex[1] === 2) {
+                return "extremumValue" + componentNum;
+              }
+            }
+            return null;
+          }
+        }
+        if (varName === "extremumLocations") {
+            // if propIndex has additional entries, ignore them
+          return "extremumLocation" + propIndex[0];
+        }
+        if (varName === "extremumValues") {
+            // if propIndex has additional entries, ignore them
+          return "extremumValue" + propIndex[0];
+        }
+        if (varName.slice(0, 8) === "extremum") {
+          // could be extremum, extremumLocation, or extremumValue
+          let componentNum = Number(varName.slice(8));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            // if propIndex has additional entries, ignore them
+            if (propIndex[0] === 1) {
+              return "extremumLocation" + componentNum;
+            } else if (propIndex[0] === 2) {
+              return "extremumValue" + componentNum;
+            }
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         numberExtrema: {
           dependencyType: "stateVariable",
@@ -2749,10 +3258,10 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "coeffs"
             },
-            interpolationPoints: {
-              dependencyType: "stateVariable",
-              variableName: "interpolationPoints"
-            },
+            // interpolationPoints: {
+            //   dependencyType: "stateVariable",
+            //   variableName: "interpolationPoints"
+            // },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
@@ -2845,68 +3354,126 @@ export default class Function extends InlineComponent {
 
     }
 
+    stateVariableDefinitions.numericalDerivativesDefinition = {
+      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.isInterpolatedFunction) {
+          return {
+            xs: {
+              dependencyType: "stateVariable",
+              variableName: "xs"
+            },
+            coeffs: {
+              dependencyType: "stateVariable",
+              variableName: "coeffs"
+            },
+            // interpolationPoints: {
+            //   dependencyType: "stateVariable",
+            //   variableName: "interpolationPoints"
+            // },
+            isInterpolatedFunction: {
+              dependencyType: "stateVariable",
+              variableName: "isInterpolatedFunction"
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables"
+            }
+          }
+        } else {
+          return {
+            functionChild: {
+              dependencyType: "child",
+              childGroups: ["functions"],
+              variableNames: ["numericalDerivativesDefinition", "variables"],
+            },
+            isInterpolatedFunction: {
+              dependencyType: "stateVariable",
+              variableName: "isInterpolatedFunction"
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables"
+            }
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.isInterpolatedFunction) {
+          return {
+            setValue: {
+              numericalDerivativesDefinition: {
+                derivativeType: "interpolatedFunction",
+                xs: dependencyValues.xs,
+                coeffs: dependencyValues.coeffs,
+                variables: dependencyValues.variables,
+              },
+            }
+          }
+
+        } else {
+
+          if (dependencyValues.functionChild.length > 0 &&
+            dependencyValues.functionChild[0].stateValues.numericalDerivativesDefinition
+          ) {
+
+            // check if variables are the same
+            let functionVariables = dependencyValues.variables.map(x => x.subscripts_to_strings().tree);
+            let childVariables = dependencyValues.functionChild[0].stateValues.variables;
+            let childVariablesTrans = childVariables.map(x => x.subscripts_to_strings().tree);
+
+            let variableMapping = {};
+
+            for (let [ind, variable] of functionVariables.entries()) {
+              if (childVariablesTrans[ind] && childVariablesTrans[ind] !== variable) {
+                variableMapping[variable] = childVariables[ind];
+              }
+            }
+
+
+            if (Object.keys(variableMapping).length === 0) {
+              return {
+                setValue: { numericalDerivativesDefinition: dependencyValues.functionChild[0].stateValues.numericalDerivativesDefinition }
+              }
+            } else {
+
+              let derivDef = { ...dependencyValues.functionChild[0].stateValues.numericalDerivativesDefinition };
+              if (derivDef.variableMappings) {
+                derivDef.variableMappings = [variableMapping, ...derivDef.variableMappings]
+              } else {
+                derivDef.variableMappings = [variableMapping];
+              }
+
+              return {
+                setValue: { numericalDerivativesDefinition: derivDef }
+              }
+
+            }
+
+          } else {
+            return { setValue: { numericalDerivativesDefinition: {} } }
+          }
+        }
+      }
+
+    }
+
     return stateVariableDefinitions;
 
   }
 
   static adapters = [{
     stateVariable: "numericalf",
-    componentType: "curve"
+    componentType: "curve",
+    stateVariablesToShadow: ["label", "labelHasLatex"]
   },
   {
     stateVariable: "formula",
-    componentType: "math"
+    componentType: "math",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
   }];
 
-}
-
-
-export function returnSymbolicFunctionFromFormula(dependencyValues, arrayKey) {
-
-  let formula = dependencyValues.formula;
-
-  let formulaIsVectorValued = Array.isArray(formula.tree) &&
-    ["tuple", "vector"].includes(formula.tree[0]);
-
-  if (formulaIsVectorValued) {
-    try {
-      formula = formula.get_component(Number(arrayKey));
-    } catch (e) {
-      return x => me.fromAst('\uff3f')
-    }
-  } else if (arrayKey !== "0") {
-    return x => me.fromAst('\uff3f')
-  }
-
-  let simplify = dependencyValues.simplify;
-  let expand = dependencyValues.expand;
-  let formula_transformed = formula.subscripts_to_strings();
-
-  if (dependencyValues.nInputs === 1) {
-    let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
-    return (x) => normalizeMathExpression({
-      value: formula_transformed.substitute({ [varString]: x }).strings_to_subscripts(),
-      simplify,
-      expand
-    })
-  }
-
-  let varStrings = [];
-  for (let i = 0; i < dependencyValues.nInputs; i++) {
-    varStrings.push(dependencyValues.variables[i].subscripts_to_strings().tree)
-  }
-
-  return function (...xs) {
-    let subArgs = {}
-    for (let i = 0; i < dependencyValues.nInputs; i++) {
-      subArgs[varStrings[i]] = xs[i];
-    }
-    return normalizeMathExpression({
-      value: formula_transformed.substitute(subArgs).strings_to_subscripts(),
-      simplify,
-      expand
-    })
-  }
 }
 
 
@@ -4015,97 +4582,4 @@ function computeSplineParamCoeffs({ dependencyValues }) {
     }
   }
 
-}
-
-function returnReturnDerivativesOfInterpolatedFunction(dependencyValues) {
-
-  let xs = dependencyValues.xs;
-  let coeffs = dependencyValues.coeffs;
-  let variable1Trans = dependencyValues.variables[0].subscripts_to_strings().tree;
-
-  let x0 = xs[0], xL = xs[xs.length - 1];
-
-  return function (derivVariables) {
-
-    let derivVariablesTrans = derivVariables.map(x => x.subscripts_to_strings().tree);
-
-    let order = derivVariablesTrans.length;
-
-    if (order > 3 || !derivVariablesTrans.every(x => x === variable1Trans)
-      || derivVariablesTrans.includes('\uff3f')
-    ) {
-      return x => 0
-    }
-
-    if (order === 0 || xs === null) {
-      return x => NaN
-    }
-
-    return function (x) {
-
-      if (isNaN(x)) {
-        return NaN;
-      }
-
-
-      if (x <= x0) {
-        // Extrapolate
-        x -= x0;
-        let c = coeffs[0];
-        if (order === 1) {
-          return (3 * c[3] * x + 2 * c[2]) * x + c[1];
-        } else if (order === 2) {
-          return 6 * c[3] * x + 2 * c[2];
-        } else {
-          return 6 * c[3]
-        }
-      }
-
-      if (x >= xL) {
-        let i = xs.length - 2;
-        // Extrapolate
-        x -= xs[i];
-        let c = coeffs[i];
-        if (order === 1) {
-          return (3 * c[3] * x + 2 * c[2]) * x + c[1];
-        } else if (order === 2) {
-          return 6 * c[3] * x + 2 * c[2];
-        } else {
-          return 6 * c[3]
-        }
-      }
-
-      // Search for the interval x is in,
-      // returning the corresponding y if x is one of the original xs
-      var low = 0, mid, high = xs.length - 1;
-      while (low <= high) {
-        mid = Math.floor(0.5 * (low + high));
-        let xHere = xs[mid];
-        if (xHere < x) { low = mid + 1; }
-        else if (xHere > x) { high = mid - 1; }
-        else {
-          // at a grid point
-          if (order === 1) {
-            return coeffs[mid][1]
-          } else if (order === 2) {
-            return 2 * coeffs[mid][2];
-          } else {
-            return 6 * coeffs[mid][3];
-          }
-        }
-      }
-      let i = Math.max(0, high);
-
-      // Interpolate
-      x -= xs[i];
-      let c = coeffs[i];
-      if (order === 1) {
-        return (3 * c[3] * x + 2 * c[2]) * x + c[1];
-      } else if (order === 2) {
-        return 6 * c[3] * x + 2 * c[2];
-      } else {
-        return 6 * c[3]
-      }
-    }
-  }
 }

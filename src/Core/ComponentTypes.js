@@ -28,7 +28,9 @@ import Text from './components/Text';
 import TextList from './components/TextList';
 import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
+import TupleList from './components/TupleList';
 import NumberList from './components/NumberList';
+import NumberListFromString from './components/NumberListFromString';
 import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
@@ -52,6 +54,7 @@ import Curve from './components/Curve';
 import BezierControls from './components/BezierControls';
 import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
+import IntervalListComponent from './components/abstract/IntervalListComponent';
 import LineListComponent from './components/abstract/LineListComponent';
 import VectorListComponent from './components/abstract/VectorListComponent';
 import AngleListComponent from './components/abstract/AngleListComponent';
@@ -71,6 +74,7 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
+import Interval from './components/Interval';
 import Template from './components/Template';
 import Option from './components/Option';
 import Sequence from './components/Sequence';
@@ -149,7 +153,13 @@ import RegionHalfPlane from './components/RegionHalfPlane';
 import CodeEditor from './components/CodeEditor';
 import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
-import OrbitalDiagramInput from './components/OrbitalDiagramInput';
+import HasSameFactoring from './components/HasSameFactoring';
+import DataFrame from './components/DataFrame';
+import SummaryStatistics from './components/SummaryStatistics';
+import Chart from './components/Chart';
+import Legend from './components/Legend';
+import Label from './components/Label';
+import MatchesPattern from './components/MatchesPattern';
 
 
 //Extended
@@ -202,7 +212,9 @@ const componentTypeArray = [
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
+  TupleList,
   NumberList,
+  NumberListFromString,
   Copy,
   Extract,
   Collect,
@@ -226,6 +238,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
+  Interval,
   Template, Option,
   Sequence,
   Slider,
@@ -297,8 +310,13 @@ const componentTypeArray = [
   CodeEditor,
   CodeViewer,
   RenderDoenetML,
-  OrbitalDiagramInput,
-
+  HasSameFactoring,
+  DataFrame,
+  SummaryStatistics,
+  Chart,
+  Legend,
+  Label,
+  MatchesPattern,
 
   BaseComponent,
   InlineComponent,
@@ -308,6 +326,7 @@ const componentTypeArray = [
   Input,
   CompositeComponent,
   PointListComponent,
+  IntervalListComponent,
   LineListComponent,
   VectorListComponent,
   AngleListComponent,
@@ -362,28 +381,4 @@ export function componentTypesCreatingVariants() {
   return componentClasses;
 }
 
-
-export function componentTypeWithPotentialVariants() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    if (ct.createsVariants ||
-      ct.setUpVariantIfVariantControlChild ||
-      ct.setUpVariantUnlessAttributePrimitive ||
-      ct.alwaysSetUpVariant
-    ) {
-      let newComponentType = ct.componentType;
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
 
