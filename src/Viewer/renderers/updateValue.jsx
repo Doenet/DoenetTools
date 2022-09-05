@@ -4,27 +4,22 @@ import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
 
 export default React.memo(function UpdateValue(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props,false);
 
   if (SVs.hidden) {
     return null;
   }
 
   return (
-    <div id={name} margin="12px 0">
-      <a name={name} />
+    <div id={id} margin="12px 0" style={{display:"inline-block"}}>
+      <a name={id} />
       <Button
-        id={name + "_button"} 
+        id={id + "_button"} 
         onClick={()=>callAction({ action:actions.updateValue })} 
         disabled={SVs.disabled}
         value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
       />
-      {/* <button 
-      id={name + "_button"} 
-      onClick={()=>callAction({ action:actions.updateValue })} 
-      disabled={SVs.disabled}
-      >{SVs.label}
-      </button> */}
     </div>
   )
 })

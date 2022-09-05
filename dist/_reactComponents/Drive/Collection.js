@@ -95,14 +95,14 @@ function Collection(props) {
     setInstanceParentId(props.pathItemId);
   }, [props.pathItemId, setInstanceParentId]);
   const indentPx = 25;
-  let bgcolor = "#ffffff";
+  let bgcolor = "var(--canvas)";
   let borderSide = "0px";
   let marginSize = "0";
   if (isSelected) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = "#e2e2e2";
+    bgcolor = "var(--mainGray)";
   }
   let woIndent = 250 - props.indentLevel * indentPx;
   let columns = `${woIndent}px repeat(4,1fr)`;
@@ -121,11 +121,11 @@ function Collection(props) {
   let column5 = ColumnJSX(props.columnTypes[3], props.item);
   const isDraggedOver = dropState.activeDropTargetId === itemId && !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
-    bgcolor = "#f0f0f0";
+    bgcolor = "var(--mainGray)";
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   useEffect(() => {
     isOpenRef.current = isOpen;
@@ -135,11 +135,11 @@ function Collection(props) {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
   }, [parentFolderSortOrder]);
   let openCloseText = isOpen ? /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleCloseIcon"
+    "data-test": "folderToggleCloseIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronDown
   })) : /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleOpenIcon"
+    "data-test": "folderToggleOpenIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronRight
   }));
@@ -246,14 +246,14 @@ function Collection(props) {
     collection = /* @__PURE__ */ React.createElement("div", {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
-      "data-cy": "driveItem",
+      "data-test": "driveItem",
       tabIndex: 0,
       className: "noselect nooutline",
       style: {
         cursor: "pointer",
         padding: "8px",
         border: "0px",
-        borderBottom: "2px solid black",
+        borderBottom: "2px solid var(--canvastext)",
         backgroundColor: bgcolor,
         marginLeft: marginSize,
         borderLeft: borderSide
@@ -326,11 +326,11 @@ function Collection(props) {
     }, /* @__PURE__ */ React.createElement("p", {
       style: {display: "inline", margin: "0px"}
     }, openCloseButton, /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderIcon"
+      "data-test": "folderIcon"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: props.isViewOnly ? faCode : faLayerGroup
     })), /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderLabel"
+      "data-test": "folderLabel"
     }, label)), props.numColumns >= 2 ? column2 : null, props.numColumns >= 3 ? column3 : null, props.numColumns >= 4 ? column4 : null, props.numColumns >= 5 ? column5 : null));
   }
   let draggableClassName = "";
@@ -427,7 +427,7 @@ function Collection(props) {
     }
   }
   return /* @__PURE__ */ React.createElement("div", {
-    "data-cy": "drive"
+    "data-test": "drive"
   }, collection, items);
 }
 export default Collection;

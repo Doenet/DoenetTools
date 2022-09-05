@@ -40,12 +40,14 @@ $userIdToEmail = [];
 
 if ($success){
 
-  $sql = "
-  SELECT email,
-  userId
-  FROM enrollment
-  WHERE courseId = '$courseId'
-  ";
+  $sql = "SELECT 
+    u.email,
+    cu.userId
+    FROM course_user AS cu
+    LEFT JOIN user AS u 
+    ON cu.userId = u.userId
+    WHERE courseId = '$courseId'
+    ";
   $result = $conn->query($sql); 
   if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()){
@@ -56,12 +58,12 @@ if ($success){
     }
   }
 
-  $sql = "
-  SELECT userId,
-  isUnassigned
-  FROM user_assignment 
-  WHERE doenetId = '$doenetId'
-  ";
+  $sql = "SELECT 
+    userId,
+    isUnassigned
+    FROM user_assignment 
+    WHERE doenetId = '$doenetId'
+    ";
   $result = $conn->query($sql); 
   if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()){
@@ -85,12 +87,11 @@ if ($success){
   }
   $sql_userIds = implode("','", $userIds_to_assign);
   $sql_userIds = "'" . $sql_userIds . "'";
-    $sql = "
-    UPDATE user_assignment
-    SET isUnassigned = b'0'
-    WHERE userId IN ($sql_userIds)
-    AND doenetId = '$doenetId'
-    ";
+    $sql = "UPDATE user_assignment
+      SET isUnassigned = b'0'
+      WHERE userId IN ($sql_userIds)
+      AND doenetId = '$doenetId'
+      ";
   $result = $conn->query($sql); 
 
   //Assign 2/2

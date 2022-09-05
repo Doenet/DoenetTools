@@ -26,8 +26,11 @@ import axios from '../_snowpack/pkg/axios.js';
 export default class Core {
   constructor({ doenetML, doenetId, activityCid, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
+    activityVariantIndex,
     requestedVariant, requestedVariantIndex,
+    previousComponentTypeCounts = {},
     flags = {},
+    prerender = false,
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
     // console.time('core');
@@ -39,6 +42,7 @@ export default class Core {
     this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
+    this.activityVariantIndex = activityVariantIndex;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -53,7 +57,7 @@ export default class Core {
 
     this.componentInfoObjects = createComponentInfoObjects(flags);
 
-
+    this.previousComponentTypeCounts = previousComponentTypeCounts;
 
     this.coreFunctions = {
       requestUpdate: this.requestUpdate.bind(this),
@@ -91,11 +95,24 @@ export default class Core {
     this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
 
+    this.visibilityInfo = {
+      componentsCurrentlyVisible: {},
+      infoToSend: {},
+      timeLastSent: new Date(),
+      saveDelay: 60000,
+      saveTimerId: null,
+      suspendDelay: 3 * 60000,
+      suspendTimerId: null,
+      suspended: false,
+      documentHasBeenVisible: false
+    }
+
     // console.time('serialize doenetML');
 
     this.parameterStack = new ParameterStack();
 
     this.parameterStack.parameters.rngClass = prng_alea;
+    this.parameterStack.parameters.prerender = prerender;
 
     this.initialized = false;
     this.initializedPromiseResolves = [];
@@ -123,8 +140,10 @@ export default class Core {
         }))
       .then(this.finishCoreConstruction)
       .catch(e => {
+        // throw e;
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: { errMsg: e.message }
         })
       })
@@ -150,6 +169,19 @@ export default class Core {
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
 
+    this.componentIndexArray = serializeFunctions.extractComponentNamesAndIndices(serializedComponents);
+
+    let { rangePieces } = serializeFunctions.extractRangeIndexPieces({ componentArray: this.componentIndexArray });
+
+    this.componentRangePieces = rangePieces;
+
+    postMessage({
+      messageType: "componentRangePieces",
+      coreId: this.coreId,
+      args: {
+        componentRangePieces: this.componentRangePieces,
+      }
+    });
 
     this.documentName = serializedComponents[0].componentName;
     serializedComponents[0].doenetAttributes.cid = this.cid;
@@ -292,6 +324,12 @@ export default class Core {
 
     this.messageViewerReady()
 
+    this.resolveInitialized();
+
+
+  }
+
+  async onDocumentFirstVisible() {
     this.requestRecordEvent({
       verb: "experienced",
       object: {
@@ -300,23 +338,50 @@ export default class Core {
       },
     })
 
-    this.resolveInitialized();
+    let foundAnswerDescendant = function (comp) {
+      let sDecs = comp.stateValues.scoredDescendants;
+      if (Array.isArray(sDecs)) {
+        for (let dec of sDecs) {
+          if (dec.componentType === "answer") {
+            return true;
+          } else {
+            if (foundAnswerDescendant(dec)) {
+              return true;
+            }
+          }
+        }
+      }
 
+      return false;
+    }
+
+    await this.document.stateValues.scoredDescendants;  // to evaluated scoredDescendants
+
+    if (!foundAnswerDescendant(this.document)) {
+      // if there are no scored items in document
+      // then treat the first view of the document as a submission
+      // so that will get credit for viewing the page
+      this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
+    }
+
+
+    setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
 
   }
-
 
   async messageViewerReady() {
 
     postMessage({
       messageType: "initializeRenderers",
+      coreId: this.coreId,
       args: {
         coreInfo: this.coreInfo,
       }
     });
 
     postMessage({
-      messageType: "coreCreated"
+      messageType: "coreCreated",
+      coreId: this.coreId
     });
 
   }
@@ -325,6 +390,7 @@ export default class Core {
 
     postMessage({
       messageType: "updateRenderers",
+      coreId: this.coreId,
       args,
       init
     })
@@ -434,6 +500,18 @@ export default class Core {
       }]
 
       this.postUpdateRenderers({ updateInstructions }, true)
+
+      // if have some states to force update
+      // then post these updates without setting init to true
+      if (results.rendererStatesToForceUpdate.length > 0) {
+        let updateInstructions = [{
+          instructionType: "updateRendererStates",
+          rendererStatesToUpdate: results.rendererStatesToForceUpdate,
+        }]
+        this.postUpdateRenderers({ updateInstructions })
+
+      }
+
 
       await this.processStateVariableTriggers();
 
@@ -674,12 +752,22 @@ export default class Core {
 
 
     let rendererStatesToUpdate = [];
+    let rendererStatesToForceUpdate = [];
 
     let stateValuesForRenderer = {};
+    let stateValuesForRendererAlwaysUpdate = {};
+    let alwaysUpdate = false;
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
         stateValuesForRenderer[stateVariable] = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
+        if (component.state[stateVariable].alwaysUpdateRenderer) {
+          alwaysUpdate = true;
+        }
       }
+    }
+
+    if (alwaysUpdate) {
+      stateValuesForRendererAlwaysUpdate = stateValuesForRenderer;
     }
 
     let componentName = component.componentName;
@@ -694,6 +782,7 @@ export default class Core {
             let results = await this.initializeRenderedComponentInstruction(child);
             childrenToRender.push(results.componentToRender);
             rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
+            rendererStatesToForceUpdate.push(...results.rendererStatesToForceUpdate);
 
           } else if (typeof child === "string") {
             childrenToRender.push(child);
@@ -709,6 +798,12 @@ export default class Core {
       stateValues: stateValuesForRenderer,
       childrenInstructions: childrenToRender,
     });
+    if (Object.keys(stateValuesForRendererAlwaysUpdate).length > 0) {
+      rendererStatesToForceUpdate.push({
+        componentName,
+        stateValues: stateValuesForRendererAlwaysUpdate,
+      });
+    }
 
     // this.renderState is used to save the renderer state to the database
     this.rendererState[componentName] = {
@@ -750,7 +845,7 @@ export default class Core {
     };
 
 
-    return { componentToRender: rendererInstructions, rendererStatesToUpdate };
+    return { componentToRender: rendererInstructions, rendererStatesToUpdate, rendererStatesToForceUpdate };
   }
 
   deleteFromComponentsToRender({
@@ -1102,6 +1197,14 @@ export default class Core {
 
     if (serializedChildren !== undefined) {
 
+      if (componentClass.preprocessSerializedChildren) {
+        componentClass.preprocessSerializedChildren({
+          serializedChildren,
+          attributes: serializedComponent.attributes,
+          componentName,
+        });
+      }
+
       if (componentClass.setUpVariant) {
 
         let variantControlInd;
@@ -1386,6 +1489,10 @@ export default class Core {
       }
     }
 
+    if(serializedComponent.unlinkedCopySource) {
+      newComponent.unlinkedCopySource = serializedComponent.unlinkedCopySource;
+    }
+
 
     await this.deriveChildResultsFromDefiningChildren({ parent: newComponent, expandComposites: false });
 
@@ -1398,10 +1505,10 @@ export default class Core {
     )
 
     for (let varDescription of variablesChanged) {
-      await this.recordActualChangeInStateVariable({
-        componentName: varDescription.componentName,
-        varName: varDescription.varName,
-      });
+      await this.markStateVariableAndUpstreamDependentsStale({
+        component: this._components[varDescription.componentName],
+        varName: varDescription.varName
+      })
     }
 
     await this.checkForStateVariablesUpdatesForNewComponent(componentName)
@@ -1711,11 +1818,14 @@ export default class Core {
 
     }
 
-    return { success: false }
+    // lastly try to match with afterAdapters set to true
+    return this.findChildGroupNoAdapters(
+      childType, parentClass, true
+    )
 
   }
 
-  findChildGroupNoAdapters(componentType, parentClass) {
+  findChildGroupNoAdapters(componentType, parentClass, afterAdapters = false) {
     if (parentClass.childGroupOfComponentType[componentType]) {
       return {
         success: true,
@@ -1729,6 +1839,9 @@ export default class Core {
           inheritedComponentType: componentType,
           baseComponentType: typeFromGroup
         })) {
+          if (group.matchAfterAdapters && !afterAdapters) {
+            continue;
+          }
           // don't match composites to the base component
           // so that they will expand
           if (!(typeFromGroup === "_base" &&
@@ -2010,9 +2123,17 @@ export default class Core {
     // we'll copy the replacements of the shadowed composite
     // and make those be the replacements of the shadowing composite
     let serializedReplacements = [];
+    let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
+    let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
+
     for (let repl of shadowedComposite.replacements) {
       if (typeof repl === "object") {
-        serializedReplacements.push(await repl.serialize())
+        serializedReplacements.push(await repl.serialize(
+          {
+            sourceAttributesToIgnore,
+            sourceAttributesToIgnoreRecursively
+          }
+        ))
       } else {
         serializedReplacements.push(repl)
       }
@@ -2040,7 +2161,7 @@ export default class Core {
     // TODO: is isResponse the only attribute to convert?
     if (component.attributes.isResponse) {
 
-      let compositeAttributesObj = component.constructor.createAttributesObject({ flags: this.flags });
+      let compositeAttributesObj = component.constructor.createAttributesObject();
 
       for (let repl of serializedReplacements) {
         if (typeof repl !== "object") {
@@ -2071,7 +2192,16 @@ export default class Core {
       let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
       let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
       let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
-
+      let mediatingSubAssignNames = mediatingAssignNames?.some(Array.isArray);
+      let assignNewNamespaces = compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
+      let target = this._components[compositeMediatingTheShadow.doenetAttributes.targetComponentName];
+      let nonCompositeTargetWithNewNamespace;
+      if (target) {
+        nonCompositeTargetWithNewNamespace = !this.componentInfoObjects.isCompositeComponent({
+          componentType: target.componentType,
+          includeNonStandard: false
+        }) && target.attributes.newNamespace?.primitive;
+      }
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
       // the original names in the serializedComponents as is
@@ -2081,16 +2211,28 @@ export default class Core {
 
       // We set originalNamesAreConsistent to true if we can be sure
       // that we won't create any duplicate names.
-      // If the component begin shadowed has a newNamespace,
+      // If the component shadowing (or the original non-composite target) has a newNamespace,
+      // or the composite mediating the shadow is assigning new namespaces,
       // or we get a new namespace from the composite mediating the shadow, 
       // that will, in most cases, be enough to prevent name collisions.
-      // The one edge case is when the composite mediating the shadow also assigns names,
-      // in which case the assigned names could collide with the original names,
+
+      // One edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names
+      // even if it makes a new namespace,
       // so we can't keep the original names.
 
+      // Another edge case is when the composite mediating the shadow
+      // assign names to sub-replacements.
+      // In that case, all bets are off and we cannot determine if those names
+      // could collide with existing names, so we can't keep the original names.
 
-      let originalNamesAreConsistent = newNamespace
-        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let originalNamesAreConsistent = !mediatingSubAssignNames && (
+        newNamespace || nonCompositeTargetWithNewNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames)
+        || assignNewNamespaces
+      );
+
 
       let assignNames = component.doenetAttributes.assignNames;
       if (assignNames && await component.stateValues.addLevelToAssignNames) {
@@ -2104,9 +2246,39 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
+
+      if (target?.componentName === shadowedComposite.componentName
+        && compositeMediatingTheShadow.doenetAttributes.fromCopyTarget
+      ) {
+
+        let newReplacements = deepClone(compositeMediatingTheShadow.serializedChildren);
+        let componentClass = this.componentInfoObjects.allComponentClasses[component.componentType];
+
+        if (!componentClass.includeBlankStringChildren) {
+          newReplacements = newReplacements.filter(
+            x => typeof x !== "string" || x.trim() !== ""
+          )
+        }
+
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames,
+          serializedComponents: newReplacements,
+          parentName: component.componentName,
+          parentCreatesNewNamespace: compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive,
+          indOffset: serializedReplacements.length,
+          componentInfoObjects: this.componentInfoObjects,
+          originalNamesAreConsistent: true
+        });
+
+        serializedReplacements.push(...processResult.serializedComponents)
+
+      }
+
+
     } else {
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
@@ -2119,6 +2291,7 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
@@ -2201,11 +2374,11 @@ export default class Core {
 
         let replaceWithPlaceholders = false;
 
-        // if an unexpanded composite has a componentType specified
+        // if an unexpanded composite has a createComponentOfType specified
         // replace with placeholders
         // otherwise, leave composite as an activeChild
         if (!child.isExpanded) {
-          if (child.attributes.componentType?.primitive) {
+          if (child.attributes.createComponentOfType?.primitive) {
             replaceWithPlaceholders = true;
           } else {
             continue;
@@ -2225,7 +2398,7 @@ export default class Core {
           }
 
           let componentType = this.componentInfoObjects.
-            componentTypeLowerCaseMapping[child.attributes.componentType.primitive.toLowerCase()];
+            componentTypeLowerCaseMapping[child.attributes.createComponentOfType.primitive.toLowerCase()];
           replacements = [];
 
           for (let i = 0; i < nComponents; i++) {
@@ -2434,6 +2607,7 @@ export default class Core {
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
               firstLevelReplacement: dep.firstLevelReplacement,
+              additionalStateVariableShadowing: dep.additionalStateVariableShadowing
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2441,6 +2615,7 @@ export default class Core {
               adapterTargetIdentity: dep.adapterTargetIdentity,
               adapterVariable: dep.adapterVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
+              stateVariablesToShadow: dep.stateVariablesToShadow,
             }
           }
         }
@@ -2482,7 +2657,7 @@ export default class Core {
 
   createAttributeStateVariableDefinitions({ componentClass, stateVariableDefinitions }) {
 
-    let attributes = componentClass.createAttributesObject({ flags: this.flags });
+    let attributes = componentClass.createAttributesObject();
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
@@ -2501,13 +2676,18 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
-        if (stateVarDef.componentType === undefined) {
-          if (attributeFromPrimitive) {
-            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
-          } else {
-            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.shadowingInstructions = {};
+        if (attributeFromPrimitive) {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
+          if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "text";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "stringArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "textList";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
+        } else {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
       }
 
@@ -2572,12 +2752,13 @@ export default class Core {
           let haveParentValue = dependencyValues.parentValue !== undefined
             && dependencyValues.parentValue !== null;
           if (haveParentValue && !usedDefault.parentValue) {
-            return { setValue: { [varName]: dependencyValues.parentValue } }
+            return { setValue: { [varName]: dependencyValues.parentValue }, checkForActualChange: { [varName]: true } }
           } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: true
-              }
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
         }
@@ -2588,7 +2769,7 @@ export default class Core {
           attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return { setValue: { [varName]: attributeValue }, checkForActualChange: { [varName]: true } };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -2660,7 +2841,7 @@ export default class Core {
     // attributes depend on adapterTarget (if attribute exists in adapterTarget)
     let adapterTargetComponent = this._components[redefineDependencies.adapterTargetIdentity.componentName];
 
-    let attributes = componentClass.createAttributesObject({ flags: this.flags });
+    let attributes = componentClass.createAttributesObject();
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
@@ -2679,16 +2860,18 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
-        if (stateVarDef.componentType === undefined) {
-          if (attributeFromPrimitive) {
-            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
-            if (stateVarDef.componentType === "string") {
-              stateVarDef.componentType = "text";
-            }
-          } else {
-            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.shadowingInstructions = {};
+        if (attributeFromPrimitive) {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
+          if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "text";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "stringArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "textList";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
+        } else {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
       }
 
@@ -2712,11 +2895,16 @@ export default class Core {
           return {
             useEssentialOrDefaultValue: {
               [varName]: true
-            }
+            },
+            checkForActualChange: { [varName]: true }
           };
         }
         else {
-          return { setValue: { [varName]: dependencyValues.adapterTargetVariable } };
+          return {
+            setValue: { [varName]: dependencyValues.adapterTargetVariable },
+            checkForActualChange: { [varName]: true }
+          };
+
         }
       };
 
@@ -2802,48 +2990,49 @@ export default class Core {
       };
     };
 
+    if (redefineDependencies.stateVariablesToShadow) {
+      this.modifyStateDefsToBeShadows({
+        stateVariablesToShadow: redefineDependencies.stateVariablesToShadow,
+        stateVariableDefinitions,
+        targetComponent: adapterTargetComponent
+      });
+    }
+
   }
 
   async createReferenceShadowStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass }) {
 
-    let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
-    let additionalAttributesFromStateVariables = {};
-
     if (redefineDependencies.propVariable) {
-      let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
-
       // if we have an array entry state variable that hasn't been created yet
-      // create it now so that we can look up stateVariablesPrescribingAdditionalAttributes
-      if (!propStateVariableInTarget && this.checkIfArrayEntry({
-        stateVariable: redefineDependencies.propVariable,
-        component: targetComponent
-      })) {
+      // create it now
+      if (!targetComponent.state[redefineDependencies.propVariable]
+        && this.checkIfArrayEntry({
+          stateVariable: redefineDependencies.propVariable,
+          component: targetComponent
+        })
+      ) {
         await this.createFromArrayEntry({
           stateVariable: redefineDependencies.propVariable,
           component: targetComponent
         })
-        propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
       }
-      if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
-        additionalAttributesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes
-      }
+
     }
 
     // attributes depend 
     // - first on attributes from component attribute components, if they exist
     // - then on targetComponent (if not copying a prop and attribute exists in targetComponent)
 
-    let attributes = componentClass.createAttributesObject({ flags: this.flags });
+    let attributes = componentClass.createAttributesObject();
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
-      if (!attributeSpecification.createStateVariable) {
+      let varName = attributeSpecification.createStateVariable;
+      if (!varName) {
         continue;
       }
-
-      let varName = attributeSpecification.createStateVariable;
 
       let stateVarDef = stateVariableDefinitions[varName] = {
         isAttribute: true,
@@ -2854,16 +3043,18 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
-        if (stateVarDef.componentType === undefined) {
-          if (attributeFromPrimitive) {
-            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
-            if (stateVarDef.componentType === "string") {
-              stateVarDef.componentType = "text";
-            }
-          } else {
-            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.shadowingInstructions = {};
+        if (attributeFromPrimitive) {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
+          if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "text";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "stringArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "textList";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
+        } else {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
       }
 
@@ -2898,48 +3089,6 @@ export default class Core {
           dependencyType: "attributeComponent",
           attributeName: attrName,
           variableNames: [stateVariableForAttributeValue],
-          fallBackToAttributeFromShadow: false,
-        }
-      }
-
-
-      if ((!redefineDependencies.propVariable || attributeSpecification.propagateToProps)
-        && (varName in targetComponent.state)
-      ) {
-        thisDependencies.targetVariable = {
-          dependencyType: "stateVariable",
-          componentName: targetComponent.componentName,
-          variableName: varName,
-        };
-        if ("targetAttributesToIgnore" in compositeComponent.state &&
-          redefineDependencies.firstLevelReplacement
-        ) {
-          thisDependencies.targetAttributesToIgnore = {
-            dependencyType: "stateVariable",
-            componentName: compositeComponent.componentName,
-            variableName: "targetAttributesToIgnore",
-          };
-        }
-      }
-
-      if ("targetAttributesToAlwaysIgnore" in compositeComponent.state) {
-        thisDependencies.targetAttributesToAlwaysIgnore = {
-          dependencyType: "stateVariable",
-          componentName: compositeComponent.componentName,
-          variableName: "targetAttributesToAlwaysIgnore",
-        };
-      }
-
-      // We overwrite targetVariable here as the instructions
-      // mean we should map this variable from the target
-      // onto attribute of replacement
-      // (rather than state variable attribute from the target
-      // even if it were to exist)
-      if (additionalAttributesFromStateVariables[attrName]) {
-        thisDependencies.targetVariable = {
-          dependencyType: "stateVariable",
-          componentName: targetComponent.componentName,
-          variableName: additionalAttributesFromStateVariables[attrName]
         }
       }
 
@@ -2961,37 +3110,25 @@ export default class Core {
           attributeValue = dependencyValues.attributePrimitive;
         } else {
 
-          let targetAttributesToIgnore = [];
-          if (dependencyValues.targetAttributesToIgnore) {
-            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-          }
-          if (dependencyValues.targetAttributesToAlwaysIgnore) {
-            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
-          }
-
-          if (dependencyValues.targetVariable !== undefined
-            && !targetAttributesToIgnore.includes(attrName)
-            && !usedDefault.targetVariable) {
-            // if don't have attribute component or primitive
-            // and target has attribute, use that value
-            return { setValue: { [varName]: dependencyValues.targetVariable } };
+          // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
+          // parentValue would be null if the parentValue state variables
+          // did not exist or its value was null 
+          let haveParentValue = dependencyValues.parentValue !== undefined
+            && dependencyValues.parentValue !== null;
+          if (haveParentValue && !usedDefault.parentValue) {
+            return {
+              setValue: { [varName]: dependencyValues.parentValue },
+              checkForActualChange: { [varName]: true }
+            }
           } else {
-
-            // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
-            // parentValue would be null if the parentValue state variables
-            // did not exist or its value was null 
-            let haveParentValue = dependencyValues.parentValue !== undefined
-              && dependencyValues.parentValue !== null;
-            if (haveParentValue && !usedDefault.parentValue) {
-              return { setValue: { [varName]: dependencyValues.parentValue } }
-            } else {
-              return {
-                useEssentialOrDefaultValue: {
-                  [varName]: true
-                }
-              }
+            return {
+              useEssentialOrDefaultValue: {
+                [varName]: true
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
+
         }
 
         attributeValue = validateAttributeValue({
@@ -2999,7 +3136,10 @@ export default class Core {
           attributeSpecification, attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return {
+          setValue: { [varName]: attributeValue },
+          checkForActualChange: { [varName]: true }
+        };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -3013,50 +3153,28 @@ export default class Core {
               return { success: false }
             }
 
-            let targetAttributesToIgnore = [];
-            if (dependencyValues.targetAttributesToIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-            }
-            if (dependencyValues.targetAttributesToAlwaysIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
-            }
-
-            if (dependencyValues.targetVariable !== undefined
-              && !targetAttributesToIgnore.includes(attrName)
-            ) {
-              //  if target has attribute, set that value
+            let haveParentValue = dependencyValues.parentValue !== undefined
+              && dependencyValues.parentValue !== null;
+            if (haveParentValue && !usedDefault.parentValue) {
+              // value from parent was used, so propagate back to parent
               return {
                 success: true,
                 instructions: [{
-                  setDependency: "targetVariable",
+                  setDependency: "parentValue",
                   desiredValue: desiredStateVariableValues[varName],
                 }]
               };
             } else {
-
-              let haveParentValue = dependencyValues.parentValue !== undefined
-                && dependencyValues.parentValue !== null;
-              if (haveParentValue && !usedDefault.parentValue) {
-                // value from parent was used, so propagate back to parent
-                return {
-                  success: true,
-                  instructions: [{
-                    setDependency: "parentValue",
-                    desiredValue: desiredStateVariableValues[varName],
-                  }]
-                };
-              } else {
-                // no component or primitive, so value is essential and give it the desired value
-                return {
-                  success: true,
-                  instructions: [{
-                    setEssentialValue: varName,
-                    value: desiredStateVariableValues[varName]
-                  }]
-                };
-              }
-
+              // no component or primitive, so value is essential and give it the desired value
+              return {
+                success: true,
+                instructions: [{
+                  setEssentialValue: varName,
+                  value: desiredStateVariableValues[varName]
+                }]
+              };
             }
+
           }
           // attribute based on child
 
@@ -3117,17 +3235,45 @@ export default class Core {
             variableName: redefineDependencies.propVariable,
           },
         });
+
+        let setDefault = false;
+        if (targetComponent.state[redefineDependencies.propVariable].defaultValue !== undefined) {
+          stateDef.defaultValue = targetComponent.state[redefineDependencies.propVariable].defaultValue;
+          if (stateDef.set) {
+            stateDef.defaultValue = stateDef.set(stateDef.defaultValue);
+          }
+          stateDef.hasEssential = true;
+          setDefault = true;
+        }
+
         if (stateDef.set) {
-          stateDef.definition = function ({ dependencyValues }) {
+          stateDef.definition = function ({ dependencyValues, usedDefault }) {
+            let valueFromTarget = stateDef.set(dependencyValues.targetVariable);
+            if (setDefault && usedDefault.targetVariable) {
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: { defaultValue: valueFromTarget }
+                },
+                alwaysShadow: [primaryStateVariableForDefinition],
+              }
+            }
             return {
               setValue: {
-                [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.targetVariable),
+                [primaryStateVariableForDefinition]: valueFromTarget,
               },
               alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         } else {
-          stateDef.definition = function ({ dependencyValues }) {
+          stateDef.definition = function ({ dependencyValues, usedDefault }) {
+            if (setDefault && usedDefault.targetVariable) {
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: { defaultValue: dependencyValues.targetVariable }
+                },
+                alwaysShadow: [primaryStateVariableForDefinition],
+              }
+            }
             return {
               setValue: {
                 [primaryStateVariableForDefinition]: dependencyValues.targetVariable,
@@ -3145,6 +3291,24 @@ export default class Core {
             }]
           };
         };
+      }
+
+      if (redefineDependencies.additionalStateVariableShadowing) {
+        let stateVariablesToShadow = [];
+        let differentStateVariablesInTarget = [];
+        for (let varName in redefineDependencies.additionalStateVariableShadowing) {
+          stateVariablesToShadow.push(varName);
+          differentStateVariablesInTarget.push(
+            redefineDependencies.additionalStateVariableShadowing[varName].stateVariableToShadow
+          )
+        }
+
+        this.modifyStateDefsToBeShadows({
+          stateVariablesToShadow,
+          stateVariableDefinitions,
+          targetComponent,
+          differentStateVariablesInTarget
+        });
       }
 
       // for referencing a prop variable, don't shadow standard state variables
@@ -3203,7 +3367,10 @@ export default class Core {
 
   }
 
-  modifyStateDefsToBeShadows({ stateVariablesToShadow, stateVariableDefinitions, foundReadyToExpandWhenResolved, targetComponent }) {
+  modifyStateDefsToBeShadows({ stateVariablesToShadow, stateVariableDefinitions,
+    foundReadyToExpandWhenResolved, targetComponent,
+    differentStateVariablesInTarget = []
+  }) {
 
     // Note: if add a markStale function to these shadow,
     // will need to modify array size state variable definition
@@ -3211,7 +3378,7 @@ export default class Core {
     // to not overwrite markStale when it finds a shadow
 
     let deleteStateVariablesFromDefinition = {};
-    for (let varName of stateVariablesToShadow) {
+    for (let [varInd, varName] of stateVariablesToShadow.entries()) {
       let stateDef = stateVariableDefinitions[varName];
 
       if (stateDef === undefined) {
@@ -3246,7 +3413,7 @@ export default class Core {
         delete stateDef.stateVariablesDeterminingDependencies;
       }
 
-      let copyComponentType = stateDef.public && stateDef.hasVariableComponentType;
+      let copyComponentType = stateDef.public && stateDef.shadowingInstructions.hasVariableComponentType;
 
       if (stateDef.isArray) {
         stateDef.returnArrayDependenciesByKey = function ({ arrayKeys }) {
@@ -3311,7 +3478,7 @@ export default class Core {
 
           // TODO: how do we make it do this just once?
           if ("targetVariableComponentType" in globalDependencyValues) {
-            result.setComponentType = {
+            result.setCreateComponentOfType = {
               [varName]: globalDependencyValues.targetVariableComponentType
             }
           }
@@ -3365,19 +3532,24 @@ export default class Core {
           returnStartingDependencies = stateDef.returnDependencies.bind(stateDef);
         }
 
+        let varNameInTarget = differentStateVariablesInTarget[varInd];
+        if (!varNameInTarget) {
+          varNameInTarget = varName;
+        }
+
         stateDef.returnDependencies = function (args) {
           let dependencies = Object.assign({}, returnStartingDependencies(args));
 
           dependencies.targetVariable = {
             dependencyType: "stateVariable",
             componentName: targetComponent.componentName,
-            variableName: varName,
+            variableName: varNameInTarget,
           };
           if (copyComponentType) {
             dependencies.targetVariableComponentType = {
               dependencyType: "stateVariableComponentType",
               componentName: targetComponent.componentName,
-              variableName: varName,
+              variableName: varNameInTarget,
             }
           }
           return dependencies;
@@ -3389,15 +3561,15 @@ export default class Core {
 
           // TODO: how do we make it do this just once?
           if ("targetVariableComponentType" in dependencyValues) {
-            result.setComponentType = {
+            result.setCreateComponentOfType = {
               [varName]: dependencyValues.targetVariableComponentType
             }
           }
 
-          // TODO: this will throw an error since did not set hasEssential
-          // But does this make sense if don't set essential in inverse definition?
-          if (usedDefault.targetVariable && "defaultValue" in stateDef) {
-            result.useEssentialOrDefaultValue = { [varName]: true }
+          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential) {
+            result.useEssentialOrDefaultValue = {
+              [varName]: { defaultValue: dependencyValues.targetVariable }
+            }
           } else {
             result.setValue = { [varName]: dependencyValues.targetVariable }
           }
@@ -3537,32 +3709,32 @@ export default class Core {
 
       if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
         let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
-        let targetNames = await stateVarObj.value;
+        let targetIds = await stateVarObj.value;
 
         let originObj = this.originsOfActionsChangedToActions[component.componentName];
 
-        let previousNames;
+        let previousIds;
         if (originObj) {
-          previousNames = originObj[varName];
+          previousIds = originObj[varName];
         }
 
-        if (!previousNames) {
-          previousNames = [];
+        if (!previousIds) {
+          previousIds = [];
         }
 
-        let newNames = [];
+        let newTargets = [];
 
-        if (Array.isArray(targetNames)) {
-          newNames = [...new Set(targetNames)];
-          for (let target of newNames) {
+        if (Array.isArray(targetIds)) {
+          newTargets = [...targetIds];
+          for (let id of newTargets) {
 
-            let indPrev = previousNames.indexOf(target);
+            let indPrev = previousIds.indexOf(id);
 
             if (indPrev === -1) {
-              // found a component that wasn't previously chained
-              let componentActionsChained = this.actionsChangedToActions[target];
+              // found a component/action that wasn't previously chained
+              let componentActionsChained = this.actionsChangedToActions[id];
               if (!componentActionsChained) {
-                componentActionsChained = this.actionsChangedToActions[target] = [];
+                componentActionsChained = this.actionsChangedToActions[id] = [];
               }
 
               componentActionsChained.push({
@@ -3574,17 +3746,17 @@ export default class Core {
             } else {
               // target was already chained
               // remove from previous names to indicate it should still be chained
-              previousNames.splice(indPrev, 1);
+              previousIds.splice(indPrev, 1);
             }
           }
 
 
         }
 
-        // if any names are left in previousNames,
+        // if any ids are left in previousIds,
         // then they should no longer be chained
-        for (let nameToNoLongerChain of previousNames) {
-          let componentActionsChained = this.actionsChangedToActions[nameToNoLongerChain];
+        for (let idToNoLongerChain of previousIds) {
+          let componentActionsChained = this.actionsChangedToActions[idToNoLongerChain];
           if (componentActionsChained) {
             let newComponentActionsChained = [];
 
@@ -3596,16 +3768,16 @@ export default class Core {
               }
             }
 
-            this.actionsChangedToActions[nameToNoLongerChain] = newComponentActionsChained;
+            this.actionsChangedToActions[idToNoLongerChain] = newComponentActionsChained;
 
           }
         }
 
-        if (newNames.length > 0) {
+        if (newTargets.length > 0) {
           if (!originObj) {
             originObj = this.originsOfActionsChangedToActions[component.componentName] = {};
           }
-          originObj[varName] = newNames;
+          originObj[varName] = newTargets;
         } else if (originObj) {
           delete originObj[varName];
 
@@ -3647,7 +3819,6 @@ export default class Core {
     stateVarObj.providePreviousValuesInDefinition = arrayStateVarObj.providePreviousValuesInDefinition;
 
     stateVarObj.nDimensions = arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
-    stateVarObj.wrappingComponents = arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix);
     stateVarObj.entryPrefix = arrayEntryPrefix;
     stateVarObj.varEnding = stateVariable.slice(arrayEntryPrefix.length)
 
@@ -3686,27 +3857,20 @@ export default class Core {
     }
 
 
-    // if any of the state variables prescribing additional entries are arrays,
-    // transform to their array entry
-    if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-      stateVarObj.stateVariablesPrescribingAdditionalAttributes = {};
+    if (arrayStateVarObj.shadowingInstructions) {
+      stateVarObj.shadowingInstructions = {};
 
-      let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+      stateVarObj.wrappingComponents = arrayStateVarObj.shadowingInstructions.returnWrappingComponents(arrayEntryPrefix);
 
-      for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-        let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+      if (arrayStateVarObj.shadowingInstructions.attributesToShadow) {
+        stateVarObj.shadowingInstructions.attributesToShadow
+          = arrayStateVarObj.shadowingInstructions.attributesToShadow;
+      }
 
-        let sObj = component.state[varName];
-
-        if (sObj.isArray) {
-
-          // find the same array entry prefix in the other array state variable
-          let newArrayEntryPrefix = sObj.entryPrefixes[entryPrefixInd];
-          let arrayEntryVarName = newArrayEntryPrefix + stateVarObj.varEnding;
-
-          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = arrayEntryVarName;
-        } else {
-          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = varName;
+      if (arrayStateVarObj.shadowingInstructions.createComponentOfType) {
+        let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+        if (arrayStateVarObj.shadowingInstructions.createComponentOfType[entryPrefixInd]) {
+          stateVarObj.shadowingInstructions.createComponentOfType = [arrayStateVarObj.shadowingInstructions.createComponentOfType[entryPrefixInd]]
         }
       }
     }
@@ -4019,6 +4183,17 @@ export default class Core {
 
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
+
+          function prependToAllKeys(keys, newStuff) {
+            for (let [ind, key] of keys.entries()) {
+              if (Array.isArray(key)) {
+                prependToAllKeys(key, newStuff)
+              } else {
+                keys[ind] = newStuff + "," + key
+              }
+            }
+          }
+
           function getAllArrayKeysSub(subArraySize) {
             if (subArraySize.length === 1) {
               // array of numbers from 0 to subArraySize[0], cast to strings
@@ -4031,7 +4206,9 @@ export default class Core {
                 if (flatten) {
                   subKeys.push(...subSubKeys.map(x => ind + "," + x))
                 } else {
-                  subKeys.push(subSubKeys.map(x => ind + "," + x))
+                  let newSubSubKeys = deepClone(subSubKeys);
+                  prependToAllKeys(newSubSubKeys, ind)
+                  subKeys.push(newSubSubKeys)
                 }
               }
               return subKeys;
@@ -4062,7 +4239,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+          return entryPrefixes[0] + [...propIndex.map(x => Math.round(Number(x))), ...Array(stateVarObj.nDimensions - propIndex.length).fill(1)].join('_')
         };
       }
 
@@ -4133,7 +4310,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + propIndex;
+          return entryPrefixes[0] + propIndex[0];
         };
       }
 
@@ -4172,12 +4349,13 @@ export default class Core {
       stateVarObj.returnEntryDimensions = () => 1;
     }
 
-    // function that returns wrapping components for whole array or entries (if given prefix)
-    if (!stateVarObj.returnWrappingComponents) {
-      stateVarObj.returnWrappingComponents = prefix => [];
+    if (stateVarObj.shadowingInstructions) {
+      // function that returns wrapping components for whole array or entries (if given prefix)
+      if (!stateVarObj.shadowingInstructions.returnWrappingComponents) {
+        stateVarObj.shadowingInstructions.returnWrappingComponents = prefix => [];
+      }
+      stateVarObj.wrappingComponents = stateVarObj.shadowingInstructions.returnWrappingComponents();
     }
-
-    stateVarObj.wrappingComponents = stateVarObj.returnWrappingComponents();
 
     stateVarObj.usedDefaultByArrayKey = {};
 
@@ -5384,7 +5562,7 @@ export default class Core {
           essentialArray = component.essentialState[essentialVarName] = [];
         }
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
 
@@ -5413,7 +5591,7 @@ export default class Core {
       } else {
         component.essentialState[essentialVarName] = result.setEssentialValue[varName];
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
         this.essentialValuesSavedInDefinition[component.componentName][varName]
@@ -5424,35 +5602,39 @@ export default class Core {
     }
 
 
-    if (result.setComponentType) {
-      for (let varName in result.setComponentType) {
-        if (!component.state[varName].hasVariableComponentType) {
+    if (result.setCreateComponentOfType) {
+      for (let varName in result.setCreateComponentOfType) {
+        if (!component.state[varName].shadowingInstructions?.hasVariableComponentType) {
           throw Error(`Cannot set type of ${varName} of ${component.componentName} as it it does not have the hasVariableComponentType attribute.`)
         }
         let changedComponentType = false;
-        let originalComponentType = component.state[varName].componentType;
-        let newComponentType = result.setComponentType[varName];
-        if (Array.isArray(originalComponentType)) {
-          if (Array.isArray(newComponentType)) {
-            if (originalComponentType.length !== newComponentType.length) {
+        let shadowingInstructions = component.state[varName].shadowingInstructions;
+        if (!shadowingInstructions) {
+          shadowingInstructions = component.state[varName].shadowingInstructions = {}
+        }
+        let originalCreateComponentOfType = shadowingInstructions.createComponentOfType;
+        let newCreateComponentOfType = result.setCreateComponentOfType[varName];
+        if (Array.isArray(originalCreateComponentOfType)) {
+          if (Array.isArray(newCreateComponentOfType)) {
+            if (originalCreateComponentOfType.length !== newCreateComponentOfType.length) {
               changedComponentType = true;
-            } else if (originalComponentType.some((v, i) => v != newComponentType[i])) {
+            } else if (originalCreateComponentOfType.some((v, i) => v != newCreateComponentOfType[i])) {
               changedComponentType = true;
             }
           } else {
             changedComponentType = true;
           }
-        } else if (Array.isArray(newComponentType)) {
+        } else if (Array.isArray(newCreateComponentOfType)) {
           changedComponentType = true;
         } else {
-          changedComponentType = originalComponentType !== newComponentType
+          changedComponentType = originalCreateComponentOfType !== newCreateComponentOfType
         }
         if (changedComponentType) {
           valuesChanged[varName] = true;
         }
-        component.state[varName].componentType = result.setComponentType[varName];
+        shadowingInstructions.createComponentOfType = result.setCreateComponentOfType[varName];
         if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
-          let arrayComponentType = result.setComponentType[varName];
+          let arrayComponentType = result.setCreateComponentOfType[varName];
           let arrayComponentTypeIsArray = Array.isArray(arrayComponentType)
           for (let arrayEntryName of component.state[varName].arrayEntryNames) {
             // TODO: address multidimensional arrays
@@ -5463,9 +5645,9 @@ export default class Core {
                 let ind = component.state[varName].keyToIndex(arrayKey);
                 componentType.push(arrayComponentType[ind])
               }
-              component.state[arrayEntryName].componentType = componentType;
+              component.state[arrayEntryName].shadowingInstructions.createComponentOfType = componentType;
             } else {
-              component.state[arrayEntryName].componentType = arrayComponentType;
+              component.state[arrayEntryName].shadowingInstructions.createComponentOfType = arrayComponentType;
 
             }
           }
@@ -6071,6 +6253,9 @@ export default class Core {
         // save old value
         // mark stale by putting getter back in place to get a new value next time it is requested
         stateVarObj._previousValue = await stateVarObj.value;
+        if (Array.isArray(stateVarObj._previousValue)) {
+          stateVarObj._previousValue = [...stateVarObj._previousValue]
+        }
         delete stateVarObj.value;
         let getStateVar = this.getStateVariableValue;
         Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: vName }), configurable: true });
@@ -6521,6 +6706,9 @@ export default class Core {
               // save old value
               // mark stale by putting getter back in place to get a new value next time it is requested
               stateVarObj._previousValue = await stateVarObj.value;
+              if (Array.isArray(stateVarObj._previousValue)) {
+                stateVarObj._previousValue = [...stateVarObj._previousValue]
+              }
               delete stateVarObj.value;
               Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: vName }), configurable: true });
             }
@@ -6631,9 +6819,22 @@ export default class Core {
           continue;
         }
 
+        let composite = this._components[shadowingParent.shadows.compositeName];
+        let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
+
         let shadowingSerializeChildren = [];
         for (let child of newChildren) {
-          shadowingSerializeChildren.push(await child.serialize())
+          if (typeof child === "object") {
+            shadowingSerializeChildren.push(await child.serialize(
+              {
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
+              }
+            ))
+          } else {
+            shadowingSerializeChildren.push(child);
+          }
         }
         shadowingSerializeChildren = postProcessCopy({
           serializedComponents: shadowingSerializeChildren,
@@ -7525,9 +7726,19 @@ export default class Core {
         // TODO: not using uniqueIdentifiers used here
         // is this a problem?
         let newSerializedReplacements = [];
+
+        let compositeCreatingShadow = this._components[shadowingComponent.shadows.compositeName];
+        let sourceAttributesToIgnore = await compositeCreatingShadow.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.sourceAttributesToIgnoreRecursively;
+
         for (let repl of replacementsToShadow) {
           if (typeof repl === "object") {
-            newSerializedReplacements.push(await repl.serialize());
+            newSerializedReplacements.push(await repl.serialize(
+              {
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
+              }
+            ));
           } else {
             newSerializedReplacements.push(repl);
           }
@@ -7541,7 +7752,7 @@ export default class Core {
 
         // TODO: is isResponse the only attribute to convert?
         if (shadowingComponent.attributes.isResponse) {
-          let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject({ flags: this.flags });
+          let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject();
 
           for (let repl of newSerializedReplacements) {
             if (typeof repl !== "object") {
@@ -7897,11 +8108,20 @@ export default class Core {
 
   }
 
-  async performAction({ componentName, actionName, args, event }) {
+  async performAction({ componentName, actionName, args, event, caseInsensitiveMatch }) {
 
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
+      if (!action && caseInsensitiveMatch) {
+        let actionNameLower = actionName.toLowerCase();
+        for (let aName in component.actions) {
+          if (aName.toLowerCase() === actionNameLower) {
+            action = component.actions[aName];
+            break;
+          }
+        }
+      }
       if (action) {
         if (event) {
           this.requestRecordEvent(event);
@@ -7913,7 +8133,24 @@ export default class Core {
       }
     }
 
-    console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+    if (!component && actionName === "recordVisibilityChange" && args?.isVisible === false) {
+      // We have an action to record that a component is no longer visible
+      // and the component has been deleted.
+      // Record a visibility changed event
+      // Note: don't know componentType, but componentType isn't preserved when summarize visibility events
+      this.requestRecordEvent({
+        verb: "visibilityChanged",
+        object: {
+          componentName,
+        },
+        result: { isVisible: false }
+      })
+      return this.resolveAction({ actionId: args.actionId });
+    }
+
+    if (component) {
+      console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+    }
 
   }
 
@@ -7921,12 +8158,13 @@ export default class Core {
     if (actionId) {
       postMessage({
         messageType: "resolveAction",
+        coreId: this.coreId,
         args: { actionId }
       })
     }
   }
 
-  async triggerChainedActions({ componentName }) {
+  async triggerChainedActions({ componentName, triggeringAction }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
       await this.checkForActionChaining({
@@ -7937,9 +8175,13 @@ export default class Core {
 
     this.updateInfo.componentsToUpdateActionChaining = {};
 
+    let id = componentName;
+    if (triggeringAction) {
+      id += "|" + triggeringAction
+    }
 
-    if (this.actionsChangedToActions[componentName]) {
-      for (let chainedActionInstructions of this.actionsChangedToActions[componentName]) {
+    if (this.actionsChangedToActions[id]) {
+      for (let chainedActionInstructions of this.actionsChangedToActions[id]) {
         await this.performAction(chainedActionInstructions);
       }
     }
@@ -8015,7 +8257,9 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false }) {
+  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
+    doNotSave = false
+  }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
@@ -8173,43 +8417,34 @@ export default class Core {
 
     if (recordItemSubmissions.length > 0) {
 
-      let subitemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
+      let itemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
+      let pageCreditAchieved = await this.document.stateValues.creditAchieved;
+      let itemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
 
       if (event) {
         if (!event.context) {
           event.context = {};
         }
-        if (!event.context.subitemCreditAchieved) {
-          event.context.subitemCreditAchieved = {};
+        event.context.item = itemsSubmitted[0];
+        event.context.itemCreditAchieved = itemCreditAchieved[itemsSubmitted[0] - 1];
+
+        // Just in case the code gets changed to that more than item can be submitted at once
+        // record credit achieved for any additional items
+        if (itemsSubmitted.length > 1) {
+          event.context.additionalItemCreditAchieved = {};
+          for (let itemNumber of itemsSubmitted) {
+            event.context.additionalItemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
+          }
         }
-        event.context.itemCreditAchieved = await this.document.stateValues.creditAchieved;
+        event.context.pageCreditAchieved = await this.document.stateValues.creditAchieved;
       }
 
-      let itemCreditAchieved = await this.document.stateValues.creditAchieved;
-      let subitemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
-
-      let componentsSubmitted = [];
-      for (let itemSubmission of recordItemSubmissions) {
-        componentsSubmitted.push({
-          componentName: itemSubmission.submittedComponent,
-          response: itemSubmission.response,
-          responseText: itemSubmission.responseText,
-          creditAchieved: itemSubmission.creditAchieved,
-          subitemNumber: itemSubmission.itemNumber
-        });
-      }
-
-      if (event) {
-        for (let subitemNumber of subitemsSubmitted) {
-          event.context.subitemCreditAchieved[subitemNumber] = subitemCreditAchieved[subitemNumber - 1]
-        }
-      }
 
       // if itemNumber is zero, it means this document wasn't given any weight,
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ itemCreditAchieved, componentsSubmitted });
+        this.saveSubmissions({ pageCreditAchieved });
       }
 
     }
@@ -8261,13 +8496,15 @@ export default class Core {
 
     }
 
+    if (!doNotSave) {
 
-    clearTimeout(this.savePageStateTimeoutID);
+      clearTimeout(this.savePageStateTimeoutID);
 
-    //Debounce the save to database
-    this.savePageStateTimeoutID = setTimeout(() => {
-      this.saveState();
-    }, 1000);
+      //Debounce the save to database
+      this.savePageStateTimeoutID = setTimeout(() => {
+        this.saveState();
+      }, 1000);
+    }
 
 
 
@@ -8283,6 +8520,13 @@ export default class Core {
   }
 
   requestRecordEvent(event) {
+
+    this.resumeVisibilityMeasuring();
+
+    if (event.verb === "visibilityChanged") {
+      return this.processVisibilityChangedEvent(event);
+    }
+
     return new Promise((resolve, reject) => {
 
       this.processQueue.push({
@@ -8303,8 +8547,6 @@ export default class Core {
       return;
     }
 
-    event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
     if (!event.result) {
       event.result = {};
     }
@@ -8318,13 +8560,14 @@ export default class Core {
       pageCid: this.cid,
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
-      variantIndex: this.requestedVariant.index,
+      activityVariantIndex: this.activityVariantIndex,
+      pageVariantIndex: this.requestedVariant.index,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
       result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
       context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
-      timestamp: event.timestamp,
-      version: "0.1.0",
+      timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      version: "0.1.1",
     }
 
     axios.post('/api/recordEvent.php', payload)
@@ -8335,6 +8578,7 @@ export default class Core {
         console.error(`Error saving event: ${e.message}`);
         // postMessage({
         //   messageType: "sendToast",
+        //   coreId: this.coreId,
         //   args: {
         //     message: `Error saving event: ${e.message}`,
         //     toastType: toastType.ERROR
@@ -8344,6 +8588,118 @@ export default class Core {
 
 
     return Promise.resolve();
+  }
+
+  processVisibilityChangedEvent(event) {
+
+    let componentName = event.object.componentName;
+    let isVisible = event.result.isVisible;
+
+    if (isVisible) {
+      if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
+        this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
+      }
+      if (componentName === this.documentName) {
+        if (!this.visibilityInfo.documentHasBeenVisible) {
+          this.visibilityInfo.documentHasBeenVisible = true;
+          this.onDocumentFirstVisible();
+        }
+      }
+    } else {
+      let begin = this.visibilityInfo.componentsCurrentlyVisible[componentName]
+      if (begin) {
+        delete this.visibilityInfo.componentsCurrentlyVisible[componentName];
+
+        let timeInSeconds = (new Date() - Math.max(begin, this.visibilityInfo.timeLastSent)) / 1000;
+
+        if (this.visibilityInfo.infoToSend[componentName]) {
+          this.visibilityInfo.infoToSend[componentName] += timeInSeconds;
+        } else {
+          this.visibilityInfo.infoToSend[componentName] = timeInSeconds;
+        }
+
+      }
+    }
+
+  }
+
+  sendVisibilityChangedEvents() {
+    let infoToSend = { ...this.visibilityInfo.infoToSend };
+    this.visibilityInfo.infoToSend = {};
+    let timeLastSent = this.visibilityInfo.timeLastSent;
+    this.visibilityInfo.timeLastSent = new Date();
+    let currentVisible = { ...this.visibilityInfo.componentsCurrentlyVisible };
+
+    for (let componentName in currentVisible) {
+      let timeInSeconds = (this.visibilityInfo.timeLastSent - Math.max(timeLastSent, currentVisible[componentName])) / 1000;
+      if (infoToSend[componentName]) {
+        infoToSend[componentName] += timeInSeconds;
+      } else {
+        infoToSend[componentName] = timeInSeconds;
+      }
+    }
+
+    for (let componentName in infoToSend) {
+      infoToSend[componentName] = Math.round(infoToSend[componentName])
+      if (!infoToSend[componentName]) {
+        // delete if rounded down to zero
+        delete infoToSend[componentName];
+      }
+    }
+
+    let promise;
+
+    if (Object.keys(infoToSend).length > 0) {
+      let event = {
+        object: { componentName: this.documentName, componentType: "document" },
+        verb: "isVisible",
+        result: infoToSend
+      }
+
+      promise = new Promise((resolve, reject) => {
+
+        this.processQueue.push({
+          type: "recordEvent", event, resolve, reject
+        })
+
+        if (!this.processing) {
+          this.processing = true;
+          this.executeProcesses();
+
+        }
+      })
+    }
+
+    if (!this.visibilityInfo.suspended) {
+      clearTimeout(this.visibilityInfo.saveTimerId);
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
+    }
+
+    return promise;
+
+  }
+
+  async suspendVisibilityMeasuring() {
+    clearTimeout(this.visibilityInfo.saveTimerId);
+    clearTimeout(this.visibilityInfo.suspendTimerId);
+    if (!this.visibilityInfo.suspended) {
+      this.visibilityInfo.suspended = true;
+      await this.sendVisibilityChangedEvents();
+    }
+  }
+
+  resumeVisibilityMeasuring() {
+    if (this.visibilityInfo.suspended) {
+      // restart visibility measuring
+      this.visibilityInfo.suspended = false;
+      this.visibilityInfo.timeLastSent = new Date();
+      clearTimeout(this.visibilityInfo.saveTimerId);
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay);
+    }
+
+    clearTimeout(this.visibilityInfo.suspendTimerId);
+    this.visibilityInfo.suspendTimerId = setTimeout(this.suspendVisibilityMeasuring.bind(this), this.visibilityInfo.suspendDelay);
+
   }
 
   async executeUpdateStateVariables(newStateVariableValues) {
@@ -8753,7 +9109,15 @@ export default class Core {
         }
       } else {
         for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
-          desiredValuesForArray[arrayKey] = instruction.value[ind];
+          if (Array.isArray(instruction.value)) {
+            desiredValuesForArray[arrayKey] = instruction.value[ind];
+          } else if (instruction.value instanceof me.class) {
+            try {
+              desiredValuesForArray[arrayKey] = instruction.value.get_component(ind);
+            } catch (e) {
+
+            }
+          }
         }
       }
       inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
@@ -9328,7 +9692,9 @@ export default class Core {
 
   }
 
-  async saveState() {
+  async saveState(overrideThrottle = false) {
+
+    this.savePageStateTimeoutID = null;
 
     if (!this.flags.allowSaveState && !this.flags.allowLocalState) {
       return;
@@ -9349,7 +9715,8 @@ export default class Core {
     }
 
     postMessage({
-      messageType: "savedState"
+      messageType: "savedState",
+      coreId: this.coreId,
     })
 
     if (!this.flags.allowSaveState) {
@@ -9375,18 +9742,25 @@ export default class Core {
     this.changesToBeSaved = true;
 
     // if not currently in throttle, save changes to database
-    this.saveChangesToDatabase();
+    this.saveChangesToDatabase(overrideThrottle);
 
 
   }
 
-  async saveChangesToDatabase() {
+  async saveChangesToDatabase(overrideThrottle) {
     // throttle save to database at 60 seconds
 
-    if (this.saveStateToDBTimerId !== null || !this.changesToBeSaved) {
+    if (!this.changesToBeSaved) {
       return;
     }
 
+    if (this.saveStateToDBTimerId !== null) {
+      if (overrideThrottle) {
+        clearTimeout(this.saveStateToDBTimerId);
+      } else {
+        return;
+      }
+    }
 
     this.changesToBeSaved = false;
 
@@ -9394,8 +9768,7 @@ export default class Core {
     this.saveStateToDBTimerId = setTimeout(() => {
       this.saveStateToDBTimerId = null;
       this.saveChangesToDatabase();
-    }, 10000);
-    // }, 60000);
+    }, 60000);
 
 
     // TODO: find out how to test if not online
@@ -9403,6 +9776,7 @@ export default class Core {
 
     // postMessage({
     //   messageType: "sendToast",
+    //   coreId: this.coreId,
     //   args: {
     //     message: "You're not connected to the internet. Changes are not saved. ",
     //     toastType: toastType.ERROR
@@ -9416,6 +9790,7 @@ export default class Core {
     } catch (e) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: "Error synchronizing data.  Changes not saved to the server.",
           toastType: toastType.ERROR
@@ -9429,6 +9804,7 @@ export default class Core {
     if (resp.status === null) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
           toastType: toastType.ERROR
@@ -9442,6 +9818,7 @@ export default class Core {
     if (!data.success) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: data.message,
           toastType: toastType.ERROR
@@ -9479,6 +9856,7 @@ export default class Core {
 
         postMessage({
           messageType: "resetPage",
+          coreId: this.coreId,
           args: {
             changedOnDevice: data.device,
             newCid: data.cid,
@@ -9489,6 +9867,7 @@ export default class Core {
         // if the cid changed without the attemptNumber changing, something went wrong
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: {
             errMsg: "Content changed unexpectedly!"
           }
@@ -9505,7 +9884,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ itemCreditAchieved, componentsSubmitted }) {
+  saveSubmissions({ pageCreditAchieved }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9514,9 +9893,8 @@ export default class Core {
     const payload = {
       doenetId: this.doenetId,
       attemptNumber: this.attemptNumber,
-      credit: itemCreditAchieved,
+      credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
-      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
 
     console.log('payload for save credit for item', payload);
@@ -9528,6 +9906,7 @@ export default class Core {
         if (resp.status === null) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
               toastType: toastType.ERROR
@@ -9536,6 +9915,7 @@ export default class Core {
         } else if (!resp.data.success) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
               toastType: toastType.ERROR
@@ -9547,13 +9927,21 @@ export default class Core {
 
           postMessage({
             messageType: "updateCreditAchieved",
-            args: data
+            coreId: this.coreId,
+            args: {
+              creditByItem: data.creditByItem.map(Number),
+              creditForAssignment: Number(data.creditForAssignment),
+              creditForAttempt: Number(data.creditForAttempt),
+              showCorrectness: data.showCorrectness === "1",
+              totalPointsOrPercent: Number(data.totalPointsOrPercent),
+            }
           })
 
           //TODO: need type warning (red but doesn't hang around)
           if (data.viewedSolution) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since solution was viewed.',
                 toastType: toastType.INFO
@@ -9563,6 +9951,7 @@ export default class Core {
           if (data.timeExpired) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the time allowed has expired.',
                 toastType: toastType.INFO
@@ -9572,6 +9961,7 @@ export default class Core {
           if (data.pastDueDate) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the due date has passed.',
                 toastType: toastType.INFO
@@ -9581,6 +9971,7 @@ export default class Core {
           if (data.exceededAttemptsAllowed) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since no more attempts are allowed.',
                 toastType: toastType.INFO
@@ -9590,6 +9981,7 @@ export default class Core {
           if (data.databaseError) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'Credit not saved due to database error.',
                 toastType: toastType.ERROR
@@ -9601,6 +9993,7 @@ export default class Core {
       .catch(e => {
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message: `Credit not saved due to error: ${e.message}`,
             toastType: toastType.ERROR
@@ -9724,6 +10117,11 @@ export default class Core {
 
     // TODO: check if student was actually allowed to view solution.
 
+    // if not allowed to save submissions, then allow view but don't record it
+    if (!this.flags.allowSaveSubmissions) {
+      return { allowView: true, message: "", scoredComponent: this.documentName };
+    }
+
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {
         doenetId: this.doenetId,
@@ -9737,6 +10135,7 @@ export default class Core {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message,
             toastType: toastType.ERROR
@@ -9758,6 +10157,7 @@ export default class Core {
 
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message,
           toastType: toastType.ERROR
@@ -9779,6 +10179,7 @@ export default class Core {
   requestAnimationFrame(args) {
     postMessage({
       messageType: "requestAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
@@ -9786,9 +10187,44 @@ export default class Core {
   cancelAnimationFrame(args) {
     postMessage({
       messageType: "cancelAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
+
+
+  handleVisibilityChange({ visible }) {
+    if (visible) {
+      this.resumeVisibilityMeasuring();
+    } else {
+      this.suspendVisibilityMeasuring();
+    }
+  }
+
+  handleNavigatingToComponent(componentName) {
+    let component = this._components[componentName];
+    if (component?.actions?.revealSection) {
+      this.requestAction({ componentName: component.componentName, actionName: "revealSection" })
+    }
+  }
+
+  async terminate() {
+    // suspend visibility measuring so that remaining times collected are saved
+    await this.suspendVisibilityMeasuring();
+
+    if (this.savePageStateTimeoutID) {
+      // if in debounce to save page to local storage
+      // then immediate save to local storage
+      // and override timeout to save to database
+      clearTimeout(this.savePageStateTimeoutID);
+      await this.saveState(true);
+    } else {
+      // else override timeout to save any pending changes to database
+      await this.saveChangesToDatabase(true)
+    }
+
+  }
+
 }
 
 

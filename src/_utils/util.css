@@ -12,6 +12,11 @@
   outline: none;
 }
 
+.nooutline:focus {
+  outline: 2px solid var(--canvastext);
+  outline-offset: -6px;
+}
+
 * {
   outline: none;
 }

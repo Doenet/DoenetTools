@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
 
 export default React.memo(function RegionBetweenCurveXAxis(props) {
-  let { name, SVs } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRender(props);
 
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
 
@@ -32,20 +32,37 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       return null;
     }
 
+    let fillColor = SVs.selectedStyle.fillColor;
+    if(fillColor === "none") {
+      fillColor = SVs.selectedStyle.lineColor;
+    }
+
+
+    // Note: actual content of label is being ignored
+    // but, if label is non-empty, then jsxgraph display a label
+    // which is an integral sign = value of integral
+
+    // TODO: either change behavior or change how label is specified
+
     let jsxAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
 
-      // TODO: use more appropriate style attribute
-      fillColor: SVs.selectedStyle.lineColor,
+      fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
       highlight: false,
 
+      // don't display points at left and right endpoints along function
       curveLeft: { visible: false },
       curveRight: { visible: false }
     };
+
+    jsxAttributes.label = {
+      highlight: false
+    }
 
     let f = createFunctionFromDefinition(SVs.fDefinition);
     curveJXG.current = board.create('functiongraph', f, { visible: false });
@@ -91,6 +108,25 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       integralJXG.current.curveLeft.coords.setCoordinates(JXG.COORDS_BY_USER, [x1, y1]);
       integralJXG.current.curveRight.coords.setCoordinates(JXG.COORDS_BY_USER, [x2, y2]);
 
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = integralJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        integralJXG.current.setAttribute({ layer });
+      }
+
+      let fillColor = SVs.selectedStyle.fillColor;
+      if(fillColor === "none") {
+        fillColor = SVs.selectedStyle.lineColor;
+      }
+
+      if (integralJXG.current.visProp.fillcolor !== fillColor) {
+        integralJXG.current.visProp.fillcolor = fillColor;
+      }
+
+      if (integralJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        integralJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+      }
 
       // including both update and full updates for all parts of curve and board
       // makes sure that it updates consistently.
@@ -113,7 +149,7 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       board.updateRenderer();
     }
 
-    return <><a name={name} /></>
+    return <><a name={id} /></>
 
   }
 
@@ -122,5 +158,5 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 })

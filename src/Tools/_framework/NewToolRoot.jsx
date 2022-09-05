@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useRef } from 'react';
+import React, { useState, lazy, Suspense, useRef, useEffect } from 'react';
 import {
   atom,
   selector,
@@ -10,7 +10,7 @@ import {
 } from 'recoil';
 import styled, { keyframes } from 'styled-components';
 import Toast from './Toast';
-import ContentPanel from './Panels/NewContentPanel';
+import ContentPanel, { panelsInfoAtom } from './Panels/NewContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 import MainPanel from './Panels/NewMainPanel';
@@ -29,14 +29,18 @@ const ToolContainer = styled(animated.div)`
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
-  background-color: #e2e2e2;
+  background-color: var(--mainGray);
   position: fixed;
   top: 0;
   left: 0;
   padding: 0px;
   gap: 0px;
   box-sizing: border-box;
+  border: var(--canvastext);
+  color: var(--canvastext);
 `;
+
+
 
 export const profileAtom = atom({
   key: 'profileAtom',
@@ -77,7 +81,6 @@ export const paramObjAtom = atom({
 
 export default function ToolRoot() {
   // console.log('>>>===ToolRoot ');
-
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: 'init',
     menuPanelCap: '',
@@ -105,7 +108,7 @@ export default function ToolRoot() {
     AccountSettings: lazy(() => import('./ToolPanels/AccountSettings')),
     HomePanel: lazy(() => import('./ToolPanels/HomePanel')),
     PublicActivityViewer: lazy(() => import('./ToolPanels/PublicActivityViewer')),
-    DriveCards: lazy(() => import('./ToolPanels/DriveCards')),
+    CourseCards: lazy(() => import('./ToolPanels/CourseCards')),
     SignIn: lazy(() => import('./ToolPanels/SignIn')),
     SignOut: lazy(() => import('./ToolPanels/SignOut')),
     NavigationPanel: lazy(() => import('./ToolPanels/NavigationPanel')),
@@ -123,11 +126,12 @@ export default function ToolRoot() {
     DataPanel: lazy(() => import('./ToolPanels/DataPanel')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
-    Enrollment: lazy(() => import('./ToolPanels/Enrollment')),
+    People: lazy(() => import('./ToolPanels/People')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
     GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
     GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
+    RolesEditor: lazy(() => import('./ToolPanels/RoleEditor')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -142,8 +146,8 @@ export default function ToolRoot() {
     DashboardBreadCrumb: lazy(() =>
       import('./HeaderControls/DashboardBreadCrumb'),
     ),
-    EnrollmentBreadCrumb: lazy(() =>
-      import('./HeaderControls/EnrollmentBreadCrumb'),
+    PeopleBreadCrumb: lazy(() =>
+      import('./HeaderControls/PeopleBreadCrumb'),
     ),
     DataBreadCrumb: lazy(() => import('./HeaderControls/DataBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
@@ -173,17 +177,17 @@ export default function ToolRoot() {
             <DonutG1>
               <Circle
                 id="donut" 
-                fill="rgb(238,161,119)" 
+                fill="var(--donutBody)" 
                 r="60" 
               />
               <Circle
                 id="donut-topping"
-                fill="rgb(109,68,69)"
+                fill="var(--donutTopping)"
                 r="48"
               />
               <Circle 
                 id="donut-hole"  
-                fill="hsl(0, 0%, 99%)"
+                fill="var(--canvas)"
                 r="19"
               />
             </DonutG1>
@@ -192,17 +196,17 @@ export default function ToolRoot() {
             <DonutG2>
               <Circle
                 id="donut" 
-                fill="rgb(238,161,119)" 
+                fill="var(--donutBody)" 
                 r="60" 
               />
               <Circle
                 id="donut-topping"
-                fill="rgb(109,68,69)"
+                fill="var(--donutTopping)"
                 r="48"
               />
               <Circle 
                 id="donut-hole"  
-                fill="hsl(0, 0%, 99%)"
+                fill="var(--canvas)"
                 r="19"
               />
             </DonutG2>
@@ -211,17 +215,17 @@ export default function ToolRoot() {
             <DonutG3>
               <Circle
                 id="donut" 
-                fill="rgb(238,161,119)" 
+                fill="var(--donutBody)" 
                 r="60" 
               />
               <Circle
                 id="donut-topping"
-                fill="rgb(109,68,69)"
+                fill="var(--donutTopping)"
                 r="48"
               />
               <Circle 
                 id="donut-hole"  
-                fill="hsl(0, 0%, 99%)"
+                fill="var(--canvas)"
                 r="19"
               />
             </DonutG3>
@@ -366,6 +370,7 @@ export default function ToolRoot() {
         id="keyboard"
         isInitOpen={toolRootMenusAndPanels.footer.open}
         height={toolRootMenusAndPanels.footer.height}
+        aria-label="keyboard"
       >
         <Suspense
           key={footerKey}
@@ -384,6 +389,7 @@ export default function ToolRoot() {
   }
 
   // <p>insert keyboard here</p></FooterPanel>
+
 
   return (
     <>
@@ -430,6 +436,7 @@ export default function ToolRoot() {
 // hasNoMenuPanel: true,
 // waitForMenuSuppression:true,
 // footer: {height,open,component}
+// initialProportion: 1,
 
 let navigationObj = {
   exam: {
@@ -478,7 +485,7 @@ let navigationObj = {
     courseChooser: {
       //allCourses
       pageName: 'Course',
-      currentMainPanel: 'DriveCards',
+      currentMainPanel: 'CourseCards',
       currentMenus: ['CreateCourse'],
       menusTitles: ['Create Course'],
       menusInitOpen: [true],
@@ -490,11 +497,12 @@ let navigationObj = {
       currentMainPanel: 'Dashboard',
       menuPanelCap: 'DriveInfoCap',
       currentMenus: ['ClassTimes', 'CurrentContent'],
-      menusTitles: ['Class Times', 'Current Content'],
+      menusTitles: ['Class Times', 'Content by week settings'],
       menusInitOpen: [false, false],
       headerControls: ['DashboardBreadCrumb'],
       onLeave: 'DashboardLeave',
       waitForMenuSuppression: true,
+      color: 'var(--canvastext)',
     },
     draftactivity: {
       pageName: 'DraftActivity',
@@ -580,11 +588,13 @@ let navigationObj = {
       currentMainPanel: 'EditorViewer',
       currentMenus: [
         'PageVariant',
+        'PageLink',
         'AssignmentSettingsMenu',
         'SupportingFilesMenu',
       ],
       menusTitles: [
         'Page Variant',
+        'Page Link',
         'Assignment Settings',
         'Supporting Files',
       ],
@@ -597,21 +607,19 @@ let navigationObj = {
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
       waitForMenuSuppression: true,
     },
-    enrollment: {
+    people: {
       //allStudentsInCourse
-      pageName: 'Enrollment',
+      pageName: 'People',
       menuPanelCap: 'DriveInfoCap',
-      // currentMenus:["LoadEnrollment","ManualEnrollment"],
-      // menusTitles:["Load","Manual"],
-      // menusInitOpen:[false,false],
-      currentMenus: ['LoadEnrollment'],
+      currentMenus: ['LoadPeople'],
       menusTitles: ['Import Learners'],
       menusInitOpen: [false],
-      currentMainPanel: 'Enrollment',
-      supportPanelOptions: [],
-      supportPanelTitles: [],
+      currentMainPanel: 'People',
+      supportPanelOptions: ['RolesEditor'],
+      supportPanelTitles: ['Roles Editor'],
       supportPanelIndex: 0,
-      headerControls: ['EnrollmentBreadCrumb'],
+      headerControls: ['PeopleBreadCrumb'],
+      initialProportion: 1,
       // headerControls: ["BackButton"],
     },
     data: {
@@ -795,6 +803,8 @@ function RootController(props) {
     useRecoilState(pageToolViewAtom);
   const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
   const [suppressMenus, setSuppressMenus] = useRecoilState(suppressMenusAtom);
+  const setPanelsInfoAtom = useSetRecoilState(panelsInfoAtom);
+
 
   let lastPageToolView = useRef({ page: 'init', tool: '', view: '' });
   let backPageToolView = useRef({ page: 'init', tool: '', view: '' });
@@ -829,6 +839,19 @@ function RootController(props) {
   let nextPageToolView = { page: '', tool: '', view: '' };
   let nextMenusAndPanels = null;
   // console.log("\n>>>===RootController")
+
+  //initialProportion
+  let initialProportion = navigationObj[recoilPageToolView.page]?.[recoilPageToolView.tool]?.initialProportion
+
+  useEffect(()=>{
+    let nextInitialProportion = initialProportion;
+    if (!nextInitialProportion){ nextInitialProportion = 0.5}
+      setPanelsInfoAtom((prev)=>{
+        let next = {...prev}
+        next.proportion = nextInitialProportion;
+        return next;
+      })
+  },[initialProportion])
 
   //Suppress Menu change test
   let isSuppressMenuChange = !arraysEqual(
@@ -1052,7 +1075,6 @@ function RootController(props) {
 
     //Don't add to the url history if it's the same location the browser is at
     if (location.pathname !== pathname || location.search !== search) {
-      console.log('urlpush:', urlPush);
       navigate(urlPush);
     }
   }
@@ -1065,7 +1087,7 @@ function RootController(props) {
 
 
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 99%);
+  background-color: var(--canvas);
   border-radius: 4px;
   display: ${props => props.display ? props.display : "flex"};
   justify-content: center;
@@ -1128,7 +1150,7 @@ const BreadcrumbContainer = styled.ul`
   height: 21px;
   display: flex;
   margin-left: -35px;
-  background-color: white;
+  background-color: var(--canvas);
 `;
 
 const shimmerAnimation = keyframes `
@@ -1145,7 +1167,7 @@ const BreadcrumbOutline = styled.li`
   border-radius: 15px;
   padding: 0px 30px 0px 30px;
   /* background: var(--mainGray); */
-  /* background-color: #F5F5F5; */
+  /* background-color: var(--canvas); */
   color: black;
 
   animation-duration: 3s;
@@ -1153,8 +1175,8 @@ const BreadcrumbOutline = styled.li`
   animation-iteration-count: infinite;
   animation-name: ${shimmerAnimation};
   animation-timing-function: linear;
-  background: #f6f7f8;
-  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background: var(--canvas);
+  background: linear-gradient(to right, var(--mainGray) 8%, var(--mainGray) 18%, var(--mainGray) 33%);
   background-size: 1000px 640px;
   position: relative;
 `;
@@ -1169,7 +1191,7 @@ const Table = styled.table `
   margin: 8px;
 `;
 const Tr = styled.tr `
-  /* border-bottom: 2px solid black; */
+  /* border-bottom: 2px solid var(--canvastext); */
 `;
 const Td = styled.td `
   height: 40px;
@@ -1184,7 +1206,7 @@ const Td3Span = styled.span `
   display: block;
   height: 14px;
   border-radius: 5px;
-  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
   background-size: 500px 100px;
   animation-name: ${movingGradient};
   animation-duration: 1s;

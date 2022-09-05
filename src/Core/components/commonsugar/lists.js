@@ -20,9 +20,9 @@ export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, f
         if (pieces.length === 1) {
           let comp = pieces[0];
           let compComponentType = comp.componentType;
-          if (compComponentType === "copy" && comp.attributes && comp.attributes.componentType) {
+          if (compComponentType === "copy" && comp.attributes?.createComponentOfType) {
             if (!comp.attributes.nComponents || comp.attributes.nComponents.primitive === 1) {
-              compComponentType = comp.attributes.componentType.primitive;
+              compComponentType = comp.attributes.createComponentOfType.primitive;
             }
           }
           if (componentInfoObjects.isInheritedComponentType({

@@ -1,10 +1,22 @@
 import React, {useState, lazy, useRef, Suspense} from "../../_snowpack/pkg/react.js";
-import {atom, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {
+  atom,
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilState
+} from "../../_snowpack/pkg/recoil.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faChevronLeft, faCog, faHome} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {
+  faChevronLeft,
+  faCog,
+  faSun,
+  faMoon
+} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import Logo from "../Logo.js";
-import {pageToolViewAtom} from "../NewToolRoot.js";
+import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
+import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
+import {darkModeAtom} from "../DarkmodeController.js";
 export const selectedMenuPanelAtom = atom({
   key: "selectedMenuPanelAtom",
   default: null
@@ -13,31 +25,32 @@ const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
   display: flex;
   flex-direction: column;
- // overflow: auto;
+  // overflow: auto;
   justify-content: flex-start;
-  background: #e3e3e3;
+  background: var(--mainGray);
   height: 100%;
   overflow-x: hidden;
   width: ${({hide}) => hide ? "0px" : "240px"};
 `;
 const MenuPanelsCap = styled.div`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: ${(props) => props.fix ? "static" : "sticky"};
-border-bottom: 2px solid #e2e2e2;
-margin-bottom: -2px;
-top: 0;
-z-index: 2;
+  width: 240px;
+  height: 35px;
+  color:var(--canvastext);
+  background: var(--canvas);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: ${(props) => props.fix ? "static" : "sticky"};
+  border-bottom: 2px solid var(--mainGray);
+  margin-bottom: -2px;
+  top: 0;
+  z-index: 2;
 `;
 const IconsGroup = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 70px;
+  margin-left: 50px;
   // width: 40px;
 `;
 const Branding = styled.div`
@@ -51,24 +64,24 @@ const Branding = styled.div`
 `;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
-background: white;
+background-color: var(--canvas);
+color: var(--canvastext);
 border-top: 1px solid #e2e2e2;
 border-top: 1px solid #e2e2e2;
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 position: sticky;
 top: 35;
-z-index: 2;
+z-index: 1;
 `;
 const MenuHeaderButton = styled.button`
   border: none;
-  border-top: ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "8px solid #1A5A99" : "none"};
-  background-color: hsl(0, 0%, 100%);
+  border-top: ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "8px solid var(--mainBlue)" : "none"};
+  background-color: white;
   border-bottom: 2px solid
-    ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "#white" : "black"};
+    ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "var(--canvas)" : "var(--canvastext)"};
   width: 100%;
   height: 100%;
-
 `;
 const CloseButton = styled.button`
 background-color: #1A5A99;
@@ -77,42 +90,55 @@ width: 20px;
 color: white;
 border: none;
 // display: inline-block;
-position: static;
+position:  static;
 left: 220px;
 cursor: pointer;
 z-index: 2;
+&:focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
 `;
 const EditMenuPanels = styled.button`
-background-color: #1A5A99;
-height: 35px;
-width: 35px;
-border: none;
-color: white;
-border-radius: 17.5px;
-font-size: 24px
+  background-color: var(--mainBlue);
+  height: 35px;
+  width: 35px;
+  border: none;
+  color: var(--canvas);
+  border-radius: 17.5px;
+  font-size: 24px;
 `;
 const MenuPanelTitle = styled.button`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: center;
-align-items: center;
-border: 0px solid white;
-// border-top: 1px solid black;
-border-bottom: ${(props) => props.isOpen ? "2px solid black" : "0px solid black"} ;
-margin-top: 2px;
+  width: 240px;
+  height: 35px;
+  color:var(--canvastext);
+  background: var(--canvas);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0px solid var(--canvas);
+  // border-top: 1px solid var(--canvastext);
+  border-bottom: ${(props) => props.isOpen ? "2px solid var(--canvastext)" : "0px solid var(--canvastext)"};
+  margin-top: 2px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: -6px;
+  }
 `;
 const SettingsButton = styled.button`
-background-color: white;
-color: black;
-border: none;
-cursor: pointer;
-font-size: 20px;
+  background-color: var(--canvas);
+  color: var(--canvastext);
+  border: none;
+  border-radius: 80px;
+  cursor: pointer;
+  font-size: 20px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+  }
 `;
 const HomeButton = styled.button`
-  color: black;
-  background-color: white;
+  color: var(--canvastext);
+  background-color: var(--canvas);
   border-style: none;
   cursor: pointer;
   font-size: 20px;
@@ -123,8 +149,9 @@ function SelectionMenu(props) {
       paddingBottom: "8px",
       paddingLeft: "4px",
       paddingRight: "4px",
-      backgroundColor: "white",
-      borderLeft: "8px solid #1A5A99"
+      backgroundColor: "var(--canvas)",
+      color: "var(--canvastext)",
+      borderLeft: "8px solid var(--mainBlue)"
     }
   }, props.children));
 }
@@ -140,20 +167,26 @@ function Menu(props) {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(MenuPanelTitle, {
     isOpen,
-    onClick: () => setIsOpen((was) => !was)
+    "aria-expanded": isOpen,
+    "aria-controls": "menu",
+    onClick: () => setIsOpen((was) => !was),
+    id: "menu-title",
+    "data-test": `${props.type} Menu`
   }, /* @__PURE__ */ React.createElement("h3", null, props.title)), /* @__PURE__ */ React.createElement("div", {
+    id: "menu",
+    "aria-labelledby": "menu-title",
     style: {
       display: hideShowStyle,
       paddingTop: "4px",
       paddingBottom: "4px",
       paddingLeft: "4px",
       paddingRight: "4px",
-      backgroundColor: "white"
+      backgroundColor: "var(--canvas)"
     }
   }, props.children));
 }
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -163,6 +196,8 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, displayProfile}) {
+  const hideLinks = useRecoilValue(searchParamAtomFamily("hideLinks"));
+  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let menusArray = [];
@@ -182,6 +217,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     SelectedActivity: lazy(() => import("../Menus/SelectedActivity.js")),
     SelectedOrder: lazy(() => import("../Menus/SelectedOrder.js")),
     SelectedPage: lazy(() => import("../Menus/SelectedPage.js")),
+    SelectedPageLink: lazy(() => import("../Menus/SelectedPageLink.js")),
+    SelectedCollectionLink: lazy(() => import("../Menus/SelectedCollectionLink.js")),
     CreateCourse: lazy(() => import("../Menus/CreateCourse.js")),
     CourseEnroll: lazy(() => import("../Menus/CourseEnroll.js")),
     AddDriveItems: lazy(() => import("../Menus/AddDriveItems.js")),
@@ -190,9 +227,10 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     DoenetMLSettings: lazy(() => import("../Menus/DoenetMLSettings.js")),
     VersionHistory: lazy(() => import("../Menus/VersionHistory.js")),
     PageVariant: lazy(() => import("../Menus/PageVariant.js")),
+    PageLink: lazy(() => import("../Menus/PageLink.js")),
     ActivityVariant: lazy(() => import("../Menus/ActivityVariant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
-    LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
+    LoadPeople: lazy(() => import("../Menus/LoadPeople.js")),
     GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
     GradeDownload: lazy(() => import("../Menus/GradeDownload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
@@ -202,7 +240,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
     CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
     ClassTimes: lazy(() => import("../Menus/ClassTimes.js")),
-    CurrentContent: lazy(() => import("../Menus/CurrentContent.js"))
+    CurrentContent: lazy(() => import("../Menus/CurrentContent.js")),
+    ManageUsersMenu: lazy(() => import("../Menus/ManageUsersMenu.js"))
   }).current;
   let selectionPanel = null;
   if (currentSelectionMenu) {
@@ -229,22 +268,40 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     menusArray.push(/* @__PURE__ */ React.createElement(Menu, {
       key: mKey,
       title,
-      isInitOpen: isOpen
+      isInitOpen: isOpen,
+      type
     }, /* @__PURE__ */ React.createElement(Suspense, {
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
     }, React.createElement(LazyMenuObj[type], {mKey}))));
   }
+  let settingsButton = null;
+  if (hideLinks != "true") {
+    settingsButton = /* @__PURE__ */ React.createElement(SettingsButton, {
+      onClick: () => setPageToolView({page: "settings", tool: "", view: ""})
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faCog
+    }));
+  }
   return /* @__PURE__ */ React.createElement(MenuPanelsWrapper, {
-    hide
+    hide,
+    "aria-label": "menus"
   }, /* @__PURE__ */ React.createElement(MenuPanelsCap, {
-    fix: hide
+    fix: hide,
+    role: "banner"
   }, /* @__PURE__ */ React.createElement(Branding, {
     style: {marginLeft: "5px"}
-  }, /* @__PURE__ */ React.createElement(Logo, null), /* @__PURE__ */ React.createElement("p", null, "Doenet")), /* @__PURE__ */ React.createElement(IconsGroup, null, /* @__PURE__ */ React.createElement(SettingsButton, {
-    onClick: () => setPageToolView({page: "settings", tool: "", view: ""})
-  }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: faCog
-  }))), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
+  }, /* @__PURE__ */ React.createElement(Logo, {
+    hasLink: hideLinks != "true"
+  }), /* @__PURE__ */ React.createElement("p", null, "Doenet")), /* @__PURE__ */ React.createElement(IconsGroup, null, /* @__PURE__ */ React.createElement(Checkbox, {
+    checked: darkModeToggle === "dark",
+    onClick: () => setDarkModeToggle(darkModeToggle === "dark" ? "light" : "dark"),
+    checkedIcon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faSun
+    }),
+    uncheckedIcon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faMoon
+    })
+  }), settingsButton), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
     onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronLeft

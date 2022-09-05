@@ -1,16 +1,31 @@
-import React, {createRef, useState} from "../../_snowpack/pkg/react.js";
+import React, {createRef, useEffect, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRenderer from "./useDoenetRenderer.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 const Box = styled.svg`
 border: '2px solid red';
 margin: 2px;
 outline: none;
 `;
 export default React.memo(function orbitalDiagram(props) {
-  let {name, SVs} = useDoenetRenderer(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRenderer(props);
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
-  if (SVs.hidden) {
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
+  if (SVs.hidden || !SVs.value) {
     return null;
   }
   let rows = [...SVs.value].reverse();
@@ -22,10 +37,13 @@ export default React.memo(function orbitalDiagram(props) {
       rowNumber,
       orbitalText: row.orbitalText,
       boxes: row.boxes,
-      name
+      name: id
     }));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, rowsJSX);
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement(React.Fragment, null, rowsJSX));
 });
 const OrbitalRow = React.memo(function OrbitalRow2({rowNumber, orbitalText, boxes, name}) {
   let rowStyle = {

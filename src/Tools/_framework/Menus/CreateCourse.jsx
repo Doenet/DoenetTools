@@ -11,7 +11,7 @@ const CreateCourse = (props) =>{
 
   return <div style={props.style}>
   <ButtonGroup vertical>
-    <Button   width="menu"  value="Create New Course" onClick={createCourse} >Create New Course</Button>
+    <Button width="menu" value="Create New Course" onClick={createCourse} data-test="createCourse">Create New Course</Button>
   </ButtonGroup>
  
   </div>

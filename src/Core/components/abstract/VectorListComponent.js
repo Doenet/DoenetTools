@@ -3,7 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstring
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static returnSugarInstructions() {
@@ -157,13 +157,19 @@ export default class VectorListComponent extends BaseComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "vectors") {
-          return "vector" + propIndex;
+          if (propIndex.length === 1) {
+            return "vector" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `vectorX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 6) === "vector") {
           // could be vector or vectorX
           let vectorNum = Number(varName.slice(6));
           if (Number.isInteger(vectorNum) && vectorNum > 0) {
-            return `vectorX${vectorNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `vectorX${vectorNum}_${propIndex[0]}`
           }
         }
         return null;

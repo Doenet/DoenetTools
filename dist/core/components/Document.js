@@ -27,6 +27,27 @@ export default class Document extends BaseComponent {
       defaultValue: false,
       public: true,
     };
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+    }
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+    }
+
+    attributes.displayDigitsForCreditAchieved = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigitsForCreditAchieved",
+      defaultValue: 3,
+      public: true
+    }
 
     // at this point, we are creating these attributes
     // so that having them in the doenetML is valid
@@ -96,7 +117,9 @@ export default class Document extends BaseComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -117,7 +140,9 @@ export default class Document extends BaseComponent {
 
     stateVariableDefinitions.description = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         descriptionChild: {
           dependencyType: "child",
@@ -391,25 +416,28 @@ export default class Document extends BaseComponent {
     }
 
 
-    stateVariableDefinitions.displayDigitsForCreditAchieved = {
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } })
-    }
-
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
       forRenderer: true,
       defaultValue: 0,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigitsForCreditAchieved",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          }
+        },
       },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
-        componentType: "number",
-        stateVariablesPrescribingAdditionalAttributes: {
-          displayDigits: "displayDigitsForCreditAchieved",
+        shadowingInstructions: {
+          createComponentOfType: "number",
+          addAttributeComponentsShadowingStateVariables: {
+            displayDigits: {
+              stateVariableToShadow: "displayDigitsForCreditAchieved",
+            }
+          }
         }
       }],
       returnDependencies: () => ({
@@ -579,6 +607,7 @@ export default class Document extends BaseComponent {
 
   actions = {
     submitAllAnswers: this.submitAllAnswers.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this)
   }
 
   async submitAllAnswers({ actionId }) {
@@ -603,6 +632,18 @@ export default class Document extends BaseComponent {
 
     this.coreFunctions.resolveAction({ actionId });
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
   }
 
   static async setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,

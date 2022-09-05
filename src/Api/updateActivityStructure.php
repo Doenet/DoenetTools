@@ -44,7 +44,7 @@ if ($success){
 if ($success) {
     $sql = "
     UPDATE course_content
-    SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$json'))
+    SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.content',JSON_MERGE('[]','$json'))
     WHERE doenetId='$doenetId'
     AND courseId='$courseId'
     ";

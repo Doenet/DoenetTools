@@ -3,16 +3,12 @@ import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {useSetRecoilState, useRecoilValue, useRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {
-  processAtom,
-  enrolllearnerAtom,
-  enrollmentTableDataAtom
-} from "../ToolPanels/Enrollment.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {enrolllearnerAtom, peopleTableDataAtom, processAtom} from "./LoadPeople.js";
 export default function ManualEnrollment(props) {
   const setProcess = useSetRecoilState(processAtom);
   const [enrolllearner, setEnrolllearner] = useRecoilState(enrolllearnerAtom);
-  const setEnrollmentTableData = useSetRecoilState(enrollmentTableDataAtom);
+  const setEnrollmentTableData = useSetRecoilState(peopleTableDataAtom);
   const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
   const enrollManual = (enrolllearner2, driveId2) => {
     if (enrolllearner2) {

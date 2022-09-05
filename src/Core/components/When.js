@@ -24,7 +24,9 @@ export default class When extends BooleanComponent {
       "allowedErrorInNumbers", "includeErrorInNumberExponents",
       "allowedErrorIsAbsolute",
       "nSignErrorsMatched",
-      "nPeriodicSetMatchesRequired"
+      "nPeriodicSetMatchesRequired",
+      "caseInsensitiveMatch",
+      "matchBlanks"
     ]) {
       attributes[attrName].fallBackToParentStateVariable = attrName;
     }
@@ -40,16 +42,22 @@ export default class When extends BooleanComponent {
     // condition satisfied is just an alias to value
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       additionalStateVariablesDefined: [
         {
           variableName: "fractionSatisfied",
           public: true,
-          componentType: "number"
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
         }, {
           variableName: "conditionSatisfied",
           public: true,
-          componentType: "boolean"
+          shadowingInstructions: {
+            createComponentOfType: "boolean",
+          },
         }
       ],
       returnDependencies: () => ({
@@ -96,6 +104,14 @@ export default class When extends BooleanComponent {
         nPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
           variableName: "nPeriodicSetMatchesRequired",
+        },
+        caseInsensitiveMatch: {
+          dependencyType: "stateVariable",
+          variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
         },
         parsedExpression: {
           dependencyType: "stateVariable",

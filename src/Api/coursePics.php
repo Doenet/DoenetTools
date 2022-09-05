@@ -16,6 +16,14 @@ return  array(
   'picture14.jpg',
   'picture15.jpg',
   'picture16.jpg',
+  'picture17.jpg',
+  'picture18.jpg',
+  'picture19.jpg',
+  'picture20.jpg',
+  'picture21.jpg',
+  'picture22.jpg',
+  'picture23.jpg',
+  'picture24.jpg',
         );
 
 ?>

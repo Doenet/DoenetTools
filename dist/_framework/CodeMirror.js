@@ -4,11 +4,13 @@ import {EditorState, Transaction, StateEffect} from "../_snowpack/pkg/@codemirro
 import {selectLine, deleteLine, cursorLineUp} from "../_snowpack/pkg/@codemirror/commands.js";
 import {EditorView, keymap} from "../_snowpack/pkg/@codemirror/view.js";
 import {styleTags, tags as t} from "../_snowpack/pkg/@codemirror/highlight.js";
-import {lineNumbers} from "../_snowpack/pkg/@codemirror/gutter.js";
+import {gutter, lineNumbers} from "../_snowpack/pkg/@codemirror/gutter.js";
 import {LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from "../_snowpack/pkg/@codemirror/language.js";
+import {HighlightStyle} from "../_snowpack/pkg/@codemirror/highlight.js";
 import {completeFromSchema} from "../_snowpack/pkg/@codemirror/lang-xml.js";
 import {parser} from "../parser/doenet.js";
 import {atom, useRecoilValue} from "../_snowpack/pkg/recoil.js";
+import {getRenderer} from "../_snowpack/pkg/handsontable/renderers.js";
 const editorConfigStateAtom = atom({
   key: "editorConfigStateAtom",
   default: {
@@ -20,6 +22,41 @@ export default function CodeMirror({setInternalValue, onBeforeChange, readOnly, 
   if (readOnly === void 0) {
     readOnly = false;
   }
+  let colorTheme = EditorView.theme({
+    "&": {
+      color: "var(--canvastext)"
+    },
+    ".cm-content": {
+      caretColor: "#0e9",
+      borderDownColor: "var(--canvastext)"
+    },
+    ".cm-editor": {
+      caretColor: "#0e9",
+      backgroundColor: "var(--canvas)"
+    },
+    "&.cm-focused .cm-cursor": {
+      backgroundColor: "var(--lightBlue)",
+      borderLeftColor: "var(--canvastext)"
+    },
+    "&.cm-focused .cm-selectionBackground, ::selection": {
+      backgroundColor: "var(--lightBlue)"
+    },
+    "&.cm-focused": {
+      color: "var(--canvastext)"
+    },
+    "cm-selectionLayer": {
+      backgroundColor: "var(--mainGreen)"
+    },
+    ".cm-gutters": {
+      backgroundColor: "var(--mainGray)",
+      color: "black",
+      border: "none"
+    },
+    ".cm-activeLine": {
+      backgroundColor: "var(--lightBlue)",
+      color: "black"
+    }
+  });
   let editorConfig = useRecoilValue(editorConfigStateAtom);
   view = useRef(null);
   let parent = useRef(null);
@@ -58,6 +95,7 @@ export default function CodeMirror({setInternalValue, onBeforeChange, readOnly, 
     basicSetup,
     doenet(doenetSchema),
     EditorView.lineWrapping,
+    colorTheme,
     tabExtension,
     cutExtension,
     copyExtension,
@@ -189,7 +227,6 @@ let parserWithMetadata = parser.configure({
     indentNodeProp.add({
       Element(context) {
         let closed = /^\s*<\//.test(context.textAfter);
-        console.log("youuuhj", context.state.doc.lineAt(context.node.from));
         return context.lineIndent(context.node.from) + (closed ? 0 : context.unit);
       },
       "OpenTag CloseTag SelfClosingTag"(context) {

@@ -41,16 +41,8 @@ export default function SelectedOrder() {
     }
   },[itemObj.doenetId])
 
-  //Can't delete top order
-  let deleteDisabled = false;
-  let topOrderSoDisabled = false;
-  if (parentItemObj.type == 'activity'){
-    deleteDisabled = true;
-    topOrderSoDisabled = true;
-  }
 
-
-  let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
+  let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
   <FontAwesomeIcon icon={faFileExport} /> {itemObj.label} 
 </h2>)
 
@@ -105,7 +97,6 @@ if (behavior == 'select'){
   <DropdownMenu
         width="menu"
         items={items}
-        disabled={topOrderSoDisabled}
         // title="Order"
         defaultIndex={defaultIndex}
         onChange={({ value }) => {
@@ -130,13 +121,21 @@ if (behavior == 'select'){
           }
           value="Add Order"
         />
+        <Button
+          width="menu"
+          onClick={() =>
+            create({itemType:"collectionLink"})
+          }
+          value="Add Collection Link"
+          data-test="Add Collection Link"
+
+        />
     </ButtonGroup>
     <br />
     <Button
       width="menu"
       value="Delete Order"
       alert
-      disabled={deleteDisabled}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

@@ -2,7 +2,7 @@ import BlockComponent from './abstract/BlockComponent';
 
 export class Paginator extends BlockComponent {
   static componentType = "paginator";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
   static createAttributesObject() {
@@ -34,7 +34,9 @@ export class Paginator extends BlockComponent {
 
     stateVariableDefinitions.nPages = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
@@ -51,7 +53,9 @@ export class Paginator extends BlockComponent {
 
     stateVariableDefinitions.currentPage = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         initialPage: {
@@ -162,8 +166,21 @@ export class Paginator extends BlockComponent {
   }
 
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     setPage: this.setPage.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }
@@ -223,8 +240,6 @@ export class PaginatorControls extends BlockComponent {
       createStateVariable: "paginator",
       defaultValue: null,
     }
-
-    attributes.disabledIgnoresParentReadOnly.defaultValue = true;
 
     return attributes;
 

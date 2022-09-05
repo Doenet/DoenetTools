@@ -1,5 +1,23 @@
 import React from 'react';
-// import { doenetComponentBackgroundInactive } from '../../Tools/_framework/temp/theme';
+import styled from "styled-components";
+
+const CardStyling = styled.button`
+    background-image: linear-gradient(to bottom left, var(--canvas), var(--canvas), var(--canvas), var(--solidLightBlue));
+    border-radius: 5px;
+    width: 190px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--canvastext);
+    border: 2px solid ${props => props.alert ? 'var(--mainRed)' : props.disabled ? 'var(--mainGray)' : 'var(--canvastext)'};
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+
+    &:focus {
+        outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : props.disabled ? 'var(--mainGray)' : 'var(--canvastext)'};
+        outline-offset: 2px;
+    }
+`
 
 
 export default function Card(props) {
@@ -7,20 +25,20 @@ export default function Card(props) {
     const labelVisible = props.label ? 'static' : 'none';
     const align = props.vertical ? 'static' : 'flex';
 
-    var card = {
-        // boxShadow: `0 4px 8px 0 ${doenetComponentBackgroundInactive}`,
-        backgroundImage: `linear-gradient(to bottom left, white, white, white, rgb(143, 184, 222))`,
-        transition: '0.3s',
-        borderRadius: '5px',
-        width: '190px',
-        height: '100px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'black',
-        border: '2px solid black',
-        cursor: 'pointer',
-    }
+    // var card = {
+    //     // boxShadow: `0 4px 8px 0 ${doenetComponentBackgroundInactive}`,
+    //     backgroundImage: `linear-gradient(to bottom left, var(--canvas), var(--canvas), var(--canvas), var(--solidLightBlue))`,
+    //     transition: '0.3s',
+    //     borderRadius: '5px',
+    //     width: '190px',
+    //     height: '100px',
+    //     display: 'flex',
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     color: 'var(--canvastext)',
+    //     border: '2px solid var(--canvastext)',
+    //     cursor: 'pointer',
+    // }
     var title = {
         value: 'Card',
         fontSize: '24px',
@@ -52,15 +70,7 @@ export default function Card(props) {
     if (props.label) {
         label.value = props.label;
     }
-    if (props.alert) {
-        card.borderColor = '#C1292E';
-      }
-      
-    if (props.disabled) {
-        card.borderColor = '#e2e2e2';
-        card.color = 'black';
-        card.cursor = 'not-allowed';
-    }
+
     function handleClick(e) {
         if (props.onClick) props.onClick(e);
     }
@@ -68,13 +78,16 @@ export default function Card(props) {
     return (
         <div style={container}>
             <p style={label}>{label.value}</p>
-            <button 
-                style={card}
+            <CardStyling 
+                alert={props.alert}
+                disabled={props.disabled}
+                aria-labelledby={label} 
+                aria-label={title.value}
                 onClick={(e) => { handleClick(e) }}
                 >
                 <h4 style={title}><b>{title.value}</b></h4>
                 {iconVisible}
-            </button>
+            </CardStyling>
         </div>
     );
 }

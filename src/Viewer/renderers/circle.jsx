@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 export default React.memo(function Circle(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
   Circle.ignoreActionsWithoutCore = true;
 
@@ -46,23 +46,42 @@ export default React.memo(function Circle(props) {
       return null;
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      fixed,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      fillColor: SVs.selectedStyle.fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
+      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
+      highlight: !fixed,
     };
 
-    if(SVs.showLabel && SVs.label !== "") {
-      jsxCircleAttributes.label = {
-      };
+
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxCircleAttributes.hasInnerPoints = true;
+    }
+
+    jsxCircleAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxCircleAttributes.label.useMathJax = true
+    }
+
+    if (SVs.showLabel && SVs.labelForGraph !== "") {
       if (SVs.applyStyleToLabel) {
         jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
       } else {
@@ -77,7 +96,11 @@ export default React.memo(function Circle(props) {
 
 
     newCircleJXG.on('drag', function (e) {
-      dragged.current = true;
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
+      }
 
       centerCoords.current = calculateCenterPosition(e);
       callAction({
@@ -105,6 +128,10 @@ export default React.memo(function Circle(props) {
             throughAngles: throughAnglesAtDown.current,
           }
         })
+      } else {
+        callAction({
+          action: actions.circleClicked
+        });
       }
     });
 
@@ -116,7 +143,7 @@ export default React.memo(function Circle(props) {
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     return newCircleJXG;
 
@@ -171,7 +198,7 @@ export default React.memo(function Circle(props) {
 
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = circleJXG.current;
+        board.itemsRenderedLowQuality[id] = circleJXG.current;
       }
 
 
@@ -195,28 +222,57 @@ export default React.memo(function Circle(props) {
         // circleJXG.current.setAttribute({visible: false})
       }
 
+      let fixed = !SVs.draggable || SVs.fixed;
+
+
+      circleJXG.current.visProp.fixed = fixed;
+      circleJXG.current.visProp.highlight = !fixed;
+
+      let layer = 10 * SVs.layer + 5;
+      let layerChanged = circleJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        circleJXG.current.setAttribute({ layer });
+      }
+
       if (circleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         circleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         circleJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (circleJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        circleJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (circleJXG.current.visProp.dash !== newDash) {
         circleJXG.current.visProp.dash = newDash;
       }
       if (circleJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
         circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
       }
 
-      circleJXG.current.name = SVs.label;
+      if (circleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        circleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      }
+      if (circleJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+        circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
+      }
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      circleJXG.current.name = SVs.labelForGraph;
+
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         circleJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
       }
 
       circleJXG.current.needsUpdate = true;
-      circleJXG.current.update()
+      circleJXG.current.update();
+
       if (circleJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
           circleJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
@@ -234,7 +290,7 @@ export default React.memo(function Circle(props) {
     return null;
   }
 
-  return <a name={name} />
+  return <a name={id} />
 
 })
 

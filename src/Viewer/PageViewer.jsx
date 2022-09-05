@@ -5,16 +5,23 @@ import { serializedComponentsReplacer, serializedComponentsReviver } from '../Co
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererState } from './renderers/useDoenetRenderer';
-import { atomFamily, useRecoilCallback } from 'recoil';
+import { atom, atomFamily, useRecoilCallback } from 'recoil';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import axios from 'axios';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
+import { useLocation } from "react-router";
+import cssesc from 'cssesc';
 
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
   default: {},
+})
+
+export const scrollableContainerAtom = atom({
+  key: "scollParentAtom",
+  default: null
 })
 
 // Two notes about props.flags of PageViewer
@@ -26,6 +33,7 @@ const rendererUpdatesToIgnore = atomFamily({
 
 
 export default function PageViewer(props) {
+
   const toast = useToast();
   const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({
     coreId, componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable, actionId
@@ -67,7 +75,7 @@ export default function PageViewer(props) {
       }
     }
 
-    let newRendererState = { stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate };
+    let newRendererState = { stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate, prefixForIds: prefixForIds };
 
     if (childrenInstructions === undefined) {
       let previousRendererState = snapshot.getLoadable(rendererState(rendererName)).contents;
@@ -106,7 +114,6 @@ export default function PageViewer(props) {
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
 
   const [stage, setStage] = useState('initial');
-
   const [pageContentChanged, setPageContentChanged] = useState(false);
 
   const [documentRenderer, setDocumentRenderer] = useState(null);
@@ -124,12 +131,17 @@ export default function PageViewer(props) {
 
   const coreWorker = useRef(null);
 
-  const [saveStatesWorker, setSaveStatesWorker] = useState(null);
-
   const preventMoreAnimations = useRef(false);
   const animationInfo = useRef({});
 
   const resolveActionPromises = useRef({});
+
+  const prefixForIds = props.prefixForIds || "";
+
+  const previousLocationKeys = useRef([]);
+
+  let location = useLocation();
+  let hash = location.hash;
 
   useEffect(() => {
 
@@ -149,7 +161,9 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          preventMoreAnimations.current = false;
           setStage('coreCreated');
+          props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
             // we already initialized renderers before core was created
@@ -169,6 +183,8 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "returnAllStateVariables") {
           console.log(e.data.args)
           resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "componentRangePieces") {
+          window["componentRangePieces" + pageNumber] = e.data.args.componentRangePieces;
         } else if (e.data.messageType === "inErrorState") {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
@@ -176,6 +192,8 @@ export default function PageViewer(props) {
           setErrMsg(e.data.args.errMsg);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
+        } else if (e.data.messageType === "terminated") {
+          terminateCoreAndAnimations();
         }
       }
     }
@@ -185,7 +203,9 @@ export default function PageViewer(props) {
   useEffect(() => {
     return () => {
       if (coreWorker.current) {
-        coreWorker.current.terminate();
+        coreWorker.current.postMessage({
+          messageType: "terminate"
+        })
       }
     }
   }, [])
@@ -227,6 +247,58 @@ export default function PageViewer(props) {
     }
   }, []);
 
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (coreWorker.current) {
+        coreWorker.current.postMessage({
+          messageType: "visibilityChange",
+          args: {
+            visible: document.visibilityState === "visible"
+          }
+        })
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    if (hash && coreCreated.current && coreWorker.current) {
+      let anchor = hash.slice(1);
+      if (anchor.substring(0, prefixForIds.length) === prefixForIds) {
+        coreWorker.current.postMessage({
+          messageType: "navigatingToComponent",
+          args: {
+            componentName: anchor.substring(prefixForIds.length)
+          }
+        })
+      }
+    }
+  }, [location, hash, coreCreated.current, coreWorker.current])
+
+
+  useEffect(() => {
+    if (hash && documentRenderer && props.pageIsActive) {
+      let anchor = hash.slice(1);
+      if ((!previousLocationKeys.current.includes(location.key) || location.key === "default") &&
+        anchor.length > prefixForIds.length &&
+        anchor.substring(0, prefixForIds.length) === prefixForIds
+      ) {
+        document.getElementById(cssesc(anchor))?.scrollIntoView();
+      }
+      previousLocationKeys.current.push(location.key);
+    }
+
+
+  }, [location, hash, documentRenderer, props.pageIsActive])
+
+  function terminateCoreAndAnimations() {
+    preventMoreAnimations.current = true;
+    coreWorker.current.terminate();
+    coreWorker.current = null;
+    for (let id in animationInfo.current) {
+      cancelAnimationFrame(id);
+    }
+    animationInfo.current = {};
+  }
 
   async function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
@@ -250,7 +322,9 @@ export default function PageViewer(props) {
         args,
       }
 
-      coreWorker.current.postMessage({
+
+      // Note: it is possible that core has been terminated
+      coreWorker.current?.postMessage({
         messageType: "requestAction",
         args: actionArgs
       });
@@ -267,10 +341,25 @@ export default function PageViewer(props) {
     }
   }
 
+  function forceRendererStateDisabledShowCorrectness(rendererState) {
+    for (let componentName in rendererState) {
+      let stateValues = rendererState[componentName].stateValues;
+      if(stateValues.disabled === false) {
+        stateValues.disabled = true;
+      }
+      if(stateValues.showCorrectness === false) {
+        stateValues.showCorrectness = true;
+      }
+
+    }
+  }
 
   function initializeRenderers(args) {
 
     if (args.rendererState) {
+      if (props.snapshotOnly) {
+        forceRendererStateDisabledShowCorrectness(args.rendererState)
+      }
       for (let componentName in args.rendererState) {
         updateRendererSVsWithRecoil({
           coreId: coreId.current,
@@ -319,6 +408,8 @@ export default function PageViewer(props) {
         }
       ));
 
+      props.renderersInitializedCallback?.()
+
     });
 
 
@@ -360,7 +451,7 @@ export default function PageViewer(props) {
 
 
   function resetPage({ changedOnDevice, newCid, newAttemptNumber }) {
-    console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
+    // console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
 
 
     if (newAttemptNumber !== attemptNumber) {
@@ -387,31 +478,39 @@ export default function PageViewer(props) {
   }
 
   function calculateCidDoenetML() {
-
+    const coreIdWhenCalled = coreId.current;
     // compare with undefined as doenetML could be empty string
     if (doenetMLFromProps !== undefined) {
       if (cidFromProps) {
         // check to see if doenetML matches cid
         cidFromText(doenetMLFromProps)
           .then(calcCid => {
-            if (calcCid === cidFromProps) {
-              setDoenetML(doenetMLFromProps);
-              setCid(cidFromProps);
-              setStage('continue');
-            } else {
-              if (props.setIsInErrorState) {
-                props.setIsInErrorState(true)
+            //Guard against the possiblity that parameters changed while waiting
+
+            if (coreIdWhenCalled === coreId.current) {
+              if (calcCid === cidFromProps) {
+                setDoenetML(doenetMLFromProps);
+                setCid(cidFromProps);
+                setStage('continue');
+              } else {
+                if (props.setIsInErrorState) {
+                  props.setIsInErrorState(true)
+                }
+                setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
               }
-              setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
             }
           })
       } else {
         // if have doenetML and no cid, then calculate cid
         cidFromText(doenetMLFromProps)
           .then(cid => {
-            setDoenetML(doenetMLFromProps);
-            setCid(cid);
-            setStage('continue');
+
+            //Guard against the possiblity that parameters changed while waiting
+            if (coreIdWhenCalled === coreId.current) {
+              setDoenetML(doenetMLFromProps);
+              setCid(cid);
+              setStage('continue');
+            }
           })
       }
     } else {
@@ -419,22 +518,30 @@ export default function PageViewer(props) {
 
       retrieveTextFileForCid(cidFromProps, "doenet")
         .then(retrievedDoenetML => {
-          setDoenetML(retrievedDoenetML);
-          setCid(cidFromProps);
-          setStage('continue');
+          //Guard against the possiblity that parameters changed while waiting
+
+          if (coreIdWhenCalled === coreId.current) {
+            setDoenetML(retrievedDoenetML);
+            setCid(cidFromProps);
+            setStage('continue');
+          }
         })
         .catch(e => {
-          if (props.setIsInErrorState) {
-            props.setIsInErrorState(true)
+          //Guard against the possiblity that parameters changed while waiting
+
+          if (coreIdWhenCalled === coreId.current) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
           }
-          setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
         })
     }
 
   }
 
   async function loadStateAndInitialize() {
-
+    const coreIdWhenCalled = coreId.current
     let loadedState = false;
 
     if (props.flags.allowLocalState) {
@@ -514,12 +621,15 @@ export default function PageViewer(props) {
           userId: props.userId,
           requestedVariantIndex,
           allowLoadState: props.flags.allowLoadState,
+          showCorrectness: props.flags.showCorrectness,
+          solutionDisplayMode: props.flags.solutionDisplayMode,
+          showFeedback: props.flags.showFeedback,
+          showHints: props.flags.showHints,
         }
       }
 
       try {
         let resp = await axios.get('/api/loadPageState.php', payload);
-
         if (!resp.data.success) {
           if (props.flags.allowLoadState) {
             if (props.setIsInErrorState) {
@@ -569,7 +679,14 @@ export default function PageViewer(props) {
 
     }
 
-    startCore();
+    //Guard against the possiblity that parameters changed while waiting
+    if (coreIdWhenCalled === coreId.current) {
+      if (props.pageIsActive) {
+        startCore();
+      } else {
+        setStage('readyToCreateCore');
+      }
+    }
 
   }
 
@@ -599,7 +716,6 @@ export default function PageViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    console.log('result from saving to db', resp.data)
 
     let data = resp.data;
 
@@ -642,6 +758,18 @@ export default function PageViewer(props) {
 
   function startCore() {
 
+    // don't create core if snapshot only
+    if (props.snapshotOnly) {
+      if (stage !== 'readyToCreateCore') {
+        setStage('readyToCreateCore');
+      }
+      return;
+    }
+
+    //Kill the current core if it exists
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     // console.log(`send message to create core ${pageNumber}`)
 
     coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : '/viewer/core.js', { type: 'module' });
@@ -653,6 +781,7 @@ export default function PageViewer(props) {
         userId: props.userId,
         doenetML,
         doenetId: props.doenetId,
+        previousComponentTypeCounts: props.previousComponentTypeCounts,
         activityCid: props.activityCid,
         flags: props.flags,
         requestedVariantIndex,
@@ -661,6 +790,7 @@ export default function PageViewer(props) {
         itemNumber: props.itemNumber,
         updateDataOnContentChange: props.updateDataOnContentChange,
         serverSaveId: initialCoreData.current.serverSaveId,
+        activityVariantIndex: props.activityVariantIndex,
         requestedVariant: initialCoreData.current.requestedVariant,
         stateVariableChanges: initialCoreData.current.coreState ? initialCoreData.current.coreState : undefined
       }
@@ -676,49 +806,6 @@ export default function PageViewer(props) {
     }
   }
 
-  async function saveInitialRendererStates() {
-
-    let nVariants;
-
-    try {
-      let result = await returnAllPossibleVariants({ doenetId: props.doenetId, cid, flags: props.flags });
-      nVariants = result.allPossibleVariants.length;
-    } catch (e) {
-      let message = `Could not save initial renderer state: ${e.message}`;
-      console.log(`Sending toast: ${message}`);
-      toast(message, toastType.ERROR);
-      return;
-    }
-
-    let sWorker = new Worker('core/utils/initialState.js', { type: 'module' });
-
-    console.log(`Generating initial renderer states for ${nVariants} variants`);
-
-    sWorker.postMessage({
-      messageType: "saveInitialRendererStates",
-      args: {
-        doenetId: props.doenetId,
-        cid,
-        doenetML,
-        flags: props.flags,
-        nVariants
-      }
-    })
-
-    sWorker.onmessage = function (e) {
-      if (e.data.messageType === "finished") {
-        sWorker.terminate();
-        setSaveStatesWorker(null);
-      }
-    }
-
-    setSaveStatesWorker(sWorker);
-  }
-
-  function cancelSaveInitialRendererStates() {
-    saveStatesWorker.terminate();
-    setSaveStatesWorker(null);
-  }
 
   function requestAnimationFrame({ action, actionArgs, delay, animationId }) {
     if (!preventMoreAnimations.current) {
@@ -755,11 +842,11 @@ export default function PageViewer(props) {
   async function cancelAnimationFrame(animationId) {
 
     let animationInfoObj = animationInfo.current[animationId];
-    let timeoutId = animationInfoObj.timeoutId;
+    let timeoutId = animationInfoObj?.timeoutId;
     if (timeoutId !== undefined) {
       window.clearTimeout(timeoutId);
     }
-    let animationFrameID = animationInfoObj.animationFrameID;
+    let animationFrameID = animationInfoObj?.animationFrameID;
     if (animationFrameID !== undefined) {
       window.cancelAnimationFrame(animationFrameID);
     }
@@ -780,7 +867,6 @@ export default function PageViewer(props) {
   // set state to props and record that that need a new core
 
   let changedState = false;
-
   if (doenetMLFromProps !== props.doenetML) {
     setDoenetMLFromProps(props.doenetML);
     changedState = true;
@@ -824,8 +910,12 @@ export default function PageViewer(props) {
     changedState = true;
   }
 
+
   // Next time through will recalculate, after state variables are set
   if (changedState) {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     setStage('recalcParams')
     coreId.current = nanoid();
     setPageContentChanged(true);
@@ -842,7 +932,7 @@ export default function PageViewer(props) {
     return null;
   }
 
-  if (pageContentChanged && props.pageIsActive) {
+  if (pageContentChanged) {
 
     setPageContentChanged(false);
 
@@ -865,7 +955,7 @@ export default function PageViewer(props) {
     // we've moved off this page, but core is still being initialized
     // kill the core worker
 
-    coreWorker.current.terminate();
+    terminateCoreAndAnimations()
     coreWorker.current = null;
 
     setStage('readyToCreateCore');
@@ -873,30 +963,25 @@ export default function PageViewer(props) {
 
   }
 
-  if (!props.pageIsActive) {
+  if (props.hideWhenNotCurrent && !props.pageIsCurrent) {
     return null;
   }
 
-  let saveStatesButton;
-  if (saveStatesWorker) {
-    saveStatesButton = <button onClick={() => cancelSaveInitialRendererStates()}>Cancel saving initial renderer states</button>
-  } else {
-    saveStatesButton = <button onClick={() => saveInitialRendererStates()}>Save initial renderer states</button>
-  }
 
   let noCoreWarning = null;
-  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "50vh" };
-  if (!coreCreated.current) {
-    noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
-      <p>Waiting for core to be created....</p>
-    </div>
+  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
+  if (!coreCreated.current && !props.snapshotOnly) {
+    if (!documentRenderer) {
+      noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
+        <p>Initializing....</p>
+      </div>
+    }
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
   //Spacing around the whole doenetML document
   return <ErrorBoundary setIsInErrorState={props.setIsInErrorState}>
     {noCoreWarning}
-    {/* <p>{saveStatesButton}</p> */}
     <div style={pageStyle}>
       {documentRenderer}
     </div>

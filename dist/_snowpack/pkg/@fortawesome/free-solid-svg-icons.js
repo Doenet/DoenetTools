@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2022 Fonticons, Inc.
  */
@@ -153,12 +153,6 @@ var faGripLinesVertical = {
   iconName: 'grip-lines-vertical',
   icon: [192, 512, [], "f7a5", "M64 448C64 465.7 49.67 480 32 480C14.33 480 0 465.7 0 448V64C0 46.33 14.33 32 32 32C49.67 32 64 46.33 64 64V448zM192 448C192 465.7 177.7 480 160 480C142.3 480 128 465.7 128 448V64C128 46.33 142.3 32 160 32C177.7 32 192 46.33 192 64V448z"]
 };
-var faHouse = {
-  prefix: 'fas',
-  iconName: 'house',
-  icon: [576, 512, [63498, 63500, 127968, "home", "home-alt", "home-lg-alt"], "f015", "M575.8 255.5C575.8 273.5 560.8 287.6 543.8 287.6H511.8L512.5 447.7C512.5 450.5 512.3 453.1 512 455.8V472C512 494.1 494.1 512 472 512H456C454.9 512 453.8 511.1 452.7 511.9C451.3 511.1 449.9 512 448.5 512H392C369.9 512 352 494.1 352 472V384C352 366.3 337.7 352 320 352H256C238.3 352 224 366.3 224 384V472C224 494.1 206.1 512 184 512H128.1C126.6 512 125.1 511.9 123.6 511.8C122.4 511.9 121.2 512 120 512H104C81.91 512 64 494.1 64 472V360C64 359.1 64.03 358.1 64.09 357.2V287.6H32.05C14.02 287.6 0 273.5 0 255.5C0 246.5 3.004 238.5 10.01 231.5L266.4 8.016C273.4 1.002 281.4 0 288.4 0C295.4 0 303.4 2.004 309.5 7.014L564.8 231.5C572.8 238.5 576.9 246.5 575.8 255.5L575.8 255.5z"]
-};
-var faHome = faHouse;
 var faKeyboard = {
   prefix: 'fas',
   iconName: 'keyboard',
@@ -173,6 +167,11 @@ var faLightbulb = {
   prefix: 'fas',
   iconName: 'lightbulb',
   icon: [384, 512, [128161], "f0eb", "M112.1 454.3c0 6.297 1.816 12.44 5.284 17.69l17.14 25.69c5.25 7.875 17.17 14.28 26.64 14.28h61.67c9.438 0 21.36-6.401 26.61-14.28l17.08-25.68c2.938-4.438 5.348-12.37 5.348-17.7L272 415.1h-160L112.1 454.3zM191.4 .0132C89.44 .3257 16 82.97 16 175.1c0 44.38 16.44 84.84 43.56 115.8c16.53 18.84 42.34 58.23 52.22 91.45c.0313 .25 .0938 .5166 .125 .7823h160.2c.0313-.2656 .0938-.5166 .125-.7823c9.875-33.22 35.69-72.61 52.22-91.45C351.6 260.8 368 220.4 368 175.1C368 78.61 288.9-.2837 191.4 .0132zM192 96.01c-44.13 0-80 35.89-80 79.1C112 184.8 104.8 192 96 192S80 184.8 80 176c0-61.76 50.25-111.1 112-111.1c8.844 0 16 7.159 16 16S200.8 96.01 192 96.01z"]
+};
+var faLink = {
+  prefix: 'fas',
+  iconName: 'link',
+  icon: [640, 512, [128279, "chain"], "f0c1", "M172.5 131.1C228.1 75.51 320.5 75.51 376.1 131.1C426.1 181.1 433.5 260.8 392.4 318.3L391.3 319.9C381 334.2 361 337.6 346.7 327.3C332.3 317 328.9 297 339.2 282.7L340.3 281.1C363.2 249 359.6 205.1 331.7 177.2C300.3 145.8 249.2 145.8 217.7 177.2L105.5 289.5C73.99 320.1 73.99 372 105.5 403.5C133.3 431.4 177.3 435 209.3 412.1L210.9 410.1C225.3 400.7 245.3 404 255.5 418.4C265.8 432.8 262.5 452.8 248.1 463.1L246.5 464.2C188.1 505.3 110.2 498.7 60.21 448.8C3.741 392.3 3.741 300.7 60.21 244.3L172.5 131.1zM467.5 380C411 436.5 319.5 436.5 263 380C213 330 206.5 251.2 247.6 193.7L248.7 192.1C258.1 177.8 278.1 174.4 293.3 184.7C307.7 194.1 311.1 214.1 300.8 229.3L299.7 230.9C276.8 262.1 280.4 306.9 308.3 334.8C339.7 366.2 390.8 366.2 422.3 334.8L534.5 222.5C566 191 566 139.1 534.5 108.5C506.7 80.63 462.7 76.99 430.7 99.9L429.1 101C414.7 111.3 394.7 107.1 384.5 93.58C374.2 79.2 377.5 59.21 391.9 48.94L393.5 47.82C451 6.731 529.8 13.25 579.8 63.24C636.3 119.7 636.3 211.3 579.8 267.7L467.5 380z"]
 };
 var faListCheck = {
   prefix: 'fas',
@@ -190,6 +189,11 @@ var faMinus = {
   prefix: 'fas',
   iconName: 'minus',
   icon: [448, 512, [8722, 10134, 8211, "subtract"], "f068", "M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"]
+};
+var faMoon = {
+  prefix: 'fas',
+  iconName: 'moon',
+  icon: [512, 512, [127769, 9214], "f186", "M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"]
 };
 var faPercent = {
   prefix: 'fas',
@@ -221,6 +225,11 @@ var faSortUp = {
   prefix: 'fas',
   iconName: 'sort-up',
   icon: [320, 512, ["sort-asc"], "f0de", "M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224z"]
+};
+var faSun = {
+  prefix: 'fas',
+  iconName: 'sun',
+  icon: [512, 512, [9728], "f185", "M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"]
 };
 var faTableCells = {
   prefix: 'fas',
@@ -257,4 +266,4 @@ var faXmark = {
 };
 var faTimes = faXmark;
 
-export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBan, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faChartPie, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faCog, faExclamationCircle, faExternalLinkAlt, faFileCode, faFileExport, faFolder, faFolderTree, faGripLines, faGripLinesVertical, faHome, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faQuestionCircle, faSearch, faSort, faSortDown, faSortUp, faTasks, faTh, faThumbtack, faTimes, faUser };
+export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBan, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faChartPie, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faCog, faExclamationCircle, faExternalLinkAlt, faFileCode, faFileExport, faFolder, faFolderTree, faGripLines, faGripLinesVertical, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faLink, faMinus, faMoon, faPercentage, faPlus, faPuzzlePiece, faQuestionCircle, faSearch, faSort, faSortDown, faSortUp, faSun, faTasks, faTh, faThumbtack, faTimes, faUser };

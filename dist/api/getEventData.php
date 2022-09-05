@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 include "db_connection.php";
 // include "permissionsAndSettingsForOneCourseFunction.php";
 $jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
+// $userId = $jwtArray['userId'];
 
 $success = TRUE;
 $message = "";
@@ -18,32 +18,40 @@ $doenetIds = array_map(function($item) use($conn) {
   return mysqli_real_escape_string($conn, $item);
 }, $_REQUEST["doenetId"]);
 
+$secretCodeRecieved = mysqli_real_escape_string($conn,$_REQUEST["code"]);
 
-// $_POST = json_decode(file_get_contents("php://input"),true);
-
-// if (!array_key_exists('doenetIds', $_POST)) {
-// 	$success = false;
-// 	$message = "Internal Error: missing doenetIds";
-// }
-
-// if ($success){
-// 	$doenetIds = array_map(function ($item) use ($conn) {
-// 		return mysqli_real_escape_string($conn, $item);
-// 	}, $_POST["doenetIds"]);
-// }
+//In the last five minutes only
+$sql = "
+SELECT `timestamp`
+FROM eventSecretCodes
+WHERE secretCode = '$secretCodeRecieved'
+";
+// AND timestamp >= NOW() - INTERVAL 5 MINUTE
+$result = $conn->query($sql);
 
 
+$secretCodeMatches = 0;
+if ($result->num_rows > 0) {
+	$secretCodeMatches = 1;
+}
 
-// //TODO: future permission system
-// // if ($success){
+// //Keep the eventSecretCodes table small
+// $sql = "
+// DELETE FROM eventSecretCodes
+// WHERE timestamp <= NOW() - INTERVAL 5 MINUTE
+// ";
+// $result = $conn->query($sql);
 
-// // $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
-// //   if ($permissions["canEditContent"] != '1'){
-// //     $success = FALSE;
-// //     $message = "You need permission to edit content.";
-// //   }
-// // }
-
+//Temporary log
+$joined_doenetIds = implode(",", $doenetIds);
+$sql = "
+INSERT INTO temp_log
+(doenetIds,secretCodeMatches,secretCodeRecieved,timestamp)
+VALUES
+('$joined_doenetIds','$secretCodeMatches','$secretCodeRecieved',NOW())
+";
+$conn->query($sql);
+//End Temporary log
 
 if ($success){
 
@@ -58,14 +66,13 @@ if ($success){
 	pageCid,
 	pageNumber,
 	attemptNumber,
-	variantIndex,
+	pageVariantIndex,
+	activityVariantIndex,
 	object,
 	context,
 	result,
 	timestamp,
-	version,
-	deviceName,
-	valid
+	version
 	FROM event
 	WHERE doenetId IN ($sql_doenetIds)
 	";
@@ -81,14 +88,13 @@ if ($success){
 					"pageCid"=>$row['pageCid'],
 					"pageNumber"=>$row['pageNumber'],
 					"attemptNumber"=>$row['attemptNumber'],
-					"variantIndex"=>$row['variantIndex'],
+					"pageVariantIndex"=>$row['pageVariantIndex'],
+					"activityVariantIndex"=>$row['activityVariantIndex'],
 					"object"=>$row['object'],
 					"context"=>$row['context'],
-					"result"=>$row['verb'],
+					"result"=>$row['result'],
 					"timestamp"=>$row['timestamp'],
 					"version"=>$row['version'],
-					"deviceName"=>$row['deviceName'],
-					"valid"=>$row['valid'],
 				));
 			}
 		}

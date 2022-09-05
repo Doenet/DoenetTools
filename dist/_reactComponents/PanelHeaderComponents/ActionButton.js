@@ -17,13 +17,19 @@ const Button = styled.button`
     color: black;
     background-color: ${(props) => props.alert ? "var(--lightRed)" : "var(--lightBlue)"};
   }
+
+  &:focus {
+    outline: 2px solid white;
+    outline-offset: ${(props) => props.theme.outlineOffset};
+  }
 `;
 Button.defaultProps = {
   theme: {
     margin: "0px 4px 0px 4px",
     borderRadius: "var(--mainBorderRadius)",
     padding: "0px 10px 0px 10px",
-    border: "none"
+    border: "none",
+    outlineOffset: "-4px"
   }
 };
 const Label = styled.p`
@@ -108,9 +114,14 @@ export default function ActionButton(props) {
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(Button, {
+    "aria-labelledby": label,
+    "aria-label": actionButton.value,
+    "aria-disabled": props.disabled,
     id: props.id,
+    "data-test": props["data-test"],
     style: actionButton,
     alert,
+    disabled: props.disabled,
     onClick: (e) => {
       if (props.disabled !== true) {
         handleClick(e);

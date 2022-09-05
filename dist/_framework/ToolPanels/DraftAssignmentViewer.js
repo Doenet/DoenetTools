@@ -29,6 +29,7 @@ export default function DraftAssignmentViewer() {
   const [
     {
       showCorrectness,
+      paginate,
       showFeedback,
       showHints,
       cid,
@@ -41,6 +42,16 @@ export default function DraftAssignmentViewer() {
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
+  let label = itemObj.label;
+  useEffect(() => {
+    const prevTitle = document.title;
+    if (label) {
+      document.title = `${label} - Doenet`;
+    }
+    return () => {
+      document.title = prevTitle;
+    };
+  }, [label]);
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
   }, [itemObj, recoilDoenetId]);
@@ -57,6 +68,7 @@ export default function DraftAssignmentViewer() {
     dueDate,
     showCorrectness: showCorrectness2,
     showCreditAchievedMenu,
+    paginate: paginate2,
     showFeedback: showFeedback2,
     showHints: showHints2,
     showSolution,
@@ -87,6 +99,7 @@ export default function DraftAssignmentViewer() {
     allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map((x) => x + 1);
     setLoad({
       showCorrectness: showCorrectness2,
+      paginate: paginate2,
       showFeedback: showFeedback2,
       showHints: showHints2,
       cid: cid2,
@@ -122,6 +135,7 @@ export default function DraftAssignmentViewer() {
       allowSaveEvents: false
     },
     requestedVariantIndex,
-    generatedVariantCallback: variantCallback
+    generatedVariantCallback: variantCallback,
+    paginate
   }));
 }

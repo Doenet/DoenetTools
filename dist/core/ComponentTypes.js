@@ -54,6 +54,7 @@ import Curve from './components/Curve.js';
 import BezierControls from './components/BezierControls.js';
 import ControlVectors from './components/ControlVectors.js';
 import PointListComponent from './components/abstract/PointListComponent.js';
+import IntervalListComponent from './components/abstract/IntervalListComponent.js';
 import LineListComponent from './components/abstract/LineListComponent.js';
 import VectorListComponent from './components/abstract/VectorListComponent.js';
 import AngleListComponent from './components/abstract/AngleListComponent.js';
@@ -73,6 +74,7 @@ import Graph from './components/Graph.js';
 import Variables from './components/Variables.js';
 import Variable from './components/Variable.js';
 import Function from './components/Function.js';
+import Interval from './components/Interval.js';
 import Template from './components/Template.js';
 import Option from './components/Option.js';
 import Sequence from './components/Sequence.js';
@@ -152,8 +154,12 @@ import CodeEditor from './components/CodeEditor.js';
 import CodeViewer from './components/CodeViewer.js';
 import RenderDoenetML from './components/RenderDoenetML.js';
 import HasSameFactoring from './components/HasSameFactoring.js';
-import OrbitalDiagramInput from './components/OrbitalDiagramInput.js';
-import OrbitalDiagram from './components/OrbitalDiagram.js';
+import DataFrame from './components/DataFrame.js';
+import SummaryStatistics from './components/SummaryStatistics.js';
+import Chart from './components/Chart.js';
+import Legend from './components/Legend.js';
+import Label from './components/Label.js';
+import MatchesPattern from './components/MatchesPattern.js';
 
 
 //Extended
@@ -232,6 +238,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
+  Interval,
   Template, Option,
   Sequence,
   Slider,
@@ -304,9 +311,12 @@ const componentTypeArray = [
   CodeViewer,
   RenderDoenetML,
   HasSameFactoring,
-  OrbitalDiagramInput,
-  OrbitalDiagram,
-
+  DataFrame,
+  SummaryStatistics,
+  Chart,
+  Legend,
+  Label,
+  MatchesPattern,
 
   BaseComponent,
   InlineComponent,
@@ -316,6 +326,7 @@ const componentTypeArray = [
   Input,
   CompositeComponent,
   PointListComponent,
+  IntervalListComponent,
   LineListComponent,
   VectorListComponent,
   AngleListComponent,

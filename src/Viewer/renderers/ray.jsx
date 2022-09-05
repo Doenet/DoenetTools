@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
-import me from 'math-expressions';
+// import me from 'math-expressions';
 
 export default React.memo(function Ray(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Ray.ignoreActionsWithoutCore = true;
 
@@ -47,22 +47,34 @@ export default React.memo(function Ray(props) {
       return;
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + 7,
+      fixed,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed,
       straightFirst: false,
     };
 
-    jsxRayAttributes.label = {};
+
+    jsxRayAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxRayAttributes.label.useMathJax = true
+    }
+
     if (SVs.applyStyleToLabel) {
       jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -77,19 +89,23 @@ export default React.memo(function Ray(props) {
     let newRayJXG = board.create('line', through, jsxRayAttributes);
 
     newRayJXG.on('drag', function (e) {
-      dragged.current = true;
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
 
-      pointCoords.current = calculatePointPositions(e);
+        pointCoords.current = calculatePointPositions(e);
 
-      callAction({
-        action: actions.moveRay,
-        args: {
-          endpointcoords: pointCoords.current[0],
-          throughcoords: pointCoords.current[1],
-          transient: true,
-          skippable: true,
-        }
-      });
+        callAction({
+          action: actions.moveRay,
+          args: {
+            endpointcoords: pointCoords.current[0],
+            throughcoords: pointCoords.current[1],
+            transient: true,
+            skippable: true,
+          }
+        });
+      }
 
       rayJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastEndpointFromCore.current);
       rayJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughpointFromCore.current);
@@ -105,6 +121,10 @@ export default React.memo(function Ray(props) {
             throughcoords: pointCoords.current[1],
           }
         })
+      } else {
+        callAction({
+          action: actions.rayClicked
+        });
       }
     });
 
@@ -118,7 +138,7 @@ export default React.memo(function Ray(props) {
 
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     rayJXG.current = newRayJXG;
 
@@ -200,22 +220,40 @@ export default React.memo(function Ray(props) {
         // rayJXG.current.setAttribute({visible: false})
       }
 
+      let fixed = !SVs.draggable || SVs.fixed;
+
+      rayJXG.current.visProp.fixed = fixed;
+      rayJXG.current.visProp.highlight = !fixed;
+
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = rayJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        rayJXG.current.setAttribute({ layer });
+      }
+
       if (rayJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         rayJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         rayJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        rayJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+      }
+      if (rayJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        rayJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
+        rayJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (rayJXG.current.visProp.dash !== newDash) {
         rayJXG.current.visProp.dash = newDash;
       }
-      if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
-        rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
-      }
 
-      rayJXG.current.name = SVs.label;
+
+      rayJXG.current.name = SVs.labelForGraph;
       // rayJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         rayJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
@@ -242,7 +280,7 @@ export default React.memo(function Ray(props) {
     return null;
   }
 
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 
 })
 

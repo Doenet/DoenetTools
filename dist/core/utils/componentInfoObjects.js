@@ -73,6 +73,14 @@ export default function createComponentInfoObjects() {
       (includeNonStandard || !componentClass.treatAsComponentForRecursiveReplacements)
   }
 
+  let componentTypeIsSpecifiedType = (cType, specifiedCType) => isInheritedComponentType({
+    inheritedComponentType: cType,
+    baseComponentType: specifiedCType
+  });
+
+  let componentIsSpecifiedType = (comp, specifiedCType) =>
+    componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
+    || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
 
   return {
     allComponentClasses,
@@ -81,7 +89,8 @@ export default function createComponentInfoObjects() {
     isInheritedComponentType,
     isCompositeComponent,
     stateVariableInfo,
-    publicStateVariableInfo
+    publicStateVariableInfo,
+    componentIsSpecifiedType,
   };
 
 

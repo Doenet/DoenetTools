@@ -32,8 +32,9 @@ function nullishCoalesce(&$value, $default) {
 }
 
 $containingDoenetIds = [];
-	//Can the user edit content?
-	if ($permissions["canEditContent"] == '1'){
+$activityDoenetIds = [];
+	//Can the user View Unassigned Content?
+	if ($permissions["canViewUnassignedContent"] == '1'){
 		//Yes then all items and json
 		$sql = "
 		SELECT cc.type,
@@ -62,6 +63,8 @@ $containingDoenetIds = [];
 		a.showHints AS showHints,
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.paginate AS paginate,
+		a.showFinishButton AS showFinishButton,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -102,11 +105,16 @@ $containingDoenetIds = [];
           "showHints" => nullishCoalesce($row['showHints'], '1') == '1' ? true : false,
           "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
           "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
+          "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
+          "showFinishButton" => nullishCoalesce($row['showFinishButton'], '1') == '1' ? true : false,
           "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
 				);
 
 				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
 					array_push($containingDoenetIds,$row['doenetId']);
+				}
+				if ($row['type'] == 'activity' ){
+					array_push($activityDoenetIds,$row['doenetId']);
 				}
 				
 				$json = json_decode($row['json'],true);
@@ -145,10 +153,44 @@ $containingDoenetIds = [];
 				}
 
 			}
+			//page links
+			foreach($activityDoenetIds as $activityDoenetId){
+				$sql = "
+				SELECT 
+				doenetId,
+				containingDoenetId,
+				parentDoenetId,
+				sourceCollectionDoenetId,
+				sourcePageDoenetId,
+				timeOfLastUpdate,
+				label
+				FROM link_pages
+				WHERE containingDoenetId = '$activityDoenetId'
+				";
+				$result = $conn->query($sql);
+				if ($result->num_rows > 0) {
+					while($row = $result->fetch_assoc()){
+						$item = array(
+							"type"=>"pageLink",
+							"doenetId"=>$row['doenetId'],
+							"containingDoenetId"=>$row['containingDoenetId'],
+							"parentDoenetId"=>$row['parentDoenetId'],
+							"sourceCollectionDoenetId"=>$row['sourceCollectionDoenetId'],
+							"sourcePageDoenetId"=>$row['sourcePageDoenetId'],
+							"timeOfLastUpdate"=>$row['timeOfLastUpdate'],
+							"label"=>$row['label']
+						);
+						$item['isSelected'] = false; //Note: no isOpen
+						array_push($items,$item);
+
+					}
+				}
+
+			}
 		}
 
-	}else if($permissions["canViewCourse"] == '1'){
-		//TODO: check that user can view content
+	}else if($permissions != false){
+		//TODO: check that user is in the course
 		$sql = "
 		SELECT cc.type,
 		cc.doenetId,
@@ -175,6 +217,8 @@ $containingDoenetIds = [];
 		a.showHints AS showHints,
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.paginate AS paginate,
+		a.showFinishButton AS showFinishButton,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -218,6 +262,8 @@ $containingDoenetIds = [];
 					"showHints" => $row['showHints'] == '1' ? true : false,
 					"showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
 					"showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
+					"paginate" => $row['paginate'] == '1' ? true : false,
+					"showFinishButton" => $row['showFinishButton'] == '1' ? true : false,
 					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
 				);
 

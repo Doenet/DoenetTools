@@ -6,9 +6,11 @@ import me from 'math-expressions';
 export default class Circle extends Curve {
   static componentType = "circle";
   static rendererType = "circle";
+  static representsClosedPath = true;
 
   actions = {
     moveCircle: this.moveCircle.bind(this),
+    circleClicked: this.circleClicked.bind(this),
   };
 
 
@@ -33,9 +35,7 @@ export default class Circle extends Curve {
   }
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
 
@@ -43,9 +43,142 @@ export default class Circle extends Curve {
 
     let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions(args);
 
-    let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
 
-    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescription = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord;
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " border";
+          } else {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescriptionWithNoun;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+            + " circle";
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " circle with a " + borderDescription + " border";
+          } else {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " circle with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+
+    stateVariableDefinitions.borderStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderStyleDescription) {
+            borderStyleDescription += " ";
+          }
+          borderStyleDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        if (borderStyleDescription) {
+          borderStyleDescription += " ";
+        }
+
+        borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { borderStyleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.fillStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let fillStyleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          fillStyleDescription = "unfilled";
+        } else {
+          fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;
+        }
+
+        return { setValue: { fillStyleDescription } };
+      }
+    }
 
 
     stateVariableDefinitions.curveType = {
@@ -57,7 +190,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.parMax = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMax: NaN } })
@@ -65,7 +200,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.parMin = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMin: NaN } })
@@ -105,20 +242,22 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "throughPointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "throughPointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
           // throughPointX1_2 is the 2nd component of the first point
@@ -164,13 +303,19 @@ export default class Circle extends Curve {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "throughPoints") {
-          return "throughPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "throughPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 12) === "throughPoint") {
           // could be throughPoint or throughPointX
           let throughPointNum = Number(varName.slice(12));
           if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
-            return `throughPointX${throughPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${throughPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -1537,7 +1682,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.radius = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       stateVariablesDeterminingDependencies: [
         "nThroughPoints", "havePrescribedCenter", "havePrescribedRadius",
       ],
@@ -1723,7 +1870,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.diameter = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         radius: {
           dependencyType: "stateVariable",
@@ -1751,18 +1900,20 @@ export default class Circle extends Curve {
     stateVariableDefinitions.center = {
       forRenderer: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "centerX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["centerX"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "centerX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: [
         "nThroughPoints", "havePrescribedCenter", "havePrescribedRadius"
       ],
@@ -2108,8 +2259,8 @@ export default class Circle extends Curve {
           setValue: {
             nearestPoint: function ({ variables, scales }) {
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
               if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
                 return {};
@@ -2225,6 +2376,16 @@ export default class Circle extends Curve {
 
   }
 
+  async circleClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 }
 
 function circleFromTwoNumericalPoints({ point1, point2 }) {

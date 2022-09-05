@@ -12,7 +12,7 @@ export default class Feedback extends BlockComponent {
     attributes.condition = {
       createComponentOfType: "boolean"
     }
-    attributes.updateWithTarget = {
+    attributes.updateWith = {
       createPrimitiveOfType: "string"
     }
 
@@ -32,31 +32,31 @@ export default class Feedback extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.updateWithTarget = {
+    stateVariableDefinitions.updateWith = {
       returnDependencies: () => ({
-        updateWithTargetAttr: {
+        updateWithAttr: {
           dependencyType: "attributePrimitive",
-          attributeName: "updateWithTarget"
+          attributeName: "updateWith"
         }
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { updateWithTarget: dependencyValues.updateWithTargetAttr }
+          setValue: { updateWith: dependencyValues.updateWithAttr }
         }
       }
     }
 
-    stateVariableDefinitions.updateWithTargetComponentNames = {
+    stateVariableDefinitions.updateWithComponentNames = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateHide"
       },
-      stateVariablesDeterminingDependencies: ["updateWithTarget"],
+      stateVariablesDeterminingDependencies: ["updateWith"],
       returnDependencies({ stateValues }) {
-        if (stateValues.updateWithTarget) {
+        if (stateValues.updateWith) {
           return {
-            updateWithTargetComponentName: {
+            updateWithComponentName: {
               dependencyType: "expandTargetName",
-              target: stateValues.updateWithTarget
+              target: stateValues.updateWith
             }
           }
         } else {
@@ -64,10 +64,10 @@ export default class Feedback extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.updateWithTargetComponentName) {
-          return { setValue: { updateWithTargetComponentNames: [dependencyValues.updateWithTargetComponentName] } }
+        if (dependencyValues.updateWithComponentName) {
+          return { setValue: { updateWithComponentNames: [dependencyValues.updateWithComponentName] } }
         } else {
-          return { setValue: { updateWithTargetComponentNames: [] } }
+          return { setValue: { updateWithComponentNames: [] } }
         }
       }
     }
@@ -86,11 +86,15 @@ export default class Feedback extends BlockComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        if (!dependencyValues.showFeedback) {
+          return { setValue: { hideWhenUpdated: true } }
+        }
+
         let hideWhenUpdated;
         if (dependencyValues.condition === null) {
           hideWhenUpdated = false;
         } else {
-          hideWhenUpdated = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
+          hideWhenUpdated = !dependencyValues.condition.stateValues.value;
         }
 
         return { setValue: { hideWhenUpdated } }
@@ -101,9 +105,9 @@ export default class Feedback extends BlockComponent {
       forRenderer: true,
       defaultValue: true,
       hasEssential: true,
-      stateVariablesDeterminingDependencies: ["updateWithTarget"],
+      stateVariablesDeterminingDependencies: ["updateWith"],
       returnDependencies({ stateValues }) {
-        if (stateValues.updateWithTarget) {
+        if (stateValues.updateWith) {
           return {};
         } else {
           return {
@@ -127,11 +131,15 @@ export default class Feedback extends BlockComponent {
           }
         }
 
+        if (!dependencyValues.showFeedback) {
+          return { setValue: { hide: true } }
+        }
+
         let hide;
         if (dependencyValues.condition === null) {
           hide = false;
         } else {
-          hide = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
+          hide = !dependencyValues.condition.stateValues.value;
         }
 
         return { setValue: { hide } }
@@ -168,7 +176,7 @@ export default class Feedback extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async updateHide({actionId}) {
+  async updateHide({ actionId }) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
@@ -179,8 +187,21 @@ export default class Feedback extends BlockComponent {
     return await this.coreFunctions.performUpdate({ updateInstructions, actionId });
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     updateHide: this.updateHide.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

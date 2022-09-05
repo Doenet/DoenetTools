@@ -16,16 +16,26 @@ $success = TRUE;
 $message = "";
 $legitAccessKey = 0;
 
+
+
 $sql = "
-SELECT driveId,
-isReleased
-FROM drive_content
+SELECT courseId
+FROM course_content
 WHERE doenetId = '$doenetId'
 ";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $driveId = $row['driveId'];
+    $courseId = $row['courseId'];
+
+    //Save to help set up the exam
+    $sql = "
+    UPDATE course 
+    SET lastSeenExamKey='$browserKey'
+    WHERE courseId = '$courseId'
+    ";
+
+    $conn->query($sql);
 }else{
   $success = FALSE;
   $message = "Couldn't find course.";
@@ -34,8 +44,8 @@ if ($result->num_rows > 0) {
 if ($success){
   $sql = "
   SELECT browserExamKeys
-  FROM drive
-  WHERE driveId = '$driveId'
+  FROM course
+  WHERE courseId = '$courseId'
   ";
   $result = $conn->query($sql);
   $row = $result->fetch_assoc();

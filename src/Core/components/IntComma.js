@@ -21,7 +21,9 @@ export default class IntComma extends Text {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      shadowingInstructions: {
+        createComponentOfType: this.componentType,
+      },
       returnDependencies: () => ({
         originalValue: {
           dependencyType: "stateVariable",
@@ -44,7 +46,9 @@ export default class IntComma extends Text {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {

@@ -1,6 +1,11 @@
-import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
+import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
+import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
+import ToggleButtonGroup from "../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 const TextNoSelect = styled.text`
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -8,62 +13,61 @@ const TextNoSelect = styled.text`
   user-select: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 `;
-const ModeButton = styled.button`
-  &:focus {
-    outline: 0;
-  }
-  width: 120px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-  margin-left: 1px;
-  margin-top: 1px;
-`;
 export default React.memo(function subsetOfReals(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props, false);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props, false);
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
-  const activeButtonColor = "lightblue";
-  const inactiveButtonColor = "lightgrey";
-  let primaryColor = "red";
-  let addRemovePointsStyle = {backgroundColor: inactiveButtonColor};
-  if (mode === "add remove points") {
-    addRemovePointsStyle = {backgroundColor: activeButtonColor};
-  }
-  let toggleStyle = {backgroundColor: inactiveButtonColor};
-  if (mode === "toggle") {
-    toggleStyle = {backgroundColor: activeButtonColor};
-  }
-  let movePointsStyle = {backgroundColor: inactiveButtonColor};
-  if (mode === "move points") {
-    movePointsStyle = {backgroundColor: activeButtonColor};
+  function handleTogglePoints(val) {
+    if (val === 0) {
+      console.log(val);
+      setMode("add remove points");
+    } else if (val === 1) {
+      console.log(val);
+      setMode("toggle");
+    } else if (val === 2) {
+      console.log(val);
+      setMode("move points");
+    }
   }
   let controlButtons = null;
   if (!SVs.fixed) {
-    controlButtons = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: addRemovePointsStyle,
-      onClick: () => setMode("add remove points")
-    }, "Add/Remove points")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: toggleStyle,
-      onClick: () => setMode("toggle")
-    }, "Toggle points and intervals")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: movePointsStyle,
-      onClick: () => setMode("move points")
-    }, "Move Points")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("button", {
+    controlButtons = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ToggleButtonGroup, {
+      onClick: handleTogglePoints
+    }, /* @__PURE__ */ React.createElement(ToggleButton, {
+      value: "Add/Remove points"
+    }), /* @__PURE__ */ React.createElement(ToggleButton, {
+      value: "Toggle points and intervals"
+    }), /* @__PURE__ */ React.createElement(ToggleButton, {
+      value: "Move Points"
+    })), /* @__PURE__ */ React.createElement(ActionButtonGroup, null, /* @__PURE__ */ React.createElement(ActionButton, {
       onClick: () => callAction({
         action: actions.clear
-      })
-    }, "Clear")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("button", {
+      }),
+      value: "Clear"
+    }), /* @__PURE__ */ React.createElement(ActionButton, {
       onClick: () => callAction({
         action: actions.setToR
-      })
-    }, "R")));
+      }),
+      value: "R"
+    })));
   }
   let firstHashXPosition = 40;
   let xBetweenHashes = 36;
@@ -95,7 +99,7 @@ export default React.memo(function subsetOfReals(props) {
   for (let pt of SVs.points) {
     let closed = pt.inSubset;
     let xPosition = xValueToXPosition(pt.value);
-    let currentFillColor = primaryColor;
+    let currentFillColor = "var(--mainPurple)";
     if (!closed) {
       currentFillColor = "white";
     }
@@ -120,7 +124,7 @@ export default React.memo(function subsetOfReals(props) {
     const lowerPointKey = `lowerIntervalPoint${lowerXPosition}`;
     const higherPointKey = `higherIntervalPoint${higherXPosition}`;
     const lineKey = `line${lowerXPosition}-${higherXPosition}`;
-    let currentFillColor = primaryColor;
+    let currentFillColor = "var(--mainPurple)";
     let lowerLine = lowerXPosition;
     let higherLine = higherXPosition;
     if (lowerXPosition < 38) {
@@ -260,10 +264,14 @@ export default React.memo(function subsetOfReals(props) {
       }
     }
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name: id
   }), /* @__PURE__ */ React.createElement("div", {
-    ref: bounds
+    ref: bounds,
+    style: {display: "flex", gap: "12px"}
   }, controlButtons), /* @__PURE__ */ React.createElement("svg", {
     width: "808",
     height: "80",
@@ -292,5 +300,5 @@ export default React.memo(function subsetOfReals(props) {
     x2: "780",
     y2: "40",
     style: {stroke: "black", strokeWidth: "2"}
-  }), storedPoints, labels));
+  }), storedPoints, labels)));
 });

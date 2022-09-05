@@ -37,6 +37,7 @@ export class MatrixInput extends Input {
   static componentType = "matrixInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static renderChildren = true;
 
@@ -298,7 +299,9 @@ export class MatrixInput extends Input {
 
     stateVariableDefinitions.numRows = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         numRowsPreliminary: {
@@ -440,7 +443,9 @@ export class MatrixInput extends Input {
 
     stateVariableDefinitions.numColumns = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         numColumnsPreliminary: {
@@ -1529,11 +1534,9 @@ export class MatrixInput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         componentValues: {
@@ -1646,11 +1649,9 @@ export class MatrixInput extends Input {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "math",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         componentImmediateValues: {
@@ -2222,6 +2223,7 @@ export default class MatrixComponentInput extends BaseComponent {
   static rendererType = "mathInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
 
   static returnStateVariableDefinitions() {
@@ -2360,11 +2362,6 @@ export default class MatrixComponentInput extends BaseComponent {
     // get value from parent matrixInput
     // using specified rowInd and colInd
     stateVariableDefinitions.value = {
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
-      },
       stateVariablesDeterminingDependencies: ["rowInd", "colInd"],
       returnDependencies: ({ stateValues }) => {
         let varEnding = "";
@@ -2405,11 +2402,9 @@ export default class MatrixComponentInput extends BaseComponent {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "math",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       stateVariablesDeterminingDependencies: ["rowInd", "colInd"],
       returnDependencies: ({ stateValues }) => {
@@ -2480,7 +2475,9 @@ export default class MatrixComponentInput extends BaseComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -2501,7 +2498,9 @@ export default class MatrixComponentInput extends BaseComponent {
       defaultValue: "",
       provideEssentialValuesInDefinition: true,
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: [{
         variableName: "lastValueForDisplay",
         hasEssential: true,

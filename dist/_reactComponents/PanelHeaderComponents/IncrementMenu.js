@@ -15,7 +15,8 @@ const IncrementBox = styled.div`
   margin: 0;
   border-radius: 5px;
   border: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
-`;
+  background-color: var(--canvas);
+  `;
 const IncrementContainer = styled.div`
   position: relative;
   max-width: 210px;
@@ -33,6 +34,10 @@ const IncreaseButton = styled.button`
     color: black;
     background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
   }
+  &:focus {
+    outline: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+    outline-offset: 4px;
+  }
 `;
 const DecreaseButton = styled.button`
   background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"};
@@ -48,6 +53,10 @@ const DecreaseButton = styled.button`
     color: black;
     background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
   }
+  &:focus {
+    outline: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+    outline-offset: 4px;
+  }
 `;
 const TextField = styled.input`
   z-index: 0;
@@ -57,17 +66,19 @@ const TextField = styled.input`
   cursor: ${(props) => props.disabled ? "not-allowed" : "default"};
   outline: none;
   border: none;
+  &:focus {
+    outline: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+    outline-offset: 6px;
+  }
 `;
 const Label = styled.span`
   font-size: 14px;
   margin-right: 5px;
 `;
 const Menu = styled.div`
-  background-color: 'var(--mainGray)';
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  border: 'var(--mainBorder)';
-  border-top: none;
-  border-radius: 'var(--mainBorderRadius)';
+  background-color: var(--canvas);
+  border: var(--mainBorder);
+  border-radius: var(--mainBorderRadius);
   position: absolute;
   left: 0;
   right: 0;
@@ -76,12 +87,12 @@ const Menu = styled.div`
   z-index: 100;
 `;
 const MenuOption = styled.button`
-  background-color: 'var(--mainGray)';
+  background-color: var(--canvas);
   display: block;
   width: 100%;
   height: 24px;
   border: none;
-  border-bottom: 1px black solid;
+  border-bottom: 2px var(--canvastext) solid;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -330,18 +341,29 @@ export default function Increment(props) {
   return /* @__PURE__ */ React.createElement(Container, {
     label: props.label,
     vertical: props.vertical
-  }, props.label && /* @__PURE__ */ React.createElement(Label, null, props.label), props.label && props.vertical && /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(IncrementContainer, null, /* @__PURE__ */ React.createElement(IncrementBox, {
+  }, props.label && /* @__PURE__ */ React.createElement(Label, {
+    id: "increment-label"
+  }, props.label), props.label && props.vertical && /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(IncrementContainer, null, /* @__PURE__ */ React.createElement(IncrementBox, {
     ref: containerRef,
     onBlur: containerOnBlur,
     alert: props.alert
   }, /* @__PURE__ */ React.createElement(DecreaseButton, {
+    "aria-label": "Decrease",
+    "aria-labelledby": "increment-label",
+    "aria-disabled": props.disabled ? true : false,
     ref: decrementRef,
+    alert: props.alert,
     disabled: props.disabled,
     onClick: decrementOnClick
   }, decreaseIcon), /* @__PURE__ */ React.createElement(TextField, {
+    "aria-labelledby": "increment-label",
+    "aria-haspopup": "true",
+    "aria-disabled": props.disabled ? true : false,
     placeholder: props.placeholder,
     value,
+    "data-test": props.dataTest,
     ref: textFieldRef,
+    alert: props.alert,
     disabled: props.disabled ? props.disabled : false,
     onChange: onTextFieldChange,
     onClick: (e) => {
@@ -354,13 +376,22 @@ export default function Increment(props) {
       ;
       if (e.key === "Enter") {
         onTextFieldEnter(e);
+        if (menuToggle) {
+          setMenuToggle(false);
+        } else {
+          setMenuToggle(true);
+        }
       }
       ;
     }
   }), /* @__PURE__ */ React.createElement(IncreaseButton, {
+    alert: props.alert,
     ref: incrementRef,
     disabled: props.disabled,
-    onClick: incrementOnClick
+    onClick: incrementOnClick,
+    "aria-labelledby": "increment-label",
+    "aria-label": "Increase",
+    "aria-disabled": props.disabled ? true : false
   }, increaseIcon)), !props.deactivateDropdown && menuOptions && menuToggle && /* @__PURE__ */ React.createElement(Menu, {
     ref: menuRef,
     maxHeight: props.maxHeight ? props.maxHeight : "150px"

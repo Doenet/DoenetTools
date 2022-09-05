@@ -18,7 +18,9 @@ const IncrementBox = styled.div`
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-`;
+  background-color: var(--canvas);
+  `
+
 
 const IncrementContainer = styled.div`
   position: relative;
@@ -38,6 +40,10 @@ const IncreaseButton = styled.button`
     color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 4px;
+  }
 `;
 
 const DecreaseButton = styled.button`
@@ -54,6 +60,10 @@ const DecreaseButton = styled.button`
     color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 4px;
+  }
 `;
 
 const TextField = styled.input`
@@ -64,6 +74,10 @@ const TextField = styled.input`
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
   outline: none;
   border: none;
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 6px;
+  }
 `;
 
 const Label = styled.span`
@@ -72,11 +86,9 @@ const Label = styled.span`
 `;
 
 const Menu = styled.div`
-  background-color: 'var(--mainGray)';
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  border: 'var(--mainBorder)';
-  border-top: none;
-  border-radius: 'var(--mainBorderRadius)';
+  background-color: var(--canvas);
+  border: var(--mainBorder);
+  border-radius: var(--mainBorderRadius);
   position: absolute;
   left: 0;
   right: 0;
@@ -86,12 +98,12 @@ const Menu = styled.div`
 `;
 
 const MenuOption = styled.button`
-  background-color: 'var(--mainGray)';
+  background-color: var(--canvas);
   display: block;
   width: 100%;
   height: 24px;
   border: none;
-  border-bottom: 1px black solid;
+  border-bottom: 2px var(--canvastext) solid;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -376,25 +388,34 @@ export default function Increment(props) {
 
   return (
     <Container label={props.label} vertical={props.vertical}>
-      {props.label && <Label>{props.label}</Label> }
+      {props.label && <Label id="increment-label">{props.label}</Label> }
       {props.label && props.vertical && <br /> }
-      <IncrementContainer>
-        <IncrementBox
+      <IncrementContainer >
+        <IncrementBox 
           ref={containerRef}
           onBlur={containerOnBlur}
           alert={props.alert}
         >
           <DecreaseButton
+            aria-label="Decrease"
+            aria-labelledby='increment-label'
+            aria-disabled={props.disabled ? true : false}
             ref={decrementRef}
+            alert={props.alert}
             disabled={props.disabled}
             onClick={decrementOnClick}
           >
             {decreaseIcon}
           </DecreaseButton>
           <TextField
+            aria-labelledby='increment-label'
+            aria-haspopup="true"
+            aria-disabled={props.disabled ? true : false}
             placeholder={props.placeholder}
             value={value}
+            data-test={props.dataTest}
             ref={textFieldRef}
+            alert={props.alert}
             disabled={props.disabled ? props.disabled : false}
             onChange={onTextFieldChange}
             onClick={(e) => {
@@ -406,13 +427,22 @@ export default function Increment(props) {
               };
               if (e.key === 'Enter') {
                 onTextFieldEnter(e);
+                if (menuToggle) {
+                  setMenuToggle(false);
+                } else {
+                  setMenuToggle(true);
+                }
               };
             }}
           />
           <IncreaseButton
+            alert={props.alert}
             ref={incrementRef}
             disabled={props.disabled}
             onClick={incrementOnClick}
+            aria-labelledby="increment-label"
+            aria-label="Increase"
+            aria-disabled={props.disabled ? true : false}
           >
             {increaseIcon}
           </IncreaseButton>

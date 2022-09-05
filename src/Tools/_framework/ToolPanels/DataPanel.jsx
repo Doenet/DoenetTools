@@ -15,6 +15,7 @@ import styled, { keyframes } from 'styled-components';
 import { itemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { useToast, toastType } from '../Toast';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+import axios from 'axios';
 
 const movingGradient = keyframes `
   0% { background-position: -250px 0; }
@@ -46,7 +47,7 @@ const Td = styled.td `
 const TBody = styled.tbody ``;
 const Td2Span = styled.span `
   display: block; 
-  background-color: rgba(0,0,0,.15);
+  background-color: var(--mainGray);
   width: 70px;
   height: 16px;
   border-radius: 5px;
@@ -55,7 +56,7 @@ const Td3Span = styled.span `
   display: block;
   height: 14px;
   border-radius: 5px;
-  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
   background-size: 500px 100px;
   animation-name: ${movingGradient};
   animation-duration: 1s;
@@ -91,8 +92,10 @@ export default function DataPanel() {
             params: { sectionId: clickedItem.doenetId, courseId},
           }})
         }else{
-            console.log("Open Link to data for Pages",doenetId)
-            window.open(`https://doenet.shinyapps.io/analyzer/?data=${doenetId}`, '_blank');
+            // console.log("Open Link to data for Pages",doenetId)
+            const resp = await axios.get(`/api/createSecretCode.php?courseId=${courseId}`)
+            const { secretCode } = resp.data
+            window.open(`https://doenet.shinyapps.io/analyzer/?data=${doenetId}&code=${secretCode}`, '_blank');
 
         }
 

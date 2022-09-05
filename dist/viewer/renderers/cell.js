@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default React.memo(function Cell(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+  let {name, id, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
@@ -38,12 +38,12 @@ export default React.memo(function Cell(props) {
   }
   if (SVs.inHeader) {
     return /* @__PURE__ */ React.createElement("th", {
-      id: name,
+      id,
       ...properties
     }, content);
   } else {
     return /* @__PURE__ */ React.createElement("td", {
-      id: name,
+      id,
       ...properties
     }, content);
   }

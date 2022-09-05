@@ -20,7 +20,9 @@ export default class AsList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -49,7 +51,9 @@ export default class AsList extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",

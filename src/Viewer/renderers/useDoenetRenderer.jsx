@@ -5,7 +5,7 @@ import { renderersloadComponent } from '../PageViewer';
 
 export const rendererState = atomFamily({
   key: 'rendererState',
-  default: { stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: [] },
+  default: { stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: [], prefixForIds: '' },
   // dangerouslyAllowMutability: true,
 })
 
@@ -17,7 +17,7 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
   let rendererName = props.coreId + componentName;
   let [renderersToLoad, setRenderersToLoad] = useState({})
 
-  let { stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions } = useRecoilValue(rendererState(rendererName));
+  let { stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions, prefixForIds } = useRecoilValue(rendererState(rendererName));
 
 
   //TODO: Fix this for graph
@@ -89,5 +89,9 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
     return props.callAction(argObj);
   }
 
-  return { name: effectiveName, SVs: stateValues, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, initializeChildren: () => { }, callAction };
+  return {
+    name: effectiveName, id: prefixForIds + effectiveName, SVs: stateValues, actions, children,
+    sourceOfUpdate, ignoreUpdate, rendererName,
+    initializeChildren: () => { }, callAction
+  };
 }

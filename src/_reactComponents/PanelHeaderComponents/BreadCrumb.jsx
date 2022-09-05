@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import styled from 'styled-components';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { panelsInfoAtom } from '../../Tools/_framework/Panels/NewContentPanel';
 import { useRecoilValue } from 'recoil';
 import { supportPanelHandleLeft } from '../../Tools/_framework/Panels/NewContentPanel';
@@ -18,7 +17,7 @@ const BreadcrumbItem = styled.li`
   &:last-of-type span {
     border-radius: 0px 15px 15px 0px;
     padding: 0px 25px 0px 45px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
   &:first-of-type span {
@@ -27,16 +26,16 @@ const BreadcrumbItem = styled.li`
   &:only-child span {
     border-radius: 15px;
     padding: 0px 30px 0px 30px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
 `;
 const CrumbMenuItem = styled.div`
   padding: 4px;
   cursor: pointer;
-  color: black;
-  background: white;
-  border: 2px solid black;
+  color: var(--canvastext);
+  background: var(--canvas);
+  border: 2px solid var(--canvastext);
   border-radius: ${props => props.radius};
   margin: -2px 0px -2px 0px;
   border-left: 0px;
@@ -50,7 +49,11 @@ const CrumbMenuItem = styled.div`
   text-overflow: ellipsis;
   height: 21.6px;
   &:hover {
-    background-color: hsl(209,54%,82%);
+    background-color: var(--lightBlue);
+    color:black;
+  }
+  &:focus {
+    background-color: var(--lightBlue);
     color:black;
   }
 `
@@ -60,7 +63,7 @@ const BreadcrumbSpan = styled.span`
   position: relative;
   float: left;
   color: white;
-  background: #1a5a99;
+  background: var(--mainBlue);
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
   &::after {
@@ -69,7 +72,7 @@ const BreadcrumbSpan = styled.span`
     height: 0;
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
-    border-left: 30px solid #1a5a99;
+    border-left: 30px solid var(--mainBlue);
     position: absolute;
     top: 50%;
     margin-top: -50px;
@@ -90,6 +93,9 @@ const BreadcrumbSpan = styled.span`
     left: 100%;
     z-index: 1;
   }
+  &:focus {
+    text-decoration: underline;
+  }
 `;
 
 const CrumbTextDiv = styled.div`
@@ -99,7 +105,7 @@ text-overflow: ellipsis;
 max-width: 175px;
 `
 
-function Crumb({setRef,i,label=null,onClick,icon=null}){
+function Crumb({setRef,i,label=null,onClick}){
   let crumbRef = useRef(null);
   
   useEffect(()=>{
@@ -110,22 +116,24 @@ function Crumb({setRef,i,label=null,onClick,icon=null}){
     })
   },[i,crumbRef,setRef])
 
-  let iconJSX = null;
-  if (icon){
-    iconJSX = <FontAwesomeIcon icon={icon}/>
-  }
-
-  if (!icon && !label){
+  if (!label){
     label = '_'
   }
 
-  return <BreadcrumbItem ref={crumbRef}>
-  <BreadcrumbSpan onClick={onClick}>{iconJSX}<CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
-  </BreadcrumbItem>
+
+  return (<BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`}>
+  <BreadcrumbSpan 
+    aria-label={label}
+    tabIndex="0" 
+    onClick={onClick}     
+    onKeyDown={(e) => { if(e.key === "Enter"){onClick()}}}
+    aria-label={label}
+  ><CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
+  </BreadcrumbItem>)
+
 }
 //crumb 
 //label: the label which shows in the span
-//icon: the Font Awesome icon which shows in the span
 //onClick: the function called when crumb is clicked
 export function BreadCrumb({crumbs=[],offset=0}){
   // console.log(">>>>----BREADCRUMB")
@@ -177,6 +185,13 @@ export function BreadCrumb({crumbs=[],offset=0}){
     }
 
   }
+
+  //focus on first menu item when breadcrumb menu opens
+  useLayoutEffect(() => {
+    if (menuVisible) {
+      document.getElementById('breadcrumbitem1').focus();
+    }
+  }, [menuVisible])
 
   //Only update if the crumb widths change
   //Or the menu panel collapses
@@ -270,27 +285,45 @@ export function BreadCrumb({crumbs=[],offset=0}){
   let crumbsJSX = [];
 
 
-  for (let [i,{icon,label,onClick}] of Object.entries(crumbs) ){
+  for (let [i,{label,onClick}] of Object.entries(crumbs) ){
     
     if (i < numHidden && i != 0){ continue; }
-    crumbsJSX.push(<Crumb key={`breadcrumbitem${i}`} icon={icon} label={label} onClick={onClick} i={i} setRef={setCrumbRefs} />)
+    crumbsJSX.push(<Crumb 
+      key={`breadcrumbitem${i}`} 
+      label={label} 
+      onClick={onClick}
+      onKeyDown={(e) => {if(e.key === "Enter"){onClick()}}}
+      i={i} 
+      setRef={setCrumbRefs} />)
   }
 
   if (numHidden > 0){crumbsJSX[1] = <BreadcrumbItem ref={elipseItemRef} key={`breadcrumbitem1`}>
-  <BreadcrumbSpan  onClick={()=>{setMenuVisible((was)=>!was)}}>...</BreadcrumbSpan>
+  <BreadcrumbSpan 
+    data-test="Crumb Menu" 
+    aria-label="..."
+    tabIndex="0" 
+    onClick={()=>{setMenuVisible((was)=>!was)}}
+    onKeyDown={(e) => {if(e.key === "Enter"){setMenuVisible((was)=>!was);}}}
+    aria-label="..."
+  >...</BreadcrumbSpan>
   </BreadcrumbItem>}
 
   let breadcrumbMenu = null;
   if (numHidden > 0 && menuVisible){
     let crumMenuItemsJSX = []
-    for (let [i,{icon,label,onClick}] of Object.entries(crumbs) ){
+    for (let [i,{label,onClick}] of Object.entries(crumbs) ){
       if (i == 0){continue;}
       if (i > numHidden){break;}
       
       crumMenuItemsJSX.push(<CrumbMenuItem 
+        tabIndex="0"
         key={`breadcrumbitem${i}`} 
+        id={`breadcrumbitem${i}`} 
+        data-test={`Crumb Menu Item ${i}`}
         radius={'0px'}
-        onClick={onClick}>{icon}{label}</CrumbMenuItem>)
+        onClick={onClick}
+        onKeyDown={(e) => {if(e.key === "Enter"){onClick();}}}
+        >{label}</CrumbMenuItem>)
     }
 
     if (crumMenuItemsJSX.length > 1) {
@@ -309,8 +342,8 @@ export function BreadCrumb({crumbs=[],offset=0}){
         zIndex:"20",
         top:"31px",
         position:"absolute",
-        backgroundColor: 'white',
-        border: '2px solid black',
+        backgroundColor: 'var(--canvas)',
+        border: '2px solid var(--canvastext)',
         borderRadius: '5px',
         // maxHeight: "86.4px",
         maxHeight: "121px",
@@ -327,7 +360,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
   }
   
   return <>
-  <BreadCrumbContainer ref={containerRef}> 
+  <BreadCrumbContainer ref={containerRef} > 
   {crumbsJSX}
   {breadcrumbMenu}
    </BreadCrumbContainer>

@@ -5,7 +5,7 @@ import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
 export default React.memo(function Angle(props) {
-  let { name, SVs } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRender(props);
 
   const board = useContext(BoardContext);
 
@@ -49,20 +49,25 @@ export default React.memo(function Angle(props) {
     let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
 
     var jsxAngleAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,//SVs.draggable !== true,
       layer: 10 * SVs.layer + 7,
       radius: SVs.numericalRadius,
       fillColor: angleColor,
       strokeColor: angleColor,
-      highlightFillColor: angleColor,
-      highlightStrokeColor: angleColor,
+      highlight: false
     };
 
+    jsxAngleAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxAngleAttributes.label.useMathJax = true;
+    }
 
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     let through;
 
@@ -132,9 +137,9 @@ export default React.memo(function Angle(props) {
 
       angleJXG.current.setAttribute({ radius: SVs.numericalRadius, visible: !SVs.hidden });
 
-      angleJXG.current.name = SVs.label;
+      angleJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         angleJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
@@ -151,19 +156,14 @@ export default React.memo(function Angle(props) {
 
     }
 
-    return <><a name={name} /></>
+    return <><a name={id} /></>
   }
 
 
 
-  let mathJaxify;
-  if (SVs.inDegrees) {
-    mathJaxify = "\\(" + me.fromAst(SVs.degrees).toLatex() + "^\\circ \\)";
-  } else {
-    mathJaxify = "\\(" + me.fromAst(SVs.radians).toLatex() + "\\)";
-  }
+  let mathJaxify = "\\(" + SVs.latexForRenderer + "\\)";
 
-  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 
 

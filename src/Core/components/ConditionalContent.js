@@ -17,16 +17,17 @@ export default class ConditionalContent extends CompositeComponent {
 
 
   // keep serialized all children other othan cases or else
-  static keepChildrenSerialized({ serializedComponent }) {
+  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
       return [];
     }
+
+    let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
+
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {
-      if (!["case", "else"].includes(child.componentType)) {
-        if (!(child.attributes && child.attributes.componentType && ["case", "else"].includes(child.attributes.componentType.primitive))) {
-          keepSerializedInds.push(ind)
-        }
+      if (!(componentIsSpecifiedType(child, "case") || componentIsSpecifiedType(child, "else"))) {
+        keepSerializedInds.push(ind)
       }
     }
 

@@ -1,6 +1,7 @@
-import React, { createRef, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import useDoenetRenderer from './useDoenetRenderer';
 import styled from 'styled-components';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 // border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
 
@@ -11,7 +12,7 @@ outline: none;
 `;
 
 export default React.memo(function orbitalDiagramInput(props) {
-  let { name, SVs, actions, callAction } = useDoenetRenderer(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
   // console.log("orbitalDiagramInput SVs ", SVs);
 
   let selectedRowIndex0 = SVs.selectedRowIndex - 1;
@@ -22,6 +23,22 @@ export default React.memo(function orbitalDiagramInput(props) {
   // use ref for fixed so changed value appears in callbacks
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
@@ -61,17 +78,17 @@ export default React.memo(function orbitalDiagramInput(props) {
   }
 
   function deselect(e) {
-    if (e.relatedTarget?.id !== `orbitaladdrow${name}` &&
-      e.relatedTarget?.id !== `orbitalremoverow${name}` &&
-      e.relatedTarget?.id !== `orbitaladdbox${name}` &&
-      e.relatedTarget?.id !== `orbitaladduparrow${name}` &&
-      e.relatedTarget?.id !== `orbitaladddownarrow${name}` &&
-      e.relatedTarget?.id !== `orbitalremovearrow${name}` &&
-      e.relatedTarget?.id !== `orbitalremovebox${name}`
+    if (e.relatedTarget?.id !== `orbitaladdrow${id}` &&
+      e.relatedTarget?.id !== `orbitalremoverow${id}` &&
+      e.relatedTarget?.id !== `orbitaladdbox${id}` &&
+      e.relatedTarget?.id !== `orbitaladduparrow${id}` &&
+      e.relatedTarget?.id !== `orbitaladddownarrow${id}` &&
+      e.relatedTarget?.id !== `orbitalremovearrow${id}` &&
+      e.relatedTarget?.id !== `orbitalremovebox${id}`
     ) {
-      if (e.relatedTarget?.id !== `OrbitalText${selectedRowIndex0}${name}` &&
-        e.relatedTarget?.id !== `OrbitalRow${selectedRowIndex0}${name}` &&
-        e.relatedTarget?.id.substring(0, (10 + name.length)) !== `orbitalbox${name}`
+      if (e.relatedTarget?.id !== `OrbitalText${selectedRowIndex0}${id}` &&
+        e.relatedTarget?.id !== `OrbitalRow${selectedRowIndex0}${id}` &&
+        e.relatedTarget?.id.substring(0, (10 + id.length)) !== `orbitalbox${id}`
       ) {
         setSelectedRow(-1);
       }
@@ -94,7 +111,7 @@ export default React.memo(function orbitalDiagramInput(props) {
       selectedBox={selectedBoxIndex0}
       setSelectedBox={setSelectedBox}
       deselect={deselect}
-      name={name}
+      name={id}
     />)
   }
 
@@ -102,7 +119,7 @@ export default React.memo(function orbitalDiagramInput(props) {
 
   if (!SVs.fixed) {
     controls = <div>
-      <button id={`orbitaladdrow${name}`}
+      <button id={`orbitaladdrow${id}`}
         onBlur={(e) => {
           deselect(e);
         }}
@@ -112,13 +129,13 @@ export default React.memo(function orbitalDiagramInput(props) {
           });
         }}>Add Row</button>
 
-      <button id={`orbitalremoverow${name}`} onClick={() => {
+      <button id={`orbitalremoverow${id}`} onClick={() => {
         callAction({
           action: actions.removeRow,
         });
       }}>Remove Row</button>
 
-      <button id={`orbitaladdbox${name}`}
+      <button id={`orbitaladdbox${id}`}
         onBlur={(e) => {
           deselect(e);
         }}
@@ -128,7 +145,7 @@ export default React.memo(function orbitalDiagramInput(props) {
           });
         }}>Add Box</button>
 
-      <button id={`orbitalremovebox${name}`}
+      <button id={`orbitalremovebox${id}`}
         onBlur={(e) => {
           deselect(e);
         }}
@@ -138,7 +155,7 @@ export default React.memo(function orbitalDiagramInput(props) {
           });
         }}>Remove Box</button>
 
-      <button id={`orbitaladduparrow${name}`}
+      <button id={`orbitaladduparrow${id}`}
         onBlur={(e) => {
           deselect(e);
         }}
@@ -148,7 +165,7 @@ export default React.memo(function orbitalDiagramInput(props) {
           });
         }}>Add Up Arrow</button>
 
-      <button id={`orbitaladddownarrow${name}`}
+      <button id={`orbitaladddownarrow${id}`}
         onBlur={(e) => {
           deselect(e);
         }}
@@ -158,7 +175,7 @@ export default React.memo(function orbitalDiagramInput(props) {
           });
         }}>Add Down Arrow</button>
 
-      <button id={`orbitalremovearrow${name}`}
+      <button id={`orbitalremovearrow${id}`}
         onBlur={(e) => {
           deselect(e);
         }}
@@ -169,10 +186,10 @@ export default React.memo(function orbitalDiagramInput(props) {
         }}>Remove Arrow</button>
     </div>
   }
-  return <>
+  return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><>
     {controls}
     {rowsJSX}
-  </>
+  </></VisibilitySensor>
 })
 
 const OrbitalRow = React.memo(function OrbitalRow({ rowNumber, updateRowText, selectedRow, setSelectedRow, orbitalText, boxes, selectedBox, setSelectedBox, deselect, name }) {

@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
 export default React.memo(function RegionBetweenCurveXAxis(props) {
-  let {name, SVs} = useDoenetRender(props);
+  let {name, id, SVs} = useDoenetRender(props);
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let curveJXG = useRef(null);
@@ -19,16 +19,24 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
     if (!SVs.haveFunction || SVs.boundaryValues.length !== 2 || !SVs.boundaryValues.every(Number.isFinite)) {
       return null;
     }
+    let fillColor = SVs.selectedStyle.fillColor;
+    if (fillColor === "none") {
+      fillColor = SVs.selectedStyle.lineColor;
+    }
     let jsxAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
-      fillColor: SVs.selectedStyle.lineColor,
+      fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
       highlight: false,
       curveLeft: {visible: false},
       curveRight: {visible: false}
+    };
+    jsxAttributes.label = {
+      highlight: false
     };
     let f = createFunctionFromDefinition(SVs.fDefinition);
     curveJXG.current = board.create("functiongraph", f, {visible: false});
@@ -56,6 +64,21 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       let [y1, y2] = SVs.boundaryValues.map(f);
       integralJXG.current.curveLeft.coords.setCoordinates(JXG.COORDS_BY_USER, [x1, y1]);
       integralJXG.current.curveRight.coords.setCoordinates(JXG.COORDS_BY_USER, [x2, y2]);
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = integralJXG.current.visProp.layer !== layer;
+      if (layerChanged) {
+        integralJXG.current.setAttribute({layer});
+      }
+      let fillColor = SVs.selectedStyle.fillColor;
+      if (fillColor === "none") {
+        fillColor = SVs.selectedStyle.lineColor;
+      }
+      if (integralJXG.current.visProp.fillcolor !== fillColor) {
+        integralJXG.current.visProp.fillcolor = fillColor;
+      }
+      if (integralJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        integralJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+      }
       integralJXG.current.curveLeft.needsUpdate = true;
       integralJXG.current.curveLeft.update();
       integralJXG.current.curveLeft.fullUpdate();
@@ -70,13 +93,13 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }));
   }
   if (SVs.hidden) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });

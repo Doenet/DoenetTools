@@ -28,8 +28,8 @@ const Panel = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #fff;
-  color: white;
+  background-color: var(--canvas);
+  color: var(--canvas);
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -86,8 +86,8 @@ const LettersSection = styled.div`
 const Button = styled.button`
   flex-basis: 23%;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   background: white;
   border-radius: 5px;
 `;
@@ -95,8 +95,8 @@ const Button = styled.button`
 const Button33 = styled.button`
   flex-basis: 30%;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   border-radius: 5px;
   background: white;
 `;
@@ -105,7 +105,7 @@ const White15Button = styled.button`
   flex-basis: 14%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -114,7 +114,7 @@ const White15Button = styled.button`
 const CursorButton = styled.button`
   flex-basis: 42%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -123,7 +123,7 @@ const CursorButton = styled.button`
 const DeleteButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -132,7 +132,7 @@ const DeleteButton = styled.button`
 const EnterButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -142,7 +142,7 @@ const White20Button = styled.button`
   flex-basis: 19%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -152,8 +152,8 @@ const LetterButton = styled.button`
   flex-basis: 9%;
   margin: 1px;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   background: white;
   border-radius: 5px;
 `;
@@ -453,47 +453,50 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write \\alpha')}>
           <MathJax dynamic>\(\alpha\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\epsilon')}>
-          <MathJax dynamic>\(\epsilon\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\kappa')}>
-          <MathJax dynamic>\(\kappa\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\xi')}>
-          <MathJax dynamic>\(\xi\)</MathJax>
-        </Button>
         <Button onClick={() => callback('write \\beta')}>
           <MathJax dynamic>\(\beta\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\zeta')}>
-          <MathJax dynamic>\(\zeta\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\lambda')}>
-          <MathJax dynamic>\(\lambda\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\pi')}>
-          <MathJax dynamic>\(\pi\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\gamma')}>
           <MathJax dynamic>\(\gamma\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\eta')}>
-          <MathJax dynamic>\(\eta\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\mu')}>
-          <MathJax dynamic>\(\mu\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\rho')}>
-          <MathJax dynamic>\(\rho\)</MathJax>
-        </Button>
         <Button onClick={() => callback('write \\delta')}>
           <MathJax dynamic>\(\delta\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\epsilon')}>
+          <MathJax dynamic>\(\epsilon\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\zeta')}>
+          <MathJax dynamic>\(\zeta\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\eta')}>
+          <MathJax dynamic>\(\eta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\theta')}>
           <MathJax dynamic>\(\theta\)</MathJax>
         </Button>
+
+        <Button onClick={() => callback('write \\kappa')}>
+          <MathJax dynamic>\(\kappa\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\lambda')}>
+          <MathJax dynamic>\(\lambda\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\mu')}>
+          <MathJax dynamic>\(\mu\)</MathJax>
+        </Button>
         <Button onClick={() => callback('write \\nu')}>
           <MathJax dynamic>\(\nu\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\xi')}>
+          <MathJax dynamic>\(\xi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\pi')}>
+          <MathJax dynamic>\(\pi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\rho')}>
+          <MathJax dynamic>\(\rho\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\sigma')}>
           <MathJax dynamic>\(\sigma\)</MathJax>
@@ -505,44 +508,48 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write \\tau')}>
           <MathJax dynamic>\(\tau\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\Lambda')}>
-          <MathJax dynamic>\(\Lambda\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Upsilon')}>
-          <MathJax dynamic>\(\Upsilon\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Gamma')}>
-          <MathJax dynamic>\(\Gamma\)</MathJax>
-        </Button>
         <Button onClick={() => callback('write \\phi')}>
           <MathJax dynamic>\(\phi\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Xi')}>
-          <MathJax dynamic>\(\Xi\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Phi')}>
-          <MathJax dynamic>\(\Phi\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Delta')}>
-          <MathJax dynamic>\(\Delta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\psi')}>
           <MathJax dynamic>\(\psi\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\Pi')}>
-          <MathJax dynamic>\(\Pi\)</MathJax>
+        <Button onClick={() => callback('write \\omega')}>
+          <MathJax dynamic>\(\omega\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\Psi')}>
-          <MathJax dynamic>\(\Psi\)</MathJax>
+
+
+        <Button onClick={() => callback('write \\Gamma')}>
+          <MathJax dynamic>\(\Gamma\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Delta')}>
+          <MathJax dynamic>\(\Delta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Theta')}>
           <MathJax dynamic>\(\Theta\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\omega')}>
-          <MathJax dynamic>\(\omega\)</MathJax>
+        <Button onClick={() => callback('write \\Lambda')}>
+          <MathJax dynamic>\(\Lambda\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\Xi')}>
+          <MathJax dynamic>\(\Xi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Pi')}>
+          <MathJax dynamic>\(\Pi\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Sigma')}>
           <MathJax dynamic>\(\Sigma\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Phi')}>
+          <MathJax dynamic>\(\Phi\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\Psi')}>
+          <MathJax dynamic>\(\Psi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Upsilon')}>
+          <MathJax dynamic>\(\Upsilon\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Omega')}>
           <MathJax dynamic>\(\Omega\)</MathJax>
@@ -594,11 +601,11 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('type sqrt')}>
           <MathJax dynamic>{`\\(\\sqrt{}\\)`}</MathJax>
         </Button>
-        <Button onClick={() => callback('type theta')}>
-          <MathJax dynamic>\(\theta\)</MathJax>
+        <Button onClick={() => callback('write \\infty')}>
+          <MathJax dynamic>\(\infty\)</MathJax>
         </Button>
-        <Button onClick={() => callback('type pi')}>
-          <MathJax dynamic>\(\pi\)</MathJax>
+        <Button onClick={() => callback('cmd _')}>
+          <MathJax dynamic>\(a_b\)</MathJax>
         </Button>
       </Section>
     );

@@ -41,7 +41,7 @@ export default function SelectedPage() {
     }
   };
   let heading = /* @__PURE__ */ React.createElement("h2", {
-    "data-cy": "infoPanelItemLabel",
+    "data-test": "infoPanelItemLabel",
     style: {margin: "16px 5px"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
@@ -51,6 +51,7 @@ export default function SelectedPage() {
   }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Edit Page",
+    "data-test": "Edit Page",
     onClick: () => {
       setPageToolView({
         page: "course",
@@ -78,14 +79,17 @@ export default function SelectedPage() {
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     onClick: () => create({itemType: "page"}),
-    value: "Add Page"
+    value: "Add Page",
+    "data-test": "Add Page"
   }), containingObj.type == "activity" ? /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     onClick: () => create({itemType: "order"}),
-    value: "Add Order"
+    value: "Add Order",
+    "data-test": "Add Order"
   }) : null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Delete Page",
+    "data-test": "Delete Page",
     alert: true,
     onClick: (e) => {
       e.preventDefault();

@@ -17,6 +17,14 @@ $cid = mysqli_real_escape_string($conn, $_POST["cid"]);
 $coreInfo = mysqli_real_escape_string($conn, $_POST["coreInfo"]);
 $rendererState = mysqli_real_escape_string($conn, $_POST["rendererState"]);
 $variantIndex = mysqli_real_escape_string($conn, $_POST["variantIndex"]);
+$showCorrectness = mysqli_real_escape_string($conn, $_POST['showCorrectness']);
+$solutionDisplayMode = mysqli_real_escape_string($conn, $_POST['solutionDisplayMode']);
+$showFeedback = mysqli_real_escape_string($conn, $_POST['showFeedback']);
+$showHints = mysqli_real_escape_string($conn, $_POST['showHints']);
+
+if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
+if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
+if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
 
 $success = true;
 $message = "";
@@ -35,6 +43,9 @@ if ($doenetId == "") {
 } elseif ($variantIndex == "") {
     $success = false;
     $message = "Internal Error: missing variantIndex";
+} elseif ($solutionDisplayMode == '') {
+    $success = false;
+    $message = 'Internal Error: missing solutionDisplayMode';
 } elseif ($userId == "") {
     $success = false;
     $message = "No access - Need to sign in";
@@ -69,8 +80,8 @@ if ($success) {
 
 if ($success) {
     $sql = "INSERT INTO initial_renderer_state
-        (cid, variantIndex, rendererState, coreInfo) 
-        VALUES ('$cid', '$variantIndex', '$rendererState', '$coreInfo')
+        (cid, variantIndex, showCorrectness, solutionDisplayMode, showFeedback, showHints, rendererState, coreInfo) 
+        VALUES ('$cid', '$variantIndex', '$showCorrectness', '$solutionDisplayMode', '$showFeedback', '$showHints', '$rendererState', '$coreInfo')
         ";
 
     $conn->query($sql);

@@ -21,6 +21,13 @@ export default class Ref extends InlineComponent {
       public: true,
       forRenderer: true
     };
+    attributes.page = {
+      createPrimitiveOfType: "integer",
+      createStateVariable: "page",
+      defaultValue: null,
+      public: true,
+      forRenderer: true
+    };
     attributes.createButton = {
       createComponentOfType: "boolean",
       createStateVariable: "createButton",
@@ -96,6 +103,10 @@ export default class Ref extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "uri"
         },
+        page: {
+          dependencyType: "stateVariable",
+          variableName: "page"
+        },
         targetInactive: {
           dependencyType: "stateVariable",
           variableName: "targetInactive"
@@ -106,7 +117,7 @@ export default class Ref extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.uri) {
+        if (dependencyValues.uri || dependencyValues.page) {
           if (dependencyValues.targetAttribute) {
             let targetName = dependencyValues.targetAttribute;
             if (targetName[0] !== "/") {
@@ -130,9 +141,6 @@ export default class Ref extends InlineComponent {
         variableName: "doenetId",
         forRenderer: true,
       }, {
-        variableName: "pageNumber",
-        forRenderer: true,
-      }, {
         variableName: "variantIndex",
         forRenderer: true,
       }, {
@@ -140,6 +148,9 @@ export default class Ref extends InlineComponent {
         forRenderer: true,
       }, {
         variableName: "draft",
+        forRenderer: true,
+      }, {
+        variableName: "hash",
         forRenderer: true,
       }],
       returnDependencies: () => ({
@@ -153,36 +164,32 @@ export default class Ref extends InlineComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            setValue: { cid: null, doenetId: null, pageNumber: null, variantIndex: null, edit: null, draft: null }
+            setValue: {
+              cid: null, doenetId: null,
+              variantIndex: null, edit: null, draft: null, hash: null
+            }
           }
         }
 
-        let cid = null, doenetId = null, pageNumber = null, variantIndex = null;
-        let draft = null, edit = null;
+        let cid = null, doenetId = null, variantIndex = null;
+        let draft = null, edit = null, hash = null;
 
-        let result = dependencyValues.uri.match(/[:&]cid=([^&]+)/i);
+        let result = dependencyValues.uri.match(/[:&]cid=([^&^#]+)/i);
         if (result) {
           cid = result[1];
         }
-        result = dependencyValues.uri.match(/[:&]doenetid=([^&]+)/i);
+        result = dependencyValues.uri.match(/[:&]doenetid=([^&^#]+)/i);
         if (result) {
           doenetId = result[1];
         }
-        result = dependencyValues.uri.match(/[:&]page=([^&]+)/i);
-        if (result) {
-          pageNumber = Number(result[1]);
-          if (!Number.isInteger(pageNumber) && pageNumber >= 1) {
-            pageNumber = 1;
-          }
-        }
-        result = dependencyValues.uri.match(/[:&]variant=([^&]+)/i);
+        result = dependencyValues.uri.match(/[:&]variant=([^&^#]+)/i);
         if (result) {
           variantIndex = Number(result[1]);
           if (!Number.isInteger(variantIndex) && variantIndex >= 1) {
             variantIndex = 1;
           }
         }
-        result = dependencyValues.uri.match(/[:&]edit=([^&]+)/i);
+        result = dependencyValues.uri.match(/[:&]edit=([^&^#]+)/i);
         if (result) {
           if (result[1].toLowerCase() === "true") {
             edit = true;
@@ -190,7 +197,7 @@ export default class Ref extends InlineComponent {
             edit = false;
           }
         }
-        result = dependencyValues.uri.match(/[:&]draft=([^&]+)/i);
+        result = dependencyValues.uri.match(/[:&]draft=([^&^#]+)/i);
         if (result) {
           if (result[1].toLowerCase() === "true") {
             draft = true;
@@ -198,16 +205,22 @@ export default class Ref extends InlineComponent {
             draft = false;
           }
         }
+        result = dependencyValues.uri.match(/(#.+)/i);
+        if (result) {
+          hash = result[1];
+        }
 
-        // console.log('url parameter results', { cid, doenetId, pageNumber, variantIndex, edit, draft })
+        // console.log('url parameter results', { cid, doenetId, variantIndex, edit, draft, hash })
 
-        return { setValue: { cid, doenetId, pageNumber, variantIndex, edit, draft } };
+        return { setValue: { cid, doenetId, variantIndex, edit, draft, hash } };
       },
     };
 
     stateVariableDefinitions.linkText = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["targetName"],
       returnDependencies({ stateValues }) {

@@ -10,7 +10,7 @@ const FormInput = styled.input`
   border-radius: var(--mainBorderRadius);
   position: relative;
   padding: 0px 30px 0px 5px;
-  color: #000;
+  color: var(--canvastext);
   overflow: hidden;
   width: 175px;
   resize: none;
@@ -21,6 +21,10 @@ const FormInput = styled.input`
   font-size: 14px;
   line-height: 20px;
   cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+  &:focus {
+    outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+    outline-offset: 2px;
+  }
 `;
 const CancelButton = styled.button`
   float: right;
@@ -30,9 +34,12 @@ const CancelButton = styled.button`
   border: 0px;
   background-color: transparent;
   visibility: ${(props) => props.cancelShown};
-  color: #000;
+  color: var(--canvastext);
   overflow: hidden;
-  outline: none;
+  border-radius: 5px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+  }
 `;
 const SubmitButton = styled.button`
   position: absolute;
@@ -43,14 +50,18 @@ const SubmitButton = styled.button`
   border: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
   border-radius: 0px 5px 5px 0px;
   background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"};
-  color: ${(props) => props.disabled ? "black" : "white"};
+  color: ${(props) => props.disabled ? "var(--canvastext)" : "var(--canvas)"};
   cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   font-size: 12px;
   overflow: hidden;
 
   &:hover {
-    color: black;
+    color: var(--canvastext);
     background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
+  }
+  &:focus {
+    outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+    outline-offset: 2px;
   }
 `;
 const Label = styled.p`
@@ -117,11 +128,6 @@ export default function Form(props) {
     label = props.label;
   }
   ;
-  var ariaLabel = "";
-  if (props.ariaLabel) {
-    ariaLabel = props.ariaLabel;
-  }
-  ;
   function handleChange(e) {
     if (cleared) {
       setText("");
@@ -177,6 +183,7 @@ export default function Form(props) {
   return /* @__PURE__ */ React.createElement(Container, {
     align
   }, /* @__PURE__ */ React.createElement(Label, {
+    id: "form-label",
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(FormInput, {
@@ -201,7 +208,8 @@ export default function Form(props) {
     },
     disabled: disable,
     alert,
-    ariaLabel
+    "aria-labelledby": "form-label",
+    "aria-disabled": props.disabled ? true : false
   }), clearButton, /* @__PURE__ */ React.createElement(SubmitButton, {
     id: "submitButton",
     ref: formRef,

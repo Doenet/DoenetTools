@@ -1,20 +1,42 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faLightbulb as lightOff} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faLightbulb as lightOn} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Hint(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (!SVs.showHints) {
     return null;
   }
-  let childrenToRender = children;
-  let title = SVs.title;
-  if (SVs.titleDefinedByChildren) {
-    title = children[0];
-    childrenToRender = children.slice(1);
+  let title;
+  if (SVs.titleChildName) {
+    for (let [ind, child] of children.entries()) {
+      if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
+        title = children[ind];
+        children.splice(ind, 1);
+        break;
+      }
+    }
+  }
+  if (!title) {
+    title = SVs.title;
   }
   let twirlIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: twirlIsClosed
@@ -38,7 +60,7 @@ export default React.memo(function Hint(props) {
     icon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: lightOn
     });
-    info = childrenToRender;
+    info = children;
     infoBlockStyle = {
       display: "block",
       margin: "0px 4px 12px 4px",
@@ -55,11 +77,14 @@ export default React.memo(function Hint(props) {
       });
     };
   }
-  return /* @__PURE__ */ React.createElement("aside", {
-    id: name,
-    key: name
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("aside", {
+    id,
+    key: id
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("span", {
     style: {
       display: "block",
@@ -73,8 +98,9 @@ export default React.memo(function Hint(props) {
       backgroundColor: "var(--mainGray)",
       cursor: "pointer"
     },
+    "data-test": "hint-heading",
     onClick: onClickFunction
   }, twirlIcon, " ", icon, " ", title, " (click to ", openCloseText, ")"), /* @__PURE__ */ React.createElement("span", {
     style: infoBlockStyle
-  }, info));
+  }, info)));
 });

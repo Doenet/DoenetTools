@@ -10,15 +10,31 @@ const Button = styled.button`
   border: 2px solid;
   border-color: ${(props) => props.color};
   border-radius: var(--mainBorderRadius);
-  color: #fff;
+  color: ${(props) => props.textColor};
   background-color: ${(props) => props.color};
-  
+  cursor: ${(props) => props.cursor};
   &:hover {
     color: black;
     background-color: ${(props) => props.alert ? "var(--lightRed)" : props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
   }
+
+  &:focus {
+    outline: 2px solid ${(props) => props.color == "var(mainGray)" ? "var(--canvastext)" : props.color};
+    outline-offset: 2px;
+}
 `;
-export default function CalendarButton(props) {
+const Label = styled.p`
+  font-size: 14px;
+  display: ${(props) => props.labelVisible};
+  margin-right: 5px;
+  margin-bottom: ${(props) => props.align == "flex" ? "none" : "2px"}
+`;
+const Container = styled.div`
+  display: ${(props) => props.align};
+  width: auto;
+  align-items: center;
+`;
+export default function CheckboxButton(props) {
   let checkedIcon = props.checkedIcon ? props.checkedIcon : /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCheck
   });
@@ -27,13 +43,38 @@ export default function CalendarButton(props) {
   });
   const icon = props.checked ? checkedIcon : uncheckedIcon;
   const color = props.checked ? "var(--mainBlue)" : "var(--mainGray)";
+  const textColor = props.checked ? "white" : "black";
   const buttonRef = useRef(null);
-  return /* @__PURE__ */ React.createElement(Button, {
+  const cursor = props.disabled ? "not-allowed" : "pointer";
+  const labelVisible = props.label ? "static" : "none";
+  const align = props.vertical ? "static" : "flex";
+  const disabled = props.disabled ? true : false;
+  let labelValue = "Label:";
+  if (props.label) {
+    labelValue = props.label;
+  }
+  ;
+  return /* @__PURE__ */ React.createElement(Container, {
+    align
+  }, /* @__PURE__ */ React.createElement(Label, {
+    align,
+    labelVisible
+  }, labelValue), /* @__PURE__ */ React.createElement(Button, {
     style: props.style,
     color,
+    textColor,
     ref: buttonRef,
+    disabled,
+    cursor,
+    "aria-labelledby": labelValue,
+    "aria-checked": props.checked,
+    "aria-disabled": disabled,
+    role: "checkbox",
+    "data-test": props.dataTest,
     onClick: (e) => {
-      props.onClick(e);
+      if (props.onClick) {
+        props.onClick(e);
+      }
     }
-  }, icon);
+  }, icon));
 }

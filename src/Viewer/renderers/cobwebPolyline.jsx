@@ -5,7 +5,7 @@ import { createFunctionFromDefinition } from '../../Core/utils/function';
 
 
 export default React.memo(function CobwebPolyline(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   CobwebPolyline.ignoreActionsWithoutCore = true;
 
@@ -88,9 +88,9 @@ export default React.memo(function CobwebPolyline(props) {
 
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -99,6 +99,13 @@ export default React.memo(function CobwebPolyline(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
+
+    jsxPolylineAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxPolylineAttributes.label.useMathJax = true 
+    }
 
     jsxPointAttributes.current = {
       fixed: !SVs.draggable || SVs.fixed,
@@ -357,7 +364,7 @@ export default React.memo(function CobwebPolyline(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 
 })
 

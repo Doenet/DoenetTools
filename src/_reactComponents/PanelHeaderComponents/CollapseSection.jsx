@@ -21,7 +21,11 @@ const SectionHeader = Styled.div `
   display: block;
   text-align: center;
   background-color: var(--mainGray);
-  color: black;
+  color: var(--canvastext);
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 
 const SectionContent = Styled.div `
@@ -29,7 +33,7 @@ const SectionContent = Styled.div `
   border-radius: 0 0 .5em .5em;
   border: var(--mainBorder);
   border-top: none;
-  background-color: white;
+  background-color: var(--canvas);
 `;
 
 const Label = Styled.p ` // Only visible with vertical label prop
@@ -45,7 +49,6 @@ export default function CollapseSection(props) {
   const labelVisible = props.label ? 'static' : 'none';
   const align = props.vertical ? 'static' : 'flex';
   const width = props.width ? props.width : null;
-  const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
   const disabled = props.disabled ? props.disabled : null;
   const label = props.label ? props.label : null;
 
@@ -59,12 +62,17 @@ export default function CollapseSection(props) {
   };
 
   return (
-      <Section aria-label={ariaLabel} width={width}>
+      <Section width={width}>
         <Label labelVisible={labelVisible} align={align}>{label}</Label>
           <SectionHeader
+              aria-label={title}
+              aria-labelledby={label} 
+              aria-disabled={disabled}
               style={headerStyle}
               disabled={disabled}
               onClick = {() => {disabled ? "" : setCollapsed(!collapsed);}} // If not disabled, the user can open/close the collapse section
+              onKeyDown = {(e) => {disabled ? "" : e.key === "Enter" || e.key === "Spacebar" || e.key === " " ? setCollapsed(!collapsed) : "";}}
+              tabIndex="0"
           >
               <FontAwesomeIcon icon={faCaretRight} style={arrowIcon}/>
               {title}

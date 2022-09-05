@@ -107,7 +107,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.nSeeds = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         seedsAttr: {
           dependencyType: "attributeComponent",
@@ -127,7 +129,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.seeds = {
       public: true,
-      componentType: "seed",
+      shadowingInstructions: {
+        createComponentOfType: "seed",
+      },
       isArray: true,
       entryPrefixes: ["seed"],
       returnArraySizeDependencies: () => ({
@@ -183,7 +187,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.variantNames = {
       public: true,
-      componentType: "variantName",
+      shadowingInstructions: {
+        createComponentOfType: "variantName",
+      },
       isArray: true,
       entryPrefixes: ["variantName"],
       returnArraySizeDependencies: () => ({
@@ -235,7 +241,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.selectedVariantIndex = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       immutable: true,
       hasEssential: true,
       shadowVariable: true,
@@ -366,7 +374,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.selectedVariantName = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         variantNames: {
           dependencyType: "stateVariable",

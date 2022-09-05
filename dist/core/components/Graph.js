@@ -1,6 +1,7 @@
 import { processAssignNames } from '../utils/serializedStateProcessing.js';
 import BlockComponent from './abstract/BlockComponent.js';
-
+import me from '../../_snowpack/pkg/math-expressions.js';
+import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size.js';
 export default class Graph extends BlockComponent {
   static componentType = "graph";
   static renderChildren = true;
@@ -29,24 +30,42 @@ export default class Graph extends BlockComponent {
     };
     attributes.width = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "width",
-      defaultValue: { size: 300, isAbsolute: true },
-      public: true,
-      forRenderer: true,
     };
+    attributes.size = {
+      createComponentOfType: "text",
+    }
+    attributes.aspectRatio = {
+      createComponentOfType: "number",
+    };
+
+    // Note: height attribute is deprecated and will be removed in the future
     attributes.height = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "height",
-      defaultValue: { size: 300, isAbsolute: true },
-      public: true,
-      forRenderer: true,
     };
+
+    attributes.displayMode = {
+      createComponentOfType: "text",
+      createStateVariable: "displayMode",
+      validValues: ["block", "inline"],
+      defaultValue: "block",
+      forRenderer: true,
+      public: true,
+    }
+
+    attributes.horizontalAlign = {
+      createComponentOfType: "text",
+      createStateVariable: "horizontalAlign",
+      validValues: ["center", "left", "right"],
+      defaultValue: "center",
+      forRenderer: true,
+      public: true,
+    }
+
     attributes.identicalAxisScales = {
-      createComponentOfType: "boolean",
+      createPrimitiveOfType: "boolean",
       createStateVariable: "identicalAxisScales",
       defaultValue: false,
       public: true,
-      forRenderer: true,
     };
     attributes.displayXAxis = {
       createComponentOfType: "boolean",
@@ -77,11 +96,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true
     };
     attributes.xlabel = {
-      createComponentOfType: "text",
-      createStateVariable: "xlabel",
-      defaultValue: "",
-      public: true,
-      forRenderer: true
+      createComponentOfType: "label",
     };
     attributes.xlabelPosition = {
       createComponentOfType: "text",
@@ -92,12 +107,15 @@ export default class Graph extends BlockComponent {
       toLowerCase: true,
       validValues: ["right", "left"]
     };
-    attributes.ylabel = {
-      createComponentOfType: "text",
-      createStateVariable: "ylabel",
-      defaultValue: "",
+    attributes.xTickScaleFactor = {
+      createComponentOfType: "math",
+      createStateVariable: "xTickScaleFactor",
+      defaultValue: null,
       public: true,
-      forRenderer: true
+      forRenderer: true,
+    }
+    attributes.ylabel = {
+      createComponentOfType: "label",
     };
     attributes.ylabelPosition = {
       createComponentOfType: "text",
@@ -117,6 +135,13 @@ export default class Graph extends BlockComponent {
       toLowerCase: true,
       validValues: ["left", "right"]
     };
+    attributes.yTickScaleFactor = {
+      createComponentOfType: "math",
+      createStateVariable: "yTickScaleFactor",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    }
     attributes.showNavigation = {
       createComponentOfType: "boolean",
       createStateVariable: "showNavigation",
@@ -133,47 +158,35 @@ export default class Graph extends BlockComponent {
     };
     attributes.grid = {
       createComponentOfType: "text",
-      createStateVariable: "grid",
-      defaultValue: "none",
+    };
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
       public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      valueTransformations: { "true": "medium", "false": "none" },
-      validValues: ["none", "medium", "dense"]
+    };
+
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
     };
     return attributes;
   }
-
-
-  // static returnSugarInstructions() {
-  //   let sugarInstructions = super.returnSugarInstructions();
-
-  //   let addCurve = function ({ matchedChildren }) {
-  //     // add <curve> around strings and macros, 
-  //     //as long as they don't have commas (for points)
-
-
-  //     // only apply if all children are strings without commas or macros
-  //     if (!matchedChildren.every(child =>
-  //       child.componentType === "string" && !child.state.value.includes(",") ||
-  //       child.doenetAttributes && child.doenetAttributes.createdFromMacro
-  //     )) {
-  //       return { success: false }
-  //     }
-
-  //     return {
-  //       success: true,
-  //       newChildren: [{ componentType: "curve", children: matchedChildren }],
-  //     }
-  //   }
-
-  //   sugarInstructions.push({
-  //     replacementFunction: addCurve
-  //   });
-
-  //   return sugarInstructions;
-
-  // }
 
 
   static returnChildGroups() {
@@ -181,6 +194,19 @@ export default class Graph extends BlockComponent {
     return [{
       group: "graphical",
       componentTypes: ["_graphical"]
+    },
+    {
+      group: "xlabels",
+      componentTypes: ["xlabel"]
+    },
+    {
+      group: "ylabels",
+      componentTypes: ["ylabel"]
+    },
+    {
+      group: "childrenThatShouldNotBeHere",
+      componentTypes: ["_base"],
+      matchAfterAdapters: true
     }]
 
   }
@@ -189,12 +215,234 @@ export default class Graph extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
+    }
+
+
+    stateVariableDefinitions.xlabel = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+        addStateVariablesShadowingStateVariables: {
+          hasLatex: {
+            stateVariableToShadow: "xlabelHasLatex",
+          }
+        },
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "xlabelHasLatex",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        xlabelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "xlabel",
+          variableNames: ["value", "hasLatex"]
+        },
+        xlabelChild: {
+          dependencyType: "child",
+          childGroups: ["xlabels"],
+          variableNames: ["value", "hasLatex"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.xlabelChild.length > 0) {
+          let xlabelChild = dependencyValues.xlabelChild[dependencyValues.xlabelChild.length - 1]
+          return {
+            setValue: {
+              xlabel: xlabelChild.stateValues.value,
+              xlabelHasLatex: xlabelChild.stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.xlabelAttr) {
+          return {
+            setValue: {
+              xlabel: dependencyValues.xlabelAttr.stateValues.value,
+              xlabelHasLatex: dependencyValues.xlabelAttr.stateValues.hasLatex
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { xlabel: true },
+            setValue: { xlabelHasLatex: false }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        console.log({ desiredStateVariableValues, dependencyValues })
+        if (typeof desiredStateVariableValues.xlabel !== "string") {
+          return { success: false }
+        }
+
+        if (dependencyValues.xlabelChild.length > 0) {
+          let lastLabelInd = dependencyValues.xlabelChild.length - 1;
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "xlabelChild",
+              desiredValue: desiredStateVariableValues.xlabel,
+              childIndex: lastLabelInd,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setStateVariable: "xlabel",
+              value: desiredStateVariableValues.xlabel
+            }]
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.ylabel = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+        addStateVariablesShadowingStateVariables: {
+          hasLatex: {
+            stateVariableToShadow: "ylabelHasLatex",
+          }
+        },
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "ylabelHasLatex",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        ylabelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "ylabel",
+          variableNames: ["value", "hasLatex"]
+        },
+        ylabelChild: {
+          dependencyType: "child",
+          childGroups: ["ylabels"],
+          variableNames: ["value", "hasLatex"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.ylabelChild.length > 0) {
+          let ylabelChild = dependencyValues.ylabelChild[dependencyValues.ylabelChild.length - 1]
+          return {
+            setValue: {
+              ylabel: ylabelChild.stateValues.value,
+              ylabelHasLatex: ylabelChild.stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.ylabelAttr) {
+          return {
+            setValue: {
+              ylabel: dependencyValues.ylabelAttr.stateValues.value,
+              ylabelHasLatex: dependencyValues.ylabelAttr.stateValues.hasLatex
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { ylabel: true },
+            setValue: { ylabelHasLatex: false }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        console.log({ desiredStateVariableValues, dependencyValues })
+        if (typeof desiredStateVariableValues.ylabel !== "string") {
+          return { success: false }
+        }
+
+        if (dependencyValues.ylabelChild.length > 0) {
+          let lastLabelInd = dependencyValues.ylabelChild.length - 1;
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "ylabelChild",
+              desiredValue: desiredStateVariableValues.ylabel,
+              childIndex: lastLabelInd,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setStateVariable: "ylabel",
+              value: desiredStateVariableValues.ylabel
+            }]
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.graphicalDescendants = {
       forRenderer: true,
       returnDependencies: () => ({
         graphicalDescendants: {
           dependencyType: "descendant",
-          componentTypes: ["_graphical"]
+          componentTypes: ["_graphical"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -205,6 +453,33 @@ export default class Graph extends BlockComponent {
         }
       },
     };
+
+    stateVariableDefinitions.childIndicesToRender = {
+      returnDependencies: () => ({
+        graphicalChildren: {
+          dependencyType: "child",
+          childGroups: ["graphical"],
+        },
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["graphical", "xlabels", "ylabels", "childrenThatShouldNotBeHere"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+
+        let graphicalChildNames = dependencyValues.graphicalChildren.map(x => x.componentName);
+
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (graphicalChildNames.includes(child.componentName)) {
+            childIndicesToRender.push(ind)
+          }
+        }
+
+        return { setValue: { childIndicesToRender } }
+
+      }
+    }
 
     stateVariableDefinitions.nChildrenAdded = {
       defaultValue: 0,
@@ -222,11 +497,212 @@ export default class Graph extends BlockComponent {
       }
     }
 
-    stateVariableDefinitions.xmin = {
-      stateVariablesDeterminingDependencies: ["identicalAxisScales"],
-      defaultValue: -10,
+    stateVariableDefinitions.size = {
       public: true,
-      componentType: "number",
+      defaultValue: "medium",
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
+      returnDependencies: () => ({
+        sizeAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "size",
+          variableNames: ["value"],
+        },
+        widthAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "width",
+          variableNames: ["componentSize"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        const defaultSize = 'medium';
+
+        if (dependencyValues.sizeAttr) {
+          let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
+
+          if (!sizePossibilities.includes(size)) {
+            size = defaultSize;
+          }
+          return {
+            setValue: { size }
+          }
+        } else if (dependencyValues.widthAttr) {
+          let componentSize = dependencyValues.widthAttr.stateValues.componentSize;
+          if (componentSize === null) {
+
+            return {
+              setValue: { size: defaultSize }
+            }
+          }
+          let { isAbsolute, size: widthSize } = componentSize;
+          let size;
+
+          if (isAbsolute) {
+            for (let [ind, pixels] of orderedWidthMidpoints.entries()) {
+              if (widthSize <= pixels) {
+                size = sizePossibilities[ind];
+                break
+              }
+            }
+            if (!size) {
+              size = defaultSize
+            }
+          } else {
+            for (let [ind, percent] of orderedPercentWidthMidpoints.entries()) {
+              if (widthSize <= percent) {
+                size = sizePossibilities[ind];
+                break
+              }
+            }
+            if (!size) {
+              size = defaultSize
+            }
+          }
+          return {
+            setValue: { size }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { size: true }
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.width = {
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize"
+      },
+      returnDependencies: () => ({
+        size: {
+          dependencyType: "stateVariable",
+          variableName: "size",
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let width = { isAbsolute: true, size: widthsBySize[dependencyValues.size] }
+
+        return {
+          setValue: { width }
+        }
+
+      }
+
+    }
+
+    stateVariableDefinitions.aspectRatioFromAxisScales = {
+      returnDependencies: () => ({
+        aspectRatioAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "aspectRatio",
+          variableNames: ["value"]
+        },
+        identicalAxisScales: {
+          dependencyType: "stateVariable",
+          variableName: "identicalAxisScales"
+        },
+        heightAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "height",
+          variableNames: ["componentSize"]
+        },
+
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.heightAttr !== null) {
+          console.warn("Height attribute of graph is deprecated and is being ignored.  Use aspectRatio attribute instead.")
+        }
+
+        let aspectRatioFromAxisScales = dependencyValues.identicalAxisScales
+          && (dependencyValues.aspectRatioAttr === null
+            // || !Number.isFinite(dependencyValues.aspectRatioAttr.stateValues.value)
+          );
+
+        return {
+          setValue: { aspectRatioFromAxisScales },
+          checkForActualChange: { aspectRatioFromAxisScales: true }
+        }
+      }
+    }
+
+    stateVariableDefinitions.aspectRatio = {
+      public: true,
+      forRenderer: true,
+      defaultValue: 1,
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      stateVariablesDeterminingDependencies: ["aspectRatioFromAxisScales"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.aspectRatioFromAxisScales) {
+          return {
+            aspectRatioFromAxisScales: {
+              dependencyType: "stateVariable",
+              variableName: "aspectRatioFromAxisScales"
+            },
+            xscale: {
+              dependencyType: "stateVariable",
+              variableName: "xscale"
+            },
+            yscale: {
+              dependencyType: "stateVariable",
+              variableName: "yscale"
+            }
+          }
+        } else {
+          return {
+            aspectRatioFromAxisScales: {
+              dependencyType: "stateVariable",
+              variableName: "aspectRatioFromAxisScales"
+            },
+            aspectRatioAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "aspectRatio",
+              variableNames: ["value"]
+            },
+            width: {
+              dependencyType: "stateVariable",
+              variableName: "width"
+            }
+          }
+        }
+      },
+      definition({ dependencyValues }) {
+        if (dependencyValues.aspectRatioFromAxisScales) {
+          let aspectRatio = dependencyValues.xscale / dependencyValues.yscale;
+          return {
+            setValue: { aspectRatio }
+          }
+        } else if (dependencyValues.aspectRatioAttr !== null) {
+          let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
+          if (!Number.isFinite(aspectRatio)) {
+            aspectRatio = 1;
+          }
+          return {
+            setValue: { aspectRatio }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { aspectRatio: true }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.xmin = {
+      stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -234,13 +710,17 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "identicalAxisScales"
           },
+          aspectRatioFromAxisScales: {
+            dependencyType: "stateVariable",
+            variableName: "aspectRatioFromAxisScales"
+          },
           xminPrelim: {
             dependencyType: "stateVariable",
             variableName: "xminPrelim"
           }
         }
 
-        if (stateValues.identicalAxisScales) {
+        if (stateValues.identicalAxisScales && !stateValues.aspectRatioFromAxisScales) {
           dependencies.xmaxPrelim = {
             dependencyType: "stateVariable",
             variableName: "xmaxPrelim"
@@ -253,19 +733,15 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "ymaxPrelim"
           }
-          dependencies.width = {
+          dependencies.aspectRatio = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
-          dependencies.height = {
-            dependencyType: "stateVariable",
-            variableName: "height"
+            variableName: "aspectRatio"
           }
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
-        if (!dependencyValues.identicalAxisScales) {
+        if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { xmin: dependencyValues.xminPrelim } }
         }
 
@@ -283,7 +759,7 @@ export default class Graph extends BlockComponent {
         let yscaleSpecified = yminSpecified && ymaxSpecified;
 
         if (yscaleSpecified) {
-          let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
+          let aspectRatio = dependencyValues.aspectRatio;
           let yscaleAdjusted = (dependencyValues.ymaxPrelim - dependencyValues.yminPrelim) * aspectRatio;
           if (xmaxSpecified) {
             return { setValue: { xmin: dependencyValues.xmaxPrelim - yscaleAdjusted } };
@@ -316,10 +792,12 @@ export default class Graph extends BlockComponent {
     }
 
     stateVariableDefinitions.xmax = {
-      stateVariablesDeterminingDependencies: ["identicalAxisScales"],
-      defaultValue: -10,
+      stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -327,13 +805,17 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "identicalAxisScales"
           },
+          aspectRatioFromAxisScales: {
+            dependencyType: "stateVariable",
+            variableName: "aspectRatioFromAxisScales"
+          },
           xmaxPrelim: {
             dependencyType: "stateVariable",
             variableName: "xmaxPrelim"
           }
         }
 
-        if (stateValues.identicalAxisScales) {
+        if (stateValues.identicalAxisScales && !stateValues.aspectRatioFromAxisScales) {
           dependencies.xminPrelim = {
             dependencyType: "stateVariable",
             variableName: "xminPrelim"
@@ -346,19 +828,15 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "ymaxPrelim"
           }
-          dependencies.width = {
+          dependencies.aspectRatio = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
-          dependencies.height = {
-            dependencyType: "stateVariable",
-            variableName: "height"
+            variableName: "aspectRatio"
           }
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
-        if (!dependencyValues.identicalAxisScales) {
+        if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { xmax: dependencyValues.xmaxPrelim } }
         }
 
@@ -373,7 +851,7 @@ export default class Graph extends BlockComponent {
         let xmin = dependencyValues.xminPrelim;
 
         if (yscaleSpecified) {
-          let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
+          let aspectRatio = dependencyValues.aspectRatio;
           let yscaleAdjusted = (dependencyValues.ymaxPrelim - dependencyValues.yminPrelim) * aspectRatio;
 
           if (xscaleSpecified) {
@@ -421,10 +899,12 @@ export default class Graph extends BlockComponent {
 
 
     stateVariableDefinitions.ymin = {
-      stateVariablesDeterminingDependencies: ["identicalAxisScales"],
-      defaultValue: -10,
+      stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -432,13 +912,17 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "identicalAxisScales"
           },
+          aspectRatioFromAxisScales: {
+            dependencyType: "stateVariable",
+            variableName: "aspectRatioFromAxisScales"
+          },
           yminPrelim: {
             dependencyType: "stateVariable",
             variableName: "yminPrelim"
           }
         }
 
-        if (stateValues.identicalAxisScales) {
+        if (stateValues.identicalAxisScales && !stateValues.aspectRatioFromAxisScales) {
           dependencies.xmaxPrelim = {
             dependencyType: "stateVariable",
             variableName: "xmaxPrelim"
@@ -451,19 +935,15 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "ymaxPrelim"
           }
-          dependencies.width = {
+          dependencies.aspectRatio = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
-          dependencies.height = {
-            dependencyType: "stateVariable",
-            variableName: "height"
+            variableName: "aspectRatio"
           }
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
-        if (!dependencyValues.identicalAxisScales) {
+        if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { ymin: dependencyValues.yminPrelim } }
         }
 
@@ -479,7 +959,7 @@ export default class Graph extends BlockComponent {
         let xmaxSpecified = !usedDefault.xmaxPrelim;
 
         let xscaleSpecified = xminSpecified && xmaxSpecified;
-        let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
+        let aspectRatio = dependencyValues.aspectRatio;
 
         if (xscaleSpecified) {
           let xscaleAdjusted = (dependencyValues.xmaxPrelim - dependencyValues.xminPrelim) / aspectRatio;
@@ -514,10 +994,12 @@ export default class Graph extends BlockComponent {
     }
 
     stateVariableDefinitions.ymax = {
-      stateVariablesDeterminingDependencies: ["identicalAxisScales"],
-      defaultValue: -10,
+      stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -525,13 +1007,17 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "identicalAxisScales"
           },
+          aspectRatioFromAxisScales: {
+            dependencyType: "stateVariable",
+            variableName: "aspectRatioFromAxisScales"
+          },
           ymaxPrelim: {
             dependencyType: "stateVariable",
             variableName: "ymaxPrelim"
           }
         }
 
-        if (stateValues.identicalAxisScales) {
+        if (stateValues.identicalAxisScales && !stateValues.aspectRatioFromAxisScales) {
           dependencies.xminPrelim = {
             dependencyType: "stateVariable",
             variableName: "xminPrelim"
@@ -544,19 +1030,15 @@ export default class Graph extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "xmaxPrelim"
           }
-          dependencies.width = {
+          dependencies.aspectRatio = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
-          dependencies.height = {
-            dependencyType: "stateVariable",
-            variableName: "height"
+            variableName: "aspectRatio"
           }
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
-        if (!dependencyValues.identicalAxisScales) {
+        if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { ymax: dependencyValues.ymaxPrelim } }
         }
 
@@ -570,7 +1052,7 @@ export default class Graph extends BlockComponent {
 
         let ymin = dependencyValues.yminPrelim;
 
-        let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
+        let aspectRatio = dependencyValues.aspectRatio;
 
         if (xscaleSpecified) {
           let xscaleAdjusted = (dependencyValues.xmaxPrelim - dependencyValues.xminPrelim) / aspectRatio;
@@ -622,7 +1104,9 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xscale = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         xmin: {
           dependencyType: "stateVariable",
@@ -644,7 +1128,9 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.yscale = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         ymin: {
           dependencyType: "stateVariable",
@@ -661,6 +1147,232 @@ export default class Graph extends BlockComponent {
             yscale: dependencyValues.ymax - dependencyValues.ymin
           }
         }
+      }
+    }
+
+    stateVariableDefinitions.gridAttrCompName = {
+      returnDependencies: () => ({
+        gridAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "grid",
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.gridAttr) {
+          return { setValue: { gridAttrCompName: dependencyValues.gridAttr.componentName } }
+        } else {
+          return { setValue: { gridAttrCompName: null } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.gridAttrCompChildren = {
+      stateVariablesDeterminingDependencies: ["gridAttrCompName"],
+      returnDependencies: ({ stateValues }) => {
+        if (stateValues.gridAttrCompName) {
+          return {
+            gridAttrCompChildren: {
+              dependencyType: "child",
+              parentName: stateValues.gridAttrCompName,
+              childGroups: ["textLike"],
+              variableNames: ["value"]
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        if (dependencyValues.gridAttrCompChildren) {
+          return { setValue: { gridAttrCompChildren: dependencyValues.gridAttrCompChildren } }
+        } else {
+          return { setValue: { gridAttrCompChildren: null } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.grid = {
+      public: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["gridAttrCompChildren"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.gridAttrCompChildren) {
+          let dependencies = {
+            gridAttrCompChildren: {
+              dependencyType: "stateVariable",
+              variableName: "gridAttrCompChildren"
+            },
+            gridAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "grid",
+              variableNames: ["value"]
+            },
+
+          }
+
+          for (let [ind, child] of stateValues.gridAttrCompChildren.entries()) {
+            dependencies["childAdapter" + ind] = {
+              dependencyType: "adapterSourceStateVariable",
+              componentName: child.componentName,
+              variableName: "value"
+            }
+          }
+
+          return dependencies;
+        } else {
+          return {};
+        }
+      },
+      definition({ dependencyValues }) {
+        if (!dependencyValues.gridAttrCompChildren) {
+          return {
+            setValue: { grid: "none" },
+            setCreateComponentOfType: { grid: "text" },
+          }
+        }
+
+        let grid = dependencyValues.gridAttr.stateValues.value.toLowerCase().trim();
+        if (grid === "true") {
+          grid = "medium";
+        } else if (grid === "false") {
+          grid = "none"
+        }
+        if (["medium", "dense", "none"].includes(grid)) {
+          return {
+            setValue: { grid },
+            setCreateComponentOfType: { grid: "text" },
+          }
+        }
+
+        // group the children separated by spaces contained in string children
+
+        let groupedChildren = [];
+        let pieces = [];
+
+        for (let child of dependencyValues.gridAttrCompChildren) {
+          if (typeof child !== "string") {
+            pieces.push(child);
+          } else {
+
+            let stringPieces = child.split(/\s+/);
+            let s0 = stringPieces[0];
+
+            if (s0 === '') {
+              // started with a space
+              if (pieces.length > 0) {
+                groupedChildren.push(pieces);
+                pieces = [];
+              }
+            } else {
+              pieces.push(s0)
+            }
+
+            for (let s of stringPieces.slice(1)) {
+              // if have more than one piece, must have had a space in between pieces
+              if (pieces.length > 0) {
+                groupedChildren.push(pieces);
+                pieces = [];
+              }
+              if (s !== "") {
+                pieces.push(s)
+              }
+
+            }
+
+          }
+        }
+
+        if (pieces.length > 0) {
+          groupedChildren.push(pieces);
+        }
+
+        if (groupedChildren.length < 2) {
+          // if don't have at least two pieces separated by spaces, it isn't valid
+          return {
+            setValue: { grid: "none" },
+            setCreateComponentOfType: { grid: "text" },
+          }
+        }
+
+
+        grid = [];
+
+
+        for (let group of groupedChildren) {
+          // each of the two grouped children must represent a positive number
+          if (group.length === 1) {
+            let child = group[0];
+            if (typeof child === "string") {
+              let num = me.fromText(child).evaluate_to_constant();
+              if (num > 0) {
+                grid.push(num)
+              } else {
+                return {
+                  setValue: { grid: "none" },
+                  setCreateComponentOfType: { grid: "text" },
+                }
+              }
+            } else {
+              // have a single non-string child.  See if it was adapted from number/math
+              let childInd = dependencyValues.gridAttrCompChildren.indexOf(child);
+
+              let num = dependencyValues["childAdapter" + childInd];
+              if (num instanceof me.class) {
+                num = num.evaluate_to_constant();
+              }
+
+              if (num > 0) {
+                grid.push(num)
+              } else {
+                return {
+                  setValue: { grid: "none" },
+                  setCreateComponentOfType: { grid: "text" },
+                }
+              }
+
+            }
+
+          } else {
+            // have a group of multiple children
+            // multiply them together
+            let num = 1;
+            for (let piece of group) {
+              if (typeof piece === "string") {
+                // Note: OK if null is converted to zero, as product will be rejected
+                num *= me.fromText(piece).evaluate_to_constant();
+              } else {
+                let childInd = dependencyValues.gridAttrCompChildren.indexOf(piece);
+
+                let factor = dependencyValues["childAdapter" + childInd];
+                if (factor instanceof me.class) {
+                  factor = factor.evaluate_to_constant();
+                }
+                // Note: OK if null is converted to zero, as product will be rejected
+                num *= factor;
+              }
+            }
+
+            if (num > 0) {
+              grid.push(num)
+            } else {
+              return {
+                setValue: { grid: "none" },
+                setCreateComponentOfType: { grid: "text" },
+              }
+            }
+
+          }
+        }
+
+        return {
+          setValue: { grid },
+          setCreateComponentOfType: { grid: "numberList" },
+        }
+
       }
     }
 
@@ -781,10 +1493,23 @@ export default class Graph extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     changeAxisLimits: this.changeAxisLimits.bind(this),
     addChildren: this.addChildren.bind(this),
-    deleteChildren: this.deleteChildren.bind(this)
+    deleteChildren: this.deleteChildren.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

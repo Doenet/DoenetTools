@@ -89,7 +89,9 @@ export default class BooleanList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
@@ -148,7 +150,9 @@ export default class BooleanList extends InlineComponent {
 
     stateVariableDefinitions.booleans = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       isArray: true,
       entryPrefixes: ["boolean"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
