@@ -17,7 +17,7 @@ const Button = styled.button `
   background-color: var(--mainBlue);
   display: inline-block;
   /* text-align: center; */
-  padding: 2px;
+  /* padding: 2px; */
   /* z-index: 0; */
   /* border: var(--mainBorder); */
   border: none;
