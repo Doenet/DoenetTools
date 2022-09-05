@@ -1220,12 +1220,13 @@ describe('Single page activity tests', function () {
 
   })
 
-  it('Video interactions do not give update version prompt', () => {
+  it('Presence of video does not give update version prompt', () => {
     const doenetML = `
 <title>A video</title>
 <video youtube="tJ4ypc5L6uU" width="640px" height="360px" name="v" />
 <p>State: <copy prop="state" source="v" assignNames="state" /></p>
 <p>Time: <copy prop="time" source="v" assignNames="time" /></p>
+<p>Duration: <copy prop="duration" source="v" assignNames="duration" /></p>
 <p>
   <callAction target="v" actionName="playVideo" name="playAction"><label>Play action</label></callAction>
   <callAction target="v" actionName="pauseVideo" name="pauseAction"><label>Pause action</label></callAction>
@@ -1248,6 +1249,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
 
     cy.get('#\\/_title1').should('have.text', 'A video')
+    cy.get('#\\/duration').should('have.text', '300')
 
     cy.wait(1500);  // wait for debounce
 
@@ -1273,6 +1275,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
+    cy.get('#\\/duration').should('have.text', '300')
     cy.get("#\\/more1").should('have.text', 'More content 1');
 
     cy.get('[data-test=NewVersionAvailable]').should('not.exist')
@@ -1306,9 +1309,13 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get("#\\/more2").should('have.text', 'More content 2');
+    cy.get('#\\/duration').should('have.text', '300')
+    cy.get("#\\/more2").should('not.exist');
 
-    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get('[data-test=ConfirmNewVersion]').click();
+
+    cy.get("#\\/more2").should('have.text', 'More content 2');
 
   })
 

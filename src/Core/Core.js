@@ -1489,7 +1489,7 @@ export default class Core {
       }
     }
 
-    if(serializedComponent.unlinkedCopySource) {
+    if (serializedComponent.unlinkedCopySource) {
       newComponent.unlinkedCopySource = serializedComponent.unlinkedCopySource;
     }
 
@@ -8258,7 +8258,7 @@ export default class Core {
   }
 
   async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
-    doNotSave = false
+    doNotSave = false, canSkipUpdatingRenderer = false
   }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
@@ -8360,7 +8360,9 @@ export default class Core {
     // always update the renderers from the update instructions themselves,
     // as even if changes were prevented, the renderers need to be given that information
     // so they can revert if the showed the changes before hearing back from core
-    this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
+    if (!canSkipUpdatingRenderer) {
+      this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
+    }
 
     // use set to create deduplicated list of components to update renderers
     let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
