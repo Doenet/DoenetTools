@@ -159,7 +159,7 @@ function formatDueDate(dt, classTimes) {
     return null;
   }
 
-  //End of Class and Before Class
+  //End of Class, In Class, and Before Class
   let dtDOTW = dt.getDay();
   for (let classTime of classTimes) {
     //Only process if it's the right day of the week
@@ -170,7 +170,9 @@ function formatDueDate(dt, classTimes) {
       let classEndDT = new Date(dt.getTime());
       const [endhours, endminutes] = classTime.endTime.split(':');
       classEndDT.setHours(endhours, endminutes, 0, 0);
-      if (dt >= classStartDT && dt < classEndDT) {
+      if (dt.getTime() == classStartDT.getTime()) {
+        return 'Before Class';
+      } else if (dt > classStartDT && dt < classEndDT) {
         return 'In Class';
       } else if (dt.getTime() == classEndDT.getTime()) {
         return 'End of Class';
