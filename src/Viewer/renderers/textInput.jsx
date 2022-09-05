@@ -11,6 +11,7 @@ import styled from 'styled-components';
 const Button = styled.button `
   position: relative;
   height: 24px;
+  width: 24px;
   display: inline-block;
   color: white;
   background-color: var(--mainBlue);
