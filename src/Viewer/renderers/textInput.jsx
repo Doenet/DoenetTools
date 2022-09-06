@@ -19,7 +19,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 10px 12px 10px;
+  margin: 0px 12px 12px 12px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -314,7 +314,7 @@ export default function TextInput(props) {
 
   return <React.Fragment>
     <a name={name} />
-    <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px"}}>
+    <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px", display: "flex"}}>
       {input}
       {checkWorkButton}
     </span>
