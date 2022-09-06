@@ -1,8 +1,11 @@
 /* Customize the label (the container) */
 .container {
-    /* display: block; */
+    display: inline;
+    width: 24px;
+    height: 24px;
     position: relative;
-    padding-left: 26px;
+    padding-left: 24px;
+    margin-right: 12px;
     margin-bottom: 12px;
     cursor: pointer;
     -webkit-user-select: none;
@@ -12,10 +15,11 @@
 }
 
 .button-container {
-    display: inline-block;
+    /* display: inline-block; */
+    width: 24px;
+    height: 24px;
     /* position: relative; */
     /* padding-left: 30px; */
-    margin-right: 12px;
     margin-bottom: 12px;
     cursor: pointer;
     -webkit-user-select: none;
