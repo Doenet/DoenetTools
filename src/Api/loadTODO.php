@@ -44,6 +44,7 @@ if ($success) {
   cc.parentDoenetId, 
   cc.label,
   cc.creationDate, 
+  cc.courseId,
   cc.isDeleted, 
   cc.isAssigned, 
   cc.isGloballyAssigned, 
@@ -66,7 +67,7 @@ if ($success) {
   AND cc.isDeleted = '0'
   AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
   AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-  ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC 
+  ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC, cc.sortOrder
   ";
 
   $result = $conn->query($sql); 
@@ -86,7 +87,6 @@ if ($success) {
           "courseId"=>$row['courseId'],
           "isAssigned"=>$row['isAssigned'],
           "isPublic"=>$row['isPublic'],
-          "isReleased"=>$row['isReleased'],
           "parentDoenetId"=>$row['parentDoenetId'],
           "sortOrder"=>$row['sortOrder']
         ));
@@ -102,7 +102,6 @@ if ($success) {
           "courseId"=>$row['courseId'],
           "isAssigned"=>$row['isAssigned'],
           "isPublic"=>$row['isPublic'],
-          "isReleased"=>$row['isReleased'],
           "parentFolderId"=>$row['parentFolderId'],
           "sortOrder"=>$row['sortOrder']
         ));

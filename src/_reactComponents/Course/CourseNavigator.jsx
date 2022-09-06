@@ -51,6 +51,7 @@ import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { effectivePermissionsByCourseId } from '../PanelHeaderComponents/RoleDropdown';
 import Button from '../PanelHeaderComponents/Button';
+import ButtonGroup from '../PanelHeaderComponents/ButtonGroup';
 
 const ToggleCloseIconStyling = styled.button`
   border: none;
@@ -799,7 +800,12 @@ function CourseNavigationHeader({courseId,sectionId,columnLabels,numberOfVisible
               alignContent: 'center',
             }}
           >
-            <span style={{display:"flex"}}><span style={{marginRight:"10px"}}>Label</span><Button value='Open All' onClick={()=>openCloseAll({isOpen:true,courseId,sectionId})}/> <Button value='Close All'  onClick={()=>openCloseAll({isOpen:false,courseId,sectionId})}/></span>
+            <span style={{display:"flex"}}><span style={{marginRight:"10px"}}>Label</span>
+            <ButtonGroup>
+            <Button value='Open All' onClick={()=>openCloseAll({isOpen:true,courseId,sectionId})}/>
+            <Button value='Close All'  onClick={()=>openCloseAll({isOpen:false,courseId,sectionId})}/>
+            </ButtonGroup>
+            </span>
             {numberOfVisibleColumns >= 2 && columnLabels[0] ? (
               <span style={{ textAlign: 'center' }}>{columnLabels[0]}</span>
             ) : null}
