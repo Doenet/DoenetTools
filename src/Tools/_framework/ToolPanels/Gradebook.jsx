@@ -91,12 +91,14 @@ export const Styles = styled.div`
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 200px;
     }
 
     thead tr:only-child th:not(:first-child) > p {
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 200px;
     }
 
     td {
