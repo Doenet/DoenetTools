@@ -11,7 +11,8 @@ const CreateCourse = (props) => {
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Create New Course",
-    onClick: createCourse
+    onClick: createCourse,
+    "data-test": "createCourse"
   }, "Create New Course")));
 };
 export default CreateCourse;

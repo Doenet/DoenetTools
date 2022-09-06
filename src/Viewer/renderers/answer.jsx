@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
+
 // Moved most of checkWorkStyle styling into Button
-const Button = styled.button `
+const Button = styled.button`
   position: relative;
   height: 24px;
   display: inline-block;
@@ -15,7 +16,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 10px 12px 10px;
+  margin: 0px 12px 12px 12px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -23,8 +24,8 @@ const Button = styled.button `
   };
 `;
 
-export default function Answer(props) {
-  let { name, SVs, actions, children, callAction } = useDoenetRender(props);
+export default React.memo(function Answer(props) {
+  let { name, id, SVs, actions, children, callAction } = useDoenetRender(props);
 
 
   if (SVs.hidden) {
@@ -76,12 +77,12 @@ export default function Answer(props) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     }
 
-    let checkWorkText = "Check Work";
+    let checkWorkText = SVs.submitLabel;
     if (!SVs.showCorrectness) {
-      checkWorkText = "Submit Response";
+      checkWorkText = SVs.submitLabelNoCorrectness;
     }
     let checkworkComponent = (
-      <Button id={name + "_submit"}
+      <Button id={id + "_submit"}
         tabIndex="0"
         disabled={disabled}
         style={checkWorkStyle}
@@ -92,7 +93,7 @@ export default function Answer(props) {
           }
         }}
       >
-        <FontAwesomeIcon style={{marginRight: "4px", paddingLeft: "2px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         &nbsp;
         {checkWorkText}
       </Button>);
@@ -101,7 +102,7 @@ export default function Answer(props) {
       if (validationState === "correct") {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
         checkworkComponent = (
-          <Button id={name + "_correct"}
+          <Button id={id + "_correct"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
@@ -111,7 +112,7 @@ export default function Answer(props) {
       } else if (validationState === "incorrect") {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
         checkworkComponent = (
-          <Button id={name + "_incorrect"}
+          <Button id={id + "_incorrect"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faTimes} />
@@ -124,7 +125,7 @@ export default function Answer(props) {
         let partialCreditContents = `${percent}% Correct`;
 
         checkworkComponent = (
-          <Button id={name + "_partial"}
+          <Button id={id + "_partial"}
             style={checkWorkStyle}
           >
             {partialCreditContents}
@@ -135,7 +136,7 @@ export default function Answer(props) {
       if (validationState !== "unvalidated") {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkworkComponent = (
-          <Button id={name + "_saved"}
+          <Button id={id + "_saved"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCloud} />
@@ -168,13 +169,13 @@ export default function Answer(props) {
       </>
     }
 
-    return <span id={name} style={{display: "flex"}}>
-      <a name={name} />
+    return <span id={id} style={{ display: "flex" }}>
+      <a name={id} />
       {inputChildrenToRender}
       {checkworkComponent}
     </span>;
   } else {
-    return <span id={name} style={{marginBottom: "12px"}}><a name={name} />{inputChildrenToRender}</span>;
+    return <span id={id} style={{ marginBottom: "12px" }}><a name={id} />{inputChildrenToRender}</span>;
   }
 
-}
+})

@@ -1,8 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
-export default function Figure(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+export default React.memo(function Figure(props) {
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden || !children) {
     return null;
@@ -39,11 +56,13 @@ export default function Figure(props) {
     }
 
     return (
-      <figure id={name} style={{ margin: "12px 0" }}>
-        <a name={name} />
+      <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <figure id={id} style={{ margin: "12px 0" }}>
+        <a name={id} />
         {childrenToRender}
-        <figcaption id={ name + "_caption" }>{caption}</figcaption>
+        <figcaption id={ id + "_caption" }>{caption}</figcaption>
       </figure>
+      </VisibilitySensor>
     )
-}
+})
 

@@ -92,14 +92,13 @@ if ($success){
   if ($itemType == 'section'){
     $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
     $isAssigned = 1;
+    $label = 'Untitled Section';
   }else if($itemType == 'activity'){
     $pageDoenetId = include "randomId.php";
     $pageDoenetId = "_" . $pageDoenetId;
+    $label = 'Untitled Activity';
 
-    $orderDoenetId = include "randomId.php";
-    $orderDoenetId = "_" . $orderDoenetId;
-
-    $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
+    $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"content":["'.$pageDoenetId.'"],"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 
     //We need to clone an existing item
   if ($cloneMode == '1'){
@@ -127,6 +126,8 @@ if ($success){
     
   }else if($itemType == 'bank'){
     $jsonDefinition = '{"type":"bank","pages":[]}';
+    $label = 'Untitled Collection';
+
   }else{
     $success = FALSE;
     $message = "Not able to make type $itemType";
@@ -201,7 +202,7 @@ if ($success){
           $conn->query($sql);
           $pageEntered = array(
             "type"=>"page",
-            "label"=>"Untitled",
+            "label"=>"Untitled Page",
             "containingDoenetId"=>$doenetId,
             "doenetId"=>$pageDoenetId,
             "cid"=>"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"

@@ -10,11 +10,15 @@ const SearchBar = styled.input `
     border-radius: var(--mainBorderRadius);
     position: relative;
     padding: 0px 70px 0px 30px;
-    color: #000;
+    color: var(--canvastext);
     overflow: hidden;
     width: ${props => props.width === 'menu' ? '130px' : '220px'};
     font-size: 14px;
     cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+    &:focus {
+        outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : 'var(--canvastext)'};
+        outline-offset: 2px;
+    }
 `;
 
 
@@ -25,11 +29,15 @@ const CancelButton = styled.button `
     position: absolute;
     z-index: 2;
     border: 0px;
-    background-color: white;
+    background-color: var(--canvas);
     visibility: ${props => props.cancelShown};
-    color: #000;
+    color: var(--canvastext);
     overflow: hidden;
     outline: none;
+    border-radius: 5px;
+    &:focus {
+        outline: 2px solid var(--canvastext);
+    }
 `;
 
 const SubmitButton = styled.button `
@@ -40,15 +48,20 @@ const SubmitButton = styled.button `
     height: 28px;
     border: ${props => props.alert ? '2px solid var(--mainRed)' : "var(--mainBorder)"};
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
-    color: ${props => props.disabled ? 'black' : 'white'};
+    color: ${props => props.disabled ? 'var(--canvastext)' : 'var(--canvas)'};
     border-radius: 0px 5px 5px 0px;
     cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
     font-size: 12px;
     overflow: hidden;
 
     &:hover {
-        color: black;
+        color: var(--canvastext);
         background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
+    }
+
+    &:focus {
+        outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : 'var(--canvastext)'};
+        outline-offset: 2px;
     }
 `;
 
@@ -89,7 +102,7 @@ export default function Searchbar(props) {
         margin: '6px 0px 0px 6px',
         position: 'absolute',
         zIndex: '1',
-        color: '#000',
+        color: 'var(--canvastext)',
         overflow: 'hidden'
     };
 
@@ -123,11 +136,6 @@ export default function Searchbar(props) {
     var label = "";
     if (props.label) {
         label = props.label;
-    };
-
-    var ariaLabel = "";
-    if (props.ariaLabel) {
-        ariaLabel = props.ariaLabel;
     };
 
     let autoFocus = false;
@@ -172,10 +180,11 @@ export default function Searchbar(props) {
 
     return (
         <Container align={align}>
-            <Label labelVisible={labelVisible} align={align}>{label}</Label>
+            <Label id="search-label" labelVisible={labelVisible} align={align}>{label}</Label>
             <div style={{display: "table-cell"}} >
                 <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
                 <CancelButton 
+                    aria-label="Clear"
                     ref={searchBarRef}
                     cancelShown={cancelShown}
                     marginLeft={marginLeft}
@@ -194,9 +203,10 @@ export default function Searchbar(props) {
                     disabled={disable}
                     alert={alert}
                     value={searchTerm}
-                    onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
+                    onKeyDown={(e)=>{if (e.key === 'Enter' || e.key === "Spacebar" || e.key === " "){searchSubmitAction()}}}
                     autoFocus={autoFocus} 
-                    ariaLabel={ariaLabel}
+                    aria-labelledby="search-label"
+                    aria-disabled={props.disabled ? true : false}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
                 {searchButton}

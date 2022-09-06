@@ -19,20 +19,23 @@ export default function TimerMenu() {
 
   //Need fresh data on began time each time 
   //in case they opened another tab or hit refresh
-  useEffect(async () => {
+  useEffect(() => {
     let startDT = new Date();
-    const { data } = await axios.get('/api/loadAttemptStartTime.php', {
+
+    axios.get('/api/loadAttemptStartTime.php', {
       params: { doenetId, attemptNumber: userAttemptNumber },
-    })
+    }).then(({ data }) => {
 
-    if (data.attemptStart !== null) {
-      //This attempt was started in the past so update startDT
-      //AND Convert UTC to local time
-      startDT = UTCDateStringToDate(data.attemptStart);
-    }
+      if (data.attemptStart !== null) {
+        //This attempt was started in the past so update startDT
+        //AND Convert UTC to local time
+        startDT = UTCDateStringToDate(data.attemptStart);
+      }
 
-    let endDT = new Date(startDT.getTime() + timeLimit * 60000 * data.timeLimitMultiplier);
-    setEndTime(endDT);
+      let endDT = new Date(startDT.getTime() + timeLimit * 60000 * data.timeLimitMultiplier);
+      setEndTime(endDT);
+
+    }).catch(console.error)
 
   }, [userAttemptNumber, timeLimit, doenetId, setEndTime])
 

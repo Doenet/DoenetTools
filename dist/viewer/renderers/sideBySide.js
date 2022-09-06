@@ -1,7 +1,22 @@
 import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function sideBySide(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
+export default React.memo(function sideBySide(props) {
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -28,10 +43,13 @@ export default function sideBySide(props) {
       key: child.key
     }, child));
   }
-  return /* @__PURE__ */ React.createElement("div", {
-    id: name,
-    style: {display: "flex", maxWidth: "800px", margin: "12px 0"}
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
+    id,
+    style: {display: "flex", maxWidth: "850px", margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
-  }), styledChildren);
-}
+    name: id
+  }), styledChildren));
+});

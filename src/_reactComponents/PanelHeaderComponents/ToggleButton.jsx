@@ -1,23 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { MathJax } from "better-react-mathjax";
 
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
-  border: ${props => props.alert ? '2px solid var(--mainRed)' : (props.disabled ? '2px solid var(--mainGray)' : '2px solid var(--mainBlue)')};
+  border: ${(props) =>
+    props.alert
+      ? '2px solid var(--mainRed)'
+      : props.disabled
+      ? '2px solid var(--mainGray)'
+      : '2px solid var(--mainBlue)'};
   border-width: 2px;
-  color: ${props => props.alert ? 'var(--mainRed)' : (props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)')};
-  background-color: white;
+  color: ${(props) =>
+    props.alert
+      ? 'var(--mainRed)'
+      : props.disabled
+      ? 'var(--mainGray)'
+      : 'var(--mainBlue)'};
+  background-color: var(--canvas);
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
-  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   font-size: 12px;
   text-align: center;
 
-  &:hover { // Button color lightens on hover
-    color: ${props => props.disabled ? 'var(--mainGray)' : 'black'};
-    background-color: ${props => props.alert ? 'var(--lightRed)' : (props.disabled ? 'none' : 'var(--lightBlue)')};
-  };
+  &:hover {
+    // Button color lightens on hover
+    color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'black')};
+    background-color: ${(props) =>
+      props.alert
+        ? 'var(--lightRed)'
+        : props.disabled
+        ? 'none'
+        : 'var(--lightBlue)'};
+  }
+
+  &:focus {
+    outline: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--mainBlue)')};
+    outline-offset: 2px;
+  }
 `;
 
 Button.defaultProps = {
@@ -41,7 +63,9 @@ Button.defaultProps = {
 // `
 
 export default function ToggleButton(props) {
-  const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
+  const [isSelected, setSelected] = useState(
+    props.isSelected ? props.isSelected : false,
+  );
   const labelVisible = props.label ? 'static' : 'none';
   const align = props.vertical ? 'static' : 'flex';
   const alert = props.alert ? props.alert : null;
@@ -80,7 +104,10 @@ export default function ToggleButton(props) {
       icon = props.icon;
       toggleButton.value = '';
     }
-  };
+    if(props.value && props.valueHasLatex) {
+      toggleButton.value = <MathJax hideUntilTypeset={"first"} inline dynamic >{toggleButton.value}</MathJax>
+    }
+  }
 
   if (isSelected === true) {
     if (!props.disabled) {
@@ -89,21 +116,21 @@ export default function ToggleButton(props) {
       } else {
         toggleButton.backgroundColor = 'var(--mainRed)';
       }
-      toggleButton.color = '#FFF';
+      toggleButton.color = 'var(--canvas)';
       if (props.switch_value) toggleButton.value = props.switch_value;
     }
-  };
+  }
 
   function handleClick() {
     if (props.onClick)
       props.onClick(
         props.index !== null && props.index !== undefined ? props.index : null,
       );
-  };
+  }
 
   if (props.label) {
     label.value = props.label;
-  };
+  }
 
   if (props.width) {
     if (props.width === 'menu') {
@@ -113,29 +140,32 @@ export default function ToggleButton(props) {
         toggleButton.width = '100%';
       }
     }
-  };
+  }
 
   if (props.num === 'first') {
     toggleButton.borderRadius = '5px 0px 0px 5px';
-  };
+  }
 
   if (props.num === 'last') {
     toggleButton.borderRadius = '0px 5px 5px 0px';
-  };
+  }
 
   if (props.num === 'first_vert') {
     toggleButton.borderRadius = '5px 5px 0px 0px';
-  };
+  }
 
   if (props.num === 'last_vert') {
     toggleButton.borderRadius = '0px 0px 5px 5px';
-  };
+  }
 
   return (
     <>
       <div style={container}>
-        <p style={label}>{label.value}</p>
+        <p id="toggle-button-label" style={label}>{label.value}</p>
         <Button
+          aria-labelledby="toggle-button-label"
+          aria-pressed={props.isSelected}
+          aria-disabled={props.disabled ? true : false}
           id={props.id}
           style={toggleButton}
           disabled={disabled}
@@ -149,4 +179,4 @@ export default function ToggleButton(props) {
       </div>
     </>
   );
-};
+}

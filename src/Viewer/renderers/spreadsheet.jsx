@@ -1,24 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { HotTable } from '@handsontable/react';
 import { HyperFormula } from 'hyperformula';
 import 'handsontable/dist/handsontable.full.css';
 import { sizeToCSS } from './utils/css';
 import { registerAllModules } from 'handsontable/registry';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 registerAllModules();
 
 
-export default function SpreadsheetRenderer(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+export default React.memo(function SpreadsheetRenderer(props) {
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
   }
   
   return (
-    <div id={name} style={{ margin: "12px 0" }} >
-      <a name={name} />
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+    <div id={id} style={{ margin: "12px 0" }} >
+      <a name={id} />
       <HotTable
         // style={{ borderRadius:"var(--mainBorderRadius)", border:"var(--mainBorder)" }}
         licenseKey='non-commercial-and-evaluation'
@@ -57,6 +75,7 @@ export default function SpreadsheetRenderer(props) {
         stretchH="all"
       />
     </div>
+    </VisibilitySensor>
   )
-}
+})
 

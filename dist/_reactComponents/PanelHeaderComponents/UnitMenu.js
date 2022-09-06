@@ -12,6 +12,10 @@ const Textfield = styled.input`
   text-align: center;
   resize: none;
   cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+  &:focus {
+    outline: ${(props) => props.alert};
+    outline-offset: 2px;
+  }
 `;
 const Label = styled.p`
   font-size: 14px;
@@ -36,21 +40,26 @@ const Units = styled.button`
   height: 24px;
   width: 34px;
   position: relative;
-  color: ${(props) => props.disabled ? "black" : "white"};
+  color: ${(props) => props.disabled ? "var(--canvastext)" : "var(--canvas)"};
   font-size: 12px;
   right: 36px;
 
   &:hover { // Button color lightens on hover
-    color: black;
+    color: var(--canvastext);
     background-color: ${(props) => props.disabled ? "none" : "var(--lightBlue)"};
     cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   };
+
+  &:focus {
+    outline: ${(props) => props.alert};
+    outline-offset: 4px;
+  }
 `;
 const Unit = styled.div`
   display: none;
   position: relative;
   background-color: var(--mainGray);
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 8px 16px 0px var(--mainGray);
   z-index: 9999;
   border: var(--mainBorder);
   border-radius: var(--mainBorderRadius);
@@ -63,13 +72,13 @@ const Unitoption = styled.button`
   display: block;
   width: 48px;
   height: 24px;
-  border: 1px black solid;
+  border: 1px var(--canvastext) solid;
   :hover {
     cursor: pointer;
   };
   ${(props) => props.selected === "True" && css`
       background: var(--solidLightBlue);
-      color: black;
+      color: var(--canvastext);
   `};
 `;
 export default function UnitMenu(props) {
@@ -218,6 +227,7 @@ export default function UnitMenu(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LabelContainer, {
     align
   }, /* @__PURE__ */ React.createElement(Label, {
+    id: "unitmenu-label",
     visible: labelVisible,
     onMouseDown: (e) => {
       initialClickLabelPosition.current = [e.clientX, e.clientY];
@@ -225,6 +235,8 @@ export default function UnitMenu(props) {
     },
     className: "noselect"
   }, labelvalue), /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Textfield, {
+    "aria-labelledby": "unitmenu-label",
+    "aria-disabled": props.disabled ? true : false,
     disabled,
     id: "text",
     type: "text",
@@ -240,7 +252,10 @@ export default function UnitMenu(props) {
       changeValue(event);
     }
   }), /* @__PURE__ */ React.createElement(Units, {
-    disabled
+    "aria-disabled": props.disabled ? true : false,
+    disabled,
+    alert,
+    "aria-haspopup": "true"
   }, currentUnit, /* @__PURE__ */ React.createElement(Unit, {
     id: "unit",
     disabled

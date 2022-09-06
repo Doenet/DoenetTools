@@ -36,6 +36,7 @@ export default function DraftAssignmentViewer() {
   const [
     {
       showCorrectness,
+      paginate,
       showFeedback,
       showHints,
       cid,
@@ -51,6 +52,18 @@ export default function DraftAssignmentViewer() {
   useInitCourseItems(courseId);
 
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
+  let label = itemObj.label;
+
+  useEffect(() => {
+    const prevTitle = document.title;
+    if (label) {
+      document.title = `${label} - Doenet`;
+    }
+    return () => {
+      document.title = prevTitle;
+    }
+  }, [label])
+
 
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
@@ -80,6 +93,7 @@ export default function DraftAssignmentViewer() {
         dueDate,
         showCorrectness,
         showCreditAchievedMenu,
+        paginate,
         showFeedback,
         showHints,
         showSolution,
@@ -125,6 +139,7 @@ export default function DraftAssignmentViewer() {
 
         setLoad({
           showCorrectness,
+          paginate,
           showFeedback,
           showHints,
           cid,
@@ -148,7 +163,7 @@ export default function DraftAssignmentViewer() {
 
   // console.log(`>>>>stage -${stage}-`)
 
-  if(courseId === "__not_found__") {
+  if (courseId === "__not_found__") {
     return <h1>Content not found or no permission to view content</h1>;
   } else if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId);
@@ -177,6 +192,7 @@ export default function DraftAssignmentViewer() {
         }}
         requestedVariantIndex={requestedVariantIndex}
         generatedVariantCallback={variantCallback}
+        paginate={paginate}
       />
     </>
   );

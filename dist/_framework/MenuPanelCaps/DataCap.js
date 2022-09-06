@@ -2,6 +2,7 @@ import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {coursePermissionsAndSettingsByCourseId} from "../../_reactComponents/Course/CourseActions.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {find_image_label, find_color_label} from "./util.js";
 export default function DataCap() {
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const tool = useRecoilValue(searchParamAtomFamily("tool"));
@@ -12,10 +13,13 @@ export default function DataCap() {
   let color = course.color;
   let image = course.image;
   let label = course.label;
+  let accessible_name = "course";
   if (image != "none") {
+    accessible_name = find_image_label(image);
     image = "url(/media/drive_pictures/" + image + ")";
   }
   if (color != "none") {
+    accessible_name = find_color_label(color);
     color = "#" + color;
   }
   let toolText = "";
@@ -27,8 +31,9 @@ export default function DataCap() {
     toolText = "Data";
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    style: {position: "relative", width: "100%", height: "135px", overflow: "hidden"}
+    style: {position: "relative", width: "100%", height: "165px", overflow: "hidden"}
   }, /* @__PURE__ */ React.createElement("img", {
+    "aria-label": accessible_name,
     style: {position: "absolute", width: "100%", height: "100%", backgroundSize: "cover", backgroundPosition: "center", backgroundImage: image, backgroundColor: color}
   })), /* @__PURE__ */ React.createElement("b", null, toolText), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "16px 12px"}

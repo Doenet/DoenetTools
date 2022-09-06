@@ -2,7 +2,7 @@ import BaseComponent from './BaseComponent.js';
 
 export default class LineListComponent extends BaseComponent {
   static componentType = "_lineListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
 

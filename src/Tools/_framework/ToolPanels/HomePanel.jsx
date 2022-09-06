@@ -16,18 +16,24 @@ const DoenetLogo = styled.div`
   position: relative;
   width: 100%;
   min-height: 340px;
-  background-color: #e3e2e2;
+  background-color: var(--mainGray);
   justify-content: center;
   align-items: center;
 `;
 const DoenetImage = styled.img`
 @media (max-width: 768px) {
   width:500px;
-}`;
+}
+
+&:focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
+`;
 
 const CloudColor = styled.div`
-  background-color: #fff;
-  color: #333333;
+  background-color: var(--canvas);
+  color: var(--canvastext);
 `;
 const CloudColorSection = styled(CloudColor)`
   padding: 20px 10px 60px 10px;
@@ -38,8 +44,8 @@ const CloudColorSection = styled(CloudColor)`
 `;
 
 const LightBlueColor = styled.div`
-background-color: hsl(209,54%,82%);
-color:black;
+background-color: var(--lightBlue);
+color: black;
 `;
 const LightBlueColorSection = styled(LightBlueColor)`
   padding: 20px 10px 60px 10px;
@@ -81,17 +87,25 @@ const Paragraph = styled.p`
     }`;
 
 const Footer = styled.div`
-  background-color: #e3e2e2;
-  color: #333333;
+  background-color: var(--mainGray);
+  color: var(--canvastext);
   font-size: 14px;
   padding: 20px 40px;
   text-align: center;
 `;
 
 const Caption = styled.p`
-text-align: center;
-   display: block;
-    `;
+  text-align: center;
+  display: block;
+`;
+
+const LinkStyling = styled.a`
+  color: var(--mainBlue);
+  border-radius: 5px;
+  &: focus {
+    outline: 2px solid var(--mainBlue);
+  }
+`;
 
 export default function HomePage(props) {
   // console.log(">>>===HomePage")
@@ -105,7 +119,7 @@ export default function HomePage(props) {
 
   return <div style = {props.style}>
     <DoenetLogo>
-      <DoenetImage src={'/media/Doenet_Logo_Frontpage.png'} />
+      <DoenetImage alt="Doenet logo showing donut in front of a cloud" src={'/media/Doenet_Logo_Frontpage.png'} />
     </DoenetLogo>
     <CloudColorSection>
       <SectionText>
@@ -131,14 +145,16 @@ export default function HomePage(props) {
 
         </Paragraph>
 
-        <Paragraph>
+        <Paragraph id="MMA-DUE-Point-article-heading">
           For more background and information on the Doenet project, see{' '}
-          <a
-            style={{ color: '#6d4445' }}
+          <LinkStyling
+            id="MMA-DUE-Point-article"
+            aria-labelledby="MMA-DUE-Point-article-heading MMA-DUE-Point-article"
+            style={{ color: 'var(--whiteBlankLink)' }}
             href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
           >
             this MAA DUE Point article
-          </a>
+          </LinkStyling>
 
         </Paragraph>
       </SectionText>
@@ -152,7 +168,7 @@ export default function HomePage(props) {
           DoenetML is the markup language we've created to let you focus
           on the meaning of the elements you wish to create.
           Based on{' '}
-          <a href="http://pretextbook.org">PreTeXt</a>, DoenetML looks
+          <LinkStyling href="http://pretextbook.org">PreTeXt</LinkStyling>, DoenetML looks
           similar to HTML, with descriptive tags such as{' '}
           <code>&lt;point&gt;</code>, <code>&lt;intersection&gt;</code>, and{' '}
           <code>&lt;answer&gt;</code>.
@@ -167,13 +183,13 @@ export default function HomePage(props) {
 
         <Paragraph>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <a href="/public?tool=editor&doenetId=_qyPDhmvsuwjwNGM9OPy3Q" style={{textDecoration: "none"}}><DoenetDriveCard image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Randomly-Generated-Graphs" href="/public?tool=editor&doenetId=_qyPDhmvsuwjwNGM9OPy3Q" style={{textDecoration: "none"}}><DoenetDriveCard id="Randomly-Generated-Graphs" image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_T-cgqOlqTxAJbicaXqtKg" style={{textDecoration: "none"}}><DoenetDriveCard image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-aria-labelledby="Hands-On-Activities" href="/public?tool=editor&doenetId=_T-cgqOlqTxAJbicaXqtKg" style={{textDecoration: "none"}}><DoenetDriveCard id="Hands-On-Activities" image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_JXTxrd8XXjfEy9GuFPcy6" style={{textDecoration: "none"}}><DoenetDriveCard image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Dynamic-Content-Interactions" href="/public?tool=editor&doenetId=_JXTxrd8XXjfEy9GuFPcy6" style={{textDecoration: "none"}}><DoenetDriveCard id="Dynamic-Content-Interactions" image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_UdDWyNkqfF21O6Ew-Qh4O" style={{textDecoration: "none"}}><DoenetDriveCard image="BasicAnswerValidation.jpg" label="Basics of Answer Validation" wwidth="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Basics-of-Answer-Validation" href="/public?tool=editor&doenetId=_UdDWyNkqfF21O6Ew-Qh4O" style={{textDecoration: "none"}}><DoenetDriveCard id="Basics-of-Answer-Validation" image="BasicAnswerValidation.jpg" label="Basics of Answer Validation" wwidth="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
           </div>
         </Paragraph>
 
@@ -182,27 +198,27 @@ export default function HomePage(props) {
 
         {/*<div style={{ display: "flex", justifyContent: "space-evenly" }}>
               <div>
-                <button type="button"><a href="/public?tool=editor&doenetId=qyPDhmvsuwjwNGM9OPy3Q"><DoenetImage src={'/media/profile_pictures/RandomlyGeneratedGraph.jpg'} width="185" />
+                <button type="button"><LinkStyling href="/public?tool=editor&doenetId=qyPDhmvsuwjwNGM9OPy3Q"><DoenetImage src={'/media/profile_pictures/RandomlyGeneratedGraph.jpg'} width="185" />
                   <Caption>Randomly-Generated Graphs</Caption></a>
                 </button>
               </div>
 
               <div>
-                <button type="button"><a href="/public?tool=editor&doenetId=T-cgqOlqTxAJbicaXqtKg">
+                <button type="button"><LinkStyling href="/public?tool=editor&doenetId=T-cgqOlqTxAJbicaXqtKg">
                   <DoenetImage src={'/media/profile_pictures/Cobwebbing.jpg'} width="185" />
                   <Caption>Hands-On Activities</Caption></a>
                 </button>
               </div>
 
               <div>
-                <button type="button"><a href="/public?tool=editor&doenetId=JXTxrd8XXjfEy9GuFPcy6">
+                <button type="button"><LinkStyling href="/public?tool=editor&doenetId=JXTxrd8XXjfEy9GuFPcy6">
                   <DoenetImage src={'/media/profile_pictures/DynamicContentInteractions.jpg'} width="185" />
                   <Caption>Dynamic Content Interactions</Caption></a>
                 </button>
               </div>
 
               <div>
-                <button type="button"><a href="/public?tool=editor&doenetId=UdDWyNkqfF21O6Ew-Qh4O">
+                <button type="button"><LinkStyling href="/public?tool=editor&doenetId=UdDWyNkqfF21O6Ew-Qh4O">
                   <DoenetImage src={'/media/profile_pictures/BasicAnswerValidation.jpg'} width="185" />
                   <Caption>Basics of Answer Validation</Caption></a>
                 </button>
@@ -219,13 +235,13 @@ export default function HomePage(props) {
         </Paragraph>
         <Paragraph>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <a href="/public?tool=editor&doenetId=_Sf8u9bDhC5W6ta3YP0XWD" style={{textDecoration: "none"}}><DoenetDriveCard image="AnteaterDynamicalSystem.jpg" label="Exploring an Anteater Dynamical System" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Dynamical-System" href="/public?tool=editor&doenetId=_Sf8u9bDhC5W6ta3YP0XWD" style={{textDecoration: "none"}}><DoenetDriveCard id="Dynamical-System" image="AnteaterDynamicalSystem.jpg" label="Exploring an Anteater Dynamical System" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_i7KDJsUQeSToEv4DGmLKq" style={{textDecoration: "none"}}><DoenetDriveCard image="SketchGaussianCurve.jpg" label="Sketching the Derivative of a Gaussian" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Derivative-of-a-Gaussian" href="/public?tool=editor&doenetId=_i7KDJsUQeSToEv4DGmLKq" style={{textDecoration: "none"}}><DoenetDriveCard id="Derivative-of-a-Gaussian" image="SketchGaussianCurve.jpg" label="Sketching the Derivative of a Gaussian" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_2yATouuOTFtJAs9j_dzU3" style={{textDecoration: "none"}}><DoenetDriveCard image="AverageRateOfChange.jpg" label="Average Rate of Change, Squirrel and Owl" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Average-Rate-of-Change" href="/public?tool=editor&doenetId=_2yATouuOTFtJAs9j_dzU3" style={{textDecoration: "none"}}><DoenetDriveCard id="Average-Rate-of-Change" image="AverageRateOfChange.jpg" label="Average Rate of Change, Squirrel and Owl" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_cbOJJuuBUuzmhE1LcCHe6" style={{textDecoration: "none"}}><DoenetDriveCard image="RiemannSums.jpg" label="Sketching Riemann Sums, Varying Intervals" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Riemann-Sums" href="/public?tool=editor&doenetId=_cbOJJuuBUuzmhE1LcCHe6" style={{textDecoration: "none"}}><DoenetDriveCard id="Riemann-Sums" image="RiemannSums.jpg" label="Sketching Riemann Sums, Varying Intervals" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
           </div>
         </Paragraph>
 
@@ -246,7 +262,7 @@ export default function HomePage(props) {
 
         <Paragraph>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <a href="/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q">DoenetML Reference</a>
+            <LinkStyling href="/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q">DoenetML Reference</LinkStyling>
           </div>
         </Paragraph>
 
@@ -259,11 +275,11 @@ export default function HomePage(props) {
       <SectionText>
         <Headings className="section-headline">Workshop on developing learning experiments in Doenet</Headings>
         <Paragraph>
-          Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our <a href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop</a> for a hands-on introduction to authoring and running experiments, led
-          by the developers of Doenet.  Designed for instructors of college STEM courses, the workshop will be held from May 23 - May 26, 2022, at the University of Minnesota.
+          From May 23 - May 26, 2022, we hosted a <LinkStyling style={{color:"var(--whiteBlankLink)"}}href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop</LinkStyling> on developing content and learning experiments in Doenet.  Held at the University of Minnesota, the workshop for instructors of college STEM courses was a hands-on introduction to authoring and running experiments, led
+          by the developers of Doenet.
         </Paragraph>
         <Paragraph>
-          For more information and to apply to the workshop, see the <a href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop site</a>.
+          For information about future workshops, please contact us at <LinkStyling style= {{color:"var(--whiteBlankLink)"}} href="mailto:info@doenet.org">info@doenet.org</LinkStyling>.
         </Paragraph>
       </SectionText>
     </CloudColorSection>
@@ -286,10 +302,10 @@ export default function HomePage(props) {
           <div>
             <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
             <div style={{ marginBottom: '40px' }}>
-              <a href="mailto:info@doenet.org">info@doenet.org</a>
+              <LinkStyling href="mailto:info@doenet.org">info@doenet.org</LinkStyling>
             </div>
             <p>
-              <a
+              <LinkStyling
                 rel="license"
                 href="http://creativecommons.org/licenses/by/4.0/"
               >
@@ -298,20 +314,20 @@ export default function HomePage(props) {
                   style={{ borderWidth: 0 }}
                   src="https://i.creativecommons.org/l/by/4.0/88x31.png"
                 />
-              </a>
+              </LinkStyling>
               <br />
               This work is licensed under a{' '}
-              <a
+              <LinkStyling
                 rel="license"
                 href="http://creativecommons.org/licenses/by/4.0/"
               >
                 Creative Commons Attribution 4.0 International License
-              </a>
+              </LinkStyling>
               .
             </p>
             <p>
               Doenet is a collaborative project involving the University of
-              Minnesota, the Ohio State University, and Ithaca College, with
+              Minnesota, the Ohio State University, and Cornell University, with
               support from the National Science Foundation (DUE-1915294,
               DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
               or recommendations expressed in this material are those of the

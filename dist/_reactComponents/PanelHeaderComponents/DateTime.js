@@ -42,11 +42,22 @@ export default function DateTime(props) {
   };
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
     return /* @__PURE__ */ React.createElement("div", null, props.label ? /* @__PURE__ */ React.createElement(Label, {
+      id: "checkbox-label",
       vertical: props.vertical
     }, props.label) : null, /* @__PURE__ */ React.createElement("input", {
       ...propsRI,
-      style: {border: borderColor, cursor: cursorStyle, width, ...props.style},
+      style: {
+        border: borderColor,
+        cursor: cursorStyle,
+        width,
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
+        ...props.style
+      },
       ref: inputRef,
+      "aria-labelledby": "checkbox-label",
+      "aria-haspopup": "true",
+      "data-test": props.dataTest,
       onChange: (e) => {
         setCursorStart(e.target.selectionStart);
         setCursorEnd(e.target.selectionEnd);
@@ -72,9 +83,11 @@ export default function DateTime(props) {
       onClick: props.disabledOnClick,
       value: props.disabledText,
       readOnly: true,
+      "data-test": props.dataTest,
       style: {
         cursor: "not-allowed",
-        color: "#545454",
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
         height: "18px",
         width: "170px",
         border: "2px solid var(--mainGray)",

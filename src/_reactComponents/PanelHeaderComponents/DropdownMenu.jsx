@@ -1,5 +1,19 @@
 import React from 'react';
 import Select from 'react-select';
+import styled from 'styled-components';
+
+const Container = styled.div `
+    display: ${props => props.align};
+    width: auto;
+    align-items: center;
+`;
+
+const Label = styled.p `
+    font-size: 14px;
+    display: ${props => props.labelVisible};
+    margin-right: 5px;
+    margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
+`;
 
 const DropdownMenu = (props) => {
   // console.log('right ', props.right);
@@ -7,9 +21,9 @@ const DropdownMenu = (props) => {
     option: (provided, state) => {
       return {
         ...provided,
-        color: 'black',
-        backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'white',
-        ':active': { backgroundColor: 'white' },
+        color: 'var(--canvastext)',
+        backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
+        ':active': { backgroundColor: 'var(--canvas)' },
       };
     },
     menu: (provided, state) => ({
@@ -17,6 +31,9 @@ const DropdownMenu = (props) => {
       width: state.selectProps.width,
       maxHeigh: state.selectProps.maxMenuHeight,
       overflow: 'scroll',
+      color: 'var(--canvastext)',
+      backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
     }),
     container: (provided, state) => ({
       ...provided,
@@ -25,24 +42,44 @@ const DropdownMenu = (props) => {
       right: props.absolute && props.right ? props.right : null,
       left: props.absolute && props.left ? props.left : null,
       bottom: props.absolute && props.bottom ? props.bottom : null,
+      color: 'var(--canvastext)',
+      // backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
       //   left: props.absolute && props.left ? props.left : null,
       //   top: props.absolute && props.top ? props.top : null,
+      
     }),
     valueContainer: (provided, state) => ({
       ...provided,
       height: '20px',
+      color: 'var(--canvastext)',
+      backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
       // padding: '0 6px',
+      
     }),
     indicatorsContainer: (provided, state) => ({
       ...provided,
       height: '20px',
+      color: 'var(--canvastext)',
+      backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
     }),
+    singleValue: (provided, state) => {
+      return {
+        ...provided,
+        color: 'var(--canvastext)',
+        backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
+        ':active': { backgroundColor: 'var(--canvas)' },
+      };
+    },
     control: (provided, state) => {
       return {
         // margin: '0px 4px 0px 4px',
         alignItems: 'center',
         fontFamily: 'Open Sans',
-        backgroundColor: 'hsl(0, 0%, 100%)',
+        color:'var(--canvastext)',
+        backgroundColor: 'var(--canvas)',
         cursor: state.isDisabled ? 'not-allowed' : 'default',
         display: 'flex',
         flexWrap: 'wrap',
@@ -55,9 +92,12 @@ const DropdownMenu = (props) => {
         borderRadius: 'var(--mainBorderRadius)',
         position: 'relative',
         transition: 'all 100ms',
-        ':focus': {
-          outline: 'none',
-        },
+        outline: state.isFocused ? '2px solid black' : 'none',
+        outlineOffset: state.isFocused ? '2px' : 'none',
+        // ':focus': {
+        //   outline: '2px solid black',
+        //   outlineOffset: '2px'
+        // },
       };
     },
   };
@@ -66,14 +106,28 @@ const DropdownMenu = (props) => {
     return { value, label };
   });
 
+  const labelVisible = props.label ? 'static' : 'none';
+
   var width = props.width;
   if (props.width == 'menu') {
     width = '210px';
   };
 
+  var align = 'flex';
+  var label = '';
+  if (props.label) {
+      label = props.label;
+      if (props.vertical) {
+      align = 'static';
+      }
+  };
+
   //   console.log(options, props.def);
   return (
+    <Container align={align} data-test={props.dataTest}>
+            <Label labelVisible={labelVisible} align={align}>{label}</Label>
     <Select
+      aria-haspopup="true"
       value={options[props.valueIndex - 1]}
       defaultValue={options[props.defaultIndex - 1]}
       styles={customStyles}
@@ -87,7 +141,10 @@ const DropdownMenu = (props) => {
       closeMenuOnSelect={true}
       isMulti={props.isMulti ? props.isMulti : false}
       isDisabled={props.disabled ? true : false}
+      aria-disabled={props.disabled ? true : false}
+      
     />
+    </Container>
   );
 };
 

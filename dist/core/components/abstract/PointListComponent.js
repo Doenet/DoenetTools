@@ -3,7 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstring
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static returnSugarInstructions() {
@@ -156,13 +156,19 @@ export default class PointListComponent extends BaseComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "points") {
-          return "point" + propIndex;
+          if (propIndex.length === 1) {
+            return "point" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `pointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 5) === "point") {
           // could be point or pointX
           let pointNum = Number(varName.slice(5));
           if (Number.isInteger(pointNum) && pointNum > 0) {
-            return `pointX${pointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `pointX${pointNum}_${propIndex[0]}`
           }
         }
         return null;

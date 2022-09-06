@@ -196,13 +196,21 @@ export default class SelectFromSequence extends Sequence {
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
+    let attributesToConvert = {};
+    for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+      if (attr in component.attributes) {
+        attributesToConvert[attr] = component.attributes[attr]
+      }
+    }
+
     // allow one to override the fixed (default true) attribute
+    // as well as rounding settings
     // by specifying it on the sequence
     let attributesFromComposite = {};
 
-    if ("fixed" in component.attributes) {
+    if (Object.keys(attributesToConvert).length > 0) {
       attributesFromComposite = convertAttributesForComponentType({
-        attributes: { fixed: component.attributes.fixed },
+        attributes: attributesToConvert,
         componentType,
         componentInfoObjects,
         compositeCreatesNewNamespace: newNamespace,
@@ -449,7 +457,7 @@ export default class SelectFromSequence extends Sequence {
 
     if (serializedComponent.attributes.excludeCombinations) {
       console.log('have not implemented unique variants of a selectFromSequence with excludeCombinations')
-      return { success: true };
+      return { success: false };
     }
 
     let excludes = [];
@@ -458,11 +466,11 @@ export default class SelectFromSequence extends Sequence {
     if (excludeComponent) {
       if (sequenceType === "math") {
         console.log('have not implemented unique variants of a selectFromSequence of type math with exclude')
-
+        return { success: false };
       }
-      if (!excludeComponent.children.every(x => x.children.length === 1 && typeof x.children[0] === "string")) {
+      if (!excludeComponent.children.every(x => x.children?.length === 1 && typeof x.children[0] === "string")) {
         console.log('have not implemented unique variants of a selectFromSequence with non-constant exclude')
-        return { success: true };
+        return { success: false };
       }
       if (sequenceType === "letters") {
         excludes = excludeComponent.children.map(x => lettersToNumber(x.children[0]))
@@ -472,7 +480,7 @@ export default class SelectFromSequence extends Sequence {
 
       if (!excludes.every(Number.isFinite)) {
         console.log('have not implemented unique variants of a selectFromSequence with non-constant exclude')
-        return { success: true };
+        return { success: false };
       }
 
     }

@@ -10,7 +10,7 @@ export default function EnrollStudents() {
     vertical: true
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    onClick: () => setPageToolView({page: "course", tool: "enrollment", view: "", params: {courseId}}),
-    value: "Go to Enrollment"
-  }, "Go to Enrollment"));
+    onClick: () => setPageToolView({page: "course", tool: "people", view: "", params: {courseId}}),
+    value: "Go to People"
+  }, "Go to People"));
 }

@@ -1,6 +1,5 @@
 import React, {useRef, useState, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {panelsInfoAtom} from "../../_framework/Panels/NewContentPanel.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {supportPanelHandleLeft} from "../../_framework/Panels/NewContentPanel.js";
@@ -16,7 +15,7 @@ const BreadcrumbItem = styled.li`
   &:last-of-type span {
     border-radius: 0px 15px 15px 0px;
     padding: 0px 25px 0px 45px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
   &:first-of-type span {
@@ -25,16 +24,16 @@ const BreadcrumbItem = styled.li`
   &:only-child span {
     border-radius: 15px;
     padding: 0px 30px 0px 30px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
 `;
 const CrumbMenuItem = styled.div`
   padding: 4px;
   cursor: pointer;
-  color: black;
-  background: white;
-  border: 2px solid black;
+  color: var(--canvastext);
+  background: var(--canvas);
+  border: 2px solid var(--canvastext);
   border-radius: ${(props) => props.radius};
   margin: -2px 0px -2px 0px;
   border-left: 0px;
@@ -48,7 +47,11 @@ const CrumbMenuItem = styled.div`
   text-overflow: ellipsis;
   height: 21.6px;
   &:hover {
-    background-color: hsl(209,54%,82%);
+    background-color: var(--lightBlue);
+    color:black;
+  }
+  &:focus {
+    background-color: var(--lightBlue);
     color:black;
   }
 `;
@@ -57,7 +60,7 @@ const BreadcrumbSpan = styled.span`
   position: relative;
   float: left;
   color: white;
-  background: #1a5a99;
+  background: var(--mainBlue);
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
   &::after {
@@ -66,7 +69,7 @@ const BreadcrumbSpan = styled.span`
     height: 0;
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
-    border-left: 30px solid #1a5a99;
+    border-left: 30px solid var(--mainBlue);
     position: absolute;
     top: 50%;
     margin-top: -50px;
@@ -87,6 +90,9 @@ const BreadcrumbSpan = styled.span`
     left: 100%;
     z-index: 1;
   }
+  &:focus {
+    text-decoration: underline;
+  }
 `;
 const CrumbTextDiv = styled.div`
 white-space: nowrap;
@@ -94,7 +100,7 @@ overflow: hidden;
 text-overflow: ellipsis;
 max-width: 175px;
 `;
-function Crumb({setRef, i, label = null, onClick, icon = null}) {
+function Crumb({setRef, i, label = null, onClick}) {
   let crumbRef = useRef(null);
   useEffect(() => {
     setRef((was) => {
@@ -103,20 +109,23 @@ function Crumb({setRef, i, label = null, onClick, icon = null}) {
       return newObj;
     });
   }, [i, crumbRef, setRef]);
-  let iconJSX = null;
-  if (icon) {
-    iconJSX = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon
-    });
-  }
-  if (!icon && !label) {
+  if (!label) {
     label = "_";
   }
   return /* @__PURE__ */ React.createElement(BreadcrumbItem, {
-    ref: crumbRef
+    ref: crumbRef,
+    "data-test": `Crumb ${i}`
   }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
-    onClick
-  }, iconJSX, /* @__PURE__ */ React.createElement(CrumbTextDiv, null, label)));
+    "aria-label": label,
+    tabIndex: "0",
+    onClick,
+    onKeyDown: (e) => {
+      if (e.key === "Enter") {
+        onClick();
+      }
+    },
+    "aria-label": label
+  }, /* @__PURE__ */ React.createElement(CrumbTextDiv, null, label)));
 }
 export function BreadCrumb({crumbs = [], offset = 0}) {
   let [crumbRefs, setCrumbRefs] = useState([]);
@@ -150,6 +159,11 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
       }
     }
   }
+  useLayoutEffect(() => {
+    if (menuVisible) {
+      document.getElementById("breadcrumbitem1").focus();
+    }
+  }, [menuVisible]);
   useLayoutEffect(() => {
     if (crumbs.length < crumbRefs.length) {
       setCrumbRefs(crumbRefs.slice(0, crumbs.length));
@@ -205,15 +219,19 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
     }
   }, [crumbs, crumbRefs, setCrumbBreaks, crumbBreaks, numHidden]);
   let crumbsJSX = [];
-  for (let [i, {icon, label, onClick}] of Object.entries(crumbs)) {
+  for (let [i, {label, onClick}] of Object.entries(crumbs)) {
     if (i < numHidden && i != 0) {
       continue;
     }
     crumbsJSX.push(/* @__PURE__ */ React.createElement(Crumb, {
       key: `breadcrumbitem${i}`,
-      icon,
       label,
       onClick,
+      onKeyDown: (e) => {
+        if (e.key === "Enter") {
+          onClick();
+        }
+      },
       i,
       setRef: setCrumbRefs
     }));
@@ -223,15 +241,24 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
       ref: elipseItemRef,
       key: `breadcrumbitem1`
     }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+      "data-test": "Crumb Menu",
+      "aria-label": "...",
+      tabIndex: "0",
       onClick: () => {
         setMenuVisible((was) => !was);
-      }
+      },
+      onKeyDown: (e) => {
+        if (e.key === "Enter") {
+          setMenuVisible((was) => !was);
+        }
+      },
+      "aria-label": "..."
     }, "..."));
   }
   let breadcrumbMenu = null;
   if (numHidden > 0 && menuVisible) {
     let crumMenuItemsJSX = [];
-    for (let [i, {icon, label, onClick}] of Object.entries(crumbs)) {
+    for (let [i, {label, onClick}] of Object.entries(crumbs)) {
       if (i == 0) {
         continue;
       }
@@ -239,10 +266,18 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
         break;
       }
       crumMenuItemsJSX.push(/* @__PURE__ */ React.createElement(CrumbMenuItem, {
+        tabIndex: "0",
         key: `breadcrumbitem${i}`,
+        id: `breadcrumbitem${i}`,
+        "data-test": `Crumb Menu Item ${i}`,
         radius: "0px",
-        onClick
-      }, icon, label));
+        onClick,
+        onKeyDown: (e) => {
+          if (e.key === "Enter") {
+            onClick();
+          }
+        }
+      }, label));
     }
     if (crumMenuItemsJSX.length > 1) {
       crumMenuItemsJSX = [React.cloneElement(crumMenuItemsJSX[0], {radius: "5px 5px 0px 0px"})].concat(crumMenuItemsJSX.slice(1, -1)).concat(React.cloneElement(crumMenuItemsJSX[crumMenuItemsJSX.length - 1], {radius: "0px 0px 5px 5px"}));
@@ -257,8 +292,8 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
           zIndex: "20",
           top: "31px",
           position: "absolute",
-          backgroundColor: "white",
-          border: "2px solid black",
+          backgroundColor: "var(--canvas)",
+          border: "2px solid var(--canvastext)",
           borderRadius: "5px",
           maxHeight: "121px",
           overflowY: "scroll"

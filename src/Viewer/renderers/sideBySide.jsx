@@ -2,12 +2,29 @@ import React, { useRef, useState, useEffect } from 'react';
 
 // import styled from "styled-components";
 import useDoenetRender from './useDoenetRenderer';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 
-export default function sideBySide(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+export default React.memo(function sideBySide(props) {
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   // console.log(">>>name: ", name, " value: ", SVs);
   // console.log(">>>children",children)
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if(SVs.hidden){
     return null;
@@ -48,9 +65,11 @@ export default function sideBySide(props) {
 
 
   return (
-    <div id={name} style={{display:"flex",maxWidth:"800px", margin: "12px 0"}}>
-      <a name={name} />
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+    <div id={id} style={{display:"flex",maxWidth:"850px", margin: "12px 0"}}>
+      <a name={id} />
       {styledChildren}
     </div>
+    </VisibilitySensor>
   )
-}
+})

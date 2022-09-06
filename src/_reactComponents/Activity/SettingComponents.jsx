@@ -11,15 +11,21 @@ import { useActivity } from './ActivityActions';
 import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
 import Increment from '../PanelHeaderComponents/IncrementMenu';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
-import { useRecoilValue } from 'recoil';
-import { enrollmentByCourseId, itemByDoenetId, useCourse } from '../Course/CourseActions';
+import { atomFamily, useRecoilState, useRecoilValue } from 'recoil';
+import {
+  peopleByCourseId,
+  itemByDoenetId,
+  useCourse,
+} from '../Course/CourseActions';
 import axios from 'axios';
 import RelatedItems from '../PanelHeaderComponents/RelatedItems';
 import ActionButtonGroup from '../PanelHeaderComponents/ActionButtonGroup';
 import ActionButton from '../PanelHeaderComponents/ActionButton';
 import { toastType, useToast } from '@Toast';
-
-
+import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { useSaveDraft } from '../../Tools/_framework/ToolPanels/DoenetMLEditor';
+import { prerenderActivity } from '../../_utils/activityUtils';
+import Textfield from '../PanelHeaderComponents/Textfield';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -42,67 +48,143 @@ const InputControl = styled.div`
   align-items: center;
 `;
 
+const initializingWorkersAtom = atomFamily({
+  key: 'initializingWorkersAtom',
+  default: null,
+})
+
 export const AssignUnassignActivity = ({ doenetId, courseId }) => {
-
-  const {
-    compileActivity,
-    updateAssignItem
-  } = useCourse(courseId);
-  const {
-    isAssigned,
-  } = useRecoilValue(itemByDoenetId(doenetId));
+  const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
+  const { saveDraft } = useSaveDraft();
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
+  const isAssigned = itemObj.isAssigned;
   const addToast = useToast();
-
+  const [initializeStatus, setInitializeStatus] = useState("");
 
   let assignActivityText = 'Assign Activity';
+  let assignActivityToast = 'Activity Assigned';
   if (isAssigned) {
     // if (assignedCid != null) {
     assignActivityText = 'Update Assigned Activity';
+    assignActivityToast = 'Assigned Activity Updated';
   }
 
-  return (<ActionButtonGroup vertical>
-  <ActionButton
-  width="menu"
-  value={assignActivityText}
-  onClick={() => {
-    compileActivity({
-      activityDoenetId: doenetId,
-      isAssigned: true,
-      courseId,
-      // successCallback: () => {
-      //   addToast('Activity Assigned.', toastType.INFO);
-      // },
-    });
-    updateAssignItem({
-      doenetId,
-      isAssigned:true,
-      successCallback: () => {
-        addToast("Activity Assigned", toastType.INFO);
-      },
-    })
-  }}
-/>
-{isAssigned ? 
-<ActionButton
-  width="menu"
-  value="Unassign Activity"
-  alert
-  onClick={() => {
-    updateAssignItem({
-      doenetId,
-      isAssigned:false,
-      successCallback: () => {
-        addToast("Activity Unassigned", toastType.INFO);
-      },
-    })
-  
-  }}
-/>
-: null}
-</ActionButtonGroup>)
-}
+  let [initializingWorker, setInitializingWorker] = useRecoilState(initializingWorkersAtom(doenetId));
 
-export const AssignedDate = ({ doenetId, courseId }) => {
+
+  let assignButton = <ActionButton
+    width="menu"
+    data-test="Assign Activity"
+    value={assignActivityText}
+    onClick={async () => {
+      if (pageId) {
+        await saveDraft({ pageId, courseId });
+      }
+      compileActivity({
+        activityDoenetId: doenetId,
+        isAssigned: true,
+        courseId,
+        // successCallback: () => {
+        //   addToast('Activity Assigned.', toastType.INFO);
+        // },
+      });
+      updateAssignItem({
+        doenetId,
+        isAssigned: true,
+        successCallback: () => {
+          addToast(assignActivityToast, toastType.INFO);
+        },
+      });
+    }}
+  />
+
+  let unAssignButton = null;
+  let prerenderButton = null;
+
+  if (isAssigned) {
+    unAssignButton = <ActionButton
+      width="menu"
+      data-test="Unassign Activity"
+      value="Unassign Activity"
+      alert
+      onClick={() => {
+        updateAssignItem({
+          doenetId,
+          isAssigned: false,
+          successCallback: () => {
+            addToast('Activity Unassigned', toastType.INFO);
+          },
+        });
+      }}
+    />
+
+    if (initializingWorker) {
+      prerenderButton = <ActionButton
+        width="menu"
+        data-test="Cancel prerendering"
+        value={`${initializeStatus} (Cancel)`}
+        onClick={() => {
+          initializingWorker.terminate();
+          setInitializingWorker(null)
+        }}
+      />
+    } else {
+
+      let initializePrerender = async () => {
+        let flags = {
+          showCorrectness: itemObj.showCorrectness,
+          readOnly: false,
+          solutionDisplayMode: itemObj.showSolution ? 'button' : "none",
+          showFeedback: itemObj.showFeedback,
+          showHints: itemObj.showHints,
+          allowLoadState: false,
+          allowSaveState: false,
+          allowLocalState: false,
+          allowSaveSubmissions: false,
+          allowSaveEvents: false,
+        }
+        let resp = await axios.get(
+          `/api/getCidForAssignment.php`,
+          { params: { doenetId } },
+        );
+        if (resp.data.cid) {
+          setInitializeStatus("");
+          let worker = prerenderActivity({ cid: resp.data.cid, doenetId, flags })
+          setInitializingWorker(worker);
+          worker.onmessage = e => {
+            if (e.data.messageType === "status") {
+              setInitializeStatus(`${e.data.stage} ${Math.round(e.data.complete*100)}%`)
+            } else {
+              worker.terminate();
+              setInitializingWorker(null);
+            }
+          }
+        }
+      }
+
+      prerenderButton = <ActionButton
+        width="menu"
+        data-test="Prerender activity"
+        value="Prerender activity"
+        onClick={initializePrerender}
+      />
+
+    }
+
+  }
+
+  return (
+    <ActionButtonGroup vertical>
+      {assignButton}
+      {unAssignButton}
+      {prerenderButton}
+    </ActionButtonGroup>
+  );
+};
+
+//TODO: Emilio ask CLARA about non edible display
+export const AssignedDate = ({ doenetId, courseId, editable = false }) => {
   const addToast = useToast();
 
   const {
@@ -122,6 +204,7 @@ export const AssignedDate = ({ doenetId, courseId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Assigned Date Checkbox"
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={assignedDate !== null && assignedDate !== undefined}
@@ -146,6 +229,7 @@ export const AssignedDate = ({ doenetId, courseId }) => {
         <DateTime
           disabled={assignedDate === null || assignedDate === undefined}
           value={assignedDate ? new Date(assignedDate) : null}
+          dataTest="Assigned Date"
           disabledText="No Assigned Date"
           disabledOnClick={() => {
             let valueDescription = 'Now';
@@ -208,6 +292,7 @@ export const DueDate = ({ courseId, doenetId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Due Date Checkbox"
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={dueDate !== null && dueDate !== undefined}
@@ -235,6 +320,7 @@ export const DueDate = ({ courseId, doenetId }) => {
         <DateTime
           disabled={dueDate === null || dueDate === undefined}
           value={dueDate ? new Date(dueDate) : null}
+          dataTest="Due Date"
           onBlur={({ valid, value }) => {
             if (valid) {
               try {
@@ -293,6 +379,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Time Limit Checkbox"
           checked={timeLimit !== null}
           onClick={() => {
             let valueDescription = 'Not Limited';
@@ -313,6 +400,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
         <Increment
           disabled={timeLimit === null}
           value={timeLimit}
+          dataTest="Time Limit"
           min={0}
           onBlur={() => {
             if (recoilValue !== timeLimit) {
@@ -341,7 +429,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
   );
 };
 
-export const AttempLimit = ({ courseId, doenetId }) => {
+export const AttemptLimit = ({ courseId, doenetId }) => {
   const {
     value: { numberOfAttemptsAllowed: recoilValue },
     updateAssignmentSettings,
@@ -360,6 +448,7 @@ export const AttempLimit = ({ courseId, doenetId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Attempt Limit Checkbox"
           checked={numberOfAttemptsAllowed !== null}
           onClick={() => {
             let valueDescription = 'Not Limited';
@@ -372,7 +461,7 @@ export const AttempLimit = ({ courseId, doenetId }) => {
             updateAssignmentSettings({
               keyToUpdate: 'numberOfAttemptsAllowed',
               value,
-              description: 'Attempts Allowe',
+              description: 'Attempts Allowed',
               valueDescription,
             });
           }}
@@ -380,6 +469,7 @@ export const AttempLimit = ({ courseId, doenetId }) => {
         <Increment
           disabled={numberOfAttemptsAllowed === null}
           value={numberOfAttemptsAllowed}
+          dataTest="Attempt Limit"
           min={0}
           onBlur={() => {
             if (recoilValue !== numberOfAttemptsAllowed) {
@@ -468,6 +558,7 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
       <InputControl>
         <Increment
           value={totalPointsOrPercent}
+          dataTest='Total Points Or Percent'
           min={0}
           onBlur={() => {
             if (recoilValue !== totalPointsOrPercent) {
@@ -480,8 +571,8 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
                 setTotalPointsOrPercent(0);
                 totalPointsOrPercentLocal = 0;
               } else {
-                totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
-                setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
+                totalPointsOrPercentLocal = parseFloat(totalPointsOrPercent);
+                setTotalPointsOrPercent(parseFloat(totalPointsOrPercent));
               }
 
               updateAssignmentSettings(doenetId, {
@@ -547,6 +638,46 @@ export const GradeCategory = ({ courseId, doenetId }) => {
   );
 };
 
+export const ItemWeights = ({ courseId, doenetId }) => {
+  const {
+    value: { itemWeights: recoilValue },
+    updateAssignmentSettings,
+  } = useActivity(courseId, doenetId);
+  const [textValue, setTextValue] = useState("");
+
+  useEffect(() => {
+    setTextValue(recoilValue?.join(" "))
+  }, [recoilValue]);
+
+  return (
+    <InputWrapper>
+      <LabelText>Item Weights</LabelText>
+      <Textfield
+        vertical
+        width="menu"
+        value={textValue}
+        dataTest="Item Weights"
+        onChange={(e) => {
+          setTextValue(e.target.value);
+        }}
+        onBlur={() => {
+          let parsedValue = textValue.split(" ").filter(x => x).map(Number).map(x => x >= 0 ? x : 0);
+
+          if (recoilValue.length !== parsedValue.length
+            || recoilValue.some((v, i) => v !== parsedValue[i])
+          ) {
+            updateAssignmentSettings({
+              keyToUpdate: 'itemWeights',
+              value: parsedValue,
+              description: 'Item Weights',
+            });
+          }
+        }}
+      />
+    </InputWrapper>
+  );
+};
+
 export const CheckedSetting = ({
   courseId,
   doenetId,
@@ -554,6 +685,7 @@ export const CheckedSetting = ({
   description,
   label,
   invert,
+  dataTest,
 }) => {
   const {
     value: { [keyToUpdate]: recoilValue },
@@ -568,6 +700,7 @@ export const CheckedSetting = ({
     <InputWrapper flex>
       <Checkbox
         style={{ marginRight: '5px' }}
+        dataTest={dataTest}
         checked={invert ? !localValue : localValue}
         onClick={() => {
           let valueDescription = invert ? 'True' : 'False';
@@ -597,6 +730,7 @@ export const CheckedFlag = ({
   description,
   label,
   invert,
+  dataTest,
 }) => {
   const {
     value: { [keyToUpdate]: recoilValue },
@@ -611,6 +745,7 @@ export const CheckedFlag = ({
     <InputWrapper flex>
       <Checkbox
         style={{ marginRight: '5px' }}
+        dataTest={dataTest}
         checked={invert ? !localValue : localValue}
         onClick={() => {
           let valueDescription = invert ? 'True' : 'False';
@@ -640,6 +775,7 @@ export const Individualize = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="individualize"
       description="Individualize"
+      dataTest="Individualize"
     />
   );
 };
@@ -651,6 +787,7 @@ export const ShowSolution = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showSolution"
       description="Show Solution"
+      dataTest="Show Solution"
     />
   );
 };
@@ -662,6 +799,7 @@ export const ShowSolutionInGradebook = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showSolutionInGradebook"
       description="Show Solution In Gradebook"
+      dataTest="Show Solution In Gradebook"
     />
   );
 };
@@ -673,6 +811,7 @@ export const ShowFeedback = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showFeedback"
       description="Show Feedback"
+      dataTest="Show Feedback"
     />
   );
 };
@@ -684,6 +823,7 @@ export const ShowHints = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showHints"
       description="Show Hints"
+      dataTest="Show Hints"
     />
   );
 };
@@ -695,6 +835,7 @@ export const ShowCorrectness = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showCorrectness"
       description="Show Correctness"
+      dataTest="Show Correctness"
     />
   );
 };
@@ -706,6 +847,31 @@ export const ShowCreditAchieved = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showCreditAchievedMenu"
       description="Show Credit Achieved Menu"
+      dataTest="Show Credit Achieved Menu"
+    />
+  );
+};
+
+export const Paginate = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="paginate"
+      description="Paginate"
+      dataTest="Paginate"
+    />
+  );
+};
+
+export const ShowFinishButton = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="showFinishButton"
+      description="Show Finish Button"
+      dataTest="Show Finish Button"
     />
   );
 };
@@ -717,6 +883,7 @@ export const MakePublic = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="isPublic"
       description="Make Publicly Visible"
+      dataTest="Make Publicly Visible"
     />
   );
 };
@@ -728,6 +895,7 @@ export const ShowDoenetMLSource = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="userCanViewSource"
       description="Show DoenetML Source"
+      dataTest="Show DoenetML Source"
     />
   );
 };
@@ -739,6 +907,7 @@ export const ProctorMakesAvailable = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="proctorMakesAvailable"
       description="Proctor Makes Available"
+      dataTest="Proctor Makes Available"
     />
   );
 };
@@ -928,7 +1097,7 @@ export function AssignTo({ courseId, doenetId }) {
   } = useActivity(courseId, doenetId);
 
   const { value: enrolledStudents } = useRecoilValue(
-    enrollmentByCourseId(courseId),
+    peopleByCourseId(courseId),
   );
 
   //email addresses of only those who assignment is restricted to

@@ -7,6 +7,10 @@ export default class Text extends InlineComponent {
 
   static variableForPlainMacro = "value";
 
+  // even if inside a component that turned on descendantCompositesMustHaveAReplacement
+  // don't required composite replacements
+  static descendantCompositesMustHaveAReplacement = false;
+
 
   static returnChildGroups() {
 
@@ -24,11 +28,20 @@ export default class Text extends InlineComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
-      hasEssential: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        fixed: "fixed",
+      shadowingInstructions: {
+        createComponentOfType: this.componentType,
+        // the reason we create a attribute component from the state variable,
+        // rather than just shadowing the attribute,
+        // is that a sequence creates a text where it sets fixed directly in the state
+        // TODO: how to deal with this in general?  Should we disallow that way to set state?
+        // Or should we always shadow attributes this way?
+        addAttributeComponentsShadowingStateVariables: {
+          fixed: {
+            stateVariableToShadow: "fixed",
+          }
+        },
       },
+      hasEssential: true,
       returnDependencies: () => ({
         textLikeChildren: {
           dependencyType: "child",
@@ -85,7 +98,9 @@ export default class Text extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {

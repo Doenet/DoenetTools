@@ -1,5 +1,0 @@
-{
-  "baseUrl": "http://localhost",
-  "numTestsKeptInMemory": 20,
-  "defaultCommandTimeout": 10000
-}

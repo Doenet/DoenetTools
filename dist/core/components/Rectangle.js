@@ -38,6 +38,15 @@ export default class Rectangle extends Polygon {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let styleDescriptionWithNounDef = stateVariableDefinitions.styleDescriptionWithNoun.definition;
+
+    stateVariableDefinitions.styleDescriptionWithNoun.definition = function ({ dependencyValues }) {
+      let styleDescriptionWithNoun = styleDescriptionWithNounDef({ dependencyValues }).setValue.styleDescriptionWithNoun;
+      styleDescriptionWithNoun = styleDescriptionWithNoun.replaceAll("polygon", "rectangle");
+
+      return { setValue: { styleDescriptionWithNoun } }
+    }
+
     stateVariableDefinitions.nVerticesSpecified = {
 
       returnDependencies: () => ({
@@ -307,15 +316,17 @@ export default class Rectangle extends Polygon {
       public: true,
       isArray: true,
       entryPrefixes: ["centerX"],
-      componentType: "math",
-      returnWrappingComponents(prefix) {
-        if (prefix === "centerX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "centerX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
       },
 
       returnArraySizeDependencies: () => ({}),
@@ -393,7 +404,9 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.width = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
 
       returnDependencies({ }) {
         return {
@@ -444,7 +457,9 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
 
       returnDependencies({ }) {
         return {
@@ -495,20 +510,22 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.vertices = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "vertexX") {
+            return [];
+          } else {
+            // vertex or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "vertexX") {
-          return [];
-        } else {
-          // vertex or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
           // vertexX1_2 is the 2nd component of the first vertex
@@ -555,13 +572,19 @@ export default class Rectangle extends Polygon {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "vertices") {
-          return "vertex" + propIndex;
+          if (propIndex.length === 1) {
+            return "vertex" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `vertexX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 6) === "vertex") {
           // could be vertex or vertexX
           let vertexNum = Number(varName.slice(6));
           if (Number.isInteger(vertexNum) && vertexNum > 0) {
-            return `vertexX${vertexNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `vertexX${vertexNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -1129,7 +1152,9 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.nVertices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { nVertices: 4 } })

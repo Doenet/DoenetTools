@@ -5,9 +5,10 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import { MathJax } from "better-react-mathjax";
 
-export default function BooleanInput(props) {
-  let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+export default React.memo(function BooleanInput(props) {
+  let { name, id, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   BooleanInput.baseStateVariable = "value";
 
@@ -69,7 +70,7 @@ export default function BooleanInput(props) {
 
   let disabled = SVs.disabled;
 
-  const inputKey = name + '_input';
+  const inputKey = id + '_input';
 
   let checkWorkStyle = {
     position: "relative",
@@ -95,7 +96,7 @@ export default function BooleanInput(props) {
         checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
       }
       checkWorkButton = <button
-        id={name + '_submit'}
+        id={id + '_submit'}
         tabIndex="0"
         disabled={disabled}
         // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
@@ -118,7 +119,7 @@ export default function BooleanInput(props) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = <span
-            id={name + '_correct'}
+            id={id + '_correct'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
@@ -132,14 +133,14 @@ export default function BooleanInput(props) {
 
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = <span
-            id={name + '_partial'}
+            id={id + '_partial'}
             style={checkWorkStyle}
           >{partialCreditContents}</span>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = <span
-            id={name + '_incorrect'}
+            id={id + '_incorrect'}
             style={checkWorkStyle}
           ><FontAwesomeIcon icon={faTimes} /></span>
 
@@ -148,7 +149,7 @@ export default function BooleanInput(props) {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = <span
-          id={name + '_saved'}
+          id={id + '_saved'}
           style={checkWorkStyle}
         ><FontAwesomeIcon icon={faCloud} /></span>
 
@@ -183,9 +184,14 @@ export default function BooleanInput(props) {
         isSelected={rendererValue}
         onClick={onChangeHandler}
         value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
         disabled={disabled}
       />;
   } else {
+    let label = SVs.label;
+    if (SVs.labelHasLatex) {
+      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    }
     input = <label>
       <input
         type="checkbox"
@@ -195,16 +201,16 @@ export default function BooleanInput(props) {
         onChange={onChangeHandler}
         disabled={disabled}
       />
-      {SVs.label}
+      {label}
     </label>;
   }
 
   return <React.Fragment>
-    <span id={name}>
-      <a name={name} />
+    <span id={id}>
+      <a name={id} />
       {input}
       {checkWorkButton}
     </span>
   </React.Fragment>
 
-}
+})

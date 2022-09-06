@@ -18,11 +18,12 @@ export default function DateTime(props) {
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
 
-  let borderColor = props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)';
+  let borderColor = props.alert
+    ? '2px solid var(--mainRed)'
+    : 'var(--mainBorder)';
   borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
   let width = props.width ? props.width : '170px';
-  
 
   useEffect(() => {
     //todo try lastValid update
@@ -58,12 +59,24 @@ export default function DateTime(props) {
     return (
       <div>
         {props.label ? (
-          <Label vertical={props.vertical}>{props.label}</Label>
+          <Label id="checkbox-label" vertical={props.vertical}>
+            {props.label}
+          </Label>
         ) : null}
         <input
           {...propsRI}
-          style={{ border: borderColor, cursor: cursorStyle, width: width, ...props.style }}
+          style={{
+            border: borderColor,
+            cursor: cursorStyle,
+            width: width,
+            color: 'var(--canvastext)',
+            backgroundColor: 'var(--canvas)',
+            ...props.style,
+          }}
           ref={inputRef}
+          aria-labelledby="checkbox-label"
+          aria-haspopup="true"
+          data-test={props.dataTest}
           onChange={(e) => {
             setCursorStart(e.target.selectionStart);
             setCursorEnd(e.target.selectionEnd);
@@ -93,10 +106,13 @@ export default function DateTime(props) {
         onClick={props.disabledOnClick}
         value={props.disabledText}
         readOnly
+        data-test={props.dataTest}
         // disabled
         style={{
           cursor: 'not-allowed',
-          color: '#545454',
+          //cs color: 'var(--canvastext)',
+          color: 'var(--canvastext)',
+          backgroundColor: 'var(--canvas)',
           height: '18px',
           width: '170px',
           border: '2px solid var(--mainGray)',
@@ -106,7 +122,8 @@ export default function DateTime(props) {
       />
     );
   }
-
+  // console.log('value:', value);
+  // console.log('lastValid:', lastValid);
   return (
     <Datetime
       renderInput={renderInput}

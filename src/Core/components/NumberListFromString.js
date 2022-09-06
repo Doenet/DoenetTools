@@ -56,7 +56,9 @@ export default class NumberListFromString extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         stringChildren: {
           dependencyType: "child",
@@ -70,7 +72,9 @@ export default class NumberListFromString extends InlineComponent {
 
     stateVariableDefinitions.numbers = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       isArray: true,
       entryPrefixes: ["number"],
       returnArraySizeDependencies: () => ({
@@ -118,7 +122,9 @@ export default class NumberListFromString extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         numbers: {

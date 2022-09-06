@@ -8,6 +8,7 @@ module.exports = {
     'react-spring': '@react-spring/web',
   },
   mount: {
+    'cypress_php/api': '/cyapi',
     'src/Viewer': '/viewer',
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
@@ -50,7 +51,25 @@ module.exports = {
       },
     },
     {
+      src: '/cyapi/.*',
+      dest: (req, res) => {
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
+      },
+    },
+    {
       src: '/media/.*',
+      dest: (req, res) => {
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
+      },
+    },
+    {
+      src: '/media/byPageId/.*',
       dest: (req, res) => {
         return proxy.web(req, res, {
           hostname: 'apache',

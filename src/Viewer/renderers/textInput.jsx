@@ -42,7 +42,7 @@ const Input = styled.input `
 `;
 
 export default function TextInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   let textAreaWidth = sizeToCSS(SVs.width); // TextArea prop
   let textAreaHeight = sizeToCSS(SVs.height); // TextArea prop
@@ -137,7 +137,7 @@ export default function TextInput(props) {
 
     let newValue = e.target.value;
 
-    // console.log(`on change handler for ${name}, desired value: ${newValue}`)
+    // console.log(`on change handler for ${id}, desired value: ${newValue}`)
 
     if (newValue !== rendererValue) {
 
@@ -166,7 +166,7 @@ export default function TextInput(props) {
 
   let disabled = SVs.disabled;
 
-  const inputKey = name + '_input';
+  const inputKey = id + '_input';
 
   // textInput turns blue when focused, otherwise maintains the main border
   let surroundingBorder = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");

@@ -1,3 +1,4 @@
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 import Input from './abstract/Input';
 
 export default class BooleanInput extends Input {
@@ -30,6 +31,7 @@ export default class BooleanInput extends Input {
   static componentType = "booleanInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -39,11 +41,10 @@ export default class BooleanInput extends Input {
       defaultValue: false,
       public: true,
     };
-    attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "",
-      forRenderer: true,
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
     };
     attributes.asToggleButton = {
@@ -59,13 +60,29 @@ export default class BooleanInput extends Input {
     return attributes;
   }
 
+
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
+
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
@@ -117,7 +134,9 @@ export default class BooleanInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -138,6 +157,8 @@ export default class BooleanInput extends Input {
     return stateVariableDefinitions;
 
   }
+
+  static adapters = ["value"];
 
   async updateBoolean({ boolean, actionId }) {
     if (!await this.stateValues.disabled) {

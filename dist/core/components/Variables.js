@@ -16,7 +16,9 @@ export default class Variables extends MathList {
 
     stateVariableDefinitions.variables = {
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       isArray: true,
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({

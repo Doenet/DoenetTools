@@ -21,7 +21,9 @@ export default class TextBaseOperatorOfMath extends TextComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         mathChildren: {

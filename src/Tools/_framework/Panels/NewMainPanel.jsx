@@ -13,7 +13,8 @@ export const mainPanelClickAtom = atom({
 
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
+  color: var(--canvastext);
   height: 100%;
   // border-radius: 0 0 4px 4px;
   overflow: auto;
@@ -24,20 +25,20 @@ const ControlsWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 4px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   // border-radius: 4px 4px 0 0;
   overflow: auto hidden;
   justify-content: flex-start;
   align-items: center;
   height: 40px;
-  // border-bottom: 2px solid #e3e3e3;
+  // border-bottom: 2px solid var(--mainGray);
 `;
 
 const OpenButton = styled.button`
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   height: 35px;
   width: 20px;
-  color: white;
+  color: var(--canvas);
   border: none;
   position: relative;
   cursor: pointer;
@@ -94,9 +95,9 @@ export default function MainPanel({
   return (
     <>
       {hasNoHeaderPanel === true ? null : (
-        <ControlsWrapper>{controls}</ControlsWrapper>
+        <ControlsWrapper role="navigation" data-test="Main Panel Controls">{controls}</ControlsWrapper>
       )}
-      <ContentWrapper onClick={mpOnClick}>
+      <ContentWrapper onClick={mpOnClick} role="main" data-test="Main Panel" id="mainPanel">
         {/* <Banner></Banner>  */}
         {/* Uncomment the line above to show banner on the main panel. Change the color of banner
       using type={'TYPENAME'}. The types can be found in Banner.jsx. */}

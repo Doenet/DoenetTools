@@ -36,14 +36,8 @@ export default function SelectedOrder() {
       setWithReplacement(itemObj.withReplacement);
     }
   }, [itemObj.doenetId]);
-  let deleteDisabled = false;
-  let topOrderSoDisabled = false;
-  if (parentItemObj.type == "activity") {
-    deleteDisabled = true;
-    topOrderSoDisabled = true;
-  }
   let heading = /* @__PURE__ */ React.createElement("h2", {
-    "data-cy": "infoPanelItemLabel",
+    "data-test": "infoPanelItemLabel",
     style: {margin: "16px 5px"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faFileExport
@@ -87,7 +81,6 @@ export default function SelectedOrder() {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(DropdownMenu, {
     width: "menu",
     items,
-    disabled: topOrderSoDisabled,
     defaultIndex,
     onChange: ({value}) => {
       setBehavior(value);
@@ -103,11 +96,15 @@ export default function SelectedOrder() {
     width: "menu",
     onClick: () => create({itemType: "order"}),
     value: "Add Order"
+  }), /* @__PURE__ */ React.createElement(Button, {
+    width: "menu",
+    onClick: () => create({itemType: "collectionLink"}),
+    value: "Add Collection Link",
+    "data-test": "Add Collection Link"
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Delete Order",
     alert: true,
-    disabled: deleteDisabled,
     onClick: (e) => {
       e.preventDefault();
       e.stopPropagation();

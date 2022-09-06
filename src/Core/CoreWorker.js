@@ -27,6 +27,20 @@ onmessage = function (e) {
         args: componentsObj
       })
     });
+  } else if (e.data.messageType === "visibilityChange") {
+    core.handleVisibilityChange(e.data.args)
+  } else if (e.data.messageType === "terminate") {
+    core.terminate().then(() => {
+      postMessage({ messageType: "terminated" });
+    })
+  } else if (e.data.messageType === "navigatingToComponent") {
+    core.handleNavigatingToComponent(e.data.args.componentName)
+  } else if (e.data.messageType === "submitAllAnswers") {
+    core.requestAction({
+      componentName: core.documentName,
+      actionName: "submitAllAnswers",
+      args: {}
+    })
   }
 }
 

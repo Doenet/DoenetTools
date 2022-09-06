@@ -1,52 +1,46 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include "db_connection.php";
+include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
-
+$jwtArray = include 'jwtArray.php';
+$requestorUserId = $jwtArray['userId'];
 $success = true;
 $message = '';
 $dueDateInfo = [];
 
-$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
-$searchUserId = mysqli_real_escape_string($conn,$_REQUEST["userId"]);
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
+$searchUserId = mysqli_real_escape_string($conn, $_REQUEST['userId']);
 
-
-if ($doenetId == ""){
-    $success = FALSE;
+if (!isset($_REQUEST['courseId'])) {
+    $success = false;
+    $message = 'Request error, missing courseId';
+} elseif ($doenetId == '') {
+    $success = false;
     $message = 'Internal Error: missing doenetId';
-}elseif ($searchUserId == ""){
-$success = FALSE;
-$message = 'Internal Error: missing searchUserId';
+} elseif ($searchUserId == '') {
+    $success = false;
+    $message = 'Internal Error: missing searchUserId';
 }
 
-//Check permissions 
-if ($success){
+//Check permissions
+if ($success) {
+    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
-    $sql = "
-    SELECT du.canEditContent AS canEditContent
-    FROM drive_user AS du
-    LEFT JOIN drive_content AS dc
-    ON dc.driveId = du.driveId
-    WHERE dc.doenetId = '$doenetId'
-    and du.userId = '$userId'
-    ";
-    $result = $conn->query($sql);  
-    if ($result->num_rows > 0){
-        $row = $result->fetch_assoc();
-        if ($row['canEditContent'] == '0'){
-            $success = FALSE;
-            $message = 'No permisson to view dueDate';
-        }
-    }else{
-        $success = FALSE;
-        $message = 'No permisson to view dueDate';
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
+    //TODO: WHAT is the correct permissions??
+    if ($requestorPermissions['canViewAndModifyGrades'] != '1') {
+        $success = false;
+        $message = 'You are not authorized to view or modify grade data';
     }
 }
 
@@ -57,48 +51,43 @@ if ($success){
 //         FROM assignment
 //         WHERE assignment.doenetId = '$doenetId'
 //     ";
-//     $result = $conn->query($sql);  
+//     $result = $conn->query($sql);
 //     if ($result->num_rows == 0){
 //         $success = FALSE;
 //         $message = 'No assignment matches doenetId';
 //     }
 // }
 
-if ($success){
-    $sql = "
-    SELECT dueDateOverride
-    FROM user_assignment
-    WHERE userId = '$searchUserId'
-    AND doenetId = '$doenetId'
-    ";
-    $result = $conn->query($sql);  
-    $dueDateInfo['dueDateOverride'] = NULL;
-    if ($result->num_rows > 0){
+if ($success) {
+    $result = $conn->query(
+        "SELECT dueDateOverride
+        FROM user_assignment
+        WHERE userId = '$searchUserId'
+        AND doenetId = '$doenetId'"
+    );
+    $dueDateInfo['dueDateOverride'] = null;
+    if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $dueDateInfo['dueDateOverride'] = $row['dueDateOverride'];
     }
 
-    $sql = "
-    SELECT dueDate
-    FROM assignment
-    WHERE doenetId = '$doenetId'
-    ";
-
-    $result = $conn->query($sql);  
-    $dueDateInfo['dueDate'] = NULL;
-    if ($result->num_rows > 0){
+    $result = $conn->query(
+        "SELECT dueDate
+        FROM assignment
+        WHERE doenetId = '$doenetId'"
+    );
+    $dueDateInfo['dueDate'] = null;
+    if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $dueDateInfo['dueDate'] = $row['dueDate'];
     }
 }
 
-
-
-$response_arr = array(
+$response_arr = [
     'success' => $success,
     'dueDateInfo' => $dueDateInfo,
     'message' => $message,
-);
+];
 
 // set response code - 200 OK
 http_response_code(200);

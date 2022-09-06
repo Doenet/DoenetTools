@@ -61,8 +61,8 @@ const Matrix = styled.div`
     };
   `;
 
-export default function MatrixInput(props) {
-  let { name, SVs, actions, children, callAction } = useDoenetRender(props);
+export default React.memo(function MatrixInput(props) {
+  let { name, id, SVs, actions, children, callAction } = useDoenetRender(props);
 
   let validationState = useRef(null);
 
@@ -91,7 +91,7 @@ export default function MatrixInput(props) {
 
   let disabled = SVs.disabled;
 
-  // const inputKey = name + '_input';
+  // const inputKey = id + '_input';
 
   let surroundingBorderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
   // if (this.focused) {
@@ -112,7 +112,7 @@ export default function MatrixInput(props) {
         ;
       }
       checkWorkButton = <Button
-        id={name + '_submit'}
+        id={id + '_submit'}
         tabIndex="0"
         disabled={disabled}
         style={checkWorkStyle}
@@ -135,7 +135,7 @@ export default function MatrixInput(props) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen")
           ;
           checkWorkButton = <Button
-            id={name + '_correct'}
+            id={id + '_correct'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
@@ -149,7 +149,7 @@ export default function MatrixInput(props) {
 
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = <Button
-            id={name + '_partial'}
+            id={id + '_partial'}
             style={checkWorkStyle}
           >{partialCreditContents}</Button>
         } else {
@@ -157,7 +157,7 @@ export default function MatrixInput(props) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed")
           ;
           checkWorkButton = <Button
-            id={name + '_incorrect'}
+            id={id + '_incorrect'}
             style={checkWorkStyle}
           ><FontAwesomeIcon icon={faTimes} /></Button>
 
@@ -166,7 +166,7 @@ export default function MatrixInput(props) {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = <Button
-          id={name + '_saved'}
+          id={id + '_saved'}
           style={checkWorkStyle}
         ><FontAwesomeIcon icon={faCloud} /></Button>
 
@@ -208,7 +208,7 @@ export default function MatrixInput(props) {
 
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(
-        <td style={{ margin: "10px"}} key={colInd} id={name + "_component_" + rowInd + "_" + colInd}>
+        <td style={{ margin: "10px"}} key={colInd} id={id + "_component_" + rowInd + "_" + colInd}>
           {children[rowInd * SVs.numColumns + colInd]}
         </td>
       )
@@ -226,13 +226,13 @@ export default function MatrixInput(props) {
   if (SVs.showSizeControls) {
     rowNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
       <ActionButtonGroup>
-      <ActionButton id={name + "_rowDecrement"} value="r-" onClick={() => callAction({
+      <ActionButton id={id + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows - 1 }
       })} disabled={SVs.numRows < 2}>
         r-
       </ActionButton>
-      <ActionButton id={name + "_rowIncrement"} value="r+" onClick={() => callAction({
+      <ActionButton id={id + "_rowIncrement"} value="r+" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows + 1 }
       })}>
@@ -245,13 +245,13 @@ export default function MatrixInput(props) {
   if (SVs.showSizeControls) {
     colNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
       <ActionButtonGroup>
-      <ActionButton id={name + "_columnDecrement"} value="c-" onClick={() => callAction({
+      <ActionButton id={id + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
         args: { numColumns: SVs.numColumns - 1 }
       })} disabled={SVs.numColumns < 2}>
         c-
       </ActionButton>
-      <ActionButton id={name + "_columnIncrement"} value="c+" onClick={() => callAction({
+      <ActionButton id={id + "_columnIncrement"} value="c+" onClick={() => callAction({
         action: actions.updateNumColumns,
         args: { numColumns: SVs.numColumns + 1 }
       })}>
@@ -263,9 +263,9 @@ export default function MatrixInput(props) {
 
 
   return <React.Fragment>
-    <a name={name} />
+    <a name={id} />
       <div style={{display: "flex", marginBottom: "12px"}}>
-        <Matrix className="matrixInputSurroundingBox" id={name}>
+        <Matrix className="matrixInputSurroundingBox" id={id}>
           <table><tbody>
             {matrixInputs}
           </tbody></table>
@@ -276,7 +276,7 @@ export default function MatrixInput(props) {
       </div>
   </React.Fragment>
 
-}
+})
 
 
 

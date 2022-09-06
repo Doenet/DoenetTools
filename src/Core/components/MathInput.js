@@ -34,6 +34,7 @@ export default class MathInput extends Input {
   static componentType = "mathInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -61,6 +62,7 @@ export default class MathInput extends Input {
       createStateVariable: "splitSymbols",
       defaultValue: true,
       public: true,
+      fallBackToParentStateVariable: "splitSymbols",
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
@@ -91,8 +93,50 @@ export default class MathInput extends Input {
       defaultValue: false,
       public: true,
     }
+    attributes.hideNaN = {
+      createComponentOfType: "boolean",
+      createStateVariable: "hideNaN",
+      defaultValue: true,
+      public: true,
+    }
 
     return attributes;
+  }
+
+
+  static returnSugarInstructions() {
+    let sugarInstructions = [];
+
+    function addMath({ matchedChildren }) {
+
+      if (matchedChildren.length === 0) {
+        return { success: false }
+      } else {
+        return {
+          success: true,
+          newChildren: [{
+            componentType: "math",
+            children: matchedChildren
+          }]
+        }
+      }
+    }
+
+    sugarInstructions.push({
+      replacementFunction: addMath
+    });
+
+    return sugarInstructions;
+
+  }
+
+  static returnChildGroups() {
+
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }]
+
   }
 
 
@@ -102,15 +146,18 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
+      },
       hasEssential: true,
       shadowVariable: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
-      },
       returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["value"]
+        },
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
@@ -123,7 +170,11 @@ export default class MathInput extends Input {
       }),
       set: convertValueToMathExpression,
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.bindValueTo) {
+        if (dependencyValues.mathChild.length > 0) {
+          return { setValue: { value: dependencyValues.mathChild[0].stateValues.value } };
+        } else if (dependencyValues.bindValueTo) {
+          return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
+        } else {
           return {
             useEssentialOrDefaultValue: {
               value: {
@@ -133,14 +184,24 @@ export default class MathInput extends Input {
           }
         }
 
-        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
         // console.log(`inverse definition of value for mathInput`)
         // console.log(desiredStateVariableValues)
 
-        if (dependencyValues.bindValueTo) {
+
+        if (dependencyValues.mathChild.length > 0) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "mathChild",
+              desiredValue: desiredStateVariableValues.value,
+              variableIndex: 0,
+              childIndex: 0,
+            }]
+          };
+        } else if (dependencyValues.bindValueTo) {
           return {
             success: true,
             instructions: [{
@@ -149,28 +210,27 @@ export default class MathInput extends Input {
               variableIndex: 0,
             }]
           };
+        } else {
+          // no child or bindValueTo, so value is essential and give it the desired value
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "value",
+              value: desiredStateVariableValues.value
+            }]
+          };
         }
-        // no children, so value is essential and give it the desired value
-        return {
-          success: true,
-          instructions: [{
-            setEssentialValue: "value",
-            value: desiredStateVariableValues.value
-          }]
-        };
       }
     }
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+      },
       hasEssential: true,
       shadowVariable: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
-      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -266,7 +326,9 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -278,6 +340,21 @@ export default class MathInput extends Input {
       }
     }
 
+    stateVariableDefinitions.dontUpdateRawValueInDefinition = {
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { dontUpdateRawValueInDefinition: true } }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "dontUpdateRawValueInDefinition",
+            value: desiredStateVariableValues.dontUpdateRawValueInDefinition
+          }]
+        }
+      }
+    }
 
     // raw value from renderer
     stateVariableDefinitions.rawRendererValue = {
@@ -287,7 +364,9 @@ export default class MathInput extends Input {
       defaultValue: "",
       provideEssentialValuesInDefinition: true,
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: [{
         variableName: "lastValueForDisplay",
         hasEssential: true,
@@ -305,6 +384,14 @@ export default class MathInput extends Input {
           dependencyType: "stateVariable",
           variableName: "valueForDisplay"
         },
+        hideNaN: {
+          dependencyType: "stateVariable",
+          variableName: "hideNaN"
+        },
+        dontUpdateRawValueInDefinition: {
+          dependencyType: "stateVariable",
+          variableName: "dontUpdateRawValueInDefinition"
+        },
 
       }),
       definition({ dependencyValues, essentialValues, justUpdatedForNewComponent, componentName }) {
@@ -315,10 +402,14 @@ export default class MathInput extends Input {
         // use deepCompare of trees rather than equalsViaSyntax
         // so even tiny numerical differences that are within double precision are detected
         if (essentialValues.rawRendererValue === undefined
-          || !(justUpdatedForNewComponent || deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree))
+          || !(
+            justUpdatedForNewComponent
+            || deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree)
+            || dependencyValues.dontUpdateRawValueInDefinition
+          )
         ) {
-          let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex());
-          if (rawRendererValue === "\uff3f") {
+          let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex({ showBlanks: false }));
+          if (dependencyValues.hideNaN && rawRendererValue === "NaN") {
             rawRendererValue = '';
           }
           return {
@@ -341,9 +432,9 @@ export default class MathInput extends Input {
         }
 
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues, essentialValues, componentName }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues, essentialValues, dependencyValues, componentName }) {
 
-        // console.log(`inverse definition of rawRenderer value for ${componentName}`, desiredStateVariableValues, essentialValues)
+        // console.log(`inverse definition of rawRenderer value for ${componentName}`, desiredStateVariableValues, JSON.parse(JSON.stringify(essentialValues)))
 
         const calculateMathExpressionFromLatex = async (text) => {
 
@@ -411,11 +502,11 @@ export default class MathInput extends Input {
           let currentMath = await calculateMathExpressionFromLatex(essentialValues.rawRendererValue);
 
           // use deepCompare of trees rather than equalsViaSyntax
-          // so even tiny numerical differences that within double precision are detected
+          // so even tiny numerical differences that are within double precision are detected
           if (!deepCompare(desiredStateVariableValues.rawRendererValue.tree, currentMath.tree)) {
 
-            let desiredValue = stripLatex(desiredStateVariableValues.rawRendererValue.toLatex());
-            if (desiredValue === "\uff3f") {
+            let desiredValue = stripLatex(desiredStateVariableValues.rawRendererValue.toLatex({ showBlanks: false }));
+            if (dependencyValues.hideNaN && desiredValue === "NaN") {
               desiredValue = '';
             }
             instructions.push({
@@ -483,6 +574,12 @@ export default class MathInput extends Input {
         let updateInstructions = [{
           updateType: "updateValue",
           componentName: this.componentName,
+          stateVariable: "dontUpdateRawValueInDefinition",
+          value: true,
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
         },
@@ -491,6 +588,12 @@ export default class MathInput extends Input {
         // (hence the need to execute update first)
         {
           updateType: "executeUpdate"
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "dontUpdateRawValueInDefinition",
+          value: false,
         },
         {
           updateType: "updateValue",
@@ -510,7 +613,7 @@ export default class MathInput extends Input {
           // since have invalid math,
           // don't update rawRendererValue,
           // but only update lastValueForDisplay to keep it in sync
-          // (lastValueForDisplay is also update if set rawRenderValue to math
+          // (lastValueForDisplay is also update if set rawRendererValue to math
           // as above)
           updateInstructions.push({
             updateType: "updateValue",
@@ -558,5 +661,12 @@ export default class MathInput extends Input {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
+
+  static adapters = [
+    {
+      stateVariable: "value",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+    }
+  ];
 
 }

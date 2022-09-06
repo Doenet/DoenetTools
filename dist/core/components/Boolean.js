@@ -76,6 +76,18 @@ export default class BooleanComponent extends InlineComponent {
       defaultValue: 3,
       public: true,
     };
+    attributes.caseInsensitiveMatch = {
+      createComponentOfType: "boolean",
+      createStateVariable: "caseInsensitiveMatch",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
@@ -226,14 +238,14 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+        attributesToShadow: ["fixed"]
+      },
       forRenderer: true,
       hasEssential: true,
       defaultValue: false,
       set: Boolean,
-      stateVariablesPrescribingAdditionalAttributes: {
-        fixed: "fixed",
-      },
       returnDependencies: () => ({
         symbolicEquality: {
           dependencyType: "stateVariable",
@@ -274,6 +286,14 @@ export default class BooleanComponent extends InlineComponent {
         nPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
           variableName: "nPeriodicSetMatchesRequired",
+        },
+        caseInsensitiveMatch: {
+          dependencyType: "stateVariable",
+          variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
         },
         parsedExpression: {
           dependencyType: "stateVariable",
@@ -402,7 +422,9 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {

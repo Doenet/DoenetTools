@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 // import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-// import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast, toastType } from '@Toast';
@@ -48,7 +47,7 @@ export default function SelectedPage() {
     }
   };
 
-  let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
+  let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
     <FontAwesomeIcon icon={faCode} /> {pageObj.label} 
   </h2>)
 
@@ -59,6 +58,7 @@ export default function SelectedPage() {
   <ActionButton
           width="menu"
           value="Edit Page"
+          data-test="Edit Page" 
           onClick={() => {
             setPageToolView({
               page: 'course',
@@ -91,6 +91,7 @@ export default function SelectedPage() {
           create({itemType:"page"})
         }
         value="Add Page"
+        data-test="Add Page"
       />
     {containingObj.type == 'activity' ? 
      <Button
@@ -99,6 +100,7 @@ export default function SelectedPage() {
        create({itemType:"order"})
      }
      value="Add Order"
+     data-test="Add Order"
    /> : null
     }
      
@@ -107,6 +109,7 @@ export default function SelectedPage() {
     <Button
       width="menu"
       value="Delete Page"
+      data-test="Delete Page"
       alert
       onClick={(e) => {
         e.preventDefault();

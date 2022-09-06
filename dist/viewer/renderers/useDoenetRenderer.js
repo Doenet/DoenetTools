@@ -3,7 +3,7 @@ import {atomFamily, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg
 import {renderersloadComponent} from "../PageViewer.js";
 export const rendererState = atomFamily({
   key: "rendererState",
-  default: {stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: []}
+  default: {stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: [], prefixForIds: ""}
 });
 export default function useDoenetRenderer(props, initializeChildrenOnConstruction = true) {
   let actions = props.componentInstructions.actions;
@@ -11,7 +11,7 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
   let effectiveName = props.componentInstructions.effectiveName;
   let rendererName = props.coreId + componentName;
   let [renderersToLoad, setRenderersToLoad] = useState({});
-  let {stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions} = useRecoilValue(rendererState(rendererName));
+  let {stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions, prefixForIds} = useRecoilValue(rendererState(rendererName));
   let children = [];
   const loadMoreRenderers = Object.keys(renderersToLoad).length === 0;
   for (let childInstructions of childrenInstructions) {
@@ -66,6 +66,17 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
     }
     return props.callAction(argObj);
   };
-  return {name: effectiveName, SVs: stateValues, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, initializeChildren: () => {
-  }, callAction};
+  return {
+    name: effectiveName,
+    id: prefixForIds + effectiveName,
+    SVs: stateValues,
+    actions,
+    children,
+    sourceOfUpdate,
+    ignoreUpdate,
+    rendererName,
+    initializeChildren: () => {
+    },
+    callAction
+  };
 }

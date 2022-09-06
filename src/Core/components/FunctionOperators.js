@@ -203,7 +203,9 @@ export class Derivative extends FunctionBaseOperator {
       defaultValue: 1,
       hasEssential: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       stateVariablesDeterminingDependencies: ["haveFunctionChild"],
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -270,7 +272,9 @@ export class Derivative extends FunctionBaseOperator {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
         nInputs: {
@@ -377,7 +381,9 @@ export class Derivative extends FunctionBaseOperator {
 
     stateVariableDefinitions.nDerivatives = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies() {
         let dependencies = {
           derivVariablesAttr: {
@@ -402,7 +408,9 @@ export class Derivative extends FunctionBaseOperator {
     stateVariableDefinitions.derivVariables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["derivVariable"],
       returnArraySizeDependencies: () => ({
         nDerivatives: {

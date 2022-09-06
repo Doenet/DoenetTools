@@ -342,7 +342,8 @@ console.log(">>>===VersionHistory")
       }
     }
 
-    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId));
+    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId)).toString();
+
 
     //Display doenetML in viewer and text editor
     set(viewerDoenetMLAtom,doenetML)

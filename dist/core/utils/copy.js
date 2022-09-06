@@ -50,24 +50,30 @@ export function postProcessCopy({ serializedComponents, componentName,
       // preserializedNamesFound[component.originalName] = component;
       uniqueIdentifierBase = identifierPrefix + component.originalName + "|shadow";
 
-      if (addShadowDependencies && !component.originalNameFromSerializedComponent) {
-        let downDep = {
-          [component.originalName]: [{
-            dependencyType: "referenceShadow",
-            compositeName: componentName,
-          }]
-        };
-        if (init) {
-          downDep[component.originalName][0].firstLevelReplacement = true;
-        }
-        if (component.state) {
-          let stateVariables = Object.keys(component.state);
-          downDep[component.originalName].downstreamStateVariables = stateVariables;
-          downDep[component.originalName].upstreamStateVariables = stateVariables;
-        }
+      if (!component.originalNameFromSerializedComponent) {
+        // if originalNameFromSerializedComponent, then was copied from a serialized component
+        // so copy cannot shadow anything
+        if (addShadowDependencies) {
+          let downDep = {
+            [component.originalName]: [{
+              dependencyType: "referenceShadow",
+              compositeName: componentName,
+            }]
+          };
+          if (init) {
+            downDep[component.originalName][0].firstLevelReplacement = true;
+          }
+          if (component.state) {
+            let stateVariables = Object.keys(component.state);
+            downDep[component.originalName].downstreamStateVariables = stateVariables;
+            downDep[component.originalName].upstreamStateVariables = stateVariables;
+          }
 
-        // create downstream dependency
-        component.downstreamDependencies = downDep;
+          // create downstream dependency
+          component.downstreamDependencies = downDep;
+        } else {
+          component.unlinkedCopySource = component.originalName;
+        }
       }
 
 

@@ -41,9 +41,6 @@ export default class MathList extends InlineComponent {
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
     attributes.displayDecimals = {
       createComponentOfType: "integer",
@@ -57,6 +54,12 @@ export default class MathList extends InlineComponent {
       valueForTrue: 1E-14,
       valueForFalse: 0,
       defaultValue: 0,
+      public: true,
+    };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
       public: true,
     };
 
@@ -119,6 +122,65 @@ export default class MathList extends InlineComponent {
       definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
+    }
+
     stateVariableDefinitions.mathsShadow = {
       defaultValue: null,
       hasEssential: true,
@@ -132,7 +194,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.mergeMathLists = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         mergeMathListsPreliminary: {
           dependencyType: "stateVariable",
@@ -164,7 +228,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["mergeMathLists"],
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies({ stateValues }) {
@@ -282,7 +348,10 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.maths = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       isArray: true,
       entryPrefixes: ["math"],
       stateVariablesDeterminingDependencies: ["mergeMathLists", "childIndexByArrayKey"],
@@ -418,6 +487,33 @@ export default class MathList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        maths: {
+          dependencyType: "stateVariable",
+          variableName: "maths"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.maths.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.maths.length === 1) {
+          math = dependencyValues.maths[0]
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.maths.map(x => x.tree)]);
+        }
+
+        return { setValue: { math } }
+
+      }
+    }
+
     stateVariableDefinitions.nValues = {
       isAlias: true,
       targetVariableName: "nComponents"
@@ -431,7 +527,9 @@ export default class MathList extends InlineComponent {
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: ["latexs"],
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         mathAndMathListChildren: {
@@ -464,10 +562,23 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let latexs = [];
-
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
         if (dependencyValues.mathAndMathListChildren.length > 0) {
           for (let child of dependencyValues.mathAndMathListChildren) {
 
@@ -477,7 +588,7 @@ export default class MathList extends InlineComponent {
 
               if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 for (let i = 0; i < childValue.tree.length - 1; i++) {
-                  latexs.push(childValue.get_component(i).toLatex());
+                  latexs.push(childValue.get_component(i).toLatex(params));
                 }
               } else {
                 latexs.push(child.stateValues.latex);
@@ -492,7 +603,7 @@ export default class MathList extends InlineComponent {
             roundForDisplay({
               value: x,
               dependencyValues, usedDefault
-            }).toLatex())
+            }).toLatex(params))
 
         }
 
@@ -512,7 +623,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         mathAndMathListChildren: {
@@ -684,5 +797,13 @@ export default class MathList extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }

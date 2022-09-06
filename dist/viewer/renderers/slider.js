@@ -2,15 +2,16 @@ import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
-import {doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray} from "../../_reactComponents/PanelHeaderComponents/theme.js";
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {rendererState} from "./useDoenetRenderer.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 const SliderContainer = styled.div`
     width: fit-content;
     height: ${(props) => props.labeled && props.noTicked ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px"};
+    margin-bottom: 12px;
     &:focus {outline: 0;};
 `;
 const SubContainer2 = styled.div`
@@ -20,8 +21,8 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: #888888 ;
-  height: 1px;
+  background: black; // black?
+  height: 2px;
   width: ${(props) => props.width};
   user-select: none;
 `;
@@ -36,24 +37,24 @@ const StyledThumb = styled.div`
   position: relative;
   top: -4px;
   opacity: 1;
-  background: ${(props) => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`};
+  background: ${(props) => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"}; // var(--mainBlue)?
   cursor: pointer;
 `;
 const Tick = styled.div`
     position: absolute;
-    border-left: 2px solid  ${doenetLightGray};
+    border-left: 2px solid var(--mainGray);
     height: 10px;
-    top:1px;
-    z-Index:-2;
+    top: 1px;
+    z-Index: -2;
     left: ${(props) => props.x};
     user-select: none;
 `;
 const Label = styled.p`
     position: absolute;
     left: ${(props) => props.x};
-    color: ${doenetComponentForegroundInactive};
+    color: black;
     font-size: 12px;
-    top:1px;
+    top: 1px;
     user-select: none;
 `;
 function generateNumericLabels(points, div_width, point_start_val, SVs) {
@@ -155,14 +156,14 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let maxAbs2 = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
       let magnitudeOfMaxAbs2 = Math.round(Math.log(maxAbs2) / Math.log(10));
       let roundDecimalsForTickSpacing = 1 - magnitudeOfMaxAbs2;
-      let dTick = round_to_decimals(desiredDTick, roundDecimalsForTickSpacing);
+      let dTick = Math.max(round_to_decimals(desiredDTick, roundDecimalsForTickSpacing), 10 ** -roundDecimalsForTickSpacing);
       let numberOfTicks = Math.floor(tickSpan / dTick) + 1;
       let roundDecimals2 = 5 - magnitudeOfMaxAbs2;
       tickValues = [...Array(numberOfTicks).keys()].map((i) => SVs.from + dTick * i);
       tickIndices = tickValues.map((x) => Math.round((x - SVs.from) / SVs.step));
       tickValues = tickValues.map((x) => round_to_decimals(x, roundDecimals2));
     } else {
-      let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
+      let desiredNumberOfTicks = Math.max(2, Math.floor(SVs.width.size / maxValueWidth));
       let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1e-10);
       let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1e-10) + 1;
       tickIndices = [...Array(numberOfTicks).keys()].map((i) => Math.round(dIndex * i));
@@ -281,19 +282,17 @@ function nearestValue(refval, points, SVs) {
   }
   return [val, index];
 }
-export default function Slider(props) {
-  let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
+export default React.memo(function Slider(props) {
+  let {name, id, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   Slider.baseStateVariable = "index";
   const containerRef = useRef(null);
   const setRendererState = useSetRecoilState(rendererState(rendererName));
   const [thumbXPos, setThumbXPos] = useState(0);
-  const [thumbValue, setThumbValue] = useState(SVs.firstItem);
-  const [isMouseDown, setIsMouseDown] = useState(0);
+  const isMouseDown = useRef(false);
   const [offsetLeft, setOffsetLeft] = useState(0);
   const startValue = SVs.type === "text" ? 0 : SVs.firstItem;
   let divisionWidth = SVs.width.size / (SVs.nItems - 1);
   const [index, setIndex] = useState(0);
-  const width = SVs.width.size;
   useEffect(() => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
@@ -301,8 +300,7 @@ export default function Slider(props) {
     }
   }, []);
   useEffect(() => {
-    if (!isMouseDown && !ignoreUpdate) {
-      setThumbValue(SVs.value);
+    if (!isMouseDown.current && !ignoreUpdate) {
       setIndex(SVs.index);
       if (!(SVs.type === "text")) {
         setThumbXPos(SVs.index / (SVs.nItems - 1) * SVs.width.size);
@@ -317,13 +315,13 @@ export default function Slider(props) {
   if (SVs.disabled) {
     let controls2 = "";
     if (SVs.showControls) {
-      controls2 = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
-        style: {marginTop: "-20px"},
+      controls2 = /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+        style: {marginBottom: "12px"}
+      }, /* @__PURE__ */ React.createElement(ActionButton, {
         value: "Prev",
         onClick: (e) => handlePrevious(e),
         disabled: true
-      }), /* @__PURE__ */ React.createElement(Button, {
-        style: {marginTop: "-20px"},
+      }), /* @__PURE__ */ React.createElement(ActionButton, {
         value: "Next",
         onClick: (e) => handleNext(e),
         disabled: true
@@ -343,28 +341,52 @@ export default function Slider(props) {
     } else {
       ticksAndLabels2 = labels2;
     }
+    let myLabel2 = null;
+    if (SVs.label) {
+      let label = SVs.label;
+      if (SVs.labelHasLatex) {
+        label = /* @__PURE__ */ React.createElement(MathJax, {
+          hideUntilTypeset: "first",
+          inline: true,
+          dynamic: true
+        }, label);
+      }
+      if (SVs.showValue) {
+        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label, " = " + SVs.valueForDisplay);
+      } else {
+        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label);
+      }
+    } else if (!SVs.label && SVs.showValue) {
+      myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
+    } else {
+      myLabel2 = null;
+    }
     return /* @__PURE__ */ React.createElement(SliderContainer, {
       labeled: SVs.showControls || SVs.label,
       noTicked: SVs.showTicks === false,
       ref: containerRef
     }, /* @__PURE__ */ React.createElement("div", {
-      style: {height: SVs.label ? "20px" : "0px"}
-    }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
-      width: `${SVs.width.size}px`
+      id: `${id}-label`,
+      style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
+    }, myLabel2), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
+      width: `${SVs.width.size}px`,
+      id
     }, /* @__PURE__ */ React.createElement(StyledThumb, {
       disabled: true,
-      style: {left: `${thumbXPos - 4}px`}
+      style: {left: `${thumbXPos - 4}px`},
+      id: `${id}-handle`
     }), ticksAndLabels2)), /* @__PURE__ */ React.createElement("div", {
       style: {height: SVs.showControls ? "20px" : "0px"}
     }, controls2));
   }
   function handleDragEnter(e) {
-    setIsMouseDown(true);
+    isMouseDown.current = true;
+    document.addEventListener("mousemove", handleDragThrough);
+    document.addEventListener("mouseup", handleDragExit);
     setThumbXPos(e.nativeEvent.clientX - offsetLeft);
     if (!(SVs.type === "text")) {
       let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
       let valindexpair = nearestValue(refval, SVs.items, SVs);
-      setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
       setRendererState((was) => {
         let newObj = {...was};
@@ -379,7 +401,6 @@ export default function Slider(props) {
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       setIndex(i);
-      setThumbValue(SVs.items[i]);
       setRendererState((was) => {
         let newObj = {...was};
         newObj.ignoreUpdate = true;
@@ -393,17 +414,18 @@ export default function Slider(props) {
     }
   }
   function handleDragExit(e) {
-    if (!isMouseDown) {
+    document.removeEventListener("mousemove", handleDragThrough);
+    document.removeEventListener("mouseup", handleDragExit);
+    if (!isMouseDown.current) {
       return;
     }
-    setIsMouseDown(false);
+    isMouseDown.current = false;
     if (!(SVs.type === "text")) {
       let xPositionToValue2 = function(ref, div_width, start_val) {
         return start_val + ref / div_width;
       };
-      let refval = xPositionToValue2(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+      let refval = xPositionToValue2(e.clientX - offsetLeft, divisionWidth, startValue);
       let valindexpair = nearestValue(refval, SVs.items, SVs);
-      setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
       setThumbXPos(valindexpair[1] * divisionWidth);
       setRendererState((was) => {
@@ -417,10 +439,9 @@ export default function Slider(props) {
         baseVariableValue: valindexpair[1]
       });
     } else {
-      let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      let i = Math.round((e.clientX - offsetLeft) / divisionWidth);
       i = Math.max(0, Math.min(SVs.nItems - 1, i));
       setIndex(i);
-      setThumbValue(SVs.items[i]);
       setThumbXPos(i * divisionWidth);
       setRendererState((was) => {
         let newObj = {...was};
@@ -435,12 +456,11 @@ export default function Slider(props) {
     }
   }
   function handleDragThrough(e) {
-    if (isMouseDown) {
-      setThumbXPos(Math.max(0, Math.min(SVs.width.size, e.nativeEvent.clientX - offsetLeft)));
+    if (isMouseDown.current) {
+      setThumbXPos(Math.max(0, Math.min(SVs.width.size, e.clientX - offsetLeft)));
       if (!(SVs.type === "text")) {
-        let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+        let refval = xPositionToValue(e.clientX - offsetLeft, divisionWidth, startValue);
         let valindexpair = nearestValue(refval, SVs.items, SVs);
-        setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
         setRendererState((was) => {
           let newObj = {...was};
@@ -453,9 +473,8 @@ export default function Slider(props) {
           baseVariableValue: valindexpair[1]
         });
       } else {
-        let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+        let i = Math.round((e.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
-        setThumbValue(SVs.items[i]);
         setRendererState((was) => {
           let newObj = {...was};
           newObj.ignoreUpdate = true;
@@ -489,7 +508,6 @@ export default function Slider(props) {
       args: {value: val},
       baseVariableValue: index + 1
     });
-    setThumbValue(val);
     setIndex(index + 1);
   }
   function handlePrevious(e) {
@@ -512,7 +530,6 @@ export default function Slider(props) {
       args: {value: val},
       baseVariableValue: index - 1
     });
-    setThumbValue(val);
     setIndex(index - 1);
   }
   function handleKeyDown(e) {
@@ -536,19 +553,45 @@ export default function Slider(props) {
   }
   let controls = "";
   if (SVs.showControls) {
-    controls = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
-      style: {marginTop: "-20px"},
+    controls = /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+      style: {marginBottom: "12px"}
+    }, /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Prev",
       onClick: (e) => handlePrevious(e),
-      "data-cy": `${name}-prevbutton`
-    }), /* @__PURE__ */ React.createElement(Button, {
-      style: {marginTop: "-20px"},
+      id: `${id}-prevbutton`
+    }), /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Next",
       onClick: (e) => handleNext(e),
-      "data-cy": `${name}-nextbutton`
+      id: `${id}-nextbutton`
     }));
   } else {
     null;
+  }
+  let valueDisplay = null;
+  if (SVs.showValue) {
+    valueDisplay = /* @__PURE__ */ React.createElement("span", {
+      style: {left: `${thumbXPos - 4}px`, userSelect: "none"}
+    }, SVs.valueForDisplay, " ");
+  }
+  let myLabel = null;
+  if (SVs.label) {
+    let label = SVs.label;
+    if (SVs.labelHasLatex) {
+      label = /* @__PURE__ */ React.createElement(MathJax, {
+        hideUntilTypeset: "first",
+        inline: true,
+        dynamic: true
+      }, label);
+    }
+    if (SVs.showValue) {
+      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label, " = " + SVs.valueForDisplay);
+    } else {
+      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label);
+    }
+  } else if (!SVs.label && SVs.showValue) {
+    myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
+  } else {
+    myLabel = null;
   }
   return /* @__PURE__ */ React.createElement(SliderContainer, {
     ref: containerRef,
@@ -557,19 +600,17 @@ export default function Slider(props) {
     onKeyDown: handleKeyDown,
     tabIndex: "0"
   }, /* @__PURE__ */ React.createElement("div", {
-    style: {height: SVs.label ? "20px" : "0px"}
-  }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay) : null), /* @__PURE__ */ React.createElement(SubContainer2, {
-    onMouseDown: handleDragEnter,
-    onMouseUp: handleDragExit,
-    onMouseMove: handleDragThrough,
-    onMouseLeave: handleDragExit
+    id: `${id}-label`,
+    style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
+  }, myLabel), /* @__PURE__ */ React.createElement(SubContainer2, {
+    onMouseDown: handleDragEnter
   }, /* @__PURE__ */ React.createElement(StyledSlider, {
     width: `${SVs.width.size}px`,
-    "data-cy": `${name}`
+    id
   }, /* @__PURE__ */ React.createElement(StyledThumb, {
     style: {left: `${thumbXPos - 4}px`},
-    "data-cy": `${name}-handle`
+    id: `${id}-handle`
   }), ticksAndLabels)), /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.showControls ? "20px" : "0px"}
   }, controls));
-}
+});
