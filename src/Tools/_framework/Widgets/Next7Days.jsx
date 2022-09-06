@@ -319,6 +319,7 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
             >
@@ -329,6 +330,7 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
             >
@@ -339,6 +341,7 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
             >
@@ -364,6 +367,7 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
             >
@@ -374,6 +378,7 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
             >
@@ -384,6 +389,7 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
             >
