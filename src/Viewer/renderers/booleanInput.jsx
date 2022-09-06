@@ -214,6 +214,10 @@ export default React.memo(function BooleanInput(props) {
         disabled={disabled}
       />;
   } else {
+    let label = SVs.label;
+    if (SVs.labelHasLatex) {
+      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    }
     input = 
     <label class="container">
       <input
@@ -225,7 +229,7 @@ export default React.memo(function BooleanInput(props) {
         disabled={disabled}
       />
       <span class="checkmark"></span>
-      {SVs.label}
+      {label}
     </label>
     // {checkWorkButton}
   }
