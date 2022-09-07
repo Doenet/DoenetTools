@@ -140,13 +140,13 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
           let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
           let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
-  
+
           if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
             // if both display digits and display decimals did not used default
             // we'll regard display digits as using default if it comes from a deeper shadow
             let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
             let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
-  
+
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
             }
@@ -344,7 +344,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
   async onChange({ changes, source, actionId, }) {
 
-    if (source !== "loadData") {
+    if (source === "edit") {
       let cellChanges = {};
       for (let change of changes) {
         let [row, col, prev, value] = change;
