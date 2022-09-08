@@ -97,6 +97,7 @@ describe('video events test', function () {
 
     cy.get('#\\/time').contains('58');
     cy.get('#\\/pause').click();
+    cy.get('#\\/state').contains("stopped")
 
     cy.log('play last seconds')
     cy.get("#\\/mi textarea").type("{home}{shift+end}{backspace}298{enter}", { force: true });

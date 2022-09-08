@@ -361,7 +361,10 @@ export default class Core {
       // if there are no scored items in document
       // then treat the first view of the document as a submission
       // so that will get credit for viewing the page
-      this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
+      this.saveSubmissions({
+        pageCreditAchieved: await this.document.stateValues.creditAchieved,
+        suppressToast: true
+      })
     }
 
 
@@ -8258,7 +8261,8 @@ export default class Core {
   }
 
   async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
-    doNotSave = false, canSkipUpdatingRenderer = false
+    doNotSave = false, canSkipUpdatingRenderer = false,
+    suppressToast = false  // temporary
   }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
@@ -8446,7 +8450,7 @@ export default class Core {
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ pageCreditAchieved });
+        this.saveSubmissions({ pageCreditAchieved, suppressToast });
       }
 
     }
@@ -9886,7 +9890,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ pageCreditAchieved }) {
+  saveSubmissions({ pageCreditAchieved, suppressToast = false }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9941,44 +9945,52 @@ export default class Core {
 
           //TODO: need type warning (red but doesn't hang around)
           if (data.viewedSolution) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since solution was viewed.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since solution was viewed.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.timeExpired) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since the time allowed has expired.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since the time allowed has expired.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.pastDueDate) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since the due date has passed.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since the due date has passed.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.exceededAttemptsAllowed) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since no more attempts are allowed.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since no more attempts are allowed.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.databaseError) {
             postMessage({
