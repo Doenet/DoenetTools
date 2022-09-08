@@ -1286,7 +1286,7 @@ describe('MathList Tag Tests', function () {
     })
 
     cy.log('merge math lists')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
 
     cy.get('#\\/_p2 .mjx-mrow').should('contain.text', 'c')
 
@@ -1328,7 +1328,7 @@ describe('MathList Tag Tests', function () {
 
 
     cy.log('stop merging again')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
     cy.get('#\\/_p2 .mjx-mrow').should('contain.text', 'e,f')
 
     cy.log('Test value displayed in browser')

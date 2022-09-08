@@ -912,22 +912,22 @@ describe('ChoiceInput Tag Tests', function () {
     checkStillMonkey();
 
     cy.get(`#\\/ci1_choice1_input`).click();
-    cy.get(`#\\/bi_input`).click();
+    cy.get(`#\\/bi`).click();
     cy.get('#\\/b').should('have.text', "true")
     checkStillMonkey();
 
     cy.get(`#\\/ci1_choice2_input`).click();
-    cy.get(`#\\/bi_input`).click();
+    cy.get(`#\\/bi`).click();
     cy.get('#\\/b').should('have.text', "false")
     checkStillMonkey();
 
     cy.get(`#\\/ci2`).select(`1`);
-    cy.get(`#\\/bi_input`).click();
+    cy.get(`#\\/bi`).click();
     cy.get('#\\/b').should('have.text', "true")
     checkStillMonkey();
 
     cy.get(`#\\/ci2`).select(`2`);
-    cy.get(`#\\/bi_input`).click();
+    cy.get(`#\\/bi`).click();
     cy.get('#\\/b').should('have.text', "false")
     checkStillMonkey();
 

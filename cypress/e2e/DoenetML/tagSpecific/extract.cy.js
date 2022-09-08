@@ -689,14 +689,14 @@ describe('Extract Tag Tests', function () {
     cy.get('#\\/e1').should('have.text', 'extract 1: hello')
     cy.get('#\\/e2').should('have.text', 'extract 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/e1').should('have.text', 'extract 1: ')
     cy.get('#\\/e2').should('have.text', 'extract 2: hello')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/e1').should('have.text', 'extract 1: hello')
     cy.get('#\\/e2').should('have.text', 'extract 2: ')

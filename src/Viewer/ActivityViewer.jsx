@@ -1240,74 +1240,75 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
+  if (order) {
+    for (let [ind, page] of order.entries()) {
 
-  for (let [ind, page] of order.entries()) {
 
-
-    let thisPageIsActive = false;
-    if (props.paginate) {
-      if (ind === currentPage - 1) {
-        // the current page is always active
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
-        // if the current page already has core created, activate next page
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1]
-        && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
-        && ind === currentPage - 2
-      ) {
-        // if current page and page after current page (if exists) already have current page
-        // activate previous page
-        thisPageIsActive = true;
+      let thisPageIsActive = false;
+      if (props.paginate) {
+        if (ind === currentPage - 1) {
+          // the current page is always active
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
+          // if the current page already has core created, activate next page
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1]
+          && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
+          && ind === currentPage - 2
+        ) {
+          // if current page and page after current page (if exists) already have current page
+          // activate previous page
+          thisPageIsActive = true;
+        }
+      } else {
+        // pageIsActive is used only if not paginated
+        thisPageIsActive = pageInfo.pageIsActive[ind];
       }
-    } else {
-      // pageIsActive is used only if not paginated
-      thisPageIsActive = pageInfo.pageIsActive[ind];
-    }
 
-    let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
+      let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
 
-    let pageViewer = <PageViewer
-      userId={props.userId}
-      doenetId={props.doenetId}
-      activityCid={cid}
-      cid={page.cid}
-      doenetML={page.doenetML}
-      pageNumber={(ind + 1).toString()}
-      previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
-      pageIsActive={thisPageIsActive}
-      pageIsCurrent={ind === currentPage - 1}
-      itemNumber={ind + 1}
-      attemptNumber={attemptNumber}
-      snapshotOnly={props.snapshotOnly}
-      flags={flags}
-      activityVariantIndex={variantIndex}
-      requestedVariantIndex={variantsByPage[ind]}
-      unbundledCore={props.unbundledCore}
-      updateCreditAchievedCallback={props.updateCreditAchievedCallback}
-      setIsInErrorState={props.setIsInErrorState}
-      updateAttemptNumber={props.updateAttemptNumber}
-      saveStateCallback={receivedSaveFromPage}
-      updateDataOnContentChange={props.updateDataOnContentChange}
-      coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
-      renderersInitializedCallback={() => pageRenderedCallback(ind)}
-      hideWhenNotCurrent={props.paginate}
-      prefixForIds={prefixForIds}
-    />
+      let pageViewer = <PageViewer
+        userId={props.userId}
+        doenetId={props.doenetId}
+        activityCid={cid}
+        cid={page.cid}
+        doenetML={page.doenetML}
+        pageNumber={(ind + 1).toString()}
+        previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
+        pageIsActive={thisPageIsActive}
+        pageIsCurrent={ind === currentPage - 1}
+        itemNumber={ind + 1}
+        attemptNumber={attemptNumber}
+        snapshotOnly={props.snapshotOnly}
+        flags={flags}
+        activityVariantIndex={variantIndex}
+        requestedVariantIndex={variantsByPage[ind]}
+        unbundledCore={props.unbundledCore}
+        updateCreditAchievedCallback={props.updateCreditAchievedCallback}
+        setIsInErrorState={props.setIsInErrorState}
+        updateAttemptNumber={props.updateAttemptNumber}
+        saveStateCallback={receivedSaveFromPage}
+        updateDataOnContentChange={props.updateDataOnContentChange}
+        coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
+        renderersInitializedCallback={() => pageRenderedCallback(ind)}
+        hideWhenNotCurrent={props.paginate}
+        prefixForIds={prefixForIds}
+      />
 
-    if (!props.paginate) {
-      pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
-        <div>
+      if (!props.paginate) {
+        pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
+          <div>
+            {pageViewer}
+          </div>
+        </VisibilitySensor>
+      }
+
+      pages.push(
+        <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
           {pageViewer}
         </div>
-      </VisibilitySensor>
+      )
     }
-
-    pages.push(
-      <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
-        {pageViewer}
-      </div>
-    )
   }
 
 
