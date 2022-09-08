@@ -3522,7 +3522,7 @@ describe('Line Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b_input').check();
+    cy.get('#\\/b_input').check({ force: true });
 
 
     cy.window().then(async (win) => {

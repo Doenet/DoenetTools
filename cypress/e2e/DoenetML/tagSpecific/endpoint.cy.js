@@ -64,7 +64,7 @@ describe('Endpoint Tag Tests', function () {
     })
 
     cy.log('switch C via boolean input')
-    cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1').click();
     cy.get('#\\/b1a').should('have.text', 'true')
 
     cy.window().then(async (win) => {
@@ -82,7 +82,7 @@ describe('Endpoint Tag Tests', function () {
     })
 
     cy.log('switch D via boolean input')
-    cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2').click();
     cy.get('#\\/b2a').should('have.text', 'true')
 
     cy.window().then(async (win) => {

@@ -167,7 +167,7 @@ describe('Slider Tag Tests', function () {
 
     cy.get("#\\/mi textarea").type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true })
     // use booleaninput to wait, since above has no effect
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/b').should('have.text', 'true');
 
     cy.get('#\\/sv').should('have.text', '3')

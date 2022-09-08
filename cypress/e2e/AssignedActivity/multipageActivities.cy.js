@@ -292,7 +292,7 @@ describe('Multipage activity tests', function () {
       expect(el.scrollTop()).eq(0);
     })
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
 
@@ -334,7 +334,7 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
 
@@ -401,7 +401,7 @@ describe('Multipage activity tests', function () {
       return rect.top > headerPixels - 1 && rect.top < headerPixels + 1;
     }))
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'false');
 
     cy.wait(2000);
@@ -510,7 +510,7 @@ describe('Multipage activity tests', function () {
       expect(el.scrollTop()).eq(0);
     })
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
 
@@ -518,7 +518,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/toPage2').click();
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
 
@@ -617,7 +617,7 @@ describe('Multipage activity tests', function () {
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'false');
 
     cy.wait(2000);
@@ -721,7 +721,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
     cy.log('move to page 2 to initialize it')
@@ -729,7 +729,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page2').scrollIntoView();
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
     cy.wait(1500); // for debounce
@@ -943,7 +943,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
 
@@ -951,7 +951,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page2').scrollIntoView();
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
     cy.wait(1500); // for debounce
@@ -1165,7 +1165,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/asideTitle').should('have.text', 'The aside');
     cy.get('#page1\\/insideAside').should('not.exist');
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
     cy.url().should('match', /#page1$/)
@@ -1185,7 +1185,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page2\\/asideTitle').should('have.text', 'The aside');
     cy.get('#page2\\/insideAside').should('not.exist');
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
     cy.url().should('match', /#page2$/)
@@ -1299,7 +1299,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
 
@@ -1307,7 +1307,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page2').scrollIntoView();
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
     cy.wait(1500); // for debounce
@@ -1573,7 +1573,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
 
@@ -1582,7 +1582,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
     cy.wait(1500); // for debounce
@@ -1662,7 +1662,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /#page1$/)
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
 
@@ -1670,7 +1670,7 @@ describe('Multipage activity tests', function () {
     cy.get('#page2').scrollIntoView();
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
     cy.wait(1500); // for debounce
@@ -1686,7 +1686,8 @@ describe('Multipage activity tests', function () {
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
 
 
-    cy.url().should('match', /#page2$/)
+    cy.waitUntil(() => cy.url().should('match', /#page2$/))
+
     cy.url().should('contain', doenetId)
 
   })

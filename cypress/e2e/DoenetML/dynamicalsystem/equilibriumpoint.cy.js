@@ -85,7 +85,7 @@ describe('Equilibriumpoint Tag Tests', function () {
     })
 
     cy.log('switch C via boolean input')
-    cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1').click();
 
     cy.get("#\\/gAs").should('have.text', 'true');
     cy.get("#\\/gBs").should('have.text', 'false');
@@ -111,7 +111,7 @@ describe('Equilibriumpoint Tag Tests', function () {
     })
 
     cy.log('switch D via boolean input')
-    cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2').click();
 
     cy.get("#\\/gAs").should('have.text', 'true');
     cy.get("#\\/gBs").should('have.text', 'false');

@@ -494,8 +494,8 @@ describe('Curve Tag Tests', function () {
     })
 
     cy.log("turn on extrapolation")
-    cy.get("#\\/_booleaninput1_input").click();
-    cy.get("#\\/_booleaninput2_input").click();
+    cy.get("#\\/_booleaninput1").click();
+    cy.get("#\\/_booleaninput2").click();
     cy.get("#\\/b1").should('contain.text', "true")
     cy.get("#\\/b2").should('contain.text', "true")
 
@@ -964,7 +964,7 @@ describe('Curve Tag Tests', function () {
     cy.get('#\\/efm').should('have.text', '')
 
     cy.log('extrapolate backward')
-    cy.get("#\\/eb_input").click();
+    cy.get("#\\/eb").click();
     cy.get('#\\/ebm').should('have.text', 'line')
     cy.get('#\\/efm').should('have.text', '')
 
@@ -1002,7 +1002,7 @@ describe('Curve Tag Tests', function () {
     })
 
     cy.log('extrapolate foward')
-    cy.get("#\\/ef_input").click();
+    cy.get("#\\/ef").click();
     cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
     cy.get('#\\/efm').should('have.text', 'line')
 

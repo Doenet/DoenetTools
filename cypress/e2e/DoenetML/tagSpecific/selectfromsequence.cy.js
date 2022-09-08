@@ -1717,14 +1717,14 @@ describe('SelectFromSequence Tag Tests', function () {
       cy.get(`#\\/_p1`).should('have.text', `${c}, `)
       cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
 
-      cy.get('#\\/h1_input').click();
-      cy.get('#\\/h2_input').click();
+      cy.get('#\\/h1').click();
+      cy.get('#\\/h2').click();
 
       cy.get(`#\\/_p1`).should('have.text', `, ${d}`)
       cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
 
-      cy.get('#\\/h1_input').click();
-      cy.get('#\\/h2_input').click();
+      cy.get('#\\/h1').click();
+      cy.get('#\\/h2').click();
 
       cy.get(`#\\/_p1`).should('have.text', `${c}, `)
       cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
@@ -1826,8 +1826,8 @@ describe('SelectFromSequence Tag Tests', function () {
       cy.get('#\\/b2').should('have.text', "j")
       cy.get('#\\/c2').should('have.text', c)
 
-      cy.get('#\\/f1_input').click();
-      cy.get('#\\/f2_input').click();
+      cy.get('#\\/f1').click();
+      cy.get('#\\/f2').click();
 
       cy.get('#\\/af').should('have.text', "true")
       cy.get('#\\/bf').should('have.text', "true")

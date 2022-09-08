@@ -2477,7 +2477,7 @@ describe('Math Tag Tests', function () {
 
     });
 
-    cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1').click();
     cy.get("#\\/b1a").should('have.text', "false");
 
     cy.window().then(async (win) => {
@@ -2490,7 +2490,7 @@ describe('Math Tag Tests', function () {
       expect(stateVariables["/p2/m3"].stateValues.unordered).eq(true);
     });
 
-    cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2').click();
     cy.get("#\\/b2a").should('have.text', "true");
 
     cy.window().then(async (win) => {
@@ -2503,7 +2503,7 @@ describe('Math Tag Tests', function () {
       expect(stateVariables["/p2/m3"].stateValues.unordered).eq(true);
     });
 
-    cy.get('#\\/b3_input').click();
+    cy.get('#\\/b3').click();
     cy.get("#\\/b3a").should('have.text', "false");
 
     cy.window().then(async (win) => {
@@ -3106,7 +3106,7 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+');
     cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2++5');
 
-    cy.get('#\\/displayBlanks_input').click();
+    cy.get('#\\/displayBlanks').click();
 
     cy.get('#\\/m1 .mjx-mrow').should('contain.text', '\uff3f')
     cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', 'x\uff3f+\uff3f2');
