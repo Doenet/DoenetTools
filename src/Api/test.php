@@ -5,18 +5,11 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
-include "db_connection.php";
-include "cidFromSHA.php";
+include 'defineDBAndUserAndCourseInfo.php';
 
 
-$doenetML = "
-<graph>
-  <point>(0,3)</point>
-</graph>
-";
+// var_dump($permissionsAndSettings);
 
-echo $doenetML;
-echo cidFromSHA(hash("sha256",$doenetML));
 
 
 $conn->close();
