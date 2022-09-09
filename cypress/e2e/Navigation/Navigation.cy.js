@@ -1,7 +1,7 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
 
-describe('doenetEditor test', function () {
+describe('Navigation test', function () {
   const userId = "cyuserId";
   // const userId = "devuserId";
   const courseId = "courseid1";

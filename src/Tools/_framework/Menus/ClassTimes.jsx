@@ -12,44 +12,44 @@ import axios from 'axios';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { recoilAddToast } from '../Toast';
+// import { recoilAddToast } from '../Toast';
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
-const TimeEntry = ({ parentValue, valueCallback = () => {} }) => {
-  let [time, setTime] = useState(parentValue);
-  let [previousTime, setPreviousTime] = useState(parentValue); //Prevent valueCallback calls if value didn't change
+// const TimeEntry = ({ parentValue, valueCallback = () => {} }) => {
+//   let [time, setTime] = useState(parentValue);
+//   let [previousTime, setPreviousTime] = useState(parentValue); //Prevent valueCallback calls if value didn't change
 
-  //This causes extra calls, but updates time when prop changes
-  if (parentValue != previousTime) {
-    setTime(parentValue);
-    setPreviousTime(parentValue);
-  }
+//   //This causes extra calls, but updates time when prop changes
+//   if (parentValue != previousTime) {
+//     setTime(parentValue);
+//     setPreviousTime(parentValue);
+//   }
 
-  return (
-    <input
-      type="text"
-      value={time}
-      style={{ width: '40px' }}
-      onChange={(e) => {
-        setTime(e.target.value);
-      }}
-      onBlur={() => {
-        if (previousTime !== time) {
-          valueCallback(time);
-          setPreviousTime(time);
-        }
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          if (previousTime !== time) {
-            valueCallback(time);
-            setPreviousTime(time);
-          }
-        }
-      }}
-    />
-  );
-};
+//   return (
+//     <input
+//       type="text"
+//       value={time}
+//       style={{ width: '40px' }}
+//       onChange={(e) => {
+//         setTime(e.target.value);
+//       }}
+//       onBlur={() => {
+//         if (previousTime !== time) {
+//           valueCallback(time);
+//           setPreviousTime(time);
+//         }
+//       }}
+//       onKeyDown={(e) => {
+//         if (e.key === 'Enter') {
+//           if (previousTime !== time) {
+//             valueCallback(time);
+//             setPreviousTime(time);
+//           }
+//         }
+//       }}
+//     />
+//   );
+// };
 
 function sortClassTimes(classTimesArray) {
   return classTimesArray.sort((first, second) => {
@@ -85,33 +85,32 @@ function sortClassTimes(classTimesArray) {
 
 export default function ClassTimes() {
   const timesObj = useRecoilValue(classTimesAtom);
-  const addClassTime = useRecoilCallback(({ set, snapshot }) => async () => {
-    let was = await snapshot.getPromise(classTimesAtom); //  get all classTimes
-    let newArr = [...was]; // enter in arr
-    const newClassTime = {
-      // make new classTime
-      dotwIndex: 1, // ? monday 9 to 10 am
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+
+  const addClassTime = useRecoilCallback(({ set, snapshot }) => async (courseId) => {
+    let prevTimesArr = await snapshot.getPromise(classTimesAtom); 
+    let nextArr = [...prevTimesArr]; 
+    // Default new classTime
+    nextArr.push({
+      dotwIndex: 1, // monday 9 to 10 am
       startTime: '09:00',
       endTime: '10:00',
-    };
-    newArr.push(newClassTime); // add to arr
-    newArr = sortClassTimes(newArr); // sort (chronological)
-    set(classTimesAtom, newArr); // set atom
+    }); 
+    nextArr = sortClassTimes(nextArr); 
+    set(classTimesAtom, nextArr); 
 
-    let courseId = await snapshot.getPromise(searchParamAtomFamily('courseId')); // get courseId
-    console.log(courseId);
     let dotwIndexes = []; // create arrays
     let startTimes = [];
     let endTimes = [];
-    for (let classTime of newArr) {
+    for (let classTime of nextArr) {
       // fill arrays
       dotwIndexes.push(classTime.dotwIndex);
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
 
+    // php updates classTimes table
     let resp = await axios.post('/api/updateClassTimes.php', {
-      // php updates classTimes table
       courseId,
       dotwIndexes,
       startTimes,
@@ -124,21 +123,18 @@ export default function ClassTimes() {
 
   const updateClassTime = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ index, newClassTime }) => {
+      async ({ index, nextClassTime, courseId }) => {
         let was = await snapshot.getPromise(classTimesAtom);
-        let newArr = [...was];
-        newArr[index] = { ...newClassTime }; // specific
-        newArr = sortClassTimes(newArr);
+        let nextArr = [...was];
+        nextArr[index] = { ...nextClassTime }; // specific
+        nextArr = sortClassTimes(nextArr);
         console.log('update');
-        set(classTimesAtom, newArr);
+        set(classTimesAtom, nextArr);
 
-        let courseId = await snapshot.getPromise(
-          searchParamAtomFamily('courseId'),
-        );
         let dotwIndexes = [];
         let startTimes = [];
         let endTimes = [];
-        for (let classTime of newArr) {
+        for (let classTime of nextArr) {
           dotwIndexes.push(classTime.dotwIndex);
           startTimes.push(classTime.startTime);
           endTimes.push(classTime.endTime);
@@ -158,20 +154,17 @@ export default function ClassTimes() {
 
   const deleteClassTime = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ index }) => {
+      async ({ index, courseId }) => {
         let was = await snapshot.getPromise(classTimesAtom);
-        let newArr = [...was];
-        newArr.splice(index, 1); // remove classTime at index
-        newArr = sortClassTimes(newArr);
-        set(classTimesAtom, newArr);
+        let nextArr = [...was];
+        nextArr.splice(index, 1); // remove classTime at index
+        nextArr = sortClassTimes(nextArr);
+        set(classTimesAtom, nextArr);
 
-        let courseId = await snapshot.getPromise(
-          searchParamAtomFamily('courseId'),
-        );
         let dotwIndexes = [];
         let startTimes = [];
         let endTimes = [];
-        for (let classTime of newArr) {
+        for (let classTime of nextArr) {
           dotwIndexes.push(classTime.dotwIndex);
           startTimes.push(classTime.startTime);
           endTimes.push(classTime.endTime);
@@ -207,19 +200,17 @@ export default function ClassTimes() {
       <>
         <tr>
           <td style={{ width: '190px' }}>
-            {/* DAY PICKER DROPDOWN */}
             <DropdownMenu
               width="180px"
               items={dotwItems}
               valueIndex={timeObj.dotwIndex}
               onChange={({ value }) => {
-                let newClassTime = { ...timeObj };
-                newClassTime.dotwIndex = value;
-                updateClassTime({ index, newClassTime });
+                let nextClassTime = { ...timeObj };
+                nextClassTime.dotwIndex = value;
+                updateClassTime({courseId, index, nextClassTime });
               }}
             />
           </td>
-          {/* DELETE TIME BUTTON */}
           <Button
             icon={<FontAwesomeIcon icon={faTimes} />}
             alert
@@ -230,18 +221,17 @@ export default function ClassTimes() {
         </tr>
         <tr style={{ width: '190px', display: 'flex', alignItems: 'center' }}>
           <td>
-            {/* START TIME PICKER */}
             <DateTime
               datePicker={false}
               width="74px"
               value={new Date(timeObj.startTime)}
               onBlur={(value, valid) => {
                 // if (valid) {
-                let newClassTime = { ...timeObj };
-                newClassTime.startTime = DateToUTCDateString(
+                let nextClassTime = { ...timeObj };
+                nextClassTime.startTime = DateToUTCDateString(
                   new Date(value.value._d),
                 );
-                updateClassTime({ index, newClassTime });
+                updateClassTime({courseId, index, nextClassTime });
                 // } else {
                 // console.log('not valid'); // TODO toast
                 // }
@@ -249,20 +239,18 @@ export default function ClassTimes() {
             />
           </td>
           <td style={{ marginLeft: '6px', marginRight: '6px' }}>-</td>
-          {/* In the menu panel, the right-side time picker's dropdown is shifted with --menuPanelMargin so that it's not cut off */}
           <td style={{ ['--menuPanelMargin']: '-62px' }}>
-            {/* END TIME PICKER */}
             <DateTime
               datePicker={false}
               width="74px"
               value={new Date(timeObj.endTime)}
               onBlur={(value, valid) => {
                 // if (valid) {
-                let newClassTime = { ...timeObj };
-                newClassTime.endTime = DateToUTCDateString(
+                let nextClassTime = { ...timeObj };
+                nextClassTime.endTime = DateToUTCDateString(
                   new Date(value.value._d),
                 );
-                updateClassTime({ index, newClassTime });
+                updateClassTime({courseId, index, nextClassTime });
                 // } else {
                 // console.log('not valid'); // TODO toast
                 // }
@@ -288,7 +276,7 @@ export default function ClassTimes() {
       <Button
         icon={<FontAwesomeIcon icon={faPlus} />}
         style={{ margin: 'auto' }}
-        onClick={() => addClassTime()}
+        onClick={() => addClassTime(courseId)}
       />
     </>
   );

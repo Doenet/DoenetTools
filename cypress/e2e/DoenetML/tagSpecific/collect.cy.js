@@ -1795,7 +1795,7 @@ describe('Collect Tag Tests', function () {
       <boolean>not $c</boolean>
     </group>
 
-    <p name="pcollect1"><collect source="_group1" componentTypes="_input math text boolean" /></p>
+    <p name="pcollect1"><collect source="_group1" componentTypes=" math text boolean" /></p>
     <p name="pcollect2">$_collect1</p>
     <p name="pgroup2">$_group1</p>
     <p name="pcollect3"><copy source="_collect1" /></p>
@@ -2034,8 +2034,8 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/c1').should('have.text', 'collect 1: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! ')
     cy.get('#\\/c2').should('have.text', 'collect 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/c1').should('have.text', 'collect 1: ')
     cy.get('#\\/c2').should('have.text', 'collect 2: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! ')
@@ -2045,8 +2045,8 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/c1').should('have.text', 'collect 1: ')
     cy.get('#\\/c2').should('have.text', 'collect 2: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! Hello, g! Hello, h! ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/c1').should('have.text', 'collect 1: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! Hello, g! Hello, h! ')
     cy.get('#\\/c2').should('have.text', 'collect 2: ')
@@ -2056,8 +2056,8 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/c1').should('have.text', 'collect 1: Hello, a! Hello, b! Hello, c! ')
     cy.get('#\\/c2').should('have.text', 'collect 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/c1').should('have.text', 'collect 1: ')
     cy.get('#\\/c2').should('have.text', 'collect 2: Hello, a! Hello, b! Hello, c! ')
@@ -2210,7 +2210,7 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables["/al2/Bx"].stateValues.fixed).eq(false);
     });
 
-    cy.get('#\\/fixed_input').click()
+    cy.get('#\\/fixed').click()
 
     cy.get("#\\/A2fixed").should('have.text', 'true')
 
@@ -2229,7 +2229,7 @@ describe('Collect Tag Tests', function () {
     });
 
 
-    cy.get('#\\/fixed_input').click();
+    cy.get('#\\/fixed').click();
 
     cy.get("#\\/A2fixed").should('have.text', 'false')
 

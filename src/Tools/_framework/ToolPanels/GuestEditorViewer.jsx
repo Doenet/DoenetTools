@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import PageViewer from '../../../Viewer/PageViewer';
+import React, { useEffect, useRef, useState } from 'react';
+import PageViewer, { scrollableContainerAtom } from '../../../Viewer/PageViewer';
 import useEventListener from '../../../_utils/hooks/useEventListener'
 import {
   useRecoilValue,
@@ -17,6 +17,7 @@ import axios from 'axios';
 import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom, useUpdateViewer } from '../ToolPanels/EditorViewer'
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { parseActivityDefinition } from '../../../_utils/activityUtils';
+import { useLocation } from 'react-router';
 
 
 export default function EditorViewer() {
@@ -33,6 +34,14 @@ export default function EditorViewer() {
   const updateViewer = useUpdateViewer();
 
   const [errMsg, setErrMsg] = useState(null);
+
+  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
+
+  let location = useLocation();
+
+  const previousLocations = useRef({});
+  const currentLocationKey = useRef(null);
+
 
 
   useEffect(() => {
@@ -94,6 +103,40 @@ export default function EditorViewer() {
     }
 
   }, [doenetId])
+
+  useEffect(() => {
+    // Keep track of scroll position when clicked on a link
+    // If navigate back to that location (i.e., hit back button)
+    // then scroll back to the location when clicked
+
+    let foundNewInPrevious = false;
+
+    if (currentLocationKey.current !== location.key) {
+      if (location.state?.previousScrollPosition !== undefined && currentLocationKey.current) {
+        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
+      }
+
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+
+        if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
+          document.getElementById('mainPanel').scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+        }
+      }
+
+
+      previousLocations.current[location.key] = { ...location };
+      currentLocationKey.current = location.key;
+    }
+
+
+  }, [location])
+
+
+  useEffect(() => {
+    const mainPanel = document.getElementById("mainPanel");
+    setScrollableContainer(mainPanel);
+  }, [])
 
 
   let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageCid) => {

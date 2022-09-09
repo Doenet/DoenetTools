@@ -260,6 +260,7 @@ export default class Solution extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      overrideReadOnly: true,
       actionId,
       event: {
         verb: "closed",

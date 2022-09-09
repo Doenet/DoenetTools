@@ -361,7 +361,10 @@ export default class Core {
       // if there are no scored items in document
       // then treat the first view of the document as a submission
       // so that will get credit for viewing the page
-      this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
+      this.saveSubmissions({
+        pageCreditAchieved: await this.document.stateValues.creditAchieved,
+        suppressToast: true
+      })
     }
 
 
@@ -1489,6 +1492,10 @@ export default class Core {
       }
     }
 
+    if (serializedComponent.unlinkedCopySource) {
+      newComponent.unlinkedCopySource = serializedComponent.unlinkedCopySource;
+    }
+
 
     await this.deriveChildResultsFromDefiningChildren({ parent: newComponent, expandComposites: false });
 
@@ -1835,7 +1842,7 @@ export default class Core {
           inheritedComponentType: componentType,
           baseComponentType: typeFromGroup
         })) {
-          if(group.matchAfterAdapters && !afterAdapters) {
+          if (group.matchAfterAdapters && !afterAdapters) {
             continue;
           }
           // don't match composites to the base component
@@ -8254,7 +8261,8 @@ export default class Core {
   }
 
   async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
-    doNotSave = false
+    doNotSave = false, canSkipUpdatingRenderer = false,
+    suppressToast = false  // temporary
   }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
@@ -8356,7 +8364,9 @@ export default class Core {
     // always update the renderers from the update instructions themselves,
     // as even if changes were prevented, the renderers need to be given that information
     // so they can revert if the showed the changes before hearing back from core
-    this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
+    if (!canSkipUpdatingRenderer) {
+      this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
+    }
 
     // use set to create deduplicated list of components to update renderers
     let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
@@ -8440,7 +8450,7 @@ export default class Core {
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ pageCreditAchieved });
+        this.saveSubmissions({ pageCreditAchieved, suppressToast });
       }
 
     }
@@ -8595,8 +8605,8 @@ export default class Core {
       if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
         this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
       }
-      if(componentName === this.documentName) {
-        if(!this.visibilityInfo.documentHasBeenVisible) {
+      if (componentName === this.documentName) {
+        if (!this.visibilityInfo.documentHasBeenVisible) {
           this.visibilityInfo.documentHasBeenVisible = true;
           this.onDocumentFirstVisible();
         }
@@ -9880,7 +9890,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ pageCreditAchieved }) {
+  saveSubmissions({ pageCreditAchieved, suppressToast = false }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9935,44 +9945,52 @@ export default class Core {
 
           //TODO: need type warning (red but doesn't hang around)
           if (data.viewedSolution) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since solution was viewed.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since solution was viewed.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.timeExpired) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since the time allowed has expired.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since the time allowed has expired.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.pastDueDate) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since the due date has passed.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since the due date has passed.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.exceededAttemptsAllowed) {
-            postMessage({
-              messageType: "sendToast",
-              coreId: this.coreId,
-              args: {
-                message: 'No credit awarded since no more attempts are allowed.',
-                toastType: toastType.INFO
-              }
-            })
+            if (!suppressToast) {
+              postMessage({
+                messageType: "sendToast",
+                coreId: this.coreId,
+                args: {
+                  message: 'No credit awarded since no more attempts are allowed.',
+                  toastType: toastType.INFO
+                }
+              })
+            }
           }
           if (data.databaseError) {
             postMessage({
@@ -10112,6 +10130,11 @@ export default class Core {
   async recordSolutionView() {
 
     // TODO: check if student was actually allowed to view solution.
+
+    // if not allowed to save submissions, then allow view but don't record it
+    if (!this.flags.allowSaveSubmissions) {
+      return { allowView: true, message: "", scoredComponent: this.documentName };
+    }
 
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {

@@ -2459,8 +2459,8 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/pb').should('have.text', 'b: ');
     cy.get('#\\/pb1').should('have.text', 'b1: cat');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/pa').should('have.text', 'a: ');
     cy.get('#\\/pa1').should('have.text', 'a1: cat');
@@ -2475,8 +2475,8 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/pb').should('have.text', 'b: dog');
     cy.get('#\\/pb1').should('have.text', 'b1: dog');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/pa').should('have.text', 'a: dog');
     cy.get('#\\/pa1').should('have.text', 'a1: dog');

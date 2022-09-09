@@ -73,6 +73,7 @@ export const Styles = styled.div`
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+
     }
 
     th:first-child {
@@ -87,16 +88,24 @@ export const Styles = styled.div`
       height: 100%;
     } */
 
+    tr:first-child th > p{
+      margin: 0px 0px 4px 0px;
+      padding: 0px;
+    }
+
     tr:not(:first-child) th:not(:first-child) > p {
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 160px;
+
     }
 
     thead tr:only-child th:not(:first-child) > p {
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 160px;
     }
 
     td {
@@ -626,7 +635,7 @@ function GradebookOverview() {
     let hasAssignments = false;
     for (let doenetId in assignments.contents) {
       let inCategory = assignments.contents[doenetId].category;
-      if (inCategory.toLowerCase() !== category.toLowerCase()) {
+      if (inCategory?.toLowerCase() !== category.toLowerCase()) {
         continue;
       }
 
@@ -681,6 +690,7 @@ function GradebookOverview() {
     //category total
     // possiblePointRow[category] = categoryPossiblePoints;
     totalPossiblePoints += categoryPossiblePoints;
+    categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
 
     let description = '';
     if (numberScores > maximumNumber) {
@@ -727,6 +737,8 @@ function GradebookOverview() {
       });
     }
   }
+
+  totalPossiblePoints = Math.round(totalPossiblePoints * 100) / 100;
 
   overviewTable.headers.push({
     Header: <div>Course Total</div>,
@@ -775,7 +787,7 @@ function GradebookOverview() {
 
       for (let doenetId in assignments.contents) {
         let inCategory = assignments.contents[doenetId].category;
-        if (inCategory.toLowerCase() !== category.toLowerCase()) {
+        if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
         }
 

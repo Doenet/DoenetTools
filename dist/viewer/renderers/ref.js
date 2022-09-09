@@ -45,7 +45,7 @@ export default React.memo(function Ref(props) {
       }
       url = `/public?${url}`;
     } else {
-      url = `/course?tool=assignment&${url}`;
+      url = `?tool=assignment&${url}`;
     }
     haveValidTarget = true;
     if (SVs.hash) {
@@ -80,15 +80,27 @@ export default React.memo(function Ref(props) {
     haveValidTarget = true;
   }
   if (SVs.createButton) {
-    return /* @__PURE__ */ React.createElement("span", {
-      id
-    }, /* @__PURE__ */ React.createElement("a", {
-      name: id
-    }), /* @__PURE__ */ React.createElement("button", {
-      id: id + "_button",
-      onClick: () => navigate(url),
-      disabled: SVs.disabled
-    }, SVs.linkText));
+    if (externalUri) {
+      return /* @__PURE__ */ React.createElement("span", {
+        id
+      }, /* @__PURE__ */ React.createElement("a", {
+        name: id
+      }), /* @__PURE__ */ React.createElement("button", {
+        id: id + "_button",
+        onClick: () => window.location.href = url,
+        disabled: SVs.disabled
+      }, SVs.linkText));
+    } else {
+      return /* @__PURE__ */ React.createElement("span", {
+        id
+      }, /* @__PURE__ */ React.createElement("a", {
+        name: id
+      }), /* @__PURE__ */ React.createElement("button", {
+        id: id + "_button",
+        onClick: () => navigate(url),
+        disabled: SVs.disabled
+      }, SVs.linkText));
+    }
   } else {
     if (haveValidTarget) {
       if (externalUri || url === "#") {

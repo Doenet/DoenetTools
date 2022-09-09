@@ -1215,7 +1215,7 @@ describe('Substitute Tag Tests', function () {
     })
 
     cy.log('match whole word')
-    cy.get('#\\/wholeWord_input').click();
+    cy.get('#\\/wholeWord').click();
 
     cy.get('#\\/subbed2_input').should('have.value', 'There thenhelloThe');
     cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
@@ -1315,7 +1315,7 @@ describe('Substitute Tag Tests', function () {
 
 
     cy.log('match case')
-    cy.get('#\\/matchCase_input').click();
+    cy.get('#\\/matchCase').click();
 
     cy.get("#\\/matchCase2").should('have.text', 'true');
 
@@ -1383,7 +1383,7 @@ describe('Substitute Tag Tests', function () {
     })
 
     cy.log('preserve case')
-    cy.get('#\\/preserveCase_input').click();
+    cy.get('#\\/preserveCase').click();
 
     cy.get('#\\/subbed2_input').should('have.value', 'then then helloThere Hello');
     cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');

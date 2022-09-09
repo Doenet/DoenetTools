@@ -45,6 +45,7 @@ export function RoleDropdown({
     valueIndex: valueIndex + 1,
     onChange,
     vertical,
-    disabled
+    disabled,
+    dataTest: "RoleDropDown"
   });
 }

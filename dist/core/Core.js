@@ -103,7 +103,8 @@ export default class Core {
       saveTimerId: null,
       suspendDelay: 3 * 60000,
       suspendTimerId: null,
-      suspended: false
+      suspended: false,
+      documentHasBeenVisible: false
     }
 
     // console.time('serialize doenetML');
@@ -323,6 +324,12 @@ export default class Core {
 
     this.messageViewerReady()
 
+    this.resolveInitialized();
+
+
+  }
+
+  async onDocumentFirstVisible() {
     this.requestRecordEvent({
       verb: "experienced",
       object: {
@@ -357,12 +364,10 @@ export default class Core {
       this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
     }
 
-    this.resolveInitialized();
 
     setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
 
   }
-
 
   async messageViewerReady() {
 
@@ -1484,6 +1489,10 @@ export default class Core {
       }
     }
 
+    if(serializedComponent.unlinkedCopySource) {
+      newComponent.unlinkedCopySource = serializedComponent.unlinkedCopySource;
+    }
+
 
     await this.deriveChildResultsFromDefiningChildren({ parent: newComponent, expandComposites: false });
 
@@ -1830,7 +1839,7 @@ export default class Core {
           inheritedComponentType: componentType,
           baseComponentType: typeFromGroup
         })) {
-          if(group.matchAfterAdapters && !afterAdapters) {
+          if (group.matchAfterAdapters && !afterAdapters) {
             continue;
           }
           // don't match composites to the base component
@@ -8590,6 +8599,12 @@ export default class Core {
       if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
         this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
       }
+      if (componentName === this.documentName) {
+        if (!this.visibilityInfo.documentHasBeenVisible) {
+          this.visibilityInfo.documentHasBeenVisible = true;
+          this.onDocumentFirstVisible();
+        }
+      }
     } else {
       let begin = this.visibilityInfo.componentsCurrentlyVisible[componentName]
       if (begin) {
@@ -10101,6 +10116,11 @@ export default class Core {
   async recordSolutionView() {
 
     // TODO: check if student was actually allowed to view solution.
+
+    // if not allowed to save submissions, then allow view but don't record it
+    if (!this.flags.allowSaveSubmissions) {
+      return { allowView: true, message: "", scoredComponent: this.documentName };
+    }
 
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {

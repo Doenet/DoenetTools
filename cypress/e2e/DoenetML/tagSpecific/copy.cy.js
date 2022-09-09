@@ -2188,14 +2188,14 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/c1').should('have.text', 'copy 1: hello')
     cy.get('#\\/c2').should('have.text', 'copy 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/c1').should('have.text', 'copy 1: ')
     cy.get('#\\/c2').should('have.text', 'copy 2: hello')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/c1').should('have.text', 'copy 1: hello')
     cy.get('#\\/c2').should('have.text', 'copy 2: ')
@@ -2227,14 +2227,14 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/c1').should('have.text', 'copy 1: hello')
     cy.get('#\\/c2').should('have.text', 'copy 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/c1').should('have.text', 'copy 1: ')
     cy.get('#\\/c2').should('have.text', 'copy 2: hello')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/c1').should('have.text', 'copy 1: hello')
     cy.get('#\\/c2').should('have.text', 'copy 2: ')

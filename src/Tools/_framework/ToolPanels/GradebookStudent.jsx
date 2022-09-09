@@ -93,7 +93,7 @@ export default function GradebookStudent() {
 
       for (let doenetId in assignments.contents) {
         let inCategory = assignments.contents[doenetId].category;
-        if (inCategory.toLowerCase() !== category.toLowerCase()) {
+        if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
         }
 
@@ -157,6 +157,7 @@ export default function GradebookStudent() {
       totalPossiblePoints += categoryPossiblePoints;
 
       categoryScore = Math.round(categoryScore * 100) / 100;
+      categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
 
       let description = '';
       if (numberScores > maximumNumber) {
@@ -190,6 +191,8 @@ export default function GradebookStudent() {
       Math.round((totalScore / totalPossiblePoints) * 1000) / 10 + '%';
 
     totalScore = Math.round(totalScore * 100) / 100;
+    totalPossiblePoints = Math.round(totalPossiblePoints * 100) / 100;
+
     overviewTable.headers.push(
       {
         Header: 'Possible Points',

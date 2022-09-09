@@ -6139,6 +6139,125 @@ class ShadowSourceDependency extends Dependency {
 
 dependencyTypeArray.push(ShadowSourceDependency);
 
+
+class UnlinkedCopySourceDependency extends Dependency {
+  static dependencyType = "unlinkedCopySource";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    if (this.definition.variableNames) {
+      if (!Array.isArray(this.definition.variableNames)) {
+        throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
+      }
+      this.originalDownstreamVariableNames = this.definition.variableNames;
+    } else {
+      this.originalDownstreamVariableNames = [];
+    }
+
+    this.returnSingleComponent = true;
+
+    // for shadow source
+    // always make variables optional so that don't get error
+    // depending on shadow source (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!component.unlinkedCopySource) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let unlinkedCopySourceComponentName = component.unlinkedCopySource;
+    let unlinkedCopySource = this.dependencyHandler._components[unlinkedCopySourceComponentName];
+
+    if (!unlinkedCopySource) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    return {
+      success: true,
+      downstreamComponentNames: [unlinkedCopySource.componentName],
+      downstreamComponentTypes: [unlinkedCopySource.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(UnlinkedCopySourceDependency);
+
 class AdapterSourceStateVariableDependency extends Dependency {
   static dependencyType = "adapterSourceStateVariable";
 

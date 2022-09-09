@@ -100,6 +100,92 @@ describe('Feedback Tag Tests', function () {
     })
   });
 
+  it('feedback from answer value or credit, set showFeedback=false', () => {
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_showFeedback').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer>x+y</answer></p>
+  <section>
+  <feedback condition="$(_answer1.creditAchieved) = 1">
+  <p>You got full credit!</p></feedback>
+  <feedback condition="$_answer1 = x+y">
+  <p>You typed the right answer!</p></feedback>
+  <feedback condition="$_answer1 = x" >
+  <p>That's a bad answer.</p></feedback>
+  </section>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', '');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Type correct answer in")
+      cy.get(mathinputAnchor).type(`x+y`, { force: true });
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Blur")
+      cy.get(mathinputAnchor).blur();
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Type wrong answer")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', 'x');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', 'x');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Enter different wrong answer")
+      cy.get(mathinputAnchor).type(`{end}{backspace}y`, { force: true }).blur();
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', 'y');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', 'y');
+      cy.get('#\\/_section1 p').should('not.exist')
+
+    })
+  });
+
   it('feedback from award', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1447,19 +1533,21 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback updated with target', () => {
+    let doenetML = `
+    <text>a</text>
+    <mathinput name="mi" />
+    <answer name="ans">
+      <award>
+        <when>$mi = x</when>
+      </award>
+    </answer>
+    
+    <feedback condition="$mi=y" updateWith="ans" name="fback"><p>You typed y!</p></feedback>
+    `;
     cy.window().then(async (win) => {
       win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <mathinput name="mi" />
-  <answer name="ans">
-    <award>
-      <when>$mi = x</when>
-    </award>
-  </answer>
-  
-  <feedback condition="$mi=y" updateWith="ans" name="fback"><p>You typed y!</p></feedback>
-  `}, "*");
+        doenetML
+      }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
@@ -1479,6 +1567,37 @@ describe('Feedback Tag Tests', function () {
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_correct').should('be.visible');
     cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_showFeedback').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/mi textarea').type("y{enter}", { force: true })
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}x{enter}", { force: true })
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get("#\\/fback").should('not.exist')
+
 
   });
 
@@ -1790,6 +1909,39 @@ describe('Feedback Tag Tests', function () {
     cy.get('#\\/closeStartingClose').should('contain.text', 'A number is close but not quite; the other number is starting to get close.');
     cy.get('#\\/goodStartingClose').should('not.exist');
     cy.get('#\\/good').should('not.exist');
+
+  });
+
+  it('feedback with no condition', () => {
+    let doenetML = `
+    <text>a</text>
+    <feedback name="fback"><p>Good job!</p></feedback>
+    `;
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fback").should('have.text', 'Good job!');
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_showFeedback').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fback").should('not.exist');
 
   });
 

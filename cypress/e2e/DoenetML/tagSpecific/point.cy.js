@@ -514,7 +514,7 @@ describe('Point Tag Tests', function () {
 
   })
 
-  it('labels from labelIsName, copy with link=false', () => {
+  it.skip('labels from labelIsName, copy with link=false', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -555,15 +555,25 @@ describe('Point Tag Tests', function () {
       let Q5Name = stateVariables["/g5"].activeChildren[1].componentName;
 
       expect(stateVariables['/P'].stateValues.label).eq('P')
-      expect(stateVariables['/_point2'].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables['/P'].stateValues.labelForGraph).eq('P')
+      expect(stateVariables['/_point2'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/_point2'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P2Name].stateValues.label).eq('P')
-      expect(stateVariables[Q2Name].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables[P2Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q2Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q2Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables['/P3'].stateValues.label).eq('P')
-      expect(stateVariables['/Q3'].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables['/P3'].stateValues.labelForGraph).eq('P')
+      expect(stateVariables['/Q3'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/Q3'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P4Name].stateValues.label).eq('P')
-      expect(stateVariables[Q4Name].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables[P4Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q4Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q4Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P5Name].stateValues.label).eq('P')
-      expect(stateVariables[Q5Name].stateValues.label).eq(`&UnderBar;point2`)
+      expect(stateVariables[P5Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q5Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q5Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
     })
 
   })
@@ -5464,8 +5474,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
     cy.get('#\\/h1Val').should('have.text', 'true')
     cy.get('#\\/h2Val').should('have.text', 'false')
     cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
@@ -5496,8 +5506,8 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('(3,2)')
     })
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
     cy.get('#\\/h1Val').should('have.text', 'false')
     cy.get('#\\/h2Val').should('have.text', 'true')
     cy.get('#\\/i2 .mjx-mrow').should('not.exist');
@@ -5525,8 +5535,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/i1 .mjx-mrow').should('not.exist');
     cy.get('#\\/i2 .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/h1Val').should('have.text', 'true')
     cy.get('#\\/h2Val').should('have.text', 'false')
@@ -5569,8 +5579,8 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('(2,3)')
     })
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/h1Val').should('have.text', 'false')
     cy.get('#\\/h2Val').should('have.text', 'true')
@@ -5604,8 +5614,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/i2 .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/h1Val').should('have.text', 'true')
     cy.get('#\\/h2Val').should('have.text', 'false')
@@ -7461,7 +7471,7 @@ describe('Point Tag Tests', function () {
       // since nothing has changed in the DOM
       // check boolean input and wait for it to change
       // to make sure got message back from core
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,−7)`)

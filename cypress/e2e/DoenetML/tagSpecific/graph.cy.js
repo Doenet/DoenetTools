@@ -1166,7 +1166,7 @@ describe('Graph Tag Tests', function () {
     cy.get('#\\/sg6').should('have.text', 'none')
     cy.get('#\\/sg7').should('have.text', 'none')
 
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/sg6').should('have.text', 'medium')
 
     cy.get('#\\/ti_input').type('true{enter}')
@@ -1346,7 +1346,7 @@ describe('Graph Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1').click();
 
     cy.get('#\\/b1a').should('have.text', 'true')
     cy.get('#\\/b2a').should('have.text', 'true')
@@ -1356,7 +1356,7 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(true);
     })
 
-    cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2').click();
 
     cy.get('#\\/b1a').should('have.text', 'true')
     cy.get('#\\/b2a').should('have.text', 'false')
@@ -1366,7 +1366,7 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(false);
     })
 
-    cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1').click();
 
     cy.get('#\\/b1a').should('have.text', 'false')
     cy.get('#\\/b2a').should('have.text', 'false')
@@ -1376,7 +1376,7 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(false);
     })
 
-    cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2').click();
 
     cy.get('#\\/b1a').should('have.text', 'false')
     cy.get('#\\/b2a').should('have.text', 'true')
@@ -1773,7 +1773,7 @@ describe('Graph Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1').click();
 
     cy.get('#\\/b1a').should('have.text', 'true')
     cy.get('#\\/b2a').should('have.text', 'true')
@@ -1783,7 +1783,7 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(true);
     })
 
-    cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2').click();
 
     cy.get('#\\/b1a').should('have.text', 'true')
     cy.get('#\\/b2a').should('have.text', 'false')
@@ -1793,7 +1793,7 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(false);
     })
 
-    cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1').click();
 
     cy.get('#\\/b1a').should('have.text', 'false')
     cy.get('#\\/b2a').should('have.text', 'false')
@@ -1803,7 +1803,7 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(false);
     })
 
-    cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2').click();
 
     cy.get('#\\/b1a').should('have.text', 'false')
     cy.get('#\\/b2a').should('have.text', 'true')
@@ -1841,7 +1841,7 @@ describe('Graph Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b_input').click();
+    cy.get('#\\/b').click();
 
     cy.get('#\\/ba').should('have.text', 'true')
     cy.window().then(async (win) => {
@@ -1849,7 +1849,7 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(true);
     })
 
-    cy.get('#\\/b_input').click();
+    cy.get('#\\/b').click();
 
     cy.get('#\\/ba').should('have.text', 'false')
     cy.window().then(async (win) => {

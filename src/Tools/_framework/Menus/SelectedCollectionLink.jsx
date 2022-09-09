@@ -160,7 +160,7 @@ export default function SelectedCollectionLink() {
     onClick={(e) => {
       e.preventDefault();
       e.stopPropagation();
-      updateContentLinksToSources({collectionDoenetId:itemObj.collectionDoenetId,pages:itemObj.pages});
+      updateContentLinksToSources({collectionLinkObj:itemObj,pages:itemObj.pages});
     }}
     />
       <br />

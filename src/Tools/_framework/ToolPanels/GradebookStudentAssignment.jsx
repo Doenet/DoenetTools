@@ -259,6 +259,7 @@ export default function GradebookStudentAssignmentView(){
         // doenetML={doenetML}
         doenetId={doenetId}
         userId={userId}
+        snapshotOnly={true}
 
         flags={{
           showCorrectness: true,

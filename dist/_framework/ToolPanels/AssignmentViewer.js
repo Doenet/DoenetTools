@@ -24,6 +24,8 @@ import {useLocation, useNavigate} from "../../_snowpack/pkg/react-router.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import Banner from "../../_reactComponents/PanelHeaderComponents/Banner.js";
+import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export const currentAttemptNumber = atom({
   key: "currentAttemptNumber",
   default: null
@@ -95,6 +97,7 @@ export default function AssignmentViewer() {
       attemptNumber,
       showCorrectness,
       paginate,
+      showFinishButton,
       showFeedback,
       showHints,
       cid,
@@ -114,6 +117,7 @@ export default function AssignmentViewer() {
   }, [saveStateToDBTimerIdAtom]);
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
+  const effectivePermissions = useRecoilValue(effectivePermissionsByCourseId(courseId));
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
   let {search, hash} = useLocation();
@@ -128,9 +132,10 @@ export default function AssignmentViewer() {
     };
   }, [label]);
   useEffect(() => {
-    console.log("about to initialize values", recoilDoenetId, itemObj);
-    initializeValues(recoilDoenetId, itemObj);
-  }, [itemObj, recoilDoenetId]);
+    if (Object.keys(itemObj).length > 0 && Object.keys(effectivePermissions).length > 0) {
+      initializeValues(recoilDoenetId, itemObj);
+    }
+  }, [itemObj, recoilDoenetId, effectivePermissions]);
   const loadProfile = useRecoilValueLoadable(profileAtom);
   userId.current = loadProfile.contents.userId;
   const initializeValues = useRecoilCallback(({snapshot, set}) => async (doenetId2, {
@@ -141,6 +146,7 @@ export default function AssignmentViewer() {
     showCorrectness: showCorrectness2,
     showCreditAchievedMenu,
     paginate: paginate2,
+    showFinishButton: showFinishButton2,
     showFeedback: showFeedback2,
     showHints: showHints2,
     showSolution,
@@ -154,12 +160,12 @@ export default function AssignmentViewer() {
     if (timeLimit === null) {
       suppress.push("TimerMenu");
     }
-    if (!showCorrectness2 || !showCreditAchievedMenu) {
+    if (!showCorrectness2 || !showCreditAchievedMenu || effectivePermissions.canViewUnassignedContent !== "0") {
       suppress.push("CreditAchieved");
     }
     setSuppressMenus(suppress);
     let solutionDisplayMode2 = "button";
-    if (!showSolution) {
+    if (!showSolution && effectivePermissions.canViewUnassignedContent === "0") {
       solutionDisplayMode2 = "none";
     }
     if (proctorMakesAvailable) {
@@ -237,6 +243,7 @@ export default function AssignmentViewer() {
         attemptNumber: attemptNumber2,
         showCorrectness: showCorrectness2,
         paginate: paginate2,
+        showFinishButton: showFinishButton2,
         showFeedback: showFeedback2,
         showHints: showHints2,
         cid: cid2,
@@ -280,6 +287,7 @@ export default function AssignmentViewer() {
       attemptNumber: attemptNumber2,
       showCorrectness: showCorrectness2,
       paginate: paginate2,
+      showFinishButton: showFinishButton2,
       showFeedback: showFeedback2,
       showHints: showHints2,
       cid: cid2,
@@ -288,7 +296,7 @@ export default function AssignmentViewer() {
       baseNumberOfAttemptsAllowed: baseNumberOfAttemptsAllowed2
     });
     setStage("Ready");
-  }, [setSuppressMenus]);
+  }, [setSuppressMenus, effectivePermissions]);
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId2) {
     if (hash && hash !== "#page1") {
       navigate(search, {replace: true});
@@ -403,30 +411,37 @@ export default function AssignmentViewer() {
       if (baseNumberOfAttemptsAllowed > 1) {
         attemptNumberPhrase = " and the number of available attempts";
       }
-      cidChangedAlert = /* @__PURE__ */ React.createElement("div", {
-        style: {border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}
-      }, "A new version of this activity is available. Do you want to start a new attempt using the new version? (This will reset the activity", attemptNumberPhrase, ".)", /* @__PURE__ */ React.createElement("div", {
-        style: {display: "flex", justifyContent: "center", padding: "5px"}
-      }, /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
-        onClick: incrementAttemptNumberAndAttemptsAllowed,
-        "data-test": "ConfirmNewVersion",
-        value: "Yes"
-      }), /* @__PURE__ */ React.createElement(Button, {
-        onClick: () => setCidChangedMessageOpen(false),
-        "data-test": "CancelNewVersion",
-        value: "No",
-        alert: true
-      }))));
+      cidChangedAlert = /* @__PURE__ */ React.createElement(Banner, {
+        type: "ACTION",
+        value: /* @__PURE__ */ React.createElement("div", {
+          style: {border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}
+        }, "A new version of this activity is available. Do you want to start a new attempt using the new version? (This will reset the activity", attemptNumberPhrase, ".)", /* @__PURE__ */ React.createElement("div", {
+          style: {display: "flex", justifyContent: "center", padding: "5px"}
+        }, /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
+          onClick: incrementAttemptNumberAndAttemptsAllowed,
+          "data-test": "ConfirmNewVersion",
+          value: "Yes"
+        }), /* @__PURE__ */ React.createElement(Button, {
+          onClick: () => setCidChangedMessageOpen(false),
+          "data-test": "CancelNewVersion",
+          value: "No",
+          alert: true
+        }))))
+      });
     } else {
-      cidChangedAlert = /* @__PURE__ */ React.createElement("div", {
-        style: {marginLeft: "1px", marginRight: "5px", marginBottom: "5px"}
-      }, /* @__PURE__ */ React.createElement(ActionButton, {
-        onClick: () => setCidChangedMessageOpen(true),
-        "data-test": "NewVersionAvailable",
-        value: "New version available!"
-      }));
+      cidChangedAlert = /* @__PURE__ */ React.createElement(Banner, {
+        type: "ACTION",
+        value: /* @__PURE__ */ React.createElement("div", {
+          style: {marginLeft: "1px", marginRight: "5px"}
+        }, /* @__PURE__ */ React.createElement(ActionButton, {
+          onClick: () => setCidChangedMessageOpen(true),
+          "data-test": "NewVersionAvailable",
+          value: "New version available!"
+        }))
+      });
     }
   }
+  const allowLoadAndSave = effectivePermissions.canViewUnassignedContent === "0";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, cidChangedAlert, /* @__PURE__ */ React.createElement(ActivityViewer, {
     key: `activityViewer${doenetId}`,
     cid,
@@ -437,11 +452,11 @@ export default function AssignmentViewer() {
       solutionDisplayMode,
       showFeedback,
       showHints,
-      allowLoadState: true,
-      allowSaveState: true,
-      allowLocalState: true,
-      allowSaveSubmissions: true,
-      allowSaveEvents: true
+      allowLoadState: allowLoadAndSave,
+      allowSaveState: allowLoadAndSave,
+      allowLocalState: allowLoadAndSave,
+      allowSaveSubmissions: allowLoadAndSave,
+      allowSaveEvents: allowLoadAndSave
     },
     attemptNumber,
     requestedVariantIndex,
@@ -449,6 +464,7 @@ export default function AssignmentViewer() {
     updateAttemptNumber: setRecoilAttemptNumber,
     pageChangedCallback: pageChanged,
     paginate,
+    showFinishButton,
     cidChangedCallback: () => setCidChanged(true)
   }));
 }

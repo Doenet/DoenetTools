@@ -20,6 +20,7 @@ import {
   ShowCorrectness,
   ShowCreditAchieved,
   Paginate,
+  ShowFinishButton,
   ShowDoenetMLSource,
   ShowFeedback,
   ShowHints,
@@ -184,7 +185,7 @@ export default function SelectedActivity() {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
-    "data-test": "Edit Activity",
+    "data-test": "View Activity",
     value: "View Activity",
     onClick: () => {
       setPageToolView({
@@ -257,6 +258,8 @@ export function AssignmentSettings({doenetId, courseId}) {
     }), /* @__PURE__ */ React.createElement(ShowCreditAchieved, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(Paginate, {
+      ...sharedProps
+    }), /* @__PURE__ */ React.createElement(ShowFinishButton, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(ProctorMakesAvailable, {
       ...sharedProps

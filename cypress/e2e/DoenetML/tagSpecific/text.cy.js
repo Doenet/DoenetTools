@@ -88,6 +88,24 @@ describe('Text Tag Tests', function () {
 
   })
 
+  it('text does not force composite replacement, even in boolean', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean>
+      <text>$nothing</text> = <text></text>
+    </boolean>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_boolean1').should('have.text', 'true')
+
+  })
+
 
 })
 

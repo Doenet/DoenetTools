@@ -8,12 +8,18 @@ export function returnLabelStateVariableDefinitions() {
       shadowSource: {
         dependencyType: "shadowSource",
         variableNames: ["componentNameAndShadowSourceNames"],
+      },
+      unlinkedCopySource: {
+        dependencyType: "unlinkedCopySource",
+        variableNames: ["componentNameAndShadowSourceNames"],
       }
     }),
     definition({ dependencyValues, componentName }) {
       let componentNameAndShadowSourceNames = [componentName];
       if (dependencyValues.shadowSource?.stateValues.componentNameAndShadowSourceNames) {
         componentNameAndShadowSourceNames.push(...dependencyValues.shadowSource.stateValues.componentNameAndShadowSourceNames)
+      } else if (dependencyValues.unlinkedCopySource?.stateValues.componentNameAndShadowSourceNames) {
+        componentNameAndShadowSourceNames.push(...dependencyValues.unlinkedCopySource.stateValues.componentNameAndShadowSourceNames)
       }
       return { setValue: { componentNameAndShadowSourceNames } }
     }

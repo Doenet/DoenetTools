@@ -744,14 +744,14 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.log("don't display initial conditions");
-    cy.get('#\\/showic_input').click();
+    cy.get('#\\/showic').click();
     cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=x')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=x')
     })
 
     cy.log("display initial conditions again");
-    cy.get('#\\/showic_input').click();
+    cy.get('#\\/showic').click();
     cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(0)=1')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')

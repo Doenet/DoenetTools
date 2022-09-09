@@ -3,6 +3,7 @@
 
 describe('Credit achieved menu tests', function () {
   const userId = "cyuserId";
+  const studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
   const doenetId = "activity1id";
@@ -18,14 +19,15 @@ describe('Credit achieved menu tests', function () {
     // cy.clearAllOfAUsersActivities({userId})
     cy.signin({ userId });
     cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.createCourse({ userId, courseId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
+    cy.createCourse({ userId, courseId, studentUserId });
   })
   beforeEach(() => {
     cy.signin({ userId });
     cy.clearIndexedDB();
     cy.clearAllOfAUsersActivities({ userId })
+    cy.clearAllOfAUsersActivities({ userId: studentUserId })
   })
-
 
   Cypress.on('uncaught:exception', (err, runnable) => {
     // returning false here prevents Cypress from
@@ -50,7 +52,10 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#\\/_problem1_title').should('have.text', 'Problem 1')
 
@@ -98,7 +103,10 @@ const doenetML4 = `<p>No questions here, either</p>`;
 
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
 
@@ -198,7 +206,9 @@ const doenetML4 = `
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
 
@@ -292,7 +302,9 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
 
@@ -380,7 +392,10 @@ const doenetML3 = `
 
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
-    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
     cy.get('#page2\\/_problem1_title').should('not.exist')
@@ -479,7 +494,9 @@ const doenetML3 = `
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.get('[data-test="View Assigned Activity"]').click();
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
 

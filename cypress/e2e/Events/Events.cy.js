@@ -3,24 +3,26 @@
 
 describe('doenet events test', function () {
   const userId = "cyuserId";
+  const studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
 
-  before(()=>{
+  before(() => {
     // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({userId});
-    cy.clearAllOfAUsersCoursesAndItems({userId});
-    cy.createCourse({userId,courseId});
+    cy.signin({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
+    cy.createCourse({ userId, courseId, studentUserId });
   })
   beforeEach(() => {
-    cy.signin({userId});
+    cy.signin({ userId });
     cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({userId})
+    cy.clearAllOfAUsersActivities({ userId })
+    cy.clearAllOfAUsersActivities({ userId: studentUserId })
     cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId});
     cy.clearEvents({doenetId})
-    
   })
 
 
@@ -44,7 +46,11 @@ it('make sure events are recorded in general',()=>{
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
   cy.get('[data-test="toast"]').contains('Activity Assigned');
-  
+
+  cy.wait(1000)
+
+  cy.signin({userId: studentUserId})
+
   cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
   //Interact with content
   cy.log("Enter a correct answer in")

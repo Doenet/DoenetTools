@@ -3178,14 +3178,14 @@ describe('Select Tag Tests', function () {
       cy.get(`#\\/_p1`).should('have.text', `${c}, `)
       cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
 
-      cy.get('#\\/h1_input').click();
-      cy.get('#\\/h2_input').click();
+      cy.get('#\\/h1').click();
+      cy.get('#\\/h2').click();
 
       cy.get(`#\\/_p1`).should('have.text', `, ${d}`)
       cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
 
-      cy.get('#\\/h1_input').click();
-      cy.get('#\\/h2_input').click();
+      cy.get('#\\/h1').click();
+      cy.get('#\\/h2').click();
 
       cy.get(`#\\/_p1`).should('have.text', `${c}, `)
       cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)

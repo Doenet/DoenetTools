@@ -68,8 +68,8 @@ Cypress.Commands.add("clearAllOfAUsersActivities", ({userId}) => {
     // })
 });
 
-Cypress.Commands.add("createCourse", ({userId,courseId}) => {
-  cy.request('POST', `/cyapi/cypressCreateCourse.php`, {userId,courseId})
+Cypress.Commands.add("createCourse", ({userId,courseId,studentUserId}) => {
+  cy.request('POST', `/cyapi/cypressCreateCourse.php`, {userId,courseId,studentUserId})
     // .then((resp)=>{
     //   cy.log(resp.body)
     // })

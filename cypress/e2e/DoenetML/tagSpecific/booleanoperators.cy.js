@@ -33,7 +33,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check the box')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/_not1').should('have.text', "false");
@@ -150,7 +150,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 1')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
     cy.get('#\\/bv1').should('have.text', "true");
     cy.get('#\\/_and1').should('have.text', "false");
     cy.get('#\\/_and2').should('have.text', "false");
@@ -169,7 +169,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 2')
-    cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/_booleaninput2').click();
     cy.get('#\\/bv2').should('have.text', "true");
     cy.get('#\\/_and1').should('have.text', "false");
     cy.get('#\\/_and2').should('have.text', "false");
@@ -188,7 +188,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 3')
-    cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/_booleaninput3').click();
     cy.get('#\\/bv3').should('have.text', "true");
     cy.get('#\\/_and1').should('have.text', "true");
     cy.get('#\\/_and2').should('have.text', "true");
@@ -258,7 +258,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 1')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
     cy.get('#\\/bv1').should('have.text', "true");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
@@ -277,7 +277,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 2')
-    cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/_booleaninput2').click();
     cy.get('#\\/bv2').should('have.text', "true");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
@@ -296,7 +296,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 3')
-    cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/_booleaninput3').click();
     cy.get('#\\/bv3').should('have.text', "true");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
@@ -315,7 +315,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 1')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
     cy.get('#\\/bv1').should('have.text', "false");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
@@ -334,7 +334,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 2')
-    cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/_booleaninput2').click();
     cy.get('#\\/bv2').should('have.text', "false");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
@@ -353,7 +353,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 3')
-    cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/_booleaninput3').click();
     cy.get('#\\/bv3').should('have.text', "false");
     cy.get('#\\/_or1').should('have.text', "false");
     cy.get('#\\/_or2').should('have.text', "true");
@@ -424,7 +424,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 1')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
     cy.get('#\\/bv1').should('have.text', "true");
     cy.get('#\\/_xor1').should('have.text', "true");
     cy.get('#\\/_xor2').should('have.text', "false");
@@ -443,7 +443,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 2')
-    cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/_booleaninput2').click();
     cy.get('#\\/bv2').should('have.text', "true");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "false");
@@ -462,7 +462,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 3')
-    cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/_booleaninput3').click();
     cy.get('#\\/bv3').should('have.text', "true");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "false");
@@ -481,7 +481,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 1')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
     cy.get('#\\/bv1').should('have.text', "false");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "false");
@@ -500,7 +500,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 2')
-    cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/_booleaninput2').click();
     cy.get('#\\/bv2').should('have.text', "false");
     cy.get('#\\/_xor1').should('have.text', "true");
     cy.get('#\\/_xor2').should('have.text', "false");
@@ -519,7 +519,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 3')
-    cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/_booleaninput3').click();
     cy.get('#\\/bv3').should('have.text', "false");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "true");
@@ -565,7 +565,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box to show point')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
     cy.get('#\\/bv1').should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

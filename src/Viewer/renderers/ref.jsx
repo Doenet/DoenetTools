@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
-import { scrollableContainerAtom } from '../ActivityViewer';
+import { scrollableContainerAtom } from '../PageViewer';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function Ref(props) {
@@ -53,7 +53,7 @@ export default React.memo(function Ref(props) {
       }
       url = `/public?${url}`
     } else {
-      url = `/course?tool=assignment&${url}`
+      url = `?tool=assignment&${url}`
     }
 
     haveValidTarget = true;
@@ -114,7 +114,7 @@ export default React.memo(function Ref(props) {
 
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = { fromLink: true }
-        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer[scrollAttribute], enumerable: true });
+        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer?.[scrollAttribute], enumerable: true });
         return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
       }
     } else {

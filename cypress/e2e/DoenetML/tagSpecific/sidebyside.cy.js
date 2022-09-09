@@ -565,7 +565,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
       // since value of m2a doesn't get changed, can't use it to determine how long to wait
       // use boolean input to check that core has responded to that
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkSingleColumnSbs({
@@ -635,7 +635,7 @@ describe('SideBySide Tag Tests', function () {
       cy.log(`invalid valign ignored`)
       cy.get("#\\/v1_input").clear().type("invalid{enter}");
       // since no change, use booleaninput to wait for core
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'false');
 
 
@@ -857,7 +857,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`ignore invalid valign`)
       cy.get("#\\/v1_input").clear().type("green{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkSingleColumnSbs({
@@ -967,7 +967,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`ignore invalid valign`)
       cy.get("#\\/v1_input").clear().type("green{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkSingleColumnSbs({
@@ -1074,7 +1074,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`ignore invalid valign`)
       cy.get("#\\/v1_input").clear().type("green{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkSingleColumnSbs({
@@ -1299,7 +1299,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`invalid valign ignored`)
       cy.get("#\\/v2_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkTwoColumnSbs({
@@ -1562,7 +1562,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`invalid valign ignored`)
       cy.get("#\\/v1_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkTwoColumnSbs({
@@ -1707,7 +1707,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`invalid valign ignored`)
       cy.get("#\\/v2_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkTwoColumnSbs({
@@ -1877,7 +1877,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`invalid valign ignored`)
       cy.get("#\\/v2_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkTwoColumnSbs({
@@ -2109,7 +2109,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`invalid valign ignored`)
       cy.get("#\\/v3_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkFourColumnSbs({
@@ -3021,7 +3021,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`valign of sbsg ignores invalid`)
       cy.get("#\\/v1g_input").clear().type("banana{enter}");
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       checkSingleColumnSbs({

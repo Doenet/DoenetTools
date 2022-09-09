@@ -288,7 +288,7 @@ describe('CallAction Tag Tests', function () {
     cy.get('#\\/deletePoint_button').click();
 
     // since nothing happens, we wait for core to respond to booleaninput
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/b').should('have.text', 'true');
 
     cy.get('#\\/p1').should('contain.text', '(1,2)');

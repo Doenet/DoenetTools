@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
-import PageViewer from './PageViewer';
+import PageViewer, { scrollableContainerAtom } from './PageViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
@@ -22,10 +22,6 @@ export const saveStateToDBTimerIdAtom = atom({
   default: null
 })
 
-export const scrollableContainerAtom = atom({
-  key: "scollParentAtom",
-  default: null
-})
 
 export const currentPageAtom = atom({
   key: "currentPageAtom",
@@ -62,8 +58,12 @@ export default function ActivityViewer(props) {
     requestedVariantIndex: null
   })
 
+  const attemptNumberRef = useRef(null);
+  attemptNumberRef.current = attemptNumber;
 
   const [cid, setCid] = useState(null);
+  const cidRef = useRef(null);
+  cidRef.current = cid;
 
   const activityDefinitionDoenetML = useRef(null);
 
@@ -71,8 +71,13 @@ export default function ActivityViewer(props) {
 
 
   const [variantIndex, setVariantIndex] = useState(null);
+  const variantIndexRef = useRef(null);
+  variantIndexRef.current = variantIndex;
 
   const [stage, setStage] = useState('initial');
+  const stageRef = useRef(null);
+  stageRef.current = stage;
+
   const settingUp = useRef(true);
 
   const [activityContentChanged, setActivityContentChanged] = useState(false);
@@ -106,6 +111,7 @@ export default function ActivityViewer(props) {
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
   const pageAtPreviousSave = useRef(null);
+  const pageAtPreviousSaveToDatabase = useRef(null);
 
 
   const [pageInfo, setPageInfo] = useState({
@@ -738,23 +744,26 @@ export default function ActivityViewer(props) {
     }
 
 
-    if ((stage !== "saving" && !overrideStage) || currentPage === pageAtPreviousSave.current) {
+    if ((stageRef.current !== "saving" && !overrideStage)
+      || (!overrideThrottle && currentPageRef.current === pageAtPreviousSave.current)
+      || (overrideThrottle && currentPageRef.current === pageAtPreviousSaveToDatabase.current)
+    ) {
       // haven't gotten a save event from page or no change to be saved
       return;
     }
 
-    pageAtPreviousSave.current = currentPage;
+    pageAtPreviousSave.current = currentPageRef.current;
 
     let saveId = nanoid();
 
     if (props.flags.allowLocalState) {
       idb_set(
-        `${props.doenetId}|${attemptNumber}|${cid}`,
+        `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}`,
         {
           activityInfo: activityInfo.current,
-          activityState: { currentPage },
+          activityState: { currentPage: currentPageRef.current },
           saveId,
-          variantIndex,
+          variantIndex: variantIndexRef.current,
         }
       )
     }
@@ -765,11 +774,11 @@ export default function ActivityViewer(props) {
 
 
     activityStateToBeSavedToDatabase.current = {
-      cid: cid,
+      cid: cidRef.current,
       activityInfo: activityInfoString.current,
-      activityState: JSON.stringify({ currentPage }),
-      variantIndex,
-      attemptNumber: attemptNumber,
+      activityState: JSON.stringify({ currentPage: currentPageRef.current }),
+      variantIndex: variantIndexRef.current,
+      attemptNumber: attemptNumberRef.current,
       doenetId: props.doenetId,
       saveId,
       serverSaveId: serverSaveId.current,
@@ -810,6 +819,8 @@ export default function ActivityViewer(props) {
 
 
     changesToBeSaved.current = false;
+    pageAtPreviousSaveToDatabase.current = currentPageRef.current;
+
 
     // check for changes again after 60 seconds
     let newTimeoutId = setTimeout(() => {
@@ -863,7 +874,7 @@ export default function ActivityViewer(props) {
 
     if (props.flags.allowLocalState) {
       idb_set(
-        `${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`,
+        `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}|ServerSaveId`,
         data.saveId
       )
     }
@@ -872,7 +883,7 @@ export default function ActivityViewer(props) {
 
       // if a new attempt number was generated,
       // then we reset the activity to the new state
-      if (attemptNumber !== Number(data.attemptNumber)) {
+      if (attemptNumberRef.current !== Number(data.attemptNumber)) {
 
         resetActivity({
           changedOnDevice: data.device,
@@ -880,7 +891,7 @@ export default function ActivityViewer(props) {
           newAttemptNumber: Number(data.attemptNumber),
         })
 
-      } else if (cid !== data.cid) {
+      } else if (cidRef.current !== data.cid) {
 
         // if the cid changed without the attemptNumber changing, something went wrong
         if (props.setIsInErrorState) {
@@ -1076,8 +1087,7 @@ export default function ActivityViewer(props) {
       return newRenderedPages;
     })
 
-
-    if (newRenderedPages.length === nPages && newRenderedPages.every(x => x)) {
+    if (newRenderedPages?.length === nPages && newRenderedPages.every(x => x)) {
       allPagesRendered.current = true;
     }
 
@@ -1230,73 +1240,75 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
+  if (order) {
+    for (let [ind, page] of order.entries()) {
 
-  for (let [ind, page] of order.entries()) {
 
-
-    let thisPageIsActive = false;
-    if (props.paginate) {
-      if (ind === currentPage - 1) {
-        // the current page is always active
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
-        // if the current page already has core created, activate next page
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1]
-        && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
-        && ind === currentPage - 2
-      ) {
-        // if current page and page after current page (if exists) already have current page
-        // activate previous page
-        thisPageIsActive = true;
+      let thisPageIsActive = false;
+      if (props.paginate) {
+        if (ind === currentPage - 1) {
+          // the current page is always active
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
+          // if the current page already has core created, activate next page
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1]
+          && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
+          && ind === currentPage - 2
+        ) {
+          // if current page and page after current page (if exists) already have current page
+          // activate previous page
+          thisPageIsActive = true;
+        }
+      } else {
+        // pageIsActive is used only if not paginated
+        thisPageIsActive = pageInfo.pageIsActive[ind];
       }
-    } else {
-      // pageIsActive is used only if not paginated
-      thisPageIsActive = pageInfo.pageIsActive[ind];
-    }
 
-    let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
+      let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
 
-    let pageViewer = <PageViewer
-      userId={props.userId}
-      doenetId={props.doenetId}
-      activityCid={cid}
-      cid={page.cid}
-      doenetML={page.doenetML}
-      pageNumber={(ind + 1).toString()}
-      previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
-      pageIsActive={thisPageIsActive}
-      pageIsCurrent={ind === currentPage - 1}
-      itemNumber={ind + 1}
-      attemptNumber={attemptNumber}
-      flags={flags}
-      activityVariantIndex={variantIndex}
-      requestedVariantIndex={variantsByPage[ind]}
-      unbundledCore={props.unbundledCore}
-      updateCreditAchievedCallback={props.updateCreditAchievedCallback}
-      setIsInErrorState={props.setIsInErrorState}
-      updateAttemptNumber={props.updateAttemptNumber}
-      saveStateCallback={receivedSaveFromPage}
-      updateDataOnContentChange={props.updateDataOnContentChange}
-      coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
-      renderersInitializedCallback={() => pageRenderedCallback(ind)}
-      hideWhenNotCurrent={props.paginate}
-      prefixForIds={prefixForIds}
-    />
+      let pageViewer = <PageViewer
+        userId={props.userId}
+        doenetId={props.doenetId}
+        activityCid={cid}
+        cid={page.cid}
+        doenetML={page.doenetML}
+        pageNumber={(ind + 1).toString()}
+        previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
+        pageIsActive={thisPageIsActive}
+        pageIsCurrent={ind === currentPage - 1}
+        itemNumber={ind + 1}
+        attemptNumber={attemptNumber}
+        snapshotOnly={props.snapshotOnly}
+        flags={flags}
+        activityVariantIndex={variantIndex}
+        requestedVariantIndex={variantsByPage[ind]}
+        unbundledCore={props.unbundledCore}
+        updateCreditAchievedCallback={props.updateCreditAchievedCallback}
+        setIsInErrorState={props.setIsInErrorState}
+        updateAttemptNumber={props.updateAttemptNumber}
+        saveStateCallback={receivedSaveFromPage}
+        updateDataOnContentChange={props.updateDataOnContentChange}
+        coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
+        renderersInitializedCallback={() => pageRenderedCallback(ind)}
+        hideWhenNotCurrent={props.paginate}
+        prefixForIds={prefixForIds}
+      />
 
-    if (!props.paginate) {
-      pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
-        <div>
+      if (!props.paginate) {
+        pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
+          <div>
+            {pageViewer}
+          </div>
+        </VisibilitySensor>
+      }
+
+      pages.push(
+        <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
           {pageViewer}
         </div>
-      </VisibilitySensor>
+      )
     }
-
-    pages.push(
-      <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
-        {pageViewer}
-      </div>
-    )
   }
 
 
