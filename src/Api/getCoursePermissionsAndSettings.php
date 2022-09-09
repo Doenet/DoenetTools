@@ -5,26 +5,22 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
-include "db_connection.php";
-include "permissionsAndSettingsFunction.php";
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
+include 'defineDBAndUserAndCourseInfo.php';
+
 
 $success = TRUE;
 $message = "";
 
 
-if ($userId == ''){
+if ($userId == '' && $examUserId == ''){
   $success = FALSE;
   $message = "You need to be signed in to view courses.";
 }
 
-//TODO: Check canViewCourse
-$permissionsAndSettings = [];
-
-if ($success){
-  $permissionsAndSettings = getpermissionsAndSettings($conn,$userId);
+//Don't let them see the settings as they aren't public info
+if (!$success){
+  $permissionsAndSettings = [];
 }
 
 $response_arr = array(
