@@ -1545,9 +1545,11 @@ export default class Core {
       // Hence, we run the definition of all variables with the extra flag
       // justUpdatedForNewComponent = true
       let comp = this._components[componentName]
-      for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
-        if (comp.state[vName]) {
-          await this.getStateVariableValue({ component: comp, stateVariable: vName, justUpdatedForNewComponent: true })
+      if (comp.constructor.processWhenJustUpdatedForNewComponent) {
+        for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
+          if (comp.state[vName]) {
+            await this.getStateVariableValue({ component: comp, stateVariable: vName, justUpdatedForNewComponent: true })
+          }
         }
       }
 
