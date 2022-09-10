@@ -327,6 +327,217 @@ describe('Video Tag Tests', function () {
 
   })
 
+  it('video segmentsWatched watched merged, youtube video', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p>An introduction to Doenet.</p>
+  <video youtube="tJ4ypc5L6uU" name="v" />
+
+  <p>State: <copy prop="state" target="v" assignNames="state" /></p>
+  <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
+  <p>Duration: <copy prop="duration" target="v" assignNames="duration" /></p>
+  <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" /></p>
+
+  <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
+
+  <p>Control with actions:
+  <callAction target="v" actionName="playVideo" name="playAction"><label>Play action</label></callAction>
+  <callAction target="v" actionName="pauseVideo" name="pauseAction"><label>Pause action</label></callAction>
+  </p>
+  `}, "*");
+    });
+
+
+    cy.get('#\\/v').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', widthsBySize["full"] - 4).and('be.lte', widthsBySize["full"] + 1)
+
+    cy.get('#\\/v').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "0")
+    cy.get('#\\/secondsWatched').should('have.text', '0')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched).eq(null);
+    })
+
+
+    cy.log('play')
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').should("have.text", "playing")
+    cy.get('#\\/time').should("have.text", "1")
+
+    cy.log('pause')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "1")
+    cy.get('#\\/secondsWatched').should('have.text', '1')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(1);
+      let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
+      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[1]).gt(0.5).lt(1.5)
+    })
+
+
+    cy.log('play')
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').should("have.text", "playing")
+    cy.get('#\\/time').should("have.text", "3")
+
+    cy.log('pause')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "3")
+    cy.get('#\\/secondsWatched').should('have.text', '3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(1);
+      let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
+      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[1]).gt(2.5).lt(3.5)
+    })
+
+
+    cy.log('play')
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').should("have.text", "playing")
+    cy.get('#\\/time').should("have.text", "4")
+
+    cy.log('pause')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "4")
+    cy.get('#\\/secondsWatched').should('have.text', '4')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(1);
+      let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
+      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[1]).gt(3.5).lt(4.5)
+    })
+
+    cy.log('cue to first minute')
+    cy.get('#\\/mi textarea').type("{end}{backspace}60{enter}", { force: true });
+    cy.get('#\\/time').should("have.text", "60")
+
+
+    cy.log('play')
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').should("have.text", "playing")
+    cy.get('#\\/time').should("have.text", "62")
+
+    cy.log('pause')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "62")
+    cy.get('#\\/secondsWatched').should('have.text', '6')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
+      let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
+      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[1]).gt(3.5).lt(4.5)
+      theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
+      expect(theSegment[0]).gt(59.5).lt(60.5)
+      expect(theSegment[1]).gt(61.5).lt(62.5)
+    })
+
+    cy.log('play')
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').should("have.text", "playing")
+    cy.get('#\\/time').should("have.text", "63")
+
+    cy.log('pause')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "63")
+    cy.get('#\\/secondsWatched').should('have.text', '7')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
+      let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
+      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[1]).gt(3.5).lt(4.5)
+      theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
+      expect(theSegment[0]).gt(59.5).lt(60.5)
+      expect(theSegment[1]).gt(62.5).lt(63.5)
+    })
+
+
+    cy.log('replay part of beginning')
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
+    cy.get('#\\/time').should("have.text", "1")
+
+    cy.log('play')
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').should("have.text", "playing")
+    cy.get('#\\/time').should("have.text", "3")
+
+    cy.log('pause')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "3")
+    cy.get('#\\/secondsWatched').should('have.text', '7')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
+      let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
+      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[1]).gt(3.5).lt(4.5)
+      theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
+      expect(theSegment[0]).gt(59.5).lt(60.5)
+      expect(theSegment[1]).gt(62.5).lt(63.5)
+    })
+
+    cy.log('play')
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').should("have.text", "playing")
+    cy.get('#\\/time').should("have.text", "5")
+
+    cy.log('pause')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').should("have.text", "stopped")
+    cy.get('#\\/time').should("have.text", "5")
+    cy.get('#\\/secondsWatched').contains(/8|9/)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
+      let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
+      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[1]).gt(4.5).lt(5.5)
+      theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
+      expect(theSegment[0]).gt(59.5).lt(60.5)
+      expect(theSegment[1]).gt(62.5).lt(63.5)
+    })
+
+  })
+
 
 })
 
