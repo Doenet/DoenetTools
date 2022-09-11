@@ -170,7 +170,7 @@ export default React.memo(function Answer(props) {
       </>
     }
 
-    return <span id={id} style={{ display: "flex" }}>
+    return <span id={id}>
       <a name={id} />
       {inputChildrenToRender}
       {checkworkComponent}
