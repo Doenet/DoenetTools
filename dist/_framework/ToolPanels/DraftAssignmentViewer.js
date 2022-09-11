@@ -29,6 +29,7 @@ export default function DraftAssignmentViewer() {
   const [
     {
       showCorrectness,
+      paginate,
       showFeedback,
       showHints,
       cid,
@@ -67,6 +68,7 @@ export default function DraftAssignmentViewer() {
     dueDate,
     showCorrectness: showCorrectness2,
     showCreditAchievedMenu,
+    paginate: paginate2,
     showFeedback: showFeedback2,
     showHints: showHints2,
     showSolution,
@@ -97,6 +99,7 @@ export default function DraftAssignmentViewer() {
     allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map((x) => x + 1);
     setLoad({
       showCorrectness: showCorrectness2,
+      paginate: paginate2,
       showFeedback: showFeedback2,
       showHints: showHints2,
       cid: cid2,
@@ -132,6 +135,7 @@ export default function DraftAssignmentViewer() {
       allowSaveEvents: false
     },
     requestedVariantIndex,
-    generatedVariantCallback: variantCallback
+    generatedVariantCallback: variantCallback,
+    paginate
   }));
 }

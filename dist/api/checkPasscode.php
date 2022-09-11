@@ -11,41 +11,17 @@ $success = TRUE;
 $message = '';
 
 // $doenetId =  mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);  
-$driveId =  mysqli_real_escape_string($conn,$_REQUEST["driveId"]);  
+$courseId =  mysqli_real_escape_string($conn,$_REQUEST["courseId"]);  
 $code =  mysqli_real_escape_string($conn,$_REQUEST["code"]);  
 
-if ($driveId == ""){
+if ($courseId == ""){
     $success = FALSE;
-    $message = 'Internal Error: missing driveId';
+    $message = 'Internal Error: missing courseId';
 }elseif ($code == ""){
     $success = FALSE;
     $message = 'Internal Error: missing code';
 }
 
-//Find driveId
-// if ($success && $driveId == ''){
-//     $sql = "
-//     SELECT driveId,
-//     isReleased
-//     FROM drive_content
-//     WHERE doenetId = '$doenetId'
-//     ";
-//     $result = $conn->query($sql);
-//     if ($result->num_rows > 0) {
-//         $row = $result->fetch_assoc();
-//         $driveId = $row['driveId'];
-//         $isReleased = $row['isReleased'];
-
-//         if ($isReleased == 0){
-//             $success = FALSE;
-//             $message = "Exam is not released"; 
-//         }
-//     }else{
-//         $success = FALSE;
-//         $message = "There is a problem with the doenetId";
-//     }
-    
-// }
 
 //TODO: Check browser key
 
@@ -53,8 +29,8 @@ if ($driveId == ""){
 if ($success){
     $sql = "
     SELECT examPasscode
-    FROM drive
-    WHERE driveId='$driveId'
+    FROM course
+    WHERE courseId='$courseId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -66,7 +42,7 @@ if ($success){
         }
     }else{
         $success = FALSE;
-        $message = "There is a problem with the driveId";
+        $message = "There is a problem with the courseId";
     }
 }
 
@@ -74,22 +50,29 @@ if ($success){
 if ($success){
     $sql = "
     SELECT 
-    firstName,
-    lastName,
-    empId,
-    userId
-    FROM enrollment
-    WHERE driveId='$driveId'
-    AND withdrew = '0'
+    u.firstName,
+    u.lastName,
+    cu.externalId,
+    cu.timeLimitMultiplier,
+    cu.userId
+    FROM course_user AS cu
+    INNER JOIN course_role AS cr
+    ON cr.roleId = cu.roleId AND cr.courseId = cu.courseId
+    INNER JOIN user AS u
+    ON cu.userId = u.userId
+    WHERE cu.courseId='$courseId'
+    AND cu.withdrew = '0'
+    AND cr.isIncludedInGradebook = '1'
     ";
     $result = $conn->query($sql);
-    $learners = array();
+    $learners = [];
     while($row = $result->fetch_assoc()) {
         $learner = array(
             "firstName"=>$row['firstName'],
             "lastName"=>$row['lastName'],
-            "studentId"=>$row['empId'],
+            "studentId"=>$row['externalId'],
             "userId"=>$row['userId'],
+            "timeLimitMultiplier"=>$row['timeLimitMultiplier'],
 
         );
         array_push($learners,$learner);
@@ -97,15 +80,6 @@ if ($success){
 
     foreach ($learners AS &$learner){
         $userId = $learner['userId'];
-
-        $sql = "
-        SELECT timeLimitMultiplier 
-        FROM course_user 
-        WHERE userId = '$userId'
-        ";
-        $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
-        $learner['timeLimit_multiplier'] = $row['timeLimitMultiplier'];
 
         $sql = "
         SELECT uaa.doenetId,
@@ -128,18 +102,7 @@ if ($success){
         }
         $learner['exam_to_date'] = $exam_to_date;
 
-        $exam_to_timeLimit = array();
-        foreach ($doenetIds AS &$doenetId){
-            $sql = "
-            SELECT timeLimit
-            FROM assignment
-            WHERE doenetId = '$doenetId'
-            ";
-            $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
-        $exam_to_timeLimit[$doenetId] = $row['timeLimit'];
-        }
-        $learner['exam_to_timeLimit'] = $exam_to_timeLimit;
+
         
     }
 
@@ -148,26 +111,28 @@ if ($success){
 //Get Exam data
 if ($success){
     $sql = "
-    SELECT dc.label AS label,
-    dc.doenetId AS doenetId
-    FROM drive_content AS dc
-    LEFT JOIN assignment AS a
-    ON a.doenetId = dc.doenetId
-    WHERE dc.driveId = '$driveId'
-    AND dc.isReleased = '1'
+    SELECT cc.label,
+    cc.doenetId,
+    a.timeLimit
+    FROM course_content AS cc
+    INNER JOIN assignment AS a
+    ON a.doenetId = cc.doenetId
+    WHERE cc.courseId = '$courseId'
+    AND cc.isAssigned = '1'
+    AND cc.isGloballyAssigned = '1'
     AND a.proctorMakesAvailable = '1'
-    
-    ORDER BY dc.label
+    AND cc.isDeleted = '0'
+    ORDER BY cc.label
     ";
     // AND (a.assignedDate <= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.assignedDate IS NULL)
     // AND (a.dueDate >= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.dueDate IS NULL)
-
     $result = $conn->query($sql);
     $exams = array();
     while($row = $result->fetch_assoc()) {
         $exam = array(
             "label"=>$row['label'],
             "doenetId"=>$row['doenetId'],
+            "timeLimit"=>$row['timeLimit']
         );
         array_push($exams,$exam);
     }

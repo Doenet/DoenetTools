@@ -30,6 +30,7 @@ export default class Core {
     requestedVariant, requestedVariantIndex,
     previousComponentTypeCounts = {},
     flags = {},
+    prerender = false,
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
     // console.time('core');
@@ -102,7 +103,8 @@ export default class Core {
       saveTimerId: null,
       suspendDelay: 3 * 60000,
       suspendTimerId: null,
-      suspended: false
+      suspended: false,
+      documentHasBeenVisible: false
     }
 
     // console.time('serialize doenetML');
@@ -110,6 +112,7 @@ export default class Core {
     this.parameterStack = new ParameterStack();
 
     this.parameterStack.parameters.rngClass = prng_alea;
+    this.parameterStack.parameters.prerender = prerender;
 
     this.initialized = false;
     this.initializedPromiseResolves = [];
@@ -321,6 +324,12 @@ export default class Core {
 
     this.messageViewerReady()
 
+    this.resolveInitialized();
+
+
+  }
+
+  async onDocumentFirstVisible() {
     this.requestRecordEvent({
       verb: "experienced",
       object: {
@@ -329,12 +338,36 @@ export default class Core {
       },
     })
 
-    this.resolveInitialized();
+    let foundAnswerDescendant = function (comp) {
+      let sDecs = comp.stateValues.scoredDescendants;
+      if (Array.isArray(sDecs)) {
+        for (let dec of sDecs) {
+          if (dec.componentType === "answer") {
+            return true;
+          } else {
+            if (foundAnswerDescendant(dec)) {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    }
+
+    await this.document.stateValues.scoredDescendants;  // to evaluated scoredDescendants
+
+    if (!foundAnswerDescendant(this.document)) {
+      // if there are no scored items in document
+      // then treat the first view of the document as a submission
+      // so that will get credit for viewing the page
+      this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
+    }
+
 
     setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
 
   }
-
 
   async messageViewerReady() {
 
@@ -467,6 +500,18 @@ export default class Core {
       }]
 
       this.postUpdateRenderers({ updateInstructions }, true)
+
+      // if have some states to force update
+      // then post these updates without setting init to true
+      if (results.rendererStatesToForceUpdate.length > 0) {
+        let updateInstructions = [{
+          instructionType: "updateRendererStates",
+          rendererStatesToUpdate: results.rendererStatesToForceUpdate,
+        }]
+        this.postUpdateRenderers({ updateInstructions })
+
+      }
+
 
       await this.processStateVariableTriggers();
 
@@ -707,12 +752,22 @@ export default class Core {
 
 
     let rendererStatesToUpdate = [];
+    let rendererStatesToForceUpdate = [];
 
     let stateValuesForRenderer = {};
+    let stateValuesForRendererAlwaysUpdate = {};
+    let alwaysUpdate = false;
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
         stateValuesForRenderer[stateVariable] = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
+        if (component.state[stateVariable].alwaysUpdateRenderer) {
+          alwaysUpdate = true;
+        }
       }
+    }
+
+    if (alwaysUpdate) {
+      stateValuesForRendererAlwaysUpdate = stateValuesForRenderer;
     }
 
     let componentName = component.componentName;
@@ -727,6 +782,7 @@ export default class Core {
             let results = await this.initializeRenderedComponentInstruction(child);
             childrenToRender.push(results.componentToRender);
             rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
+            rendererStatesToForceUpdate.push(...results.rendererStatesToForceUpdate);
 
           } else if (typeof child === "string") {
             childrenToRender.push(child);
@@ -742,6 +798,12 @@ export default class Core {
       stateValues: stateValuesForRenderer,
       childrenInstructions: childrenToRender,
     });
+    if (Object.keys(stateValuesForRendererAlwaysUpdate).length > 0) {
+      rendererStatesToForceUpdate.push({
+        componentName,
+        stateValues: stateValuesForRendererAlwaysUpdate,
+      });
+    }
 
     // this.renderState is used to save the renderer state to the database
     this.rendererState[componentName] = {
@@ -783,7 +845,7 @@ export default class Core {
     };
 
 
-    return { componentToRender: rendererInstructions, rendererStatesToUpdate };
+    return { componentToRender: rendererInstructions, rendererStatesToUpdate, rendererStatesToForceUpdate };
   }
 
   deleteFromComponentsToRender({
@@ -1427,6 +1489,10 @@ export default class Core {
       }
     }
 
+    if(serializedComponent.unlinkedCopySource) {
+      newComponent.unlinkedCopySource = serializedComponent.unlinkedCopySource;
+    }
+
 
     await this.deriveChildResultsFromDefiningChildren({ parent: newComponent, expandComposites: false });
 
@@ -1752,11 +1818,14 @@ export default class Core {
 
     }
 
-    return { success: false }
+    // lastly try to match with afterAdapters set to true
+    return this.findChildGroupNoAdapters(
+      childType, parentClass, true
+    )
 
   }
 
-  findChildGroupNoAdapters(componentType, parentClass) {
+  findChildGroupNoAdapters(componentType, parentClass, afterAdapters = false) {
     if (parentClass.childGroupOfComponentType[componentType]) {
       return {
         success: true,
@@ -1770,6 +1839,9 @@ export default class Core {
           inheritedComponentType: componentType,
           baseComponentType: typeFromGroup
         })) {
+          if (group.matchAfterAdapters && !afterAdapters) {
+            continue;
+          }
           // don't match composites to the base component
           // so that they will expand
           if (!(typeFromGroup === "_base" &&
@@ -5490,7 +5562,7 @@ export default class Core {
           essentialArray = component.essentialState[essentialVarName] = [];
         }
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
 
@@ -5519,7 +5591,7 @@ export default class Core {
       } else {
         component.essentialState[essentialVarName] = result.setEssentialValue[varName];
 
-        // Since setting an essential value during a defintion,
+        // Since setting an essential value during a definition,
         // we also add the value to essentialValuesSavedInDefinition
         // so that it will be saved to the database during the next update
         this.essentialValuesSavedInDefinition[component.componentName][varName]
@@ -8076,7 +8148,9 @@ export default class Core {
       return this.resolveAction({ actionId: args.actionId });
     }
 
-    console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+    if (component) {
+      console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+    }
 
   }
 
@@ -8183,7 +8257,9 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false }) {
+  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
+    doNotSave = false
+  }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
@@ -8364,23 +8440,11 @@ export default class Core {
       }
 
 
-      let componentsSubmitted = [];
-      for (let itemSubmission of recordItemSubmissions) {
-        componentsSubmitted.push({
-          componentName: itemSubmission.submittedComponent,
-          response: itemSubmission.response,
-          responseText: itemSubmission.responseText,
-          creditAchieved: itemSubmission.creditAchieved,
-          subitemNumber: itemSubmission.itemNumber
-        });
-      }
-
-
       // if itemNumber is zero, it means this document wasn't given any weight,
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ pageCreditAchieved, componentsSubmitted });
+        this.saveSubmissions({ pageCreditAchieved });
       }
 
     }
@@ -8432,13 +8496,15 @@ export default class Core {
 
     }
 
+    if (!doNotSave) {
 
-    clearTimeout(this.savePageStateTimeoutID);
+      clearTimeout(this.savePageStateTimeoutID);
 
-    //Debounce the save to database
-    this.savePageStateTimeoutID = setTimeout(() => {
-      this.saveState();
-    }, 1000);
+      //Debounce the save to database
+      this.savePageStateTimeoutID = setTimeout(() => {
+        this.saveState();
+      }, 1000);
+    }
 
 
 
@@ -8532,6 +8598,12 @@ export default class Core {
     if (isVisible) {
       if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
         this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
+      }
+      if (componentName === this.documentName) {
+        if (!this.visibilityInfo.documentHasBeenVisible) {
+          this.visibilityInfo.documentHasBeenVisible = true;
+          this.onDocumentFirstVisible();
+        }
       }
     } else {
       let begin = this.visibilityInfo.componentsCurrentlyVisible[componentName]
@@ -9620,7 +9692,9 @@ export default class Core {
 
   }
 
-  async saveState() {
+  async saveState(overrideThrottle = false) {
+
+    this.savePageStateTimeoutID = null;
 
     if (!this.flags.allowSaveState && !this.flags.allowLocalState) {
       return;
@@ -9668,18 +9742,25 @@ export default class Core {
     this.changesToBeSaved = true;
 
     // if not currently in throttle, save changes to database
-    this.saveChangesToDatabase();
+    this.saveChangesToDatabase(overrideThrottle);
 
 
   }
 
-  async saveChangesToDatabase() {
+  async saveChangesToDatabase(overrideThrottle) {
     // throttle save to database at 60 seconds
 
-    if (this.saveStateToDBTimerId !== null || !this.changesToBeSaved) {
+    if (!this.changesToBeSaved) {
       return;
     }
 
+    if (this.saveStateToDBTimerId !== null) {
+      if (overrideThrottle) {
+        clearTimeout(this.saveStateToDBTimerId);
+      } else {
+        return;
+      }
+    }
 
     this.changesToBeSaved = false;
 
@@ -9687,8 +9768,7 @@ export default class Core {
     this.saveStateToDBTimerId = setTimeout(() => {
       this.saveStateToDBTimerId = null;
       this.saveChangesToDatabase();
-    }, 10000);
-    // }, 60000);
+    }, 60000);
 
 
     // TODO: find out how to test if not online
@@ -9804,7 +9884,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ pageCreditAchieved, componentsSubmitted }) {
+  saveSubmissions({ pageCreditAchieved }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9815,7 +9895,6 @@ export default class Core {
       attemptNumber: this.attemptNumber,
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
-      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
 
     console.log('payload for save credit for item', payload);
@@ -9849,7 +9928,13 @@ export default class Core {
           postMessage({
             messageType: "updateCreditAchieved",
             coreId: this.coreId,
-            args: data
+            args: {
+              creditByItem: data.creditByItem.map(Number),
+              creditForAssignment: Number(data.creditForAssignment),
+              creditForAttempt: Number(data.creditForAttempt),
+              showCorrectness: data.showCorrectness === "1",
+              totalPointsOrPercent: Number(data.totalPointsOrPercent),
+            }
           })
 
           //TODO: need type warning (red but doesn't hang around)
@@ -10032,6 +10117,11 @@ export default class Core {
 
     // TODO: check if student was actually allowed to view solution.
 
+    // if not allowed to save submissions, then allow view but don't record it
+    if (!this.flags.allowSaveSubmissions) {
+      return { allowView: true, message: "", scoredComponent: this.documentName };
+    }
+
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {
         doenetId: this.doenetId,
@@ -10111,8 +10201,8 @@ export default class Core {
     }
   }
 
-  handleNavigatingToHash(hash) {
-    let component = this._components[hash];
+  handleNavigatingToComponent(componentName) {
+    let component = this._components[componentName];
     if (component?.actions?.revealSection) {
       this.requestAction({ componentName: component.componentName, actionName: "revealSection" })
     }
@@ -10121,6 +10211,18 @@ export default class Core {
   async terminate() {
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
+
+    if (this.savePageStateTimeoutID) {
+      // if in debounce to save page to local storage
+      // then immediate save to local storage
+      // and override timeout to save to database
+      clearTimeout(this.savePageStateTimeoutID);
+      await this.saveState(true);
+    } else {
+      // else override timeout to save any pending changes to database
+      await this.saveChangesToDatabase(true)
+    }
+
   }
 
 }

@@ -183,7 +183,7 @@ describe('MatchesPattern Tag Tests', function () {
     for (let expr in desiredResults) {
       cy.log(`trying: ${expr}`)
       cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       b = !b;
       cy.get('#\\/b').should('have.text', b.toString()) // to make sure change occured
 
@@ -333,7 +333,7 @@ describe('MatchesPattern Tag Tests', function () {
     for (let expr in desiredResults) {
       cy.log(`trying: ${expr}`)
       cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       b = !b;
       cy.get('#\\/b').should('have.text', b.toString()) // to make sure change occured
 
@@ -473,7 +473,7 @@ describe('MatchesPattern Tag Tests', function () {
     for (let expr in desiredResults) {
       cy.log(`trying: ${expr}`)
       cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       b = !b;
       cy.get('#\\/b').should('have.text', b.toString()) // to make sure change occured
 

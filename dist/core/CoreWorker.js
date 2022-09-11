@@ -33,8 +33,14 @@ onmessage = function (e) {
     core.terminate().then(() => {
       postMessage({ messageType: "terminated" });
     })
-  } else if(e.data.messageType === "navigatingToHash") {
-    core.handleNavigatingToHash(e.data.args.hash)
+  } else if (e.data.messageType === "navigatingToComponent") {
+    core.handleNavigatingToComponent(e.data.args.componentName)
+  } else if (e.data.messageType === "submitAllAnswers") {
+    core.requestAction({
+      componentName: core.documentName,
+      actionName: "submitAllAnswers",
+      args: {}
+    })
   }
 }
 

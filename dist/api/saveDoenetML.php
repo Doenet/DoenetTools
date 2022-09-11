@@ -62,8 +62,18 @@ if ($success) {
     $result = $conn->query($sql);
 
     if ($result->num_rows < 1) {
-        $success = false;
-        $message = "Invalid page";
+        //Try link pages
+        $sql = "SELECT doenetId
+        FROM link_pages
+        WHERE courseId='$courseId' AND doenetId='$pageId'
+        ";
+
+        $result = $conn->query($sql);
+        if ($result->num_rows < 1) {
+
+            $success = false;
+            $message = "Invalid page";
+        }
     }
 }
 

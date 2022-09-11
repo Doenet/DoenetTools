@@ -20,7 +20,7 @@ const LogoButton = styled.button`
   // border-radius: 50%;
   // margin-top: 8px;
   // margin-left: 90px;
-  cursor: pointer;
+  cursor: ${(props) => props.hasLink ? "pointer" : "default"};
   &:focus {
     outline: 2px solid var(--canvastext);
     outline-offset: 2px;
@@ -30,9 +30,14 @@ export const profileToolViewStashAtom = atom({
   key: "profileToolViewStashAtom",
   default: {}
 });
-export default function Logo(props) {
+export default function Logo({hasLink = true}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   return /* @__PURE__ */ React.createElement(LogoButton, {
-    onClick: () => setPageToolView({page: "home", tool: "", view: ""})
+    hasLink,
+    onClick: () => {
+      if (hasLink) {
+        setPageToolView({page: "home", tool: "", view: ""});
+      }
+    }
   });
 }

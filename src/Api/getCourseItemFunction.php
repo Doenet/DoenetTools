@@ -46,13 +46,14 @@ function getCourseItemFunction($conn,$type,$doenetId){
     a.showCorrectness,
     a.showCreditAchievedMenu,
     a.paginate,
+    a.showFinishButton,
     a.showFeedback,
     a.showHints,
     a.showSolution,
     a.proctorMakesAvailable,
     a.numberOfAttemptsAllowed
     FROM course_content AS cc
-    INNER JOIN
+    LEFT JOIN
     assignment AS a
     ON cc.doenetId=a.doenetId
     WHERE cc.doenetId = '$doenetId'
@@ -81,6 +82,7 @@ function getCourseItemFunction($conn,$type,$doenetId){
       "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
       "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
       "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
+      "showFinishButton" => nullishCoalesce($row['showFinishButton'], '1') == '1' ? true : false,
       "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
       );
     

@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
 export default React.memo(function RegionBetweenCurveXAxis(props) {
-  let {name, SVs} = useDoenetRender(props);
+  let {name, id, SVs} = useDoenetRender(props);
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let curveJXG = useRef(null);
@@ -24,9 +24,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       fillColor = SVs.selectedStyle.lineColor;
     }
     let jsxAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + 7,
       fillColor,
@@ -93,13 +93,13 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }));
   }
   if (SVs.hidden) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }));
 });

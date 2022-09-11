@@ -3,21 +3,26 @@
 
 describe('doenetEditor test', function () {
   const userId = "cyuserId";
+  const studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
 
-  before(()=>{
+  const headerPixels = 40;
+
+  before(() => {
     // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({userId});
-    cy.clearAllOfAUsersCoursesAndItems({userId});
-    cy.createCourse({userId,courseId});
+    cy.signin({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
+    cy.createCourse({ userId, courseId, studentUserId });
   })
   beforeEach(() => {
-    cy.signin({userId});
+    cy.signin({ userId });
     cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({userId})
+    cy.clearAllOfAUsersActivities({ userId })
+    cy.clearAllOfAUsersActivities({ userId: studentUserId })
     cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId});
     cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
   })
@@ -144,7 +149,17 @@ it('Assign two-page activity',()=>{
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
   cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-  cy.get('[data-test="View Assigned Activity"]').click();
+
+          
+  cy.signin({userId: studentUserId})
+
+  cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+  cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+  cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+  cy.get('[data-test="View Activity"]').click();
 
   cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
 
@@ -319,4 +334,149 @@ it('animation stopped when click update button',()=>{
   
 })
   
+
+it('Repeatedly select same internal link', () => {
+  const doenetMLString = `
+<section>
+<p><ref name="toAside" target="aside">Link to aside</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<aside name="aside">
+  <title name="asideTitle">The aside</title>
+  <p name="insideAside">Content in aside</p>
+</aside>
+
+<lorem generateParagraphs="8" />
+
+</section>`
+
+  cy.get('.cm-content').type(doenetMLString)
+  cy.get('[data-test="Viewer Update Button"]').click();
+
+  cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+  cy.url().should('match', /[^#]/)
+
+  cy.get('[data-test="Main Panel"]').then(el => {
+    expect(el.scrollTop()).eq(0);
+  })
+
+
+  cy.get('#\\/asideTitle').should('have.text', 'The aside');
+  cy.get('#\\/insideAside').should('not.exist');
+
+
+  cy.get('#\\/toAside').click();
+  cy.url().should('match', /#\/aside$/)
+
+  cy.get('#\\/aside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+  cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+
+  cy.get('#\\/asideTitle').click();
+  cy.get('#\\/insideAside').should('not.exist');
+
+  cy.get('#\\/toAside').scrollIntoView();
+
+  cy.get('#\\/toAside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+  cy.url().should('match', /#\/aside$/)
+
+
+  cy.get('#\\/toAside').click();
+  cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+
+  cy.url().should('match', /#\/aside$/)
+
+  cy.get('#\\/aside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+
+})
+
+
+it('Navigating back remembers position where clicked internal link', () => {
+  const doenetMLString = `
+<section>
+<lorem generateParagraphs="8" />
+
+<p><ref name="toAside" target="aside">Link to aside</ref></p>
+
+<lorem generateParagraphs="8" />
+
+<aside name="aside">
+  <title name="asideTitle">The aside</title>
+  <p name="insideAside">Content in aside</p>
+</aside>
+
+<lorem generateParagraphs="8" />
+
+<p name="bottom">bottom</p>
+
+<lorem generateParagraphs="8" />
+
+</section>`
+
+  cy.get('.cm-content').type(doenetMLString)
+  cy.get('[data-test="Viewer Update Button"]').click();
+
+  cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+  cy.url().should('match', /[^#]/)
+
+  cy.get('[data-test="Main Panel"]').then(el => {
+    expect(el.scrollTop()).eq(0);
+  })
+
+
+  cy.get('#\\/asideTitle').should('have.text', 'The aside');
+  cy.get('#\\/insideAside').should('not.exist');
+
+  cy.get('#\\/toAside').scrollIntoView();
+
+  cy.get('#\\/toAside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+  cy.get('#\\/toAside').click();
+  cy.url().should('match', /#\/aside$/)
+
+  cy.get('#\\/aside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+  cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+
+
+  cy.get('#\\/bottom').scrollIntoView();
+
+  cy.get('#\\/bottom').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+  cy.go("back");
+  cy.url().should('match', /[^#]/)
+
+  cy.get('#\\/toAside').then(el => {
+    let rect = el[0].getBoundingClientRect();
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+  })
+
+
+
+})
+
 })

@@ -31,12 +31,12 @@ $message = 'Internal Error: missing code';
 if ($success){
   //Check if code is legit
   $sql = "
-  SELECT dc.doenetId
-FROM drive_content AS dc
-LEFT JOIN drive AS d
-ON dc.driveId = d.driveId
-WHERE dc.doenetId = '$doenetId'
-AND d.examPasscode ='$code'
+  SELECT cc.doenetId
+FROM course_content AS cc
+INNER JOIN course AS c
+ON cc.courseId = c.courseId
+WHERE cc.doenetId = '$doenetId'
+AND c.examPasscode ='$code'
   ";
   $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -63,27 +63,9 @@ if ($success){
   $row = $result->fetch_assoc();
   $attemptNumber = $row['attemptNumber'] + 1;
 
-  //Find cid
-  $sql = "
-  SELECT cid
-  FROM content 
-  WHERE removedFlag = 0
-  AND doenetId = '$doenetId'
-  AND isReleased = '1'
-";
 
-$result = $conn->query($sql); 
-$versions_arr = array();         
-if ($result->num_rows > 0){
-$row = $result->fetch_assoc();
-$cid = $row['cid'];
-}else{
-  $success = FALSE;
-  $message = 'Internal Error: not released!'; 
-}
-  if ($success){
     $sql = "INSERT INTO user_assignment_attempt
-    SET cid='$cid', doenetId='$doenetId', userId='$userId', attemptNumber='$attemptNumber'
+    SET doenetId='$doenetId', userId='$userId', attemptNumber='$attemptNumber'
     ";
     $result = $conn->query($sql);
 
@@ -103,8 +85,6 @@ $cid = $row['cid'];
       ";
       $result = $conn->query($sql);
     }
-  }
-
 
   
 }

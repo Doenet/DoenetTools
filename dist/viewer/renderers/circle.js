@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function Circle(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   Circle.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let circleJXG = useRef(null);
@@ -30,9 +30,9 @@ export default React.memo(function Circle(props) {
     }
     let fixed = !SVs.draggable || SVs.fixed;
     var jsxCircleAttributes = {
-      name: SVs.label,
+      name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -57,7 +57,7 @@ export default React.memo(function Circle(props) {
     if (SVs.labelHasLatex) {
       jsxCircleAttributes.label.useMathJax = true;
     }
-    if (SVs.showLabel && SVs.label !== "") {
+    if (SVs.showLabel && SVs.labelForGraph !== "") {
       if (SVs.applyStyleToLabel) {
         jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
       } else {
@@ -105,7 +105,7 @@ export default React.memo(function Circle(props) {
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
     });
-    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
     return newCircleJXG;
   }
   function calculateCenterPosition(e) {
@@ -128,7 +128,7 @@ export default React.memo(function Circle(props) {
       deleteCircleJXG();
     } else {
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = circleJXG.current;
+        board.itemsRenderedLowQuality[id] = circleJXG.current;
       }
       let validCoords = SVs.numericalCenter.every((x) => Number.isFinite(x));
       circleJXG.current.center.coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalCenter]);
@@ -174,8 +174,8 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
         circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
       }
-      circleJXG.current.name = SVs.label;
-      let withlabel = SVs.showLabel && SVs.label !== "";
+      circleJXG.current.name = SVs.labelForGraph;
+      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         circleJXG.current.setAttribute({withlabel});
         previousWithLabel.current = withlabel;
@@ -198,7 +198,7 @@ export default React.memo(function Circle(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   });
 });
 function styleToDash(style) {

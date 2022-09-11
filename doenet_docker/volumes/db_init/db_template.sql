@@ -88,6 +88,7 @@ CREATE TABLE `assignment` (
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
   `paginate` tinyint(1) NOT NULL DEFAULT '1',
+  `showFinishButton` tinyint(1) NOT NULL DEFAULT '0',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
@@ -100,7 +101,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0);
+INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0,0);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -270,6 +271,7 @@ CREATE TABLE `course` (
   `defaultRoleId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `browserExamKeys` text COLLATE utf8_unicode_ci,
+  `lastSeenExamKey` varchar(66) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -638,10 +640,14 @@ CREATE TABLE `initial_renderer_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `variantIndex` int(11) NOT NULL,
+  `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
+  `solutionDisplayMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'button',
+  `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
+  `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `rendererState` mediumtext COLLATE utf8_unicode_ci,
   `coreInfo` mediumtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `cid-variantIndex` (`cid`,`variantIndex`)
+  UNIQUE KEY `uniquekey` (`cid`,`variantIndex`,`showCorrectness`,`solutionDisplayMode`,`showFeedback`,`showHints`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1004,4 +1010,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-27 20:36:32
+-- Dump completed on 2022-08-31 19:45:34

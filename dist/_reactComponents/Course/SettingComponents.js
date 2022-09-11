@@ -537,7 +537,7 @@ export function MangeRoles({courseId}) {
         handleSave();
       }
     }
-  })), /* @__PURE__ */ React.createElement(CollapseSection, {
+  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(CollapseSection, {
     width: "menu",
     title: "Delete Role",
     collapsed: true

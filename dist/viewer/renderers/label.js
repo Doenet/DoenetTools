@@ -2,15 +2,15 @@ import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default React.memo(function Label(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+  let {name, id, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
   if (children.length > 0) {
     return /* @__PURE__ */ React.createElement("span", {
-      id: name
+      id
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), children);
   } else {
     let label = SVs.value;
@@ -22,9 +22,9 @@ export default React.memo(function Label(props) {
       }, label);
     }
     return /* @__PURE__ */ React.createElement("span", {
-      id: name
+      id
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), label);
   }
 });

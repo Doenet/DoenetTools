@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
-
-// Moved most of checkWorkStyle styling into Button
-const Button = styled.button`
+ // Moved most of checkWorkStyle styling into Button
+ const Button = styled.button `
   position: relative;
   height: 24px;
   display: inline-block;
@@ -16,7 +15,7 @@ const Button = styled.button`
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 10px 12px 10px;
+  margin: 0px 12px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -72,7 +71,6 @@ export default React.memo(function Answer(props) {
     let checkWorkStyle = {
       cursor: 'pointer',
     }
-
 
     if (disabled) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");

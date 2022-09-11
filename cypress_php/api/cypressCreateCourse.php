@@ -13,12 +13,17 @@ $message = "";
 $success = TRUE;
 $courseId = $_POST['courseId'];
 $userId = $_POST['userId'];
+$studentUserId = $_POST['studentUserId'];
 // $emailaddress = 'devuser@example.com';
 // $userId = 'devuserid';
 
 if ($userId == ''){
     $userId = 'cyuserid';
 }
+if ($studentUserId == ''){
+  $studentUserId = 'cyStudentUserId';
+}
+
 
 $sql = "
 INSERT INTO course
@@ -73,13 +78,32 @@ $result = $conn->query($sql);
 //Don't create another if it already exists 
 if ($result->num_rows == 0) {
 
-    $roleLabels = '["Owner"]';
-
     $sql = "
     INSERT INTO course_user
     (userId,courseId,roleId)
     VALUES
     ('$userId','$courseId','ownerRoleId')
+    ";
+
+    $result = $conn->query($sql); 
+}
+
+$sql = "
+SELECT userId
+FROM course_user
+WHERE userId = '$studentUserId'
+AND courseId = '$courseId'
+";
+$result = $conn->query($sql); 
+
+//Don't create another if it already exists 
+if ($result->num_rows == 0) {
+
+    $sql = "
+    INSERT INTO course_user
+    (userId,courseId,roleId)
+    VALUES
+    ('$studentUserId','$courseId','studentRoleId')
     ";
 
     $result = $conn->query($sql); 

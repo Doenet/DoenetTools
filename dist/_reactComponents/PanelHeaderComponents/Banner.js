@@ -47,6 +47,17 @@ export default function Banner(props) {
   function clearBanner() {
     setBannerVisible("none");
   }
+  if (props.allowClose) {
+    container.closeButton = /* @__PURE__ */ React.createElement("button", {
+      "aria-label": "Close banner",
+      style: closeButton,
+      onClick: () => {
+        clearBanner();
+      }
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faTimes
+    }));
+  }
   return /* @__PURE__ */ React.createElement("div", {
     "aria-labelledby": "banner-text"
   }, /* @__PURE__ */ React.createElement("div", {
@@ -56,15 +67,7 @@ export default function Banner(props) {
   }, /* @__PURE__ */ React.createElement("div", {
     style: bannerText,
     id: "banner-text"
-  }, /* @__PURE__ */ React.createElement("strong", null, "Reminder:"), " Your assignment is due tomorrow. Please contact the instructor to request an extension. Here is some more text! I am trying out this banner to see how many words I can fit. Please contact the help desk if you need any assistance. They can be reached at 651-713-8393."), /* @__PURE__ */ React.createElement("button", {
-    "aria-label": "Close banner",
-    style: closeButton,
-    onClick: () => {
-      clearBanner();
-    }
-  }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: faTimes
-  })))), /* @__PURE__ */ React.createElement("div", {
+  }, props.value), container.closeButton)), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "5px"}
   }));
 }

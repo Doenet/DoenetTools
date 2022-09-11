@@ -159,7 +159,7 @@ function formatDueDate(dt, classTimes) {
     return null;
   }
 
-  //End of Class and Before Class
+  //End of Class, In Class, and Before Class
   let dtDOTW = dt.getDay();
   for (let classTime of classTimes) {
     //Only process if it's the right day of the week
@@ -170,7 +170,9 @@ function formatDueDate(dt, classTimes) {
       let classEndDT = new Date(dt.getTime());
       const [endhours, endminutes] = classTime.endTime.split(':');
       classEndDT.setHours(endhours, endminutes, 0, 0);
-      if (dt >= classStartDT && dt < classEndDT) {
+      if (dt.getTime() == classStartDT.getTime()) {
+        return 'Before Class';
+      } else if (dt > classStartDT && dt < classEndDT) {
         return 'In Class';
       } else if (dt.getTime() == classEndDT.getTime()) {
         return 'End of Class';
@@ -197,7 +199,6 @@ function buildRows({
   rowLabel = '',
   assignments,
   clickCallback,
-  doubleClickCallback,
   completedArray,
   setCompletedArray,
   classTimes,
@@ -210,6 +211,7 @@ function buildRows({
     let isFirstRow = true;
     let numberOfVisibleRows = 0;
     for (let assignment of assignments) {
+      // console.log("buildRows assignment",assignment)
       let checked = completedArray.includes(assignment.doenetId);
 
       if (showCompleted || (!showCompleted && !checked)) {
@@ -257,21 +259,11 @@ function buildRows({
       let oneClick = (e) => {
         e.stopPropagation();
         clickCallback({
-          driveId: assignment.driveId,
-          itemId: assignment.itemId,
-          driveInstanceId: 'currentContent',
-          type: assignment.itemType,
-          instructionType: 'one item',
-          parentFolderId: assignment.parentFolderId,
+          courseId: assignment.courseId,
+          doenetId: assignment.doenetId
         });
       };
-      let path = `${assignment.driveId}:${assignment.parentFolderId}:${assignment.itemId}:${assignment.itemType}`;
-      let doubleClick = () =>
-        doubleClickCallback({
-          type: assignment.itemType,
-          doenetId: assignment.doenetId,
-          path,
-        });
+ 
       let checked = completedArray.includes(assignment.doenetId);
 
       if (!showCompleted && checked) {
@@ -327,9 +319,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {assignment.label}
             </td>
@@ -338,9 +330,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayAssignedDate}
             </td>
@@ -349,9 +341,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayDueDate}
             </td>
@@ -375,9 +367,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {assignment.label}
             </td>
@@ -386,9 +378,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayAssignedDate}
             </td>
@@ -397,9 +389,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayDueDate}
             </td>
@@ -470,45 +462,13 @@ export default function Next7Days({ courseId }) {
   });
 
   const clickCallback = useRecoilCallback(
-    ({ set }) =>
-      (info) => {
-        switch (info.instructionType) {
-          case 'one item':
-            set(selectedMenuPanelAtom, `Selected${info.type}`);
-            break;
-          case 'range to item':
-          case 'add item':
-            set(selectedMenuPanelAtom, `SelectedMulti`);
-            break;
-          case 'clear all':
-            set(selectedMenuPanelAtom, null);
-            break;
-          default:
-            throw new Error('NavigationPanel found invalid select instruction');
-        }
-        set(
-          selectedDriveItems({
-            driveId: info.driveId,
-            driveInstanceId: info.driveInstanceId,
-            itemId: info.itemId,
-          }),
-          {
-            instructionType: info.instructionType,
-            parentFolderId: info.parentFolderId,
-          },
-        );
-        set(selectedDriveAtom, info.driveId);
-      },
-    [],
-  );
-
-  const doubleClickCallback = useRecoilCallback(
-    ({ snapshot }) =>
-      async ({ type, doenetId, path }) => {
+    ({ set, snapshot }) =>
+      async (info) => {
+        const courseId = info.courseId;
+        const doenetId = info.doenetId;
         let { canEditContent } = await snapshot.getPromise(
           effectivePermissionsByCourseId(courseId)
           );
-          
           
           //Note: need to send pageId
         if (canEditContent === '1') {
@@ -541,7 +501,7 @@ export default function Next7Days({ courseId }) {
      
         }
       },
-    [courseId, setPageToolView],
+    [],
   );
 
   if (!initialized && courseId !== '') {
@@ -588,7 +548,6 @@ export default function Next7Days({ courseId }) {
         rowLabel: pinnedName,
         assignments: pinnedArray,
         clickCallback,
-        doubleClickCallback,
         completedArray,
         setCompletedArray,
         classTimes,
@@ -618,7 +577,6 @@ export default function Next7Days({ courseId }) {
           rowLabel: 'Overdue',
           assignments: overdueArray,
           clickCallback,
-          doubleClickCallback,
           completedArray,
           setCompletedArray,
           classTimes,
@@ -671,7 +629,6 @@ export default function Next7Days({ courseId }) {
         dotw: dotwLabel[index],
         assignments: dayAssignments,
         clickCallback,
-        doubleClickCallback,
         completedArray,
         setCompletedArray,
         classTimes,

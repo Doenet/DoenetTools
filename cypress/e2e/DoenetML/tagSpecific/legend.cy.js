@@ -479,7 +479,7 @@ describe('Legend Tag Tests', function () {
     });
 
     cy.log('change displayClosedSwatches to true')
-    cy.get("#\\/closedSwatches_input").click();
+    cy.get("#\\/closedSwatches").click();
 
 
     cy.window().then(async (win) => {

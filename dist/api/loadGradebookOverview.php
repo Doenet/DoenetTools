@@ -1,76 +1,91 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include "db_connection.php";
+include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
-//TODO: Check if the user is the instructor in the course
+$jwtArray = include 'jwtArray.php';
+$requestorUserId = $jwtArray['userId'];
+$allUsers = true;
+$success = true;
+$message = '';
 
-if (!isset($_REQUEST["driveId"])) {
-    http_response_code(400);
-    echo "Database Retrieval Error: No course specified!";
-} else {
-    $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+if (!isset($_REQUEST['courseId'])) {
+    $success = false;
+    $message = 'Request error, missing courseId';
+}
 
-    $sql = "
-    SELECT role
-    FROM drive_user
-    WHERE driveId = '$driveId'
-    and userId = '$userId'
-    ";
+//Check permissions
+if ($success) {
+    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
-    $result = $conn->query($sql);  
-    $row = $result->fetch_assoc();
-    $role = $row['role'];
-    //Students should only see their own data
-    if ($role == 'Student'){
-        $sql = "
-        SELECT a.doenetId, ua.credit, ua.userId
-        FROM assignment AS a
-        JOIN user_assignment AS ua
-        ON a.doenetId = ua.doenetId
-        WHERE a.driveId = '$driveId'
-        AND ua.userId = '$userId'
-        ORDER BY a.dueDate
-        ";
-    }else{
-        $sql = "
-        SELECT a.doenetId, ua.credit, ua.userId
-        FROM assignment AS a
-        JOIN user_assignment AS ua
-        ON a.doenetId = ua.doenetId
-        WHERE a.driveId = '$driveId'
-        ORDER BY a.dueDate
-        ";
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
+
+    if ($requestorPermissions == false) {
+        $success = false;
+        $message = 'You are not authorized to view or modify grade data';
+    } elseif ($requestorPermissions['canViewAndModifyGrades'] != '1') {
+        $allUsers = false;
+        $message = 'You are only allowed to view your own data';
+    }
+}
+
+if ($success) {
+    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
+
+    if ($allUsers) {
+        $result = $conn->query(
+            "SELECT 
+                a.doenetId, 
+                ua.credit, 
+                ua.userId
+            FROM assignment AS a
+            JOIN user_assignment AS ua
+                ON a.doenetId = ua.doenetId
+            WHERE a.courseId = '$courseId'
+            ORDER BY a.dueDate"
+        );
+    } else {
+        $result = $conn->query(
+            "SELECT 
+                a.doenetId, 
+                ua.credit, 
+                ua.userId
+            FROM assignment AS a
+            JOIN user_assignment AS ua
+                ON a.doenetId = ua.doenetId
+            WHERE a.courseId = '$courseId'
+                AND ua.userId = '$requestorUserId'
+            ORDER BY a.dueDate"
+        );
     }
 
-    
-      
+    $response_arr = [];
 
-        $result = $conn->query($sql);  
-        $response_arr = array();
+    while ($row = $result->fetch_assoc()) {
+        array_push($response_arr, [
+            $row['doenetId'],
+            $row['credit'],
+            $row['userId'],
+        ]);
+    }
+}
+// set response code - 200 OK
+http_response_code(200);
 
-        while ($row = $result->fetch_assoc()) {
-            array_push($response_arr,
-                array(
-                    $row['doenetId'],
-                    $row['credit'],
-                    $row['userId']
-                )
-            );
-        }
-
-        // set response code - 200 OK
-        http_response_code(200);
-
-        // make it json format
-        echo json_encode($response_arr);
-    } 
+// make it json format
+echo json_encode([
+    'success' => $success,
+    'message' => $message,
+    'overviewData' => $response_arr,
+]);
 $conn->close();
 ?>
-           

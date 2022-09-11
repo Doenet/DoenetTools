@@ -23,7 +23,7 @@ import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGrou
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
 import {suppressMenusAtom} from "../NewToolRoot.js";
-import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import axios from "../../_snowpack/pkg/axios.js";
 export const processGradesAtom = atom({
   key: "processGradesAtom",
@@ -38,6 +38,7 @@ export const entriesGradesAtom = atom({
   default: []
 });
 const getUserId = (students, name) => {
+  console.log(students, name);
   for (let userId in students) {
     if (students[userId].firstName + " " + students[userId].lastName == name) {
       return userId;
@@ -188,20 +189,20 @@ function UploadChoices({doenetId, maxAttempts}) {
 export default function GradebookAssignmentView() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  let driveIdValue = useRecoilValue(searchParamAtomFamily("driveId"));
+  let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let students = useRecoilValueLoadable(studentData);
   let [process, setProcess] = useRecoilState(processGradesAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
-  let effectiveRole = useRecoilValue(effectiveRoleAtom);
+  let {canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   let assignments = useRecoilValueLoadable(assignmentData);
   useEffect(() => {
-    if (effectiveRole === "student") {
+    if (canViewAndModifyGrades === "1") {
       setSuppressMenus(["GradeUpload"]);
     } else {
       setSuppressMenus([]);
     }
-  }, [effectiveRole]);
+  }, [canViewAndModifyGrades, setSuppressMenus]);
   if (attempts.state !== "hasValue" || students.state !== "hasValue" || assignments.state !== "hasValue") {
     return null;
   }
@@ -236,16 +237,17 @@ export default function GradebookAssignmentView() {
       disableFilters: true,
       Cell: (row) => /* @__PURE__ */ React.createElement("a", {
         onClick: (e) => {
-          let name = row.cell.row.cells[0].value;
+          let name = row.cell.row.cells[0].value.props.children;
+          console.log(name);
           let userId = getUserId(students.contents, name);
           setPageToolView({
             page: "course",
             tool: "gradebookStudentAssignment",
             view: "",
-            params: {driveId: driveIdValue, doenetId, userId, attemptNumber: i, previousCrumb: "assignment"}
+            params: {courseId, doenetId, userId, attemptNumber: i, previousCrumb: "assignment"}
           });
         }
-      }, " ", row.value, " ")
+      }, row.value)
     });
   }
   assignmentsTable.headers.push({
@@ -258,10 +260,6 @@ export default function GradebookAssignmentView() {
   for (let userId in students.contents) {
     let firstName = students.contents[userId].firstName;
     let lastName = students.contents[userId].lastName;
-    let role = students.contents[userId].role;
-    if (role !== "Student") {
-      continue;
-    }
     let row = {};
     let name = firstName + " " + lastName;
     row["student"] = /* @__PURE__ */ React.createElement("a", {
@@ -270,10 +268,10 @@ export default function GradebookAssignmentView() {
           page: "course",
           tool: "gradebookStudentAssignment",
           view: "",
-          params: {driveId: driveIdValue, doenetId, userId, previousCrumb: "assignment"}
+          params: {courseId, doenetId, userId, previousCrumb: "assignment"}
         });
       }
-    }, " ", name, " ");
+    }, name);
     for (let i = 1; i <= maxAttempts; i++) {
       let attemptCredit = attempts.contents[userId]?.attempts[i];
       let pointsEarned = Math.round(attemptCredit * totalPossiblePoints * 100) / 100;

@@ -254,6 +254,78 @@ export default class Video extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.duration = {
+      hasEssential: true,
+      defaultValue: null,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { duration: true } }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setEssentialValue: "duration",
+          value: desiredStateVariableValues.duration
+        }]
+      })
+    }
+
+    stateVariableDefinitions.segmentsWatched = {
+      hasEssential: true,
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { segmentsWatched: true } }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setEssentialValue: "segmentsWatched",
+          value: desiredStateVariableValues.segmentsWatched
+        }]
+      })
+    }
+
+    stateVariableDefinitions.secondsWatched = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({
+        segmentsWatched: {
+          dependencyType: "stateVariable",
+          variableName: "segmentsWatched"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let secondsWatched = 0;
+        if (dependencyValues.segmentsWatched) {
+          secondsWatched = dependencyValues.segmentsWatched.reduce((a, c) => a + c[1] - c[0], 0);
+        }
+        return { setValue: { secondsWatched } }
+      }
+    }
+
+    stateVariableDefinitions.fractionWatched = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({
+        secondsWatched: {
+          dependencyType: "stateVariable",
+          variableName: "secondsWatched"
+        },
+        duration: {
+          dependencyType: "stateVariable",
+          variableName: "duration"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { fractionWatched: dependencyValues.secondsWatched / dependencyValues.duration } }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -279,11 +351,10 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "playing",
       }],
-      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
-  recordVideoWatched({ beginTime, endTime, duration, rates }) {
+  async recordVideoWatched({ beginTime, endTime, duration, rates }) {
     this.coreFunctions.requestRecordEvent({
       verb: "watched",
       object: {
@@ -297,6 +368,52 @@ export default class Video extends BlockComponent {
         rates
       }
     })
+
+    let previousSegments = await this.stateValues.segmentsWatched;
+    let segmentsWatched;
+    if (!previousSegments) {
+      segmentsWatched = [[beginTime, endTime]]
+    } else {
+      segmentsWatched = [];
+      let addedNew = false;
+
+      // if merge new segment with previous segments if it almost overlaps
+      // Note: include 0.2 buffer since there is variation in the timestamps youtube reports
+      // when pause and then continue
+      for (let [ind, seg] of previousSegments.entries()) {
+        if (endTime < seg[0] - 0.2) {
+          segmentsWatched.push([beginTime, endTime])
+          segmentsWatched.push(...previousSegments.slice(ind));
+          addedNew = true;
+          break;
+        } else if (beginTime > seg[1] + 0.2) {
+          segmentsWatched.push(seg);
+          continue;
+        }
+        // have overlap with segment
+        beginTime = Math.min(seg[0], beginTime);
+        endTime = Math.max(seg[1], endTime)
+      }
+
+      if (!addedNew) {
+        segmentsWatched.push([beginTime, endTime])
+      }
+    }
+
+
+    await this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "segmentsWatched",
+        value: segmentsWatched,
+      }],
+      canSkipUpdatingRenderer: true,
+    })
+
+    return await this.coreFunctions.triggerChainedActions({
+      componentName: this.componentName,
+    });
   }
 
   recordVideoPaused({ endTime, duration }) {
@@ -318,7 +435,6 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
-      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -353,7 +469,6 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
-      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -370,13 +485,19 @@ export default class Video extends BlockComponent {
   }
 
 
-  recordVideoReady() {
+  recordVideoReady({ duration }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "state",
         value: "stopped",
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "duration",
+        value: duration,
       }],
       doNotSave: true  // video actions don't count as changing page state
     })
@@ -390,7 +511,6 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "playing",
       }],
-      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -402,7 +522,6 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
-      doNotSave: true  // video actions don't count as changing page state
     })
   }
 
@@ -414,7 +533,6 @@ export default class Video extends BlockComponent {
         stateVariable: "time",
         value: time,
       }],
-      doNotSave: true  // video actions don't count as changing page state
     })
   }
 

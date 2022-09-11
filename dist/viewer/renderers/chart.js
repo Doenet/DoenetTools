@@ -1,10 +1,11 @@
 import React, {useEffect, useState, useRef, createContext} from "../../_snowpack/pkg/react.js";
 import {sizeToCSS} from "./utils/css.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import Plotly from "../../_snowpack/pkg/plotly.js-dist-min.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export const BoardContext = createContext();
 export default React.memo(function Chart(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -19,13 +20,42 @@ export default React.memo(function Chart(props) {
       });
     };
   }, []);
+  useEffect(() => {
+    if (SVs.dataFrame !== null) {
+      let colInds;
+      if (SVs.colInd !== null) {
+        colInds = [SVs.colInd];
+      } else {
+        colInds = SVs.dataFrame.columnTypes.map((v, i) => v === "number" ? i : null).filter((x) => x !== null);
+      }
+      let data = [];
+      for (let colInd of colInds) {
+        if (SVs.type === "box") {
+          data.push({
+            y: extractColumn(SVs.dataFrame.data, colInd),
+            type: "box",
+            name: SVs.dataFrame.columnNames[colInd]
+          });
+        } else {
+          data.push({
+            x: extractColumn(SVs.dataFrame.data, colInd),
+            type: "histogram",
+            name: SVs.dataFrame.columnNames[colInd]
+          });
+        }
+      }
+      Plotly.newPlot(name, {
+        data
+      });
+    }
+  }, []);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement(VisibilitySensor, {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("div", {
-    id: name
+    id
   })));
 });
 function extractColumn(data, colInd) {

@@ -1031,6 +1031,7 @@ export const useCourse = (courseId) => {
             showCorrectness: true,
             showCreditAchievedMenu: true,
             paginate: true,
+            showFinishButton: false,
             proctorMakesAvailable: false,
             pinnedAfterDate: null,
             pinnedUntilDate: null,
@@ -1704,7 +1705,7 @@ export const useCourse = (courseId) => {
 
         let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
 
-        console.log("activityDoenetML",activityDoenetML)
+        // console.log("activityDoenetML",activityDoenetML)
         try {
           let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId: activityDoenetId, isAssigned, activityDoenetML });
          
@@ -2041,51 +2042,141 @@ export const useCourse = (courseId) => {
         
   });
 
+  function replaceCollectionLinkInActivityContent({content,updateCollectionLink}){
+    let needleDoenetId = updateCollectionLink.doenetId;
+    let nextContent = [];
+    for (let item of content){
+      if (item?.type == 'order'){
+        let subContent = replaceCollectionLinkInActivityContent({content:item.content,updateCollectionLink})
+        let nextItem = {...item}
+        nextItem.content = subContent;
+        item = nextItem;
+      }else if (item?.doenetId == needleDoenetId){
+        item = updateCollectionLink;
+      }
+      nextContent.push(item);
+
+    }
+    return nextContent;
+  }
+
   const updateContentLinksToSources = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({collectionDoenetId = null, pages, failureCallback = defaultFailure}) => {
-
+      async ({collectionLinkObj, pages, failureCallback = defaultFailure}) => {
+        let timeOfLastUpdate = new Date(); //Only update the time when we copy over the changes
 
       //update pages to latest ones in the source collection
-      if (collectionDoenetId){
-        let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionDoenetId))
+      if (collectionLinkObj){
+        let sourceCollectionObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.collectionDoenetId))
         let collectionSourcePages = sourceCollectionObj.pages;
-        let sourcePagesOfPageLinks = []
+        let sourcePagesOfPageLinks = [];
+        let labels = []; 
         for (let doenetId of pages){
           let linkPageObj = await snapshot.getPromise(itemByDoenetId(doenetId))
           sourcePagesOfPageLinks.push(linkPageObj.sourcePageDoenetId);
         }
-        // TODO: toast new and deleted pages
+        // TODO: preview new and deleted pages before updating them
 
-        //TODO: create the new link pages
-        //TODO: delete the deleted pages
-        //TODO: update recoil for the activity, collection link and added page links
-        let newPages = collectionSourcePages.filter((doenetId)=>{
-          return !sourcePagesOfPageLinks.includes(doenetId);
-        })
-        // let newPages = [];
-        // for (let sourcePage of collectionSourcePages){
+        let newSourcePageDoenetIds = [];
+        for (let sourceDoenetId of collectionSourcePages){
+          if (!sourcePagesOfPageLinks.includes(sourceDoenetId)){
+            newSourcePageDoenetIds.push(sourceDoenetId);
+            let newSourceObj = await snapshot.getPromise(itemByDoenetId(sourceDoenetId))
+            labels.push(newSourceObj.label)
+          }
+        }
 
-        // }
-        let deletedPages = sourcePagesOfPageLinks.filter((doenetId)=>{
-          return !collectionSourcePages.includes(doenetId);
-        })
+        let pageLinksToDelete = [];
+        let sourcePagesWhichWereDeleted = [];
+        for (let [i,sourcePageLink] of Object.entries(sourcePagesOfPageLinks)){
+          if (!collectionSourcePages.includes(sourcePageLink)){
+            sourcePagesWhichWereDeleted.push(sourcePageLink);
+            pageLinksToDelete.push(pages[i])
+          }
+        }
+
+        let { data } = await axios.post('/api/updateCreateAndDeletePageLinks.php', {
+          courseId,
+          containingDoenetId:collectionLinkObj.containingDoenetId,
+          parentDoenetId:collectionLinkObj.doenetId,
+          sourceCollectionDoenetId:collectionLinkObj.collectionDoenetId,
+          newSourcePageDoenetIds,
+          pageLinksToDelete,
+          labels,
+        });
+        // console.log("createAndDeletePageLinks",data)
+
+        //recoil new page links
+        //Build sourceToPageLink as we go through
+        let sourceToPageLink = {}
+        for (let [i,newLinkPageDoenetId] of Object.entries(Object.keys(data.linkPageObjs))){
+          let newLinkPageObj = {...data.linkPageObjs[newLinkPageDoenetId]};
+          
+          newLinkPageObj.containingDoenetId = collectionLinkObj.containingDoenetId;
+          newLinkPageObj.doenetId = newLinkPageDoenetId;
+          newLinkPageObj.parentDoenetId = collectionLinkObj.doenetId;
+          newLinkPageObj.sourceCollectionDoenetId = collectionLinkObj.collectionDoenetId;
+          newLinkPageObj.label = labels[i];
+          newLinkPageObj.type = "pageLink";
+          newLinkPageObj.isSelected = false;
+          newLinkPageObj.timeOfLastUpdate = timeOfLastUpdate;
+          sourceToPageLink[newLinkPageObj.sourcePageDoenetId] = newLinkPageDoenetId; //need this to help update the collection link
+          set(itemByDoenetId(newLinkPageDoenetId),newLinkPageObj);
+        }
+
         let nextLinkPages = [];
         //Remove deleted pages from pages
         for (let [i,linkPageId] of Object.entries(pages)){
           const sourcePage = sourcePagesOfPageLinks[i];
           // console.log("link",linkPageId,"source",sourcePage)
-          if (!deletedPages.includes(sourcePage)){
+          if (!sourcePagesWhichWereDeleted.includes(sourcePage)){
             nextLinkPages.push(linkPageId);
+            sourceToPageLink[sourcePage] = linkPageId;
           }
         }
-        // console.log("newPages",newPages)
-        // console.log("deletedPages",deletedPages)
-        // console.log("nextLinkPages",nextLinkPages)
-        pages = nextLinkPages;
-      }
 
-      let timeOfLastUpdate = new Date(); //Only update the time when we copy over the changes
+        //recoil new collection link
+        let nextPagesByCollectionSource = []; 
+        for (let sourceDoenetId of collectionSourcePages){
+            nextPagesByCollectionSource.push(sourceToPageLink[sourceDoenetId])
+        }
+        let nextCollectionLinkObj = {...collectionLinkObj}
+        nextCollectionLinkObj.pagesByCollectionSource = {...collectionLinkObj.pagesByCollectionSource}
+        nextCollectionLinkObj.pagesByCollectionSource[collectionLinkObj.collectionDoenetId] = nextPagesByCollectionSource;
+        
+        //Remove deleted from manually filtered
+        let nextManuallyFilteredPages = [];
+        for (let manualPage of nextCollectionLinkObj.manuallyFilteredPages){
+          if (nextPagesByCollectionSource.includes(manualPage)){
+            nextManuallyFilteredPages.push(manualPage);
+          }
+        }
+        nextCollectionLinkObj.manuallyFilteredPages = [...nextManuallyFilteredPages];
+        //Set nextCollectionLinkObj.pages
+        if (nextCollectionLinkObj.isManuallyFiltered){
+          nextCollectionLinkObj.pages = [...nextManuallyFilteredPages];
+        }else{
+          nextCollectionLinkObj.pages = nextPagesByCollectionSource
+        }
+        set(itemByDoenetId(collectionLinkObj.doenetId),nextCollectionLinkObj);
+
+        
+        //recoil new activity
+        let previousActivityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
+        const nextActivityContent = replaceCollectionLinkInActivityContent({content:previousActivityObj.content,updateCollectionLink:nextCollectionLinkObj})
+        let nextActivityObj = {...previousActivityObj};
+        nextActivityObj.content = nextActivityContent;
+        set(itemByDoenetId(nextActivityObj.doenetId),nextActivityObj);
+        //Store activity in db
+        let { data:activityData } = await axios.post('/api/updateActivityStructure.php', {
+          courseId,
+          doenetId:previousActivityObj.doenetId,
+          newJSON:nextActivityContent
+        });
+        // console.log("activityData",activityData)
+        
+      }else{
+        //Update one page
         let { data } = await axios.post('/api/updatePageLinks.php', {
           courseId,
           pages,
@@ -2103,6 +2194,10 @@ export const useCourse = (courseId) => {
         }else{
           failureCallback(data.message);
         }
+
+      }
+
+      
         
   });
 

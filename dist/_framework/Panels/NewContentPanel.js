@@ -35,13 +35,13 @@ const DragHandle = styled.div`
 `;
 export const panelsInfoAtom = atom({
   key: "panelsInfoAtom",
-  default: {propotion: 0.5, isActive: false}
+  default: {proportion: 0.5, isActive: false}
 });
-const panelPropotion = selector({
-  key: "panelPropotion",
+const panelProportionSelector = selector({
+  key: "panelProportionSelector",
   get: ({get}) => {
     const info = get(panelsInfoAtom);
-    return info.isActive ? info.propotion : 1;
+    return info.isActive ? info.proportion : 1;
   }
 });
 const calcInfo = (num) => num < 0.05 ? 0 : num < 0.1 ? 0.1 : num > 0.95 ? 1 : num > 0.9 ? 0.9 : num;
@@ -49,7 +49,7 @@ export const useSupportDividerController = () => {
   const supportController = useRecoilCallback(({set}) => (newIsActive, newProportion) => {
     set(panelsInfoAtom, (oldInfo) => ({
       isActive: newProportion === 1 ? false : newIsActive ?? !oldInfo.isActive,
-      propotion: (newProportion ?? 1) === 1 ? oldInfo.propotion : calcInfo(newProportion)
+      proportion: (newProportion ?? 1) === 1 ? oldInfo.proportion : calcInfo(newProportion)
     }));
   }, []);
   return supportController;
@@ -62,7 +62,7 @@ export default function ContentPanel({main, support, hasNoHeaderPanel}) {
   const wrapperRef = useRef();
   const hasRespCont = true;
   const setDivider = useSupportDividerController();
-  const panelProportion = useRecoilValue(panelPropotion);
+  let panelProportion = useRecoilValue(panelProportionSelector);
   const dragHandleRef = useRef();
   const setHandleLeft = useSetRecoilState(supportPanelHandleLeft);
   useEffect(() => {

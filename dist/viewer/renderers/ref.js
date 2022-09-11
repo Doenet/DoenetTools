@@ -1,12 +1,18 @@
 import React from "../../_snowpack/pkg/react.js";
+import {useLocation, useNavigate} from "../../_snowpack/pkg/react-router.js";
+import {Link} from "../../_snowpack/pkg/react-router-dom.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import {itemByDoenetId} from "../../_reactComponents/Course/CourseActions.js";
+import {scrollableContainerAtom} from "../ActivityViewer.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default React.memo(function Ref(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+  let {name, id, SVs, children} = useDoenetRender(props);
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
+  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
+  let {search} = useLocation();
+  let navigate = useNavigate();
   if (SVs.hidden) {
     return null;
   }
@@ -17,14 +23,12 @@ export default React.memo(function Ref(props) {
   let url = "";
   let targetForATag = "_blank";
   let haveValidTarget = false;
+  let externalUri = false;
   if (SVs.cid || SVs.doenetId) {
     if (SVs.cid) {
       url = `cid=${SVs.cid}`;
     } else {
       url = `doenetId=${SVs.doenetId}`;
-    }
-    if (SVs.pageNumber) {
-      url += `&page=${SVs.pageNumber}`;
     }
     if (SVs.variantIndex) {
       url += `&variant=${SVs.variantIndex}`;
@@ -41,43 +45,86 @@ export default React.memo(function Ref(props) {
       }
       url = `/public?${url}`;
     } else {
-      url = `/course?tool=assignment&${url}`;
+      url = `?tool=assignment&${url}`;
     }
     haveValidTarget = true;
-    if (SVs.targetName) {
-      url += "#" + SVs.targetName;
+    if (SVs.hash) {
+      url += SVs.hash;
+    } else {
+      if (SVs.page) {
+        url += `#page${SVs.page}`;
+        if (SVs.targetName) {
+          url += SVs.targetName;
+        }
+      } else if (SVs.targetName) {
+        url += "#" + SVs.targetName;
+      }
     }
   } else if (SVs.uri) {
     url = SVs.uri;
     if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
       haveValidTarget = true;
+      externalUri = true;
     }
   } else {
-    url = "#" + SVs.targetName;
+    url += search;
+    if (SVs.page) {
+      url += `#page${SVs.page}`;
+    } else {
+      let firstSlash = id.indexOf("/");
+      let prefix = id.substring(0, firstSlash);
+      url += "#" + prefix;
+    }
+    url += SVs.targetName;
     targetForATag = null;
     haveValidTarget = true;
   }
   if (SVs.createButton) {
-    return /* @__PURE__ */ React.createElement("span", {
-      id: name
-    }, /* @__PURE__ */ React.createElement("a", {
-      name
-    }), /* @__PURE__ */ React.createElement("button", {
-      id: name + "_button",
-      onClick: () => window.location.href = url,
-      disabled: SVs.disabled
-    }, SVs.linkText));
-  } else {
-    if (haveValidTarget) {
-      return /* @__PURE__ */ React.createElement("a", {
-        target: targetForATag,
-        id: name,
-        name,
-        href: url
-      }, linkContent);
+    if (externalUri) {
+      return /* @__PURE__ */ React.createElement("span", {
+        id
+      }, /* @__PURE__ */ React.createElement("a", {
+        name: id
+      }), /* @__PURE__ */ React.createElement("button", {
+        id: id + "_button",
+        onClick: () => window.location.href = url,
+        disabled: SVs.disabled
+      }, SVs.linkText));
     } else {
       return /* @__PURE__ */ React.createElement("span", {
-        id: name
+        id
+      }, /* @__PURE__ */ React.createElement("a", {
+        name: id
+      }), /* @__PURE__ */ React.createElement("button", {
+        id: id + "_button",
+        onClick: () => navigate(url),
+        disabled: SVs.disabled
+      }, SVs.linkText));
+    }
+  } else {
+    if (haveValidTarget) {
+      if (externalUri || url === "#") {
+        return /* @__PURE__ */ React.createElement("a", {
+          target: targetForATag,
+          id: name,
+          name,
+          href: url
+        }, linkContent);
+      } else {
+        let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
+        let stateObj = {fromLink: true};
+        Object.defineProperty(stateObj, "previousScrollPosition", {get: () => scrollableContainer[scrollAttribute], enumerable: true});
+        return /* @__PURE__ */ React.createElement(Link, {
+          target: targetForATag,
+          id,
+          name: id,
+          to: url,
+          state: stateObj
+        }, linkContent);
+      }
+    } else {
+      return /* @__PURE__ */ React.createElement("span", {
+        id
       }, linkContent);
     }
   }

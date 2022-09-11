@@ -100,15 +100,15 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('change values')
 
-    cy.get("#\\/_booleaninput1_input").click();
-    cy.get("#\\/_booleaninput2_input").click();
-    cy.get("#\\/_booleaninput3_input").click();
-    cy.get("#\\/_booleaninput4_input").click();
-    cy.get("#\\/_booleaninput5_input").click();
-    cy.get("#\\/_booleaninput6_input").click();
-    cy.get("#\\/_booleaninput7_input").click();
-    cy.get("#\\/_booleaninput8_input").click();
-    cy.get("#\\/_booleaninput9_input").click();
+    cy.get("#\\/_booleaninput1").click();
+    cy.get("#\\/_booleaninput2").click();
+    cy.get("#\\/_booleaninput3").click();
+    cy.get("#\\/_booleaninput4").click();
+    cy.get("#\\/_booleaninput5").click();
+    cy.get("#\\/_booleaninput6").click();
+    cy.get("#\\/_booleaninput7").click();
+    cy.get("#\\/_booleaninput8").click();
+    cy.get("#\\/_booleaninput9").click();
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_p1').should('have.text', 'false, true, true, true, true, false, true, true, false')
@@ -209,15 +209,15 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('change values')
 
-    cy.get("#\\/_booleaninput1_input").click();
-    cy.get("#\\/_booleaninput2_input").click();
-    cy.get("#\\/_booleaninput3_input").click();
-    cy.get("#\\/_booleaninput4_input").click();
-    cy.get("#\\/_booleaninput5_input").click();
-    cy.get("#\\/_booleaninput6_input").click();
-    cy.get("#\\/_booleaninput7_input").click();
-    cy.get("#\\/_booleaninput8_input").click();
-    cy.get("#\\/_booleaninput9_input").click();
+    cy.get("#\\/_booleaninput1").click();
+    cy.get("#\\/_booleaninput2").click();
+    cy.get("#\\/_booleaninput3").click();
+    cy.get("#\\/_booleaninput4").click();
+    cy.get("#\\/_booleaninput5").click();
+    cy.get("#\\/_booleaninput6").click();
+    cy.get("#\\/_booleaninput7").click();
+    cy.get("#\\/_booleaninput8").click();
+    cy.get("#\\/_booleaninput9").click();
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_p1').should('have.text', 'false, true, true, true, true, false, true, true, false')

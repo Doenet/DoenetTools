@@ -864,6 +864,18 @@ export const Paginate = ({ courseId, doenetId }) => {
   );
 };
 
+export const ShowFinishButton = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="showFinishButton"
+      description="Show Finish Button"
+      dataTest="Show Finish Button"
+    />
+  );
+};
+
 export const MakePublic = ({ courseId, doenetId }) => {
   return (
     <CheckedFlag

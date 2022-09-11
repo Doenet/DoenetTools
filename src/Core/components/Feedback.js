@@ -86,11 +86,15 @@ export default class Feedback extends BlockComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        if (!dependencyValues.showFeedback) {
+          return { setValue: { hideWhenUpdated: true } }
+        }
+
         let hideWhenUpdated;
         if (dependencyValues.condition === null) {
           hideWhenUpdated = false;
         } else {
-          hideWhenUpdated = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
+          hideWhenUpdated = !dependencyValues.condition.stateValues.value;
         }
 
         return { setValue: { hideWhenUpdated } }
@@ -127,11 +131,15 @@ export default class Feedback extends BlockComponent {
           }
         }
 
+        if (!dependencyValues.showFeedback) {
+          return { setValue: { hide: true } }
+        }
+
         let hide;
         if (dependencyValues.condition === null) {
           hide = false;
         } else {
-          hide = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
+          hide = !dependencyValues.condition.stateValues.value;
         }
 
         return { setValue: { hide } }
@@ -168,7 +176,7 @@ export default class Feedback extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async updateHide({actionId}) {
+  async updateHide({ actionId }) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,

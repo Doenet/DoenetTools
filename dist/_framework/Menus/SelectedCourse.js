@@ -10,7 +10,6 @@ import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGrou
 import {drivecardSelectedNodesAtom} from "../ToolHandlers/CourseToolHandler.js";
 import {
   DeleteCourse,
-  EditDefaultRole,
   EditImageAndColor,
   EditLabel
 } from "../../_reactComponents/Course/SettingComponents.js";
@@ -87,9 +86,7 @@ const CourseInfoPanel = function({courseId}) {
     courseId
   }), canModifyCourseSettings === "1" && /* @__PURE__ */ React.createElement(EditImageAndColor, {
     courseId
-  }), isAdmin === "1" && /* @__PURE__ */ React.createElement(EditDefaultRole, {
-    courseId
-  }), isOwner === "1" && /* @__PURE__ */ React.createElement(DeleteCourse, {
+  }), /* @__PURE__ */ React.createElement("br", null), isOwner === "1" && /* @__PURE__ */ React.createElement(DeleteCourse, {
     courseId
   }));
 };

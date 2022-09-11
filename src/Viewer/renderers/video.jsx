@@ -46,22 +46,26 @@ export default React.memo(function Video(props) {
 
       let cName = cssesc(id);
 
-      player.current = new window.YT.Player(cName, {
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          modestbranding: 1,
-          rel: 0,
-        },
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange,
-          'onPlaybackRateChange': onPlaybackRateChange,
-        }
-      });
+      // protect against window.YT being undefined,
+      // which could occur if cannot reach youtube
+      if (window.YT) {
+        player.current = new window.YT.Player(cName, {
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            modestbranding: 1,
+            rel: 0,
+          },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onPlaybackRateChange': onPlaybackRateChange,
+          }
+        });
+      }
     }
 
-  }, [])
+  }, [window.YT])
 
   function pollCurrentTime() {
     let currentTime = player.current.getCurrentTime();
@@ -109,6 +113,9 @@ export default React.memo(function Video(props) {
 
     callAction({
       action: actions.recordVideoReady,
+      args: {
+        duration: player.current.getDuration(),
+      },
     })
 
 
@@ -175,6 +182,8 @@ export default React.memo(function Video(props) {
           }]
 
           lastPlayedTime.current = currentTime;
+          preSkipTime.current = currentTime;
+          postSkipTime.current = null;
 
           // console.log("recordVideoStarted",{
           //     beginTime: player.current.getCurrentTime(),
@@ -205,26 +214,30 @@ export default React.memo(function Video(props) {
         // the player emits the state change sequence: PAUSED, BUFFERING, PLAYING
         // To prevent the pause event, we wait 250 millisecond.
         // If a BUFFERING event occurs, we only emit the watched event, not the paused event
+
+        let lastState = lastPlayerState.current;
+        let beginTime = lastPlayedTime.current;
+        let pausedTime = player.current.getCurrentTime();
+
         pauseTimeoutId.current = setTimeout(
           function () {
-            let currentTime = player.current.getCurrentTime();
 
             clearInterval(pollIntervalId.current);
 
-            if (lastPlayerState.current === window.YT.PlayerState.PLAYING) {
-              rates.current[rates.current.length - 1].endingPoint = currentTime;
+            if (lastState === window.YT.PlayerState.PLAYING && pausedTime > beginTime) {
+              rates.current[rates.current.length - 1].endingPoint = pausedTime;
 
-              // console.log("recordVideoWatched",{
-              //     beginTime: lastPlayedTime.current,
-              //     endTime: currentTime,
-              //     duration,
-              //     rates: rates.current,
-              //   })
+              // console.log("recordVideoWatched from PAUSED", {
+              //   beginTime,
+              //   endTime: pausedTime,
+              //   duration,
+              //   rates: rates.current,
+              // })
               callAction({
                 action: actions.recordVideoWatched,
                 args: {
-                  beginTime: lastPlayedTime.current,
-                  endTime: currentTime,
+                  beginTime,
+                  endTime: pausedTime,
                   duration,
                   rates: rates.current,
                 }
@@ -236,18 +249,18 @@ export default React.memo(function Video(props) {
 
             }
             // console.log("recordVideoPaused",{
-            //   endTime: currentTime,
+            //   endTime: pausedTime,
             //   duration,
             // })
             callAction({
               action: actions.recordVideoPaused,
               args: {
-                endTime: currentTime,
+                endTime: pausedTime,
                 duration,
               }
             })
 
-            lastPausedTime.current = currentTime;
+            lastPausedTime.current = pausedTime;
             lastPlayerState.current = event.data;
 
           }, 250);
@@ -261,28 +274,34 @@ export default React.memo(function Video(props) {
 
         if (lastPlayedTime.current !== null) {
 
-          rates.current[rates.current.length - 1].endingPoint = preSkipTime.current;
+          let beginTime = lastPlayedTime.current;
 
-          // console.log("BUFFERING recordVideoWatched",{
-          //   beginTime: lastPlayedTime.current,
-          //   endTime: preSkipTime.current,
-          //   duration,
-          //   rates: rates.current,
-          // })
+          if (preSkipTime.current > beginTime) {
+            rates.current[rates.current.length - 1].endingPoint = preSkipTime.current;
 
-          callAction({
-            action: actions.recordVideoWatched,
-            args: {
-              beginTime: lastPlayedTime.current,
-              endTime: preSkipTime.current,
-              duration,
-              rates: rates.current,
-            }
-          })
+            // console.log("BUFFERING recordVideoWatched", {
+            //   beginTime,
+            //   endTime: preSkipTime.current,
+            //   duration,
+            //   rates: rates.current,
+            // })
+
+            callAction({
+              action: actions.recordVideoWatched,
+              args: {
+                beginTime,
+                endTime: preSkipTime.current,
+                duration,
+                rates: rates.current,
+              }
+            })
+
+            beginTime = preSkipTime.current;
+          }
 
 
-          // console.log("BUFFERING recordVideoSkipped",{
-          //   beginTime: lastPlayedTime.current,
+          // console.log("BUFFERING recordVideoSkipped", {
+          //   beginTime,
           //   endTime: currentTime,
           //   duration,
           // })
@@ -290,7 +309,7 @@ export default React.memo(function Video(props) {
           callAction({
             action: actions.recordVideoSkipped,
             args: {
-              beginTime: preSkipTime.current,
+              beginTime,
               endTime: currentTime,
               duration,
             }
@@ -299,6 +318,8 @@ export default React.memo(function Video(props) {
 
           lastPlayerState.current = event.data;
           lastPlayedTime.current = null;
+          preSkipTime.current = currentTime;
+          postSkipTime.current = null;
 
         }
 
@@ -312,20 +333,22 @@ export default React.memo(function Video(props) {
         clearInterval(pollIntervalId.current);
 
         // if rates.current is empty, then never played
-        if (rates.current.length > 0) {
-          rates.current[rates.current.length - 1].endingPoint = player.current.getCurrentTime();
+        let begin = lastPlayedTime.current;
+        let end = player.current.getCurrentTime();
+        if (rates.current.length > 0 && begin !== null && end > begin) {
+          rates.current[rates.current.length - 1].endingPoint = end;
 
-          // console.log("recordVideoWatched",{
-          //   beginTime: lastPlayedTime.current,
-          //   endTime: player.current.getCurrentTime(),
+          // console.log("recordVideoWatched from ENDED", {
+          //   beginTime: begin,
+          //   endTime: end,
           //   duration,
           //   rates: rates.current,
           // })
           callAction({
             action: actions.recordVideoWatched,
             args: {
-              beginTime: lastPlayedTime.current,
-              endTime: player.current.getCurrentTime(),
+              beginTime: begin,
+              endTime: end,
               duration,
               rates: rates.current,
             }

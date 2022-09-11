@@ -58,7 +58,7 @@ const Button = styled.button`
     };
   `;
 export default React.memo(function MatrixInput(props) {
-  let {name, SVs, actions, children, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, children, callAction} = useDoenetRender(props);
   let validationState = useRef(null);
   function updateValidationState() {
     validationState.current = "unvalidated";
@@ -88,7 +88,7 @@ export default React.memo(function MatrixInput(props) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
       }
       checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-        id: name + "_submit",
+        id: id + "_submit",
         tabIndex: "0",
         disabled,
         style: checkWorkStyle,
@@ -111,7 +111,7 @@ export default React.memo(function MatrixInput(props) {
         if (validationState.current === "correct") {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-            id: name + "_correct",
+            id: id + "_correct",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCheck
@@ -122,13 +122,13 @@ export default React.memo(function MatrixInput(props) {
           checkWorkStyle.width = "50px";
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-            id: name + "_partial",
+            id: id + "_partial",
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-            id: name + "_incorrect",
+            id: id + "_incorrect",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faTimes
@@ -137,7 +137,7 @@ export default React.memo(function MatrixInput(props) {
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
-          id: name + "_saved",
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -159,7 +159,7 @@ export default React.memo(function MatrixInput(props) {
       mathinputRow.push(/* @__PURE__ */ React.createElement("td", {
         style: {margin: "10px"},
         key: colInd,
-        id: name + "_component_" + rowInd + "_" + colInd
+        id: id + "_component_" + rowInd + "_" + colInd
       }, children[rowInd * SVs.numColumns + colInd]));
     }
     matrixInputs.push(/* @__PURE__ */ React.createElement("tr", {
@@ -171,7 +171,7 @@ export default React.memo(function MatrixInput(props) {
     rowNumControls = /* @__PURE__ */ React.createElement("span", {
       style: {margin: "0px 10px 12px 10px"}
     }, /* @__PURE__ */ React.createElement(ActionButtonGroup, null, /* @__PURE__ */ React.createElement(ActionButton, {
-      id: name + "_rowDecrement",
+      id: id + "_rowDecrement",
       value: "r-",
       onClick: () => callAction({
         action: actions.updateNumRows,
@@ -179,7 +179,7 @@ export default React.memo(function MatrixInput(props) {
       }),
       disabled: SVs.numRows < 2
     }, "r-"), /* @__PURE__ */ React.createElement(ActionButton, {
-      id: name + "_rowIncrement",
+      id: id + "_rowIncrement",
       value: "r+",
       onClick: () => callAction({
         action: actions.updateNumRows,
@@ -192,7 +192,7 @@ export default React.memo(function MatrixInput(props) {
     colNumControls = /* @__PURE__ */ React.createElement("span", {
       style: {margin: "0px 10px 12px 10px"}
     }, /* @__PURE__ */ React.createElement(ActionButtonGroup, null, /* @__PURE__ */ React.createElement(ActionButton, {
-      id: name + "_columnDecrement",
+      id: id + "_columnDecrement",
       value: "c-",
       onClick: () => callAction({
         action: actions.updateNumColumns,
@@ -200,7 +200,7 @@ export default React.memo(function MatrixInput(props) {
       }),
       disabled: SVs.numColumns < 2
     }, "c-"), /* @__PURE__ */ React.createElement(ActionButton, {
-      id: name + "_columnIncrement",
+      id: id + "_columnIncrement",
       value: "c+",
       onClick: () => callAction({
         action: actions.updateNumColumns,
@@ -209,11 +209,11 @@ export default React.memo(function MatrixInput(props) {
     }, "c+")));
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("div", {
     style: {display: "flex", marginBottom: "12px"}
   }, /* @__PURE__ */ React.createElement(Matrix, {
     className: "matrixInputSurroundingBox",
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("tbody", null, matrixInputs))), rowNumControls, colNumControls, checkWorkButton));
 });

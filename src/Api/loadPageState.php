@@ -24,6 +24,15 @@ $requestedVariantIndex = mysqli_real_escape_string(
     $_REQUEST['requestedVariantIndex']
 );
 $allowLoadState = mysqli_real_escape_string($conn, $_REQUEST['allowLoadState']);
+$showCorrectness = mysqli_real_escape_string($conn, $_REQUEST['showCorrectness']);
+$solutionDisplayMode = mysqli_real_escape_string($conn, $_REQUEST['solutionDisplayMode']);
+$showFeedback = mysqli_real_escape_string($conn, $_REQUEST['showFeedback']);
+$showHints = mysqli_real_escape_string($conn, $_REQUEST['showHints']);
+
+if ($showFeedback == "true"){ $showFeedback = '1'; } else { $showFeedback = '0'; }
+if ($showHints == "true"){ $showHints = '1'; } else { $showHints = '0'; }
+if ($showCorrectness == "true"){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
+
 $effectiveUserId = $requestorUserId;
 
 $paramUserId = mysqli_real_escape_string($conn, $_REQUEST['userId']);
@@ -48,6 +57,9 @@ if ($cid == '') {
 } elseif ($allowLoadState == '') {
     $success = false;
     $message = 'Internal Error: missing allowLoadState';
+} elseif ($solutionDisplayMode == '') {
+    $success = false;
+    $message = 'Internal Error: missing solutionDisplayMode';
 } elseif ($effectiveUserId == '') {
     if ($examUserId == '') {
         $success = false;
@@ -131,7 +143,12 @@ if ($success) {
             "SELECT rendererState, coreInfo
             FROM initial_renderer_state
             WHERE cid = '$cid'
-                AND variantIndex = '$requestedVariantIndex'"
+            AND variantIndex = '$requestedVariantIndex'
+            AND showCorrectness = '$showCorrectness'
+            AND solutionDisplayMode = '$solutionDisplayMode'
+            AND showFeedback = '$showFeedback'
+            AND showHints = '$showHints'
+            "
         );
 
         if ($result->num_rows > 0) {

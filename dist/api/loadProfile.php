@@ -11,15 +11,23 @@ $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 $result = $conn->query(
-    "SELECT screenName, email, lastName, firstName, profilePicture, trackingConsent
-  FROM user
-  WHERE userId = '$userId'"
+    "SELECT 
+        screenName, 
+        email, 
+        lastName, 
+        firstName, 
+        profilePicture, 
+        trackingConsent,
+        canUpload
+    FROM user
+    WHERE userId = '$userId'"
 );
 $response_arr = ['success' => '0'];
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile = [
+        'userId' => $userId,
         'screenName' => $row['screenName'],
         'email' => $row['email'],
         'firstName' => $row['firstName'],
@@ -28,6 +36,7 @@ if ($result->num_rows > 0) {
         'trackingConsent' => $row['trackingConsent'],
         'signedIn' => '1',
         'device' => $jwtArray['deviceName'],
+        'canUpload' => $row['canUpload']
     ];
 
     $response_arr = [
@@ -45,6 +54,7 @@ if ($result->num_rows > 0) {
         'trackingConsent' => true,
         'signedIn' => '0',
         'userId' => $userId,
+        'canUpload' => '0'
     ];
     $profile['device'] = 'N/A';
 

@@ -8,7 +8,7 @@ import {registerAllModules} from "../../_snowpack/pkg/handsontable/registry.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 registerAllModules();
 export default React.memo(function SpreadsheetRenderer(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -30,10 +30,10 @@ export default React.memo(function SpreadsheetRenderer(props) {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("div", {
-    id: name,
+    id,
     style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement(HotTable, {
     licenseKey: "non-commercial-and-evaluation",
     data: SVs.cells.map((x) => [...x]),

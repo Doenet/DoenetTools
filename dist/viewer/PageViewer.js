@@ -47,7 +47,7 @@ export default function PageViewer(props) {
         }
       }
     }
-    let newRendererState = {stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate};
+    let newRendererState = {stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate, prefixForIds};
     if (childrenInstructions === void 0) {
       let previousRendererState = snapshot.getLoadable(rendererState(rendererName)).contents;
       newRendererState.childrenInstructions = previousRendererState.childrenInstructions;
@@ -81,11 +81,13 @@ export default function PageViewer(props) {
   const resolveAllStateVariables = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
   const coreWorker = useRef(null);
-  const [saveStatesWorker, setSaveStatesWorker] = useState(null);
   const preventMoreAnimations = useRef(false);
   const animationInfo = useRef({});
   const resolveActionPromises = useRef({});
-  let {hash} = useLocation();
+  const prefixForIds = props.prefixForIds || "";
+  const previousLocationKeys = useRef([]);
+  let location = useLocation();
+  let hash = location.hash;
   useEffect(() => {
     if (coreWorker.current) {
       coreWorker.current.onmessage = function(e) {
@@ -102,6 +104,7 @@ export default function PageViewer(props) {
           coreCreated.current = true;
           preventMoreAnimations.current = false;
           setStage("coreCreated");
+          props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
           } else {
@@ -181,22 +184,29 @@ export default function PageViewer(props) {
         });
       }
     });
-  });
+  }, []);
   useEffect(() => {
     if (hash && coreCreated.current && coreWorker.current) {
-      coreWorker.current.postMessage({
-        messageType: "navigatingToHash",
-        args: {
-          hash: hash.slice(1)
-        }
-      });
+      let anchor = hash.slice(1);
+      if (anchor.substring(0, prefixForIds.length) === prefixForIds) {
+        coreWorker.current.postMessage({
+          messageType: "navigatingToComponent",
+          args: {
+            componentName: anchor.substring(prefixForIds.length)
+          }
+        });
+      }
     }
-  }, [hash, coreCreated.current, coreWorker.current]);
+  }, [location, hash, coreCreated.current, coreWorker.current]);
   useEffect(() => {
-    if (documentRenderer) {
-      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    if (hash && documentRenderer && props.pageIsActive) {
+      let anchor = hash.slice(1);
+      if ((!previousLocationKeys.current.includes(location.key) || location.key === "default") && anchor.length > prefixForIds.length && anchor.substring(0, prefixForIds.length) === prefixForIds) {
+        document.getElementById(cssesc(anchor))?.scrollIntoView();
+      }
+      previousLocationKeys.current.push(location.key);
     }
-  }, [hash, documentRenderer]);
+  }, [location, hash, documentRenderer, props.pageIsActive]);
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
     coreWorker.current.terminate();
@@ -269,6 +279,7 @@ export default function PageViewer(props) {
         coreId: coreId.current,
         callAction
       }));
+      props.renderersInitializedCallback?.();
     });
   }
   function updateRenderers({updateInstructions, actionId}) {
@@ -408,7 +419,11 @@ export default function PageViewer(props) {
           doenetId: props.doenetId,
           userId: props.userId,
           requestedVariantIndex,
-          allowLoadState: props.flags.allowLoadState
+          allowLoadState: props.flags.allowLoadState,
+          showCorrectness: props.flags.showCorrectness,
+          solutionDisplayMode: props.flags.solutionDisplayMode,
+          showFeedback: props.flags.showFeedback,
+          showHints: props.flags.showHints
         }
       };
       try {
@@ -447,7 +462,11 @@ export default function PageViewer(props) {
       }
     }
     if (coreIdWhenCalled === coreId.current) {
-      startCore();
+      if (props.pageIsActive) {
+        startCore();
+      } else {
+        setStage("readyToCreateCore");
+      }
     }
   }
   async function saveLoadedLocalStateToDatabase(localInfo) {
@@ -525,40 +544,6 @@ export default function PageViewer(props) {
         args: actionArgs
       });
     }
-  }
-  async function saveInitialRendererStates() {
-    let nVariants;
-    try {
-      let result = await returnAllPossibleVariants({doenetId: props.doenetId, cid, flags: props.flags});
-      nVariants = result.allPossibleVariants.length;
-    } catch (e) {
-      let message = `Could not save initial renderer state: ${e.message}`;
-      console.log(`Sending toast: ${message}`);
-      toast(message, toastType.ERROR);
-      return;
-    }
-    let sWorker = new Worker("core/utils/initialState.js", {type: "module"});
-    sWorker.postMessage({
-      messageType: "saveInitialRendererStates",
-      args: {
-        doenetId: props.doenetId,
-        cid,
-        doenetML,
-        flags: props.flags,
-        nVariants
-      }
-    });
-    sWorker.onmessage = function(e) {
-      if (e.data.messageType === "finished") {
-        sWorker.terminate();
-        setSaveStatesWorker(null);
-      }
-    };
-    setSaveStatesWorker(sWorker);
-  }
-  function cancelSaveInitialRendererStates() {
-    saveStatesWorker.terminate();
-    setSaveStatesWorker(null);
   }
   function requestAnimationFrame({action, actionArgs, delay, animationId}) {
     if (!preventMoreAnimations.current) {
@@ -652,7 +637,7 @@ export default function PageViewer(props) {
     calculateCidDoenetML();
     return null;
   }
-  if (pageContentChanged && props.pageIsActive) {
+  if (pageContentChanged) {
     setPageContentChanged(false);
     coreInfo.current = null;
     setDocumentRenderer(null);
@@ -668,25 +653,17 @@ export default function PageViewer(props) {
     coreWorker.current = null;
     setStage("readyToCreateCore");
   }
-  if (!props.pageIsActive) {
+  if (props.hideWhenNotCurrent && !props.pageIsCurrent) {
     return null;
   }
-  let saveStatesButton;
-  if (saveStatesWorker) {
-    saveStatesButton = /* @__PURE__ */ React.createElement("button", {
-      onClick: () => cancelSaveInitialRendererStates()
-    }, "Cancel saving initial renderer states");
-  } else {
-    saveStatesButton = /* @__PURE__ */ React.createElement("button", {
-      onClick: () => saveInitialRendererStates()
-    }, "Save initial renderer states");
-  }
   let noCoreWarning = null;
-  let pageStyle = {maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "50vh"};
+  let pageStyle = {maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px"};
   if (!coreCreated.current) {
-    noCoreWarning = /* @__PURE__ */ React.createElement("div", {
-      style: {backgroundColor: "lightCyan", padding: "10px"}
-    }, /* @__PURE__ */ React.createElement("p", null, "Waiting for core to be created...."));
+    if (!documentRenderer) {
+      noCoreWarning = /* @__PURE__ */ React.createElement("div", {
+        style: {backgroundColor: "lightCyan", padding: "10px"}
+      }, /* @__PURE__ */ React.createElement("p", null, "Initializing...."));
+    }
     pageStyle.backgroundColor = "#F0F0F0";
   }
   return /* @__PURE__ */ React.createElement(ErrorBoundary, {

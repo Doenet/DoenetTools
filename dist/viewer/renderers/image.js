@@ -4,7 +4,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Image(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props, false);
+  let {name, id, SVs, actions, callAction} = useDoenetRender(props, false);
   let [url, setUrl] = useState(null);
   let onChangeVisibility = (isVisible) => {
     callAction({
@@ -50,14 +50,14 @@ export default React.memo(function Image(props) {
   }, /* @__PURE__ */ React.createElement("div", {
     style: outerStyle
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), url || SVs.source ? /* @__PURE__ */ React.createElement("img", {
-    id: name,
+    id,
     src: url ? url : SVs.source ? SVs.source : "",
     style: imageStyle,
     alt: SVs.description
   }) : /* @__PURE__ */ React.createElement("div", {
-    id: name,
+    id,
     style: imageStyle
   }, SVs.description)));
 });

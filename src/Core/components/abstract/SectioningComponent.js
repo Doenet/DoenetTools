@@ -787,6 +787,7 @@ export default class SectioningComponent extends BlockComponent {
         stateVariable: "open",
         value: true
       }],
+      overrideReadOnly: true,
       actionId,
       event: {
         verb: "viewed",
@@ -807,6 +808,7 @@ export default class SectioningComponent extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      overrideReadOnly: true,
       actionId,
       event: {
         verb: "closed",

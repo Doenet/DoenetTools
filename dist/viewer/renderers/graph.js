@@ -13,7 +13,7 @@ function cesc(s) {
 }
 export const BoardContext = createContext();
 export default React.memo(function Graph(props) {
-  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   const [board, setBoard] = useState(null);
   const previousDimensions = useRef(null);
   const previousBoundingbox = useRef(null);
@@ -50,7 +50,7 @@ export default React.memo(function Graph(props) {
       JXG.Options.grid.gridX = SVs.grid[0];
       JXG.Options.grid.gridY = SVs.grid[1];
     }
-    let newBoard = window.JXG.JSXGraph.initBoard(name, {
+    let newBoard = window.JXG.JSXGraph.initBoard(id, {
       boundingbox,
       axis: false,
       showCopyright: false,
@@ -118,9 +118,9 @@ export default React.memo(function Graph(props) {
     }, /* @__PURE__ */ React.createElement("div", {
       style: outerStyle
     }, /* @__PURE__ */ React.createElement("a", {
-      name
+      name: id
     }), /* @__PURE__ */ React.createElement("div", {
-      id: name,
+      id,
       className: "jxgbox",
       style: divStyle
     })));
@@ -275,7 +275,7 @@ export default React.memo(function Graph(props) {
       settingBoundingBox.current = false;
       board.fullUpdate();
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = board;
+        board.itemsRenderedLowQuality[id] = board;
       }
       previousBoundingbox.current = boundingbox;
     }
@@ -286,9 +286,9 @@ export default React.memo(function Graph(props) {
   }, /* @__PURE__ */ React.createElement("div", {
     style: outerStyle
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), /* @__PURE__ */ React.createElement("div", {
-    id: name,
+    id,
     className: "jxgbox",
     style: divStyle
   }), /* @__PURE__ */ React.createElement(BoardContext.Provider, {
@@ -531,7 +531,7 @@ export default React.memo(function Graph(props) {
     theBoard.unsuspendUpdate();
   }
   function addNavigationButtons() {
-    let navigationBar = document.querySelector("#" + cesc(name) + `_navigationbar`);
+    let navigationBar = document.querySelector("#" + cesc(id) + `_navigationbar`);
     let addEvent = function(obj, type, fn) {
       var el = function() {
         return fn.apply(board, arguments);
@@ -581,7 +581,7 @@ export default React.memo(function Graph(props) {
   }
   function removeNavigationButtons() {
     for (let i = 7; i >= 1; i--) {
-      let button = document.querySelector("#" + cesc(name) + `_navigationbar > :first-child`);
+      let button = document.querySelector("#" + cesc(id) + `_navigationbar > :first-child`);
       button.remove();
     }
     board.internalclick = [];

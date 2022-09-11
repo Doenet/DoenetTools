@@ -298,7 +298,7 @@ describe('UpdateValue Tag Tests', function () {
 
     cy.get('#\\/_updatevalue1_button').click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/b').should('have.text', 'true');
     cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
@@ -327,7 +327,7 @@ describe('UpdateValue Tag Tests', function () {
 
     cy.get('#\\/_updatevalue2_button').click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/b').should('have.text', 'false');
     cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
@@ -370,7 +370,7 @@ describe('UpdateValue Tag Tests', function () {
 
     cy.get('#\\/_updatevalue1_button').click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/b').should('have.text', 'true');
     cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6,1)')
@@ -383,7 +383,7 @@ describe('UpdateValue Tag Tests', function () {
 
     cy.get('#\\/_updatevalue2_button').click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/b').should('have.text', 'false');
     cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6,6)')

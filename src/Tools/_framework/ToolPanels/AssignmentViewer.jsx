@@ -26,6 +26,8 @@ import { useLocation, useNavigate } from 'react-router';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton'
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button'
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Banner from '../../../_reactComponents/PanelHeaderComponents/Banner';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 
 export const currentAttemptNumber = atom({
@@ -121,6 +123,7 @@ export default function AssignmentViewer() {
       attemptNumber,
       showCorrectness,
       paginate,
+      showFinishButton,
       showFeedback,
       showHints,
       cid,
@@ -146,6 +149,8 @@ export default function AssignmentViewer() {
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
+  const effectivePermissions = useRecoilValue(effectivePermissionsByCourseId(courseId));
+
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
 
@@ -165,9 +170,10 @@ export default function AssignmentViewer() {
 
 
   useEffect(() => {
-    console.log('about to initialize values', recoilDoenetId, itemObj)
-    initializeValues(recoilDoenetId, itemObj);
-  }, [itemObj, recoilDoenetId])
+    if (Object.keys(itemObj).length > 0 && Object.keys(effectivePermissions).length > 0) {
+      initializeValues(recoilDoenetId, itemObj);
+    }
+  }, [itemObj, recoilDoenetId, effectivePermissions])
 
   // console.log("itemObj",itemObj)
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
@@ -188,6 +194,7 @@ export default function AssignmentViewer() {
         showCorrectness,
         showCreditAchievedMenu,
         paginate,
+        showFinishButton,
         showFeedback,
         showHints,
         showSolution,
@@ -205,14 +212,14 @@ export default function AssignmentViewer() {
           suppress.push('TimerMenu');
         }
 
-        if (!showCorrectness || !showCreditAchievedMenu) {
+        if (!showCorrectness || !showCreditAchievedMenu || effectivePermissions.canViewUnassignedContent !== '0') {
           suppress.push('CreditAchieved');
         }
 
         setSuppressMenus(suppress);
 
         let solutionDisplayMode = 'button';
-        if (!showSolution) {
+        if (!showSolution && effectivePermissions.canViewUnassignedContent === '0') {
           solutionDisplayMode = 'none';
         }
         if (proctorMakesAvailable) {
@@ -342,6 +349,7 @@ export default function AssignmentViewer() {
             attemptNumber,
             showCorrectness,
             paginate,
+            showFinishButton,
             showFeedback,
             showHints,
             cid,
@@ -401,6 +409,7 @@ export default function AssignmentViewer() {
           attemptNumber,
           showCorrectness,
           paginate,
+          showFinishButton,
           showFeedback,
           showHints,
           cid,
@@ -412,7 +421,7 @@ export default function AssignmentViewer() {
         setStage('Ready');
 
       },
-    [setSuppressMenus],
+    [setSuppressMenus, effectivePermissions],
   );
 
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
@@ -580,25 +589,26 @@ export default function AssignmentViewer() {
       if (baseNumberOfAttemptsAllowed > 1) {
         attemptNumberPhrase = " and the number of available attempts";
       }
-      cidChangedAlert = <div style={{border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}}>
+      cidChangedAlert = <Banner type="ACTION" value={<div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap" }}>
         A new version of this activity is available.
         Do you want to start a new attempt using the new version?
         (This will reset the activity{attemptNumberPhrase}.)
-        <div style={{display: "flex", justifyContent: "center", padding: "5px"}}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
             <Button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion" value="Yes"></Button>
             <Button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion" value="No" alert></Button>
           </ButtonGroup>
         </div>
-        
-      </div>
+
+      </div>}></Banner>
     } else {
-      cidChangedAlert = <div style={{marginLeft: "1px", marginRight: "5px", marginBottom: "5px"}}>
+      cidChangedAlert = <Banner type="ACTION" value={<div style={{ marginLeft: "1px", marginRight: "5px" }}>
         <ActionButton onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable" value="New version available!"></ActionButton>
-      </div>
+      </div>}></Banner>
     }
   }
 
+  const allowLoadAndSave = effectivePermissions.canViewUnassignedContent === '0';
 
   return (
     <>
@@ -613,11 +623,11 @@ export default function AssignmentViewer() {
           solutionDisplayMode,
           showFeedback,
           showHints,
-          allowLoadState: true,
-          allowSaveState: true,
-          allowLocalState: true,
-          allowSaveSubmissions: true,
-          allowSaveEvents: true,
+          allowLoadState: allowLoadAndSave,
+          allowSaveState: allowLoadAndSave,
+          allowLocalState: allowLoadAndSave,
+          allowSaveSubmissions: allowLoadAndSave,
+          allowSaveEvents: allowLoadAndSave,
         }}
         attemptNumber={attemptNumber}
         requestedVariantIndex={requestedVariantIndex}
@@ -625,6 +635,7 @@ export default function AssignmentViewer() {
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}
+        showFinishButton={showFinishButton}
         cidChangedCallback={() => setCidChanged(true)}
       // generatedVariantCallback={variantCallback}
       />

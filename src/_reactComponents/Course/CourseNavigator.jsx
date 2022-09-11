@@ -50,6 +50,8 @@ import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { effectivePermissionsByCourseId } from '../PanelHeaderComponents/RoleDropdown';
+import Button from '../PanelHeaderComponents/Button';
+import ButtonGroup from '../PanelHeaderComponents/ButtonGroup';
 
 const ToggleCloseIconStyling = styled.button`
   border: none;
@@ -64,7 +66,7 @@ export default function CourseNavigator(props) {
   // console.log("=== CourseNavigator")
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
-  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const {canViewUnassignedContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
 
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
@@ -92,10 +94,10 @@ export default function CourseNavigator(props) {
     })
   },[clearSelections, setMainPanelClick])
 
-  if (canEditContent == '0' || props.displayRole == 'student'){
+  if (canViewUnassignedContent == '0' || props.displayRole == 'student'){
     return <StudentCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
-  if (canEditContent == '1' || props.displayRole == 'instructor'){
+  if (canViewUnassignedContent == '1' || props.displayRole == 'instructor'){
     return <AuthorCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
   return null;
@@ -120,7 +122,7 @@ function StudentCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setN
   )
     
   return <>
-  <CourseNavigationHeader columnLabels={["Due Date"]} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
+  <CourseNavigationHeader courseId={courseId} sectionId={sectionId} columnLabels={["Due Date"]} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   {items}
   </>
 }
@@ -188,7 +190,7 @@ function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNu
     <Item key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={0} />)
     
   return <>
-  <CourseNavigationHeader columnLabels={["Assigned","Public"]} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
+  <CourseNavigationHeader courseId={courseId} sectionId={sectionId} columnLabels={["Assigned","Public"]} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   {items}
   </>
 }
@@ -702,8 +704,22 @@ function getColumnsCSS(numberOfVisibleColumns){
 
 }
 
-function CourseNavigationHeader({columnLabels,numberOfVisibleColumns,setNumberOfVisibleColumns}){
+function CourseNavigationHeader({courseId,sectionId,columnLabels,numberOfVisibleColumns,setNumberOfVisibleColumns}){
   // console.log("===CourseNavigationHeader")
+  
+  let openCloseAll = useRecoilCallback(({set,snapshot})=>async ({isOpen=true,courseId,sectionId})=>{
+    if (!sectionId){sectionId = courseId;}
+    let doenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}))
+    for (let doenetId of doenetIds){
+      set(itemByDoenetId(doenetId),(prev)=>{
+        let next = {...prev}
+        if ('isOpen' in next){ //is something that we can open
+          next.isOpen = isOpen;
+        }
+        return next;
+      })
+    }
+  },[])
 
   const updateNumColumns = useCallback(
     (width) => {
@@ -784,7 +800,12 @@ function CourseNavigationHeader({columnLabels,numberOfVisibleColumns,setNumberOf
               alignContent: 'center',
             }}
           >
-            <span>Label</span>
+            <span style={{display:"flex"}}><span style={{marginRight:"10px"}}>Label</span>
+            <ButtonGroup>
+            <Button value='Open All' onClick={()=>openCloseAll({isOpen:true,courseId,sectionId})}/>
+            <Button value='Close All'  onClick={()=>openCloseAll({isOpen:false,courseId,sectionId})}/>
+            </ButtonGroup>
+            </span>
             {numberOfVisibleColumns >= 2 && columnLabels[0] ? (
               <span style={{ textAlign: 'center' }}>{columnLabels[0]}</span>
             ) : null}

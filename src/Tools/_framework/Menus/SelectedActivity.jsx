@@ -20,6 +20,7 @@ import {
   ShowCorrectness,
   ShowCreditAchieved,
   Paginate,
+  ShowFinishButton,
   ShowDoenetMLSource,
   ShowFeedback,
   ShowHints,
@@ -220,7 +221,7 @@ export default function SelectedActivity() {
       {heading}
       <ActionButton
         width="menu"
-        data-test="Edit Activity"
+        data-test="View Activity"
         value="View Activity"
         onClick={() => {
           setPageToolView({
@@ -286,6 +287,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
           <ShowCorrectness {...sharedProps} />
           <ShowCreditAchieved {...sharedProps} />
           <Paginate {...sharedProps} />
+          <ShowFinishButton {...sharedProps} />
           <ProctorMakesAvailable {...sharedProps} />
           <MakePublic {...sharedProps} />
           <ShowDoenetMLSource {...sharedProps} />

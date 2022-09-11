@@ -7,7 +7,7 @@ import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default React.memo(function BooleanInput(props) {
-  let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
+  let {name, id, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   BooleanInput.baseStateVariable = "value";
   const [rendererValue, setRendererValue] = useState(SVs.value);
   const setRendererState = useSetRecoilState(rendererState(rendererName));
@@ -49,7 +49,7 @@ export default React.memo(function BooleanInput(props) {
     return null;
   }
   let disabled = SVs.disabled;
-  const inputKey = name + "_input";
+  const inputKey = id + "_input";
   let checkWorkStyle = {
     position: "relative",
     width: "30px",
@@ -71,7 +71,7 @@ export default React.memo(function BooleanInput(props) {
         checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
       }
       checkWorkButton = /* @__PURE__ */ React.createElement("button", {
-        id: name + "_submit",
+        id: id + "_submit",
         tabIndex: "0",
         disabled,
         style: checkWorkStyle,
@@ -94,7 +94,7 @@ export default React.memo(function BooleanInput(props) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_correct",
+            id: id + "_correct",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCheck
@@ -105,13 +105,13 @@ export default React.memo(function BooleanInput(props) {
           checkWorkStyle.width = "50px";
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_partial",
+            id: id + "_partial",
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
           checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: name + "_incorrect",
+            id: id + "_incorrect",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faTimes
@@ -120,7 +120,7 @@ export default React.memo(function BooleanInput(props) {
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-          id: name + "_saved",
+          id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
           icon: faCloud
@@ -163,8 +163,8 @@ export default React.memo(function BooleanInput(props) {
     }), label);
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
-    id: name
+    id
   }, /* @__PURE__ */ React.createElement("a", {
-    name
+    name: id
   }), input, checkWorkButton));
 });

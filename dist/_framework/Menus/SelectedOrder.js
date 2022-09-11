@@ -96,6 +96,11 @@ export default function SelectedOrder() {
     width: "menu",
     onClick: () => create({itemType: "order"}),
     value: "Add Order"
+  }), /* @__PURE__ */ React.createElement(Button, {
+    width: "menu",
+    onClick: () => create({itemType: "collectionLink"}),
+    value: "Add Collection Link",
+    "data-test": "Add Collection Link"
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Delete Order",

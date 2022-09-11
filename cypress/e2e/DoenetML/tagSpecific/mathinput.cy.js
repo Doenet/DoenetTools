@@ -988,7 +988,7 @@ describe('MathInput Tag Tests', function () {
 
     // since v1 was already invalid, can't be sure when have waited long enough
     // so click boolean input and wait for its effect to take
-    cy.get('#\\/bi_input').click()
+    cy.get('#\\/bi').click()
     cy.get('#\\/b').should('have.text', 'true')
 
     cy.log('Test values displayed in browser')
@@ -1040,7 +1040,7 @@ describe('MathInput Tag Tests', function () {
     // the DOM will display even before core is ready
     // so to make sure core has loaded, click boolean and wait for it to change
     cy.get("#\\/b").should('have.text', 'true');
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get("#\\/b").should('have.text', 'false');
 
 
@@ -1341,7 +1341,7 @@ describe('MathInput Tag Tests', function () {
 
     // since v1 was already invalid, can't be sure when have waited long enough
     // so click boolean input and wait for its effect to take
-    cy.get('#\\/bi_input').click()
+    cy.get('#\\/bi').click()
     cy.get('#\\/b').should('have.text', 'true')
 
     cy.log('Test values displayed in browser')
@@ -1393,7 +1393,7 @@ describe('MathInput Tag Tests', function () {
     // the DOM will display even before core is ready
     // so to make sure core has loaded, click boolean and wait for it to change
     cy.get("#\\/b").should('have.text', 'true');
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get("#\\/b").should('have.text', 'false');
 
 

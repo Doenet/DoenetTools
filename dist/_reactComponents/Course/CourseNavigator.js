@@ -13,7 +13,8 @@ import {
   faFolderTree,
   faChevronRight,
   faChevronDown,
-  faCheck
+  faCheck,
+  faLink
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
@@ -45,7 +46,7 @@ const ToggleCloseIconStyling = styled.button`
 export default function CourseNavigator(props) {
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const sectionId = useRecoilValue(searchParamAtomFamily("sectionId"));
-  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const {canViewUnassignedContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns, setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
@@ -68,7 +69,7 @@ export default function CourseNavigator(props) {
       return newObj;
     });
   }, [clearSelections, setMainPanelClick]);
-  if (canEditContent == "0" || props.displayRole == "student") {
+  if (canViewUnassignedContent == "0" || props.displayRole == "student") {
     return /* @__PURE__ */ React.createElement(StudentCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -77,7 +78,7 @@ export default function CourseNavigator(props) {
       setNumberOfVisibleColumns
     });
   }
-  if (canEditContent == "1" || props.displayRole == "instructor") {
+  if (canViewUnassignedContent == "1" || props.displayRole == "instructor") {
     return /* @__PURE__ */ React.createElement(AuthorCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -206,7 +207,7 @@ function StudentActivity({courseId, doenetId, itemInfo, numberOfVisibleColumns, 
 }
 function AuthorCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId}));
-  console.log("authorItemOrder", courseId, sectionId, authorItemOrder);
+  console.log(`authorItemOrder CourseId-${courseId}-SectionId-${sectionId}-`, authorItemOrder);
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
   if (definedForSectionId.current != sectionId) {
@@ -391,23 +392,33 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
     }));
   }
   if (itemInfo.isOpen) {
-    let childRowsJSX = itemInfo.content.map((pageOrOrder, i) => {
-      if (pageOrOrder?.type == "order") {
+    let childRowsJSX = itemInfo.content.map((collectionLinkPageOrOrder, i) => {
+      if (collectionLinkPageOrOrder?.type == "order") {
         return /* @__PURE__ */ React.createElement(Order, {
           key: `Order${i}${doenetId}`,
           courseNavigatorProps,
-          orderInfo: pageOrOrder,
+          orderInfo: collectionLinkPageOrOrder,
           courseId,
           activityDoenetId: doenetId,
           numberOfVisibleColumns: 1,
           indentLevel: indentLevel + 1
         });
-      } else {
+      } else if (!collectionLinkPageOrOrder?.type) {
         return /* @__PURE__ */ React.createElement(Page, {
           key: `NavPage${i}`,
           courseNavigatorProps,
           courseId,
-          doenetId: pageOrOrder,
+          doenetId: collectionLinkPageOrOrder,
+          activityDoenetId: itemInfo.doenetId,
+          numberOfVisibleColumns,
+          indentLevel: indentLevel + 1
+        });
+      } else if (collectionLinkPageOrOrder?.type == "collectionLink") {
+        return /* @__PURE__ */ React.createElement(CollectionLink, {
+          key: `CollectionLink${i}`,
+          courseNavigatorProps,
+          courseId,
+          collectionLinkInfo: collectionLinkPageOrOrder,
           activityDoenetId: itemInfo.doenetId,
           numberOfVisibleColumns,
           indentLevel: indentLevel + 1
@@ -450,15 +461,25 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
   let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
   let contentJSX = [];
   if (behavior == "sequence") {
-    contentJSX = content.map((pageOrOrder, i) => {
-      if (pageOrOrder?.type == "order") {
+    contentJSX = content.map((collectionLinkPageOrOrder, i) => {
+      if (collectionLinkPageOrOrder?.type == "order") {
         return /* @__PURE__ */ React.createElement(Order, {
           key: `Order${i}${doenetId}`,
           courseNavigatorProps,
-          orderInfo: pageOrOrder,
+          orderInfo: collectionLinkPageOrOrder,
           courseId,
           activityDoenetId: doenetId,
           numberOfVisibleColumns: 1,
+          indentLevel: indentLevel + 1
+        });
+      } else if (collectionLinkPageOrOrder?.type == "collectionLink") {
+        return /* @__PURE__ */ React.createElement(CollectionLink, {
+          key: `CollectionLink${i}`,
+          courseNavigatorProps,
+          courseId,
+          collectionLinkInfo: collectionLinkPageOrOrder,
+          activityDoenetId: doenetId,
+          numberOfVisibleColumns,
           indentLevel: indentLevel + 1
         });
       } else {
@@ -466,7 +487,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
           key: `NavPage${i}`,
           courseNavigatorProps,
           courseId,
-          doenetId: pageOrOrder,
+          doenetId: collectionLinkPageOrOrder,
           activityDoenetId,
           numberOfVisibleColumns,
           indentLevel: indentLevel + 1,
@@ -475,15 +496,25 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
       }
     });
   } else {
-    contentJSX = content.map((pageOrOrder, i) => {
-      if (pageOrOrder?.type == "order") {
+    contentJSX = content.map((collectionLinkPageOrOrder, i) => {
+      if (collectionLinkPageOrOrder?.type == "order") {
         return /* @__PURE__ */ React.createElement(Order, {
           key: `Order${i}${doenetId}`,
           courseNavigatorProps,
-          orderInfo: pageOrOrder,
+          orderInfo: collectionLinkPageOrOrder,
           courseId,
           activityDoenetId: doenetId,
           numberOfVisibleColumns: 1,
+          indentLevel: indentLevel + 1
+        });
+      } else if (collectionLinkPageOrOrder?.type == "collectionLink") {
+        return /* @__PURE__ */ React.createElement(CollectionLink, {
+          key: `CollectionLink${i}`,
+          courseNavigatorProps,
+          courseId,
+          collectionLinkInfo: collectionLinkPageOrOrder,
+          activityDoenetId: doenetId,
+          numberOfVisibleColumns,
           indentLevel: indentLevel + 1
         });
       } else {
@@ -491,7 +522,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
           key: `NavPage${i}`,
           courseNavigatorProps,
           courseId,
-          doenetId: pageOrOrder,
+          doenetId: collectionLinkPageOrOrder,
           activityDoenetId,
           numberOfVisibleColumns,
           indentLevel: indentLevel + 1
@@ -552,7 +583,67 @@ function Page({courseId, doenetId, activityDoenetId, numberOfVisibleColumns, ind
     isBeingCut: recoilPageInfo.isBeingCut
   });
 }
-function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon, label, isSelected = false, indentLevel = 0, numbered, hasToggle = false, isOpen, isBeingCut = false, courseNavigatorProps}) {
+function CollectionLinkChildren({courseId, indentLevel, pages, courseNavigatorProps}) {
+  if (!pages) {
+    return null;
+  }
+  let pageLinksJSX = [];
+  for (let [i, pageId] of pages.entries()) {
+    pageLinksJSX.push(/* @__PURE__ */ React.createElement(PageLink, {
+      courseId,
+      doenetId: pageId,
+      number: i + 1,
+      indentLevel: indentLevel + 1,
+      courseNavigatorProps
+    }));
+  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, pageLinksJSX);
+}
+function CollectionLink({courseId, numberOfVisibleColumns, indentLevel, number = null, courseNavigatorProps, collectionLinkInfo}) {
+  let {doenetId} = collectionLinkInfo;
+  let collectionLinkRecoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
+  let collectionLinkChildrenJSX = null;
+  if (collectionLinkRecoilPageInfo.isOpen) {
+    let pages = collectionLinkRecoilPageInfo.pages;
+    collectionLinkChildrenJSX = /* @__PURE__ */ React.createElement(CollectionLinkChildren, {
+      courseId,
+      indentLevel,
+      pages,
+      courseNavigatorProps
+    });
+  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
+    courseId,
+    courseNavigatorProps,
+    hasToggle: true,
+    isOpen: collectionLinkRecoilPageInfo.isOpen,
+    numberOfVisibleColumns,
+    icon: faLink,
+    label: collectionLinkRecoilPageInfo.label,
+    doenetId,
+    indentLevel,
+    numbered: number,
+    isSelected: collectionLinkRecoilPageInfo.isSelected,
+    isBeingCut: collectionLinkRecoilPageInfo.isBeingCut
+  }), collectionLinkChildrenJSX);
+}
+function PageLink({courseId, doenetId, indentLevel, numberOfVisibleColumns, number = null, courseNavigatorProps}) {
+  let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
+  return /* @__PURE__ */ React.createElement(Row, {
+    courseId,
+    itemType: "pageLink",
+    courseNavigatorProps,
+    numberOfVisibleColumns,
+    icon: faLink,
+    label: `Page Link of ${recoilPageInfo.label}`,
+    doenetId,
+    indentLevel,
+    numbered: number,
+    isSelected: recoilPageInfo.isSelected,
+    isBeingCut: recoilPageInfo.isBeingCut
+  });
+}
+function Row({courseId, doenetId, itemType, numberOfVisibleColumns, columnsJSX = [], icon, label, isSelected = false, indentLevel = 0, numbered, hasToggle = false, isOpen, isBeingCut = false, courseNavigatorProps}) {
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set}) => () => {
@@ -566,8 +657,6 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     e.preventDefault();
     e.stopPropagation();
     let selectedItems = await snapshot.getPromise(selectedCourseItems);
-    let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
-    console.log("clickedItem", clickedItem.type, clickedItem.doenetId, clickedItem);
     let newSelectedItems = [];
     if (selectedItems.length == 0) {
       newSelectedItems = [doenetId];
@@ -673,8 +762,12 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
         }
       }
     }
+    let singleItem = null;
+    if (newSelectedItems.length == 1) {
+      singleItem = await snapshot.getPromise(itemByDoenetId(newSelectedItems[0]));
+    }
     set(selectedCourseItems, newSelectedItems);
-    courseNavigatorProps?.updateSelectMenu({selectedItems: newSelectedItems});
+    courseNavigatorProps?.updateSelectMenu({selectedItems: newSelectedItems, singleItem});
   }, [doenetId, courseId, setSelectionMenu]);
   let bgcolor = "var(--canvas)";
   let color = "var(--canvastext)";
@@ -686,7 +779,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
   }
   if (hasToggle) {
     openCloseIndicator = isOpen ? /* @__PURE__ */ React.createElement(ToggleCloseIconStyling, {
-      "data-cy": "folderToggleCloseIcon",
+      "data-text": "folderToggleCloseIcon",
       "aria-expanded": "true",
       style: {backgroundColor: bgcolor},
       onClick: () => {
@@ -704,7 +797,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faChevronDown
     })) : /* @__PURE__ */ React.createElement(ToggleCloseIconStyling, {
-      "data-cy": "folderToggleOpenIcon",
+      "data-test": "folderToggleOpenIcon",
       "aria-expanded": "false",
       style: {backgroundColor: bgcolor},
       onClick: () => {
@@ -824,13 +917,13 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
   return /* @__PURE__ */ React.createElement(React.Fragment, null, activityJSX);
 }
 function getColumnsCSS(numberOfVisibleColumns) {
-  let columnsCSS = "250px repeat(4,1fr)";
+  let columnsCSS = "300px repeat(4,1fr)";
   if (numberOfVisibleColumns === 4) {
-    columnsCSS = "250px repeat(3,1fr)";
+    columnsCSS = "300px repeat(3,1fr)";
   } else if (numberOfVisibleColumns === 3) {
-    columnsCSS = "250px 1fr 1fr";
+    columnsCSS = "300px 1fr 1fr";
   } else if (numberOfVisibleColumns === 2) {
-    columnsCSS = "250px 1fr";
+    columnsCSS = "300px 1fr";
   } else if (numberOfVisibleColumns === 1) {
     columnsCSS = "100%";
   }

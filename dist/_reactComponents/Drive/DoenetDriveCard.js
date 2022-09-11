@@ -80,12 +80,9 @@ const DriveCard = (props) => {
     }
   }, /* @__PURE__ */ React.createElement("b", {
     "data-test": "driveCardLabel"
-  }, props.label)), props?.role?.map((item) => {
-    return /* @__PURE__ */ React.createElement(LabelContainer, {
-      id: "role-label",
-      key: item,
-      style: {color: props.isSelected ? "black" : "var(--canvastext)"}
-    }, item);
-  })));
+  }, props.label)), /* @__PURE__ */ React.createElement(LabelContainer, {
+    id: "role-label",
+    style: {color: props.isSelected ? "black" : "var(--canvastext)"}
+  }, props.roleLabel)));
 };
 export default DriveCard;

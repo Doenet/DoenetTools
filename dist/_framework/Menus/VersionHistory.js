@@ -259,7 +259,7 @@ export default function VersionHistory(props) {
         break;
       }
     }
-    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId));
+    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId)).toString();
     set(viewerDoenetMLAtom, doenetML);
     set(updateTextEditorDoenetMLAtom, doenetML);
   });

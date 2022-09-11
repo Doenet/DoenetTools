@@ -5,7 +5,7 @@ import { serializedComponentsReplacer, serializedComponentsReviver } from '../Co
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererState } from './renderers/useDoenetRenderer';
-import { atomFamily, useRecoilCallback } from 'recoil';
+import { atom, atomFamily, useRecoilCallback } from 'recoil';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
@@ -17,6 +17,11 @@ import cssesc from 'cssesc';
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
   default: {},
+})
+
+export const scrollableContainerAtom = atom({
+  key: "scollParentAtom",
+  default: null
 })
 
 // Two notes about props.flags of PageViewer
@@ -158,7 +163,7 @@ export default function PageViewer(props) {
           coreCreated.current = true;
           preventMoreAnimations.current = false;
           setStage('coreCreated');
-          props.coreCreatedCallback?.();
+          props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
             // we already initialized renderers before core was created
@@ -336,10 +341,25 @@ export default function PageViewer(props) {
     }
   }
 
+  function forceRendererStateDisabledShowCorrectness(rendererState) {
+    for (let componentName in rendererState) {
+      let stateValues = rendererState[componentName].stateValues;
+      if(stateValues.disabled === false) {
+        stateValues.disabled = true;
+      }
+      if(stateValues.showCorrectness === false) {
+        stateValues.showCorrectness = true;
+      }
+
+    }
+  }
 
   function initializeRenderers(args) {
 
     if (args.rendererState) {
+      if (props.snapshotOnly) {
+        forceRendererStateDisabledShowCorrectness(args.rendererState)
+      }
       for (let componentName in args.rendererState) {
         updateRendererSVsWithRecoil({
           coreId: coreId.current,
@@ -601,6 +621,10 @@ export default function PageViewer(props) {
           userId: props.userId,
           requestedVariantIndex,
           allowLoadState: props.flags.allowLoadState,
+          showCorrectness: props.flags.showCorrectness,
+          solutionDisplayMode: props.flags.solutionDisplayMode,
+          showFeedback: props.flags.showFeedback,
+          showHints: props.flags.showHints,
         }
       }
 
@@ -733,6 +757,7 @@ export default function PageViewer(props) {
   }
 
   function startCore() {
+
 
     //Kill the current core if it exists
     if (coreWorker.current) {
@@ -931,7 +956,7 @@ export default function PageViewer(props) {
 
   }
 
-  if (props.hideWhenInactive && !props.pageIsActive) {
+  if (props.hideWhenNotCurrent && !props.pageIsCurrent) {
     return null;
   }
 

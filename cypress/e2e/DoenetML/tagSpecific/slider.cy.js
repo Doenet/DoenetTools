@@ -167,7 +167,7 @@ describe('Slider Tag Tests', function () {
 
     cy.get("#\\/mi textarea").type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true })
     // use booleaninput to wait, since above has no effect
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/b').should('have.text', 'true');
 
     cy.get('#\\/sv').should('have.text', '3')
@@ -184,7 +184,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('drag handle past below document and past end sets to maximum 10');
     cy.get('#\\/_document1')
-      .trigger('mousedown', numberToPx2(3), 100)
+      .trigger('mousedown', numberToPx2(3), 50)
       .trigger('mousemove', numberToPx2(25), 400, {force: true})
       .trigger('mouseup')
 
@@ -202,7 +202,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('hold down mouse at 6');
     cy.get('#\\/_document1')
-      .trigger('mousedown', numberToPx2(6), 100)
+      .trigger('mousedown', numberToPx2(6), 50)
 
     cy.get('#\\/sv').should('have.text', '6')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
@@ -216,7 +216,7 @@ describe('Slider Tag Tests', function () {
       expect(stateVariables['/mi'].stateValues.value).eq(6)
     })
 
-    cy.log('drag to 2, but above lisder');
+    cy.log('drag to 2, but above slider');
     cy.get('#\\/_document1')
       .trigger('mousemove', numberToPx2(2), 0)
 
