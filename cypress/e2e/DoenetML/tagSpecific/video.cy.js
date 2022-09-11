@@ -381,7 +381,7 @@ describe('Video Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(1);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
-      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[0]).lt(0.5)
       expect(theSegment[1]).gt(0.5).lt(1.5)
     })
 
@@ -403,7 +403,7 @@ describe('Video Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(1);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
-      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[0]).lt(0.5)
       expect(theSegment[1]).gt(2.5).lt(3.5)
     })
 
@@ -425,7 +425,7 @@ describe('Video Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(1);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
-      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[0]).lt(0.5)
       expect(theSegment[1]).gt(3.5).lt(4.5)
     })
 
@@ -451,7 +451,7 @@ describe('Video Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
-      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[0]).lt(0.5)
       expect(theSegment[1]).gt(3.5).lt(4.5)
       theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
       expect(theSegment[0]).gt(59.5).lt(60.5)
@@ -475,7 +475,7 @@ describe('Video Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
-      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[0]).lt(0.5)
       expect(theSegment[1]).gt(3.5).lt(4.5)
       theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
       expect(theSegment[0]).gt(59.5).lt(60.5)
@@ -505,7 +505,7 @@ describe('Video Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
-      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[0]).lt(0.5)
       expect(theSegment[1]).gt(3.5).lt(4.5)
       theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
       expect(theSegment[0]).gt(59.5).lt(60.5)
@@ -529,7 +529,7 @@ describe('Video Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
-      expect(theSegment[0]).lt(0.1)
+      expect(theSegment[0]).lt(0.5)
       expect(theSegment[1]).gt(4.5).lt(5.5)
       theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
       expect(theSegment[0]).gt(59.5).lt(60.5)
