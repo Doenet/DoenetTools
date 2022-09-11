@@ -5,34 +5,28 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
-include "db_connection.php";
-
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
-
-$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
+require 'defineDBAndUserAndCourseInfo.php';
 
 $success = TRUE;
 $message = "";
+
+
+if ($userId == '' && $examUserId == ''){
+  $success = FALSE;
+  $message = "You need to be signed in to view courses.";
+}
+
+$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
 if ($courseId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing courseId';
 }
 
-//Check if enrolled in course
-if ($success){
-$sql = "
-SELECT userId
-FROM course_user
-WHERE userId='$userId'
-AND courseId='$courseId'
-";
-$result = $conn->query($sql); 
-  if ($result->num_rows < 1) {
-    $success = FALSE;
-    $message = "No access to view course materials.";
-  }
+// Check if enrolled in course
+if (!array_key_exists($courseId,$permissionsAndSettingsByCourseId)){
+  $success = FALSE;
+  $message = "No access to view course materials.";
 }
 
 //Get Assignment data
