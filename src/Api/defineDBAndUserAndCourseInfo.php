@@ -1,35 +1,34 @@
 <?php
 //TODO: Kevin, Emilio – discus True / False vs '1' / '0' returns
+//Note using object oriented variables to avoild variable collisions
 
-include "db_connection.php";
+require_once "db_connection.php";
 error_reporting(E_ERROR | E_PARSE);
 
 
-// $jwtArray = include "jwtArray.php"; //TODO: migrate to this one 
-
-$key = $ini_array['key'];
+$settings->key = $ini_array['key'];
 use \Firebase\JWT\JWT;
 require_once "vendor/autoload.php";
 
 
-$jwt =  mysqli_real_escape_string($conn,$_COOKIE["JWT"]);
-$jwt_array = array();
+$settings->jwt =  mysqli_real_escape_string($conn,$_COOKIE["JWT"]);
+$settings->jwt_array = array();
 
-if ($jwt != ""){
-    $jwt_array = (array) JWT::decode($jwt, $key, array('HS256'));
-    $userId = array_key_exists("userId",$jwt_array) ? $jwt_array['userId'] : "";
+if ($settings->jwt != ""){
+    $settings->jwt_array = (array) JWT::decode($settings->jwt, $settings->key, array('HS256'));
+    $userId = array_key_exists("userId",$settings->jwt_array) ? $settings->jwt_array['userId'] : "";
 }
 
-$ejwt_array = array();
+$settings->ejwt_array = array();
 if (array_key_exists("EJWT",$_COOKIE)){
   //Keep euserId and userId separate keys so we know the source
-  $ejwt =  mysqli_real_escape_string($conn,$_COOKIE["EJWT"]);
+  $settings->ejwt =  mysqli_real_escape_string($conn,$_COOKIE["EJWT"]);
 
-  if ($ejwt != ""){
-    $ejwt_array = (array) JWT::decode($ejwt, $key, array('HS256'));
-    $examUserId = array_key_exists("examineeUserId",$ejwt_array) ? $ejwt_array['examineeUserId'] : "";
-    $examDoenetId = array_key_exists("doenetId",$ejwt_array) ? $ejwt_array['doenetId'] : "";
-    $examPasscode = array_key_exists("examPasscode",$ejwt_array) ? $ejwt_array['examPasscode'] : "";
+  if ($settings->ejwt != ""){
+    $settings->ejwt_array = (array) JWT::decode($settings->ejwt, $settings->key, array('HS256'));
+    $examUserId = array_key_exists("examineeUserId",$settings->ejwt_array) ? $settings->ejwt_array['examineeUserId'] : "";
+    $examDoenetId = array_key_exists("doenetId",$settings->ejwt_array) ? $settings->ejwt_array['doenetId'] : "";
+    $examPasscode = array_key_exists("examPasscode",$settings->ejwt_array) ? $settings->ejwt_array['examPasscode'] : "";
   }
 }
 
@@ -46,12 +45,13 @@ if (array_key_exists("EJWT",$_COOKIE)){
 //If it does match then return student permissions.
 
 $permissionsAndSettings = [];
+$permissionsAndSettingsByCourseId = [];
 
-if (array_key_exists("examineeUserId",$ejwt_array)){
+if (array_key_exists("examineeUserId",$settings->ejwt_array)){
 
     //TODO: code should be by proctor
     //TEST the examcode
-    $sql = "
+    $settings->sql = "
     SELECT c.courseId
     FROM course_content AS cc
     INNER JOIN course AS c
@@ -60,10 +60,10 @@ if (array_key_exists("examineeUserId",$ejwt_array)){
     AND c.examPasscode = '$examPasscode'
     ";
 
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
+    $settings->result = $conn->query($settings->sql);
+    if ($settings->result->num_rows > 0) {
 
-    $sql = "SELECT
+    $settings->sql = "SELECT
     c.courseId,
     c.label,
     c.isPublic,
@@ -77,19 +77,19 @@ if (array_key_exists("examineeUserId",$ejwt_array)){
     AND c.isDeleted = '0'
     ";
 
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
+    $settings->result = $conn->query($settings->sql);
+    if ($settings->result->num_rows > 0) {
+        $settings->row = $settings->result->fetch_assoc();
 
-        $oneCourse = [
-            'courseId' => $row['courseId'],
-            'label' => $row['label'],
-            'isPublic' => $row['isPublic'],
-            'image' => $row['image'],
-            'color' => $row['color'],
-            'defaultRoleId' => $row['defaultRoleId'],
-            'roleId' => $row['roleId'],
-            'roleLabel' => $row['roleLabel'],
+        $settings->oneCourse = [
+            'courseId' => $settings->row['courseId'],
+            'label' => $settings->row['label'],
+            'isPublic' => $settings->row['isPublic'],
+            'image' => $settings->row['image'],
+            'color' => $settings->row['color'],
+            'defaultRoleId' => $settings->row['defaultRoleId'],
+            'roleId' => $settings->row['roleId'],
+            'roleLabel' => $settings->row['roleLabel'],
             'isIncludedInGradebook' => '1',
             'canViewContentSource' => '0',
             'canEditContent' => '0',
@@ -106,14 +106,15 @@ if (array_key_exists("examineeUserId",$ejwt_array)){
             'dataAccessPermission' => '0',
             'isOwner' => '0',
         ];
-        array_push($permissionsAndSettings, $oneCourse);
+        array_push($permissionsAndSettings, $settings->oneCourse);
+        $permissionsAndSettingsByCourseId[$settings->row['courseId']] = $settings->oneCourse;
     }
     }
 
 }else{
 
 
-    $sql = "SELECT
+    $settings->sql = "SELECT
     c.courseId,
     c.label,
     c.isPublic,
@@ -148,36 +149,38 @@ if (array_key_exists("examineeUserId",$ejwt_array)){
     ";
 
 
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $oneCourse = [
-                'courseId' => $row['courseId'],
-                'label' => $row['label'],
-                'isPublic' => $row['isPublic'],
-                'image' => $row['image'],
-                'color' => $row['color'],
-                'defaultRoleId' => $row['defaultRoleId'],
-                'roleId' => $row['roleId'],
-                'roleLabel' => $row['roleLabel'],
-                'isIncludedInGradebook' => $row['isIncludedInGradebook'],
-                'canViewContentSource' => $row['canViewContentSource'],
-                'canEditContent' => $row['canEditContent'],
-                'canPublishContent' => $row['canPublishContent'],
-                'canViewUnassignedContent' => $row['canViewUnassignedContent'],
-                'canProctor' => $row['canProctor'],
-                'canViewAndModifyGrades' => $row['canViewAndModifyGrades'],
-                'canViewActivitySettings' => $row['canViewActivitySettings'],
+    $settings->result = $conn->query($settings->sql);
+    if ($settings->result->num_rows > 0) {
+        while ($settings->row = $settings->result->fetch_assoc()) {
+            $settings->oneCourse = [
+                'courseId' => $settings->row['courseId'],
+                'label' => $settings->row['label'],
+                'isPublic' => $settings->row['isPublic'],
+                'image' => $settings->row['image'],
+                'color' => $settings->row['color'],
+                'defaultRoleId' => $settings->row['defaultRoleId'],
+                'roleId' => $settings->row['roleId'],
+                'roleLabel' => $settings->row['roleLabel'],
+                'isIncludedInGradebook' => $settings->row['isIncludedInGradebook'],
+                'canViewContentSource' => $settings->row['canViewContentSource'],
+                'canEditContent' => $settings->row['canEditContent'],
+                'canPublishContent' => $settings->row['canPublishContent'],
+                'canViewUnassignedContent' => $settings->row['canViewUnassignedContent'],
+                'canProctor' => $settings->row['canProctor'],
+                'canViewAndModifyGrades' => $settings->row['canViewAndModifyGrades'],
+                'canViewActivitySettings' => $settings->row['canViewActivitySettings'],
                 'canModifyActivitySettings' =>
-                    $row['canModifyActivitySettings'],
-                'canModifyCourseSettings' => $row['canModifyCourseSettings'],
-                'canViewUsers' => $row['canViewUsers'],
-                'canManageUsers' => $row['canManageUsers'],
-                'isAdmin' => $row['isAdmin'],
-                'dataAccessPermission' => $row['dataAccessPermission'],
-                'isOwner' => $row['isOwner'],
+                    $settings->row['canModifyActivitySettings'],
+                'canModifyCourseSettings' => $settings->row['canModifyCourseSettings'],
+                'canViewUsers' => $settings->row['canViewUsers'],
+                'canManageUsers' => $settings->row['canManageUsers'],
+                'isAdmin' => $settings->row['isAdmin'],
+                'dataAccessPermission' => $settings->row['dataAccessPermission'],
+                'isOwner' => $settings->row['isOwner'],
             ];
-            array_push($permissionsAndSettings, $oneCourse);
+            array_push($permissionsAndSettings, $settings->oneCourse);
+            $permissionsAndSettingsByCourseId[$settings->row['courseId']] = $settings->oneCourse;
+
         }
     }
 }

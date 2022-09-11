@@ -5,11 +5,9 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
-include 'defineDBAndUserAndCourseInfo.php';
-
+require 'defineDBAndUserAndCourseInfo.php';
 
 // var_dump($permissionsAndSettings);
-
 
 
 $conn->close();
