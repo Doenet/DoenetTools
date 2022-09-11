@@ -2094,6 +2094,76 @@ describe('SelectFromSequence Tag Tests', function () {
 
   });
 
+  it("selectfromsequence depending on selectfromsequence handles reload 2", () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    // doenetML snippet based on course content that was crashing
+
+    let doenetML = `
+    <text>a</text>
+    <selectFromSequence assignNames='aa' step=' 0.01' from='0.01' to='1' />
+    <selectFromSequence assignNames='bb' step=' 0.00001' from='0.00001' to='0.001' />
+    
+    <number name='a_over_b'>$aa / $bb </number>
+    
+    <sequence name="excludeForS02" from="round($a_over_b - 10)" to="round($a_over_b + 10)" />
+    
+    <selectFromSequence assignNames='S02' from='round(($a_over_b )*0.5)' to='round(($a_over_b )*1.5)' exclude="$excludeForS02" />
+    <selectFromSequence assignNames='S03' from='round(($a_over_b )*1.1)' to='round(($a_over_b )*4.0)' />
+    
+    <math name='S_critical' simplify='full'>$a_over_b</math>
+    
+    <answer name='critNumAns'>
+    <mathinput name="mi" />
+    <award>$S_critical</award>
+    </answer>
+    <p><math name="m" copySource="mi" /></p>
+    <p><math name="m2" copySource="critNumAns.submittedResponse" /></p>
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.get('#\\/mi textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'x');
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', 'x');
+
+    cy.wait(2000);  // wait for debounce
+
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'x');
+
+    cy.log('core has not crashed and processes change in bi')
+    cy.get('#\\/mi textarea').type("{end}{backspace}y", { force: true }).blur();
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'y');
+
+    cy.get('#\\/mi textarea').type("{enter}", { force: true });
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'y');
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', 'y');
+
+  });
 
 
 })
