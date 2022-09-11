@@ -376,13 +376,17 @@ export default class Video extends BlockComponent {
     } else {
       segmentsWatched = [];
       let addedNew = false;
+
+      // if merge new segment with previous segments if it almost overlaps
+      // Note: include 0.2 buffer since there is variation in the timestamps youtube reports
+      // when pause and then continue
       for (let [ind, seg] of previousSegments.entries()) {
-        if (endTime < seg[0]) {
+        if (endTime < seg[0] - 0.2) {
           segmentsWatched.push([beginTime, endTime])
           segmentsWatched.push(...previousSegments.slice(ind));
           addedNew = true;
           break;
-        } else if (beginTime > seg[1]) {
+        } else if (beginTime > seg[1] + 0.2) {
           segmentsWatched.push(seg);
           continue;
         }
