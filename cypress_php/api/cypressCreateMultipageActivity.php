@@ -19,10 +19,13 @@ $pageDoenetId1 = $_POST['pageDoenetId1'];
 $pageDoenetId2 = $_POST['pageDoenetId2'];
 $pageDoenetId3 = $_POST['pageDoenetId3'];
 $pageDoenetId4 = $_POST['pageDoenetId4'];
+$shuffleDoenetId = $_POST['shuffleDoenetId'];
 $doenetML1 = $_POST['doenetML1'];
 $doenetML2 = $_POST['doenetML2'];
 $doenetML3 = $_POST['doenetML3'];
 $doenetML4 = $_POST['doenetML4'];
+
+$shufflePages = $_POST['shufflePages'];
 
 if ($parentDoenetId == ""){
   $parentDoenetId = $courseId;
@@ -64,6 +67,10 @@ if ($success){
       }
     }
 
+    if($shufflePages == "true") {
+      $contentJSON = '{"type":"order", "content":['.$contentJSON.'],"behavior":"shuffle","doenetId":"'.$shuffleDoenetId.'","numberToSelect":1, "withReplacement": false}';
+    }
+    
     $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": false,"content":['.$contentJSON.'],"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 
     $sql = "SELECT sortOrder
