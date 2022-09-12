@@ -84,9 +84,9 @@ Cypress.Commands.add("createActivity", ({courseId,doenetId,parentDoenetId,pageDo
 });
 
 
-Cypress.Commands.add("createMultipageActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4,doenetML1,doenetML2,doenetML3,doenetML4}) => {
+Cypress.Commands.add("createMultipageActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4,doenetML1,doenetML2,doenetML3,doenetML4,shuffleDoenetId,shufflePages}) => {
   cy.log(courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4)
-  cy.request('POST', `/cyapi/cypressCreateMultipageActivity.php`, {courseId, doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4,doenetML1,doenetML2,doenetML3,doenetML4})
+  cy.request('POST', `/cyapi/cypressCreateMultipageActivity.php`, {courseId, doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,pageDoenetId3,pageDoenetId4,doenetML1,doenetML2,doenetML3,doenetML4,shuffleDoenetId,shufflePages})
     // .then((resp)=>{
     //   cy.log(resp.body)
     // })
