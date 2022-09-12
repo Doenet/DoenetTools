@@ -1,11 +1,8 @@
 /* Customize the label (the container) */
 .container {
-    display: inline;
-    width: 24px;
-    height: 24px;
+    /* display: inline-block; */
     position: relative;
     padding-left: 24px;
-    margin-right: 12px;
     margin-bottom: 12px;
     cursor: pointer;
     -webkit-user-select: none;
@@ -15,12 +12,11 @@
 }
 
 .button-container {
-    /* display: inline-block; */
-    width: 24px;
-    height: 24px;
-    /* position: relative; */
+    display: inline-block;
+    position: relative;
     /* padding-left: 30px; */
     margin-bottom: 12px;
+    margin-right: 2px;
     cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -42,22 +38,28 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 24px;
-    width: 24px;
+    height: 18px;
+    width: 18px;
     background-color: #eee;
     border-style: solid;
     border-color: #000;
     border-radius: var(--mainBorderRadius);
 }
   
-/* On mouse-over, add a grey background color */
+/* On mouse-over, add a light blue background color */
 .container:hover input ~ .checkmark {
     background-color: var(--lightBlue);
 }
   
-/* When the checkbox is checked, add a blue background */
+/* When the checkbox is checked, add a dark blue background */
 .container input:checked ~ .checkmark {
     background-color: var(--mainBlue);
+}
+
+/* When a checkbox has focus, add a dark blue outline */
+.container:focus-within input ~ .checkmark {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
 }
   
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -74,8 +76,8 @@
   
 /* Style the checkmark/indicator */
 .container .checkmark:after {
-    left: 8px;
-    top: 4px;
+    left: 5px;
+    top: 1px;
     width: 5px;
     height: 10px;
     border: solid white;

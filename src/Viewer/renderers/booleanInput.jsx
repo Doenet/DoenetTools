@@ -32,7 +32,7 @@ const Button = styled.button `
 `;
 
 export default React.memo(function BooleanInput(props) {
-  let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   BooleanInput.baseStateVariable = "value";
 
@@ -229,10 +229,11 @@ export default React.memo(function BooleanInput(props) {
         disabled={disabled}
       />
       <span className="checkmark"></span>
-      <span style={{marginLeft: "8px"}}>{label}</span>
+      {label != "" ? <span style={{marginLeft: "2px"}}>{label}</span> : <span>{label}</span>}
     </label>
     {checkWorkButton}
   }
+  console.log(label);
 
   return <React.Fragment>
     <span id={id} className="button-container">
