@@ -19,7 +19,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 12px;
+  margin: 0px 12px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -32,6 +32,11 @@ const TextArea = styled.textarea `
   height: ${props => props.textAreaHeight}; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
   border: ${props => props.surroundingBorder}; // Turns blue on focus
+
+  &:focus {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
+  }
 `;
 
 const Input = styled.input `
@@ -39,6 +44,11 @@ const Input = styled.input `
   height: 20px; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
   border: ${props => props.surroundingBorder}; // Turns blue on focus
+
+  &:focus {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
+  }
 `;
 
 export default function TextInput(props) {
@@ -170,9 +180,6 @@ export default function TextInput(props) {
 
   // textInput turns blue when focused, otherwise maintains the main border
   let surroundingBorder = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
-  if (focused.current) {
-    surroundingBorder = "2px solid var(--lightBlue)";
-  }
 
   // Assume we don't have a check work button
   let checkWorkButton = null;
@@ -295,6 +302,8 @@ export default function TextInput(props) {
       textAreaWidth={textAreaWidth}
       textAreaHeight={textAreaHeight}
       surroundingBorder={surroundingBorder}
+      style={{margin: "0px 12px 12px 0px"}}
+
     />
   } else {
     input = <Input
@@ -309,12 +318,13 @@ export default function TextInput(props) {
       onFocus={handleFocus}
       inputWidth={inputWidth}
       surroundingBorder={surroundingBorder}
+      style={{margin: "0px 12px 12px 0px"}}
     />
   }
 
   return <React.Fragment>
     <a name={name} />
-    <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px", display: "flex"}}>
+    <span className="textInputSurroundingBox" id={name} style={{display: "inline-flex"}}>
       {input}
       {checkWorkButton}
     </span>
