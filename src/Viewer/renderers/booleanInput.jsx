@@ -89,7 +89,7 @@ export default React.memo(function BooleanInput(props) {
 
   let disabled = SVs.disabled;
 
-  const inputKey = name + '_input';
+  const inputKey = id + '_input';
 
   let checkWorkStyle = {
     cursor: 'pointer',
@@ -233,7 +233,6 @@ export default React.memo(function BooleanInput(props) {
     </label>
     {checkWorkButton}
   }
-  console.log(label);
 
   return <React.Fragment>
     <span id={id} className="button-container">
