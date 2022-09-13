@@ -229,7 +229,7 @@ export default React.memo(function BooleanInput(props) {
         disabled={disabled}
       />
       <span className="checkmark"></span>
-      <span style={{marginLeft: "8px"}}>{label}</span>
+      {label != "" ? <span style={{marginLeft: "2px"}}>{label}</span> : <span>{label}</span>}
     </label>
     {checkWorkButton}
   }
