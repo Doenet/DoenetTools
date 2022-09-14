@@ -2305,7 +2305,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).clear().type(`hellothere`).blur();
 
       cy.log('click boolean input to know when core has finished processing')
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true')
 
       cy.log('Test value displayed in browser')
@@ -2342,7 +2342,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).clear().type(`hello  there`).blur();
 
       cy.log('click boolean input to know when core has finished processing')
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'false')
 
       cy.log('Test value displayed in browser')
@@ -2396,7 +2396,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -2501,7 +2501,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -2607,7 +2607,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -2712,7 +2712,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -6438,7 +6438,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -6543,7 +6543,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -6649,7 +6649,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -6755,7 +6755,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
+      let booleaninputAnchor = cesc('#' + booleaninputName);
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
@@ -15832,7 +15832,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log("toggle inline")
-      cy.get('#\\/inline_input').click();
+      cy.get('#\\/inline').click();
       cy.get(`${choiceinputAnchor} option:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputAnchor).should('have.value', '');
       cy.get(choiceinputSubmitAnchor).should('be.visible');
@@ -15855,7 +15855,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log("toggle inline")
-      cy.get('#\\/inline_input').click();
+      cy.get('#\\/inline').click();
       cy.get(`${choiceinputAnchor} li:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
@@ -15883,7 +15883,7 @@ describe('Answer Tag Tests', function () {
       })
 
       cy.log("toggle inline")
-      cy.get('#\\/inline_input').click();
+      cy.get('#\\/inline').click();
       cy.get(`${choiceinputAnchor} option:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputCorrectAnchor).should('not.exist');
@@ -18346,10 +18346,10 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer15_correct")).should('be.visible');
       cy.get(cesc("#/_answer16_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16]) + "_input").click();
-      cy.get(cesc('#' + inputNames[17]) + "_input").click();
-      cy.get(cesc('#' + inputNames[18]) + "_input").click();
-      cy.get(cesc('#' + inputNames[19]) + "_input").click();
+      cy.get(cesc('#' + inputNames[16])).click();
+      cy.get(cesc('#' + inputNames[17])).click();
+      cy.get(cesc('#' + inputNames[18])).click();
+      cy.get(cesc('#' + inputNames[19])).click();
       cy.get(cesc('#' + inputNames[16]) + "_submit").click();
       cy.get(cesc('#' + inputNames[17]) + "_submit").click();
       cy.get(cesc("#/_answer19_submit")).click();
@@ -18413,10 +18413,10 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer15_incorrect")).should('be.visible');
       cy.get(cesc("#/_answer16_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16]) + "_input").click();
-      cy.get(cesc('#' + inputNames[17]) + "_input").click();
-      cy.get(cesc('#' + inputNames[18]) + "_input").click();
-      cy.get(cesc('#' + inputNames[19]) + "_input").click();
+      cy.get(cesc('#' + inputNames[16])).click();
+      cy.get(cesc('#' + inputNames[17])).click();
+      cy.get(cesc('#' + inputNames[18])).click();
+      cy.get(cesc('#' + inputNames[19])).click();
       cy.get(cesc('#' + inputNames[16]) + "_submit").click();
       cy.get(cesc('#' + inputNames[17]) + "_submit").click();
       cy.get(cesc("#/_answer19_submit")).click();
@@ -18476,9 +18476,9 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer15_correct")).should('be.visible');
       cy.get(cesc("#/_answer16_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16]) + "_input").click();
+      cy.get(cesc('#' + inputNames[16])).click();
       cy.get(cesc('#' + inputNames[17]) + "_input").should('be.disabled')
-      cy.get(cesc('#' + inputNames[18]) + "_input").click();
+      cy.get(cesc('#' + inputNames[18])).click();
       cy.get(cesc('#' + inputNames[19]) + "_input").should('be.disabled')
       cy.get(cesc('#' + inputNames[16]) + "_submit").click();
       cy.get(cesc("#/_answer19_submit")).click();
@@ -18685,10 +18685,10 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer15_correct")).should('be.visible');
       cy.get(cesc("#/_answer16_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16]) + "_input").click();
-      cy.get(cesc('#' + inputNames[17]) + "_input").click();
-      cy.get(cesc('#' + inputNames[18]) + "_input").click();
-      cy.get(cesc('#' + inputNames[19]) + "_input").click();
+      cy.get(cesc('#' + inputNames[16])).click();
+      cy.get(cesc('#' + inputNames[17])).click();
+      cy.get(cesc('#' + inputNames[18])).click();
+      cy.get(cesc('#' + inputNames[19])).click();
       cy.get(cesc('#' + inputNames[16]) + "_submit").click();
       cy.get(cesc('#' + inputNames[17]) + "_submit").click();
       cy.get(cesc("#/_answer19_submit")).click();
@@ -18749,9 +18749,9 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer15_incorrect")).should('be.visible');
       cy.get(cesc("#/_answer16_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16]) + "_input").click();
+      cy.get(cesc('#' + inputNames[16])).click();
       cy.get(cesc('#' + inputNames[17]) + "_input").should('be.disabled')
-      cy.get(cesc('#' + inputNames[18]) + "_input").click();
+      cy.get(cesc('#' + inputNames[18])).click();
       cy.get(cesc('#' + inputNames[19]) + "_input").should('be.disabled')
       cy.get(cesc('#' + inputNames[16]) + "_submit").click();
       cy.get(cesc("#/_answer19_submit")).click();
@@ -18999,7 +18999,7 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
     })
 
-    cy.get('#\\/split_input').click();
+    cy.get('#\\/split').click();
 
     // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
@@ -19013,7 +19013,7 @@ describe('Answer Tag Tests', function () {
     })
 
 
-    cy.get('#\\/split_input').click();
+    cy.get('#\\/split').click();
 
     // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })
@@ -19060,7 +19060,7 @@ describe('Answer Tag Tests', function () {
         expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
       })
 
-      cy.get('#\\/split_input').click();
+      cy.get('#\\/split').click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
@@ -19074,7 +19074,7 @@ describe('Answer Tag Tests', function () {
       })
 
 
-      cy.get('#\\/split_input').click();
+      cy.get('#\\/split').click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
@@ -19123,7 +19123,7 @@ describe('Answer Tag Tests', function () {
         expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
       })
 
-      cy.get('#\\/split_input').click();
+      cy.get('#\\/split').click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
@@ -19137,7 +19137,7 @@ describe('Answer Tag Tests', function () {
       })
 
 
-      cy.get('#\\/split_input').click();
+      cy.get('#\\/split').click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
@@ -19177,7 +19177,7 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
     })
 
-    cy.get('#\\/split_input').click();
+    cy.get('#\\/split').click();
 
     // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
@@ -19191,7 +19191,7 @@ describe('Answer Tag Tests', function () {
     })
 
 
-    cy.get('#\\/split_input').click();
+    cy.get('#\\/split').click();
 
     // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })

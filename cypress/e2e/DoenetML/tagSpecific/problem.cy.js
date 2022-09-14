@@ -964,7 +964,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('switch to section wide checkwork')
 
-      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw').click();
       cy.get('#\\/swcw_input').should('be.checked');
 
 
@@ -1031,7 +1031,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('turn off section wide checkwork')
 
-      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw').click();
       cy.get('#\\/swcw_input').should('not.be.checked');
 
       cy.get(twoxInputSubmitAnchor).should('not.exist');
@@ -1172,7 +1172,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('switch to section wide checkwork')
 
-      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw').click();
       cy.get('#\\/swcw_input').should('be.checked');
 
 
@@ -1239,7 +1239,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('turn off section wide checkwork')
 
-      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw').click();
       cy.get('#\\/swcw_input').should('not.be.checked');
 
       cy.get(twoxInputSubmitAnchor).should('not.exist');
@@ -1380,7 +1380,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('switch to document wide checkwork')
 
-      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw').click();
       cy.get('#\\/dwcw_input').should('be.checked');
 
 
@@ -1447,7 +1447,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('turn off document wide checkwork')
 
-      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw').click();
       cy.get('#\\/dwcw_input').should('not.be.checked');
 
       cy.get(twoxInputSubmitAnchor).should('not.exist');
@@ -1599,7 +1599,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('switch to section wide checkwork')
 
-      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw').click();
       cy.get('#\\/swcw_input').should('be.checked');
 
 
@@ -1672,7 +1672,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('turn off section wide checkwork')
 
-      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw').click();
       cy.get('#\\/swcw_input').should('not.be.checked');
 
       cy.get(twoxInputSubmitAnchor).should('not.exist');
@@ -1829,7 +1829,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('switch to document wide checkwork')
 
-      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw').click();
       cy.get('#\\/dwcw_input').should('be.checked');
 
 
@@ -1902,7 +1902,7 @@ describe('Problem Tag Tests', function () {
 
       cy.log('turn off document wide checkwork')
 
-      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw').click();
       cy.get('#\\/dwcw_input').should('not.be.checked');
 
       cy.get(twoxInputSubmitAnchor).should('not.exist');

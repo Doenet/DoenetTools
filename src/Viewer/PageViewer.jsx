@@ -758,13 +758,6 @@ export default function PageViewer(props) {
 
   function startCore() {
 
-    // don't create core if snapshot only
-    if (props.snapshotOnly) {
-      if (stage !== 'readyToCreateCore') {
-        setStage('readyToCreateCore');
-      }
-      return;
-    }
 
     //Kill the current core if it exists
     if (coreWorker.current) {
@@ -970,7 +963,7 @@ export default function PageViewer(props) {
 
   let noCoreWarning = null;
   let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
-  if (!coreCreated.current && !props.snapshotOnly) {
+  if (!coreCreated.current) {
     if (!documentRenderer) {
       noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
         <p>Initializing....</p>

@@ -10,7 +10,7 @@ export default React.memo(function Label(props) {
   }
 
   if(children.length > 0) {
-    return <span id={id}><a name={id} />{children}</span>;
+    return <span id={id} style={{marginRight: "12px"}}><a name={id}/>{children}</span>;
   } else {
     let label = SVs.value;
 

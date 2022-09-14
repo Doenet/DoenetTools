@@ -60,6 +60,9 @@ export default React.memo(function SpreadsheetRenderer(props) {
           rows: SVs.hiddenRows.map(x => x - 1),
           indicators: false
         }}
+        readOnly = {SVs.disabled}
+        disableVisualSelection = {SVs.disabled}
+        
         // contextMenu={
         //   {
         //     items: {

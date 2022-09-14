@@ -34,6 +34,8 @@ export default class Textinput extends Input {
   static variableForPlainMacro = "value";
   static variableForPlainCopy = "value";
 
+  static processWhenJustUpdatedForNewComponent = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.prefill = {

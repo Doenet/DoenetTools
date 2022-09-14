@@ -622,6 +622,7 @@ export const GradeCategory = ({ courseId, doenetId }) => {
           ['projects', 'Projects'],
           ['participation', 'Participation'],
         ]}
+        dataTest="Grade Category"
         onChange={({ value: val }) => {
           if (recoilValue !== val) {
             // aInfoRef.current.gradeCategory = val;

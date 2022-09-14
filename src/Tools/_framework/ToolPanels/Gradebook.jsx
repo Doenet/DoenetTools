@@ -73,6 +73,7 @@ export const Styles = styled.div`
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+
     }
 
     th:first-child {
@@ -87,16 +88,24 @@ export const Styles = styled.div`
       height: 100%;
     } */
 
+    tr:first-child th > p{
+      margin: 0px 0px 4px 0px;
+      padding: 0px;
+    }
+
     tr:not(:first-child) th:not(:first-child) > p {
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 160px;
+
     }
 
     thead tr:only-child th:not(:first-child) > p {
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 160px;
     }
 
     td {

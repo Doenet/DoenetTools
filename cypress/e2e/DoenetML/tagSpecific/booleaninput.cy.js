@@ -47,7 +47,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('check the box')
-    cy.get('#\\/bi1_input').click();
+    cy.get('#\\/bi1').click();
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/v1').should('have.text', "true");
@@ -62,7 +62,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('uncheck the box')
-    cy.get('#\\/bi1_input').click();
+    cy.get('#\\/bi1').click();
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/v1').should('have.text', "false");
@@ -104,7 +104,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('uncheck the box')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
 
     cy.log('Test values displayed in browser')
     cy.get("#\\/v1").should('have.text', "false");
@@ -117,7 +117,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('recheck the box')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
 
     cy.log('Test values displayed in browser')
     cy.get("#\\/v1").should('have.text', "true");
@@ -167,7 +167,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log("click the first input");
-    cy.get("#\\/bi1_input").click();
+    cy.get("#\\/bi1").click();
     cy.get("#\\/v1").should('have.text', "false");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
@@ -180,7 +180,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log("click the second input");
-    cy.get("#\\/bi1a_input").click();
+    cy.get("#\\/bi1a").click();
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
@@ -194,7 +194,7 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log("click the third input");
-    cy.get("#\\/bi2_input").click();
+    cy.get("#\\/bi2").click();
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "true");
     cy.window().then(async (win) => {
@@ -237,7 +237,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('change value')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
 
     // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
 
@@ -297,7 +297,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('change value, but it reverts')
-    cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_booleaninput1').click();
 
     // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
 
@@ -325,9 +325,9 @@ describe('BooleanInput Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.get('#\\/n').should('have.text', '1')
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/n').should('have.text', '2')
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/n').should('have.text', '3')
 
   })
@@ -372,7 +372,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('check the box')
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/atb_input').should('not.be.checked');
@@ -390,7 +390,7 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('set as toggle button')
-    cy.get('#\\/atb_input').click();
+    cy.get('#\\/atb').click();
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/atb_input').should('be.checked');
@@ -486,7 +486,7 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log('set as toggle button')
-    cy.get('#\\/atb_input').click();
+    cy.get('#\\/atb').click();
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/v').should('have.text', "true");
@@ -544,7 +544,7 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log('set as toggle button')
-    cy.get('#\\/asToggleButton_input').click();
+    cy.get('#\\/asToggleButton').click();
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/v').should('have.text', "true");

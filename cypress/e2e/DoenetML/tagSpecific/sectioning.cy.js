@@ -2158,7 +2158,7 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
-  it('Example, problems, exercise no not include parent number by default', () => {
+  it('Example, problems, exercise do not include parent number by default', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2255,6 +2255,36 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
+  it('Can open aside in read only mode', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_readOnly').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <aside name="aside1">
+        <title>Hello</title>
+        <p>Content</p>
+      </aside>
+
+      <p><textinput name="ti" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/aside1_title').should('contain.text', 'Hello');
+    cy.get('#\\/_p1').should('not.exist');
+    cy.get('#\\/ti_input').should('be.disabled')
+
+    cy.get('#\\/aside1_title').click();
+    cy.get('#\\/_p1').should('have.text', 'Content');
+
+    cy.get('#\\/aside1_title').click();
+    cy.get('#\\/_p1').should('not.exist');
+
+  });
 
 
 });

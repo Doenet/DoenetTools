@@ -1,14 +1,15 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
-$userId = $jwtArray["userId"];
+$requestorUserId = $jwtArray["userId"];
 $examUserId = $jwtArray["examineeUserId"];
 $examDoenetId = $jwtArray["doenetId"];
 
@@ -17,10 +18,9 @@ $examDoenetId = $jwtArray["doenetId"];
 $cid = mysqli_real_escape_string($conn, $_REQUEST["cid"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
-$allowLoadState = mysqli_real_escape_string(
-    $conn,
-    $_REQUEST["allowLoadState"]
-);
+$allowLoadState = mysqli_real_escape_string($conn, $_REQUEST["allowLoadState"]);
+
+$effectiveUserId = $requestorUserId;
 
 $paramUserId = mysqli_real_escape_string($conn, $_REQUEST["userId"]);
 
@@ -38,7 +38,7 @@ if ($cid == "") {
 } elseif ($allowLoadState == "") {
     $success = false;
     $message = "Internal Error: missing allowLoadState";
-} elseif ($userId == "") {
+} elseif ($effectiveUserId == "") {
     if ($examUserId == "") {
         $success = false;
         $message = "No access - Need to sign in";
@@ -46,30 +46,44 @@ if ($cid == "") {
         $success = false;
         $message = "No access for doenetId: $doenetId";
     } else {
-        $userId = $examUserId;
+        $effectiveUserId = $examUserId;
     }
 }
 
+//find courseId
 if ($success) {
-    $effectiveUserId = $userId;
-    if ($paramUserId !== "") {
-        //TODO: Need a permission related to see grades (not du.canEditContent)
-        $sql = "
-            SELECT du.canEditContent 
-            FROM drive_user AS du
-            LEFT JOIN drive_content AS dc
-            ON dc.driveId = du.driveId
-            WHERE du.userId = '$userId'
-            AND dc.doenetId = '$doenetId'
-            AND du.canEditContent = '1'
-    ";
-
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            $effectiveUserId = $paramUserId;
-        }
+    $result = $conn->query(
+        "SELECT courseId
+        FROM course_content
+        WHERE doenetId='$doenetId'"
+    );
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $courseId = $row['courseId'];
+    } else {
+        $success = false;
+        $message = 'Content not found or no permission to view content';
     }
+}
 
+//Check permissions for using a paramUserId
+if ($success && $paramUserId != "" && $paramUserId != $effectiveUserId) {
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
+
+    if ($requestorPermissions["canViewAndModifyGrades"] == "1") {
+        $effectiveUserId = $paramUserId;
+    } else {
+        $success = false;
+        $message = "You are only allowed to view your own data";
+    }
+}
+
+
+if ($success) {
     $loadedState = false;
 
     if ($allowLoadState == "true") {
@@ -95,8 +109,6 @@ if ($success) {
             // TODO: check if instructor changed cid
         }
     }
-
-
 }
 
 $response_arr = [

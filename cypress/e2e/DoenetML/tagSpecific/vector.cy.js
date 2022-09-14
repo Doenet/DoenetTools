@@ -12302,5 +12302,936 @@ describe('Vector Tag Tests', function () {
 
   })
 
+  it('head/tail draggable without vector draggable', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g0" newNamespace>
+    <vector name="vdrag" head="(1,1)" />
+    <vector name="vnoheaddrag" head="(1,2)" headdraggable="false" />
+    <vector name="vnotaildrag" head="(1,3)" taildraggable="false" />
+    <vector name="vnoheadtaildrag" head="(1,4)" headdraggable="false" taildraggable="false" />
+
+    <vector name="vnodrag" head="(1,5)" draggable="false" />
+    <vector name="vnodragheaddrag" head="(1,6)" draggable="false" headdraggable />
+    <vector name="vnodragtaildrag" head="(1,7)" draggable="false" taildraggable />
+    <vector name="vnodragheadtaildrag" head="(1,8)" draggable="false" headdraggable taildraggable />
+
+  </graph>
+
+  <copy tname="g0" assignNames="g1" />
+
+  <copy target="g0/vdrag" prop="tail" assignNames="vdragt" />
+  <copy target="g0/vdrag" prop="head" assignNames="vdragh" />
+  <copy target="g0/vnoheaddrag" prop="tail" assignNames="vnoheaddragt" />
+  <copy target="g0/vnoheaddrag" prop="head" assignNames="vnoheaddragh" />
+  <copy target="g0/vnotaildrag" prop="tail" assignNames="vnotaildragt" />
+  <copy target="g0/vnotaildrag" prop="head" assignNames="vnotaildragh" />
+  <copy target="g0/vnoheadtaildrag" prop="tail" assignNames="vnoheadtaildragt" />
+  <copy target="g0/vnoheadtaildrag" prop="head" assignNames="vnoheadtaildragh" />
+
+
+  <copy target="g0/vnodrag" prop="tail" assignNames="vnodragt" />
+  <copy target="g0/vnodrag" prop="head" assignNames="vnodragh" />
+  <copy target="g0/vnodragheaddrag" prop="tail" assignNames="vnodragheaddragt" />
+  <copy target="g0/vnodragheaddrag" prop="head" assignNames="vnodragheaddragh" />
+  <copy target="g0/vnodragtaildrag" prop="tail" assignNames="vnodragtaildragt" />
+  <copy target="g0/vnodragtaildrag" prop="head" assignNames="vnodragtaildragh" />
+  <copy target="g0/vnodragheadtaildrag" prop="tail" assignNames="vnodragheadtaildragt" />
+  <copy target="g0/vnodragheadtaildrag" prop="head" assignNames="vnodragheadtaildragh" />
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/vdragt .mjx-mrow').should('contain.text', "(0,0)");
+
+    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(1,1)")
+    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(1,2)")
+    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(1,3)")
+    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,4)")
+
+    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(1,6)")
+    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,8)")
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g0/vdrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g0/vdrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g0/vdrag"].stateValues.tailDraggable).eq(true);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tailDraggable).eq(true);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tailDraggable).eq(false);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tailDraggable).eq(false);
+
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g0/vnodrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g0/vnodrag"].stateValues.tailDraggable).eq(false);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tailDraggable).eq(false);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tailDraggable).eq(true);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tailDraggable).eq(true);
+
+
+      expect(stateVariables["/g1/vdrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g1/vdrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g1/vdrag"].stateValues.tailDraggable).eq(true);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tailDraggable).eq(true);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tailDraggable).eq(false);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.draggable).eq(true);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tailDraggable).eq(false);
+
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g1/vnodrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g1/vnodrag"].stateValues.tailDraggable).eq(false);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tailDraggable).eq(false);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.headDraggable).eq(false);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tailDraggable).eq(true);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.draggable).eq(false);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.headDraggable).eq(true);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tailDraggable).eq(true);
+
+      expect(stateVariables["/g0/vdrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vdrag"].stateValues.head).eqls([1,1]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.head).eqls([1,2]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.head).eqls([1,3]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.head).eqls([1,4]);
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.head).eqls([1,6]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.head).eqls([1,8]);
+
+      expect(stateVariables["/g1/vdrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vdrag"].stateValues.head).eqls([1,1]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.head).eqls([1,2]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.head).eqls([1,3]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.head).eqls([1,4]);
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.head).eqls([1,6]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.head).eqls([1,8]);
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vdrag",
+        args: {
+          headcoords: [2, 1]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnoheaddrag",
+        args: {
+          headcoords: [2, 2]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnotaildrag",
+        args: {
+          headcoords: [2, 3]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnoheadtaildrag",
+        args: {
+          headcoords: [2, 4]
+        }
+      })
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodrag",
+        args: {
+          headcoords: [2, 5]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragheaddrag",
+        args: {
+          headcoords: [2, 6]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragtaildrag",
+        args: {
+          headcoords: [2, 7]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragheadtaildrag",
+        args: {
+          headcoords: [2, 8]
+        }
+      })
+
+    })
+
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').should('contain.text', "(2,8)")
+
+    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(2,1)")
+    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(1,2)")
+    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(2,3)")
+    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,4)")
+
+    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(2,6)")
+    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(2,8)")
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/g0/vdrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vdrag"].stateValues.head).eqls([2,1]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.head).eqls([1,2]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.head).eqls([2,3]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.head).eqls([1,4]);
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.head).eqls([2,6]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.head).eqls([2,8]);
+
+      expect(stateVariables["/g1/vdrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vdrag"].stateValues.head).eqls([2,1]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.head).eqls([1,2]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.head).eqls([2,3]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.head).eqls([1,4]);
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.head).eqls([2,6]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.head).eqls([2,8]);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vdrag",
+        args: {
+          tailcoords: [-1, -1]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnoheaddrag",
+        args: {
+          tailcoords: [-1, -2]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnotaildrag",
+        args: {
+          tailcoords: [-1, -3]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnoheadtaildrag",
+        args: {
+          tailcoords: [-1, -4]
+        }
+      })
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodrag",
+        args: {
+          tailcoords: [-1, -5]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragheaddrag",
+        args: {
+          tailcoords: [-1, -6]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragtaildrag",
+        args: {
+          tailcoords: [-1, -7]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragheadtaildrag",
+        args: {
+          tailcoords: [-1, -8]
+        }
+      })
+
+    })
+
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').should('contain.text', "(−1,−8)")
+
+    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−1,−1)")
+    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(2,1)")
+    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−1,−2)")
+    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(1,2)")
+    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(2,3)")
+    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,4)")
+
+    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(2,6)")
+    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
+    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(2,8)")
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/g0/vdrag"].stateValues.tail).eqls([-1,-1]);
+      expect(stateVariables["/g0/vdrag"].stateValues.head).eqls([2,1]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tail).eqls([-1,-2]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.head).eqls([1,2]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.head).eqls([2,3]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.head).eqls([1,4]);
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.head).eqls([2,6]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tail).eqls([-1,-7]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tail).eqls([-1,-8]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.head).eqls([2,8]);
+
+      expect(stateVariables["/g1/vdrag"].stateValues.tail).eqls([-1,-1]);
+      expect(stateVariables["/g1/vdrag"].stateValues.head).eqls([2,1]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tail).eqls([-1,-2]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.head).eqls([1,2]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.head).eqls([2,3]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.head).eqls([1,4]);
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.head).eqls([2,6]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tail).eqls([-1,-7]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tail).eqls([-1,-8]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.head).eqls([2,8]);
+
+    })
+
+
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodrag",
+        args: {
+          headcoords: [3, 5],
+          tailcoords: [-2, -5]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragheaddrag",
+        args: {
+          headcoords: [3, 6],
+          tailcoords: [-2, -6]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragtaildrag",
+        args: {
+          headcoords: [3, 7],
+          tailcoords: [-2, -7]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnodragheadtaildrag",
+        args: {
+          headcoords: [3, 8],
+          tailcoords: [-2, -8]
+        }
+      })
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vdrag",
+        args: {
+          headcoords: [3, 1],
+          tailcoords: [-2, -1]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnoheaddrag",
+        args: {
+          headcoords: [3, 2],
+          tailcoords: [-2, -2]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnotaildrag",
+        args: {
+          headcoords: [3, 3],
+          tailcoords: [-2, -3]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g0/vnoheadtaildrag",
+        args: {
+          headcoords: [3, 4],
+          tailcoords: [-2, -4]
+        }
+      })
+
+    })
+
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').should('contain.text', "(3,4)")
+
+    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−2,−1)")
+    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(3,1)")
+    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−2,−2)")
+    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(3,2)")
+    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
+    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(3,3)")
+    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(3,4)")
+
+    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(2,6)")
+    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
+    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(2,8)")
+
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/g0/vdrag"].stateValues.tail).eqls([-2,-1]);
+      expect(stateVariables["/g0/vdrag"].stateValues.head).eqls([3,1]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tail).eqls([-2,-2]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.head).eqls([3,2]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tail).eqls([-2,-3]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.head).eqls([3,3]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tail).eqls([-2,-4]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.head).eqls([3,4]);
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.head).eqls([2,6]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tail).eqls([-1,-7]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tail).eqls([-1,-8]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.head).eqls([2,8]);
+
+      expect(stateVariables["/g1/vdrag"].stateValues.tail).eqls([-2,-1]);
+      expect(stateVariables["/g1/vdrag"].stateValues.head).eqls([3,1]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tail).eqls([-2,-2]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.head).eqls([3,2]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tail).eqls([-2,-3]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.head).eqls([3,3]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tail).eqls([-2,-4]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.head).eqls([3,4]);
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.head).eqls([2,6]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tail).eqls([-1,-7]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tail).eqls([-1,-8]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.head).eqls([2,8]);
+
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vdrag",
+        args: {
+          headcoords: [4, 1]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnoheaddrag",
+        args: {
+          headcoords: [4, 2]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnotaildrag",
+        args: {
+          headcoords: [4, 3]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnoheadtaildrag",
+        args: {
+          headcoords: [4, 4]
+        }
+      })
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodrag",
+        args: {
+          headcoords: [4, 5]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragheaddrag",
+        args: {
+          headcoords: [4, 6]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragtaildrag",
+        args: {
+          headcoords: [4, 7]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragheadtaildrag",
+        args: {
+          headcoords: [4, 8]
+        }
+      })
+
+    })
+
+
+
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').should('contain.text', "(4,8)")
+
+    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−2,−1)")
+    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(4,1)")
+    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−2,−2)")
+    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(3,2)")
+    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
+    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(4,3)")
+    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(3,4)")
+
+    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
+    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(4,8)")
+
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/g0/vdrag"].stateValues.tail).eqls([-2,-1]);
+      expect(stateVariables["/g0/vdrag"].stateValues.head).eqls([4,1]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tail).eqls([-2,-2]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.head).eqls([3,2]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tail).eqls([-2,-3]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.head).eqls([4,3]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tail).eqls([-2,-4]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.head).eqls([3,4]);
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.head).eqls([4,6]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tail).eqls([-1,-7]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tail).eqls([-1,-8]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.head).eqls([4,8]);
+
+      expect(stateVariables["/g1/vdrag"].stateValues.tail).eqls([-2,-1]);
+      expect(stateVariables["/g1/vdrag"].stateValues.head).eqls([4,1]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tail).eqls([-2,-2]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.head).eqls([3,2]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tail).eqls([-2,-3]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.head).eqls([4,3]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tail).eqls([-2,-4]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.head).eqls([3,4]);
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.head).eqls([4,6]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tail).eqls([-1,-7]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tail).eqls([-1,-8]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.head).eqls([4,8]);
+    })
+
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vdrag",
+        args: {
+          tailcoords: [-3, -1]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnoheaddrag",
+        args: {
+          tailcoords: [-3, -2]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnotaildrag",
+        args: {
+          tailcoords: [-3, -3]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnoheadtaildrag",
+        args: {
+          tailcoords: [-3, -4]
+        }
+      })
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodrag",
+        args: {
+          tailcoords: [-3, -5]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragheaddrag",
+        args: {
+          tailcoords: [-3, -6]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragtaildrag",
+        args: {
+          tailcoords: [-3, -7]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragheadtaildrag",
+        args: {
+          tailcoords: [-3, -8]
+        }
+      })
+
+    })
+
+
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').should('contain.text', "(−3,−8)")
+
+    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−3,−1)")
+    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(4,1)")
+    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−3,−2)")
+    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(3,2)")
+    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
+    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(4,3)")
+    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(3,4)")
+
+    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−7)")
+    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−8)")
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(4,8)")
+
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/g0/vdrag"].stateValues.tail).eqls([-3,-1]);
+      expect(stateVariables["/g0/vdrag"].stateValues.head).eqls([4,1]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tail).eqls([-3,-2]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.head).eqls([3,2]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tail).eqls([-2,-3]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.head).eqls([4,3]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tail).eqls([-2,-4]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.head).eqls([3,4]);
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.head).eqls([4,6]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tail).eqls([-3,-7]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tail).eqls([-3,-8]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.head).eqls([4,8]);
+
+      expect(stateVariables["/g1/vdrag"].stateValues.tail).eqls([-3,-1]);
+      expect(stateVariables["/g1/vdrag"].stateValues.head).eqls([4,1]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tail).eqls([-3,-2]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.head).eqls([3,2]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tail).eqls([-2,-3]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.head).eqls([4,3]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tail).eqls([-2,-4]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.head).eqls([3,4]);
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.head).eqls([4,6]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tail).eqls([-3,-7]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tail).eqls([-3,-8]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.head).eqls([4,8]);
+    })
+
+
+
+
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodrag",
+        args: {
+          headcoords: [5, 5],
+          tailcoords: [-4, -5]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragheaddrag",
+        args: {
+          headcoords: [5, 6],
+          tailcoords: [-4, -6]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragtaildrag",
+        args: {
+          headcoords: [5, 7],
+          tailcoords: [-4, -7]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnodragheadtaildrag",
+        args: {
+          headcoords: [5, 8],
+          tailcoords: [-4, -8]
+        }
+      })
+
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vdrag",
+        args: {
+          headcoords: [5, 1],
+          tailcoords: [-4, -1]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnoheaddrag",
+        args: {
+          headcoords: [5, 2],
+          tailcoords: [-4, -2]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnotaildrag",
+        args: {
+          headcoords: [5, 3],
+          tailcoords: [-4, -3]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g1/vnoheadtaildrag",
+        args: {
+          headcoords: [5, 4],
+          tailcoords: [-4, -4]
+        }
+      })
+
+    })
+
+
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').should('contain.text', "(5,4)")
+
+    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−4,−1)")
+    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(5,1)")
+    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−4,−2)")
+    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(5,2)")
+    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−4,−3)")
+    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(5,3)")
+    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−4,−4)")
+    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(5,4)")
+
+    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−7)")
+    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−8)")
+    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(4,8)")
+
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/g0/vdrag"].stateValues.tail).eqls([-4,-1]);
+      expect(stateVariables["/g0/vdrag"].stateValues.head).eqls([5,1]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.tail).eqls([-4,-2]);
+      expect(stateVariables["/g0/vnoheaddrag"].stateValues.head).eqls([5,2]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.tail).eqls([-4,-3]);
+      expect(stateVariables["/g0/vnotaildrag"].stateValues.head).eqls([5,3]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.tail).eqls([-4,-4]);
+      expect(stateVariables["/g0/vnoheadtaildrag"].stateValues.head).eqls([5,4]);
+
+      expect(stateVariables["/g0/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g0/vnodragheaddrag"].stateValues.head).eqls([4,6]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.tail).eqls([-3,-7]);
+      expect(stateVariables["/g0/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.tail).eqls([-3,-8]);
+      expect(stateVariables["/g0/vnodragheadtaildrag"].stateValues.head).eqls([4,8]);
+
+      expect(stateVariables["/g1/vdrag"].stateValues.tail).eqls([-4,-1]);
+      expect(stateVariables["/g1/vdrag"].stateValues.head).eqls([5,1]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.tail).eqls([-4,-2]);
+      expect(stateVariables["/g1/vnoheaddrag"].stateValues.head).eqls([5,2]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.tail).eqls([-4,-3]);
+      expect(stateVariables["/g1/vnotaildrag"].stateValues.head).eqls([5,3]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.tail).eqls([-4,-4]);
+      expect(stateVariables["/g1/vnoheadtaildrag"].stateValues.head).eqls([5,4]);
+
+      expect(stateVariables["/g1/vnodrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodrag"].stateValues.head).eqls([1,5]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.tail).eqls([0,0]);
+      expect(stateVariables["/g1/vnodragheaddrag"].stateValues.head).eqls([4,6]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.tail).eqls([-3,-7]);
+      expect(stateVariables["/g1/vnodragtaildrag"].stateValues.head).eqls([1,7]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.tail).eqls([-3,-8]);
+      expect(stateVariables["/g1/vnodragheadtaildrag"].stateValues.head).eqls([4,8]);
+    })
+
+
+
+
+  })
+
 
 });

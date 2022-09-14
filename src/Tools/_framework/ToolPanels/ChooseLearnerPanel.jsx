@@ -8,6 +8,115 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import SearchBar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
 import { formatAMPM, UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
+import styled from 'styled-components';
+
+export const Styles = styled.div`
+  padding: 1rem;
+  table {
+    /* border-collapse: collapse; */
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 20vh;
+
+    thead {
+      position: sticky;
+      top: 43px;
+      box-shadow: 0 2px 0 0px var(--canvastext);
+    }
+
+    a {
+      text-decoration: var(--mainBlue) underline;
+    }
+
+    .sortIcon {
+      padding-left: 4px;
+    }
+
+    tbody tr:not(:last-child) {
+      border-bottom: 1px solid var(--mainGray);
+    }
+
+    td:first-child {
+      text-align: left;
+      max-width: 15rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: var(--canvas);
+      user-select: none;
+      max-width: 4rem;
+      //word-wrap: break-word;
+      padding: 2px;
+      max-height: 10rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+
+    }
+
+    th:first-child {
+      vertical-align: bottom;
+      max-width: 15rem;
+      p {
+        margin: 5px;
+      }
+    }
+
+    /* th > p {
+      height: 100%;
+    } */
+
+    tr:first-child th > p{
+      margin: 0px 0px 4px 0px;
+      padding: 0px;
+    }
+
+    tr:not(:first-child) th:not(:first-child) > p {
+      /* writing-mode: vertical-rl; */
+      text-align: left;
+      /* transform: rotate(180deg); */
+      /* max-height: 160px; */
+
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--mainGray);
+    }
+
+    thead tr:only-child th:not(:first-child) > p {
+      /* writing-mode: vertical-rl; */
+      text-align: left;
+      /* transform: rotate(180deg); */
+      /* max-height: 160px; */
+    }
+
+    td {
+      /* user-select: none; */
+      text-align: center;
+      max-width: 5rem;
+    }
+    td,
+    th {
+      border-right: 2px solid var(--canvastext);
+      :last-child {
+        border-right: 0;
+      }
+    }
+
+    tfoot {
+      font-weight: bolder;
+      position: sticky;
+      bottom: 0;
+      background-color: var(--canvas);
+      box-shadow: inset 0 2px 0 var(--canvastext);
+    }
+  }
+`;
 
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -183,9 +292,9 @@ export default function ChooseLearnerPanel(props) {
       let timeZoneCorrectLastExamDate = null;
       let allowResume = false;
 
-      if (learner.exam_to_date[doenetId]) {
+      if (learner?.exam_to_date[doenetId]) {
 
-        let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
+        let lastExamDT = UTCDateStringToDate(learner?.exam_to_date[doenetId]);
 
         allowResume = examTimeLimit === null;
         let minutesRemainingPhrase = null;
@@ -225,35 +334,55 @@ export default function ChooseLearnerPanel(props) {
         }
 
       }
-      learnerRows.push(<tr>
-        <td style={{ textAlign: "center" }}>{learner.firstName}</td>
-        <td style={{ textAlign: "center" }}>{learner.lastName}</td>
-        <td style={{ textAlign: "center" }}>{learner.studentId}</td>
-        <td style={{ textAlign: "center" }}>{timeZoneCorrectLastExamDate}</td>
-        <td style={{ textAlign: "center" }}><Button value='Start'
-          onClick={() => {
-            setChoosenLearner(learner);
-            setStage('student final check');
-            setResumeAttemptFlag(false);
-          }} /></td>
-      </tr>)
+      learnerRows.push(
+        <tr>
+          <td style={{ textAlign: "center" }}>{learner.firstName}</td>
+          <td style={{ textAlign: "center" }}>{learner.lastName}</td>
+          <td style={{ textAlign: "center" }}>{learner.studentId}</td>
+          <td style={{ textAlign: "center" }}>{timeZoneCorrectLastExamDate}</td>
+          <td style={{ display: "block", margin: '4px auto' }}>
+            <Button 
+              width='menu'
+              value='Start'
+              onClick={() => {
+                setChoosenLearner(learner);
+                setStage('student final check');
+                setResumeAttemptFlag(false);
+              }} 
+            />
+          </td>
+        </tr>
+      )
     }
 
-    return <div>
-      <div style={{ marginLeft: "50px", marginBottom: "15px" }}><SearchBar autoFocus onChange={setFilter} /></div>
-      <table>
-        <thead>
-          <th style={{ width: "200px" }}>First Name</th>
-          <th style={{ width: "200px" }}>Last Name</th>
-          <th style={{ width: "200px" }}>Student ID</th>
-          <th style={{ width: "240px" }}>Last Exam</th>
-          <th style={{ width: "60px" }}>Choose</th>
-        </thead>
-        <tbody>
-          {learnerRows}
-        </tbody>
-      </table>
-    </div>;
+    return (
+      <Styles>
+        <div 
+          style={{ 
+            background: 'var(--canvas)',
+            top: 0,
+            position: 'sticky',
+            paddingLeft: "50px", 
+            paddingBottom: "15px",
+          }}
+        >
+          <SearchBar autoFocus onChange={setFilter} width='100%'/>
+        </div>
+        <table>
+          <thead>
+            <th style={{ width: "200px" }}>First Name</th>
+            <th style={{ width: "200px" }}>Last Name</th>
+            <th style={{ width: "200px" }}>Student ID</th>
+            <th style={{ width: "240px" }}>Last Exam</th>
+            <th style={{ width: "60px" }}>Choose</th>
+          </thead>
+          <tbody>
+            {learnerRows}
+          </tbody>
+        </table>
+        
+      </Styles>
+    );
   }
 
   if (stage === 'student final check') {
