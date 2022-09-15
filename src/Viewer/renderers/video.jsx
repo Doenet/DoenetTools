@@ -46,22 +46,26 @@ export default React.memo(function Video(props) {
 
       let cName = cssesc(id);
 
-      player.current = new window.YT.Player(cName, {
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          modestbranding: 1,
-          rel: 0,
-        },
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange,
-          'onPlaybackRateChange': onPlaybackRateChange,
-        }
-      });
+      // protect against window.YT being undefined,
+      // which could occur if cannot reach youtube
+      if (window.YT) {
+        player.current = new window.YT.Player(cName, {
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            modestbranding: 1,
+            rel: 0,
+          },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onPlaybackRateChange': onPlaybackRateChange,
+          }
+        });
+      }
     }
 
-  }, [])
+  }, [window.YT])
 
   function pollCurrentTime() {
     let currentTime = player.current.getCurrentTime();

@@ -248,7 +248,7 @@ export default function checkEquality({
 
   } else {
     check_equality = (a, b) => {
-      if(caseInsensitiveMatch) {
+      if (caseInsensitiveMatch) {
         a = convertStringsToLowerCase(a);
         b = convertStringsToLowerCase(b);
       }
@@ -423,8 +423,12 @@ export default function checkEquality({
     } else if (object1_operator === "matrix") {
       if (object2_operator === "matrix") {
         // convert to array of matrix rows
-        object1 = object1.tree.slice(1);
-        object2 = object2.tree.slice(1);
+
+        object1 = convertMatrixToArrayOfTuples(object1.tree.slice(1))
+        object2 = convertMatrixToArrayOfTuples(object2.tree.slice(1))
+
+        matchByExactPositions = true;
+
       } else {
         return { fraction_equal: 0 };
       }
@@ -566,8 +570,8 @@ export default function checkEquality({
     for (let i = 0; i < minN; i++) {
       let sub_results = checkEquality({
         object1: me.fromAst(object1[i]), object2: me.fromAst(object2[i]),
-        isUnordered: false, partialMatches: false,
-        matchByExactPositions: false,
+        isUnordered, partialMatches,
+        matchByExactPositions,
         symbolicEquality,
         simplify, expand,
         allowedErrorInNumbers,
@@ -614,8 +618,8 @@ export default function checkEquality({
       for (let j = 0; j < nelts2; j++) {
         let sub_results = checkEquality({
           object1: me.fromAst(object1[i]), object2: me.fromAst(object2[j]),
-          isUnordered: false, partialMatches: false,
-          matchByExactPositions: false,
+          isUnordered, partialMatches,
+          matchByExactPositions,
           symbolicEquality,
           simplify, expand,
           allowedErrorInNumbers,
@@ -657,8 +661,8 @@ export default function checkEquality({
 
       let sub_results = checkEquality({
         object1: me.fromAst(expr1), object2: me.fromAst(expr2),
-        isUnordered: false, partialMatches: false,
-        matchByExactPositions: false,
+        isUnordered, partialMatches,
+        matchByExactPositions,
         symbolicEquality,
         simplify, expand,
         allowedErrorInNumbers,
@@ -719,5 +723,37 @@ function convertStringsToLowerCase(x) {
   }
 
   return x.map(convertStringsToLowerCase);
+
+}
+
+function convertMatrixToArrayOfTuples(matrixOperands) {
+  // remove any entries not within specified size
+  // and pad with \uff3f for any missing entries
+
+  let nRows = matrixOperands[0][1];
+  let nCols = matrixOperands[0][2];
+  if (!(Number.isInteger(nRows) && Number.isInteger(nCols))) {
+    return matrixOperands;
+  }
+
+  let result = [];
+
+  for (let rowInd = 0; rowInd < nRows; rowInd++) {
+    let row = ["tuple"];
+    let rowOperands = matrixOperands[1][rowInd + 1] || [];
+
+    for (let colInd = 0; colInd < nCols; colInd++) {
+      let val = rowOperands[colInd + 1];
+      if (val === undefined || val === null) {
+        val = '\uff3f';
+      }
+      row.push(val)
+    }
+
+    result.push(row);
+
+  }
+
+  return result;
 
 }

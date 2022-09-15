@@ -1957,7 +1957,7 @@ describe('SelectFromSequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -1966,15 +1966,15 @@ describe('SelectFromSequence Tag Tests', function () {
       let n3 = stateVariables["/n3"].stateValues.value;
       let n4 = stateVariables["/n4"].stateValues.value;
 
-      cy.get('#\\/n1').should('have.text', String(Math.round(n1*10**8)/10**8))
-      cy.get('#\\/n2').should('have.text', String(Math.round(n2*10**1)/10**1))
-      cy.get('#\\/n3').should('have.text', String(Math.round(n3*10**3)/10**3))
-      cy.get('#\\/n4').should('have.text', String(n4)+".0")
+      cy.get('#\\/n1').should('have.text', String(Math.round(n1 * 10 ** 8) / 10 ** 8))
+      cy.get('#\\/n2').should('have.text', String(Math.round(n2 * 10 ** 1) / 10 ** 1))
+      cy.get('#\\/n3').should('have.text', String(Math.round(n3 * 10 ** 3) / 10 ** 3))
+      cy.get('#\\/n4').should('have.text', String(n4) + ".0")
 
-      cy.get('#\\/n1a').should('have.text', String(Math.round(n1*10**8)/10**8))
-      cy.get('#\\/n2a').should('have.text', String(Math.round(n2*10**1)/10**1))
-      cy.get('#\\/n3a').should('have.text', String(Math.round(n3*10**3)/10**3))
-      cy.get('#\\/n4a').should('have.text', String(n4)+".0")
+      cy.get('#\\/n1a').should('have.text', String(Math.round(n1 * 10 ** 8) / 10 ** 8))
+      cy.get('#\\/n2a').should('have.text', String(Math.round(n2 * 10 ** 1) / 10 ** 1))
+      cy.get('#\\/n3a').should('have.text', String(Math.round(n3 * 10 ** 3) / 10 ** 3))
+      cy.get('#\\/n4a').should('have.text', String(n4) + ".0")
 
     });
 
@@ -1996,7 +1996,7 @@ describe('SelectFromSequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -2006,7 +2006,7 @@ describe('SelectFromSequence Tag Tests', function () {
 
       cy.get('#\\/na').should('have.text', String(n))
 
-      expect(n=== 1 || n=== 3).eq(true)
+      expect(n === 1 || n === 3).eq(true)
 
     });
 
@@ -2027,7 +2027,7 @@ describe('SelectFromSequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -2037,9 +2037,131 @@ describe('SelectFromSequence Tag Tests', function () {
 
       cy.get('#\\/na').should('have.text', String(n))
 
-      expect(n=== 1 || n=== 3).eq(true)
+      expect(n === 1 || n === 3).eq(true)
 
     });
+
+  });
+
+  it("selectfromsequence depending on selectfromsequence handles reload", () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    let doenetML = `
+    <text>a</text>
+    <selectFromSequence assignNames='n'  />
+    <selectFromSequence assignNames='m' to='$n' />
+  
+    <p><booleaninput name="bi" /> <boolean copySource="bi" name="b" /></p>
+
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', 'false');
+
+    cy.get('#\\/bi').click();
+    cy.get('#\\/b').should('have.text', 'true');
+
+    cy.wait(2000);  // wait for debounce
+
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', 'true');
+
+    cy.log('core has not crashed and processes change in bi')
+    cy.get('#\\/bi').click();
+    cy.get('#\\/b').should('have.text', 'false');
+
+
+  });
+
+  it("selectfromsequence depending on selectfromsequence handles reload 2", () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    // doenetML snippet based on course content that was crashing
+
+    let doenetML = `
+    <text>a</text>
+    <selectFromSequence assignNames='aa' step=' 0.01' from='0.01' to='1' />
+    <selectFromSequence assignNames='bb' step=' 0.00001' from='0.00001' to='0.001' />
+    
+    <number name='a_over_b'>$aa / $bb </number>
+    
+    <sequence name="excludeForS02" from="round($a_over_b - 10)" to="round($a_over_b + 10)" />
+    
+    <selectFromSequence assignNames='S02' from='round(($a_over_b )*0.5)' to='round(($a_over_b )*1.5)' exclude="$excludeForS02" />
+    <selectFromSequence assignNames='S03' from='round(($a_over_b )*1.1)' to='round(($a_over_b )*4.0)' />
+    
+    <math name='S_critical' simplify='full'>$a_over_b</math>
+    
+    <answer name='critNumAns'>
+    <mathinput name="mi" />
+    <award>$S_critical</award>
+    </answer>
+    <p><math name="m" copySource="mi" /></p>
+    <p><math name="m2" copySource="critNumAns.submittedResponse" /></p>
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.get('#\\/mi textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'x');
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', 'x');
+
+    cy.wait(2000);  // wait for debounce
+
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'x');
+
+    cy.log('core has not crashed and processes change in bi')
+    cy.get('#\\/mi textarea').type("{end}{backspace}y", { force: true }).blur();
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'y');
+
+    cy.get('#\\/mi textarea').type("{enter}", { force: true });
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'y');
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', 'y');
 
   });
 

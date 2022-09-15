@@ -364,15 +364,15 @@ describe('Math Tag Tests', function () {
 
   <copy prop="format" source="a" name="caf" hide />
   <copy prop="format" source="b" name="cbf" hide />
-  
+
   <p name="formata"><copy prop="format" source="a" /></p>
   <p name="formatb"><copy prop="format" source="b" /></p>
   <p name="formatc"><copy prop="format" source="c" /></p>
   <p name="formatd"><copy prop="format" source="d" /></p>
-  
+
   <textinput prefill="latex"/>
   <textinput prefill="text"/>
-      
+
   `}, "*");
     });
 
@@ -1002,7 +1002,7 @@ describe('Math Tag Tests', function () {
   <p><copy prop="number" source="dig5dec1bpad" assignNames="dig5dec1bpadNumber" /></p>
   <p><copy prop="number" source="dig5dec1c" assignNames="dig5dec1cNumber" /></p>
   <p><copy prop="number" source="dig5dec1cpad" assignNames="dig5dec1cpadNumber" /></p>
-  
+
   <p><math name="dig5aMath">$dig5a</math></p>
   <p><math name="dig5apadMath">$dig5apad</math></p>
   <p><math name="dig5bMath">$dig5b</math></p>
@@ -1021,7 +1021,7 @@ describe('Math Tag Tests', function () {
   <p><math name="dig5dec1bpadMath">$dig5dec1bpad</math></p>
   <p><math name="dig5dec1cMath">$dig5dec1c</math></p>
   <p><math name="dig5dec1cpadMath">$dig5dec1cpad</math></p>
-  
+
   <p><number name="dig5aNumber2">$dig5a</number></p>
   <p><number name="dig5apadNumber2">$dig5apad</number></p>
   <p><number name="dig5bNumber2">$dig5b</number></p>
@@ -1040,7 +1040,7 @@ describe('Math Tag Tests', function () {
   <p><number name="dig5dec1bpadNumber2">$dig5dec1bpad</number></p>
   <p><number name="dig5dec1cNumber2">$dig5dec1c</number></p>
   <p><number name="dig5dec1cpadNumber2">$dig5dec1cpad</number></p>
-  
+
   <p><copy prop="x1" source="dig5a" assignNames="dig5aX1" /></p>
   <p><copy prop="x1" source="dig5apad" assignNames="dig5apadX1" /></p>
   <p><copy prop="x1" source="dig5b" assignNames="dig5bX1" /></p>
@@ -3118,6 +3118,160 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '(\uff3f,\uff3f]');
     cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+\uff3f');
     cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2+\uff3f+5');
+  });
+
+  it('changes are reloaded correctly.', () => {
+    let doenetML = `
+    <p><text>a</text></p>
+    <p><math name="m1">w</math></p>
+    <p><math name="m2">x + <math name="m3">y</math></math></p>
+    <p><math name="m4">z</math></p>
+    <p><math name="m5">a+$m4</math></p>
+    <p><mathinput name="mi1" bindValueTo="$m1" /></p>
+    <p><mathinput name="mi2" bindValueTo="$m2" /></p>
+    <p><mathinput name="mi3" bindValueTo="$m3" /></p>
+    <p><mathinput name="mi4" bindValueTo="$m4" /></p>
+    <p><mathinput name="mi5" bindValueTo="$m5" /></p>
+    `;
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', 'w');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', 'x+y');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', 'z');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', 'a+z');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eqls("w");
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", "x", "y"]);
+      expect(stateVariables["/m3"].stateValues.value).eqls("y");
+      expect(stateVariables["/m4"].stateValues.value).eqls("z");
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", "a", "z"]);
+    });
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/mi4 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/m4 .mjx-mrow').should('contain.text', '3');
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', 'x+2');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', 'a+3');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eqls(1);
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", "x", 2]);
+      expect(stateVariables["/m3"].stateValues.value).eqls(2);
+      expect(stateVariables["/m4"].stateValues.value).eqls(3);
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", "a", 3]);
+    });
+
+    cy.wait(1500);  // wait for debounce 
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/m1"];
+    }))
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', 'x+2');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', 'a+3');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eqls(1);
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", "x", 2]);
+      expect(stateVariables["/m3"].stateValues.value).eqls(2);
+      expect(stateVariables["/m4"].stateValues.value).eqls(3);
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", "a", 3]);
+    });
+
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}4+5{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{end}{backspace}6+7{enter}", { force: true })
+    cy.get('#\\/mi5 textarea').type("{end}{backspace}8+9{enter}", { force: true })
+
+    cy.get('#\\/m5 .mjx-mrow').should('contain.text', '17');
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '4+5');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', 'x+6+7');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '17');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', 'a+17');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eqls(["+", 4, 5]);
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", "x", 6, 7]);
+      expect(stateVariables["/m3"].stateValues.value).eqls(["+", 6, 7]);
+      expect(stateVariables["/m4"].stateValues.value).eqls(17);
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", "a", 17]);
+    });
+
+
+
+    cy.wait(1500);  // wait for debounce 
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/m1"];
+    }))
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '4+5');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', 'x+6+7');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '17');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', 'a+17');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eqls(["+", 4, 5]);
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", "x", 6, 7]);
+      expect(stateVariables["/m3"].stateValues.value).eqls(["+", 6, 7]);
+      expect(stateVariables["/m4"].stateValues.value).eqls(17);
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", "a", 17]);
+    });
+
+
+
   });
 
 

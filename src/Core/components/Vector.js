@@ -25,17 +25,9 @@ export default class Vector extends GraphicalComponent {
     };
     attributes.headDraggable = {
       createComponentOfType: "boolean",
-      createStateVariable: "headDraggable",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
     };
     attributes.tailDraggable = {
       createComponentOfType: "boolean",
-      createStateVariable: "tailDraggable",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
     };
 
     attributes.x = {
@@ -282,6 +274,71 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.tailDraggable = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean"
+      },
+      hasEssential: true,
+      forRenderer: true,
+      returnDependencies: () => ({
+        tailDraggableAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "tailDraggable",
+          variableNames: ["value"]
+        },
+        draggable: {
+          dependencyType: "stateVariable",
+          variableName: "draggable"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.tailDraggableAttr) {
+          return {
+            setValue: { tailDraggable: dependencyValues.tailDraggableAttr.stateValues.value }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              tailDraggable: { defaultValue: dependencyValues.draggable }
+            }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.headDraggable = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean"
+      },
+      hasEssential: true,
+      forRenderer: true,
+      returnDependencies: () => ({
+        headDraggableAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "headDraggable",
+          variableNames: ["value"]
+        },
+        draggable: {
+          dependencyType: "stateVariable",
+          variableName: "draggable"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.headDraggableAttr) {
+          return {
+            setValue: { headDraggable: dependencyValues.headDraggableAttr.stateValues.value }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              headDraggable: { defaultValue: dependencyValues.draggable }
+            }
+          }
+        }
+      }
+    }
 
     // displacementShadow will be null unless vector was created
     // via an adapter or copy prop or from serialized state with displacement value
@@ -1870,6 +1927,25 @@ export default class Vector extends GraphicalComponent {
   }];
 
   async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {
+
+    if (tailcoords !== undefined) {
+      if (headcoords !== undefined) {
+        // dragged entire vector
+        if (!await this.stateValues.draggable) {
+          return await this.coreFunctions.resolveAction({ actionId });
+        }
+      } else {
+        // dragged just tail
+        if (!await this.stateValues.tailDraggable) {
+          return await this.coreFunctions.resolveAction({ actionId });
+        }
+      }
+    } else {
+      // dragged just head
+      if (!await this.stateValues.headDraggable) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    }
 
     let updateInstructions = [];
 

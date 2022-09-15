@@ -1795,7 +1795,7 @@ describe('Collect Tag Tests', function () {
       <boolean>not $c</boolean>
     </group>
 
-    <p name="pcollect1"><collect source="_group1" componentTypes=" math text boolean" /></p>
+    <p name="pcollect1"><collect source="_group1" componentTypes="_input math text boolean" /></p>
     <p name="pcollect2">$_collect1</p>
     <p name="pgroup2">$_group1</p>
     <p name="pcollect3"><copy source="_collect1" /></p>

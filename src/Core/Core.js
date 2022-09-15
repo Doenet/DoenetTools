@@ -87,6 +87,7 @@ export default class Core {
       compositesBeingExpanded: [],
       // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
       stateVariableUpdatesForMissingComponents: JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver),
+      stateVariablesToEvaluate: []
     }
 
     this.cumulativeStateVariableChanges = JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver);
@@ -473,6 +474,17 @@ export default class Core {
 
       await this.expandAllComposites(this.document, true);
 
+      if (this.updateInfo.stateVariablesToEvaluate) {
+        let stateVariablesToEvaluate = this.updateInfo.stateVariablesToEvaluate;
+        this.updateInfo.stateVariablesToEvaluate = [];
+        for (let { componentName, stateVariable } of stateVariablesToEvaluate) {
+          let comp = this._components[componentName];
+          if (comp && comp.state[stateVariable]) {
+            await this.getStateVariableValue({ component: comp, stateVariable })
+          }
+        }
+      }
+
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
@@ -541,6 +553,16 @@ export default class Core {
       await this.expandAllComposites(this.document);
       await this.expandAllComposites(this.document, true);
 
+      if (this.updateInfo.stateVariablesToEvaluate) {
+        let stateVariablesToEvaluate = this.updateInfo.stateVariablesToEvaluate;
+        this.updateInfo.stateVariablesToEvaluate = [];
+        for (let { componentName, stateVariable } of stateVariablesToEvaluate) {
+          let comp = this._components[componentName];
+          if (comp && comp.state[stateVariable]) {
+            await this.getStateVariableValue({ component: comp, stateVariable })
+          }
+        }
+      }
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
@@ -1542,29 +1564,29 @@ export default class Core {
       // that was saved to the database,
       // it may be necessary for a component to treat the value received differently
       // in the first pass of the definition.
+      // hence we set justUpdatedForNewComponent which will
       // Hence, we run the definition of all variables with the extra flag
       // justUpdatedForNewComponent = true
-      let comp = this._components[componentName]
-      for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
-        if (comp.state[vName]) {
-          await this.getStateVariableValue({ component: comp, stateVariable: vName, justUpdatedForNewComponent: true })
+      let comp = this._components[componentName];
+      if (comp.constructor.processWhenJustUpdatedForNewComponent || result.foundIgnore) {
+        for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
+          if (comp.state[vName]) {
+            this.updateInfo.stateVariablesToEvaluate.push({ componentName, stateVariable: vName })
+            comp.state[vName].justUpdatedForNewComponent = true;
+            if (result.foundIgnore) {
+              // This is a kludge
+              // The only case so far with ignored children is that Math ignores strings
+              // (set in inverse definition of expressionWithCodes).
+              // We need change its value a second time after evaluating
+              // so that the next time the definition of expressionWithCodes is run,
+              // the strings don't show any changes and we'll use the essential value
+              // of expressionWithCodes
+              comp.reprocessAfterEvaluate = this.updateInfo.stateVariableUpdatesForMissingComponents[componentName];
+            }
+          }
         }
       }
 
-      if (result.foundIgnore) {
-        // The only case so far with ignored children is that Math ignores strings
-        // (set in inverse definition of expressionWithCodes).
-        // We need change its value a second time after evaluating
-        // so that the next time the definition of expressionWithCodes is run,
-        // the strings don't show any changes and we'll use the essential value
-        // of expressionWithCodes
-        // TODO: is this the right general approach?
-
-        await this.processNewStateVariableValues({
-          [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
-        });
-
-      }
 
       delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
     }
@@ -5067,7 +5089,7 @@ export default class Core {
     };
   }
 
-  async getStateVariableValue({ component, stateVariable, justUpdatedForNewComponent = false }) {
+  async getStateVariableValue({ component, stateVariable }) {
 
     // console.log(`getting value of state variable ${stateVariable} of ${component.componentName}`)
 
@@ -5077,6 +5099,30 @@ export default class Core {
 
     }
 
+    if (component.reprocessAfterEvaluate) {
+      // This is a kludge 
+      // due to the fact that Math ignores strings
+      // (set in inverse definition of expressionWithCodes).
+      // We need change its value a second time after evaluating
+      // so that the next time the definition of expressionWithCodes is run,
+      // the strings don't show any changes and we'll use the essential value
+      // of expressionWithCodes
+      let reprocessAfterEvaluate = component.reprocessAfterEvaluate;
+      delete this._components[component.componentName].reprocessAfterEvaluate;
+
+      for (let vName in reprocessAfterEvaluate) {
+        if (component.state[vName]) {
+          await this.getStateVariableValue({ component, stateVariable: vName });
+        }
+      }
+
+      await this.processNewStateVariableValues({
+        [component.componentName]: reprocessAfterEvaluate
+      });
+
+    }
+
+
     let additionalStateVariablesDefined = stateVarObj.additionalStateVariablesDefined;
 
 
@@ -5084,6 +5130,8 @@ export default class Core {
     if (additionalStateVariablesDefined) {
       allStateVariablesAffected.push(...additionalStateVariablesDefined)
     }
+
+    let justUpdatedForNewComponent = false;
 
     for (let varName of allStateVariablesAffected) {
 
@@ -5100,6 +5148,11 @@ export default class Core {
           throw Error(`Can't get value of ${stateVariable} of ${component.componentName} as ${varName} couldn't be resolved.`);
         }
 
+      }
+
+      if (component.state[varName].justUpdatedForNewComponent) {
+        delete this._components[component.componentName].state[varName].justUpdatedForNewComponent;
+        justUpdatedForNewComponent = true;
       }
 
     }
@@ -8752,6 +8805,17 @@ export default class Core {
       // create other composites that have to be expanded
       await this.expandAllComposites(this.document);
       await this.expandAllComposites(this.document, true);
+
+      if (this.updateInfo.stateVariablesToEvaluate) {
+        let stateVariablesToEvaluate = this.updateInfo.stateVariablesToEvaluate;
+        this.updateInfo.stateVariablesToEvaluate = [];
+        for (let { componentName, stateVariable } of stateVariablesToEvaluate) {
+          let comp = this._components[componentName];
+          if (comp && comp.state[stateVariable]) {
+            await this.getStateVariableValue({ component: comp, stateVariable })
+          }
+        }
+      }
 
     }
 
