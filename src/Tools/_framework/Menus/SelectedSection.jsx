@@ -84,6 +84,7 @@ export default function SelectedSection() {
         <Textfield
           label="Label"
           vertical
+          data-test="Label Section"
           width="menu"
           value={itemTextFieldLabel}
           onChange={(e) => setItemTextFieldLabel(e.target.value)}

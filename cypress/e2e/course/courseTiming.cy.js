@@ -36,7 +36,7 @@ describe('Course Timing Tests', function () {
 
       })
 
-        it('choosing class timing by typing', ()=>{
+        it.skip('choosing class timing by typing', ()=>{
             cy.get('.rdt').eq(0).click();
             cy.get(' .form-control').eq(0).type('1:00 PM');
             cy.get('[data-test="Main Panel"]').click();  
