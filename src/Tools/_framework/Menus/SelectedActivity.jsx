@@ -165,6 +165,7 @@ export default function SelectedActivity() {
 
         <Textfield
           label="Label"
+          data-test="Label Activity"
           vertical
           width="menu"
           value={itemTextFieldLabel}

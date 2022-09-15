@@ -102,7 +102,7 @@ export default function Textfield(props) {
     <>
       <div style={container}>
             <p style={label} id="textfield-label">{label.value}</p>
-            <TextfieldStyling aria-disabled={props.disabled ? true : false} aria-labelledby="textfield-label" type="text" inputWidth={inputWidth} readOnly={read_only} alert={props.alert} disabled={props.disabled} ref={inputRef} value={props.value} placeholder={textfieldValue.placeholder} aria-label={textfieldValue.ariaLabel} style={textfieldValue} data-test={props.dataTest} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }}></TextfieldStyling>
+            <TextfieldStyling aria-disabled={props.disabled ? true : false} aria-labelledby="textfield-label" type="text" inputWidth={inputWidth} readOnly={read_only} alert={props.alert} disabled={props.disabled} ref={inputRef} value={props.value} placeholder={textfieldValue.placeholder} aria-label={textfieldValue.ariaLabel} style={textfieldValue} data-test={props["data-test"]} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }}></TextfieldStyling>
       </div>
     </>
   )
