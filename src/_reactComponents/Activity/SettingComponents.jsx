@@ -657,7 +657,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
         vertical
         width="menu"
         value={textValue}
-        dataTest="Item Weights"
+        data-test="Item Weights"
         onChange={(e) => {
           setTextValue(e.target.value);
         }}
