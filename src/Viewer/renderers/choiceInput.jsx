@@ -124,17 +124,6 @@ export default React.memo(function ChoiceInput(props) {
   if (SVs.inline) {
 
     let checkWorkStyle = {
-      // position: "relative",
-      // width: "30px",
-      // height: "24px",
-      // fontSize: "20px",
-      // fontWeight: "bold",
-      // color: "#ffffff",
-      // display: "inline-block",
-      // textAlign: "center",
-      // top: "3px",
-      // padding: "2px",
-      // backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue")
       cursor: 'pointer'
     }
 
@@ -165,7 +154,7 @@ export default React.memo(function ChoiceInput(props) {
             }
           }}
         >
-          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+          <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         </Button>
       } else {
         if (SVs.showCorrectness) {
@@ -255,8 +244,7 @@ export default React.memo(function ChoiceInput(props) {
 
     return <React.Fragment>
       <a name={id} />
-      {/* <div className="custom-select" style={{width:"200px"}}> */}
-        <select
+        <select style={{border: "var(--mainBorder)", height: "24px", margin: "0px 12px 12px 0px"}}
           id={id}
           onChange={onChangeHandler}
           value={value}
@@ -266,19 +254,18 @@ export default React.memo(function ChoiceInput(props) {
           <option hidden={true} value="">{SVs.placeHolder}</option>
           {optionsList}
         </select>
-      {/* </div> */}
       {checkWorkButton}
     </React.Fragment>
   } else {
 
 
     let checkWorkStyle = {
-      height: "23px",
+      height: "24px",
       display: "inline-block",
       backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
       padding: "1px 6px 1px 6px",
       color: "white",
-      fontWeight: "bold",
+      // fontWeight: "bold",
     }
 
     let checkworkComponent = null;
@@ -310,7 +297,7 @@ export default React.memo(function ChoiceInput(props) {
               }
             }}
           >
-            <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+            <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
             &nbsp;
             {checkWorkText}
           </Button>);
@@ -406,9 +393,10 @@ export default React.memo(function ChoiceInput(props) {
         if (svData.choicesHidden[i]) {
           return null;
         }
-        return <label className="radio-container" key={inputKey + '_choice' + (i + 1)}>
+        if (inputType == 'radio') { // selectMultiple="false"
+          return <label className="radio-container" key={inputKey + '_choice' + (i + 1)}>
           <input
-            type={inputType}
+            type="radio"
             id={keyBeginning + (i + 1) + "_input"}
             name={inputKey}
             value={i + 1}
@@ -417,10 +405,28 @@ export default React.memo(function ChoiceInput(props) {
             disabled={disabled || svData.choicesDisabled[i]}
           />
           <span className="radio-checkmark" />
-          <label htmlFor={keyBeginning + (i + 1) + "_input"}>
+          <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{marginLeft: "2px"}}>
             {child}
           </label>
         </label>
+
+        } else if (inputType == 'checkbox') { // selectMultiple="true"
+          return <label className="checkbox-container" key={inputKey + '_choice' + (i + 1)}>
+          <input
+            type="checkbox"
+            id={keyBeginning + (i + 1) + "_input"}
+            name={inputKey}
+            value={i + 1}
+            checked={rendererSelectedIndices.includes(i + 1)}
+            onChange={onChangeHandler}
+            disabled={disabled || svData.choicesDisabled[i]}
+          />
+          <span className="checkbox-checkmark" />
+          <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{marginLeft: "2px"}}>
+            {child}
+          </label>
+        </label>
+        }
       });
 
     return <React.Fragment>

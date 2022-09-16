@@ -1,4 +1,4 @@
-/* Custom styling for radio button */
+/* CUSTOM STYLING FOR RADIO BUTTON */
 
 /* Customize the label (the container) */
 .radio-container {
@@ -45,7 +45,7 @@
     background-color: var(--mainBlue);
 }
 
-/* When a checkbox has focus, add a dark blue outline */
+/* When a radio button has focus, add a dark blue outline */
 .radio-container:focus-within input ~ .radio-checkmark {
     outline: 2px solid var(--mainBlue);
     outline-offset: 2px;
@@ -73,64 +73,80 @@
     background: white;
 }
 
-/* Custom styling for select */
+/* CUSTOM STYLING FOR CHECKBOX */
 
-/* The container must be positioned relative: */
-.custom-select {
+/* Customize the label (the container) */
+.checkbox-container {
+    display: block;
     position: relative;
-    font-family: Arial;
-}
-
-.custom-select select {
-    display: none; /*hide original SELECT element: */
-}
-
-.select-selected {
-    background-color: DodgerBlue;
-}
-
-/* Style the arrow inside the select element: */
-.select-selected:after {
-    position: absolute;
-    content: "";
-    top: 14px;
-    right: 10px;
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-color: #fff transparent transparent transparent;
-}
-
-/* Point the arrow upwards when the select box is open (active): */
-.select-selected.select-arrow-active:after {
-    border-color: transparent transparent #fff transparent;
-    top: 7px;
-}
-
-/* style the items (options), including the selected item: */
-.select-items div,.select-selected {
-    color: #ffffff;
-    padding: 8px 16px;
-    border: 1px solid transparent;
-    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    padding-left: 24px;
+    margin-bottom: 12px;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
   
-/* Style items (options): */
-.select-items {
+/* Hide the browser's default checkbox */
+.checkbox-container input {
     position: absolute;
-    background-color: DodgerBlue;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 99;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
 }
   
-/* Hide the items when the select box is closed: */
-.select-hide {
+/* Create a custom checkbox */
+.checkbox-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #eee;
+    border-style: solid;
+    border-color: #000;
+    border-radius: var(--mainBorderRadius);
+}
+  
+/* On mouse-over, add a light blue background color */
+.checkbox-container:hover input ~ .checkbox-checkmark {
+    background-color: var(--lightBlue);
+}
+  
+/* When the checkbox is checked, add a dark blue background */
+.checkbox-container input:checked ~ .checkbox-checkmark {
+    background-color: var(--mainBlue);
+}
+
+/* When a checkbox has focus, add a dark blue outline */
+.checkbox-container:focus-within input ~ .checkbox-checkmark {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
+}
+  
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkbox-checkmark:after {
+    content: "";
+    position: absolute;
     display: none;
 }
   
-.select-items div:hover, .same-as-selected {
-    background-color: rgba(0, 0, 0, 0.1);
+/* Show the checkmark when checked */
+.checkbox-container input:checked ~ .checkbox-checkmark:after {
+    display: block;
+}
+  
+/* Style the checkmark/indicator */
+.checkbox-container .checkbox-checkmark:after {
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
 }
