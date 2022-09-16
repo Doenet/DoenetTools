@@ -418,7 +418,7 @@ export function mathStateVariableFromNumberStateVariable({
       },
     }),
     definition: function ({ dependencyValues }) {
-      return { setValue: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
+      return { setValue: { [mathVariableName]: numberToMathExpression(dependencyValues.number) } };
     },
     inverseDefinition: function ({ desiredStateVariableValues }) {
 
@@ -444,6 +444,32 @@ export function mathStateVariableFromNumberStateVariable({
 
   return mathDef;
 
+}
+
+export function numberToMathExpression(number) {
+  let mathTree;
+  if (typeof number?.re === "number" && typeof number?.im === "number") {
+    if (number.im === 0) {
+      mathTree = number.re;
+    } else {
+      let imPart;
+      if (number.im === 1) {
+        imPart = "i";
+      } else if (number.im === -1) {
+        imPart = ["-", "i"];
+      } else {
+        imPart = ["*", number.im, "i"];
+      }
+      if (number.re === 0) {
+        mathTree = imPart;
+      } else {
+        mathTree = ["+", number.re, imPart];
+      }
+    }
+  } else {
+    mathTree = number;
+  }
+  return me.fromAst(mathTree);
 }
 
 export function roundForDisplay({ value, dependencyValues, usedDefault }) {

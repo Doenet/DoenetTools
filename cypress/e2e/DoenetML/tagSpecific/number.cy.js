@@ -1131,4 +1131,333 @@ describe('Number Tag Tests', function () {
 
   });
 
+  it('complex numbers', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  
+  <p><number name="i1">i</number></p>
+  <p><math name="i1a">$i1</math></p>
+  <p><number name="i2" displaySmallAsZero>sqrt(-1)</number></p>
+  <p><number name="i3" displaySmallAsZero>exp(pi i/2)</number></p>
+  <p><number name="i4">$ni1^3</number></p>
+  <p><number name="i5">$ni2^3</number></p>
+  <p><number name="i6" displaySmallAsZero>$ni3^3</number></p>
+  <p><number name="i7">1/-i</number></p>
+  <p><number name="i8" displaySmallAsZero>1/$ni4</number></p>
+  <p><number name="i9">1/$ni5</number></p>
+  <p><number name="i10" displaySmallAsZero>1/$ni6</number></p>
+  <p><number name="i11">0+i</number></p>
+  <p><number name="i12">1i</number></p>
+
+  <p><number name="ni1">-i</number></p>
+  <p><math name="ni1a">$ni1</math></p>
+  <p><number name="ni2">i^3</number></p>
+  <p><number name="ni3" displaySmallAsZero>(-1)^(3/2)</number></p>
+  <p><number name="ni4" displaySmallAsZero>exp(3 pi i/2)</number></p>
+  <p><number name="ni5">$i1^3</number></p>
+  <p><number name="ni6" displaySmallAsZero>$i2^3</number></p>
+  <p><number name="ni7" displaySmallAsZero>$i3^3</number></p>
+  <p><number name="ni8">1/i</number></p>
+  <p><number name="ni9">1/$i4</number></p>
+  <p><number name="ni10">1/$i5</number></p>
+  <p><number name="ni11" displaySmallAsZero>1/$i6</number></p>
+  <p><number name="ni12">0-i</number></p>
+  <p><number name="ni13">-1i</number></p>
+
+  <p><number name="c1">2+3i</number></p>
+  <p><number name="c2"><math>2+3i</math></number></p>
+  <p><number name="c3">(2+3i)/(3+i)</number></p>
+  <p><number name="c4"><math>2+3i</math>/<number>3+i</number></number></p>
+  <p><number name="c5">Infinity i</number></p>
+  <p><number name="c6"><math format="latex">\\infty i</math></number></p>
+  <p><number name="c7">5+0i</number></p>
+  <p><number name="c8"><math>5+0i</math></number></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/i1').should('have.text', 'i');
+    cy.get('#\\/i1a .mjx-mrow').eq(0).should('have.text', 'i');
+    cy.get('#\\/i2').should('have.text', 'i');
+    cy.get('#\\/i3').should('have.text', 'i');
+    cy.get('#\\/i4').should('have.text', 'i');
+    cy.get('#\\/i5').should('have.text', 'i');
+    cy.get('#\\/i6').should('have.text', 'i');
+    cy.get('#\\/i7').should('have.text', 'i');
+    cy.get('#\\/i8').should('have.text', 'i');
+    cy.get('#\\/i9').should('have.text', 'i');
+    cy.get('#\\/i10').should('have.text', 'i');
+    cy.get('#\\/i11').should('have.text', 'i');
+    cy.get('#\\/i12').should('have.text', 'i');
+
+
+    cy.get('#\\/ni1').should('have.text', '-i');
+    cy.get('#\\/ni1a .mjx-mrow').eq(0).should('have.text', '−i');
+    cy.get('#\\/ni2').should('have.text', '-i');
+    cy.get('#\\/ni3').should('have.text', '-i');
+    cy.get('#\\/ni4').should('have.text', '-i');
+    cy.get('#\\/ni5').should('have.text', '-i');
+    cy.get('#\\/ni6').should('have.text', '-i');
+    cy.get('#\\/ni7').should('have.text', '-i');
+    cy.get('#\\/ni8').should('have.text', '-i');
+    cy.get('#\\/ni9').should('have.text', '-i');
+    cy.get('#\\/ni10').should('have.text', '-i');
+    cy.get('#\\/ni11').should('have.text', '-i');
+    cy.get('#\\/ni12').should('have.text', '-i');
+    cy.get('#\\/ni13').should('have.text', '-i');
+
+    cy.get('#\\/c1').should('have.text', '2 + 3 i');
+    cy.get('#\\/c2').should('have.text', '2 + 3 i');
+    cy.get('#\\/c3').should('have.text', '0.9 + 0.7 i');
+    cy.get('#\\/c4').should('have.text', '0.9 + 0.7 i');
+    cy.get('#\\/c5').should('have.text', 'NaN + NaN i');
+    cy.get('#\\/c6').should('have.text', 'NaN + NaN i');
+    cy.get('#\\/c7').should('have.text', '5');
+    cy.get('#\\/c8').should('have.text', '5');
+
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/i1'].stateValues.value).eqls({ re: 0, im: 1 });
+      expect(stateVariables['/i1a'].stateValues.value).eqls("i");
+      expect(stateVariables['/i2'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/i2'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i3'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/i3'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i4'].stateValues.value.re).eq(0)
+      expect(stateVariables['/i4'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i5'].stateValues.value.re).eq(0)
+      expect(stateVariables['/i5'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i6'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/i6'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i7'].stateValues.value.re).eq(0)
+      expect(stateVariables['/i7'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i8'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/i8'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i9'].stateValues.value.re).eq(0)
+      expect(stateVariables['/i9'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i10'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/i10'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i11'].stateValues.value.re).eq(0)
+      expect(stateVariables['/i11'].stateValues.value.im).eq(1);
+      expect(stateVariables['/i12'].stateValues.value.re).eq(0)
+      expect(stateVariables['/i12'].stateValues.value.im).eq(1);
+
+
+      expect(stateVariables['/ni1'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni1'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni1a'].stateValues.value).eqls(["-", "i"]);
+      expect(stateVariables['/ni2'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni2'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni3'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/ni3'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni4'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/ni4'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni5'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni5'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni6'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/ni6'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni7'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/ni7'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni8'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni8'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni9'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni9'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni10'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni10'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni11'].stateValues.value.re).closeTo(0, 1E-14);
+      expect(stateVariables['/ni11'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni12'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni12'].stateValues.value.im).eq(-1);
+      expect(stateVariables['/ni13'].stateValues.value.re).eq(0)
+      expect(stateVariables['/ni13'].stateValues.value.im).eq(-1);
+
+
+      expect(stateVariables['/c1'].stateValues.value.re).eq(2)
+      expect(stateVariables['/c1'].stateValues.value.im).eq(3);
+      expect(stateVariables['/c2'].stateValues.value.re).eq(2)
+      expect(stateVariables['/c2'].stateValues.value.im).eq(3);
+      expect(stateVariables['/c3'].stateValues.value.re).closeTo(0.9, 1E-14)
+      expect(stateVariables['/c3'].stateValues.value.im).closeTo(0.7, 1E-14);
+      expect(stateVariables['/c4'].stateValues.value.re).closeTo(0.9, 1E-14)
+      expect(stateVariables['/c4'].stateValues.value.im).closeTo(0.7, 1E-14);
+      expect(stateVariables['/c5'].stateValues.value.re).eqls(NaN)
+      expect(stateVariables['/c5'].stateValues.value.im).eqls(NaN);
+      expect(stateVariables['/c6'].stateValues.value.re).eqls(NaN)
+      expect(stateVariables['/c6'].stateValues.value.im).eqls(NaN);
+      expect(stateVariables['/c7'].stateValues.value).eq(5);
+      expect(stateVariables['/c8'].stateValues.value).eq(5);
+    })
+
+  });
+
+  it('complex numbers and inverse definition', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><number name="n1">1</number> <mathinput bindValueto="$n1" name="mi1" /></p>
+  <p><number name="n2"><number>1</number></number> <mathinput bindValueto="$n2" name="mi2" /></p>
+  <p><number name="n3"></number> <mathinput bindValueto="$n3" name="mi3" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n1').should('have.text', '1');
+    cy.get('#\\/n2').should('have.text', '1');
+    cy.get('#\\/n3').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "1")
+    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "1")
+    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "")
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value).eqls(1);
+      expect(stateVariables['/n2'].stateValues.value).eqls(1);
+      expect(stateVariables['/n3'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/mi1'].stateValues.value).eqls(1);
+      expect(stateVariables['/mi2'].stateValues.value).eqls(1);
+      expect(stateVariables['/mi3'].stateValues.value).eqls(NaN);
+
+    })
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{end}{backspace}i{enter}", { force: true }).blur()
+
+    cy.get('#\\/n1').should('have.text', 'i');
+    cy.get('#\\/n2').should('have.text', 'i');
+    cy.get('#\\/n3').should('have.text', 'i');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "i")
+    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "i")
+    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "i")
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value).eqls({ re: 0, im: 1 });
+      expect(stateVariables['/n2'].stateValues.value).eqls({ re: 0, im: 1 });
+      expect(stateVariables['/n3'].stateValues.value).eqls({ re: 0, im: 1 });
+      expect(stateVariables['/mi1'].stateValues.value).eqls("i");
+      expect(stateVariables['/mi2'].stateValues.value).eqls("i");
+      expect(stateVariables['/mi3'].stateValues.value).eqls("i");
+
+    })
+
+
+    cy.get('#\\/mi1 textarea').type("{end}+2{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{end}+2{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{end}+2{enter}", { force: true }).blur()
+
+    cy.get('#\\/n1').should('have.text', '2 + i');
+    cy.get('#\\/n2').should('have.text', '2 + i');
+    cy.get('#\\/n3').should('have.text', '2 + i');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "2+i")
+    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "2+i")
+    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "2+i")
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value.re).eq(2)
+      expect(stateVariables['/n1'].stateValues.value.im).eq(1)
+      expect(stateVariables['/n2'].stateValues.value.re).eq(2)
+      expect(stateVariables['/n2'].stateValues.value.im).eq(1)
+      expect(stateVariables['/n3'].stateValues.value.re).eq(2)
+      expect(stateVariables['/n3'].stateValues.value.im).eq(1)
+      expect(stateVariables['/mi1'].stateValues.value).eqls(["+", 2, "i"]);
+      expect(stateVariables['/mi2'].stateValues.value).eqls(["+", 2, "i"]);
+      expect(stateVariables['/mi3'].stateValues.value).eqls(["+", 2, "i"]);
+
+    })
+
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true }).blur()
+
+    cy.get('#\\/n1').should('have.text', '3');
+    cy.get('#\\/n2').should('have.text', '3');
+    cy.get('#\\/n3').should('have.text', '3');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "3")
+    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "3")
+    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "3")
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value).eq(3)
+      expect(stateVariables['/n2'].stateValues.value).eq(3)
+      expect(stateVariables['/n3'].stateValues.value).eq(3)
+      expect(stateVariables['/mi1'].stateValues.value).eqls(3);
+      expect(stateVariables['/mi2'].stateValues.value).eqls(3);
+      expect(stateVariables['/mi3'].stateValues.value).eqls(3);
+
+    })
+
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}1i{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}1i{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{end}{backspace}1i{enter}", { force: true }).blur()
+
+    cy.get('#\\/n1').should('have.text', 'i');
+    cy.get('#\\/n2').should('have.text', 'i');
+    cy.get('#\\/n3').should('have.text', 'i');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "i")
+    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "i")
+    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "i")
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value).eqls({ re: 0, im: 1 });
+      expect(stateVariables['/n2'].stateValues.value).eqls({ re: 0, im: 1 });
+      expect(stateVariables['/n3'].stateValues.value).eqls({ re: 0, im: 1 });
+      expect(stateVariables['/mi1'].stateValues.value).eqls("i");
+      expect(stateVariables['/mi2'].stateValues.value).eqls("i");
+      expect(stateVariables['/mi3'].stateValues.value).eqls("i");
+
+    })
+
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}-1i+0{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}-1i+0{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{end}{backspace}-1i+0{enter}", { force: true }).blur()
+
+    cy.get('#\\/n1').should('have.text', '-i');
+    cy.get('#\\/n2').should('have.text', '-i');
+    cy.get('#\\/n3').should('have.text', '-i');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "−i")
+    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "−i")
+    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "−i")
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value.re).eq(0)
+      expect(stateVariables['/n1'].stateValues.value.im).eq(-1)
+      expect(stateVariables['/n2'].stateValues.value.re).eq(0)
+      expect(stateVariables['/n2'].stateValues.value.im).eq(-1)
+      expect(stateVariables['/n3'].stateValues.value.re).eq(0)
+      expect(stateVariables['/n3'].stateValues.value.im).eq(-1)
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['-', "i"]);
+      expect(stateVariables['/mi2'].stateValues.value).eqls(['-', "i"]);
+      expect(stateVariables['/mi3'].stateValues.value).eqls(['-', "i"]);
+
+    })
+
+
+  });
+
+
+
 });
