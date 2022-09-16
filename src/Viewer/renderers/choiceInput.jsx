@@ -242,9 +242,10 @@ export default React.memo(function ChoiceInput(props) {
       }
     }
 
+    // inline="true"
     return <React.Fragment>
       <a name={id} />
-        <select style={{border: "var(--mainBorder)", height: "24px", margin: "0px 12px 12px 0px"}}
+        <select className="custom-select"
           id={id}
           onChange={onChangeHandler}
           value={value}

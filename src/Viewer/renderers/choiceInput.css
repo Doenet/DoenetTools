@@ -150,3 +150,16 @@
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
+
+/* CUSTOM STYLING FOR SELECT */
+.custom-select {
+    border: var(--mainBorder);
+    border-radius: var(--mainBorderRadius);
+    height: 24px;
+    margin: 0px 12px 12px 0px;
+}
+
+.custom-select:focus-within {
+    outline: var(--mainBorder);
+    outline-offset: 2px;
+}
