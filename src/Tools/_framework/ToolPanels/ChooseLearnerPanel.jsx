@@ -322,6 +322,8 @@ export default function ChooseLearnerPanel(props) {
           }
           timeZoneCorrectLastExamDate = <ButtonGroup>
             <Button value='Resume' onClick={() => {
+              localStorage.clear(); //Clear out the profile of the last exam taker
+              axios.get('/api/signOut.php');
               setChoosenLearner(learner);
               setStage('student final check');
               setResumeAttemptFlag(true)
@@ -345,6 +347,8 @@ export default function ChooseLearnerPanel(props) {
               width='menu'
               value='Start'
               onClick={() => {
+                localStorage.clear(); //Clear out the profile of the last exam taker
+                axios.get('/api/signOut.php');
                 setChoosenLearner(learner);
                 setStage('student final check');
                 setResumeAttemptFlag(false);
