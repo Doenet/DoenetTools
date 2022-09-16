@@ -159,6 +159,10 @@
     margin: 0px 12px 12px 0px;
 }
 
+.custom-select:hover {
+    background: var(--lightBlue);
+}
+
 .custom-select:focus-within {
     outline: var(--mainBorder);
     outline-offset: 2px;
