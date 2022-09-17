@@ -1458,6 +1458,61 @@ describe('Number Tag Tests', function () {
 
   });
 
+  it('complex numbers, re and im', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  
+  <p><number name="n1">re(2-4i)</number></p>
+  <p><number name="n2">im(2-4i)</number></p>
+  <p><number name="n3">re((2-4i)(3-i))</number></p>
+  <p><number name="n4">im((2-4i)(3-i))</number></p>
+  <p><number name="n1a"><math>re(2-4i)</math></number></p>
+  <p><number name="n2a"><math>im(2-4i)</math></number></p>
+  <p><number name="n3a"><math>re((2-4i)(3-i))</math></number></p>
+  <p><number name="n4a"><math>im((2-4i)(3-i))</math></number></p>
+  <p><number name="n1b"><math format="latex">\\Re(2-4i)</math></number></p>
+  <p><number name="n2b"><math format="latex">\\Im(2-4i)</math></number></p>
+  <p><number name="n3b"><math format="latex">\\Re((2-4i)(3-i))</math></number></p>
+  <p><number name="n4b"><math format="latex">\\Im((2-4i)(3-i))</math></number></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n1').should('have.text', '2');
+    cy.get('#\\/n2').should('have.text', '-4');
+    cy.get('#\\/n3').should('have.text', '2');
+    cy.get('#\\/n4').should('have.text', '-14');
+    cy.get('#\\/n1a').should('have.text', '2');
+    cy.get('#\\/n2a').should('have.text', '-4');
+    cy.get('#\\/n3a').should('have.text', '2');
+    cy.get('#\\/n4a').should('have.text', '-14');
+    cy.get('#\\/n1b').should('have.text', '2');
+    cy.get('#\\/n2b').should('have.text', '-4');
+    cy.get('#\\/n3b').should('have.text', '2');
+    cy.get('#\\/n4b').should('have.text', '-14');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value).eq(2);
+      expect(stateVariables['/n2'].stateValues.value).eq(-4);
+      expect(stateVariables['/n3'].stateValues.value).eq(2);
+      expect(stateVariables['/n4'].stateValues.value).eq(-14);
+      expect(stateVariables['/n1a'].stateValues.value).eq(2);
+      expect(stateVariables['/n2a'].stateValues.value).eq(-4);
+      expect(stateVariables['/n3a'].stateValues.value).eq(2);
+      expect(stateVariables['/n4a'].stateValues.value).eq(-14);
+      expect(stateVariables['/n1b'].stateValues.value).eq(2);
+      expect(stateVariables['/n2b'].stateValues.value).eq(-4);
+      expect(stateVariables['/n3b'].stateValues.value).eq(2);
+      expect(stateVariables['/n4b'].stateValues.value).eq(-14);
+    })
+
+  });
 
 
 });

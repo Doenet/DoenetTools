@@ -11,7 +11,21 @@ export var appliedFunctionSymbolsDefault = [
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
-  'count', 'mod'
+  'count', 'mod', 're', 'im'
+];
+
+export var appliedFunctionSymbolsDefaultLatex = [
+  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
+  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
+  "asech", "asin", "asinh", "atan", "atanh",
+  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
+  "sech", "sin", "sinh", "tan", "tanh",
+  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
+  'arg',
+  'min', 'max', 'mean', 'median',
+  'floor', 'ceil', 'round',
+  'sum', 'prod', 'variance', 'std',
+  'count', 'mod', 'Re', 'Im'
 ];
 
 let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset']
@@ -31,13 +45,13 @@ export function getFromText({
 }
 
 export var latexToAst = new me.converters.latexToAstObj({
-  appliedFunctionSymbols: appliedFunctionSymbolsDefault,
+  appliedFunctionSymbols: appliedFunctionSymbolsDefaultLatex,
   allowedLatexSymbols,
 });
 
 export function getFromLatex({
   functionSymbols,
-  appliedFunctionSymbols = appliedFunctionSymbolsDefault,
+  appliedFunctionSymbols = appliedFunctionSymbolsDefaultLatex,
   splitSymbols = true,
 }) {
   if (splitSymbols) {
