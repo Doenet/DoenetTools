@@ -136,6 +136,7 @@ export default function ActivityViewer(props) {
   const viewerWasUnmounted = useRef(false);
 
   const [finishAssessmentMessageOpen, setFinishAssessmentMessageOpen] = useState(false);
+  const [processingSubmitAll, setProcessingSubmitAll] = useState(false);
 
 
   let navigate = useNavigate();
@@ -1094,6 +1095,9 @@ export default function ActivityViewer(props) {
   }
 
   async function submitAllAndFinishAssessment() {
+
+    setProcessingSubmitAll(true);
+    
     let terminatePromises = [];
 
     for (let coreWorker of pageInfo.pageCoreWorker) {
@@ -1368,8 +1372,8 @@ export default function ActivityViewer(props) {
         Are you sure you want to finish this assessment?
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
-            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes"></Button>
-            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert></Button>
+            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
+            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert disabled={processingSubmitAll}></Button>
           </ButtonGroup>
         </div>
 
