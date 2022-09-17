@@ -136,6 +136,7 @@ export default function ActivityViewer(props) {
   const viewerWasUnmounted = useRef(false);
 
   const [finishAssessmentMessageOpen, setFinishAssessmentMessageOpen] = useState(false);
+  const [processingSubmitAll, setProcessingSubmitAll] = useState(false);
 
 
   let navigate = useNavigate();
@@ -704,7 +705,7 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    idb_set(
+    await idb_set(
       `${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
@@ -719,7 +720,7 @@ export default function ActivityViewer(props) {
         variantIndex: data.variantIndex,
       }
 
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
         newLocalInfo
       );
@@ -757,7 +758,7 @@ export default function ActivityViewer(props) {
     let saveId = nanoid();
 
     if (props.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}`,
         {
           activityInfo: activityInfo.current,
@@ -790,7 +791,7 @@ export default function ActivityViewer(props) {
     changesToBeSaved.current = true;
 
     // if not currently in throttle, save changes to database
-    saveChangesToDatabase(overrideThrottle);
+    await saveChangesToDatabase(overrideThrottle);
 
 
   }
@@ -873,7 +874,7 @@ export default function ActivityViewer(props) {
     serverSaveId.current = data.saveId;
 
     if (props.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}|ServerSaveId`,
         data.saveId
       )
@@ -964,7 +965,7 @@ export default function ActivityViewer(props) {
     }
 
     if (viewerWasUnmounted.current) {
-      saveState({ overrideThrottle: true, overrideStage: true });
+      await saveState({ overrideThrottle: true, overrideStage: true });
     }
 
   }
@@ -1094,17 +1095,49 @@ export default function ActivityViewer(props) {
   }
 
   async function submitAllAndFinishAssessment() {
-    for (let coreWorker of pageInfo.pageCoreWorker) {
-      coreWorker?.postMessage({
-        messageType: "submitAllAnswers"
-      })
 
-      // posting terminate will make sure page state gets saved
-      // (as navigating to another URL will not initiate a state save)
-      coreWorker?.postMessage({
-        messageType: "terminate"
-      })
+    setProcessingSubmitAll(true);
+    
+    let terminatePromises = [];
+
+    for (let coreWorker of pageInfo.pageCoreWorker) {
+
+      if (coreWorker) {
+        let actionId = nanoid();
+        let resolveTerminatePromise
+
+        terminatePromises.push(new Promise((resolve, reject) => {
+          resolveTerminatePromise = resolve;
+        }));
+
+
+        coreWorker.onmessage = function (e) {
+          if (e.data.messageType === "resolveAction" && e.data.args.actionId === actionId) {
+
+            // posting terminate will make sure page state gets saved
+            // (as navigating to another URL will not initiate a state save)
+            coreWorker.postMessage({
+              messageType: "terminate"
+            })
+
+          } else if (e.data.messageType === "terminated") {
+            // resolve promise
+            resolveTerminatePromise();
+          }
+        }
+
+        coreWorker.postMessage({
+          messageType: "submitAllAnswers",
+          args: { actionId }
+        })
+
+
+      }
     }
+
+    await Promise.all(terminatePromises);
+
+    await saveState({ overrideThrottle: true })
 
     // TODO: what should this do in general?
     window.location.href = "/exam?tool=endExam";
@@ -1339,8 +1372,8 @@ export default function ActivityViewer(props) {
         Are you sure you want to finish this assessment?
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
-            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes"></Button>
-            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert></Button>
+            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
+            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert disabled={processingSubmitAll}></Button>
           </ButtonGroup>
         </div>
 

@@ -222,6 +222,8 @@ export default class Core {
 
     this.processQueue = [];
 
+    this.stopProcessingRequests = false;
+
     this.dependencies = new DependencyHandler({
       _components: this._components,
       componentInfoObjects: this.componentInfoObjects,
@@ -8042,6 +8044,10 @@ export default class Core {
 
   async executeProcesses() {
 
+    if (this.stopProcessingRequests) {
+      return;
+    }
+
     while (this.processQueue.length > 0) {
       let nextUpdateInfo = this.processQueue.splice(0, 1)[0];
       let result;
@@ -8600,7 +8606,7 @@ export default class Core {
     })
   }
 
-  performRecordEvent({ event }) {
+  async performRecordEvent({ event }) {
 
     if (!this.flags.allowSaveEvents) {
       return;
@@ -8629,24 +8635,22 @@ export default class Core {
       version: "0.1.1",
     }
 
-    axios.post('/api/recordEvent.php', payload)
-      .then(resp => {
-        // console.log(">>>>resp",resp.data)
-      })
-      .catch(e => {
-        console.error(`Error saving event: ${e.message}`);
-        // postMessage({
-        //   messageType: "sendToast",
-        //   coreId: this.coreId,
-        //   args: {
-        //     message: `Error saving event: ${e.message}`,
-        //     toastType: toastType.ERROR
-        //   }
-        // })
-      });
 
+    try {
+      let resp = await axios.post('/api/recordEvent.php', payload);
+      // console.log(">>>>resp from record event", resp.data)
+    } catch(e) {
+      console.error(`Error saving event: ${e.message}`);
+      // postMessage({
+      //   messageType: "sendToast",
+      //   coreId: this.coreId,
+      //   args: {
+      //     message: `Error saving event: ${e.message}`,
+      //     toastType: toastType.ERROR
+      //   }
+      // })
+    }
 
-    return Promise.resolve();
   }
 
   processVisibilityChangedEvent(event) {
@@ -9773,7 +9777,7 @@ export default class Core {
     let saveId = nanoid();
 
     if (this.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
         {
           coreState: this.cumulativeStateVariableChanges,
@@ -9812,7 +9816,7 @@ export default class Core {
     this.changesToBeSaved = true;
 
     // if not currently in throttle, save changes to database
-    this.saveChangesToDatabase(overrideThrottle);
+    await this.saveChangesToDatabase(overrideThrottle);
 
 
   }
@@ -9900,7 +9904,7 @@ export default class Core {
     this.serverSaveId = data.saveId;
 
     if (this.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
         data.saveId
       )
@@ -9913,7 +9917,7 @@ export default class Core {
       if (this.attemptNumber !== Number(data.attemptNumber) || this.cid === data.cid) {
 
         if (this.flags.allowLocalState) {
-          idb_set(
+          await idb_set(
             `${this.doenetId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
             {
               coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
@@ -10287,8 +10291,26 @@ export default class Core {
   }
 
   async terminate() {
+
+    let pause100 = function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, 100)
+      })
+    }
+
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
+
+    this.stopProcessingRequests = true;
+
+    if (this.processing) {
+      for (let i = 0; i < 10; i++) {
+        await pause100();
+        if (!this.processing) {
+          break;
+        }
+      }
+    }
 
     if (this.savePageStateTimeoutID) {
       // if in debounce to save page to local storage
