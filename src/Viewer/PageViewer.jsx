@@ -724,7 +724,7 @@ export default function PageViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    idb_set(
+    await idb_set(
       `${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
@@ -739,7 +739,7 @@ export default function PageViewer(props) {
         saveId: data.saveId,
       }
 
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${pageNumber}|${data.attemptNumber}|${data.cid}`,
         newLocalInfo
       );
