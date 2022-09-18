@@ -1140,7 +1140,7 @@ export default function ActivityViewer(props) {
     await saveState({ overrideThrottle: true })
 
     // TODO: what should this do in general?
-    window.location.href = "/exam?tool=endExam";
+    window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
 
   }
 
