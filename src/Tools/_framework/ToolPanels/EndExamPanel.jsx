@@ -91,24 +91,34 @@ export default function EndExamPanel() {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      display: 'flex',
+      // display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       margin: '20',
     }}
   >
-    <img
-      style={{ width: '250px', height: '250px' }}
-      alt="Doenet Logo"
-      src={'/media/Doenet_Logo_Frontpage.png'}
-    />
-    <div style={{ leftPadding: "10px", rightPadding: "100px", rightMargin: "100px" }}>
-      <h1>Exam is finished</h1>
-      <div>
-
+    <div style={{display: 'flex',alignItems: 'center'}}>
+        <div>
+        <img
+            style={{ width: '250px', height: '250px' }}
+            alt="Doenet Logo"
+            src={'/media/Doenet_Logo_Frontpage.png'}
+          />
+        </div>
+        
+        <h1>Exam is finished</h1>
+    </div>
+    <div style={{  display: 'flex',
+      justifyContent: 'center'
+      }}>
+      <div style={{width: '200px'}}>
+        {scoreResults}
       </div>
     </div>
+   
+       
 
-    {scoreResults}
+    
+    
   </div>
 }
