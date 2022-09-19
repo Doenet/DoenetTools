@@ -341,14 +341,25 @@ export default function PageViewer(props) {
     }
   }
 
-  function forceRendererStateDisabledShowCorrectness(rendererState) {
+  function forceRendererState({ rendererState, forceDisable, forceShowCorrectness, forceShowSolution }) {
     for (let componentName in rendererState) {
       let stateValues = rendererState[componentName].stateValues;
-      if(stateValues.disabled === false) {
+      if (forceDisable && stateValues.disabled === false) {
         stateValues.disabled = true;
       }
-      if(stateValues.showCorrectness === false) {
+      if (forceShowCorrectness && stateValues.showCorrectness === false) {
         stateValues.showCorrectness = true;
+      }
+      if (forceShowSolution && rendererState[componentName].childrenInstructions?.length > 0) {
+        // look for a child that has a componentType solution
+        for (let childInst of rendererState[componentName].childrenInstructions) {
+          if (childInst.componentType === "solution") {
+            let solComponentName = childInst.componentName;
+            if (rendererState[solComponentName].stateValues.hidden) {
+              rendererState[solComponentName].stateValues.hidden = false;
+            }
+          }
+        }
       }
 
     }
@@ -357,8 +368,8 @@ export default function PageViewer(props) {
   function initializeRenderers(args) {
 
     if (args.rendererState) {
-      if (props.snapshotOnly) {
-        forceRendererStateDisabledShowCorrectness(args.rendererState)
+      if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution) {
+        forceRendererState({ rendererState: args.rendererState, ...props })
       }
       for (let componentName in args.rendererState) {
         updateRendererSVsWithRecoil({

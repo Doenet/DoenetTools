@@ -1914,7 +1914,7 @@ export default class Core {
       }
 
       if (typeof child === "object") {
-        if (!await child.stateValues.hidden) {
+        if (child.constructor.sendToRendererEvenIfHidden || !await child.stateValues.hidden) {
           indicesToRender.push(ind);
         }
       } else {

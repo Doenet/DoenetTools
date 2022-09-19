@@ -4,6 +4,8 @@ export default class Solution extends BlockComponent {
   static componentType = "solution";
   static renderChildren = true;
 
+  static sendToRendererEvenIfHidden = true;
+
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
