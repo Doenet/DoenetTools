@@ -1273,7 +1273,7 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
-  if (order) {
+  if (order && variantsByPage) {
     for (let [ind, page] of order.entries()) {
 
 
@@ -1312,7 +1312,9 @@ export default function ActivityViewer(props) {
         pageIsCurrent={ind === currentPage - 1}
         itemNumber={ind + 1}
         attemptNumber={attemptNumber}
-        snapshotOnly={props.snapshotOnly}
+        forceDisable={props.forceDisable}
+        forceShowCorrectness={props.forceShowCorrectness}
+        forceShowSolution={props.forceShowSolution}
         flags={flags}
         activityVariantIndex={variantIndex}
         requestedVariantIndex={variantsByPage[ind]}
