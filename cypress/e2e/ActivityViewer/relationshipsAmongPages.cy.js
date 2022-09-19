@@ -471,7 +471,7 @@ describe('Relationships among pages tests', function () {
       expect(win.scrollY).eq(0);
     })
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'true');
 
     cy.get('#page1\\/toAbove').click();
@@ -496,7 +496,7 @@ describe('Relationships among pages tests', function () {
       expect(win.scrollY).eq(0);
     })
 
-    cy.get('#page2\\/bi_input').click();
+    cy.get('#page2\\/bi').click();
     cy.get('#page2\\/b').should('have.text', 'true');
 
     cy.get('#page2\\/toAside1').click();
@@ -533,7 +533,7 @@ describe('Relationships among pages tests', function () {
     cy.url().should('match', /#page1$/)
 
 
-    cy.get('#page1\\/bi_input').click();
+    cy.get('#page1\\/bi').click();
     cy.get('#page1\\/b').should('have.text', 'false');
 
     cy.wait(2000);  // to wait for debounce

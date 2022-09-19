@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
-
-// Moved most of checkWorkStyle styling into Button
-const Button = styled.button`
+ // Moved most of checkWorkStyle styling into Button
+ const Button = styled.button `
   position: relative;
   height: 24px;
   display: inline-block;
@@ -169,7 +168,7 @@ export default React.memo(function Answer(props) {
       </>
     }
 
-    return <span id={id} style={{ display: "flex" }}>
+    return <span id={id}>
       <a name={id} />
       {inputChildrenToRender}
       {checkworkComponent}

@@ -57,11 +57,11 @@ const sockets = atomFamily({
     key: 'socketStore/Default',
     get:
       (nsp) =>
-      ({ get }) => {
-        const manager = get(socketManger);
-        const socket = manager.socket(`/${nsp}`);
-        return socket;
-      },
+        ({ get }) => {
+          const manager = get(socketManger);
+          const socket = manager.socket(`/${nsp}`);
+          return socket;
+        },
     dangerouslyAllowMutability: true,
   }),
   dangerouslyAllowMutability: true,
@@ -157,6 +157,7 @@ export default function useSockets(nsp) {
           cid:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
           numberOfAttemptsAllowed: '1',
+          showFinishButton: false,
           proctorMakesAvailable: false,
           showCorrectness: true,
           showFeedback: true,
@@ -182,6 +183,7 @@ export default function useSockets(nsp) {
           cid:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
           numberOfAttemptsAllowed: '1',
+          showFinishButton: false,
           proctorMakesAvailable: false,
           showCorrectness: true,
           showFeedback: true,
@@ -301,16 +303,14 @@ export default function useSockets(nsp) {
         } else if (
           destinationFolderObj.folderInfo.itemType === itemType.COLLECTION &&
           sourceFolderInfo.contentsDictionary[gItem.itemId].itemType !==
-            itemType.DOENETML
+          itemType.DOENETML
         ) {
           addToast(
-            `Can not ${
-              sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+            `Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
             }s into a Collection`,
             toastType.ERROR,
           );
-          throw `Can not ${
-            sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+          throw `Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
           }s into a Collection`;
         }
       }
@@ -1196,12 +1196,12 @@ const formatDate = (dt) => {
   )
     .toString()
     .padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt
-    .getHours()
-    .toString()
-    .padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt
-    .getSeconds()
-    .toString()
-    .padStart(2, '0')}`;
+      .getHours()
+      .toString()
+      .padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt
+        .getSeconds()
+        .toString()
+        .padStart(2, '0')}`;
 
   return formattedDate;
 };

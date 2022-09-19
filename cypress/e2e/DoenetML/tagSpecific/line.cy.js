@@ -1665,6 +1665,9 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(1)})`)
+    cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(5)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -3522,7 +3525,7 @@ describe('Line Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b_input').check();
+    cy.get('#\\/b_input').check({ force: true });
 
 
     cy.window().then(async (win) => {

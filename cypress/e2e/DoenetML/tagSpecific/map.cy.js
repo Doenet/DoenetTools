@@ -2454,8 +2454,8 @@ describe('Map Tag Tests', function () {
     cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 ')
     cy.get('#\\/m2').should('have.text', 'map 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
     cy.get('#\\/h2a').should('contain.text', 'false');
     cy.get('#\\/h1a').should('contain.text', 'true');
 
@@ -2470,8 +2470,8 @@ describe('Map Tag Tests', function () {
     cy.get('#\\/m1').should('have.text', 'map 1: ')
     cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
     cy.get('#\\/h2a').should('contain.text', 'true');
     cy.get('#\\/h1a').should('contain.text', 'false');
 
@@ -2486,8 +2486,8 @@ describe('Map Tag Tests', function () {
     cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 ')
     cy.get('#\\/m2').should('have.text', 'map 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
     cy.get('#\\/h2a').should('contain.text', 'false');
     cy.get('#\\/h1a').should('contain.text', 'true');
 

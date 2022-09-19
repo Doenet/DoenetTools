@@ -76,7 +76,7 @@ if ($success) {
             array_push($attemptInfo, [
                 'attemptNumber' => $row['attemptNumber'],
                 'cid' => $row['cid'],
-                'variant' => $row['variantIndex'],
+                'variantIndex' => $row['variantIndex'],
             ]);
         }
     }

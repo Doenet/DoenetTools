@@ -199,7 +199,6 @@ function buildRows({
   rowLabel = '',
   assignments,
   clickCallback,
-  doubleClickCallback,
   completedArray,
   setCompletedArray,
   classTimes,
@@ -212,6 +211,7 @@ function buildRows({
     let isFirstRow = true;
     let numberOfVisibleRows = 0;
     for (let assignment of assignments) {
+      // console.log("buildRows assignment",assignment)
       let checked = completedArray.includes(assignment.doenetId);
 
       if (showCompleted || (!showCompleted && !checked)) {
@@ -259,25 +259,27 @@ function buildRows({
       let oneClick = (e) => {
         e.stopPropagation();
         clickCallback({
-          driveId: assignment.driveId,
-          itemId: assignment.itemId,
-          driveInstanceId: 'currentContent',
-          type: assignment.itemType,
-          instructionType: 'one item',
-          parentFolderId: assignment.parentFolderId,
+          courseId: assignment.courseId,
+          doenetId: assignment.doenetId
         });
       };
-      let path = `${assignment.driveId}:${assignment.parentFolderId}:${assignment.itemId}:${assignment.itemType}`;
-      let doubleClick = () =>
-        doubleClickCallback({
-          type: assignment.itemType,
-          doenetId: assignment.doenetId,
-          path,
-        });
+ 
       let checked = completedArray.includes(assignment.doenetId);
 
       if (!showCompleted && checked) {
         continue;
+      }
+
+      let score = '';
+      // console.log("assignment",assignment)
+
+      if (assignment.gradeCategory){
+        const totalPointsOrPercent = Number(assignment.totalPointsOrPercent)
+        let pointsAwarded = Math.round(assignment.credit * totalPointsOrPercent * 100) / 100;
+        if (assignment.creditOverride){
+          pointsAwarded = Math.round(assignment.creditOverride * totalPointsOrPercent * 100) / 100;
+        }
+        score = `${pointsAwarded}/${totalPointsOrPercent}`;
       }
 
       let checkbox = (
@@ -329,9 +331,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {assignment.label}
             </td>
@@ -340,9 +342,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayAssignedDate}
             </td>
@@ -351,11 +353,21 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayDueDate}
+            </td>
+            <td
+              style={{
+                backgroundColor: bgColor,
+                padding: '8px',
+                borderBottom: '2px solid black',
+                textAlign: 'center',
+              }}
+            >
+              {score}
             </td>
             <td
               style={{
@@ -377,9 +389,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {assignment.label}
             </td>
@@ -388,9 +400,9 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayAssignedDate}
             </td>
@@ -399,11 +411,21 @@ function buildRows({
                 backgroundColor: bgColor,
                 padding: '8px',
                 borderBottom: '2px solid black',
+                cursor:"pointer"
               }}
               onClick={oneClick}
-              onDoubleClick={doubleClick}
             >
               {displayDueDate}
+            </td>
+            <td
+              style={{
+                backgroundColor: bgColor,
+                padding: '8px',
+                borderBottom: '2px solid black',
+                textAlign: 'center',
+              }}
+            >
+              {score}
             </td>
             <td
               style={{
@@ -455,6 +477,7 @@ export default function Next7Days({ courseId }) {
       params: { courseId },
     });
     // console.log('Next7 data: ', data);
+    // console.log('Next7 first assignment: ', data.assignments[0]);
     if (!data.success) {
       setProblemMessage(data.message);
       return;
@@ -472,45 +495,13 @@ export default function Next7Days({ courseId }) {
   });
 
   const clickCallback = useRecoilCallback(
-    ({ set }) =>
-      (info) => {
-        switch (info.instructionType) {
-          case 'one item':
-            set(selectedMenuPanelAtom, `Selected${info.type}`);
-            break;
-          case 'range to item':
-          case 'add item':
-            set(selectedMenuPanelAtom, `SelectedMulti`);
-            break;
-          case 'clear all':
-            set(selectedMenuPanelAtom, null);
-            break;
-          default:
-            throw new Error('NavigationPanel found invalid select instruction');
-        }
-        set(
-          selectedDriveItems({
-            driveId: info.driveId,
-            driveInstanceId: info.driveInstanceId,
-            itemId: info.itemId,
-          }),
-          {
-            instructionType: info.instructionType,
-            parentFolderId: info.parentFolderId,
-          },
-        );
-        set(selectedDriveAtom, info.driveId);
-      },
-    [],
-  );
-
-  const doubleClickCallback = useRecoilCallback(
-    ({ snapshot }) =>
-      async ({ type, doenetId, path }) => {
+    ({ set, snapshot }) =>
+      async (info) => {
+        const courseId = info.courseId;
+        const doenetId = info.doenetId;
         let { canEditContent } = await snapshot.getPromise(
           effectivePermissionsByCourseId(courseId)
           );
-          
           
           //Note: need to send pageId
         if (canEditContent === '1') {
@@ -543,7 +534,7 @@ export default function Next7Days({ courseId }) {
      
         }
       },
-    [courseId, setPageToolView],
+    [],
   );
 
   if (!initialized && courseId !== '') {
@@ -590,7 +581,6 @@ export default function Next7Days({ courseId }) {
         rowLabel: pinnedName,
         assignments: pinnedArray,
         clickCallback,
-        doubleClickCallback,
         completedArray,
         setCompletedArray,
         classTimes,
@@ -620,7 +610,6 @@ export default function Next7Days({ courseId }) {
           rowLabel: 'Overdue',
           assignments: overdueArray,
           clickCallback,
-          doubleClickCallback,
           completedArray,
           setCompletedArray,
           classTimes,
@@ -673,7 +662,6 @@ export default function Next7Days({ courseId }) {
         dotw: dotwLabel[index],
         assignments: dayAssignments,
         clickCallback,
-        doubleClickCallback,
         completedArray,
         setCompletedArray,
         classTimes,
@@ -723,7 +711,7 @@ export default function Next7Days({ courseId }) {
         <tr>
           <th
             style={{
-              width: '150px',
+              width: '100px',
               padding: '8px',
               textAlign: 'left',
               borderBottom: '2px solid black',
@@ -760,6 +748,16 @@ export default function Next7Days({ courseId }) {
             }}
           >
             Due
+          </th>
+          <th
+            style={{
+              width: '50px',
+              padding: '8px',
+              textAlign: 'left',
+              borderBottom: '2px solid black',
+            }}
+          >
+            Score
           </th>
           <th
             style={{

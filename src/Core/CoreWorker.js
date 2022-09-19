@@ -39,7 +39,7 @@ onmessage = function (e) {
     core.requestAction({
       componentName: core.documentName,
       actionName: "submitAllAnswers",
-      args: {}
+      args: e.data.args
     })
   }
 }

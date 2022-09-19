@@ -341,14 +341,25 @@ export default function PageViewer(props) {
     }
   }
 
-  function forceRendererStateDisabledShowCorrectness(rendererState) {
+  function forceRendererState({ rendererState, forceDisable, forceShowCorrectness, forceShowSolution }) {
     for (let componentName in rendererState) {
       let stateValues = rendererState[componentName].stateValues;
-      if(stateValues.disabled === false) {
+      if (forceDisable && stateValues.disabled === false) {
         stateValues.disabled = true;
       }
-      if(stateValues.showCorrectness === false) {
+      if (forceShowCorrectness && stateValues.showCorrectness === false) {
         stateValues.showCorrectness = true;
+      }
+      if (forceShowSolution && rendererState[componentName].childrenInstructions?.length > 0) {
+        // look for a child that has a componentType solution
+        for (let childInst of rendererState[componentName].childrenInstructions) {
+          if (childInst.componentType === "solution") {
+            let solComponentName = childInst.componentName;
+            if (rendererState[solComponentName].stateValues.hidden) {
+              rendererState[solComponentName].stateValues.hidden = false;
+            }
+          }
+        }
       }
 
     }
@@ -357,8 +368,8 @@ export default function PageViewer(props) {
   function initializeRenderers(args) {
 
     if (args.rendererState) {
-      if (props.snapshotOnly) {
-        forceRendererStateDisabledShowCorrectness(args.rendererState)
+      if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution) {
+        forceRendererState({ rendererState: args.rendererState, ...props })
       }
       for (let componentName in args.rendererState) {
         updateRendererSVsWithRecoil({
@@ -724,7 +735,7 @@ export default function PageViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    idb_set(
+    await idb_set(
       `${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
@@ -739,7 +750,7 @@ export default function PageViewer(props) {
         saveId: data.saveId,
       }
 
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${pageNumber}|${data.attemptNumber}|${data.cid}`,
         newLocalInfo
       );
@@ -758,13 +769,6 @@ export default function PageViewer(props) {
 
   function startCore() {
 
-    // don't create core if snapshot only
-    if (props.snapshotOnly) {
-      if (stage !== 'readyToCreateCore') {
-        setStage('readyToCreateCore');
-      }
-      return;
-    }
 
     //Kill the current core if it exists
     if (coreWorker.current) {
@@ -970,7 +974,7 @@ export default function PageViewer(props) {
 
   let noCoreWarning = null;
   let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
-  if (!coreCreated.current && !props.snapshotOnly) {
+  if (!coreCreated.current) {
     if (!documentRenderer) {
       noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
         <p>Initializing....</p>

@@ -136,6 +136,7 @@ export default function ActivityViewer(props) {
   const viewerWasUnmounted = useRef(false);
 
   const [finishAssessmentMessageOpen, setFinishAssessmentMessageOpen] = useState(false);
+  const [processingSubmitAll, setProcessingSubmitAll] = useState(false);
 
 
   let navigate = useNavigate();
@@ -704,7 +705,7 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    idb_set(
+    await idb_set(
       `${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
@@ -719,7 +720,7 @@ export default function ActivityViewer(props) {
         variantIndex: data.variantIndex,
       }
 
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
         newLocalInfo
       );
@@ -757,7 +758,7 @@ export default function ActivityViewer(props) {
     let saveId = nanoid();
 
     if (props.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}`,
         {
           activityInfo: activityInfo.current,
@@ -790,7 +791,7 @@ export default function ActivityViewer(props) {
     changesToBeSaved.current = true;
 
     // if not currently in throttle, save changes to database
-    saveChangesToDatabase(overrideThrottle);
+    await saveChangesToDatabase(overrideThrottle);
 
 
   }
@@ -873,7 +874,7 @@ export default function ActivityViewer(props) {
     serverSaveId.current = data.saveId;
 
     if (props.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}|ServerSaveId`,
         data.saveId
       )
@@ -964,7 +965,7 @@ export default function ActivityViewer(props) {
     }
 
     if (viewerWasUnmounted.current) {
-      saveState({ overrideThrottle: true, overrideStage: true });
+      await saveState({ overrideThrottle: true, overrideStage: true });
     }
 
   }
@@ -1094,20 +1095,52 @@ export default function ActivityViewer(props) {
   }
 
   async function submitAllAndFinishAssessment() {
-    for (let coreWorker of pageInfo.pageCoreWorker) {
-      coreWorker?.postMessage({
-        messageType: "submitAllAnswers"
-      })
 
-      // posting terminate will make sure page state gets saved
-      // (as navigating to another URL will not initiate a state save)
-      coreWorker?.postMessage({
-        messageType: "terminate"
-      })
+    setProcessingSubmitAll(true);
+    
+    let terminatePromises = [];
+
+    for (let coreWorker of pageInfo.pageCoreWorker) {
+
+      if (coreWorker) {
+        let actionId = nanoid();
+        let resolveTerminatePromise
+
+        terminatePromises.push(new Promise((resolve, reject) => {
+          resolveTerminatePromise = resolve;
+        }));
+
+
+        coreWorker.onmessage = function (e) {
+          if (e.data.messageType === "resolveAction" && e.data.args.actionId === actionId) {
+
+            // posting terminate will make sure page state gets saved
+            // (as navigating to another URL will not initiate a state save)
+            coreWorker.postMessage({
+              messageType: "terminate"
+            })
+
+          } else if (e.data.messageType === "terminated") {
+            // resolve promise
+            resolveTerminatePromise();
+          }
+        }
+
+        coreWorker.postMessage({
+          messageType: "submitAllAnswers",
+          args: { actionId }
+        })
+
+
+      }
     }
 
+    await Promise.all(terminatePromises);
+
+    await saveState({ overrideThrottle: true })
+
     // TODO: what should this do in general?
-    window.location.href = "/exam?tool=endExam";
+    window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
 
   }
 
@@ -1240,74 +1273,77 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
+  if (order && variantsByPage) {
+    for (let [ind, page] of order.entries()) {
 
-  for (let [ind, page] of order.entries()) {
 
-
-    let thisPageIsActive = false;
-    if (props.paginate) {
-      if (ind === currentPage - 1) {
-        // the current page is always active
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
-        // if the current page already has core created, activate next page
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1]
-        && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
-        && ind === currentPage - 2
-      ) {
-        // if current page and page after current page (if exists) already have current page
-        // activate previous page
-        thisPageIsActive = true;
+      let thisPageIsActive = false;
+      if (props.paginate) {
+        if (ind === currentPage - 1) {
+          // the current page is always active
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
+          // if the current page already has core created, activate next page
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1]
+          && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage])
+          && ind === currentPage - 2
+        ) {
+          // if current page and page after current page (if exists) already have current page
+          // activate previous page
+          thisPageIsActive = true;
+        }
+      } else {
+        // pageIsActive is used only if not paginated
+        thisPageIsActive = pageInfo.pageIsActive[ind];
       }
-    } else {
-      // pageIsActive is used only if not paginated
-      thisPageIsActive = pageInfo.pageIsActive[ind];
-    }
 
-    let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
+      let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
 
-    let pageViewer = <PageViewer
-      userId={props.userId}
-      doenetId={props.doenetId}
-      activityCid={cid}
-      cid={page.cid}
-      doenetML={page.doenetML}
-      pageNumber={(ind + 1).toString()}
-      previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
-      pageIsActive={thisPageIsActive}
-      pageIsCurrent={ind === currentPage - 1}
-      itemNumber={ind + 1}
-      attemptNumber={attemptNumber}
-      snapshotOnly={props.snapshotOnly}
-      flags={flags}
-      activityVariantIndex={variantIndex}
-      requestedVariantIndex={variantsByPage[ind]}
-      unbundledCore={props.unbundledCore}
-      updateCreditAchievedCallback={props.updateCreditAchievedCallback}
-      setIsInErrorState={props.setIsInErrorState}
-      updateAttemptNumber={props.updateAttemptNumber}
-      saveStateCallback={receivedSaveFromPage}
-      updateDataOnContentChange={props.updateDataOnContentChange}
-      coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
-      renderersInitializedCallback={() => pageRenderedCallback(ind)}
-      hideWhenNotCurrent={props.paginate}
-      prefixForIds={prefixForIds}
-    />
+      let pageViewer = <PageViewer
+        userId={props.userId}
+        doenetId={props.doenetId}
+        activityCid={cid}
+        cid={page.cid}
+        doenetML={page.doenetML}
+        pageNumber={(ind + 1).toString()}
+        previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
+        pageIsActive={thisPageIsActive}
+        pageIsCurrent={ind === currentPage - 1}
+        itemNumber={ind + 1}
+        attemptNumber={attemptNumber}
+        forceDisable={props.forceDisable}
+        forceShowCorrectness={props.forceShowCorrectness}
+        forceShowSolution={props.forceShowSolution}
+        flags={flags}
+        activityVariantIndex={variantIndex}
+        requestedVariantIndex={variantsByPage[ind]}
+        unbundledCore={props.unbundledCore}
+        updateCreditAchievedCallback={props.updateCreditAchievedCallback}
+        setIsInErrorState={props.setIsInErrorState}
+        updateAttemptNumber={props.updateAttemptNumber}
+        saveStateCallback={receivedSaveFromPage}
+        updateDataOnContentChange={props.updateDataOnContentChange}
+        coreCreatedCallback={(coreWorker) => coreCreatedCallback(ind, coreWorker)}
+        renderersInitializedCallback={() => pageRenderedCallback(ind)}
+        hideWhenNotCurrent={props.paginate}
+        prefixForIds={prefixForIds}
+      />
 
-    if (!props.paginate) {
-      pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
-        <div>
+      if (!props.paginate) {
+        pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
+          <div>
+            {pageViewer}
+          </div>
+        </VisibilitySensor>
+      }
+
+      pages.push(
+        <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
           {pageViewer}
         </div>
-      </VisibilitySensor>
+      )
     }
-
-    pages.push(
-      <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
-        {pageViewer}
-      </div>
-    )
   }
 
 
@@ -1338,8 +1374,8 @@ export default function ActivityViewer(props) {
         Are you sure you want to finish this assessment?
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
-            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes"></Button>
-            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert></Button>
+            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
+            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert disabled={processingSubmitAll}></Button>
           </ButtonGroup>
         </div>
 

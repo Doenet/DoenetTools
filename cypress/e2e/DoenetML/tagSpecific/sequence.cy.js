@@ -1205,8 +1205,8 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/s1').should('have.text', 'sequence 1: 123456')
     cy.get('#\\/s2').should('have.text', 'sequence 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/s1').should('have.text', 'sequence 1: ')
     cy.get('#\\/s2').should('have.text', 'sequence 2: 123456')
@@ -1217,8 +1217,8 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/s1').should('have.text', 'sequence 1: ')
     cy.get('#\\/s2').should('have.text', 'sequence 2: 12345678')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/s1').should('have.text', 'sequence 1: 12345678')
     cy.get('#\\/s2').should('have.text', 'sequence 2: ')
@@ -1229,8 +1229,8 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/s1').should('have.text', 'sequence 1: 123')
     cy.get('#\\/s2').should('have.text', 'sequence 2: ')
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/s1').should('have.text', 'sequence 1: ')
     cy.get('#\\/s2').should('have.text', 'sequence 2: 123')
@@ -1339,7 +1339,7 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/thelist').should('have.text', '9')
 
 
-    cy.get('#\\/fx_input').click();
+    cy.get('#\\/fx').click();
     cy.get('#\\/step textarea').type("{end}{backspace}1{enter}", { force: true })
     cy.get('#\\/thelist').should('have.text', '4, 5, 6, 7')
 
@@ -1349,7 +1349,7 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/b2 textarea').type("{end}{backspace}41{enter}", { force: true })
     cy.get('#\\/thelist').should('have.text', '4, 5, 6, 7')
 
-    cy.get('#\\/fx_input').click();
+    cy.get('#\\/fx').click();
 
     cy.get('#\\/a2 textarea').type("{end}{backspace}9{enter}", { force: true })
     cy.get('#\\/thelist').should('have.text', '9, 5, 6, 7')

@@ -74,6 +74,7 @@ export default function SelectedPage() {
   </ActionButtonGroup>
   <Textfield
       label="Label"
+      data-test="Label Page"
       vertical
       width="menu"
       value={itemTextFieldLabel}

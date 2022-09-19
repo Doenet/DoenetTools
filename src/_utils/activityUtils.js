@@ -271,6 +271,10 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
     variantIndex += activityVariantResult.numberOfVariants;
   }
 
+  if (!Number.isFinite(variantIndex)) {
+    return { success: false, message: "Invalid requested variant index" }
+  }
+
   let rng = new rngClass(variantIndex.toString());
 
   let orderResult = determineOrder(activityDefinition.order, rng);

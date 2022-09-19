@@ -5474,8 +5474,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
     cy.get('#\\/h1Val').should('have.text', 'true')
     cy.get('#\\/h2Val').should('have.text', 'false')
     cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
@@ -5506,8 +5506,8 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('(3,2)')
     })
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
     cy.get('#\\/h1Val').should('have.text', 'false')
     cy.get('#\\/h2Val').should('have.text', 'true')
     cy.get('#\\/i2 .mjx-mrow').should('not.exist');
@@ -5535,8 +5535,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/i1 .mjx-mrow').should('not.exist');
     cy.get('#\\/i2 .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/h1Val').should('have.text', 'true')
     cy.get('#\\/h2Val').should('have.text', 'false')
@@ -5579,8 +5579,8 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('(2,3)')
     })
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/h1Val').should('have.text', 'false')
     cy.get('#\\/h2Val').should('have.text', 'true')
@@ -5614,8 +5614,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/i2 .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1_input').click();
-    cy.get('#\\/h2_input').click();
+    cy.get('#\\/h1').click();
+    cy.get('#\\/h2').click();
 
     cy.get('#\\/h1Val').should('have.text', 'true')
     cy.get('#\\/h2Val').should('have.text', 'false')
@@ -7471,7 +7471,7 @@ describe('Point Tag Tests', function () {
       // since nothing has changed in the DOM
       // check boolean input and wait for it to change
       // to make sure got message back from core
-      cy.get('#\\/bi_input').click();
+      cy.get('#\\/bi').click();
       cy.get('#\\/b').should('have.text', 'true');
 
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,−7)`)

@@ -420,7 +420,7 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/t').should('have.text', "You are hungry. false")
     cy.get('#\\/ti_input').should('have.value', 'false')
 
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/t').should('have.text', "You are hungry. true")
     cy.get('#\\/ti_input').should('have.value', 'true')
 
@@ -456,11 +456,11 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/t').should('have.text', "You are hungry. false")
     cy.get('#\\/ti_input').should('have.value', 'false')
 
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/t').should('have.text', "You are hungry. true")
     cy.get('#\\/ti_input').should('have.value', 'true')
 
-    cy.get('#\\/bi_input').click();
+    cy.get('#\\/bi').click();
     cy.get('#\\/t').should('have.text', "You are hungry. false")
     cy.get('#\\/ti_input').should('have.value', 'false')
 

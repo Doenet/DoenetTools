@@ -5,7 +5,31 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
-import { MathJax } from "better-react-mathjax";
+import styled from 'styled-components';
+import './booleanInput.css';
+import { MathJax } from 'better-react-mathjax';
+
+// Moved most of checkWorkStyle styling into Button
+const Button = styled.button `
+  position: relative;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  background-color: var(--mainBlue);
+  display: inline-block;
+  /* text-align: center; */
+  /* padding: 2px; */
+  /* z-index: 0; */
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 12px 12px 0px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
 
 export default React.memo(function BooleanInput(props) {
   let { name, id, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
@@ -18,7 +42,6 @@ export default React.memo(function BooleanInput(props) {
 
   let valueWhenSetState = useRef(null);
 
-
   if (!ignoreUpdate && valueWhenSetState.current !== SVs.value) {
     // console.log(`setting value to ${SVs.value}`)
     setRendererValue(SVs.value);
@@ -26,7 +49,6 @@ export default React.memo(function BooleanInput(props) {
   } else {
     valueWhenSetState.current = null;
   }
-
 
   let validationState = 'unvalidated';
   if (SVs.valueHasBeenValidated) {
@@ -38,7 +60,6 @@ export default React.memo(function BooleanInput(props) {
       validationState = 'partialcorrect';
     }
   }
-
 
   function onChangeHandler(e) {
 
@@ -60,9 +81,7 @@ export default React.memo(function BooleanInput(props) {
       },
       baseVariableValue: newValue,
     })
-
   }
-
 
   if (SVs.hidden) {
     return null;
@@ -73,57 +92,52 @@ export default React.memo(function BooleanInput(props) {
   const inputKey = id + '_input';
 
   let checkWorkStyle = {
-    position: "relative",
-    width: "30px",
-    height: "24px",
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#ffffff",
-    display: "inline-block",
-    textAlign: "center",
-    top: "3px",
-    padding: "2px",
+    cursor: 'pointer',
   }
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
+  let icon = props.icon;
   if (SVs.includeCheckWork) {
 
     if (validationState === "unvalidated") {
       if (disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.cursor = 'not-allowed';
       } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
-      checkWorkButton = <button
-        id={id + '_submit'}
-        tabIndex="0"
-        disabled={disabled}
-        // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-        style={checkWorkStyle}
-        onClick={() => callAction({
-          action: actions.submitAnswer,
-        })}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            callAction({
-              action: actions.submitAnswer,
-            });
-          }
-        }}
-      >
-        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </button>
+      checkWorkButton = 
+        <Button
+          id={id + '_submit'}
+          tabIndex="0"
+          disabled={disabled}
+          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          style={checkWorkStyle} 
+          onClick={() => callAction({
+            action: actions.submitAnswer,
+          })}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              callAction({
+                action: actions.submitAnswer,
+              });
+            }
+          }}
+        >
+          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        </Button>
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkWorkButton = <span
-            id={id + '_correct'}
-            style={checkWorkStyle}
-          >
-            <FontAwesomeIcon icon={faCheck} />
-          </span>
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+          checkWorkButton = 
+            <Button
+              id={id + '_correct'}
+              style={checkWorkStyle}
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </Button>
         } else if (validationState === "partialcorrect") {
           //partial credit
 
@@ -132,27 +146,34 @@ export default React.memo(function BooleanInput(props) {
           checkWorkStyle.width = "50px";
 
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = <span
-            id={id + '_partial'}
-            style={checkWorkStyle}
-          >{partialCreditContents}</span>
+          checkWorkButton = 
+            <Button
+              id={id + '_partial'}
+              style={checkWorkStyle}
+            >
+              {partialCreditContents}
+            </Button>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "var(--mainRed)";
-          checkWorkButton = <span
-            id={id + '_incorrect'}
-            style={checkWorkStyle}
-          ><FontAwesomeIcon icon={faTimes} /></span>
-
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+          checkWorkButton = 
+            <Button
+              id={id + '_incorrect'}
+              style={checkWorkStyle}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </Button>
         }
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = <span
-          id={id + '_saved'}
-          style={checkWorkStyle}
-        ><FontAwesomeIcon icon={faCloud} /></span>
-
+        checkWorkButton = 
+          <Button
+            id={id + '_saved'}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCloud} />
+          </Button>
       }
     }
 
@@ -163,19 +184,29 @@ export default React.memo(function BooleanInput(props) {
           (no attempts remaining)
         </span>
       </>
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (1 attempt remaining)
+        </span>
+        </>
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
 
       checkWorkButton = <>
         {checkWorkButton}
         <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
+          ({SVs.numberOfAttemptsLeft} attempts remaining)
         </span>
       </>
     }
   }
 
-
   let input;
+  let label = SVs.label;
+  if (SVs.labelHasLatex) {
+    label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+  }
   if (SVs.asToggleButton) {
     input =
       <ToggleButton
@@ -183,16 +214,12 @@ export default React.memo(function BooleanInput(props) {
         key={inputKey}
         isSelected={rendererValue}
         onClick={onChangeHandler}
-        value={SVs.label}
-        valueHasLatex={SVs.labelHasLatex}
+        value={label}
         disabled={disabled}
       />;
   } else {
-    let label = SVs.label;
-    if (SVs.labelHasLatex) {
-      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
-    }
-    input = <label>
+    input = 
+    <label className="container">
       <input
         type="checkbox"
         key={inputKey}
@@ -201,16 +228,17 @@ export default React.memo(function BooleanInput(props) {
         onChange={onChangeHandler}
         disabled={disabled}
       />
-      {label}
-    </label>;
+      <span className="checkmark"></span>
+      {label != "" ? <span style={{marginLeft: "2px"}}>{label}</span> : <span>{label}</span>}
+    </label>
+    {checkWorkButton}
   }
 
   return <React.Fragment>
-    <span id={id}>
+    <span id={id} className="button-container">
       <a name={id} />
       {input}
-      {checkWorkButton}
     </span>
+    {checkWorkButton}
   </React.Fragment>
-
 })

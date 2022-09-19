@@ -10,8 +10,8 @@ describe('Math Display Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <m>\sin(x)</m>
-    <me>\cos(x)</me>
+    <m>\\sin(x)</m>
+    <me>\\cos(x)</me>
     `}, "*");
     });
 
@@ -302,6 +302,44 @@ describe('Math Display Tag Tests', function () {
     })
     cy.get('#\\/_men1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2z(1)')
+    })
+
+  });
+
+  it('number inside', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <m><number>1</number></m>
+    <me><number>2+0i</number></me>
+    <men><number>3+4i</number></men>
+    <m><number>5+1i</number></m>
+    <me><number>6-1i</number></me>
+    <men><number>0-i</number></men>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/_men1').find('.mjx-mtd').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3+4i')
+    })
+    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5+i')
+    })
+    cy.get('#\\/_me2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6−i')
+    })
+    cy.get('#\\/_men2').find('.mjx-mtd').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−i')
     })
 
   });

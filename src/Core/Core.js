@@ -87,6 +87,7 @@ export default class Core {
       compositesBeingExpanded: [],
       // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
       stateVariableUpdatesForMissingComponents: JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver),
+      stateVariablesToEvaluate: []
     }
 
     this.cumulativeStateVariableChanges = JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver);
@@ -220,6 +221,8 @@ export default class Core {
 
 
     this.processQueue = [];
+
+    this.stopProcessingRequests = false;
 
     this.dependencies = new DependencyHandler({
       _components: this._components,
@@ -473,6 +476,17 @@ export default class Core {
 
       await this.expandAllComposites(this.document, true);
 
+      if (this.updateInfo.stateVariablesToEvaluate) {
+        let stateVariablesToEvaluate = this.updateInfo.stateVariablesToEvaluate;
+        this.updateInfo.stateVariablesToEvaluate = [];
+        for (let { componentName, stateVariable } of stateVariablesToEvaluate) {
+          let comp = this._components[componentName];
+          if (comp && comp.state[stateVariable]) {
+            await this.getStateVariableValue({ component: comp, stateVariable })
+          }
+        }
+      }
+
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
@@ -541,6 +555,16 @@ export default class Core {
       await this.expandAllComposites(this.document);
       await this.expandAllComposites(this.document, true);
 
+      if (this.updateInfo.stateVariablesToEvaluate) {
+        let stateVariablesToEvaluate = this.updateInfo.stateVariablesToEvaluate;
+        this.updateInfo.stateVariablesToEvaluate = [];
+        for (let { componentName, stateVariable } of stateVariablesToEvaluate) {
+          let comp = this._components[componentName];
+          if (comp && comp.state[stateVariable]) {
+            await this.getStateVariableValue({ component: comp, stateVariable })
+          }
+        }
+      }
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
@@ -1542,29 +1566,29 @@ export default class Core {
       // that was saved to the database,
       // it may be necessary for a component to treat the value received differently
       // in the first pass of the definition.
+      // hence we set justUpdatedForNewComponent which will
       // Hence, we run the definition of all variables with the extra flag
       // justUpdatedForNewComponent = true
-      let comp = this._components[componentName]
-      for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
-        if (comp.state[vName]) {
-          await this.getStateVariableValue({ component: comp, stateVariable: vName, justUpdatedForNewComponent: true })
+      let comp = this._components[componentName];
+      if (comp.constructor.processWhenJustUpdatedForNewComponent || result.foundIgnore) {
+        for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
+          if (comp.state[vName]) {
+            this.updateInfo.stateVariablesToEvaluate.push({ componentName, stateVariable: vName })
+            comp.state[vName].justUpdatedForNewComponent = true;
+            if (result.foundIgnore) {
+              // This is a kludge
+              // The only case so far with ignored children is that Math ignores strings
+              // (set in inverse definition of expressionWithCodes).
+              // We need change its value a second time after evaluating
+              // so that the next time the definition of expressionWithCodes is run,
+              // the strings don't show any changes and we'll use the essential value
+              // of expressionWithCodes
+              comp.reprocessAfterEvaluate = this.updateInfo.stateVariableUpdatesForMissingComponents[componentName];
+            }
+          }
         }
       }
 
-      if (result.foundIgnore) {
-        // The only case so far with ignored children is that Math ignores strings
-        // (set in inverse definition of expressionWithCodes).
-        // We need change its value a second time after evaluating
-        // so that the next time the definition of expressionWithCodes is run,
-        // the strings don't show any changes and we'll use the essential value
-        // of expressionWithCodes
-        // TODO: is this the right general approach?
-
-        await this.processNewStateVariableValues({
-          [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
-        });
-
-      }
 
       delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
     }
@@ -1890,7 +1914,7 @@ export default class Core {
       }
 
       if (typeof child === "object") {
-        if (!await child.stateValues.hidden) {
+        if (child.constructor.sendToRendererEvenIfHidden || !await child.stateValues.hidden) {
           indicesToRender.push(ind);
         }
       } else {
@@ -5067,7 +5091,7 @@ export default class Core {
     };
   }
 
-  async getStateVariableValue({ component, stateVariable, justUpdatedForNewComponent = false }) {
+  async getStateVariableValue({ component, stateVariable }) {
 
     // console.log(`getting value of state variable ${stateVariable} of ${component.componentName}`)
 
@@ -5077,6 +5101,30 @@ export default class Core {
 
     }
 
+    if (component.reprocessAfterEvaluate) {
+      // This is a kludge 
+      // due to the fact that Math ignores strings
+      // (set in inverse definition of expressionWithCodes).
+      // We need change its value a second time after evaluating
+      // so that the next time the definition of expressionWithCodes is run,
+      // the strings don't show any changes and we'll use the essential value
+      // of expressionWithCodes
+      let reprocessAfterEvaluate = component.reprocessAfterEvaluate;
+      delete this._components[component.componentName].reprocessAfterEvaluate;
+
+      for (let vName in reprocessAfterEvaluate) {
+        if (component.state[vName]) {
+          await this.getStateVariableValue({ component, stateVariable: vName });
+        }
+      }
+
+      await this.processNewStateVariableValues({
+        [component.componentName]: reprocessAfterEvaluate
+      });
+
+    }
+
+
     let additionalStateVariablesDefined = stateVarObj.additionalStateVariablesDefined;
 
 
@@ -5084,6 +5132,8 @@ export default class Core {
     if (additionalStateVariablesDefined) {
       allStateVariablesAffected.push(...additionalStateVariablesDefined)
     }
+
+    let justUpdatedForNewComponent = false;
 
     for (let varName of allStateVariablesAffected) {
 
@@ -5100,6 +5150,11 @@ export default class Core {
           throw Error(`Can't get value of ${stateVariable} of ${component.componentName} as ${varName} couldn't be resolved.`);
         }
 
+      }
+
+      if (component.state[varName].justUpdatedForNewComponent) {
+        delete this._components[component.componentName].state[varName].justUpdatedForNewComponent;
+        justUpdatedForNewComponent = true;
       }
 
     }
@@ -7989,6 +8044,10 @@ export default class Core {
 
   async executeProcesses() {
 
+    if (this.stopProcessingRequests) {
+      return;
+    }
+
     while (this.processQueue.length > 0) {
       let nextUpdateInfo = this.processQueue.splice(0, 1)[0];
       let result;
@@ -8547,7 +8606,7 @@ export default class Core {
     })
   }
 
-  performRecordEvent({ event }) {
+  async performRecordEvent({ event }) {
 
     if (!this.flags.allowSaveEvents) {
       return;
@@ -8576,24 +8635,22 @@ export default class Core {
       version: "0.1.1",
     }
 
-    axios.post('/api/recordEvent.php', payload)
-      .then(resp => {
-        // console.log(">>>>resp",resp.data)
-      })
-      .catch(e => {
-        console.error(`Error saving event: ${e.message}`);
-        // postMessage({
-        //   messageType: "sendToast",
-        //   coreId: this.coreId,
-        //   args: {
-        //     message: `Error saving event: ${e.message}`,
-        //     toastType: toastType.ERROR
-        //   }
-        // })
-      });
 
+    try {
+      let resp = await axios.post('/api/recordEvent.php', payload);
+      // console.log(">>>>resp from record event", resp.data)
+    } catch(e) {
+      console.error(`Error saving event: ${e.message}`);
+      // postMessage({
+      //   messageType: "sendToast",
+      //   coreId: this.coreId,
+      //   args: {
+      //     message: `Error saving event: ${e.message}`,
+      //     toastType: toastType.ERROR
+      //   }
+      // })
+    }
 
-    return Promise.resolve();
   }
 
   processVisibilityChangedEvent(event) {
@@ -8752,6 +8809,17 @@ export default class Core {
       // create other composites that have to be expanded
       await this.expandAllComposites(this.document);
       await this.expandAllComposites(this.document, true);
+
+      if (this.updateInfo.stateVariablesToEvaluate) {
+        let stateVariablesToEvaluate = this.updateInfo.stateVariablesToEvaluate;
+        this.updateInfo.stateVariablesToEvaluate = [];
+        for (let { componentName, stateVariable } of stateVariablesToEvaluate) {
+          let comp = this._components[componentName];
+          if (comp && comp.state[stateVariable]) {
+            await this.getStateVariableValue({ component: comp, stateVariable })
+          }
+        }
+      }
 
     }
 
@@ -9709,7 +9777,7 @@ export default class Core {
     let saveId = nanoid();
 
     if (this.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
         {
           coreState: this.cumulativeStateVariableChanges,
@@ -9748,7 +9816,7 @@ export default class Core {
     this.changesToBeSaved = true;
 
     // if not currently in throttle, save changes to database
-    this.saveChangesToDatabase(overrideThrottle);
+    await this.saveChangesToDatabase(overrideThrottle);
 
 
   }
@@ -9836,7 +9904,7 @@ export default class Core {
     this.serverSaveId = data.saveId;
 
     if (this.flags.allowLocalState) {
-      idb_set(
+      await idb_set(
         `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
         data.saveId
       )
@@ -9849,7 +9917,7 @@ export default class Core {
       if (this.attemptNumber !== Number(data.attemptNumber) || this.cid === data.cid) {
 
         if (this.flags.allowLocalState) {
-          idb_set(
+          await idb_set(
             `${this.doenetId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
             {
               coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
@@ -10223,8 +10291,26 @@ export default class Core {
   }
 
   async terminate() {
+
+    let pause100 = function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, 100)
+      })
+    }
+
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
+
+    this.stopProcessingRequests = true;
+
+    if (this.processing) {
+      for (let i = 0; i < 10; i++) {
+        await pause100();
+        if (!this.processing) {
+          break;
+        }
+      }
+    }
 
     if (this.savePageStateTimeoutID) {
       // if in debounce to save page to local storage

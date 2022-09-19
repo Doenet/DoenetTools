@@ -3341,8 +3341,8 @@ describe('Match partial validation tests', function () {
     cy.get('#\\/e_submit').should('be.visible');
 
     cy.log("Submit correct answers")
-    cy.get('#\\/y_input').click();
-    cy.get('#\\/z_input').click();
+    cy.get('#\\/y').click();
+    cy.get('#\\/z').click();
 
     cy.get('#\\/a_submit').click();
     cy.get('#\\/a_correct').should('be.visible');
@@ -3365,7 +3365,7 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("All true")
-    cy.get('#\\/x_input').click();
+    cy.get('#\\/x').click();
 
     cy.get('#\\/a_submit').click();
     cy.get('#\\/a_partial').invoke('text').then((text) => {
@@ -3394,7 +3394,7 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("wrong order")
-    cy.get('#\\/y_input').click();
+    cy.get('#\\/y').click();
 
     cy.get('#\\/a_submit').click();
     cy.get('#\\/a_partial').invoke('text').then((text) => {
@@ -3421,7 +3421,7 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("wrong order and values")
-    cy.get('#\\/z_input').click();
+    cy.get('#\\/z').click();
 
     cy.get('#\\/a_submit').click();
     cy.get('#\\/a_partial').invoke('text').then((text) => {
@@ -3448,7 +3448,7 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("all false")
-    cy.get('#\\/x_input').click();
+    cy.get('#\\/x').click();
 
     cy.get('#\\/a_submit').click();
     cy.get('#\\/a_partial').invoke('text').then((text) => {
@@ -4190,15 +4190,15 @@ describe('Match partial validation tests', function () {
     cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get('#\\/u_input').click();
-    cy.get('#\\/x_input').click();
+    cy.get('#\\/u').click();
+    cy.get('#\\/x').click();
     cy.get('#\\/partial_submit').click();
     cy.get('#\\/partial_correct').should('be.visible');
     cy.get('#\\/strict_submit').click();
     cy.get('#\\/strict_correct').should('be.visible');
 
     cy.log("One incorrect in first")
-    cy.get('#\\/v_input').click();
+    cy.get('#\\/v').click();
     cy.get('#\\/partial_submit').click();
     cy.get('#\\/partial_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
@@ -4208,7 +4208,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("One incorrect in second")
-    cy.get('#\\/y_input').click();
+    cy.get('#\\/y').click();
     cy.get('#\\/partial_submit').click();
     cy.get('#\\/partial_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
@@ -4218,7 +4218,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("permute order in first")
-    cy.get('#\\/u_input').click();
+    cy.get('#\\/u').click();
     cy.get('#\\/partial_submit').click();
     cy.get('#\\/partial_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
@@ -4227,7 +4227,7 @@ describe('Match partial validation tests', function () {
     cy.get('#\\/strict_incorrect').should('be.visible');
 
     cy.log("permute order in second")
-    cy.get('#\\/x_input').click();
+    cy.get('#\\/x').click();
     cy.get('#\\/partial_submit').click();
     cy.get('#\\/partial_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
@@ -4236,8 +4236,8 @@ describe('Match partial validation tests', function () {
     cy.get('#\\/strict_incorrect').should('be.visible');
 
     cy.log("correct order in first")
-    cy.get('#\\/u_input').click();
-    cy.get('#\\/v_input').click();
+    cy.get('#\\/u').click();
+    cy.get('#\\/v').click();
     cy.get('#\\/partial_submit').click();
     cy.get('#\\/partial_correct').should('be.visible')
     cy.get('#\\/strict_submit').click();
