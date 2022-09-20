@@ -91,7 +91,20 @@ export default class EigenDecomposition extends BaseComponent {
             if (val === undefined || val === null) {
               return { setValue: { decomposition: null } }
             }
-            row.push(val)
+            if (typeof val === "number" || (typeof val?.re === "number" && typeof val?.im === "number")) {
+              row.push(val)
+            } else {
+              try {
+                val = me.fromAst(val).evaluate_to_constant();
+                if (typeof val === "number" || (typeof val?.re === "number" && typeof val?.im === "number")) {
+                  row.push(val)
+                } else {
+                  row.push(NaN);
+                }
+              } catch (e) {
+                row.push(NaN)
+              }
+            }
           }
 
           matrixArray.push(row);

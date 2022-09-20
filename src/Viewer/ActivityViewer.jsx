@@ -611,7 +611,7 @@ export default function ActivityViewer(props) {
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
         newVariantIndex = resp.data.variantIndex;
-        setVariantIndex(variantIndex);
+        setVariantIndex(newVariantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
         setOrder(newActivityInfo.orderWithCids);
         setVariantsByPage(newActivityInfo.variantsByPage);
