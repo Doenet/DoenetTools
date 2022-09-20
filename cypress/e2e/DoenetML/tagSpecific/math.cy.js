@@ -2995,7 +2995,6 @@ describe('Math Tag Tests', function () {
 
   });
 
-
   it('negative integer to power of integer', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3274,6 +3273,324 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('add vectors, multiply by scalar', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>Tuple2: <math name="tuple2">(a,b)</math></p>
+  <p>Vector2: <math name="vector2" createVectors>(c,d)</math></p>
+  <p>Interval: <math name="interval" createIntervals>(e,f)</math></p>
+  <p>Tuple3: <math name="tuple3">(g,h,i)</math></p>
+  <p>Vector3: <math name="vector3" createVectors>(j,k,l)</math></p>
+  <p><math name="t2t2sum">$tuple2+$tuple2</math></p>
+  <p><math name="t2t2sumSimp" simplify>$tuple2+$tuple2</math></p>
+  <p><math name="v2v2sum">$vector2+$vector2</math></p>
+  <p><math name="v2v2sumSimp" simplify>$vector2+$vector2</math></p>
+  <p><math name="iisum">$interval+$interval</math></p>
+  <p><math name="iisumSimp" simplify>$interval+$interval</math></p>
+  <p><math name="t2v2sum">$tuple2+$vector2</math></p>
+  <p><math name="t2v2sumSimp" simplify>$tuple2+$vector2</math></p>
+  <p><math name="v2t2sum">$vector2+$tuple2</math></p>
+  <p><math name="v2t2sumSimp" simplify>$vector2+$tuple2</math></p>
+  <p><math name="t2isum">$tuple2+$interval</math></p>
+  <p><math name="t2isumSimp" simplify>$tuple2+$interval</math></p>
+  <p><math name="v2isum">$vector2+$interval</math></p>
+  <p><math name="v2isumSimp" simplify>$vector2+$interval</math></p>
+  <p><math name="st2mul">m$tuple2</math></p>
+  <p><math name="st2mulSimp" simplify>m$tuple2</math></p>
+  <p><math name="st2mulExp" expand>m$tuple2</math></p>
+  <p><math name="t2smul">$tuple2 m</math></p>
+  <p><math name="t2smulSimp" simplify>$tuple2 m</math></p>
+  <p><math name="t2smulExp" expand>$tuple2 m</math></p>
+  <p><math name="sv2mul">m$vector2</math></p>
+  <p><math name="sv2mulSimp" simplify>m$vector2</math></p>
+  <p><math name="sv2mulExp" expand>m$vector2</math></p>
+  <p><math name="v2smul">$vector2 m</math></p>
+  <p><math name="v2smulSimp" simplify>$vector2 m</math></p>
+  <p><math name="v2smulExp" expand>$vector2 m</math></p>
+  <p><math name="simul">m$interval</math></p>
+  <p><math name="simulSimp" simplify>m$interval</math></p>
+  <p><math name="simulExp" expand>m$interval</math></p>
+  <p><math name="ismul">$interval m</math></p>
+  <p><math name="ismulSimp" simplify>$interval m</math></p>
+  <p><math name="ismulExp" expand>$interval m</math></p>
+
+
+  <p><math name="t3t3sum">$tuple3+$tuple3</math></p>
+  <p><math name="t3t3sumSimp" simplify>$tuple3+$tuple3</math></p>
+  <p><math name="v3v3sum">$vector3+$vector3</math></p>
+  <p><math name="v3v3sumSimp" simplify>$vector3+$vector3</math></p>
+  <p><math name="t3v3sum">$tuple3+$vector3</math></p>
+  <p><math name="t3v3sumSimp" simplify>$tuple3+$vector3</math></p>
+  <p><math name="v3t3sum">$vector3+$tuple3</math></p>
+  <p><math name="v3t3sumSimp" simplify>$vector3+$tuple3</math></p>
+  <p><math name="st3mul">m$tuple3</math></p>
+  <p><math name="st3mulSimp" simplify>m$tuple3</math></p>
+  <p><math name="st3mulExp" expand>m$tuple3</math></p>
+  <p><math name="t3smul">$tuple3 m</math></p>
+  <p><math name="t3smulSimp" simplify>$tuple3 m</math></p>
+  <p><math name="t3smulExp" expand>$tuple3 m</math></p>
+  <p><math name="sv3mul">m$vector3</math></p>
+  <p><math name="sv3mulSimp" simplify>m$vector3</math></p>
+  <p><math name="sv3mulExp" expand>m$vector3</math></p>
+  <p><math name="v3smul">$vector3 m</math></p>
+  <p><math name="v3smulSimp" simplify>$vector3 m</math></p>
+  <p><math name="v3smulExp" expand>$vector3 m</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/t2t2sum .mjx-mrow').eq(0).should('have.text', '(a,b)+(a,b)');
+    cy.get('#\\/t2t2sumSimp .mjx-mrow').eq(0).should('have.text', '(2a,2b)');
+    cy.get('#\\/v2v2sum .mjx-mrow').eq(0).should('have.text', '(c,d)+(c,d)');
+    cy.get('#\\/v2v2sumSimp .mjx-mrow').eq(0).should('have.text', '(2c,2d)');
+    cy.get('#\\/iisum .mjx-mrow').eq(0).should('have.text', '(e,f)+(e,f)');
+    cy.get('#\\/iisumSimp .mjx-mrow').eq(0).should('have.text', '2(e,f)');
+    cy.get('#\\/t2v2sum .mjx-mrow').eq(0).should('have.text', '(a,b)+(c,d)');
+    cy.get('#\\/t2v2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+c,b+d)');
+    cy.get('#\\/v2t2sum .mjx-mrow').eq(0).should('have.text', '(c,d)+(a,b)');
+    cy.get('#\\/v2t2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+c,b+d)');
+    cy.get('#\\/t2isum .mjx-mrow').eq(0).should('have.text', '(a,b)+(e,f)');
+    cy.get('#\\/t2isumSimp .mjx-mrow').eq(0).should('have.text', '(e,f)+(a,b)');
+    cy.get('#\\/v2isum .mjx-mrow').eq(0).should('have.text', '(c,d)+(e,f)');
+    cy.get('#\\/v2isumSimp .mjx-mrow').eq(0).should('have.text', '(e,f)+(c,d)');
+    cy.get('#\\/st2mul .mjx-mrow').eq(0).should('have.text', 'm(a,b)');
+    cy.get('#\\/st2mulSimp .mjx-mrow').eq(0).should('have.text', 'm(a,b)');
+    cy.get('#\\/st2mulExp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
+    cy.get('#\\/t2smul .mjx-mrow').eq(0).should('have.text', '(a,b)m');
+    cy.get('#\\/t2smulSimp .mjx-mrow').eq(0).should('have.text', 'm(a,b)');
+    cy.get('#\\/t2smulExp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
+    cy.get('#\\/sv2mul .mjx-mrow').eq(0).should('have.text', 'm(c,d)');
+    cy.get('#\\/sv2mulSimp .mjx-mrow').eq(0).should('have.text', 'm(c,d)');
+    cy.get('#\\/sv2mulExp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
+    cy.get('#\\/v2smul .mjx-mrow').eq(0).should('have.text', '(c,d)m');
+    cy.get('#\\/v2smulSimp .mjx-mrow').eq(0).should('have.text', 'm(c,d)');
+    cy.get('#\\/v2smulExp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
+    cy.get('#\\/simul .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
+    cy.get('#\\/simulSimp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
+    cy.get('#\\/simulExp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
+    cy.get('#\\/ismul .mjx-mrow').eq(0).should('have.text', '(e,f)m');
+    cy.get('#\\/ismulSimp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
+    cy.get('#\\/ismulExp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
+
+
+    cy.get('#\\/t3t3sum .mjx-mrow').eq(0).should('have.text', '(g,h,i)+(g,h,i)');
+    cy.get('#\\/t3t3sumSimp .mjx-mrow').eq(0).should('have.text', '(2g,2h,2i)');
+    cy.get('#\\/v3v3sum .mjx-mrow').eq(0).should('have.text', '(j,k,l)+(j,k,l)');
+    cy.get('#\\/v3v3sumSimp .mjx-mrow').eq(0).should('have.text', '(2j,2k,2l)');
+    cy.get('#\\/t3v3sum .mjx-mrow').eq(0).should('have.text', '(g,h,i)+(j,k,l)');
+    cy.get('#\\/t3v3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+j,h+k,i+l)');
+    cy.get('#\\/v3t3sum .mjx-mrow').eq(0).should('have.text', '(j,k,l)+(g,h,i)');
+    cy.get('#\\/v3t3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+j,h+k,i+l)');
+    cy.get('#\\/st3mul .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)');
+    cy.get('#\\/st3mulSimp .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)');
+    cy.get('#\\/st3mulExp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
+    cy.get('#\\/t3smul .mjx-mrow').eq(0).should('have.text', '(g,h,i)m');
+    cy.get('#\\/t3smulSimp .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)');
+    cy.get('#\\/t3smulExp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
+    cy.get('#\\/sv3mul .mjx-mrow').eq(0).should('have.text', 'm(j,k,l)');
+    cy.get('#\\/sv3mulSimp .mjx-mrow').eq(0).should('have.text', 'm(j,k,l)');
+    cy.get('#\\/sv3mulExp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
+    cy.get('#\\/v3smul .mjx-mrow').eq(0).should('have.text', '(j,k,l)m');
+    cy.get('#\\/v3smulSimp .mjx-mrow').eq(0).should('have.text', 'm(j,k,l)');
+    cy.get('#\\/v3smulExp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
+
+  });
+
+  it('add matrices, multiply by scalar', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>matrix22: <math name="matrix22" format="latex">\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}</math></p>
+  <p>matrix21: <math name="matrix21" format="latex">\\begin{bmatrix}e\\\\f\\end{bmatrix}</math></p>
+  <p>matrix12: <math name="matrix12" format="latex">\\begin{bmatrix}g&h\\end{bmatrix}</math></p>
+  <p>Tuple2: <math name="tuple2">(i,j)</math></p>
+  <p>Vector2: <math name="vector2" createVectors>(k,l)</math></p>
+  <p>matrix22b: <math name="matrix22b" format="latex">\\begin{bmatrix}n&o\\\\p&q\\end{bmatrix}</math></p>
+  <p><math name="m22m22sum">$matrix22+$matrix22</math></p>
+  <p><math name="m22m22sumSimp" simplify>$matrix22+$matrix22</math></p>
+  <p><math name="m21m21sum">$matrix21+$matrix21</math></p>
+  <p><math name="m21m21sumSimp" simplify>$matrix21+$matrix21</math></p>
+  <p><math name="m12m12sum">$matrix12+$matrix12</math></p>
+  <p><math name="m12m12sumSimp" simplify>$matrix12+$matrix12</math></p>
+  <p><math name="m21t2sum">$matrix21+$tuple2</math></p>
+  <p><math name="m21t2sumSimp" simplify>$matrix21+$tuple2</math></p>
+  <p><math name="m21v2sum">$matrix21+$vector2</math></p>
+  <p><math name="m21v2sumSimp" simplify>$matrix21+$vector2</math></p>
+  <p><math name="m12t2sum">$matrix12+$tuple2</math></p>
+  <p><math name="m12t2sumSimp" simplify>$matrix12+$tuple2</math></p>
+  <p><math name="m12v2sum">$matrix12+$vector2</math></p>
+  <p><math name="m12v2sumSimp" simplify>$matrix12+$vector2</math></p>
+  <p><math name="m22m21sum">$matrix22+$matrix21</math></p>
+  <p><math name="m22m21sumSimp" simplify>$matrix22+$matrix21</math></p>
+  <p><math name="m22m12sum">$matrix22+$matrix12</math></p>
+  <p><math name="m22m12sumSimp" simplify>$matrix22+$matrix12</math></p>
+  <p><math name="m21m12sum">$matrix21+$matrix12</math></p>
+  <p><math name="m21m12sumSimp" simplify>$matrix21+$matrix12</math></p>
+  <p><math name="m22m21m12m12m21m22sum">$matrix22+$matrix21+$matrix12+$matrix12+$matrix21+$matrix22</math></p>
+  <p><math name="m22m21m12m12m21m22sumSimp" simplify>$matrix22+$matrix21+$matrix12+$matrix12+$matrix21+$matrix22</math></p>
+
+  <p><math name="sm22mul">m$matrix22</math></p>
+  <p><math name="sm22mulSimp" simplify>m$matrix22</math></p>
+  <p><math name="sm22mulExp" expand>m$matrix22</math></p>
+  <p><math name="m22smul">$matrix22 m</math></p>
+  <p><math name="m22smulSimp" simplify>$matrix22 m</math></p>
+  <p><math name="m22smulExp" expand>$matrix22 m</math></p>
+  <p><math name="sm21mul">m$matrix21</math></p>
+  <p><math name="sm21mulSimp" simplify>m$matrix21</math></p>
+  <p><math name="sm21mulExp" expand>m$matrix21</math></p>
+  <p><math name="m21smul">$matrix21 m</math></p>
+  <p><math name="m21smulSimp" simplify>$matrix21 m</math></p>
+  <p><math name="m21smulExp" expand>$matrix21 m</math></p>
+  <p><math name="sm12mul">m$matrix12</math></p>
+  <p><math name="sm12mulSimp" simplify>m$matrix12</math></p>
+  <p><math name="sm12mulExp" expand>m$matrix12</math></p>
+  <p><math name="m12smul">$matrix12 m</math></p>
+  <p><math name="m12smulSimp" simplify>$matrix12 m</math></p>
+  <p><math name="m12smulExp" expand>$matrix12 m</math></p>
+
+
+  <p><math name="m22m22b">$matrix22+$matrix22b</math></p>
+  <p><math name="m22m22bSimp" simplify>$matrix22+$matrix22b</math></p>
+  <p><math name="m22sm22b">$matrix22+m$matrix22b</math></p>
+  <p><math name="m22sm22bSimp" simplify>$matrix22+m$matrix22b</math></p>
+  <p><math name="m22sm22bExpSimp" expand simplify>$matrix22+m$matrix22b</math></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m22m22sum .mjx-mrow').eq(0).should('have.text', '[abcd]+[abcd]');
+    cy.get('#\\/m22m22sumSimp .mjx-mrow').eq(0).should('have.text', '[2a2b2c2d]');
+    cy.get('#\\/m21m21sum .mjx-mrow').eq(0).should('have.text', '[ef]+[ef]');
+    cy.get('#\\/m21m21sumSimp .mjx-mrow').eq(0).should('have.text', '[2e2f]');
+    cy.get('#\\/m12m12sum .mjx-mrow').eq(0).should('have.text', '[gh]+[gh]');
+    cy.get('#\\/m12m12sumSimp .mjx-mrow').eq(0).should('have.text', '[2g2h]');
+    cy.get('#\\/m21t2sum .mjx-mrow').eq(0).should('have.text', '[ef]+(i,j)');
+    cy.get('#\\/m21t2sumSimp .mjx-mrow').eq(0).should('have.text', '[ef]+(i,j)');
+    cy.get('#\\/m21v2sum .mjx-mrow').eq(0).should('have.text', '[ef]+(k,l)');
+    cy.get('#\\/m21v2sumSimp .mjx-mrow').eq(0).should('have.text', '[ef]+(k,l)');
+    cy.get('#\\/m12t2sum .mjx-mrow').eq(0).should('have.text', '[gh]+(i,j)');
+    cy.get('#\\/m12t2sumSimp .mjx-mrow').eq(0).should('have.text', '[gh]+(i,j)');
+    cy.get('#\\/m12v2sum .mjx-mrow').eq(0).should('have.text', '[gh]+(k,l)');
+    cy.get('#\\/m12v2sumSimp .mjx-mrow').eq(0).should('have.text', '[gh]+(k,l)');
+    cy.get('#\\/m22m21sum .mjx-mrow').eq(0).should('have.text', '[abcd]+[ef]');
+    cy.get('#\\/m22m21sumSimp .mjx-mrow').eq(0).should('have.text', '[ef]+[abcd]');
+    cy.get('#\\/m22m12sum .mjx-mrow').eq(0).should('have.text', '[abcd]+[gh]');
+    cy.get('#\\/m22m12sumSimp .mjx-mrow').eq(0).should('have.text', '[gh]+[abcd]');
+    cy.get('#\\/m21m12sum .mjx-mrow').eq(0).should('have.text', '[ef]+[gh]');
+    cy.get('#\\/m21m12sumSimp .mjx-mrow').eq(0).should('have.text', '[gh]+[ef]');
+    cy.get('#\\/m22m21m12m12m21m22sum .mjx-mrow').eq(0).should('have.text', '[abcd]+[ef]+[gh]+[gh]+[ef]+[abcd]');
+    cy.get('#\\/m22m21m12m12m21m22sumSimp .mjx-mrow').eq(0).should('have.text', '[2g2h]+[2e2f]+[2a2b2c2d]');
+
+    cy.get('#\\/sm22mul .mjx-mrow').eq(0).should('have.text', 'm[abcd]');
+    cy.get('#\\/sm22mulSimp .mjx-mrow').eq(0).should('have.text', 'm[abcd]');
+    cy.get('#\\/sm22mulExp .mjx-mrow').eq(0).should('have.text', '[ambmcmdm]');
+    cy.get('#\\/m22smul .mjx-mrow').eq(0).should('have.text', '[abcd]m');
+    cy.get('#\\/m22smulSimp .mjx-mrow').eq(0).should('have.text', 'm[abcd]');
+    cy.get('#\\/m22smulExp .mjx-mrow').eq(0).should('have.text', '[ambmcmdm]');
+    cy.get('#\\/sm21mul .mjx-mrow').eq(0).should('have.text', 'm[ef]');
+    cy.get('#\\/sm21mulSimp .mjx-mrow').eq(0).should('have.text', 'm[ef]');
+    cy.get('#\\/sm21mulExp .mjx-mrow').eq(0).should('have.text', '[emfm]');
+    cy.get('#\\/m21smul .mjx-mrow').eq(0).should('have.text', '[ef]m');
+    cy.get('#\\/m21smulSimp .mjx-mrow').eq(0).should('have.text', 'm[ef]');
+    cy.get('#\\/m21smulExp .mjx-mrow').eq(0).should('have.text', '[emfm]');
+    cy.get('#\\/sm12mul .mjx-mrow').eq(0).should('have.text', 'm[gh]');
+    cy.get('#\\/sm12mulSimp .mjx-mrow').eq(0).should('have.text', 'm[gh]');
+    cy.get('#\\/sm12mulExp .mjx-mrow').eq(0).should('have.text', '[gmhm]');
+    cy.get('#\\/m12smul .mjx-mrow').eq(0).should('have.text', '[gh]m');
+    cy.get('#\\/m12smulSimp .mjx-mrow').eq(0).should('have.text', 'm[gh]');
+    cy.get('#\\/m12smulExp .mjx-mrow').eq(0).should('have.text', '[gmhm]');
+
+
+    cy.get('#\\/m22m22b .mjx-mrow').eq(0).should('have.text', '[abcd]+[nopq]');
+    cy.get('#\\/m22m22bSimp .mjx-mrow').eq(0).should('have.text', '[a+nb+oc+pd+q]');
+    cy.get('#\\/m22sm22b .mjx-mrow').eq(0).should('have.text', '[abcd]+m[nopq]');
+    cy.get('#\\/m22sm22bSimp .mjx-mrow').eq(0).should('have.text', 'm[nopq]+[abcd]');
+    cy.get('#\\/m22sm22bExpSimp .mjx-mrow').eq(0).should('have.text', '[a+mnb+moc+mpd+mq]');
+
+  });
+
+  it('matrix multiplication', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>matrix22a: <math name="matrix22a" format="latex">\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}</math></p>
+  <p>matrix22b: <math name="matrix22b" format="latex">\\begin{bmatrix}e&f\\\\g&h\\end{bmatrix}</math></p>
+  <p>matrix21a: <math name="matrix21a" format="latex">\\begin{bmatrix}i\\\\j\\end{bmatrix}</math></p>
+  <p>matrix21b: <math name="matrix21b" format="latex">\\begin{bmatrix}k\\\\l\\end{bmatrix}</math></p>
+  <p>matrix12a: <math name="matrix12a" format="latex">\\begin{bmatrix}m&n\\end{bmatrix}</math></p>
+  <p>matrix12b: <math name="matrix12b" format="latex">\\begin{bmatrix}o&p\\end{bmatrix}</math></p>
+  <p><math name="m22am22b">$matrix22a$matrix22b</math></p>
+  <p><math name="m22am22bExp" expand>$matrix22a$matrix22b</math></p>
+  <p><math name="m22bm22a">$matrix22b$matrix22a</math></p>
+  <p><math name="m22bm22aExp" expand>$matrix22b$matrix22a</math></p>
+  <p><math name="m21am21b">$matrix21a$matrix21b</math></p>
+  <p><math name="m21am21bExp" expand>$matrix21a$matrix21b</math></p>
+  <p><math name="m12am12b">$matrix12a$matrix12b</math></p>
+  <p><math name="m12am12bExp" expand>$matrix12a$matrix12b</math></p>
+  <p><math name="m21am12a">$matrix21a$matrix12a</math></p>
+  <p><math name="m21am12aExp" expand>$matrix21a$matrix12a</math></p>
+  <p><math name="m12am21a">$matrix12a$matrix21a</math></p>
+  <p><math name="m12am21aExp" expand>$matrix12a$matrix21a</math></p>
+  <p><math name="longmult">$matrix22a$matrix21a$matrix12a$matrix22b$matrix21b$matrix12b</math></p>
+  <p><math name="longmultExp" expand>$matrix22a$matrix21a$matrix12a$matrix22b$matrix21b$matrix12b</math></p>
+  <p><math name="longMultResult" format="latex">\\begin{pmatrix}a e i k m o + a f i l m o + a g i k n o + a h i l n o + b e j k m o + b f j l m o + b g j k n o + b h j l n o & a e i k m p + a f i l m p + a g i k n p + a h i l n p + b e j k m p + b f j l m p + b g j k n p + b h j l n p\\\\
+    c e i k m o + c f i l m o + c g i k n o + c h i l n o + d e j k m o + d f j l m o + d g j k n o + d h j l n o & c e i k m p + c f i l m p + c g i k n p + c h i l n p + d e j k m p + d f j l m p + d g j k n p + d h j l n p\\end{pmatrix}</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m22am22b .mjx-mrow').eq(0).should('have.text', '[abcd][efgh]');
+    cy.get('#\\/m22am22bExp .mjx-mrow').eq(0).should('have.text', '[ae+bgaf+bhce+dgcf+dh]');
+    cy.get('#\\/m22bm22a .mjx-mrow').eq(0).should('have.text', '[efgh][abcd]');
+    cy.get('#\\/m22bm22aExp .mjx-mrow').eq(0).should('have.text', '[ae+cfbe+dfag+chbg+dh]');
+    cy.get('#\\/m21am21b .mjx-mrow').eq(0).should('have.text', '[ij][kl]');
+    cy.get('#\\/m21am21bExp .mjx-mrow').eq(0).should('have.text', '[ij][kl]');
+    cy.get('#\\/m12am12b .mjx-mrow').eq(0).should('have.text', '[mn][op]');
+    cy.get('#\\/m12am12bExp .mjx-mrow').eq(0).should('have.text', '[mn][op]');
+    cy.get('#\\/m21am12a .mjx-mrow').eq(0).should('have.text', '[ij][mn]');
+    cy.get('#\\/m21am12aExp .mjx-mrow').eq(0).should('have.text', '[iminjmjn]');
+    cy.get('#\\/m12am21a .mjx-mrow').eq(0).should('have.text', '[mn][ij]');
+    cy.get('#\\/m12am21aExp .mjx-mrow').eq(0).should('have.text', '[im+jn]');
+    cy.get('#\\/longmult .mjx-mrow').eq(0).should('have.text', '[abcd][ij][mn][efgh][kl][op]');
+    cy.get('#\\/longmultExp .mjx-mrow').eq(0).should('have.text', '[aeikmo+afilmo+agikno+ahilno+bejkmo+bfjlmo+bgjkno+bhjlnoaeikmp+afilmp+agiknp+ahilnp+bejkmp+bfjlmp+bgjknp+bhjlnpceikmo+cfilmo+cgikno+chilno+dejkmo+dfjlmo+dgjkno+dhjlnoceikmp+cfilmp+cgiknp+chilnp+dejkmp+dfjlmp+dgjknp+dhjlnp]');
+    cy.get('#\\/longMultResult .mjx-mrow').eq(0).should('have.text', '[aeikmo+afilmo+agikno+ahilno+bejkmo+bfjlmo+bgjkno+bhjlnoaeikmp+afilmp+agiknp+ahilnp+bejkmp+bfjlmp+bgjknp+bhjlnpceikmo+cfilmo+cgikno+chilno+dejkmo+dfjlmo+dgjkno+dhjlnoceikmp+cfilmp+cgiknp+chilnp+dejkmp+dfjlmp+dgjknp+dhjlnp]');
+
+  });
+
+  it('simplify complex numbers', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math simplify name="e1">i^2</math>
+  <math simplify name="e2">i^3</math>
+  <math simplify name="e3">i^4</math>
+  <math simplify name="e4">(1+i)(1-i)</math>
+  <math simplify name="e5">aibici</math>
+  <math simplify expand name="e6">(a+bi)(c+di)</math>
+  <math simplify expand name="e7">(a+bi)(a-bi)</math>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/e1 .mjx-mrow').eq(0).should('have.text', '−1');
+    cy.get('#\\/e2 .mjx-mrow').eq(0).should('have.text', '−i');
+    cy.get('#\\/e3 .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get('#\\/e4 .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get('#\\/e5 .mjx-mrow').eq(0).should('have.text', '−abci');
+    cy.get('#\\/e6 .mjx-mrow').eq(0).should('have.text', 'ac+adi+bci−bd');
+    cy.get('#\\/e7 .mjx-mrow').eq(0).should('have.text', 'a2+b2');
+
+  });
 
 
 })
