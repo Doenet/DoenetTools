@@ -352,23 +352,23 @@ export default React.memo(function ChoiceInput(props) {
     }
 
     if (SVs.numberOfAttemptsLeft < 0) {
-      checkWorkButton = <>
-        {checkWorkButton}
+      checkworkComponent = <>
+        {checkworkComponent}
         <span>
           (no attempts remaining)
         </span>
       </>
     } else if (SVs.numberOfAttemptsLeft == 1) {
-      checkWorkButton = <>
-        {checkWorkButton}
+      checkworkComponent = <>
+        {checkworkComponent}
         <span>
           (1 attempt remaining)
         </span>
       </>
     }
     else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-      checkWorkButton = <>
-        {checkWorkButton}
+      checkworkComponent = <>
+        {checkworkComponent}
         <span>
           ({SVs.numberOfAttemptsLeft} attempts remaining)
         </span>
