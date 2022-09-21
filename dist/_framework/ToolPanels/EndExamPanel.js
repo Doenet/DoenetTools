@@ -97,6 +97,6 @@ export default function EndExamPanel() {
       justifyContent: "center"
     }
   }, /* @__PURE__ */ React.createElement("div", {
-    style: {width: "200px", maxHeight: "340px", overflowY: "scroll"}
+    style: {width: "230px", maxHeight: "340px", overflowY: "scroll"}
   }, scoreResults)));
 }
