@@ -81,7 +81,7 @@ if ($success) {
 
     //Override show correctness is false if we are in the gradebook
     $subTool = substr($tool, 0, 9);
-    if ($showCorrectness == '1' || $subTool == 'gradebook') {
+    if ($showCorrectness == '1' || $subTool == 'gradebook' || $tool == 'endExam') {
         // look credit for assignment from user_asssignment
 
         $result = $conn->query(

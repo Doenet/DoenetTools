@@ -11,39 +11,7 @@ import axios from "../../_snowpack/pkg/axios.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faTimes, faPlus} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {recoilAddToast} from "../Toast.js";
 import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
-const TimeEntry = ({parentValue, valueCallback = () => {
-}}) => {
-  let [time, setTime] = useState(parentValue);
-  let [previousTime, setPreviousTime] = useState(parentValue);
-  if (parentValue != previousTime) {
-    setTime(parentValue);
-    setPreviousTime(parentValue);
-  }
-  return /* @__PURE__ */ React.createElement("input", {
-    type: "text",
-    value: time,
-    style: {width: "40px"},
-    onChange: (e) => {
-      setTime(e.target.value);
-    },
-    onBlur: () => {
-      if (previousTime !== time) {
-        valueCallback(time);
-        setPreviousTime(time);
-      }
-    },
-    onKeyDown: (e) => {
-      if (e.key === "Enter") {
-        if (previousTime !== time) {
-          valueCallback(time);
-          setPreviousTime(time);
-        }
-      }
-    }
-  });
-};
 function sortClassTimes(classTimesArray) {
   return classTimesArray.sort((first, second) => {
     let mondayFirstDotw = first.dotwIndex;
@@ -75,29 +43,27 @@ function sortClassTimes(classTimesArray) {
 }
 export default function ClassTimes() {
   const timesObj = useRecoilValue(classTimesAtom);
-  const addClassTime = useRecoilCallback(({set, snapshot}) => async () => {
-    let was = await snapshot.getPromise(classTimesAtom);
-    let newArr = [...was];
-    const newClassTime = {
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const addClassTime = useRecoilCallback(({set, snapshot}) => async (courseId2) => {
+    let prevTimesArr = await snapshot.getPromise(classTimesAtom);
+    let nextArr = [...prevTimesArr];
+    nextArr.push({
       dotwIndex: 1,
       startTime: "09:00",
       endTime: "10:00"
-    };
-    newArr.push(newClassTime);
-    newArr = sortClassTimes(newArr);
-    set(classTimesAtom, newArr);
-    let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
-    console.log(courseId);
+    });
+    nextArr = sortClassTimes(nextArr);
+    set(classTimesAtom, nextArr);
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
-    for (let classTime of newArr) {
+    for (let classTime of nextArr) {
       dotwIndexes.push(classTime.dotwIndex);
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
     let resp = await axios.post("/api/updateClassTimes.php", {
-      courseId,
+      courseId: courseId2,
       dotwIndexes,
       startTimes,
       endTimes
@@ -106,24 +72,23 @@ export default function ClassTimes() {
     console.log("resp: ", resp);
     console.log(">>>>data", data);
   });
-  const updateClassTime = useRecoilCallback(({set, snapshot}) => async ({index, newClassTime}) => {
+  const updateClassTime = useRecoilCallback(({set, snapshot}) => async ({index, nextClassTime, courseId: courseId2}) => {
     let was = await snapshot.getPromise(classTimesAtom);
-    let newArr = [...was];
-    newArr[index] = {...newClassTime};
-    newArr = sortClassTimes(newArr);
+    let nextArr = [...was];
+    nextArr[index] = {...nextClassTime};
+    nextArr = sortClassTimes(nextArr);
     console.log("update");
-    set(classTimesAtom, newArr);
-    let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
+    set(classTimesAtom, nextArr);
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
-    for (let classTime of newArr) {
+    for (let classTime of nextArr) {
       dotwIndexes.push(classTime.dotwIndex);
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
     let resp = await axios.post("/api/updateClassTimes.php", {
-      courseId,
+      courseId: courseId2,
       dotwIndexes,
       startTimes,
       endTimes
@@ -131,23 +96,22 @@ export default function ClassTimes() {
     let {data} = resp;
     console.log(">>>>data", data);
   });
-  const deleteClassTime = useRecoilCallback(({set, snapshot}) => async ({index}) => {
+  const deleteClassTime = useRecoilCallback(({set, snapshot}) => async ({index, courseId: courseId2}) => {
     let was = await snapshot.getPromise(classTimesAtom);
-    let newArr = [...was];
-    newArr.splice(index, 1);
-    newArr = sortClassTimes(newArr);
-    set(classTimesAtom, newArr);
-    let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
+    let nextArr = [...was];
+    nextArr.splice(index, 1);
+    nextArr = sortClassTimes(nextArr);
+    set(classTimesAtom, nextArr);
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
-    for (let classTime of newArr) {
+    for (let classTime of nextArr) {
       dotwIndexes.push(classTime.dotwIndex);
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
     let resp = await axios.post("/api/updateClassTimes.php", {
-      courseId,
+      courseId: courseId2,
       dotwIndexes,
       startTimes,
       endTimes
@@ -175,9 +139,9 @@ export default function ClassTimes() {
       items: dotwItems,
       valueIndex: timeObj.dotwIndex,
       onChange: ({value}) => {
-        let newClassTime = {...timeObj};
-        newClassTime.dotwIndex = value;
-        updateClassTime({index, newClassTime});
+        let nextClassTime = {...timeObj};
+        nextClassTime.dotwIndex = value;
+        updateClassTime({courseId, index, nextClassTime});
       }
     })), /* @__PURE__ */ React.createElement(Button, {
       icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -194,9 +158,9 @@ export default function ClassTimes() {
       width: "74px",
       value: new Date(timeObj.startTime),
       onBlur: (value, valid) => {
-        let newClassTime = {...timeObj};
-        newClassTime.startTime = DateToUTCDateString(new Date(value.value._d));
-        updateClassTime({index, newClassTime});
+        let nextClassTime = {...timeObj};
+        nextClassTime.startTime = DateToUTCDateString(new Date(value.value._d));
+        updateClassTime({courseId, index, nextClassTime});
       }
     })), /* @__PURE__ */ React.createElement("td", {
       style: {marginLeft: "6px", marginRight: "6px"}
@@ -207,9 +171,9 @@ export default function ClassTimes() {
       width: "74px",
       value: new Date(timeObj.endTime),
       onBlur: (value, valid) => {
-        let newClassTime = {...timeObj};
-        newClassTime.endTime = DateToUTCDateString(new Date(value.value._d));
-        updateClassTime({index, newClassTime});
+        let nextClassTime = {...timeObj};
+        nextClassTime.endTime = DateToUTCDateString(new Date(value.value._d));
+        updateClassTime({courseId, index, nextClassTime});
       }
     }))), /* @__PURE__ */ React.createElement("div", {
       style: {margin: "10px"}
@@ -226,6 +190,6 @@ export default function ClassTimes() {
       icon: faPlus
     }),
     style: {margin: "auto"},
-    onClick: () => addClassTime()
+    onClick: () => addClassTime(courseId)
   }));
 }

@@ -33,8 +33,8 @@ function nullishCoalesce(&$value, $default) {
 
 $containingDoenetIds = [];
 $activityDoenetIds = [];
-	//Can the user edit content?
-	if ($permissions["canEditContent"] == '1'){
+	//Can the user View Unassigned Content?
+	if ($permissions["canViewUnassignedContent"] == '1'){
 		//Yes then all items and json
 		$sql = "
 		SELECT cc.type,
@@ -106,7 +106,7 @@ $activityDoenetIds = [];
           "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
           "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
           "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
-          "showFinishButton" => nullishCoalesce($row['showFinishButton'], '1') == '1' ? true : false,
+          "showFinishButton" => nullishCoalesce($row['showFinishButton'], '0') == '1' ? true : false,
           "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
 				);
 
@@ -190,7 +190,7 @@ $activityDoenetIds = [];
 		}
 
 	}else if($permissions != false){
-		//TODO: check that user can view content
+		//TODO: check that user is in the course
 		$sql = "
 		SELECT cc.type,
 		cc.doenetId,

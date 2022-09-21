@@ -160,6 +160,7 @@ import Chart from './components/Chart.js';
 import Legend from './components/Legend.js';
 import Label from './components/Label.js';
 import MatchesPattern from './components/MatchesPattern.js';
+import EigenDecomposition from './components/linearAlgebra/EigenDecomposition.js';
 
 
 //Extended
@@ -317,6 +318,7 @@ const componentTypeArray = [
   Legend,
   Label,
   MatchesPattern,
+  EigenDecomposition,
 
   BaseComponent,
   InlineComponent,

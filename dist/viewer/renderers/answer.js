@@ -13,7 +13,7 @@ const Button = styled.button`
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 10px 12px 10px;
+  margin: 0px 12px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -121,8 +121,7 @@ export default React.memo(function Answer(props) {
       checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(", SVs.numberOfAttemptsLeft, " attempts remaining)"));
     }
     return /* @__PURE__ */ React.createElement("span", {
-      id,
-      style: {display: "flex"}
+      id
     }, /* @__PURE__ */ React.createElement("a", {
       name: id
     }), inputChildrenToRender, checkworkComponent);

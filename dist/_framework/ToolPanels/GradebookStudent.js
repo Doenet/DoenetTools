@@ -54,7 +54,7 @@ export default function GradebookStudent() {
       let allpossiblepoints = [];
       for (let doenetId in assignments.contents) {
         let inCategory = assignments.contents[doenetId].category;
-        if (inCategory.toLowerCase() !== category.toLowerCase()) {
+        if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
         }
         let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
@@ -99,6 +99,7 @@ export default function GradebookStudent() {
       totalScore += categoryScore;
       totalPossiblePoints += categoryPossiblePoints;
       categoryScore = Math.round(categoryScore * 100) / 100;
+      categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
       let description = "";
       if (numberScores > maximumNumber) {
         description = /* @__PURE__ */ React.createElement("div", {
@@ -119,6 +120,7 @@ export default function GradebookStudent() {
     }
     let totalPercentage = Math.round(totalScore / totalPossiblePoints * 1e3) / 10 + "%";
     totalScore = Math.round(totalScore * 100) / 100;
+    totalPossiblePoints = Math.round(totalPossiblePoints * 100) / 100;
     overviewTable.headers.push({
       Header: "Possible Points",
       Footer: totalPossiblePoints,
