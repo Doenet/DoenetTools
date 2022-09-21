@@ -12,9 +12,50 @@ import {
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
-import { fileByPageId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
 import { useValidateEmail } from '../../_utils/hooks/useValidateEmail';
+
+export const fileByCid = atomFamily({
+  key:"fileByCid",
+  default: selectorFamily({
+    key:"fileByCid/Default",
+    get:(cid)=> async ()=>{
+      if (!cid){
+        return "";
+      }
+      // const local = localStorage.getItem(cid);
+      // if (local){ return local}
+      try {
+        const server = await axios.get(`/media/${cid}.doenet`); 
+        return server.data;
+      } catch (error) {
+        //TODO: Handle 404
+        // Error 😨
+        if (error.response) {
+          /*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+            /*
+            * The request was made but no response was received, `error.request`
+            * is an instance of XMLHttpRequest in the browser and an instance
+            * of http.ClientRequest in Node.js
+            */
+            console.log(error.request);
+        } else {
+            // Something happened in setting up the request and triggered an Error
+            console.log('Error', error.message);
+        }
+              return "Error Loading";
+        }
+    }
+  })
+  
+})
 
 const peopleAtomByCourseId = atomFamily({
   key:"peopleAtomByCourseId",
