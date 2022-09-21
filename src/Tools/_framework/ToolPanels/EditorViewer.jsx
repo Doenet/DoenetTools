@@ -8,15 +8,11 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { profileAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
-import {
-  fileByPageId,
-  pageVariantInfoAtom,
-  pageVariantPanelAtom,
-} from '../ToolHandlers/CourseToolHandler';
 import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 import { editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 import axios from 'axios';
 import { useLocation } from 'react-router';
+import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 
 export const useUpdateViewer = () => {
   const updateViewer = useRecoilCallback(({ snapshot, set }) => async () => {

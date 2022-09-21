@@ -8,16 +8,14 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import {
-  pageVariantInfoAtom,
-  pageVariantPanelAtom,
-} from '../ToolHandlers/CourseToolHandler';
 import { findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
 import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { parseActivityDefinition } from '../../../_utils/activityUtils';
 import { editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 import { useLocation } from 'react-router';
+import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
+import { useUpdateViewer } from './EditorViewer';
 
 
 export default function EditorViewer() {
