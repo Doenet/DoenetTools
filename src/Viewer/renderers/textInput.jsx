@@ -34,7 +34,7 @@ const TextArea = styled.textarea `
   border: ${props => props.surroundingBorder}; // Turns blue on focus
 
   &:focus {
-    outline: 2px solid var(--mainBlue);
+    outline: var(--mainBorder);
     outline-offset: 2px;
   }
 `;
@@ -46,7 +46,7 @@ const Input = styled.input `
   border: ${props => props.surroundingBorder}; // Turns blue on focus
 
   &:focus {
-    outline: 2px solid var(--mainBlue);
+    outline: var(--mainBorder);
     outline-offset: 2px;
   }
 `;
