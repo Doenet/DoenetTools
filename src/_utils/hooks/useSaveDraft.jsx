@@ -1,15 +1,13 @@
 import axios from 'axios';
 import { useRecoilCallback } from 'recoil';
-import { fileByPageId } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
-import { updateTextEditorDoenetMLAtom } from '../../_sharedRecoil/EditorViewerRecoil';
+import { fileByPageId } from '../../_reactComponents/Course/CourseActions';
+import { textEditorDoenetMLAtom } from '../../_sharedRecoil/EditorViewerRecoil';
 
 export function useSaveDraft() {
   const saveDraft = useRecoilCallback(
     ({ snapshot, set }) =>
       async ({ pageId, courseId, backup = false }) => {
-        const doenetML = await snapshot.getPromise(
-          updateTextEditorDoenetMLAtom,
-        );
+        const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
 
         //Save in localStorage
         // localStorage.setItem(cid,doenetML)
