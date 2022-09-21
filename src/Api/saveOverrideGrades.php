@@ -75,119 +75,118 @@ if ($success) {
     }
 }
 
-    if ($success) {
-        foreach ($emails as $key => $email) {
-            $credit = $scores[$key] / $totalPointsOrPercent;
+if ($success) {
+    foreach ($emails as $key => $email) {
+        $credit = $scores[$key] / $totalPointsOrPercent;
 
-            //Find userId
-            $result = $conn->query(
-                "SELECT u.userId
-                FROM user AS u
-                INNER JOIN course_user AS cu
-                ON cu.userId = u.userId
-                WHERE u.email = '$email'
-                AND cu.courseId = '$driveId' 
-                "
-            );
-            //Uploaded data requires students who are enrolled
-            if ($result->num_rows < 1) {
-                continue;
-            }
-            $row = $result->fetch_assoc();
-            $emailUserId = $row['userId'];
+        //Find userId
+        $result = $conn->query(
+            "SELECT u.userId
+            FROM user AS u
+            INNER JOIN course_user AS cu
+            ON cu.userId = u.userId
+            WHERE u.email = '$email'
+            AND cu.courseId = '$driveId' 
+            "
+        );
+        //Uploaded data requires students who are enrolled
+        if ($result->num_rows < 1) {
+            continue;
+        }
+        $row = $result->fetch_assoc();
+        $emailUserId = $row['userId'];
 
-            //If a row exists then update else insert
-            $result = $conn->query(
-                "SELECT doenetId
-                FROM user_assignment_attempt
+        //If a row exists then update else insert
+        $result = $conn->query(
+            "SELECT doenetId
+            FROM user_assignment_attempt
+            WHERE userId = '$emailUserId'
+            AND doenetId = '$doenetId'
+            AND attemptNumber = '$attemptNumber'
+            "
+        );
+
+        if ($result->num_rows > 0) {
+            $sql = "UPDATE user_assignment_attempt
+                SET credit='$credit',
+                creditOverride='$credit'
                 WHERE userId = '$emailUserId'
                 AND doenetId = '$doenetId'
                 AND attemptNumber = '$attemptNumber'
-                "
-            );
-
-            if ($result->num_rows > 0) {
-                $sql = "UPDATE user_assignment_attempt
-                    SET credit='$credit',
-                    creditOverride='$credit'
-                    WHERE userId = '$emailUserId'
-                    AND doenetId = '$doenetId'
-                    AND attemptNumber = '$attemptNumber'
-                    ";
-            } else {
-                $sql = "INSERT INTO user_assignment_attempt (doenetId,cid,userId,attemptNumber,credit,creditOverride)
-                  VALUES
-                  ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$attemptNumber','$credit','$credit')
-                  ";
-            }
-            $result = $conn->query($sql);
-
-            // if we don't have a record for this user on the user_assignment table then we need to insert not update
-            $result = $conn->query(
-                "SELECT creditOverride
-                FROM user_assignment
-                WHERE doenetId = '$doenetId'
-                AND userId = '$emailUserId'"
-            );
-
-            $need_insert = true;
-            if ($result->num_rows > 0) {
-                $need_insert = false;
-                $row = $result->fetch_assoc();
-                $creditOverride_for_assignment = $row['creditOverride'];
-
-                // if we have $creditOverride_for_assignment, don't update assignment credit
-                if ($creditOverride_for_assignment != null) {
-                    continue;
-                }
-            }
-
-            $result = $conn->query(
-                "SELECT 
-                credit
-                FROM user_assignment_attempt
-                WHERE userId = '$emailUserId'
-                AND doenetId = '$doenetId'
-                ORDER BY attemptNumber DESC"
-            );
-
-            $credit_for_assignment = 0;
-
-            //Update user_assignment table
-            if ($attemptAggregation == 'm') {
-                // Find maximum attempt score
-                while ($row = $result->fetch_assoc()) {
-                    $attemptCredit = $row['credit'];
-                    // $attemptCredit = (float) $row['credit'];
-
-                    if ($attemptCredit > $credit_for_assignment) {
-                        $credit_for_assignment = $attemptCredit;
-                    }
-                }
-            } elseif ($attemptAggregation == 'l') {
-                // Use latest attempt score
-                $row = $result->fetch_assoc();
-                $lastCredit = $row['credit'];
-
-                $credit_for_assignment = $lastCredit;
-            }
-
-            if ($need_insert) {
-                // insert credit in user_assigment
-                $sql = "INSERT INTO user_assignment (doenetId,cid,userId,credit)
-                  VALUES
-                  ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$credit_for_assignment')
-                  ";
-            } else {
-                // update credit in user_assigment
-                $sql = "UPDATE user_assignment
-                  SET credit='$credit_for_assignment'
-                  WHERE userId = '$emailUserId'
-                  AND doenetId = '$doenetId'
-                  ";
-            }
-            $result = $conn->query($sql);
+                ";
+        } else {
+            $sql = "INSERT INTO user_assignment_attempt (doenetId,cid,userId,attemptNumber,credit,creditOverride)
+              VALUES
+              ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$attemptNumber','$credit','$credit')
+              ";
         }
+        $result = $conn->query($sql);
+
+        // if we don't have a record for this user on the user_assignment table then we need to insert not update
+        $result = $conn->query(
+            "SELECT creditOverride
+            FROM user_assignment
+            WHERE doenetId = '$doenetId'
+            AND userId = '$emailUserId'"
+        );
+
+        $need_insert = true;
+        if ($result->num_rows > 0) {
+            $need_insert = false;
+            $row = $result->fetch_assoc();
+            $creditOverride_for_assignment = $row['creditOverride'];
+
+            // if we have $creditOverride_for_assignment, don't update assignment credit
+            if ($creditOverride_for_assignment != null) {
+                continue;
+            }
+        }
+
+        $result = $conn->query(
+            "SELECT 
+            credit
+            FROM user_assignment_attempt
+            WHERE userId = '$emailUserId'
+            AND doenetId = '$doenetId'
+            ORDER BY attemptNumber DESC"
+        );
+
+        $credit_for_assignment = 0;
+
+        //Update user_assignment table
+        if ($attemptAggregation == 'm') {
+            // Find maximum attempt score
+            while ($row = $result->fetch_assoc()) {
+                $attemptCredit = $row['credit'];
+                // $attemptCredit = (float) $row['credit'];
+
+                if ($attemptCredit > $credit_for_assignment) {
+                    $credit_for_assignment = $attemptCredit;
+                }
+            }
+        } elseif ($attemptAggregation == 'l') {
+            // Use latest attempt score
+            $row = $result->fetch_assoc();
+            $lastCredit = $row['credit'];
+
+            $credit_for_assignment = $lastCredit;
+        }
+
+        if ($need_insert) {
+            // insert credit in user_assigment
+            $sql = "INSERT INTO user_assignment (doenetId,cid,userId,credit)
+              VALUES
+              ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$credit_for_assignment')
+              ";
+        } else {
+            // update credit in user_assigment
+            $sql = "UPDATE user_assignment
+              SET credit='$credit_for_assignment'
+              WHERE userId = '$emailUserId'
+              AND doenetId = '$doenetId'
+              ";
+        }
+        $result = $conn->query($sql);
     }
 }
 
