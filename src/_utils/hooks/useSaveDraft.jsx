@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { useRecoilCallback } from 'recoil';
+import { toastType, useToast } from '../../Tools/_framework/Toast';
 import { fileByPageId } from '../../_reactComponents/Course/CourseActions';
 import { textEditorDoenetMLAtom } from '../../_sharedRecoil/EditorViewerRecoil';
 
 export function useSaveDraft() {
+  const addToast = useToast();
   const saveDraft = useRecoilCallback(
     ({ snapshot, set }) =>
       async ({ pageId, courseId, backup = false }) => {
@@ -19,19 +21,21 @@ export function useSaveDraft() {
             courseId,
             backup,
           };
-          const { data } = await axios.post('/api/saveDoenetML.php', params);
+          const {
+            data: { success, message },
+          } = await axios.post('/api/saveDoenetML.php', params);
+
+          if (!success) throw new Error(message);
+
           set(fileByPageId(pageId), doenetML);
-          if (!data.success) {
-            //   //TODO: Toast here
-            console.log('ERROR', data.message);
-          }
-          return { success: data.success };
+
+          return { success };
         } catch (error) {
-          console.log('ERROR', error);
+          addToast(error.message, toastType.ERROR);
           return { success: false };
         }
       },
-    [],
+    [addToast],
   );
 
   return { saveDraft };
