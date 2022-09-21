@@ -78,6 +78,8 @@ if ($success) {
 
     $response_arr = [];
     if ($result->num_rows > 0) {
+        $num = $result->num_rows;
+        $message = "$num attempts found";
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr, [
                 $row['userId'],
@@ -88,8 +90,7 @@ if ($success) {
             ]);
         }
     } else {
-        $success = false;
-        $message = "No such assignment '$doenetId'";
+        $message = "No attempts found for '$doenetId'";
     }
 }
 
