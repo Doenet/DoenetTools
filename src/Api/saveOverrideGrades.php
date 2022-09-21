@@ -6,6 +6,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
 date_default_timezone_set('UTC');
 // America/Chicago
@@ -35,35 +36,44 @@ if ($attemptNumber == '') {
     $message = 'Internal Error: missing doenetId';
 }
 
-//TODO: Test permission to set grades
-
+//Lookup data
 if ($success) {
     //Look up total points for assignment
     $result = $conn->query(
         "SELECT 
-          attemptAggregation,
-          totalPointsOrPercent,
-          driveId
-        FROM assignment
-        WHERE doenetId = '$doenetId'"
+      attemptAggregation,
+      totalPointsOrPercent,
+      courseId
+    FROM assignment
+    WHERE doenetId = '$doenetId'"
     );
-    $row = $result->fetch_assoc();
-    $totalPointsOrPercent = $row['totalPointsOrPercent'];
-    $attemptAggregation = $row['attemptAggregation'];
-    $driveId = $row['driveId'];
-
-    $result = $conn->query(
-        "SELECT canChangeAllDriveSettings
-        FROM drive_user
-        WHERE userId = '$userId'
-        AND driveId = '$driveId'"
-    );
-    $row = $result->fetch_assoc();
-    $allowed = $row['canChangeAllDriveSettings'];
-    if (!$allowed) {
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $totalPointsOrPercent = $row['totalPointsOrPercent'];
+        $attemptAggregation = $row['attemptAggregation'];
+        $courseId = $row['courseId'];
+    } else {
         $success = false;
-        $message = 'You need need permission to add grades';
+        $message = "No assignment with doenetId: $doenetId";
     }
+}
+
+//Check permissions
+if ($success) {
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
+
+    if ($requestorPermissions == false) {
+        $success = false;
+        $message = 'You are not authorized to view or modify grade data';
+    } elseif ($requestorPermissions['canViewAndModifyGrades'] != '1') {
+        $allUsers = false;
+        $message = 'You are only allowed to view your own data';
+    }
+}
 
     if ($success) {
         foreach ($emails as $key => $email) {
