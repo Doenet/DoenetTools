@@ -86,7 +86,7 @@ if ($success) {
             INNER JOIN course_user AS cu
             ON cu.userId = u.userId
             WHERE u.email = '$email'
-            AND cu.courseId = '$driveId' 
+            AND cu.courseId = '$courseId' 
             "
         );
         //Uploaded data requires students who are enrolled
