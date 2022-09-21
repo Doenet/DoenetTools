@@ -254,7 +254,7 @@ export default function ChooseLearnerPanel(props) {
         <td style={{ textAlign: "center" }}><button onClick={async () => {
            //Possible check for SEB header
            const { data } = await axios.get('/api/checkSEBheaders.php', {
-            params: { doenetId },
+            params: { doenetId:exam.doenetId },
           });
           // console.log('>>>>data', data);
           if (Number(data.legitAccessKey) !== 1) {
