@@ -111,7 +111,7 @@ export default function EndExamPanel() {
     <div style={{  display: 'flex',
       justifyContent: 'center'
       }}>
-      <div style={{width: '200px', maxHeight: '340px', overflowY: 'scroll'}}>
+      <div style={{width: '230px', maxHeight: '340px', overflowY: 'scroll'}}>
         {scoreResults}
       </div>
     </div>

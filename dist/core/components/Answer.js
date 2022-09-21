@@ -17,6 +17,8 @@ export default class Answer extends InlineComponent {
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
+  static processWhenJustUpdatedForNewComponent = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.weight = {
@@ -180,6 +182,13 @@ export default class Answer extends InlineComponent {
       createStateVariable: "splitSymbols",
       defaultValue: true,
       public: true,
+    }
+
+    // temporary attribute until fix toast
+    attributes.suppressToast = {
+      createComponentOfType: "boolean",
+      createStateVariable: "suppressToast",
+      defaultValue: false,
     }
 
     return attributes;
@@ -1757,6 +1766,7 @@ export default class Answer extends InlineComponent {
         }
 
       },
+      suppressToast: await this.stateValues.suppressToast // temporary
     });
 
     return await this.coreFunctions.triggerChainedActions({

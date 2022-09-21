@@ -67,6 +67,7 @@ export const Styles = styled.div`
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+
     }
 
     th:first-child {
@@ -81,16 +82,24 @@ export const Styles = styled.div`
       height: 100%;
     } */
 
+    tr:first-child th > p{
+      margin: 0px 0px 4px 0px;
+      padding: 0px;
+    }
+
     tr:not(:first-child) th:not(:first-child) > p {
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 160px;
+
     }
 
     thead tr:only-child th:not(:first-child) > p {
       writing-mode: vertical-rl;
       text-align: left;
       transform: rotate(180deg);
+      max-height: 160px;
     }
 
     td {
@@ -488,7 +497,7 @@ function GradebookOverview() {
     let hasAssignments = false;
     for (let doenetId in assignments.contents) {
       let inCategory = assignments.contents[doenetId].category;
-      if (inCategory.toLowerCase() !== category.toLowerCase()) {
+      if (inCategory?.toLowerCase() !== category.toLowerCase()) {
         continue;
       }
       hasAssignments = true;
@@ -527,6 +536,7 @@ function GradebookOverview() {
     allpossiblepoints = allpossiblepoints.sort((a, b) => b - a).slice(0, maximumNumber);
     let categoryPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
     totalPossiblePoints += categoryPossiblePoints;
+    categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
     let description = "";
     if (numberScores > maximumNumber) {
       description = /* @__PURE__ */ React.createElement("div", {
@@ -559,6 +569,7 @@ function GradebookOverview() {
       });
     }
   }
+  totalPossiblePoints = Math.round(totalPossiblePoints * 100) / 100;
   overviewTable.headers.push({
     Header: /* @__PURE__ */ React.createElement("div", null, "Course Total"),
     accessor: "course total",
@@ -589,7 +600,7 @@ function GradebookOverview() {
       let scores = [];
       for (let doenetId in assignments.contents) {
         let inCategory = assignments.contents[doenetId].category;
-        if (inCategory.toLowerCase() !== category.toLowerCase()) {
+        if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
         }
         let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;

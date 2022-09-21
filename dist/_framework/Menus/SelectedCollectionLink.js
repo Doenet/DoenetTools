@@ -123,6 +123,7 @@ export default function SelectedCollectionLink() {
     label: "Label",
     vertical: true,
     width: "menu",
+    "data-test": "Label Collection",
     value: itemTextFieldLabel,
     onChange: (e) => setItemTextFieldLabel(e.target.value),
     onKeyDown: (e) => {

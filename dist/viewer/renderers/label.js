@@ -8,7 +8,8 @@ export default React.memo(function Label(props) {
   }
   if (children.length > 0) {
     return /* @__PURE__ */ React.createElement("span", {
-      id
+      id,
+      style: {marginRight: "12px"}
     }, /* @__PURE__ */ React.createElement("a", {
       name: id
     }), children);

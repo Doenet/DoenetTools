@@ -5,7 +5,7 @@ import {serializedComponentsReplacer, serializedComponentsReviver} from "../core
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faExclamationCircle} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {rendererState} from "./renderers/useDoenetRenderer.js";
-import {atomFamily, useRecoilCallback} from "../_snowpack/pkg/recoil.js";
+import {atom, atomFamily, useRecoilCallback} from "../_snowpack/pkg/recoil.js";
 import {get as idb_get, set as idb_set} from "../_snowpack/pkg/idb-keyval.js";
 import {cidFromText} from "../core/utils/cid.js";
 import {retrieveTextFileForCid} from "../core/utils/retrieveTextFile.js";
@@ -16,6 +16,10 @@ import cssesc from "../_snowpack/pkg/cssesc.js";
 const rendererUpdatesToIgnore = atomFamily({
   key: "rendererUpdatesToIgnore",
   default: {}
+});
+export const scrollableContainerAtom = atom({
+  key: "scollParentAtom",
+  default: null
 });
 export default function PageViewer(props) {
   const toast = useToast();
@@ -246,8 +250,32 @@ export default function PageViewer(props) {
       });
     }
   }
+  function forceRendererState({rendererState: rendererState2, forceDisable, forceShowCorrectness, forceShowSolution}) {
+    for (let componentName in rendererState2) {
+      let stateValues = rendererState2[componentName].stateValues;
+      if (forceDisable && stateValues.disabled === false) {
+        stateValues.disabled = true;
+      }
+      if (forceShowCorrectness && stateValues.showCorrectness === false) {
+        stateValues.showCorrectness = true;
+      }
+      if (forceShowSolution && rendererState2[componentName].childrenInstructions?.length > 0) {
+        for (let childInst of rendererState2[componentName].childrenInstructions) {
+          if (childInst.componentType === "solution") {
+            let solComponentName = childInst.componentName;
+            if (rendererState2[solComponentName].stateValues.hidden) {
+              rendererState2[solComponentName].stateValues.hidden = false;
+            }
+          }
+        }
+      }
+    }
+  }
   function initializeRenderers(args) {
     if (args.rendererState) {
+      if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution) {
+        forceRendererState({rendererState: args.rendererState, ...props});
+      }
       for (let componentName in args.rendererState) {
         updateRendererSVsWithRecoil({
           coreId: coreId.current,
@@ -493,7 +521,7 @@ export default function PageViewer(props) {
     if (!data.success) {
       return {localInfo, cid, attemptNumber};
     }
-    idb_set(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`, data.saveId);
+    await idb_set(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`, data.saveId);
     if (data.stateOverwritten) {
       let newLocalInfo = {
         coreState: JSON.parse(data.coreState, serializedComponentsReviver),
@@ -501,7 +529,7 @@ export default function PageViewer(props) {
         coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
         saveId: data.saveId
       };
-      idb_set(`${props.doenetId}|${pageNumber}|${data.attemptNumber}|${data.cid}`, newLocalInfo);
+      await idb_set(`${props.doenetId}|${pageNumber}|${data.attemptNumber}|${data.cid}`, newLocalInfo);
       return {
         changedOnDevice: data.device,
         newLocalInfo,
