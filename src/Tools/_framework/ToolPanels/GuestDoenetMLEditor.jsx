@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import {
   useRecoilValue,
   // useRecoilState,
   useSetRecoilState,
   // atom,
 } from 'recoil';
+import { textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 
 import CodeMirror from '../CodeMirror';
 

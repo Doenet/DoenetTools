@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from 'react';
-import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import {
   useRecoilValue,
   useSetRecoilState,

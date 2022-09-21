@@ -14,9 +14,9 @@ import {
 } from '../ToolHandlers/CourseToolHandler';
 import { findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
 import axios from 'axios';
-import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom, useUpdateViewer } from '../ToolPanels/EditorViewer'
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { parseActivityDefinition } from '../../../_utils/activityUtils';
+import { editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 import { useLocation } from 'react-router';
 
 
