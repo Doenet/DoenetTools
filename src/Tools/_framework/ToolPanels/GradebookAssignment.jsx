@@ -364,7 +364,7 @@ export default function GradebookAssignmentView(){
         <>
             <div style={{paddingLeft:"8px"}}><b>{label}</b></div>
             <div style={{paddingLeft:"8px"}}>{totalPossiblePoints} Points Possible</div>
-            {assignmentsTable.headers.length < 3 &&  <h3 style={{paddingLeft:"8px"}} > No attemtps found for this activity</h3>}
+            {assignmentsTable.headers.length < 3 &&  <h3 style={{paddingLeft:"8px"}}>No attempts found for this activity</h3>}
             <Styles>
                 <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
             </Styles>
