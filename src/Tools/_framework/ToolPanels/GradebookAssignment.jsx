@@ -245,9 +245,9 @@ export default function GradebookAssignmentView(){
 
     useEffect(()=>{
         if (canViewAndModifyGrades === "1"){
-            setSuppressMenus(["GradeUpload"])
-        }else{
             setSuppressMenus([])
+        }else{
+            setSuppressMenus(["GradeUpload"])
         }
     },[canViewAndModifyGrades, setSuppressMenus])
     
