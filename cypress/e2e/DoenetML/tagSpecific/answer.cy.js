@@ -16604,7 +16604,6 @@ describe('Answer Tag Tests', function () {
 
   });
 
-
   it('isResponse is not copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -16667,7 +16666,6 @@ describe('Answer Tag Tests', function () {
 
 
   });
-
 
   it('isResponse from sourcesAreResponses is not copied', () => {
     cy.window().then(async (win) => {
@@ -16797,6 +16795,117 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('all composites are responses if no responses indicated', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Enter minimum: <mathinput name="min" /></p>
+        <p>Enter value larger than $min: <mathinput name="val" /></p>
+        
+        <answer name="a"> 
+         <award ><when>$val > $min</when></award>
+        </answer>
+        
+        <p>Current responses <copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" /></p>
+        <p>Submitted response <copy assignNames="sr1 sr2" prop="submittedResponses" target="a" createComponentOfType="math" nComponents="2" /></p>
+        <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/ca`).should('have.text', '0')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/a"].stateValues.nResponses).eq(2)
+    });
+
+    cy.get("#\\/min textarea").type("2{enter}", { force: true });
+
+    cy.get(`#\\/cr2 .mjx-mrow`).should("have.text", '2')
+    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    });
+    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+
+    cy.get('#\\/a_submit').click();
+
+    cy.get(`#\\/sr2 .mjx-mrow`).should("have.text", '2')
+
+    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    });
+    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    });
+    cy.get(`#\\/ca`).should('have.text', '0')
+
+
+    cy.get("#\\/val textarea").type("3{enter}", { force: true });
+
+    cy.get(`#\\/cr1 .mjx-mrow`).should("have.text", '3')
+    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    });
+    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    });
+    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    });
+    cy.get(`#\\/ca`).should('have.text', '0')
+
+    cy.get('#\\/a_submit').click();
+
+    cy.get(`#\\/sr1 .mjx-mrow`).should("have.text", '3')
+    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    });
+    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    });
+    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    });
+    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    });
+    cy.get(`#\\/ca`).should('have.text', '1')
+
+  });
 
   it('immediate value used for submit button', () => {
     cy.window().then(async (win) => {
