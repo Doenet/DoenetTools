@@ -1804,7 +1804,11 @@ export default class Answer extends InlineComponent {
     let responseText = [];
     for (let response of currentResponses) {
       if (response.toString) {
-        responseText.push(response.toString())
+        try {
+          responseText.push(response.toString())
+        } catch(e) {
+          responseText.push('\uff3f')
+        }
       } else {
         responseText.push(response)
       }
