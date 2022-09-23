@@ -1,0 +1,33 @@
+<p>Enter a number between 0 and 1:
+<answer>
+  <mathinput name="myNum" />
+  <award>
+    <when>
+      $myNum >= 0
+        and
+      $myNum <= 1
+    </when>
+  </award>
+</answer>
+</p>
+
+<p>Enter two values than add up to 1:
+<answer>
+  <mathinput name="num2" />
+  <mathinput name="num1" />
+  <award>
+    <when>
+      $num1 + $num2 = 1
+    </when>
+  </award>
+</answer>
+</p>
+
+<p>Enter an article:
+<answer>
+  <textinput name="a1" />
+  <award><when>
+    $a1 = a or $a1 = an or $a1 = the
+  </when></award>
+</answer> 
+</p>

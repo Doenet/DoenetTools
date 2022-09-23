@@ -1,141 +1,164 @@
 <?php
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: access');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: access");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
-include '../api/db_connection.php';
+include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
-$courseId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["courseId"]);
-$number_assignments = count($_POST["assignmentSeeds"][$i]["documentName"]);
-$headingId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["headingId"]);
-//Find maxSortOrder
-$sql = "SELECT MAX(sortOrder) AS maxSortOrder FROM assignment WHERE courseHeadingId = '".$headingId."';";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$maxSortOrder = mysqli_real_escape_string($conn,$row['maxSortOrder']);
-$sortOrder = $maxSortOrder + 100;
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
 
-for ($j = 0; $j < $number_assignments; $j++){
-  $documentName =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["documentName"][$j]);
-  // KE: Is assignmentId the ID of the section/collection?
-  $assignmentId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["assignmentId"][$j]);
-  $doenetId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["doenetId"][$j]);
-  // KE: Is contentId the ID of the activity?
-  $contentId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["contentId"][$j]);
-  $creationDate =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["creationDate"][$j]);
-  $assignedDate =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["assignedDate"][$j]);
-  $dueDate =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["dueDate"][$j]);
+$success = TRUE;
+$message = "";
 
-  // KE: Initialize the section/collection to hold these values?
-  $sql = "INSERT INTO assignment 
-  SET assignmentId='$assignmentId',
-  courseHeadingId='$headingId',
-  assignmentName='$documentName',
-  courseId='$courseId',
-  sourceDoenetId='$doenetId',
-  contentId='$contentId',
-  sectionId='$sectionId',
-  sortOrder='$sortOrder',
-  assignedDate = '$assignedDate',
-  dueDate = '$dueDate',
-  creationDate= '$creationDate'"
-  ;
+$_POST = json_decode(file_get_contents("php://input"),true);
 
-  $result = $conn->query($sql);
-  $sortOrder = $sortOrder + 100;
+//TODO: is this the right permission?
+$courseId = $_POST['courseId'];
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
+if ($courseId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing courseId";
+  http_response_code(400);
+}
+if ($doenetId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing doenetId";
+  http_response_code(400);
+}
+$permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+if ($permissions["canModifyActivitySettings"] != '1'){
+  $success = FALSE;
+  $message = "You need permission to edit content.";
+  http_response_code(403);
 }
 
-// KE: If the activity is NOT nested within a section
-if ($assignmentId == "") {
-  //Base level so just find the last sortOrder and increment by 100
-  $sql = "SELECT contentId AS minSortOrder
-  FROM course_heading 
-  WHERE courseId = '$courseId';";
-  $result = $conn->query($sql);
-  $row = $result->fetch_assoc();
-  //$minSortOrder = mysqli_real_escape_string($conn,$row['minSortOrder']);
-  //echo "minSortOrder $minSortOrder\n";
+$settingKeys = array(
+  "makeContnet", "isSubmitted", "role", "dueDate", "assignedDate", 
+  "timeLimit", "numberOfAttemptsAllowed", "attemptAggregation", "totalPointsOrPercent",
+  "gradeCategory","individualize", "showSolution", "showSolutionInGradebook", 
+  "showFeedback", "showHints", "showCorrectness", "showCreditAchievedMenu",
+  "paginate", "showFinishButton",  
+  "proctorMakesAvailable", "pinnedUntilDate", "pinnedAfterDate"
+);
 
-  // KE: Update the due date
-  $sql = "UPDATE dueDate 
-  SET dueDate = '$dueDate'
-  WHERE courseId = '$courseId'";
-  $result = $conn->query($sql);
+$providedValues = [];
 
-  // KE: Update the assigned date
-  $sql = "UPDATE assignedDate 
-  SET assignedDate = '$assignedDate'
-  WHERE courseId = '$courseId'";
-  $result = $conn->query($sql);
+foreach ($settingKeys as $key) {
+  if(array_key_exists($key, $_POST)) {
+    $providedValues[$key] = mysqli_real_escape_string($conn,$_POST[$key]);
+  }
+}
+unset($key, $value);
 
-  // KE: Reinsert the updated due date and assigned date back into the section
-  $sql = "INSERT INTO assignment SET 
-  assignmentId='$assignmentId',
-  courseHeadingId='$headingId',
-  assignmentName='$documentName',
-  courseId='$courseId',
-  sourceDoenetId='$doenetId',
-  contentId='$contentId',
-  sortOrder='$sortOrder',
-  assignedDate = '$assignedDate',
-  dueDate = '$dueDate',
-  creationDate= '$creationDate'"
-  ;
-  $result = $conn->query($sql);
+//protect against invalid empty string values
+if (array_key_exists("pinnedUntilDate", $providedValues) && $providedValues["pinnedUntilDate"] == ''){$providedValues["pinnedUntilDate"] = 'NULL';}
+if (array_key_exists("pinnedAfterDate", $providedValues) && $providedValues["pinnedAfterDate"] == ''){$providedValues["pinnedAfterDate"] = 'NULL';}
+if (array_key_exists("timeLimit", $providedValues) && $providedValues["timeLimit"] == ''){$providedValues["timeLimit"] = 'NULL';}
+if (array_key_exists("dueDate", $providedValues) && $providedValues["dueDate"] == ''){$providedValues["dueDate"] = 'NULL';}
+if (array_key_exists("assignedDate", $providedValues) && $providedValues["assignedDate"] == ''){$providedValues["assignedDate"] = 'NULL';}
+if (array_key_exists("numberOfAttemptsAllowed", $providedValues) && $providedValues["numberOfAttemptsAllowed"] == ''){$providedValues["numberOfAttemptsAllowed"] = 'NULL';}
+if (array_key_exists("totalPointsOrPercent", $providedValues) && $providedValues["totalPointsOrPercent"] == '') { $providedValues["totalPointsOrPercent"] = 'NULL';}
 
-// KE: If the activity IS nested within a section
-} else {
-  //has a parent
-  // KE: contentId (the activity) is nested within assignmentId (the section)
-  $sql = "SELECT contentId AS assignmentId 
-  FROM course_heading 
-  WHERE courseHeadingId = '$parentHeadingId';";
-  $result = $conn->query($sql);
-  $row = $result->fetch_assoc();
-  $parentSortOrder = $row['parentSortOrder'];
+//protect against invalid boolean values
+$boolKeys = array(
+  "individualize", "showSolution", "showSolutionInGradebook", "showFeedback",
+  "showHints","showCorrectness","showCreditAchievedMenu",
+  "paginate","showFinishButton","proctorMakesAvailable"
+);
 
-  // Update the due date
-  $sql = "UPDATE dueDate 
-  SET dueDate = '$dueDate'
-  WHERE courseId = '$courseId'
-  AND contentId > '$assignmentId'"; // KE: assignmentId is parenting contentId
-  $result = $conn->query($sql);
-
-  // Update the assigned date
-  $sql = "UPDATE assignedDate 
-  SET assignedDate = '$assignedDate'
-  WHERE courseId = '$courseId'
-  AND contentId > '$assignmentId'"; // KE: assignmentId is parenting contentId
-  $result = $conn->query($sql);
-
-  // KE: Do I need sortOrder? Is that relevant in this file?
-  // $insertSortOrder = $parentSortOrder + 100;
-
-  // KE: Reinsert the updated due date and assigned date back into the section
-  $sql = "INSERT INTO assignment SET
-  assignmentId='$assignmentId',
-  courseHeadingId='$headingId',
-  assignmentName='$documentName',
-  courseId='$courseId',
-  sourceDoenetId='$doenetId',
-  contentId='$contentId',
-  sortOrder='$sortOrder',
-  assignedDate = '$assignedDate',
-  dueDate = '$dueDate',
-  creationDate= '$creationDate'"
-  ;
-  echo $sql;
-  $result = $conn->query($sql);
+foreach ($boolKeys as $key) {
+  if (array_key_exists($key, $providedValues)) {
+    if ($providedValues[$key]) {$providedValues[$key] = '1';} else {$providedValues[$key] = '0';}
+  }
 }
 
-if ($result === TRUE) {
-    // set response code - 200 OK
-    http_response_code(200);
-} else {
-  echo "Error: " . $sql . "<br>" . $conn->error;
+function array_map_assoc( $callback , $array ){
+  $r = array();
+  foreach ($array as $key=>$value)
+    $r[$key] = $callback($key,$value);
+  return $r;
 }
+;
+
+$updates = implode(
+  ",", 
+  array_map_assoc(
+    function($key, $value) {
+      if ($value == 'NULL') {
+        return "$key = $value";}
+      else {
+        return "$key = '$value'";
+      }
+    },
+    $providedValues
+  )
+);
+
+if ($success){
+  http_response_code(200);
+
+  if(count($providedValues) > 0) {
+
+    // KE: This is the only line I changed from updateAssignmentSettings.php
+    $sql = "INSERT INTO `activity` SET
+        doenetId='$doenetId',
+        courseId = '$courseId',
+        $updates
+      ON DUPLICATE KEY UPDATE
+        $updates
+    ";
+
+    $result = $conn->query($sql);
+
+
+    if ($result == false) {
+      $success = FALSE;
+      $message = "Database error";
+      http_response_code(500);
+    }
+  }
+}
+
+if($success) {
+
+  if(array_key_exists("itemWeights", $_POST)) {
+
+    // $itemWeights = mysqli_real_escape_string($conn,$_POST['itemWeights']);
+    // $itemWeights = json_encode($_POST['itemWeights']);
+    $itemWeights = implode(",",$_POST['itemWeights']);
+
+    $sql = "
+    UPDATE course_content
+    SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.itemWeights',JSON_ARRAY($itemWeights))
+    WHERE doenetId='$doenetId'
+    AND courseId='$courseId'
+    ";
+    $result = $conn->query($sql);
+
+    if ($result == false) {
+      $success = FALSE;
+      $message = "Database error";
+      http_response_code(500);
+    }
+
+  }
+
+}
+// echo $sql;
+// set response code - 200 OK
+
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
+
+// make it json format
+echo json_encode($response_arr);
+
   
-$conn->close();
+  $conn->close();
 ?>

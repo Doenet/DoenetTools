@@ -1,0 +1,49 @@
+<p>What food item below was NOT invented in America?
+  <answer>
+    <choice>Hot Dogs</choice>
+    <choice>Cotton Candy</choice>
+    <choice credit="1">Pizza</choice>
+  </answer>
+</p>
+
+<p>Given an angle <m>\theta</m> on the unit circle, 
+what is the name for the trigonometric ratio of the opposite side to 
+the hypotenuse?</p>
+<answer maximumNumberOfAttempts="2" disableAfterCorrect="true">
+  <choiceInput>
+    <choice><m>\tan(\theta)</m></choice>
+    <choice credit="1"><m>\sin(\theta)</m></choice>
+    <choice><m>\cos(\theta)</m></choice>
+    <choice>><m>\cot(\theta)</m></choice>
+  </choiceInput>
+</answer>
+
+<answer maximumNumberOfAttempts="2" disableAfterCorrect="true">
+<booleanInput name="isHappy">
+    <label>Happy</label>
+  </booleanInput>
+  
+  <booleanInput name="isSad">
+    <label>Sad</label>
+  </booleanInput>
+  
+  <booleanInput name="isRelaxed">
+    <label>Relaxed</label>
+  </booleanInput>
+  
+  <booleanInput name="isStressed">
+    <label>Stressed</label>
+</booleanInput>
+</answer>
+
+<p>Enter an integer between -10 and 10 for the 
+  <m>x</m>-component: <mathInput name="xComponent"/></p>
+<p>Enter an integer between -10 and 10 for the 
+  <m>y</m>-component: <mathInput name="yComponent" /></p>  
+
+<m> \vec{v} = \langle <integer name="x1">$xComponent</integer> , 
+<integer name="y1">$yComponent</integer> \rangle</m>
+  
+<graph grid="1 1">
+  <vector x="$x1" y="$y1"/>
+</graph>
