@@ -27,7 +27,7 @@ describe('Activity test', function () {
         cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
         cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Activity');
         cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-        cy.get('[data-test="Label Activity"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type('Hello',{scrollBehavior:false})
+        cy.get('[data-test="Label Activity"]', {timeout:20000}).should('be.visible').clear().type('Hello')
         cy.get('[data-test="infoPanelItemLabel"]').click();
         cy.get('[data-test="rowLabel"]').should('contain.text', 'Hello');
         // cy.get('[style="display: initial; width: 200px; align-items: center;"] > .sc-ctqQKy').clear();

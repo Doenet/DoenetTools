@@ -6,16 +6,28 @@ import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
 import { scrollableContainerAtom } from '../PageViewer';
 import useDoenetRender from './useDoenetRenderer';
+import Button from '../../_reactComponents/PanelHeaderComponents/Button';
+import styled from 'styled-components';
+
+const LinkStyling = styled.a`
+    color: var(--mainBlue);
+    border-radius: 5px;
+    &: focus {
+      outline: 2px solid var(--mainBlue);
+    }
+  `;
 
 export default React.memo(function Ref(props) {
   let { name, id, SVs, children } = useDoenetRender(props);
-
+  console.log('ref tag');
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
   const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
   let { search } = useLocation();
   let navigate = useNavigate();
+
+  
 
 
   if (SVs.hidden) {
@@ -94,12 +106,12 @@ export default React.memo(function Ref(props) {
 
   if (SVs.createButton) {
     if (externalUri) {
-      return <span id={id}><a name={id} />
-        <button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
+      return <span id={id} style={{display: "inline-block" }}><a name={id} />
+        <Button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</Button>
       </span>;
     } else {
-      return <span id={id}><a name={id} />
-        <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
+      return <span id={id} style={{display: "inline-block" }}><a name={id} />
+        <Button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</Button>
       </span>;
     }
     
@@ -109,13 +121,15 @@ export default React.memo(function Ref(props) {
       if (externalUri || url === "#") {
         // for some reason, if url = "#", the <Link>, below, causes a refresh
         // as it removes the # from the url.  So we use a <a> directly in this case.
-        return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
+        console.log('first case');
+        return <LinkStyling target={targetForATag} id={name} name={name} href={url} >{linkContent} </LinkStyling>
       } else {
 
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = { fromLink: true }
         Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer?.[scrollAttribute], enumerable: true });
-        return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
+        console.log('second case');
+        return <LinkStyling target={targetForATag} id={id} name={id} to={url} state={stateObj} >{linkContent}</LinkStyling>
       }
     } else {
       return <span id={id}>{linkContent}</span>
