@@ -7,6 +7,114 @@ import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js";
 import {formatAMPM, UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+export const Styles = styled.div`
+  padding: 1rem;
+  table {
+    /* border-collapse: collapse; */
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 20vh;
+
+    thead {
+      position: sticky;
+      top: 43px;
+      box-shadow: 0 2px 0 0px var(--canvastext);
+    }
+
+    a {
+      text-decoration: var(--mainBlue) underline;
+    }
+
+    .sortIcon {
+      padding-left: 4px;
+    }
+
+    tbody tr:not(:last-child) {
+      border-bottom: 1px solid var(--mainGray);
+    }
+
+    td:first-child {
+      text-align: left;
+      max-width: 15rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: var(--canvas);
+      user-select: none;
+      max-width: 4rem;
+      //word-wrap: break-word;
+      padding: 2px;
+      max-height: 10rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+
+    }
+
+    th:first-child {
+      vertical-align: bottom;
+      max-width: 15rem;
+      p {
+        margin: 5px;
+      }
+    }
+
+    /* th > p {
+      height: 100%;
+    } */
+
+    tr:first-child th > p{
+      margin: 0px 0px 4px 0px;
+      padding: 0px;
+    }
+
+    tr:not(:first-child) th:not(:first-child) > p {
+      /* writing-mode: vertical-rl; */
+      text-align: left;
+      /* transform: rotate(180deg); */
+      /* max-height: 160px; */
+
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--mainGray);
+    }
+
+    thead tr:only-child th:not(:first-child) > p {
+      /* writing-mode: vertical-rl; */
+      text-align: left;
+      /* transform: rotate(180deg); */
+      /* max-height: 160px; */
+    }
+
+    td {
+      /* user-select: none; */
+      text-align: center;
+      max-width: 5rem;
+    }
+    td,
+    th {
+      border-right: 2px solid var(--canvastext);
+      :last-child {
+        border-right: 0;
+      }
+    }
+
+    tfoot {
+      font-weight: bolder;
+      position: sticky;
+      bottom: 0;
+      background-color: var(--canvas);
+      box-shadow: inset 0 2px 0 var(--canvastext);
+    }
+  }
+`;
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
@@ -18,6 +126,7 @@ export default function ChooseLearnerPanel(props) {
   let [choosenLearner, setChoosenLearner] = useState(null);
   let [filter, setFilter] = useState("");
   let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
+  let [message, setMessage] = useState("");
   const addToast = useToast();
   const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId, resumeAttemptFlag2) => {
     if (!resumeAttemptFlag2) {
@@ -106,9 +215,18 @@ export default function ChooseLearnerPanel(props) {
       }, exam.label), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
       }, /* @__PURE__ */ React.createElement("button", {
-        onClick: () => {
-          setDoenetId(exam.doenetId, courseId);
-          setStage("choose learner");
+        onClick: async () => {
+          const {data} = await axios.get("/api/checkSEBheaders.php", {
+            params: {doenetId: exam.doenetId}
+          });
+          if (Number(data.legitAccessKey) !== 1) {
+            setStage("Problem");
+            setMessage("Browser not configured properly to take an exam.");
+            return;
+          } else {
+            setDoenetId(exam.doenetId, courseId);
+            setStage("choose learner");
+          }
         }
       }, "Choose"))));
     }
@@ -133,8 +251,8 @@ export default function ChooseLearnerPanel(props) {
       }
       let timeZoneCorrectLastExamDate = null;
       let allowResume = false;
-      if (learner.exam_to_date[doenetId]) {
-        let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
+      if (learner?.exam_to_date[doenetId]) {
+        let lastExamDT = UTCDateStringToDate(learner?.exam_to_date[doenetId]);
         allowResume = examTimeLimit === null;
         let minutesRemainingPhrase = null;
         if (!allowResume) {
@@ -159,6 +277,8 @@ export default function ChooseLearnerPanel(props) {
           timeZoneCorrectLastExamDate = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
             value: "Resume",
             onClick: () => {
+              localStorage.clear();
+              axios.get("/api/signOut.php");
               setChoosenLearner(learner);
               setStage("student final check");
               setResumeAttemptFlag(true);
@@ -178,21 +298,31 @@ export default function ChooseLearnerPanel(props) {
       }, learner.studentId), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
       }, timeZoneCorrectLastExamDate), /* @__PURE__ */ React.createElement("td", {
-        style: {textAlign: "center"}
+        style: {display: "block", margin: "4px auto"}
       }, /* @__PURE__ */ React.createElement(Button, {
+        width: "menu",
         value: "Start",
         onClick: () => {
+          localStorage.clear();
+          axios.get("/api/signOut.php");
           setChoosenLearner(learner);
           setStage("student final check");
           setResumeAttemptFlag(false);
         }
       }))));
     }
-    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
-      style: {marginLeft: "50px", marginBottom: "15px"}
+    return /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement("div", {
+      style: {
+        background: "var(--canvas)",
+        top: 0,
+        position: "sticky",
+        paddingLeft: "50px",
+        paddingBottom: "15px"
+      }
     }, /* @__PURE__ */ React.createElement(SearchBar, {
       autoFocus: true,
-      onChange: setFilter
+      onChange: setFilter,
+      width: "100%"
     })), /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}
     }, "First Name"), /* @__PURE__ */ React.createElement("th", {
@@ -237,6 +367,9 @@ export default function ChooseLearnerPanel(props) {
         newAttempt(doenetId, code, choosenLearner.userId, resumeAttemptFlag);
       }
     }))));
+  }
+  if (stage === "Problem") {
+    return /* @__PURE__ */ React.createElement("h1", null, message);
   }
   return null;
 }

@@ -142,6 +142,7 @@ export default function SelectedActivity() {
       courseId
     }), /* @__PURE__ */ React.createElement(Textfield, {
       label: "Label",
+      "data-test": "Label Activity",
       vertical: true,
       width: "menu",
       value: itemTextFieldLabel,
