@@ -1,52 +1,14 @@
 import React, { useRef, useEffect } from 'react';
-import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import {
-  atom,
   useRecoilValue,
-  // useRecoilState,
   useSetRecoilState,
-  // atom,
-  useRecoilCallback,
 } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
 
 import CodeMirror from '../CodeMirror';
-import axios from "axios";
-import { fileByPageId } from '../ToolHandlers/CourseToolHandler';
 import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
-
-export function useSaveDraft(){
-  const saveDraft = useRecoilCallback(({ snapshot, set }) => async ({pageId, courseId, backup=false}) => {
-    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-  
-    //Save in localStorage
-    // localStorage.setItem(cid,doenetML)
-  
-    try {
-      const params = {
-        doenetML,
-        pageId,
-        courseId,
-        backup,
-      }
-      const { data } = await axios.post("/api/saveDoenetML.php", params);
-      set(fileByPageId(pageId),doenetML);
-      if (!data.success) {
-      //   //TODO: Toast here
-        console.log("ERROR", data.message)
-      }
-      return {success:data.success};
-  
-    } catch (error) {
-      console.log("ERROR", error)
-      return {success:false};
-    }
-  
-  
-  }, []);
-
-  return { saveDraft }
-}
+import { useSaveDraft } from '../../../_utils/hooks/useSaveDraft'
+import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 
 
 export default function DoenetMLEditor() {

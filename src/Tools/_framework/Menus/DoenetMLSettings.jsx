@@ -1,5 +1,4 @@
 import React from 'react';
-import { editorPageIdInitAtom } from '../ToolPanels/EditorViewer'
 import { useToast, toastType } from '@Toast';
 import { 
   useRecoilValue, 
@@ -14,6 +13,7 @@ import {
   faClipboard
  } from '@fortawesome/free-regular-svg-icons';
  import { searchParamAtomFamily } from '../NewToolRoot';
+import { editorPageIdInitAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 
 export default function DoenetMLSettings(props){
   const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
