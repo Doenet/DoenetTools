@@ -46,10 +46,10 @@ const Button = styled.button`
     color: white;
     background-color: var(--mainBlue);
     /* border: var(--mainBorder); */
-    /* padding: 2px; */
+    padding: 2px;
     border: none;
     border-radius: var(--mainBorderRadius);
-    margin: 0px 10px 12px 10px;
+    margin: 0px 12px 12px 0px;
 
 
     &:hover {
@@ -157,7 +157,7 @@ export default React.memo(function MatrixInput(props) {
     let mathinputRow = [];
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(/* @__PURE__ */ React.createElement("td", {
-        style: {margin: "10px"},
+        style: {margin: "12px"},
         key: colInd,
         id: id + "_component_" + rowInd + "_" + colInd
       }, children[rowInd * SVs.numColumns + colInd]));
@@ -169,7 +169,7 @@ export default React.memo(function MatrixInput(props) {
   let rowNumControls = null;
   if (SVs.showSizeControls) {
     rowNumControls = /* @__PURE__ */ React.createElement("span", {
-      style: {margin: "0px 10px 12px 10px"}
+      style: {margin: "0px 12px 12px 0px"}
     }, /* @__PURE__ */ React.createElement(ActionButtonGroup, null, /* @__PURE__ */ React.createElement(ActionButton, {
       id: id + "_rowDecrement",
       value: "r-",
@@ -190,7 +190,7 @@ export default React.memo(function MatrixInput(props) {
   let colNumControls = null;
   if (SVs.showSizeControls) {
     colNumControls = /* @__PURE__ */ React.createElement("span", {
-      style: {margin: "0px 10px 12px 10px"}
+      style: {margin: "0px 12px 12px 0px"}
     }, /* @__PURE__ */ React.createElement(ActionButtonGroup, null, /* @__PURE__ */ React.createElement(ActionButton, {
       id: id + "_columnDecrement",
       value: "c-",
@@ -211,9 +211,12 @@ export default React.memo(function MatrixInput(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name: id
   }), /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", marginBottom: "12px"}
+    style: {display: "inline-flex", marginBottom: "12px"}
   }, /* @__PURE__ */ React.createElement(Matrix, {
     className: "matrixInputSurroundingBox",
-    id
-  }, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("tbody", null, matrixInputs))), rowNumControls, colNumControls, checkWorkButton));
+    id,
+    style: {paddingLeft: "12px", paddingTop: "12px"}
+  }, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("tbody", null, matrixInputs))), /* @__PURE__ */ React.createElement("div", {
+    style: {marginRight: "12px"}
+  }), rowNumControls, colNumControls, checkWorkButton));
 });

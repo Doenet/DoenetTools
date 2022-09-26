@@ -359,15 +359,16 @@ export default function GradebookAssignmentView(){
         assignmentsTable.rows.push(row);
     }
     
-
+    //TODO CRITIAL: update to use new table interface and remove the dep on rows
     return(
         <>
-        <div style={{paddingLeft:"8px"}}><b>{label}</b></div>
-        <div style={{paddingLeft:"8px"}}>{totalPossiblePoints} Points Possible</div>
-    <Styles>
-        <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
-    </Styles>
-    </>
+            <div style={{paddingLeft:"8px"}}><b>{label}</b></div>
+            <div style={{paddingLeft:"8px"}}>{totalPossiblePoints} Points Possible</div>
+            {assignmentsTable.headers.length < 3 &&  <h3 style={{paddingLeft:"8px"}}>No attempts found for this activity</h3>}
+            <Styles>
+                <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
+            </Styles>
+        </>
     )
 
 }

@@ -39,6 +39,8 @@ export class MatrixInput extends Input {
   static variableForPlainMacro = "value";
   static variableForPlainCopy = "value";
 
+  static processWhenJustUpdatedForNewComponent = true;
+
   static renderChildren = true;
 
   static createAttributesObject() {

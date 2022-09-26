@@ -110,7 +110,7 @@ export default function Textfield(props) {
     placeholder: textfieldValue.placeholder,
     "aria-label": textfieldValue.ariaLabel,
     style: textfieldValue,
-    "data-test": props.dataTest,
+    "data-test": props["data-test"],
     onChange: (e) => {
       handleChange(e);
     },

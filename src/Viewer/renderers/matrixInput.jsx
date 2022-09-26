@@ -264,7 +264,7 @@ export default React.memo(function MatrixInput(props) {
 
   return <React.Fragment>
     <a name={id} />
-      <div style={{display: "flex", marginBottom: "12px"}}>
+      <div style={{display: "inline-flex", marginBottom: "12px"}}>
         <Matrix className="matrixInputSurroundingBox" id={id} style={{paddingLeft: "12px", paddingTop: "12px"}}>
           <table><tbody>
             {matrixInputs}

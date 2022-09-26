@@ -274,8 +274,8 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-        
-    cy.signin({userId: studentUserId})
+
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -494,7 +494,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -709,7 +709,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -737,7 +737,7 @@ describe('Multipage activity tests', function () {
     cy.go('back')
     cy.url().should('contain', `course?tool=navigation&courseId=${courseId}`);
 
-    cy.signin({userId})
+    cy.signin({ userId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -749,7 +749,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -931,7 +931,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -959,7 +959,7 @@ describe('Multipage activity tests', function () {
     cy.go('back')
     cy.url().should('contain', `course?tool=navigation&courseId=${courseId}`);
 
-    cy.signin({userId})
+    cy.signin({ userId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -970,7 +970,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -1150,7 +1150,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -1287,7 +1287,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -1561,7 +1561,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Activity Assigned');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -1650,7 +1650,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="toast"]').contains('Updated Paginate to False');
     cy.get('[data-test="toast cancel button"]').click();
 
-    cy.signin({userId: studentUserId})
+    cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
@@ -2249,7 +2249,7 @@ describe('Multipage activity tests', function () {
     cy.go("back")
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
-    
+
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="View Activity"]').click();
@@ -2406,6 +2406,192 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+  })
+
+  it('Finish button submits and saves state ', () => {
+
+    const doenetML1 = `1: <answer forceFullCheckworkButton>1</answer><solution>1</solution>`;
+    const doenetML2 = `2: <answer forceFullCheckworkButton>2</answer><solution>2</solution>`;
+    const doenetML3 = `3: <answer forceFullCheckworkButton>3</answer><solution>3</solution>`;
+    const doenetML4 = `4: <answer forceFullCheckworkButton>4</answer><solution>4</solution>`;
+
+    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, pageDoenetId3, pageDoenetId4, doenetML1, doenetML2, doenetML3, doenetML4 });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Show Finish Button"]').click();
+    cy.get('[data-test="toast"]').contains('Updated Show Finish Button to True');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="Show Solution"]').click();
+    cy.get('[data-test="toast"]').contains('Updated Show Solution to False');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="Show Correctness"]').click();
+    cy.get('[data-test="toast"]').contains('Updated Show Correctness to False');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="Show Credit Achieved Menu"]').click();
+    cy.get('[data-test="toast"]').contains('Updated Show Credit Achieved Menu to False');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+
+    cy.signin({ userId: studentUserId })
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get('#page1\\/_answer1 textarea').type("1", { force: true })
+
+    cy.get('[data-test="Item 1 Credit"]').should('not.exist')
+    cy.get('[data-test="Item 2 Credit"]').should('not.exist')
+    cy.get('[data-test="Item 3 Credit"]').should('not.exist')
+    cy.get('[data-test="Item 4 Credit"]').should('not.exist')
+    cy.get('[data-test="Assignment Percent"]').should('not.exist')
+    cy.get('#page1\\/_solution1').should('not.exist');
+
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page2\\/_answer1 textarea').type("2", { force: true })
+    cy.get('#page2\\/_solution1').should('not.exist');
+
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page3\\/_answer1 textarea').type("3", { force: true })
+    cy.get('#page3\\/_solution1').should('not.exist');
+
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page4\\/_answer1 textarea').type("4", { force: true })
+    cy.get('#page4\\/_solution1').should('not.exist');
+
+    cy.get('[data-test=FinishAssessmentPrompt]').click();
+    cy.get('[data-test=CancelFinishAssessment]').click();
+    cy.get('[data-test=FinishAssessmentPrompt]').click();
+    cy.get('[data-test=ConfirmFinishAssessment]').click();
+
+
+    cy.get('h1').should('contain.text', 'finished')
+
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
+
+    cy.get(`#page4\\/_answer1 .mq-editable-field`).should('have.text', '4')
+    cy.get(`#page4\\/_answer1_correct`).should('be.visible')
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('#page4\\/_solution1').click();
+    cy.get('#page4\\/_solution1').should('contain.text', '4')
+
+
+    cy.get('[data-test=previous]').click();
+
+    cy.get(`#page3\\/_answer1 .mq-editable-field`).should('have.text', '3')
+    cy.get(`#page3\\/_answer1_correct`).should('be.visible')
+
+    cy.get('#page3\\/_solution1').click();
+    cy.get('#page3\\/_solution1').should('contain.text', '3')
+
+
+    cy.get('[data-test="Item 1 Credit"]').click()
+
+    cy.get(`#page1\\/_answer1 .mq-editable-field`).should('have.text', '1')
+    cy.get(`#page1\\/_answer1_correct`).should('be.visible')
+
+    cy.get('#page1\\/_solution1').click();
+    cy.get('#page1\\/_solution1').should('contain.text', '1')
+
+
+    cy.get('[data-test=next]').click();
+
+    cy.get(`#page2\\/_answer1 .mq-editable-field`).should('have.text', '2')
+    cy.get(`#page2\\/_answer1_correct`).should('be.visible')
+
+    cy.get('#page2\\/_solution1').click();
+    cy.get('#page2\\/_solution1').should('contain.text', '2')
+
+
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get(`#page4\\/_answer1 .mq-editable-field`).should('have.text', '4')
+    cy.get(`#page4\\/_answer1_saved`).should('be.visible')
+
+    cy.get('[data-test="New Attempt"]').click();
+
+    cy.get(`#page1\\/_answer1`).should('be.visible')
+    cy.get(`#page1\\/_answer1_submit`).should('be.visible')
+    cy.get('#page1\\/_solution1').should('not.exist');
+
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page2\\/_answer1 textarea').type("2", { force: true })
+    cy.get('#page2\\/_solution1').should('not.exist');
+
+
+    cy.get('[data-test=FinishAssessmentPrompt]').click();
+    cy.get('[data-test=ConfirmFinishAssessment]').click();
+
+
+    cy.get('h1').should('contain.text', 'finished')
+
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    // TODO: how do we get the gradebook to reload and show the new attempt?
+    cy.reload();
+    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
+    cy.reload();
+    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
+
+    cy.get(`#page2\\/_answer1 .mq-editable-field`).should('have.text', '2')
+    cy.get(`#page2\\/_answer1_correct`).should('be.visible')
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
+    cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
+    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+
+    cy.get('#page2\\/_solution1').click();
+    cy.get('#page2\\/_solution1').should('contain.text', '2')
+
+    cy.get('[data-test=next]').click();
+
 
   })
 

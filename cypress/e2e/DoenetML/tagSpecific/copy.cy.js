@@ -13401,6 +13401,216 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('dot and array notation, chaining, copy source, change type', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph size="small">
+      <line name="l" through="(2/3,3/4) (5/8,6/10)" displayDigits="2" />
+    </graph>
+    
+    <p name="p1"><aslist><copy source="l.points.coords" creatComponentOfType="math" nComponents="2" /></aslist></p>
+    <p name="p2"><aslist><copy source="l.points.x" createComponentOfType="number" nComponents="2" /></aslist></p>
+    <p name="p3"><aslist><copy source="l.points.y" createComponentOfType="number" nComponents="2" /></aslist></p>
+    <p name="p4"><aslist><copy source="l.points.bad" createComponentOfType="number" nComponents="2" /></aslist></p>
+    <p name="p5"><aslist><copy source="l.points.xs[1]" createComponentOfType="number" nComponents="2" /></aslist></p>
+    <p name="p6"><aslist><copy source="l.points.xs[2]" createComponentOfType="number" nComponents="2" /></aslist></p>
+    <p name="p7"><aslist><copy source="l.points.xs[3]" createComponentOfType="number" nComponents="2" /></aslist></p>
+
+    <p name="p8"><math copySource="l.points[1].coords" /></p>
+    <p name="p9"><number copySource="l.points[1].x" /></p>
+    <p name="p10"><number copysource="l.points[1].y" /></p>
+    <p name="p11"><number copysource="l.points[1].bad" /></p>
+    <p name="p12"><number copysource="l.points[1].xs[1]" /></p>
+    <p name="p13"><number copysource="l.points[1].xs[2]" /></p>
+    <p name="p14"><number copysource="l.points[1].xs[3]" /></p>
+
+    <p name="p15"><math copysource="l.points[2].coords" /></p>
+    <p name="p16"><number copysource="l.points[2].x" /></p>
+    <p name="p17"><number copysource="l.points[2].y" /></p>
+    <p name="p18"><number copysource="l.points[2].bad" /></p>
+    <p name="p19"><number copysource="l.points[2].xs[1]" /></p>
+    <p name="p20"><number copysource="l.points[2].xs[2]" /></p>
+    <p name="p21"><number copysource="l.points[2].xs[3]" /></p>
+
+    <p name="p22"><math copysource="l.points[3].coords" /></p>
+    <p name="p23"><number copysource="l.points[3].x" /></p>
+    <p name="p24"><number copysource="l.points[3].y" /></p>
+    <p name="p25"><number copysource="l.points[3].bad" /></p>
+    <p name="p26"><number copysource="l.points[3].xs[1]" /></p>
+    <p name="p27"><number copysource="l.points[3].xs[2]" /></p>
+    <p name="p28"><number copysource="l.points[3].xs[3]" /></p>
+
+    <p name="p29"><aslist><copy source="l.points.coords.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p30"><aslist><copy source="l.points.x.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p31"><aslist><copy source="l.points.y.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p32"><aslist><copy source="l.points.bad.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p33"><aslist><copy source="l.points.xs[1].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p34"><aslist><copy source="l.points.xs[2].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p35"><aslist><copy source="l.points.xs[3].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    
+    <p name="p36"><text copysource="l.points[1].coords.latex" /></p>
+    <p name="p37"><text copysource="l.points[1].x.latex" /></p>
+    <p name="p38"><text copysource="l.points[1].y.latex" /></p>
+    <p name="p39"><text copysource="l.points[1].bad.latex" /></p>
+    <p name="p40"><text copysource="l.points[1].xs[1].latex" /></p>
+    <p name="p41"><text copysource="l.points[1].xs[2].latex" /></p>
+    <p name="p42"><text copysource="l.points[1].xs[3].latex" /></p>
+    
+    <p name="p43"><number copysource="l.points[1][1]" /></p>
+    <p name="p44"><number copysource="l.points[1][2]" /></p>
+    <p name="p45"><number copysource="l.points[2][1]" /></p>
+    <p name="p46"><number copysource="l.points[2][2]" /></p>
+    <p name="p47"><number copysource="l.points[0][1]" /></p>
+    <p name="p48"><number copysource="l.points[1][0]" /></p>
+    <p name="p49"><number copysource="l.points[1][3]" /></p>
+    <p name="p50"><number copysource="l.points[3][1]" /></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,34)');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(58,35)');
+    cy.get(cesc('#/p2')).should('have.text', '0.67, 0.63');
+    cy.get(cesc('#/p3')).should('have.text', '0.75, 0.6');
+    cy.get(cesc('#/p4')).should('have.text', 'NaN, NaN')
+    cy.get(cesc('#/p5')).should('have.text', '0.67, 0.63');
+    cy.get(cesc('#/p6')).should('have.text', '0.75, 0.6');
+    cy.get(cesc('#/p7')).should('have.text', 'NaN, NaN')
+
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,34)');
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p9')).should('have.text', '0.67');
+    cy.get(cesc('#/p10')).should('have.text', '0.75');
+    cy.get(cesc('#/p11')).should('have.text', 'NaN')
+    cy.get(cesc('#/p12')).should('have.text', '0.67');
+    cy.get(cesc('#/p13')).should('have.text', '0.75');
+    cy.get(cesc('#/p14')).should('have.text', 'NaN')
+
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(58,35)');
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p16')).should('have.text', '0.63');
+    cy.get(cesc('#/p17')).should('have.text', '0.6');
+    cy.get(cesc('#/p18')).should('have.text', 'NaN')
+    cy.get(cesc('#/p19')).should('have.text', '0.63');
+    cy.get(cesc('#/p20')).should('have.text', '0.6');
+    cy.get(cesc('#/p21')).should('have.text', 'NaN')
+
+    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get(cesc('#/p23')).should('have.text', 'NaN')
+    cy.get(cesc('#/p24')).should('have.text', 'NaN')
+    cy.get(cesc('#/p25')).should('have.text', 'NaN')
+    cy.get(cesc('#/p26')).should('have.text', 'NaN')
+    cy.get(cesc('#/p27')).should('have.text', 'NaN')
+    cy.get(cesc('#/p28')).should('have.text', 'NaN')
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( \\frac{2}{3}, \\frac{3}{4} \\right), \\left( \\frac{5}{8}, \\frac{3}{5} \\right)');
+    cy.get(cesc('#/p30')).should('have.text', '\\frac{2}{3}, \\frac{5}{8}');
+    cy.get(cesc('#/p31')).should('have.text', '\\frac{3}{4}, \\frac{3}{5}');
+    cy.get(cesc('#/p32')).should('have.text', ', ')
+    cy.get(cesc('#/p33')).should('have.text', '\\frac{2}{3}, \\frac{5}{8}');
+    cy.get(cesc('#/p34')).should('have.text', '\\frac{3}{4}, \\frac{3}{5}');
+    cy.get(cesc('#/p35')).should('have.text', ', ')
+
+    cy.get(cesc('#/p36')).should('have.text', '\\left( \\frac{2}{3}, \\frac{3}{4} \\right)');
+    cy.get(cesc('#/p37')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc('#/p38')).should('have.text', '\\frac{3}{4}');
+    cy.get(cesc('#/p39')).should('have.text', '')
+    cy.get(cesc('#/p40')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc('#/p41')).should('have.text', '\\frac{3}{4}');
+    cy.get(cesc('#/p42')).should('have.text', '')
+
+    cy.get(cesc('#/p43')).should('have.text', '0.67');
+    cy.get(cesc('#/p44')).should('have.text', '0.75');
+    cy.get(cesc('#/p45')).should('have.text', '0.63');
+    cy.get(cesc('#/p46')).should('have.text', '0.6');
+    cy.get(cesc('#/p47')).should('have.text', 'NaN');
+    cy.get(cesc('#/p48')).should('have.text', 'NaN');
+    cy.get(cesc('#/p49')).should('have.text', 'NaN');
+    cy.get(cesc('#/p50')).should('have.text', 'NaN');
+
+    cy.log('move points');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [7, 8],
+          point2coords: [9, 0]
+        }
+      })
+    })
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right), \\left( 9, 0 \\right)');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
+    cy.get(cesc('#/p2')).should('have.text', '7, 9');
+    cy.get(cesc('#/p3')).should('have.text', '8, 0');
+    cy.get(cesc('#/p4')).should('have.text', 'NaN, NaN')
+    cy.get(cesc('#/p5')).should('have.text', '7, 9');
+    cy.get(cesc('#/p6')).should('have.text', '8, 0');
+    cy.get(cesc('#/p7')).should('have.text', 'NaN, NaN')
+
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p9')).should('have.text', '7');
+    cy.get(cesc('#/p10')).should('have.text', '8');
+    cy.get(cesc('#/p11')).should('have.text', 'NaN')
+    cy.get(cesc('#/p12')).should('have.text', '7');
+    cy.get(cesc('#/p13')).should('have.text', '8');
+    cy.get(cesc('#/p14')).should('have.text', 'NaN')
+
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p16')).should('have.text', '9');
+    cy.get(cesc('#/p17')).should('have.text', '0');
+    cy.get(cesc('#/p18')).should('have.text', 'NaN')
+    cy.get(cesc('#/p19')).should('have.text', '9');
+    cy.get(cesc('#/p20')).should('have.text', '0');
+    cy.get(cesc('#/p21')).should('have.text', 'NaN')
+
+    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get(cesc('#/p23')).should('have.text', 'NaN')
+    cy.get(cesc('#/p24')).should('have.text', 'NaN')
+    cy.get(cesc('#/p25')).should('have.text', 'NaN')
+    cy.get(cesc('#/p26')).should('have.text', 'NaN')
+    cy.get(cesc('#/p27')).should('have.text', 'NaN')
+    cy.get(cesc('#/p28')).should('have.text', 'NaN')
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right), \\left( 9, 0 \\right)');
+    cy.get(cesc('#/p30')).should('have.text', '7, 9');
+    cy.get(cesc('#/p31')).should('have.text', '8, 0');
+    cy.get(cesc('#/p32')).should('have.text', ', ')
+    cy.get(cesc('#/p33')).should('have.text', '7, 9');
+    cy.get(cesc('#/p34')).should('have.text', '8, 0');
+    cy.get(cesc('#/p35')).should('have.text', ', ')
+
+    cy.get(cesc('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
+    cy.get(cesc('#/p37')).should('have.text', '7');
+    cy.get(cesc('#/p38')).should('have.text', '8');
+    cy.get(cesc('#/p39')).should('have.text', '')
+    cy.get(cesc('#/p40')).should('have.text', '7');
+    cy.get(cesc('#/p41')).should('have.text', '8');
+    cy.get(cesc('#/p42')).should('have.text', '')
+
+    cy.get(cesc('#/p43')).should('have.text', '7');
+    cy.get(cesc('#/p44')).should('have.text', '8');
+    cy.get(cesc('#/p45')).should('have.text', '9');
+    cy.get(cesc('#/p46')).should('have.text', '0');
+    cy.get(cesc('#/p47')).should('have.text', 'NaN');
+    cy.get(cesc('#/p48')).should('have.text', 'NaN');
+    cy.get(cesc('#/p49')).should('have.text', 'NaN');
+    cy.get(cesc('#/p50')).should('have.text', 'NaN');
+
+
+  });
+
   it('dot and array notation, multidimensional, dynamic', () => {
     cy.window().then(async (win) => {
       win.postMessage({

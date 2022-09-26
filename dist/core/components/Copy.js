@@ -1,6 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent.js';
 import * as serializeFunctions from '../utils/serializedStateProcessing.js';
-import { convertAttributesForComponentType, postProcessCopy } from '../utils/copy.js';
+import { convertAttributesForComponentType, postProcessCopy, verifyReplacementsMatchSpecifiedType } from '../utils/copy.js';
 import { flattenDeep, flattenLevels } from '../utils/array.js';
 import { getUniqueIdentifierFromBase } from '../utils/naming.js';
 import { deepClone } from '../utils/deepFunctions.js';
@@ -1038,9 +1038,10 @@ export default class Copy extends CompositeComponent {
 
       replacements = processResult.serializedComponents;
 
-      let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
+      let verificationResult = await verifyReplacementsMatchSpecifiedType({
         component,
         replacements,
+        assignNames,
         workspace, componentInfoObjects, compositeAttributesObj,
         flags
       });
@@ -1078,9 +1079,10 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
       });
 
-      let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
+      let verificationResult = await verifyReplacementsMatchSpecifiedType({
         component,
         replacements: processResult.serializedComponents,
+        assignNames,
         workspace, componentInfoObjects, compositeAttributesObj,
         flags
       });
@@ -1137,7 +1139,7 @@ export default class Copy extends CompositeComponent {
         }];
 
         let processResult = serializeFunctions.processAssignNames({
-          assignNames: await component.stateValues.effectiveAssignNames,
+          assignNames,
           serializedComponents: replacements,
           parentName: component.componentName,
           componentInfoObjects,
@@ -1151,9 +1153,10 @@ export default class Copy extends CompositeComponent {
 
       }
 
-      let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
+      let verificationResult = await verifyReplacementsMatchSpecifiedType({
         component,
         replacements,
+        assignNames,
         workspace, componentInfoObjects, compositeAttributesObj
       });
 
@@ -1255,9 +1258,10 @@ export default class Copy extends CompositeComponent {
     workspace.numNonStringReplacementsBySource = numNonStringReplacementsBySource;
     workspace.sourceNames = replacementSourceIdentities.map(x => x.componentName)
 
-    let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
+    let verificationResult = await verifyReplacementsMatchSpecifiedType({
       component,
       replacements,
+      assignNames,
       workspace, componentInfoObjects, compositeAttributesObj,
       flags
     });
@@ -1269,209 +1273,7 @@ export default class Copy extends CompositeComponent {
 
   }
 
-  static async verifyReplacementsMatchSpecifiedType({ component,
-    replacements, replacementChanges,
-    workspace, componentInfoObjects, compositeAttributesObj, flags
-  }) {
 
-    if (!component.attributes.createComponentOfType?.primitive
-      && !component.sharedParameters.compositesMustHaveAReplacement
-    ) {
-
-      return { replacements, replacementChanges }
-    }
-
-    let replacementsToWithhold = component.replacementsToWithhold;
-    let replacementTypes;
-
-    if (!replacementChanges) {
-      replacementTypes = replacements.map(x => x.componentType);
-
-      if (replacementTypes.length === 1 && replacementTypes[0] === "externalContent") {
-        // since looking for a particular componentType, filter out blank strings
-        replacementTypes = replacements[0].children
-          .filter(x => x.componentType || x.trim().length > 0)
-          .map(x => x.componentType)
-      }
-
-    } else {
-
-      replacementTypes = component.replacements.map(x => x.componentType);
-
-      // apply any replacement changes to replacementTypes and replacementsToWithhold
-      for (let change of replacementChanges) {
-
-        if (change.changeType === "add") {
-          if (change.replacementsToWithhold !== undefined) {
-            replacementsToWithhold = change.replacementsToWithhold;
-          }
-
-          if (!change.changeTopLevelReplacements) {
-            continue;
-          }
-
-          if (change.serializedReplacements) {
-
-            let numberToDelete = change.numberReplacementsToReplace;
-            if (!(numberToDelete > 0)) {
-              numberToDelete = 0;
-            }
-
-            let firstIndex = change.firstReplacementInd;
-
-            let newTypes = change.serializedReplacements.map(x => x.componentType);
-
-            replacementTypes.splice(firstIndex, numberToDelete, ...newTypes);
-
-          }
-
-        } else if (change.changeType === "delete") {
-
-          if (change.replacementsToWithhold !== undefined) {
-            replacementsToWithhold = change.replacementsToWithhold;
-          }
-
-          if (change.changeTopLevelReplacements) {
-            let firstIndex = change.firstReplacementInd;
-            let numberToDelete = change.numberReplacementsToDelete;
-            replacementTypes.splice(firstIndex, numberToDelete);
-          }
-
-        } else if (change.changeType === "changeReplacementsToWithhold") {
-          if (change.replacementsToWithhold !== undefined) {
-            replacementsToWithhold = change.replacementsToWithhold;
-          }
-        }
-
-      }
-    }
-
-    if (replacementsToWithhold > 0) {
-      replacementTypes = replacementTypes.slice(0, replacementTypes.length - replacementsToWithhold);
-    }
-
-    if (!(component.attributes.createComponentOfType?.primitive)
-      && component.sharedParameters.compositesMustHaveAReplacement
-      && replacementTypes.length > 0
-    ) {
-      // no changes since only reason we got this far was that
-      // composites must have a replacement
-      // and we have at least one replacement
-      return { replacements, replacementChanges }
-    }
-
-    let requiredComponentType = component.attributes.createComponentOfType?.primitive;
-
-    let requiredLength = await component.stateValues.nComponentsSpecified;
-
-    if (!requiredComponentType) {
-      // must have be here due to composites needing a replacement
-      requiredComponentType = component.sharedParameters.compositesDefaultReplacementType;
-      if (!requiredComponentType) {
-        throw Error(`A component class specified descendantCompositesMustHaveAReplacement but didn't specify descendantCompositesDefaultReplacementType`)
-      }
-      requiredLength = 1;
-    }
-
-    requiredComponentType = componentInfoObjects.componentTypeLowerCaseMapping[requiredComponentType.toLowerCase()];
-
-    if (replacementTypes.length !== requiredLength ||
-      !replacementTypes.every(x => x === requiredComponentType)) {
-
-      // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
-
-
-      // if require a single component and have a single replacement,
-      // but the only discrepancy is that it is the wrong type,
-      // then wrap that replacement with the blank component we are creating,
-      // i.e., add the current replacement as the child of the new component
-
-      let wrapExistingReplacements = requiredLength === 1 && replacementTypes.length === 1
-        && !(replacementsToWithhold > 0) && workspace.sourceNames.length === 1;
-
-      let uniqueIdentifiersUsed, originalReplacements;
-
-      if (wrapExistingReplacements) {
-        originalReplacements = replacements;
-      } else {
-        // since clearing out all replacements, reset all workspace variables
-        workspace.numReplacementsBySource = [];
-        workspace.numNonStringReplacementsBySource = [];
-        workspace.propVariablesCopiedBySource = [];
-        workspace.sourceNames = [];
-        workspace.uniqueIdentifiersUsedBySource = {};
-
-        uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
-
-      }
-
-      let newNamespace = component.attributes.newNamespace?.primitive;
-
-      replacements = []
-      for (let i = 0; i < requiredLength; i++) {
-
-        let attributesFromComposite = convertAttributesForComponentType({
-          attributes: component.attributes,
-          componentType: requiredComponentType,
-          componentInfoObjects,
-          compositeAttributesObj,
-          compositeCreatesNewNamespace: newNamespace,
-          flags
-        });
-
-        let uniqueIdentifierBase = requiredComponentType + "|empty" + i;
-        let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, workspace.uniqueIdentifiersUsedBySource[0]);
-        replacements.push({
-          componentType: requiredComponentType,
-          attributes: attributesFromComposite,
-          uniqueIdentifier,
-        });
-
-      }
-
-      if (wrapExistingReplacements) {
-        replacements[0].children = originalReplacements;
-      }
-
-      let processResult = serializeFunctions.processAssignNames({
-        assignNames: await component.stateValues.effectiveAssignNames,
-        serializedComponents: replacements,
-        parentName: component.componentName,
-        parentCreatesNewNamespace: newNamespace,
-        componentInfoObjects,
-      });
-
-      replacements = processResult.serializedComponents;
-
-      workspace.numReplacementsBySource.push(replacements.length)
-      workspace.numNonStringReplacementsBySource.push(replacements.filter(x => typeof x !== "string").length)
-
-      if (replacementChanges) {
-        replacementChanges = [];
-        if (component.replacementsToWithhold > 0) {
-          replacementChanges.push({
-            changeType: "changeReplacementsToWithhold",
-            replacementsToWithhold: 0,
-          });
-        }
-
-        let numberReplacementsToReplace = 0;
-        if (component.replacements) {
-          numberReplacementsToReplace = component.replacements.length;
-        }
-
-        replacementChanges.push({
-          changeType: "add",
-          changeTopLevelReplacements: true,
-          firstReplacementInd: 0,
-          numberReplacementsToReplace,
-          serializedReplacements: replacements,
-        })
-      }
-    }
-
-    return { replacements, replacementChanges }
-  }
 
   static async createReplacementForSource({
     component,
@@ -1707,6 +1509,8 @@ export default class Copy extends CompositeComponent {
 
     let compositeAttributesObj = this.createAttributesObject();
 
+    let assignNames = await component.stateValues.effectiveAssignNames;
+
     let replacementSourceIdentities = await component.stateValues.replacementSourceIdentities;
     if (!await component.stateValues.targetComponent || !replacementSourceIdentities) {
 
@@ -1739,9 +1543,10 @@ export default class Copy extends CompositeComponent {
         workspace.propVariablesCopiedBySource = [];
 
 
-        let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
+        let verificationResult = await verifyReplacementsMatchSpecifiedType({
           component,
           replacementChanges,
+          assignNames,
           workspace, componentInfoObjects, compositeAttributesObj,
           flags
         });
@@ -1773,9 +1578,10 @@ export default class Copy extends CompositeComponent {
           replacementChanges.push(replacementInstruction);
         }
 
-        let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
+        let verificationResult = await verifyReplacementsMatchSpecifiedType({
           component,
           replacementChanges,
+          assignNames,
           workspace, componentInfoObjects, compositeAttributesObj,
           flags
         });
@@ -2148,9 +1954,10 @@ export default class Copy extends CompositeComponent {
     workspace.propVariablesCopiedBySource = propVariablesCopiedBySource;
 
 
-    let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
+    let verificationResult = await verifyReplacementsMatchSpecifiedType({
       component,
       replacementChanges,
+      assignNames,
       workspace, componentInfoObjects, compositeAttributesObj,
       flags
     });

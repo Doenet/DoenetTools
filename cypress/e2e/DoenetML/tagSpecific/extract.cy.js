@@ -1533,4 +1533,28 @@ describe('Extract Tag Tests', function () {
 
   });
 
+  it('createComponentOfType adapts result', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <extract prop="x" assignNames="e1"><vector>(1/2,2/3)</vector></extract>
+    <extract prop="x" assignNames="e2" createComponentOfType="number"><vector>(3/4,4/5)</vector></extract>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/e1 .mjx-mrow").should('contain.text', '12')
+    cy.get("#\\/e2").should('have.text', '0.75')
+
+    cy.log(`check properties`);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/e1'].stateValues.value).eqls(["/", 1,2])
+      expect(stateVariables['/e2'].stateValues.value).eq(0.75);
+    })
+
+  });
+
 });

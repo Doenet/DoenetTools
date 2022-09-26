@@ -270,6 +270,18 @@ function buildRows({
         continue;
       }
 
+      let score = '';
+      // console.log("assignment",assignment)
+
+      if (assignment.gradeCategory){
+        const totalPointsOrPercent = Number(assignment.totalPointsOrPercent)
+        let pointsAwarded = Math.round(assignment.credit * totalPointsOrPercent * 100) / 100;
+        if (assignment.creditOverride){
+          pointsAwarded = Math.round(assignment.creditOverride * totalPointsOrPercent * 100) / 100;
+        }
+        score = `${pointsAwarded}/${totalPointsOrPercent}`;
+      }
+
       let checkbox = (
         <Checkbox
           checked={checked}
@@ -355,6 +367,16 @@ function buildRows({
                 textAlign: 'center',
               }}
             >
+              {score}
+            </td>
+            <td
+              style={{
+                backgroundColor: bgColor,
+                padding: '8px',
+                borderBottom: '2px solid black',
+                textAlign: 'center',
+              }}
+            >
               {checkbox}
             </td>
           </tr>,
@@ -394,6 +416,16 @@ function buildRows({
               onClick={oneClick}
             >
               {displayDueDate}
+            </td>
+            <td
+              style={{
+                backgroundColor: bgColor,
+                padding: '8px',
+                borderBottom: '2px solid black',
+                textAlign: 'center',
+              }}
+            >
+              {score}
             </td>
             <td
               style={{
@@ -445,6 +477,7 @@ export default function Next7Days({ courseId }) {
       params: { courseId },
     });
     // console.log('Next7 data: ', data);
+    // console.log('Next7 first assignment: ', data.assignments[0]);
     if (!data.success) {
       setProblemMessage(data.message);
       return;
@@ -678,7 +711,7 @@ export default function Next7Days({ courseId }) {
         <tr>
           <th
             style={{
-              width: '150px',
+              width: '100px',
               padding: '8px',
               textAlign: 'left',
               borderBottom: '2px solid black',
@@ -715,6 +748,16 @@ export default function Next7Days({ courseId }) {
             }}
           >
             Due
+          </th>
+          <th
+            style={{
+              width: '50px',
+              padding: '8px',
+              textAlign: 'left',
+              borderBottom: '2px solid black',
+            }}
+          >
+            Score
           </th>
           <th
             style={{

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
-import PageViewer from "../../viewer/PageViewer.js";
+import PageViewer, {scrollableContainerAtom} from "../../viewer/PageViewer.js";
 import useEventListener from "../../_utils/hooks/useEventListener.js";
 import {
   useRecoilValue,
@@ -16,6 +16,7 @@ import {
 } from "../ToolHandlers/CourseToolHandler.js";
 import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {useLocation} from "../../_snowpack/pkg/react-router.js";
 export const viewerDoenetMLAtom = atom({
   key: "viewerDoenetMLAtom",
   default: ""
@@ -74,6 +75,10 @@ export default function EditorViewer() {
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const {canUpload} = useRecoilValue(profileAtom);
   const updateViewer = useUpdateViewer();
+  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
+  let location = useLocation();
+  const previousLocations = useRef({});
+  const currentLocationKey = useRef(null);
   useSetCourseIdFromDoenetId(effectiveDoenetId);
   useInitCourseItems(courseId);
   let pageInitiated = false;
@@ -131,6 +136,26 @@ export default function EditorViewer() {
       updateViewer();
     }
   });
+  useEffect(() => {
+    let foundNewInPrevious = false;
+    if (currentLocationKey.current !== location.key) {
+      if (location.state?.previousScrollPosition !== void 0 && currentLocationKey.current) {
+        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition;
+      }
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+        if (previousLocations.current[location.key]?.lastScrollPosition !== void 0) {
+          document.getElementById("mainPanel").scroll({top: previousLocations.current[location.key].lastScrollPosition});
+        }
+      }
+      previousLocations.current[location.key] = {...location};
+      currentLocationKey.current = location.key;
+    }
+  }, [location]);
+  useEffect(() => {
+    const mainPanel = document.getElementById("mainPanel");
+    setScrollableContainer(mainPanel);
+  }, []);
   if (courseId === "__not_found__") {
     return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
   } else if (effectivePageId !== initializedPageId) {

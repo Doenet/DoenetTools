@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import PageViewer from "../../viewer/PageViewer.js";
+import React, {useEffect, useRef, useState} from "../../_snowpack/pkg/react.js";
+import PageViewer, {scrollableContainerAtom} from "../../viewer/PageViewer.js";
 import useEventListener from "../../_utils/hooks/useEventListener.js";
 import {
   useRecoilValue,
@@ -17,6 +17,7 @@ import axios from "../../_snowpack/pkg/axios.js";
 import {editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom, useUpdateViewer} from "./EditorViewer.js";
 import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
 import {parseActivityDefinition} from "../../_utils/activityUtils.js";
+import {useLocation} from "../../_snowpack/pkg/react-router.js";
 export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
@@ -28,6 +29,10 @@ export default function EditorViewer() {
   const [pageCid, setPageCid] = useState(null);
   const updateViewer = useUpdateViewer();
   const [errMsg, setErrMsg] = useState(null);
+  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
+  let location = useLocation();
+  const previousLocations = useRef({});
+  const currentLocationKey = useRef(null);
   useEffect(() => {
     const prevTitle = document.title;
     const setTitle = async () => {
@@ -67,6 +72,26 @@ export default function EditorViewer() {
       document.title = prevTitle;
     };
   }, [doenetId]);
+  useEffect(() => {
+    let foundNewInPrevious = false;
+    if (currentLocationKey.current !== location.key) {
+      if (location.state?.previousScrollPosition !== void 0 && currentLocationKey.current) {
+        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition;
+      }
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+        if (previousLocations.current[location.key]?.lastScrollPosition !== void 0) {
+          document.getElementById("mainPanel").scroll({top: previousLocations.current[location.key].lastScrollPosition});
+        }
+      }
+      previousLocations.current[location.key] = {...location};
+      currentLocationKey.current = location.key;
+    }
+  }, [location]);
+  useEffect(() => {
+    const mainPanel = document.getElementById("mainPanel");
+    setScrollableContainer(mainPanel);
+  }, []);
   let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageCid2) => {
     const doenetML = await retrieveTextFileForCid(pageCid2, "doenet");
     set(updateTextEditorDoenetMLAtom, doenetML);
