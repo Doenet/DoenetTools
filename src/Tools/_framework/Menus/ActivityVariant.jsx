@@ -1,8 +1,9 @@
 import React from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+import { activityVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { pageToolViewAtom } from '../NewToolRoot';
-import { activityVariantPanelAtom } from '../ToolHandlers/CourseToolHandler';
+
 
 export default function ActivityVariant(props) {
 

@@ -1,8 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { flattenDeep } from '../utils/array';
-import { getUniqueIdentifierFromBase } from '../utils/naming';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { replacementFromProp } from './Copy';
+import { verifyReplacementsMatchSpecifiedType } from '../utils/copy';
 
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
@@ -65,6 +64,42 @@ export default class Extract extends CompositeComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.nComponentsSpecified = {
+      returnDependencies: () => ({
+        nComponentsAttr: {
+          dependencyType: "attributePrimitive",
+          attributeName: "nComponents"
+        },
+        typeAttr: {
+          dependencyType: "attributePrimitive",
+          attributeName: "createComponentOfType"
+        }
+      }),
+      definition({ dependencyValues, componentInfoObjects }) {
+        let nComponentsSpecified;
+
+        if (dependencyValues.typeAttr) {
+          let componentType = componentInfoObjects.
+            componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+
+          if (!(componentType in componentInfoObjects.allComponentClasses)) {
+            throw Error(`Invalid componentType ${dependencyValues.typeAttr} of copy.`)
+          }
+          if (dependencyValues.nComponentsAttr !== null) {
+            nComponentsSpecified = dependencyValues.nComponentsAttr
+          } else {
+            nComponentsSpecified = 1;
+          }
+        } else if (dependencyValues.nComponentsAttr !== null) {
+          throw Error(`You must specify createComponentOfType when specifying nComponents for a copy.`)
+        } else {
+          nComponentsSpecified = null;
+        }
+
+        return { setValue: { nComponentsSpecified } };
+      }
+    }
 
     stateVariableDefinitions.link = {
       returnDependencies: () => ({}),
@@ -234,9 +269,21 @@ export default class Extract extends CompositeComponent {
     }
 
     workspace.numReplacementsBySource = numReplacementsBySource;
+    workspace.numNonStringReplacementsBySource = [...numReplacementsBySource]
     workspace.sourceNames = sourceComponents.map(x => x.componentName)
 
-    return { replacements };
+    let verificationResult = await verifyReplacementsMatchSpecifiedType({
+      component,
+      replacements,
+      assignNames: component.doenetAttributes.assignNames,
+      workspace, componentInfoObjects, compositeAttributesObj,
+      flags
+    });
+
+    // console.log(`serialized replacements for ${component.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(verificationResult.replacements)))
+
+    return { replacements: verificationResult.replacements };
 
   }
 
@@ -511,14 +558,24 @@ export default class Extract extends CompositeComponent {
 
 
     workspace.numReplacementsBySource = numReplacementsBySource;
+    workspace.numNonStringReplacementsBySource = [...numReplacementsBySource]
     workspace.sourceNames = sourceComponents.map(x => x.componentName)
     workspace.propVariablesCopiedBySource = propVariablesCopiedBySource;
 
+    let verificationResult = await verifyReplacementsMatchSpecifiedType({
+      component,
+      replacementChanges,
+      assignNames: component.doenetAttributes.assignNames,
+      workspace, componentInfoObjects, compositeAttributesObj,
+      flags
+    });
+
+
     // console.log("replacementChanges");
-    // console.log(replacementChanges);
+    // console.log(verificationResult.replacementChanges);
 
+    return verificationResult.replacementChanges;
 
-    return replacementChanges;
 
   }
 

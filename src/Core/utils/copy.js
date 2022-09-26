@@ -1,5 +1,5 @@
 import { getUniqueIdentifierFromBase } from "./naming";
-import { applyMacros, applySugar, componentFromAttribute, removeBlankStringChildren } from "./serializedStateProcessing";
+import { applyMacros, applySugar, componentFromAttribute, processAssignNames, removeBlankStringChildren } from "./serializedStateProcessing";
 
 export function postProcessCopy({ serializedComponents, componentName,
   addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
@@ -257,4 +257,213 @@ export function convertAttributesForComponentType({
 
   return newAttributes;
 
+}
+
+export async function verifyReplacementsMatchSpecifiedType({ component,
+  replacements, replacementChanges,
+  assignNames,
+  workspace, componentInfoObjects, compositeAttributesObj, flags
+}) {
+
+  if (!component.attributes.createComponentOfType?.primitive
+    && !component.sharedParameters.compositesMustHaveAReplacement
+  ) {
+
+    return { replacements, replacementChanges }
+  }
+
+  let replacementsToWithhold = component.replacementsToWithhold;
+  let replacementTypes;
+
+  if (!replacementChanges) {
+    replacementTypes = replacements.map(x => x.componentType);
+
+    if (replacementTypes.length === 1 && replacementTypes[0] === "externalContent") {
+      // since looking for a particular componentType, filter out blank strings
+      replacementTypes = replacements[0].children
+        .filter(x => x.componentType || x.trim().length > 0)
+        .map(x => x.componentType)
+    }
+
+  } else {
+
+    replacementTypes = component.replacements.map(x => x.componentType);
+
+    // apply any replacement changes to replacementTypes and replacementsToWithhold
+    for (let change of replacementChanges) {
+
+      if (change.changeType === "add") {
+        if (change.replacementsToWithhold !== undefined) {
+          replacementsToWithhold = change.replacementsToWithhold;
+        }
+
+        if (!change.changeTopLevelReplacements) {
+          continue;
+        }
+
+        if (change.serializedReplacements) {
+
+          let numberToDelete = change.numberReplacementsToReplace;
+          if (!(numberToDelete > 0)) {
+            numberToDelete = 0;
+          }
+
+          let firstIndex = change.firstReplacementInd;
+
+          let newTypes = change.serializedReplacements.map(x => x.componentType);
+
+          replacementTypes.splice(firstIndex, numberToDelete, ...newTypes);
+
+        }
+
+      } else if (change.changeType === "delete") {
+
+        if (change.replacementsToWithhold !== undefined) {
+          replacementsToWithhold = change.replacementsToWithhold;
+        }
+
+        if (change.changeTopLevelReplacements) {
+          let firstIndex = change.firstReplacementInd;
+          let numberToDelete = change.numberReplacementsToDelete;
+          replacementTypes.splice(firstIndex, numberToDelete);
+        }
+
+      } else if (change.changeType === "changeReplacementsToWithhold") {
+        if (change.replacementsToWithhold !== undefined) {
+          replacementsToWithhold = change.replacementsToWithhold;
+        }
+      }
+
+    }
+  }
+
+  if (replacementsToWithhold > 0) {
+    replacementTypes = replacementTypes.slice(0, replacementTypes.length - replacementsToWithhold);
+  }
+
+  if (!(component.attributes.createComponentOfType?.primitive)
+    && component.sharedParameters.compositesMustHaveAReplacement
+    && replacementTypes.length > 0
+  ) {
+    // no changes since only reason we got this far was that
+    // composites must have a replacement
+    // and we have at least one replacement
+    return { replacements, replacementChanges }
+  }
+
+  let requiredComponentType = component.attributes.createComponentOfType?.primitive;
+
+  let requiredLength = await component.stateValues.nComponentsSpecified;
+
+  if (!requiredComponentType) {
+    // must have be here due to composites needing a replacement
+    requiredComponentType = component.sharedParameters.compositesDefaultReplacementType;
+    if (!requiredComponentType) {
+      throw Error(`A component class specified descendantCompositesMustHaveAReplacement but didn't specify descendantCompositesDefaultReplacementType`)
+    }
+    requiredLength = 1;
+  }
+
+  requiredComponentType = componentInfoObjects.componentTypeLowerCaseMapping[requiredComponentType.toLowerCase()];
+
+  if (replacementTypes.length !== requiredLength ||
+    !replacementTypes.every(x => x === requiredComponentType)) {
+
+    // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
+
+
+    // if the only discrepancy is the components are the wrong type,
+    // with number of sources matching the number of components
+    // then wrap that each replacement with a blank component we are creating,
+    // i.e., add each current replacement as the child of a new component
+
+    let wrapExistingReplacements = replacementTypes.length === requiredLength
+      && !(replacementsToWithhold > 0) && workspace.sourceNames.length === requiredLength;
+
+    // let uniqueIdentifiersUsed;
+    let originalReplacements;
+
+    if (wrapExistingReplacements) {
+      originalReplacements = replacements;
+    } else {
+      // since clearing out all replacements, reset all workspace variables
+      workspace.numReplacementsBySource = [];
+      workspace.numNonStringReplacementsBySource = [];
+      workspace.propVariablesCopiedBySource = [];
+      workspace.sourceNames = [];
+      workspace.uniqueIdentifiersUsedBySource = {};
+
+      workspace.uniqueIdentifiersUsedBySource[0] = [];
+      // uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
+
+    }
+
+    let newNamespace = component.attributes.newNamespace?.primitive;
+
+    replacements = []
+    for (let i = 0; i < requiredLength; i++) {
+
+      let attributesFromComposite = convertAttributesForComponentType({
+        attributes: component.attributes,
+        componentType: requiredComponentType,
+        componentInfoObjects,
+        compositeAttributesObj,
+        compositeCreatesNewNamespace: newNamespace,
+        flags
+      });
+
+      let uniqueIdentifierBase = requiredComponentType + "|empty" + i;
+      let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, workspace.uniqueIdentifiersUsedBySource[0]);
+      replacements.push({
+        componentType: requiredComponentType,
+        attributes: attributesFromComposite,
+        uniqueIdentifier,
+      });
+
+    }
+
+    if (wrapExistingReplacements) {
+      for (let [ind, repl] of replacements.entries()) {
+        repl.children = [originalReplacements[ind]];
+      }
+    }
+
+    let processResult = processAssignNames({
+      assignNames,
+      serializedComponents: replacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: newNamespace,
+      componentInfoObjects,
+    });
+
+    replacements = processResult.serializedComponents;
+
+    workspace.numReplacementsBySource.push(replacements.length)
+    workspace.numNonStringReplacementsBySource.push(replacements.filter(x => typeof x !== "string").length)
+
+    if (replacementChanges) {
+      replacementChanges = [];
+      if (component.replacementsToWithhold > 0) {
+        replacementChanges.push({
+          changeType: "changeReplacementsToWithhold",
+          replacementsToWithhold: 0,
+        });
+      }
+
+      let numberReplacementsToReplace = 0;
+      if (component.replacements) {
+        numberReplacementsToReplace = component.replacements.length;
+      }
+
+      replacementChanges.push({
+        changeType: "add",
+        changeTopLevelReplacements: true,
+        firstReplacementInd: 0,
+        numberReplacementsToReplace,
+        serializedReplacements: replacements,
+      })
+    }
+  }
+
+  return { replacements, replacementChanges }
 }

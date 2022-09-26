@@ -371,6 +371,13 @@ export default class Video extends BlockComponent {
 
     let previousSegments = await this.stateValues.segmentsWatched;
     let segmentsWatched;
+
+    if (beginTime < 1) {
+      beginTime = 0;  // get credit for the beginning even though it typically doesn't say 0
+    } else if (endTime > duration - 2) {
+      endTime = duration;  // get credit for the end even though it typically doesn't get to duration
+    }
+
     if (!previousSegments) {
       segmentsWatched = [[beginTime, endTime]]
     } else {
@@ -378,15 +385,15 @@ export default class Video extends BlockComponent {
       let addedNew = false;
 
       // if merge new segment with previous segments if it almost overlaps
-      // Note: include 0.2 buffer since there is variation in the timestamps youtube reports
+      // Note: include 1 second buffer since there is variation in the timestamps youtube reports
       // when pause and then continue
       for (let [ind, seg] of previousSegments.entries()) {
-        if (endTime < seg[0] - 0.2) {
+        if (endTime < seg[0] - 1) {
           segmentsWatched.push([beginTime, endTime])
           segmentsWatched.push(...previousSegments.slice(ind));
           addedNew = true;
           break;
-        } else if (beginTime > seg[1] + 0.2) {
+        } else if (beginTime > seg[1] + 1) {
           segmentsWatched.push(seg);
           continue;
         }

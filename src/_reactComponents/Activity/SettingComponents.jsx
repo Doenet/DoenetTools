@@ -23,9 +23,9 @@ import ActionButtonGroup from '../PanelHeaderComponents/ActionButtonGroup';
 import ActionButton from '../PanelHeaderComponents/ActionButton';
 import { toastType, useToast } from '@Toast';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
-import { useSaveDraft } from '../../Tools/_framework/ToolPanels/DoenetMLEditor';
-import { prerenderActivity } from '../../_utils/activityUtils';
+import { prerenderActivity } from '../../_utils/activtyWebWorker';
 import Textfield from '../PanelHeaderComponents/Textfield';
+import { useSaveDraft } from '../../_utils/hooks/useSaveDraft';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -657,7 +657,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
         vertical
         width="menu"
         value={textValue}
-        dataTest="Item Weights"
+        data-test="Item Weights"
         onChange={(e) => {
           setTextValue(e.target.value);
         }}

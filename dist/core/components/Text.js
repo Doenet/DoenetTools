@@ -7,6 +7,10 @@ export default class Text extends InlineComponent {
 
   static variableForPlainMacro = "value";
 
+  // even if inside a component that turned on descendantCompositesMustHaveAReplacement
+  // don't required composite replacements
+  static descendantCompositesMustHaveAReplacement = false;
+
 
   static returnChildGroups() {
 

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "../_snowpack/pkg/react.js";
 import {retrieveTextFileForCid} from "../core/utils/retrieveTextFile.js";
-import PageViewer from "./PageViewer.js";
+import PageViewer, {scrollableContainerAtom} from "./PageViewer.js";
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faExclamationCircle} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import axios from "../_snowpack/pkg/axios.js";
@@ -18,10 +18,6 @@ import ActionButton from "../_reactComponents/PanelHeaderComponents/ActionButton
 import ButtonGroup from "../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
-  default: null
-});
-export const scrollableContainerAtom = atom({
-  key: "scollParentAtom",
   default: null
 });
 export const currentPageAtom = atom({
@@ -105,6 +101,7 @@ export default function ActivityViewer(props) {
   const currentLocationKey = useRef(null);
   const viewerWasUnmounted = useRef(false);
   const [finishAssessmentMessageOpen, setFinishAssessmentMessageOpen] = useState(false);
+  const [processingSubmitAll, setProcessingSubmitAll] = useState(false);
   let navigate = useNavigate();
   useEffect(() => {
     return () => {
@@ -419,7 +416,7 @@ export default function ActivityViewer(props) {
           setRecoilCurrentPage(activityState.currentPage);
         }
         newVariantIndex = resp.data.variantIndex;
-        setVariantIndex(variantIndex);
+        setVariantIndex(newVariantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
         setOrder(newActivityInfo.orderWithCids);
         setVariantsByPage(newActivityInfo.variantsByPage);
@@ -484,7 +481,7 @@ export default function ActivityViewer(props) {
     if (!data.success) {
       return {localInfo, cid, attemptNumber};
     }
-    idb_set(`${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`, data.saveId);
+    await idb_set(`${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`, data.saveId);
     if (data.stateOverwritten) {
       let newLocalInfo = {
         activityState: JSON.parse(data.activityState),
@@ -492,7 +489,7 @@ export default function ActivityViewer(props) {
         saveId: data.saveId,
         variantIndex: data.variantIndex
       };
-      idb_set(`${props.doenetId}|${data.attemptNumber}|${data.cid}`, newLocalInfo);
+      await idb_set(`${props.doenetId}|${data.attemptNumber}|${data.cid}`, newLocalInfo);
       return {
         changedOnDevice: data.device,
         newLocalInfo,
@@ -512,7 +509,7 @@ export default function ActivityViewer(props) {
     pageAtPreviousSave.current = currentPageRef.current;
     let saveId = nanoid();
     if (props.flags.allowLocalState) {
-      idb_set(`${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}`, {
+      await idb_set(`${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}`, {
         activityInfo: activityInfo.current,
         activityState: {currentPage: currentPageRef.current},
         saveId,
@@ -534,7 +531,7 @@ export default function ActivityViewer(props) {
       updateDataOnContentChange: props.updateDataOnContentChange
     };
     changesToBeSaved.current = true;
-    saveChangesToDatabase(overrideThrottle);
+    await saveChangesToDatabase(overrideThrottle);
   }
   async function saveChangesToDatabase(overrideThrottle) {
     if (!changesToBeSaved.current) {
@@ -578,7 +575,7 @@ export default function ActivityViewer(props) {
     }
     serverSaveId.current = data.saveId;
     if (props.flags.allowLocalState) {
-      idb_set(`${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}|ServerSaveId`, data.saveId);
+      await idb_set(`${props.doenetId}|${attemptNumberRef.current}|${cidRef.current}|ServerSaveId`, data.saveId);
     }
     if (data.stateOverwritten) {
       if (attemptNumberRef.current !== Number(data.attemptNumber)) {
@@ -631,7 +628,7 @@ export default function ActivityViewer(props) {
     } catch (e) {
     }
     if (viewerWasUnmounted.current) {
-      saveState({overrideThrottle: true, overrideStage: true});
+      await saveState({overrideThrottle: true, overrideStage: true});
     }
   }
   function clickNext() {
@@ -720,15 +717,33 @@ export default function ActivityViewer(props) {
     }
   }
   async function submitAllAndFinishAssessment() {
+    setProcessingSubmitAll(true);
+    let terminatePromises = [];
     for (let coreWorker of pageInfo.pageCoreWorker) {
-      coreWorker?.postMessage({
-        messageType: "submitAllAnswers"
-      });
-      coreWorker?.postMessage({
-        messageType: "terminate"
-      });
+      if (coreWorker) {
+        let actionId = nanoid();
+        let resolveTerminatePromise;
+        terminatePromises.push(new Promise((resolve, reject) => {
+          resolveTerminatePromise = resolve;
+        }));
+        coreWorker.onmessage = function(e) {
+          if (e.data.messageType === "resolveAction" && e.data.args.actionId === actionId) {
+            coreWorker.postMessage({
+              messageType: "terminate"
+            });
+          } else if (e.data.messageType === "terminated") {
+            resolveTerminatePromise();
+          }
+        };
+        coreWorker.postMessage({
+          messageType: "submitAllAnswers",
+          args: {actionId}
+        });
+      }
     }
-    window.location.href = "/exam?tool=endExam";
+    await Promise.all(terminatePromises);
+    await saveState({overrideThrottle: true});
+    window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
   }
   if (errMsg !== null) {
     let errorIcon = /* @__PURE__ */ React.createElement("span", {
@@ -819,58 +834,63 @@ export default function ActivityViewer(props) {
   saveState();
   let title = /* @__PURE__ */ React.createElement("h1", null, activityDefinition.title);
   let pages = [];
-  for (let [ind, page] of order.entries()) {
-    let thisPageIsActive = false;
-    if (props.paginate) {
-      if (ind === currentPage - 1) {
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
-        thisPageIsActive = true;
-      } else if (pageInfo.pageCoreWorker[currentPage - 1] && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage]) && ind === currentPage - 2) {
-        thisPageIsActive = true;
+  if (order && variantsByPage) {
+    for (let [ind, page] of order.entries()) {
+      let thisPageIsActive = false;
+      if (props.paginate) {
+        if (ind === currentPage - 1) {
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1] && ind === currentPage) {
+          thisPageIsActive = true;
+        } else if (pageInfo.pageCoreWorker[currentPage - 1] && (currentPage === nPages || pageInfo.pageCoreWorker[currentPage]) && ind === currentPage - 2) {
+          thisPageIsActive = true;
+        }
+      } else {
+        thisPageIsActive = pageInfo.pageIsActive[ind];
       }
-    } else {
-      thisPageIsActive = pageInfo.pageIsActive[ind];
+      let prefixForIds = nPages > 1 ? `page${ind + 1}` : "";
+      let pageViewer = /* @__PURE__ */ React.createElement(PageViewer, {
+        userId: props.userId,
+        doenetId: props.doenetId,
+        activityCid: cid,
+        cid: page.cid,
+        doenetML: page.doenetML,
+        pageNumber: (ind + 1).toString(),
+        previousComponentTypeCounts: previousComponentTypeCountsByPage.current[ind],
+        pageIsActive: thisPageIsActive,
+        pageIsCurrent: ind === currentPage - 1,
+        itemNumber: ind + 1,
+        attemptNumber,
+        forceDisable: props.forceDisable,
+        forceShowCorrectness: props.forceShowCorrectness,
+        forceShowSolution: props.forceShowSolution,
+        flags,
+        activityVariantIndex: variantIndex,
+        requestedVariantIndex: variantsByPage[ind],
+        unbundledCore: props.unbundledCore,
+        updateCreditAchievedCallback: props.updateCreditAchievedCallback,
+        setIsInErrorState: props.setIsInErrorState,
+        updateAttemptNumber: props.updateAttemptNumber,
+        saveStateCallback: receivedSaveFromPage,
+        updateDataOnContentChange: props.updateDataOnContentChange,
+        coreCreatedCallback: (coreWorker) => coreCreatedCallback(ind, coreWorker),
+        renderersInitializedCallback: () => pageRenderedCallback(ind),
+        hideWhenNotCurrent: props.paginate,
+        prefixForIds
+      });
+      if (!props.paginate) {
+        pageViewer = /* @__PURE__ */ React.createElement(VisibilitySensor, {
+          partialVisibility: true,
+          offset: {top: -200, bottom: -200},
+          requireContentsSize: false,
+          onChange: (isVisible) => onChangeVisibility(isVisible, ind)
+        }, /* @__PURE__ */ React.createElement("div", null, pageViewer));
+      }
+      pages.push(/* @__PURE__ */ React.createElement("div", {
+        key: `page${ind + 1}`,
+        id: `page${ind + 1}`
+      }, pageViewer));
     }
-    let prefixForIds = nPages > 1 ? `page${ind + 1}` : "";
-    let pageViewer = /* @__PURE__ */ React.createElement(PageViewer, {
-      userId: props.userId,
-      doenetId: props.doenetId,
-      activityCid: cid,
-      cid: page.cid,
-      doenetML: page.doenetML,
-      pageNumber: (ind + 1).toString(),
-      previousComponentTypeCounts: previousComponentTypeCountsByPage.current[ind],
-      pageIsActive: thisPageIsActive,
-      pageIsCurrent: ind === currentPage - 1,
-      itemNumber: ind + 1,
-      attemptNumber,
-      flags,
-      activityVariantIndex: variantIndex,
-      requestedVariantIndex: variantsByPage[ind],
-      unbundledCore: props.unbundledCore,
-      updateCreditAchievedCallback: props.updateCreditAchievedCallback,
-      setIsInErrorState: props.setIsInErrorState,
-      updateAttemptNumber: props.updateAttemptNumber,
-      saveStateCallback: receivedSaveFromPage,
-      updateDataOnContentChange: props.updateDataOnContentChange,
-      coreCreatedCallback: (coreWorker) => coreCreatedCallback(ind, coreWorker),
-      renderersInitializedCallback: () => pageRenderedCallback(ind),
-      hideWhenNotCurrent: props.paginate,
-      prefixForIds
-    });
-    if (!props.paginate) {
-      pageViewer = /* @__PURE__ */ React.createElement(VisibilitySensor, {
-        partialVisibility: true,
-        offset: {top: -200, bottom: -200},
-        requireContentsSize: false,
-        onChange: (isVisible) => onChangeVisibility(isVisible, ind)
-      }, /* @__PURE__ */ React.createElement("div", null, pageViewer));
-    }
-    pages.push(/* @__PURE__ */ React.createElement("div", {
-      key: `page${ind + 1}`,
-      id: `page${ind + 1}`
-    }, pageViewer));
   }
   let pageControlsTop = null;
   let pageControlsBottom = null;
@@ -918,12 +938,14 @@ export default function ActivityViewer(props) {
       }, /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
         onClick: submitAllAndFinishAssessment,
         "data-test": "ConfirmFinishAssessment",
-        value: "Yes"
+        value: "Yes",
+        disabled: processingSubmitAll
       }), /* @__PURE__ */ React.createElement(Button, {
         onClick: () => setFinishAssessmentMessageOpen(false),
         "data-test": "CancelFinishAssessment",
         value: "No",
-        alert: true
+        alert: true,
+        disabled: processingSubmitAll
       }))));
     } else {
       finishAssessmentPrompt = /* @__PURE__ */ React.createElement("div", {

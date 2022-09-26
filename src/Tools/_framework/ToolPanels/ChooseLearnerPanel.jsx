@@ -129,6 +129,8 @@ export default function ChooseLearnerPanel(props) {
   let [choosenLearner, setChoosenLearner] = useState(null);
   let [filter, setFilter] = useState('')
   let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
+  let [message, setMessage] = useState('');
+
 
   const addToast = useToast();
 
@@ -249,9 +251,21 @@ export default function ChooseLearnerPanel(props) {
       examRows.push(<tr>
         <td style={{ textAlign: "center" }}>{exam.label}</td>
         {/* <td style={{textAlign:"center"}}>{exam.info}</td> */}
-        <td style={{ textAlign: "center" }}><button onClick={() => {
-          setDoenetId(exam.doenetId, courseId)
-          setStage('choose learner');
+        <td style={{ textAlign: "center" }}><button onClick={async () => {
+           //Possible check for SEB header
+           const { data } = await axios.get('/api/checkSEBheaders.php', {
+            params: { doenetId:exam.doenetId },
+          });
+          // console.log('>>>>data', data);
+          if (Number(data.legitAccessKey) !== 1) {
+            setStage('Problem');
+            setMessage('Browser not configured properly to take an exam.');
+            return;
+          }else{
+            setDoenetId(exam.doenetId, courseId)
+            setStage('choose learner');
+          }
+          
         }}>Choose</button></td>
       </tr>)
     }
@@ -322,6 +336,8 @@ export default function ChooseLearnerPanel(props) {
           }
           timeZoneCorrectLastExamDate = <ButtonGroup>
             <Button value='Resume' onClick={() => {
+              localStorage.clear(); //Clear out the profile of the last exam taker
+              axios.get('/api/signOut.php');
               setChoosenLearner(learner);
               setStage('student final check');
               setResumeAttemptFlag(true)
@@ -345,6 +361,8 @@ export default function ChooseLearnerPanel(props) {
               width='menu'
               value='Start'
               onClick={() => {
+                localStorage.clear(); //Clear out the profile of the last exam taker
+                axios.get('/api/signOut.php');
                 setChoosenLearner(learner);
                 setStage('student final check');
                 setResumeAttemptFlag(false);
@@ -425,6 +443,11 @@ export default function ChooseLearnerPanel(props) {
       </ButtonGroup>
     </div>
     </>
+  }
+
+  if (stage === 'Problem'){
+    return <h1>{message}</h1>;
+
   }
 
 

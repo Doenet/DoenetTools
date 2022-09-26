@@ -35,6 +35,8 @@ import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {mainPanelClickAtom} from "../../_framework/Panels/NewMainPanel.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
 import {effectivePermissionsByCourseId} from "../PanelHeaderComponents/RoleDropdown.js";
+import Button from "../PanelHeaderComponents/Button.js";
+import ButtonGroup from "../PanelHeaderComponents/ButtonGroup.js";
 const ToggleCloseIconStyling = styled.button`
   border: none;
   border-radius: 35px;
@@ -109,6 +111,8 @@ function StudentCourseNavigation({courseId, sectionId, numberOfVisibleColumns, s
     numberOfVisibleColumns
   })));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CourseNavigationHeader, {
+    courseId,
+    sectionId,
     columnLabels: ["Due Date"],
     numberOfVisibleColumns,
     setNumberOfVisibleColumns
@@ -224,6 +228,8 @@ function AuthorCourseNavigation({courseId, sectionId, numberOfVisibleColumns, se
     indentLevel: 0
   }));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CourseNavigationHeader, {
+    courseId,
+    sectionId,
     columnLabels: ["Assigned", "Public"],
     numberOfVisibleColumns,
     setNumberOfVisibleColumns
@@ -929,7 +935,22 @@ function getColumnsCSS(numberOfVisibleColumns) {
   }
   return columnsCSS;
 }
-function CourseNavigationHeader({columnLabels, numberOfVisibleColumns, setNumberOfVisibleColumns}) {
+function CourseNavigationHeader({courseId, sectionId, columnLabels, numberOfVisibleColumns, setNumberOfVisibleColumns}) {
+  let openCloseAll = useRecoilCallback(({set, snapshot}) => async ({isOpen = true, courseId: courseId2, sectionId: sectionId2}) => {
+    if (!sectionId2) {
+      sectionId2 = courseId2;
+    }
+    let doenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId: courseId2, sectionId: sectionId2}));
+    for (let doenetId of doenetIds) {
+      set(itemByDoenetId(doenetId), (prev) => {
+        let next = {...prev};
+        if ("isOpen" in next) {
+          next.isOpen = isOpen;
+        }
+        return next;
+      });
+    }
+  }, []);
   const updateNumColumns = useCallback((width) => {
     const maxColumns = columnLabels.length + 1;
     const breakpoints = [375, 500, 650, 800];
@@ -975,7 +996,17 @@ function CourseNavigationHeader({columnLabels, numberOfVisibleColumns, setNumber
       gridTemplateRows: "1fr",
       alignContent: "center"
     }
-  }, /* @__PURE__ */ React.createElement("span", null, "Label"), numberOfVisibleColumns >= 2 && columnLabels[0] ? /* @__PURE__ */ React.createElement("span", {
+  }, /* @__PURE__ */ React.createElement("span", {
+    style: {display: "flex"}
+  }, /* @__PURE__ */ React.createElement("span", {
+    style: {marginRight: "10px"}
+  }, "Label"), /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
+    value: "Open All",
+    onClick: () => openCloseAll({isOpen: true, courseId, sectionId})
+  }), /* @__PURE__ */ React.createElement(Button, {
+    value: "Close All",
+    onClick: () => openCloseAll({isOpen: false, courseId, sectionId})
+  }))), numberOfVisibleColumns >= 2 && columnLabels[0] ? /* @__PURE__ */ React.createElement("span", {
     style: {textAlign: "center"}
   }, columnLabels[0]) : null, numberOfVisibleColumns >= 3 && columnLabels[1] ? /* @__PURE__ */ React.createElement("span", {
     style: {textAlign: "center"}
