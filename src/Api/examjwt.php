@@ -36,7 +36,7 @@ if ($result->num_rows < 1) {
 http_response_code(200);
 
 
-$expirationTime = 2147483647;
+$expirationTime = 0;
 
 $payload = [
     'examineeUserId' => $userId,
