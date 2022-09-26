@@ -18,8 +18,8 @@
     position: absolute;
     opacity: 0;
     cursor: pointer;
-    height: 0;
-    width: 0;
+    height: 1;
+    width: 1;
 }
   
 /* Create a custom radio button */
@@ -93,8 +93,8 @@
     position: absolute;
     opacity: 0;
     cursor: pointer;
-    height: 0;
-    width: 0;
+    height: 1;
+    width: 1;
 }
   
 /* Create a custom checkbox */
