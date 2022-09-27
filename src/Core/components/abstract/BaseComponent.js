@@ -346,7 +346,7 @@ export default class BaseComponent {
     for (let groupName of childGroups) {
       let matches = this.childMatchesByGroup[groupName];
       if (!matches) {
-        throw Error(`child group ${groupName} is not defined for a component of type ${this.componentType}`)
+        return undefined;
       }
       matchedIndices.push(...matches)
     }

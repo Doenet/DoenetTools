@@ -1457,6 +1457,7 @@ export default class Core {
     let stateVariableDefinitions = await this.createStateVariableDefinitions({
       componentClass,
       prescribedDependencies,
+      componentName,
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
@@ -2614,7 +2615,7 @@ export default class Core {
   }
 
   async createStateVariableDefinitions({ componentClass,
-    prescribedDependencies
+    prescribedDependencies, componentName
   }) {
 
     let redefineDependencies;
@@ -2624,6 +2625,9 @@ export default class Core {
         let depArray = prescribedDependencies[name];
         for (let dep of depArray) {
           if (dep.dependencyType === "referenceShadow") {
+            if (name === componentName) {
+              throw Error(`circular reference involving ${componentName}`);
+            }
             redefineDependencies = {
               linkSource: "referenceShadow",
               targetName: name,
@@ -8639,7 +8643,7 @@ export default class Core {
     try {
       let resp = await axios.post('/api/recordEvent.php', payload);
       // console.log(">>>>resp from record event", resp.data)
-    } catch(e) {
+    } catch (e) {
       console.error(`Error saving event: ${e.message}`);
       // postMessage({
       //   messageType: "sendToast",
