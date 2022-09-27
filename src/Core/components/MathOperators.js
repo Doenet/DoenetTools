@@ -353,6 +353,58 @@ export class Round extends MathBaseOperatorOneInput {
   }
 }
 
+export class setSmallToZero extends MathBaseOperatorOneInput {
+  static componentType = "setSmallToZero";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.threshold = {
+      createComponentOfType: "number",
+      createStateVariable: "threshold",
+      defaultValue: 1E-14,
+      public: true,
+    };
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({
+        threshold: {
+          dependencyType: "stateVariable",
+          variableName: "threshold"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        setValue: {
+          mathOperator: function (value) {
+
+            return value.evaluate_numbers({ skip_ordering: true, set_small_zero: dependencyValues.threshold });
+
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.inverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          inverseMathOperator: value => value
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+
 
 export class ConvertSetToList extends MathBaseOperatorOneInput {
   static componentType = "convertSetToList";

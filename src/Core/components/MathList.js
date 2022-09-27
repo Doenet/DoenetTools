@@ -1,7 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
-import { roundForDisplay } from '../utils/math';
+import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class MathList extends InlineComponent {
   static componentType = "mathList";
@@ -36,8 +36,6 @@ export default class MathList extends InlineComponent {
     };
     attributes.mergeMathLists = {
       createComponentOfType: "boolean",
-      createStateVariable: "mergeMathListsPreliminary",
-      defaultValue: false,
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
@@ -198,9 +196,10 @@ export default class MathList extends InlineComponent {
         createComponentOfType: "boolean",
       },
       returnDependencies: () => ({
-        mergeMathListsPreliminary: {
-          dependencyType: "stateVariable",
-          variableName: "mergeMathListsPreliminary"
+        mergeMathListsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "mergeMathLists",
+          variableNames: ["value"]
         },
         mathListChildren: {
           dependencyType: "child",
@@ -215,7 +214,7 @@ export default class MathList extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         let mergeMathLists =
-          dependencyValues.mergeMathListsPreliminary
+          dependencyValues.mergeMathListsAttr?.stateValues.value
           || (
             dependencyValues.mathListChildren.length === 0
             && dependencyValues.mathChildren.length === 1
@@ -297,7 +296,7 @@ export default class MathList extends InlineComponent {
                 if (childValue && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                   let nPieces = childValue.tree.length - 1
                   for (let i = 0; i < nPieces; i++) {
-                    childIndexByArrayKey[i + nComponents] = [childInd, i];
+                    childIndexByArrayKey[i + nComponents] = [childInd, i, nPieces];
                   }
                   nComponents += nPieces;
                 } else {
@@ -438,13 +437,90 @@ export default class MathList extends InlineComponent {
         return { setValue: { maths } }
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
-        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, stateValues, workspace
       }) {
 
         if (globalDependencyValues.mergeMathLists) {
-          console.log("Have not implemented inverse definition for math list with mergeMathLists=true");
-          return { success: false };
+
+          let instructions = [];
+
+
+          let childIndexByArrayKey = await stateValues.childIndexByArrayKey;
+
+          let arrayKeysAddressed = [];
+
+
+          for (let arrayKey in desiredStateVariableValues.maths) {
+
+            if (!dependencyValuesByKey[arrayKey]) {
+              continue;
+            }
+
+            if (arrayKeysAddressed.includes(arrayKey)) {
+              continue;
+            }
+
+            let desiredValue;
+            if (childIndexByArrayKey[arrayKey][2] !== undefined) {
+              // found a math that has been split due to merging
+
+              // array keys that are associated with this math child
+              let firstInd = Number(arrayKey) - childIndexByArrayKey[arrayKey][1];
+              let lastInd = firstInd + childIndexByArrayKey[arrayKey][2] - 1;
+
+              // in case just one ind specified, merge with previous values
+              if (!workspace.desiredMaths) {
+                workspace.desiredMaths = [];
+              }
+
+              let desiredTree = ["list"];
+
+              for (let i = firstInd; i <= lastInd; i++) {
+                if (desiredStateVariableValues.maths[i] !== undefined) {
+                  workspace.desiredMaths[i] = convertValueToMathExpression(desiredStateVariableValues.maths[i]);
+                } else if (workspace.desiredMaths[i] === undefined) {
+                  workspace.desiredMaths[i] = (await stateValues.maths)[i];
+                }
+
+                desiredTree.push(workspace.desiredMaths[i].tree)
+                arrayKeysAddressed.push(i.toString());
+              }
+
+              desiredValue = me.fromAst(desiredTree);
+
+            } else {
+              desiredValue = desiredStateVariableValues.maths[arrayKey]
+            }
+
+            let child = dependencyValuesByKey[arrayKey].mathAndMathListChildren[0];
+
+            if (child) {
+              if (child.stateValues.value !== undefined) {
+                instructions.push({
+                  setDependency: dependencyNamesByKey[arrayKey].mathAndMathListChildren,
+                  desiredValue,
+                  childIndex: 0,
+                  variableIndex: 0,
+                });
+
+              } else {
+                instructions.push({
+                  setDependency: dependencyNamesByKey[arrayKey].mathAndMathListChildren,
+                  desiredValue,
+                  childIndex: 0,
+                  variableIndex: 1,
+                });
+
+              }
+            }
+
+          }
+
+          return {
+            success: true,
+            instructions
+          }
         }
 
         let instructions = [];

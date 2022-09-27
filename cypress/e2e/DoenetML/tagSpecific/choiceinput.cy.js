@@ -1023,7 +1023,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.log('select x^2/2 from first input');
     let selectedIndex = 1;
     let inputText = "x22";
-    cy.get(`#\\/ci1_choice${selectedIndex}_input`).click();
+    cy.get(`#\\/ci1_choice${selectedIndex}_input`).should('not.be.visible').click({force:true}); // input is invisible (covered by text), but click it anyway
     checkChoices(selectedIndex, inputText, ["/", ["^", "x", 2], 2])
 
     cy.log('Type 3')

@@ -84,6 +84,7 @@ describe('video events test', function () {
 
     cy.get('#\\/time').contains('160');
     cy.get('#\\/pause').click();
+    cy.get('#\\/state').contains("stopped")
 
     cy.log('skip backward while paused')
     cy.get("#\\/mi textarea").type("{home}{shift+end}{backspace}141{enter}", { force: true });
@@ -100,11 +101,12 @@ describe('video events test', function () {
     cy.get('#\\/state').contains("stopped")
 
     cy.log('play last seconds')
-    cy.get("#\\/mi textarea").type("{home}{shift+end}{backspace}298{enter}", { force: true });
-    cy.get('#\\/time').contains("298");
+    cy.get("#\\/mi textarea").type("{home}{shift+end}{backspace}297{enter}", { force: true });
+    cy.get('#\\/time').contains("297");
 
     cy.get('#\\/play').click();
-    cy.get('#\\/time').contains('299');
+    cy.get('#\\/time').contains("298");
+    cy.get('#\\/state').contains("stopped")
 
     cy.wait(1000); //TODO: time travel instead of wait?
     //Test if interactions were recorded

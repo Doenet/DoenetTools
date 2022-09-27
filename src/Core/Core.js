@@ -1457,6 +1457,7 @@ export default class Core {
     let stateVariableDefinitions = await this.createStateVariableDefinitions({
       componentClass,
       prescribedDependencies,
+      componentName,
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
@@ -2614,7 +2615,7 @@ export default class Core {
   }
 
   async createStateVariableDefinitions({ componentClass,
-    prescribedDependencies
+    prescribedDependencies, componentName
   }) {
 
     let redefineDependencies;
@@ -2624,6 +2625,9 @@ export default class Core {
         let depArray = prescribedDependencies[name];
         for (let dep of depArray) {
           if (dep.dependencyType === "referenceShadow") {
+            if (name === componentName) {
+              throw Error(`circular reference involving ${componentName}`);
+            }
             redefineDependencies = {
               linkSource: "referenceShadow",
               targetName: name,
@@ -5536,7 +5540,10 @@ export default class Core {
     if (result.noChanges) {
       for (let varName of result.noChanges) {
         if (!component.state[varName].isResolved) {
-          throw Error(`Claiming state variable is unchanged when it isn't yet resolved: ${varName} of ${component.componentName}`)
+          // TODO: is this the correct response to having no changes but a variable not resolved?
+          // This scenario was occasionally occurring with readyToExpandWhenResolved in tests
+          component.state[varName].isResolved = true;
+          // throw Error(`Claiming state variable is unchanged when it isn't yet resolved: ${varName} of ${component.componentName}`)
         }
 
         if (!(varName in receivedValue)) {
@@ -8639,7 +8646,7 @@ export default class Core {
     try {
       let resp = await axios.post('/api/recordEvent.php', payload);
       // console.log(">>>>resp from record event", resp.data)
-    } catch(e) {
+    } catch (e) {
       console.error(`Error saving event: ${e.message}`);
       // postMessage({
       //   messageType: "sendToast",
