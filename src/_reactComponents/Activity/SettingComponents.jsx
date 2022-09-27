@@ -604,6 +604,7 @@ export const GradeCategory = ({ courseId, doenetId }) => {
     <InputWrapper>
       <LabelText>Grade Category</LabelText>
       <DropdownMenu
+        defaultIndex={"7"}
         valueIndex={
           {
             gateway: 1,
@@ -612,6 +613,7 @@ export const GradeCategory = ({ courseId, doenetId }) => {
             'problem sets': 4,
             projects: 5,
             participation: 6,
+            'No Category': 7,
           }[gradeCategory]
         }
         items={[
@@ -621,6 +623,7 @@ export const GradeCategory = ({ courseId, doenetId }) => {
           ['problem sets', 'Problem Sets'],
           ['projects', 'Projects'],
           ['participation', 'Participation'],
+          ['NULL', 'No Category'],
         ]}
         onChange={({ value: val }) => {
           if (recoilValue !== val) {
