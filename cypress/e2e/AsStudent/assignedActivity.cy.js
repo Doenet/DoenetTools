@@ -32,7 +32,7 @@ describe('Assigned Activity Test', function () {
       return false
   })
 
-  it('Activity contains assigned date and due date in Content page',()=>{
+  it('Activity contains assigned date and due date in Content page',() => {
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
 
@@ -63,14 +63,15 @@ describe('Assigned Activity Test', function () {
     cy.get('[data-test="Due Date Checkbox"]').click();
     cy.get('[data-test="Assign Activity"]').click();
 
-    cy.get('[data-test="Assigned Date"]').should('have.text', formatDate(today) + ' ' + formattedTime);
-    cy.get('[data-test="Due Date"]').should('have.text', formatDate(nextWeek) + ' ' + formattedTime);
+    cy.get('[data-test="Assigned Date"]').should('have.value', formatDate(today) + ' ' + formattedTime);
+    cy.get('[data-test="Due Date"]').should('have.value', formatDate(nextWeek) + ' ' + formattedTime);
 
 
-    cy.get('[data-test="Crumb2"]').click();
+    cy.get('[data-test="Crumb 0"]').click();
+    cy.get('[data-test="Enter Course nav button"]').click();
 
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length',1); // Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Activity');
   
   
