@@ -1,6 +1,6 @@
 import checkEquality from './checkEquality';
 import me from 'math-expressions';
-import { textToAst, getFromText, appliedFunctionSymbolsDefault } from './math';
+import { textToAst, getFromText, appliedFunctionSymbolsDefault, numberToMathExpression } from './math';
 import { deepCompare } from './deepFunctions';
 
 const appliedFunctionSymbolsWithBooleanOperators = [
@@ -223,7 +223,7 @@ export function evaluateLogic({ logicTree,
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
-        return child.stateValues.value;
+        return numberToMathExpression(child.stateValues.value).tree;
       }
       child = dependencyValues.numberListChildrenByCode[tree];
 
@@ -580,7 +580,7 @@ export function evaluateLogic({ logicTree,
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
-        return child.stateValues.value;
+        return numberToMathExpression(child.stateValues.value).tree;
       }
       child = dependencyValues.numberListChildrenByCode[tree];
       if (child !== undefined) {
