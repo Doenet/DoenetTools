@@ -1,79 +1,146 @@
 describe('Assigned Activity Test', function () {
-    const userId = "cyuserId";
-    const studentUserId = "cyStudentUserId";
-    // const userId = "devuserId";
-    const courseId = "courseid1";
-    const doenetId = "activity1id";
-    const pageDoenetId = "_page1id";
-    // const doenetId2 = "activity2id";
-    // const pageDoenetId2 = "_page2id";
-  
-    before(()=>{
-      // cy.clearAllOfAUsersActivities({userId})
-      cy.signin({ userId });
-      cy.clearAllOfAUsersCoursesAndItems({ userId });
-      cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
-      cy.createCourse({ userId, courseId, studentUserId });
-    })
-    beforeEach(() => {
-      cy.signin({ userId });
-      cy.clearIndexedDB();
-      cy.clearAllOfAUsersActivities({ userId })
-      cy.clearAllOfAUsersActivities({ userId: studentUserId })
-      cy.createActivity({ courseId, doenetId, parentDoenetId:courseId, pageDoenetId });
-      // cy.createActivity({courseId,doenetId:doenetId2,parentDoenetId:courseId,pageDoenetId:pageDoenetId2});
-      cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
-    })
-  
-  
-    Cypress.on('uncaught:exception', (err, runnable) => {
-      // returning false here prevents Cypress from
-      // failing the test
-      return false
+  const userId = "cyuserId";
+  const studentUserId = "cyStudentUserId";
+  const courseId = "courseid1";
+  const doenetId = "activity1id";
+  const pageDoenetId = "_page1id";
+
+  before(()=>{
+    cy.signin({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
+    cy.createCourse({ userId, courseId, studentUserId });
+  })
+  beforeEach(() => {
+    cy.signin({ userId });
+    cy.clearIndexedDB();
+    cy.clearAllOfAUsersActivities({ userId });
+    cy.clearAllOfAUsersActivities({ userId: studentUserId });
+    cy.createActivity({ courseId, doenetId, parentDoenetId:courseId, pageDoenetId });
+    cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
   })
 
-  it('Activity contains assigned date and due date in Content page',() => {
-    const today = new Date();
-    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    function formatDate(date) {
-      // Formatting the date
-      const yyyy = date.getFullYear();
-      let mm = date.getMonth() + 1; // Months start at 0!
-      let dd = date.getDate();
-      if (mm < 10) mm = '0' + mm;
-      if (dd < 10) dd = '0' + dd;
+  Cypress.on('uncaught:exception', (err, runnable) => {
+    // Returning false here prevents Cypress from failing the test
+    return false;
+  })
 
-      return mm + '/' + dd + '/' + yyyy;
-    }
+  /* Methods to get/set the date and time */
 
-    // Formatting the time
-    let hr = today.getHours();
-    let min = today.getMinutes();
-    const ampm = hr >= 12 ? 'PM' : 'AM';
+  // Formatting the date to be 'mm/dd/yyyy' WITH leading zeros
+  // Ex: '09/12/2022' for September 12, 2022
+  function formatDateWithYear(date) {
+    const yyyy = date.getFullYear();
+    let mm = date.getMonth() + 1; // Months start at 0!
+    let dd = date.getDate();
+    if (mm < 10) mm = '0' + mm;
+    if (dd < 10) dd = '0' + dd;
+
+    return mm + '/' + dd + '/' + yyyy;
+  }
+
+  // Formatting the date to be 'mm/dd' WITHOUT leading zeros
+  // Ex: '9/12' for September 12, 2022
+  function formatDateWithoutYear(date) {
+    let mm = date.getMonth() + 1; // Months start at 0!
+    let dd = date.getDate();
+
+    return mm + '/' + dd;
+  }
+
+  function getDayOfWeek(date) {
+    const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    return weekday[date.getDay()];
+  }
+
+  function getAmPm(hour) {
+    return hour >= 12 ? 'PM' : 'AM';
+  }
+
+  function formatHours(date) {
+    let hr = date.getHours();
     hr = hr % 12;
-    hr = hr ? hr : 12; // Hour '0' should be '12
-    min = min < 10 ? '0' + min : min;
+    return hr ? hr : 12; // Hour '0' should be '12
+  }
 
-    const formattedTime = hr + ':' + min + ' ' + ampm;
+  function formatMinutes(date) {
+    let min = date.getMinutes();
+    return min < 10 ? '0' + min : min;
+
+  }
+
+  // Formatting the time to be 'hh:mm A/P'
+  // Ex: '4:02 P' for '04:02:00 PM'
+  function formatTime(date) {
+    let hr = formatHours(date);
+    let min = formatMinutes(date);
+    const ampm = date.getHours() >= 12 ? 'P' : 'A'; // Datetime component automatically adds the 'M'
+
+    return hr + ':' + min + ' ' + ampm;
+  }
+
+  
+  it('Activity contains due date in Content page', () => {
+
+    const assignedDate = new Date();
+    let dueDate = new Date();
+    
+    // Make the due date 5 hours from now
+    dueDate.setHours((assignedDate).getHours() + 5);
+
+    // Update the activity as the owner
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Due Date Checkbox"]').click();
+
+    // Prevent scrolling behavior when entering the due date
+    cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
+    cy.get('[data-test="Assign Activity"]').click();
+
+    // Add the 'M' back to AM/PM
+    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + 'M');
+
+    // Sign in as a student
+    cy.signin({ userId: studentUserId });
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    // Check if the Content page contains the correct activity with the due date
+    cy.get('.navigationRow').should('have.length',1); // Need this to wait for the row to appear
+    cy.get('[data-test="rowLabel"]').contains('Cypress Activity');
+    cy.get('.navigationRow').eq(0).get('.navigationColumn2').contains(dueDate.toLocaleDateString() + ', ' + formatHours(dueDate) + ':' + formatMinutes(dueDate) + ':00 ' + getAmPm(dueDate.getHours()));
+  
+  })
 
 
+  it('Activity contains assigned date and due date in Content By Week page', () => {
+
+    const assignedDate = new Date();
+    let dueDate = new Date();
+    
+    // Make the due date 5 hours from now
+    dueDate.setHours(assignedDate.getHours() + 5);
+
+    // Update the activity as the owner
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assigned Date Checkbox"]').click();
     cy.get('[data-test="Due Date Checkbox"]').click();
+
+    // Prevent scrolling behavior when entering the due date
+    cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
     cy.get('[data-test="Assign Activity"]').click();
 
-    cy.get('[data-test="Assigned Date"]').should('have.value', formatDate(today) + ' ' + formattedTime);
-    cy.get('[data-test="Due Date"]').should('have.value', formatDate(nextWeek) + ' ' + formattedTime);
+    // Add the 'M' back to AM/PM
+    cy.get('[data-test="Assigned Date"]').should('have.value', formatDateWithYear(assignedDate) + ' ' + formatTime(assignedDate) + 'M');
+    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + 'M');
 
-
-    cy.get('[data-test="Crumb 0"]').click();
-    cy.get('[data-test="Enter Course nav button"]').click();
-
-
-    cy.get('.navigationRow').should('have.length',1); // Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Activity');
-  
+    // Sign in as a student
+    // Check if the Content By Week page contains the correct activity with the assigned date and due date
+    cy.signin({ userId: studentUserId });
+    cy.visit(`http://localhost/course?tool=dashboard&courseId=${courseId}`);
+    cy.get('table').should('have.length',1); // Need this to wait for the row to appear
+    cy.get('table > :nth-child(2) > :nth-child(2)').contains('Cypress Activity');
+    cy.get('table > :nth-child(2) > :nth-child(3)').contains(getDayOfWeek(assignedDate) + ' - ' + formatTime(assignedDate) + 'M'); // Add the 'M' back to AM/PM
+    cy.get('table > :nth-child(2) > :nth-child(4)').contains(formatDateWithoutYear(dueDate) + ' ' + formatTime(dueDate) + 'M');
   
   })
 
