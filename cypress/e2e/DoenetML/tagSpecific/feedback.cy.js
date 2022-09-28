@@ -453,7 +453,7 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Select dog")
-      cy.get(choiceinputAnchor).contains(`dog`).click();
+      cy.get(choiceinputAnchor).contains(`dog`).click({ force: true });
       cy.get('#\\/_section1 p').should('not.exist')
       cy.get("#\\/ca").invoke('text').then((text) => {
         expect(text.trim()).equal('0')
@@ -469,7 +469,7 @@ describe('Feedback Tag Tests', function () {
       });
 
       cy.log("submit cow")
-      cy.get(choiceinputAnchor).contains(`cow`).click();
+      cy.get(choiceinputAnchor).contains(`cow`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).click();
       cy.get('#\\/_section1 p').should('have.text', `Moo`)
       cy.get("#\\/ca").invoke('text').then((text) => {
@@ -477,7 +477,7 @@ describe('Feedback Tag Tests', function () {
       });
 
       cy.log("submit cat")
-      cy.get(choiceinputAnchor).contains(`cat`).click();
+      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).click();
       cy.get('#\\/_section1 p').should('have.text', `Meow`)
       cy.get("#\\/ca").invoke('text').then((text) => {
@@ -485,7 +485,7 @@ describe('Feedback Tag Tests', function () {
       });
 
       cy.log("submit mouse")
-      cy.get(choiceinputAnchor).contains(`mouse`).click();
+      cy.get(choiceinputAnchor).contains(`mouse`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).click();
       cy.get('#\\/_section1 p').should('have.text', `Squeak`)
       cy.get("#\\/ca").invoke('text').then((text) => {
@@ -493,7 +493,7 @@ describe('Feedback Tag Tests', function () {
       });
 
       cy.log("submit banana")
-      cy.get(choiceinputAnchor).contains(`banana`).click();
+      cy.get(choiceinputAnchor).contains(`banana`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).click();
       cy.get('#\\/_section1 p').should('have.text', `Huh?`)
       cy.get("#\\/ca").invoke('text').then((text) => {
@@ -1402,36 +1402,36 @@ describe('Feedback Tag Tests', function () {
       })
 
       cy.log("Select correct answer")
-      cy.get(choiceinputAnchor).contains(`dog`).click();
+      cy.get(choiceinputAnchor).contains(`dog`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedbacks').invoke('text').then(text => {
         expect(text.match(/^\s*$/)).not.be.null;
       })
 
       cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).click({ force: true });
       cy.get(choiceinputCorrectAnchor).should('be.visible');
       cy.get('#\\/feedbacks').should('contain.text', 'FeedbackGood job!')
 
       cy.log("Select half correct answer")
-      cy.get(choiceinputAnchor).contains(`cat`).click();
+      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedbacks').should('contain.text', 'FeedbackGood job!')
 
       cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).click({ force: true });
       cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('50% correct')
       })
       cy.get('#\\/feedbacks').should('contain.text', 'Feedbackmeow')
 
       cy.log("Select incorrect answer")
-      cy.get(choiceinputAnchor).contains(`monkey`).click();
+      cy.get(choiceinputAnchor).contains(`monkey`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedbacks').should('contain.text', 'Feedbackmeow')
 
       cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).click({ force: true });
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get('#\\/feedbacks').invoke('text').then(text => {
         expect(text.match(/^\s*$/)).not.be.null;
@@ -1494,36 +1494,36 @@ describe('Feedback Tag Tests', function () {
       })
 
       cy.log("Select correct answer")
-      cy.get(choiceinputAnchor).contains(`dog`).click();
+      cy.get(choiceinputAnchor).contains(`dog`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedbacks').invoke('text').then(text => {
         expect(text.match(/^\s*$/)).not.be.null;
       })
 
       cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).click({ force: true });
       cy.get(choiceinputCorrectAnchor).should('be.visible');
       cy.get('#\\/feedbacks').should('contain.text', 'FeedbackWoof FeedbackGrrr')
 
       cy.log("Select half correct answer")
-      cy.get(choiceinputAnchor).contains(`cat`).click();
+      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedbacks').should('contain.text', 'FeedbackWoof FeedbackGrrr')
 
       cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).click({ force: true });
       cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('50% correct')
       })
       cy.get('#\\/feedbacks').should('contain.text', 'FeedbackMeow')
 
       cy.log("Select incorrect answer")
-      cy.get(choiceinputAnchor).contains(`monkey`).click();
+      cy.get(choiceinputAnchor).contains(`monkey`).click({ force: true });
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedbacks').should('contain.text', 'FeedbackMeow')
 
       cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).click({ force: true });
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get('#\\/feedbacks').invoke('text').then(text => {
         expect(text.match(/^\s*$/)).not.be.null;

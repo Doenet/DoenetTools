@@ -8,12 +8,6 @@ import {
  } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
-import { 
-  editorPageIdInitAtom, 
-  updateTextEditorDoenetMLAtom,
-  textEditorDoenetMLAtom,
-  viewerDoenetMLAtom,
-} from '../ToolPanels/EditorViewer';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import { 
@@ -27,6 +21,8 @@ import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
+import { editorPageIdInitAtom, textEditorDoenetMLAtom, viewerDoenetMLAtom, updateTextEditorDoenetMLAtom} from '../../../_sharedRecoil/EditorViewerRecoil';
+import { cidFromText } from '../../../Core/utils/cid';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",

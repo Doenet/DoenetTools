@@ -782,7 +782,7 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 }
 
 function addResponsesToDescendantsWithTarget(components, target, absoluteTarget) {
-
+  
   for (let component of components) {
     let propsOrDAttrs = component.props;
     if (!propsOrDAttrs || Object.keys(propsOrDAttrs).length === 0) {
@@ -800,6 +800,9 @@ function addResponsesToDescendantsWithTarget(components, target, absoluteTarget)
           }
           let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
           if (!foundIsResponse) {
+            // Note we don't add the attribute as {primitive: true}
+            // because the composite don't have the attribute isResponse
+            // but pass it on to their replacements
             component.attributes.isResponse = true;
           }
         }

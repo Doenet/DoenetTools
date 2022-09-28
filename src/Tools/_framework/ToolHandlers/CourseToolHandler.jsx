@@ -56,91 +56,6 @@ export const itemHistoryAtom = atomFamily({
   })
 })
 
-export const fileByCid = atomFamily({
-  key:"fileByCid",
-  default: selectorFamily({
-    key:"fileByCid/Default",
-    get:(cid)=> async ()=>{
-      if (!cid){
-        return "";
-      }
-      // const local = localStorage.getItem(cid);
-      // if (local){ return local}
-      try {
-        const server = await axios.get(`/media/${cid}.doenet`); 
-        return server.data;
-      } catch (error) {
-        //TODO: Handle 404
-        // Error 😨
-        if (error.response) {
-          /*
-          * The request was made and the server responded with a
-          * status code that falls out of the range of 2xx
-          */
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-            /*
-            * The request was made but no response was received, `error.request`
-            * is an instance of XMLHttpRequest in the browser and an instance
-            * of http.ClientRequest in Node.js
-            */
-            console.log(error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            console.log('Error', error.message);
-        }
-              return "Error Loading";
-        }
-    }
-  })
-  
-})
-
-
-export const fileByPageId = atomFamily({
-  key:"fileByPageId",
-  default: selectorFamily({
-    key:"fileByPageId/Default",
-    get:(doenetId)=> async ()=>{
-      if (!doenetId){
-        return "";
-      }
-      // const local = localStorage.getItem(doenetId);
-      // if (local){ return local}
-      try {
-        const server = await axios.get(`/media/byPageId/${doenetId}.doenet`); 
-        return server.data;
-      } catch (error) {
-        //TODO: Handle 404
-        // Error 😨
-        if (error.response) {
-          /*
-          * The request was made and the server responded with a
-          * status code that falls out of the range of 2xx
-          */
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-            /*
-            * The request was made but no response was received, `error.request`
-            * is an instance of XMLHttpRequest in the browser and an instance
-            * of http.ClientRequest in Node.js
-            */
-            console.log(error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            console.log('Error', error.message);
-        }
-              return "Error Loading";
-        }
-    }
-  })
-  
-})
-
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
   default:[]
@@ -186,20 +101,7 @@ export let assignmentDictionarySelector = selectorFamily({
     },
 });
 
-export const pageVariantInfoAtom = atom({
-  key:"pageVariantInfoAtom",
-  default:{index:1}
-})
 
-export const pageVariantPanelAtom = atom({
-  key:"pageVariantPanelAtom",
-  default:{index:1, allPossibleVariants: [], variantIndicesToIgnore: []}
-})
-
-export const activityVariantPanelAtom = atom({
-  key:"activityVariantPanelAtom",
-  default:{index:1, numberOfVariants: 0}
-})
 
 export function buildTimestamp(){
   const dt = new Date();

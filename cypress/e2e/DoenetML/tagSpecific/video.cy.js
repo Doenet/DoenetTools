@@ -445,7 +445,7 @@ describe('Video Tag Tests', function () {
 
     cy.get('#\\/state').should("have.text", "stopped")
     cy.get('#\\/time').should("have.text", "62")
-    cy.get('#\\/secondsWatched').should('have.text', '6')
+    cy.get('#\\/secondsWatched').contains(/6|7/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -469,7 +469,7 @@ describe('Video Tag Tests', function () {
 
     cy.get('#\\/state').should("have.text", "stopped")
     cy.get('#\\/time').should("have.text", "63")
-    cy.get('#\\/secondsWatched').should('have.text', '7')
+    cy.get('#\\/secondsWatched').contains(/7|8/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -479,7 +479,7 @@ describe('Video Tag Tests', function () {
       expect(theSegment[1]).gt(3.5).lt(4.5)
       theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
       expect(theSegment[0]).gt(59.5).lt(60.5)
-      expect(theSegment[1]).gt(62.5).lt(63.5)
+      expect(theSegment[1]).gt(62).lt(63.5)
     })
 
 
@@ -499,7 +499,7 @@ describe('Video Tag Tests', function () {
 
     cy.get('#\\/state').should("have.text", "stopped")
     cy.get('#\\/time').should("have.text", "3")
-    cy.get('#\\/secondsWatched').should('have.text', '7')
+    cy.get('#\\/secondsWatched').contains(/7|8/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -530,7 +530,7 @@ describe('Video Tag Tests', function () {
       expect(stateVariables["/v"].stateValues.segmentsWatched.length).eq(2);
       let theSegment = stateVariables["/v"].stateValues.segmentsWatched[0];
       expect(theSegment[0]).lt(0.5)
-      expect(theSegment[1]).gt(4.5).lt(5.5)
+      expect(theSegment[1]).gt(4).lt(5.5)
       theSegment = stateVariables["/v"].stateValues.segmentsWatched[1];
       expect(theSegment[0]).gt(59.5).lt(60.5)
       expect(theSegment[1]).gt(62.5).lt(63.5)
