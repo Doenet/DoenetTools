@@ -11,7 +11,7 @@ export var appliedFunctionSymbolsDefault = [
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
-  'count', 'mod', 're', 'im'
+  'count', 'mod', 're', 'im','det', 'trace',
 ];
 
 export var appliedFunctionSymbolsDefaultLatex = [
@@ -25,7 +25,7 @@ export var appliedFunctionSymbolsDefaultLatex = [
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
-  'count', 'mod', 'Re', 'Im'
+  'count', 'mod', 'Re', 'Im', 'det', 'trace',
 ];
 
 let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset']

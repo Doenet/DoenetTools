@@ -140,6 +140,55 @@ describe('Boolean Tag Tests', function () {
 
   })
 
+  it('boolean based on complex numbers', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <p><number name="a">3+4i</number> <number name="b">3i</number> <number name="c">pi+e i</number></p>
+
+    <p><boolean name="t1">isnumber(re($c))</boolean></p>
+    <p><boolean name="t2">isnumber(im($c))</boolean></p>
+    <p><boolean name="f1">isnumber($c)</boolean></p>
+    <p><boolean name="f2">isinteger(re($c))</boolean></p>
+    <p><boolean name="f3">isinteger(im($c))</boolean></p>
+    <p><boolean name="f4">isinteger($c)</boolean></p>
+    <p><boolean name="t3">isinteger(re($a))</boolean></p>
+    <p><boolean name="t4">isinteger(im($a))</boolean></p>
+    <p><boolean name="f5">isinteger($a)</boolean></p>
+    <p><boolean name="t5">re($a)</boolean></p>
+    <p><boolean name="f6">re($b)</boolean></p>
+    <p><boolean name="t6">re($c)</boolean></p>
+    <p><boolean name="t7">re($a) <= 3</boolean></p>
+    <p><boolean name="f7">re($a) < 3</boolean></p>
+    <p><boolean name="t8">im($a) <= 4</boolean></p>
+    <p><boolean name="f8">im($a) < 4</boolean></p>
+    <p><boolean name="t9">abs($a) <= 5</boolean></p>
+    <p><boolean name="f9">abs($a) < 5</boolean></p>
+        
+    `}, "*");
+    });
+
+
+    let nTrues = 9, nFalses = 9;
+    for (let i = 1; i <= nTrues; i++) {
+      cy.get(`#\\/t${i}`).should('have.text', "true")
+    }
+
+    for (let i = 1; i <= nFalses; i++) {
+      cy.get(`#\\/f${i}`).should('have.text', "false")
+    }
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 1; i <= nTrues; i++) {
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
+      }
+      for (let i = 1; i <= nFalses; i++) {
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
+      }
+    })
+  })
+
   it('boolean from computation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
