@@ -75,7 +75,7 @@ describe('Assigned Activity Test', function () {
   function formatTime(date) {
     let hr = formatHours(date);
     let min = formatMinutes(date);
-    const ampm = date.getHours() >= 12 ? 'P' : 'A'; // Datetime component automatically adds the 'M'
+    const ampm = date.getHours() >= 12 ? 'PM' : 'AM'; // Datetime component automatically adds the 'M'
 
     return hr + ':' + min + ' ' + ampm;
   }
@@ -84,30 +84,27 @@ describe('Assigned Activity Test', function () {
   it('Activity contains due date in Content page', () => {
 
     const assignedDate = new Date();
-    let dueDate = new Date();
-    
-    // Make the due date 5 hours from now
-    dueDate.setHours((assignedDate).getHours() + 5);
+    let dueDate = new Date(assignedDate.getTime() + 7 * 24 * 60 * 60 * 1000); // One week from now
 
     // Update the activity as the owner
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Due Date Checkbox"]').click();
+    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
+    cy.get('[data-test="Assigned Date Checkbox"]').click();
 
     // Prevent scrolling behavior when entering the due date
-    cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
+    // cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
     cy.get('[data-test="Assign Activity"]').click();
-
-    // Add the 'M' back to AM/PM
-    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + 'M');
+    cy.wait(2000); // Wait for activity to be saved and assigned
 
     // Sign in as a student
     cy.signin({ userId: studentUserId });
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
     // Check if the Content page contains the correct activity with the due date
-    cy.get('.navigationRow').should('have.length',1); // Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); // Need this to wait for the row to appear
     cy.get('[data-test="rowLabel"]').contains('Cypress Activity');
-    cy.get('.navigationRow').eq(0).get('.navigationColumn2').contains(dueDate.toLocaleDateString() + ', ' + formatHours(dueDate) + ':' + formatMinutes(dueDate) + ':00 ' + getAmPm(dueDate.getHours()));
+    cy.get('.navigationRow').eq(0).get('.navigationColumn2').contains(dueDate.toLocaleString());
   
   })
 
@@ -115,32 +112,30 @@ describe('Assigned Activity Test', function () {
   it('Activity contains assigned date and due date in Content By Week page', () => {
 
     const assignedDate = new Date();
-    let dueDate = new Date();
-    
-    // Make the due date 5 hours from now
-    dueDate.setHours(assignedDate.getHours() + 5);
+    let dueDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000); // One week from now
 
     // Update the activity as the owner
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assigned Date Checkbox"]').click();
+    cy.get('[data-test="Assigned Date"]').should('have.value', formatDateWithYear(assignedDate) + ' ' + formatTime(assignedDate));
     cy.get('[data-test="Due Date Checkbox"]').click();
+    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
 
     // Prevent scrolling behavior when entering the due date
-    cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
+    // cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
     cy.get('[data-test="Assign Activity"]').click();
-
-    // Add the 'M' back to AM/PM
-    cy.get('[data-test="Assigned Date"]').should('have.value', formatDateWithYear(assignedDate) + ' ' + formatTime(assignedDate) + 'M');
-    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + 'M');
+    cy.wait(2000); // Wait for activity to be saved and assigned
 
     // Sign in as a student
     // Check if the Content By Week page contains the correct activity with the assigned date and due date
     cy.signin({ userId: studentUserId });
     cy.visit(`http://localhost/course?tool=dashboard&courseId=${courseId}`);
-    cy.get('table').should('have.length',1); // Need this to wait for the row to appear
+    cy.get('[data-test="Main Panel"]').scrollTo('right');
+    cy.get(':nth-child(2) > .sc-bBHHxi').click();
+    cy.get('table').should('have.length', 1); // Need this to wait for the row to appear
     cy.get('table > :nth-child(2) > :nth-child(2)').contains('Cypress Activity');
-    cy.get('table > :nth-child(2) > :nth-child(3)').contains(getDayOfWeek(assignedDate) + ' - ' + formatTime(assignedDate) + 'M'); // Add the 'M' back to AM/PM
-    cy.get('table > :nth-child(2) > :nth-child(4)').contains(formatDateWithoutYear(dueDate) + ' ' + formatTime(dueDate) + 'M');
+    cy.get('table > :nth-child(2) > :nth-child(3)').contains(formatDateWithoutYear(assignedDate) + ' ' + formatTime(assignedDate)); // Add the 'M' back to AM/PM
+    cy.get('table > :nth-child(2) > :nth-child(4)').contains(formatDateWithoutYear(dueDate) + ' ' + formatTime(dueDate));
   
   })
 
