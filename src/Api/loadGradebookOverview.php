@@ -51,6 +51,7 @@ if ($success) {
             JOIN user_assignment AS ua
                 ON a.doenetId = ua.doenetId
             WHERE a.courseId = '$courseId'
+                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')
             ORDER BY a.dueDate"
         );
     } else {
@@ -64,6 +65,7 @@ if ($success) {
                 ON a.doenetId = ua.doenetId
             WHERE a.courseId = '$courseId'
                 AND ua.userId = '$requestorUserId'
+                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')
             ORDER BY a.dueDate"
         );
     }
