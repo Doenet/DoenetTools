@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilState } from 'recoil';
-import { pageVariantInfoAtom, pageVariantPanelAtom } from '../ToolHandlers/CourseToolHandler';
+import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 
 export default function PageVariant(props) {
 

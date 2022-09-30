@@ -430,6 +430,7 @@ export default function GradebookAssignmentView() {
       // }
       // </Link>
     }
+    </>
     let totalCredit = attempts.contents[userId]?.credit;
     let totalPointsEarned =
       Math.round(totalCredit * totalPossiblePoints * 100) / 100;
@@ -438,6 +439,7 @@ export default function GradebookAssignmentView() {
     assignmentsTable.rows.push(row);
   }
 
+  //TODO CRITIAL: update to use new table interface and remove the dep on rows
   return (
     <>
       <div style={{ paddingLeft: '8px' }}>

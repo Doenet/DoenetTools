@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil';
 import { useToast } from '../../Tools/_framework/Toast';
+import { DateToUTCDateString } from '../../_utils/dateUtilityFunction';
 import { itemByDoenetId } from '../Course/CourseActions';
 
 const dateFormatKeys = [
@@ -25,8 +26,38 @@ export const useActivity = (courseId, doenetId) => {
           {},
         );
 
+        let updateDBObj = {...updateObject}
+
+        //Update assigned date to UTC time for the database
+        if (updateDBObj['assignedDate'] !== undefined &&
+        updateDBObj['assignedDate'] !== null
+        ){
+          updateDBObj['assignedDate'] = DateToUTCDateString(new Date(updateDBObj['assignedDate']))
+        }
+
+        // Update due date to UTC time for the database
+        if (updateDBObj['dueDate'] !== undefined &&
+        updateDBObj['dueDate'] !== null
+        ){
+          updateDBObj['dueDate'] = DateToUTCDateString(new Date(updateDBObj['dueDate']))
+        }
+
+        // Update pinned After Date to UTC time for the database
+        if (updateDBObj['pinnedAfterDate'] !== undefined &&
+        updateDBObj['pinnedAfterDate'] !== null
+        ){
+          updateDBObj['pinnedAfterDate'] = DateToUTCDateString(new Date(updateDBObj['pinnedAfterDate']))
+        }
+
+        // Update pinned Until Date to UTC time for the database
+        if (updateDBObj['pinnedUntilDate'] !== undefined &&
+        updateDBObj['pinnedUntilDate'] !== null
+        ){
+          updateDBObj['pinnedUntilDate'] = DateToUTCDateString(new Date(updateDBObj['pinnedUntilDate']))
+        }
+
         const resp = await axios.post('/api/updateAssignmentSettings.php', {
-          ...updateObject,
+          ...updateDBObj,
           courseId,
           doenetId,
         });

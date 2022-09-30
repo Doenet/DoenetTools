@@ -3273,7 +3273,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it('add vectors, multiply by scalar', () => {
+  it('add and subtract vectors, multiply by scalar', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -3293,6 +3293,10 @@ describe('Math Tag Tests', function () {
   <p><math name="t2v2sumSimp" simplify>$tuple2+$vector2</math></p>
   <p><math name="v2t2sum">$vector2+$tuple2</math></p>
   <p><math name="v2t2sumSimp" simplify>$vector2+$tuple2</math></p>
+  <p><math name="t2v2diff">$tuple2-$vector2</math></p>
+  <p><math name="t2v2diffSimp" simplify>$tuple2-$vector2</math></p>
+  <p><math name="v2t2diff">$vector2-$tuple2</math></p>
+  <p><math name="v2t2diffSimp" simplify>$vector2-$tuple2</math></p>
   <p><math name="t2isum">$tuple2+$interval</math></p>
   <p><math name="t2isumSimp" simplify>$tuple2+$interval</math></p>
   <p><math name="v2isum">$vector2+$interval</math></p>
@@ -3315,7 +3319,9 @@ describe('Math Tag Tests', function () {
   <p><math name="ismul">$interval m</math></p>
   <p><math name="ismulSimp" simplify>$interval m</math></p>
   <p><math name="ismulExp" expand>$interval m</math></p>
-
+  <p><math name="st2v2ssum">m$tuple2+$vector2*n</math></p>
+  <p><math name="st2v2ssumSimp" simplify>m$tuple2+$vector2*n</math></p>
+  <p><math name="st2v2ssumExp" expand>m$tuple2+$vector2*n</math></p>
 
   <p><math name="t3t3sum">$tuple3+$tuple3</math></p>
   <p><math name="t3t3sumSimp" simplify>$tuple3+$tuple3</math></p>
@@ -3325,6 +3331,10 @@ describe('Math Tag Tests', function () {
   <p><math name="t3v3sumSimp" simplify>$tuple3+$vector3</math></p>
   <p><math name="v3t3sum">$vector3+$tuple3</math></p>
   <p><math name="v3t3sumSimp" simplify>$vector3+$tuple3</math></p>
+  <p><math name="t3v3diff">$tuple3-$vector3</math></p>
+  <p><math name="t3v3diffSimp" simplify>$tuple3-$vector3</math></p>
+  <p><math name="v3t3diff">$vector3-$tuple3</math></p>
+  <p><math name="v3t3diffSimp" simplify>$vector3-$tuple3</math></p>
   <p><math name="st3mul">m$tuple3</math></p>
   <p><math name="st3mulSimp" simplify>m$tuple3</math></p>
   <p><math name="st3mulExp" expand>m$tuple3</math></p>
@@ -3337,6 +3347,9 @@ describe('Math Tag Tests', function () {
   <p><math name="v3smul">$vector3 m</math></p>
   <p><math name="v3smulSimp" simplify>$vector3 m</math></p>
   <p><math name="v3smulExp" expand>$vector3 m</math></p>
+  <p><math name="st3v3ssum">m$tuple3+$vector3*n</math></p>
+  <p><math name="st3v3ssumSimp" simplify>m$tuple3+$vector3*n</math></p>
+  <p><math name="st3v3ssumExp" expand>m$tuple3+$vector3*n</math></p>
   `}, "*");
     });
 
@@ -3352,21 +3365,25 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/t2v2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+c,b+d)');
     cy.get('#\\/v2t2sum .mjx-mrow').eq(0).should('have.text', '(c,d)+(a,b)');
     cy.get('#\\/v2t2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+c,b+d)');
+    cy.get('#\\/t2v2diff .mjx-mrow').eq(0).should('have.text', '(a,b)−(c,d)');
+    cy.get('#\\/t2v2diffSimp .mjx-mrow').eq(0).should('have.text', '(a−c,b−d)');
+    cy.get('#\\/v2t2diff .mjx-mrow').eq(0).should('have.text', '(c,d)−(a,b)');
+    cy.get('#\\/v2t2diffSimp .mjx-mrow').eq(0).should('have.text', '(−a+c,−b+d)');
     cy.get('#\\/t2isum .mjx-mrow').eq(0).should('have.text', '(a,b)+(e,f)');
     cy.get('#\\/t2isumSimp .mjx-mrow').eq(0).should('have.text', '(e,f)+(a,b)');
     cy.get('#\\/v2isum .mjx-mrow').eq(0).should('have.text', '(c,d)+(e,f)');
     cy.get('#\\/v2isumSimp .mjx-mrow').eq(0).should('have.text', '(e,f)+(c,d)');
     cy.get('#\\/st2mul .mjx-mrow').eq(0).should('have.text', 'm(a,b)');
-    cy.get('#\\/st2mulSimp .mjx-mrow').eq(0).should('have.text', 'm(a,b)');
+    cy.get('#\\/st2mulSimp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
     cy.get('#\\/st2mulExp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
     cy.get('#\\/t2smul .mjx-mrow').eq(0).should('have.text', '(a,b)m');
-    cy.get('#\\/t2smulSimp .mjx-mrow').eq(0).should('have.text', 'm(a,b)');
+    cy.get('#\\/t2smulSimp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
     cy.get('#\\/t2smulExp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
     cy.get('#\\/sv2mul .mjx-mrow').eq(0).should('have.text', 'm(c,d)');
-    cy.get('#\\/sv2mulSimp .mjx-mrow').eq(0).should('have.text', 'm(c,d)');
+    cy.get('#\\/sv2mulSimp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
     cy.get('#\\/sv2mulExp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
     cy.get('#\\/v2smul .mjx-mrow').eq(0).should('have.text', '(c,d)m');
-    cy.get('#\\/v2smulSimp .mjx-mrow').eq(0).should('have.text', 'm(c,d)');
+    cy.get('#\\/v2smulSimp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
     cy.get('#\\/v2smulExp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
     cy.get('#\\/simul .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
     cy.get('#\\/simulSimp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
@@ -3374,7 +3391,9 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/ismul .mjx-mrow').eq(0).should('have.text', '(e,f)m');
     cy.get('#\\/ismulSimp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
     cy.get('#\\/ismulExp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
-
+    cy.get('#\\/st2v2ssum .mjx-mrow').eq(0).should('have.text', 'm(a,b)+(c,d)n');
+    cy.get('#\\/st2v2ssumSimp .mjx-mrow').eq(0).should('have.text', '(am+cn,bm+dn)');
+    cy.get('#\\/st2v2ssumExp .mjx-mrow').eq(0).should('have.text', '(am+cn,bm+dn)');
 
     cy.get('#\\/t3t3sum .mjx-mrow').eq(0).should('have.text', '(g,h,i)+(g,h,i)');
     cy.get('#\\/t3t3sumSimp .mjx-mrow').eq(0).should('have.text', '(2g,2h,2i)');
@@ -3384,22 +3403,29 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/t3v3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+j,h+k,i+l)');
     cy.get('#\\/v3t3sum .mjx-mrow').eq(0).should('have.text', '(j,k,l)+(g,h,i)');
     cy.get('#\\/v3t3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+j,h+k,i+l)');
+    cy.get('#\\/t3v3diff .mjx-mrow').eq(0).should('have.text', '(g,h,i)−(j,k,l)');
+    cy.get('#\\/t3v3diffSimp .mjx-mrow').eq(0).should('have.text', '(g−j,h−k,i−l)');
+    cy.get('#\\/v3t3diff .mjx-mrow').eq(0).should('have.text', '(j,k,l)−(g,h,i)');
+    cy.get('#\\/v3t3diffSimp .mjx-mrow').eq(0).should('have.text', '(−g+j,−h+k,−i+l)');
     cy.get('#\\/st3mul .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)');
-    cy.get('#\\/st3mulSimp .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)');
+    cy.get('#\\/st3mulSimp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
     cy.get('#\\/st3mulExp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
     cy.get('#\\/t3smul .mjx-mrow').eq(0).should('have.text', '(g,h,i)m');
-    cy.get('#\\/t3smulSimp .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)');
+    cy.get('#\\/t3smulSimp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
     cy.get('#\\/t3smulExp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
     cy.get('#\\/sv3mul .mjx-mrow').eq(0).should('have.text', 'm(j,k,l)');
-    cy.get('#\\/sv3mulSimp .mjx-mrow').eq(0).should('have.text', 'm(j,k,l)');
+    cy.get('#\\/sv3mulSimp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
     cy.get('#\\/sv3mulExp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
     cy.get('#\\/v3smul .mjx-mrow').eq(0).should('have.text', '(j,k,l)m');
-    cy.get('#\\/v3smulSimp .mjx-mrow').eq(0).should('have.text', 'm(j,k,l)');
+    cy.get('#\\/v3smulSimp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
     cy.get('#\\/v3smulExp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
+    cy.get('#\\/st3v3ssum .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)+(j,k,l)n');
+    cy.get('#\\/st3v3ssumSimp .mjx-mrow').eq(0).should('have.text', '(gm+jn,hm+kn,im+ln)');
+    cy.get('#\\/st3v3ssumExp .mjx-mrow').eq(0).should('have.text', '(gm+jn,hm+kn,im+ln)');
 
   });
 
-  it('add matrices, multiply by scalar', () => {
+  it('add and subtract matrices, multiply by scalar', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -3455,6 +3481,8 @@ describe('Math Tag Tests', function () {
 
   <p><math name="m22m22b">$matrix22+$matrix22b</math></p>
   <p><math name="m22m22bSimp" simplify>$matrix22+$matrix22b</math></p>
+  <p><math name="m22m22bdiff">$matrix22-$matrix22b</math></p>
+  <p><math name="m22m22bdiffSimp" simplify>$matrix22-$matrix22b</math></p>
   <p><math name="m22sm22b">$matrix22+m$matrix22b</math></p>
   <p><math name="m22sm22bSimp" simplify>$matrix22+m$matrix22b</math></p>
   <p><math name="m22sm22bExpSimp" expand simplify>$matrix22+m$matrix22b</math></p>
@@ -3488,29 +3516,31 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/m22m21m12m12m21m22sumSimp .mjx-mrow').eq(0).should('have.text', '[2g2h]+[2e2f]+[2a2b2c2d]');
 
     cy.get('#\\/sm22mul .mjx-mrow').eq(0).should('have.text', 'm[abcd]');
-    cy.get('#\\/sm22mulSimp .mjx-mrow').eq(0).should('have.text', 'm[abcd]');
+    cy.get('#\\/sm22mulSimp .mjx-mrow').eq(0).should('have.text', '[ambmcmdm]');
     cy.get('#\\/sm22mulExp .mjx-mrow').eq(0).should('have.text', '[ambmcmdm]');
     cy.get('#\\/m22smul .mjx-mrow').eq(0).should('have.text', '[abcd]m');
-    cy.get('#\\/m22smulSimp .mjx-mrow').eq(0).should('have.text', 'm[abcd]');
+    cy.get('#\\/m22smulSimp .mjx-mrow').eq(0).should('have.text', '[ambmcmdm]');
     cy.get('#\\/m22smulExp .mjx-mrow').eq(0).should('have.text', '[ambmcmdm]');
     cy.get('#\\/sm21mul .mjx-mrow').eq(0).should('have.text', 'm[ef]');
-    cy.get('#\\/sm21mulSimp .mjx-mrow').eq(0).should('have.text', 'm[ef]');
+    cy.get('#\\/sm21mulSimp .mjx-mrow').eq(0).should('have.text', '[emfm]');
     cy.get('#\\/sm21mulExp .mjx-mrow').eq(0).should('have.text', '[emfm]');
     cy.get('#\\/m21smul .mjx-mrow').eq(0).should('have.text', '[ef]m');
-    cy.get('#\\/m21smulSimp .mjx-mrow').eq(0).should('have.text', 'm[ef]');
+    cy.get('#\\/m21smulSimp .mjx-mrow').eq(0).should('have.text', '[emfm]');
     cy.get('#\\/m21smulExp .mjx-mrow').eq(0).should('have.text', '[emfm]');
     cy.get('#\\/sm12mul .mjx-mrow').eq(0).should('have.text', 'm[gh]');
-    cy.get('#\\/sm12mulSimp .mjx-mrow').eq(0).should('have.text', 'm[gh]');
+    cy.get('#\\/sm12mulSimp .mjx-mrow').eq(0).should('have.text', '[gmhm]');
     cy.get('#\\/sm12mulExp .mjx-mrow').eq(0).should('have.text', '[gmhm]');
     cy.get('#\\/m12smul .mjx-mrow').eq(0).should('have.text', '[gh]m');
-    cy.get('#\\/m12smulSimp .mjx-mrow').eq(0).should('have.text', 'm[gh]');
+    cy.get('#\\/m12smulSimp .mjx-mrow').eq(0).should('have.text', '[gmhm]');
     cy.get('#\\/m12smulExp .mjx-mrow').eq(0).should('have.text', '[gmhm]');
 
 
     cy.get('#\\/m22m22b .mjx-mrow').eq(0).should('have.text', '[abcd]+[nopq]');
     cy.get('#\\/m22m22bSimp .mjx-mrow').eq(0).should('have.text', '[a+nb+oc+pd+q]');
+    cy.get('#\\/m22m22bdiff .mjx-mrow').eq(0).should('have.text', '[abcd]−[nopq]');
+    cy.get('#\\/m22m22bdiffSimp .mjx-mrow').eq(0).should('have.text', '[a−nb−oc−pd−q]');
     cy.get('#\\/m22sm22b .mjx-mrow').eq(0).should('have.text', '[abcd]+m[nopq]');
-    cy.get('#\\/m22sm22bSimp .mjx-mrow').eq(0).should('have.text', 'm[nopq]+[abcd]');
+    cy.get('#\\/m22sm22bSimp .mjx-mrow').eq(0).should('have.text', '[a+mnb+moc+mpd+mq]');
     cy.get('#\\/m22sm22bExpSimp .mjx-mrow').eq(0).should('have.text', '[a+mnb+moc+mpd+mq]');
 
   });
@@ -3563,6 +3593,1345 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/longmultExp .mjx-mrow').eq(0).should('have.text', '[aeikmo+afilmo+agikno+ahilno+bejkmo+bfjlmo+bgjkno+bhjlnoaeikmp+afilmp+agiknp+ahilnp+bejkmp+bfjlmp+bgjknp+bhjlnpceikmo+cfilmo+cgikno+chilno+dejkmo+dfjlmo+dgjkno+dhjlnoceikmp+cfilmp+cgiknp+chilnp+dejkmp+dfjlmp+dgjknp+dhjlnp]');
     cy.get('#\\/longMultResult .mjx-mrow').eq(0).should('have.text', '[aeikmo+afilmo+agikno+ahilno+bejkmo+bfjlmo+bgjkno+bhjlnoaeikmp+afilmp+agiknp+ahilnp+bejkmp+bfjlmp+bgjknp+bhjlnpceikmo+cfilmo+cgikno+chilno+dejkmo+dfjlmo+dgjkno+dhjlnoceikmp+cfilmp+cgiknp+chilnp+dejkmp+dfjlmp+dgjknp+dhjlnp]');
 
+  });
+
+  it('matrix and vector state variables', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>Originals: <math format="latex" name="v1">
+    \\begin{pmatrix}
+      1 \\\\ 2
+    \\end{pmatrix}
+  </math>
+  <math format="latex" name="v2">
+    \\begin{pmatrix}
+      1 & 2
+    \\end{pmatrix}
+  </math>
+  <math name="v3">(1,2)</math>
+  <math name="v4">(1,2)'</math>
+  <math name="v5">(1,2)^T</math>
+  <math name="v6">1,2</math>
+  <math name="v7" createVectors>(1,2)</math>
+  <math name="v8" createVectors>(1,2)'</math>
+  <math name="v9" createVectors>(1,2)^T</math>
+  </p>
+  <p>N dimensions:
+    <integer copySource="v1.nDimensions" name="v1nd" />
+    <integer copySource="v2.nDimensions" name="v2nd" />
+    <integer copySource="v3.nDimensions" name="v3nd" />
+    <integer copySource="v4.nDimensions" name="v4nd" />
+    <integer copySource="v5.nDimensions" name="v5nd" />
+    <integer copySource="v6.nDimensions" name="v6nd" />
+    <integer copySource="v7.nDimensions" name="v7nd" />
+    <integer copySource="v8.nDimensions" name="v8nd" />
+    <integer copySource="v9.nDimensions" name="v9nd" />
+  </p>
+  <p>Vectors:
+    <vector copySource="v1.vector" name="v1v" />
+    <vector copySource="v2.vector" name="v2v" />
+    <vector copySource="v3.vector" name="v3v" />
+    <vector copySource="v4.vector" name="v4v" />
+    <vector copySource="v5.vector" name="v5v" />
+    <vector copySource="v6.vector" name="v6v" />
+    <vector copySource="v7.vector" name="v7v" />
+    <vector copySource="v8.vector" name="v8v" />
+    <vector copySource="v9.vector" name="v9v" />
+  </p>
+  <p>Vectors as math:
+    <math copySource="v1.vector" name="v1vm" />
+    <math copySource="v2.vector" name="v2vm" />
+    <math copySource="v3.vector" name="v3vm" />
+    <math copySource="v4.vector" name="v4vm" />
+    <math copySource="v5.vector" name="v5vm" />
+    <math copySource="v6.vector" name="v6vm" />
+    <math copySource="v7.vector" name="v7vm" />
+    <math copySource="v8.vector" name="v8vm" />
+    <math copySource="v9.vector" name="v9vm" />
+  </p>
+  <p>Vector x components:
+    <math copySource="v1.x" name="v1x" />
+    <math copySource="v2.x" name="v2x" />
+    <math copySource="v3.x" name="v3x" />
+    <math copySource="v4.x" name="v4x" />
+    <math copySource="v5.x" name="v5x" />
+    <math copySource="v6.x" name="v6x" />
+    <math copySource="v7.x" name="v7x" />
+    <math copySource="v8.x" name="v8x" />
+    <math copySource="v9.x" name="v9x" />
+  </p>
+  <p>Vector y components:
+    <math copySource="v1.y" name="v1y" />
+    <math copySource="v2.y" name="v2y" />
+    <math copySource="v3.y" name="v3y" />
+    <math copySource="v4.y" name="v4y" />
+    <math copySource="v5.y" name="v5y" />
+    <math copySource="v6.y" name="v6y" />
+    <math copySource="v7.y" name="v7y" />
+    <math copySource="v8.y" name="v8y" />
+    <math copySource="v9.y" name="v9y" />
+  </p>
+  <p>Vector x components b:
+    <math copySource="v1.vector[1]" name="v1xb" />
+    <math copySource="v2.vector[1]" name="v2xb" />
+    <math copySource="v3.vector[1]" name="v3xb" />
+    <math copySource="v4.vector[1]" name="v4xb" />
+    <math copySource="v5.vector[1]" name="v5xb" />
+    <math copySource="v6.vector[1]" name="v6xb" />
+    <math copySource="v7.vector[1]" name="v7xb" />
+    <math copySource="v8.vector[1]" name="v8xb" />
+    <math copySource="v9.vector[1]" name="v9xb" />
+  </p>
+  <p>Vector y components b:
+    <math copySource="v1.vector[2]" name="v1yb" />
+    <math copySource="v2.vector[2]" name="v2yb" />
+    <math copySource="v3.vector[2]" name="v3yb" />
+    <math copySource="v4.vector[2]" name="v4yb" />
+    <math copySource="v5.vector[2]" name="v5yb" />
+    <math copySource="v6.vector[2]" name="v6yb" />
+    <math copySource="v7.vector[2]" name="v7yb" />
+    <math copySource="v8.vector[2]" name="v8yb" />
+    <math copySource="v9.vector[2]" name="v9yb" />
+  </p>
+  <p>Matrix size:
+    <numberList copySource="v1.matrixSize" name="v1ms" />
+    <numberList copySource="v2.matrixSize" name="v2ms" />
+    <numberList copySource="v3.matrixSize" name="v3ms" />
+    <numberList copySource="v4.matrixSize" name="v4ms" />
+    <numberList copySource="v5.matrixSize" name="v5ms" />
+    <numberList copySource="v6.matrixSize" name="v6ms" />
+    <numberList copySource="v7.matrixSize" name="v7ms" />
+    <numberList copySource="v8.matrixSize" name="v8ms" />
+    <numberList copySource="v9.matrixSize" name="v9ms" />
+  </p>
+  <p>N rows:
+    <integer copySource="v1.nRows" name="v1nr" />
+    <integer copySource="v2.nRows" name="v2nr" />
+    <integer copySource="v3.nRows" name="v3nr" />
+    <integer copySource="v4.nRows" name="v4nr" />
+    <integer copySource="v5.nRows" name="v5nr" />
+    <integer copySource="v6.nRows" name="v6nr" />
+    <integer copySource="v7.nRows" name="v7nr" />
+    <integer copySource="v8.nRows" name="v8nr" />
+    <integer copySource="v9.nRows" name="v9nr" />
+  </p>
+  <p>N columns:
+    <integer copySource="v1.nColumns" name="v1nc" />
+    <integer copySource="v2.nColumns" name="v2nc" />
+    <integer copySource="v3.nColumns" name="v3nc" />
+    <integer copySource="v4.nColumns" name="v4nc" />
+    <integer copySource="v5.nColumns" name="v5nc" />
+    <integer copySource="v6.nColumns" name="v6nc" />
+    <integer copySource="v7.nColumns" name="v7nc" />
+    <integer copySource="v8.nColumns" name="v8nc" />
+    <integer copySource="v9.nColumns" name="v9nc" />
+  </p>
+  <p>Matrices:
+    <matrix copySource="v1.matrix" name="v1m" />
+    <matrix copySource="v2.matrix" name="v2m" />
+    <matrix copySource="v3.matrix" name="v3m" />
+    <matrix copySource="v4.matrix" name="v4m" />
+    <matrix copySource="v5.matrix" name="v5m" />
+    <matrix copySource="v6.matrix" name="v6m" />
+    <matrix copySource="v7.matrix" name="v7m" />
+    <matrix copySource="v8.matrix" name="v8m" />
+    <matrix copySource="v9.matrix" name="v9m" />
+  </p>
+  <p>Matrices as math:
+    <math copySource="v1.matrix" name="v1mm" />
+    <math copySource="v2.matrix" name="v2mm" />
+    <math copySource="v3.matrix" name="v3mm" />
+    <math copySource="v4.matrix" name="v4mm" />
+    <math copySource="v5.matrix" name="v5mm" />
+    <math copySource="v6.matrix" name="v6mm" />
+    <math copySource="v7.matrix" name="v7mm" />
+    <math copySource="v8.matrix" name="v8mm" />
+    <math copySource="v9.matrix" name="v9mm" />
+  </p>
+  <p>Row 1:
+    <matrix copySource="v1.matrix[1]" name="v1r1" />
+    <matrix copySource="v2.matrix[1]" name="v2r1" />
+    <matrix copySource="v3.matrix[1]" name="v3r1" />
+    <matrix copySource="v4.matrix[1]" name="v4r1" />
+    <matrix copySource="v5.matrix[1]" name="v5r1" />
+    <matrix copySource="v6.matrix[1]" name="v6r1" />
+    <matrix copySource="v7.matrix[1]" name="v7r1" />
+    <matrix copySource="v8.matrix[1]" name="v8r1" />
+    <matrix copySource="v9.matrix[1]" name="v9r1" />
+  </p>
+  <p>Row 1 b:
+    <matrix copySource="v1.row1" name="v1r1b" />
+    <matrix copySource="v2.row1" name="v2r1b" />
+    <matrix copySource="v3.row1" name="v3r1b" />
+    <matrix copySource="v4.row1" name="v4r1b" />
+    <matrix copySource="v5.row1" name="v5r1b" />
+    <matrix copySource="v6.row1" name="v6r1b" />
+    <matrix copySource="v7.row1" name="v7r1b" />
+    <matrix copySource="v8.row1" name="v8r1b" />
+    <matrix copySource="v9.row1" name="v9r1b" />
+  </p>
+  <p>Row 1 c:
+    <matrix copySource="v1.rows[1]" name="v1r1c" />
+    <matrix copySource="v2.rows[1]" name="v2r1c" />
+    <matrix copySource="v3.rows[1]" name="v3r1c" />
+    <matrix copySource="v4.rows[1]" name="v4r1c" />
+    <matrix copySource="v5.rows[1]" name="v5r1c" />
+    <matrix copySource="v6.rows[1]" name="v6r1c" />
+    <matrix copySource="v7.rows[1]" name="v7r1c" />
+    <matrix copySource="v8.rows[1]" name="v8r1c" />
+    <matrix copySource="v9.rows[1]" name="v9r1c" />
+  </p>
+  <p>Row 2:
+    <matrix copySource="v1.matrix[2]" name="v1r2" />
+    <matrix copySource="v2.matrix[2]" name="v2r2" />
+    <matrix copySource="v3.matrix[2]" name="v3r2" />
+    <matrix copySource="v4.matrix[2]" name="v4r2" />
+    <matrix copySource="v5.matrix[2]" name="v5r2" />
+    <matrix copySource="v6.matrix[2]" name="v6r2" />
+    <matrix copySource="v7.matrix[2]" name="v7r2" />
+    <matrix copySource="v8.matrix[2]" name="v8r2" />
+    <matrix copySource="v9.matrix[2]" name="v9r2" />
+  </p>
+  <p>Row 2 b:
+    <matrix copySource="v1.row2" name="v1r2b" />
+    <matrix copySource="v2.row2" name="v2r2b" />
+    <matrix copySource="v3.row2" name="v3r2b" />
+    <matrix copySource="v4.row2" name="v4r2b" />
+    <matrix copySource="v5.row2" name="v5r2b" />
+    <matrix copySource="v6.row2" name="v6r2b" />
+    <matrix copySource="v7.row2" name="v7r2b" />
+    <matrix copySource="v8.row2" name="v8r2b" />
+    <matrix copySource="v9.row2" name="v9r2b" />
+  </p>
+  <p>Row 2 c:
+    <matrix copySource="v1.rows[2]" name="v1r2c" />
+    <matrix copySource="v2.rows[2]" name="v2r2c" />
+    <matrix copySource="v3.rows[2]" name="v3r2c" />
+    <matrix copySource="v4.rows[2]" name="v4r2c" />
+    <matrix copySource="v5.rows[2]" name="v5r2c" />
+    <matrix copySource="v6.rows[2]" name="v6r2c" />
+    <matrix copySource="v7.rows[2]" name="v7r2c" />
+    <matrix copySource="v8.rows[2]" name="v8r2c" />
+    <matrix copySource="v9.rows[2]" name="v9r2c" />
+  </p>
+  <p>Column 1:
+    <matrix copySource="v1.columns[1]" name="v1c1" />
+    <matrix copySource="v2.columns[1]" name="v2c1" />
+    <matrix copySource="v3.columns[1]" name="v3c1" />
+    <matrix copySource="v4.columns[1]" name="v4c1" />
+    <matrix copySource="v5.columns[1]" name="v5c1" />
+    <matrix copySource="v6.columns[1]" name="v6c1" />
+    <matrix copySource="v7.columns[1]" name="v7c1" />
+    <matrix copySource="v8.columns[1]" name="v8c1" />
+    <matrix copySource="v9.columns[1]" name="v9c1" />
+  </p>
+  <p>Column 1 b:
+    <matrix copySource="v1.column1" name="v1c1b" />
+    <matrix copySource="v2.column1" name="v2c1b" />
+    <matrix copySource="v3.column1" name="v3c1b" />
+    <matrix copySource="v4.column1" name="v4c1b" />
+    <matrix copySource="v5.column1" name="v5c1b" />
+    <matrix copySource="v6.column1" name="v6c1b" />
+    <matrix copySource="v7.column1" name="v7c1b" />
+    <matrix copySource="v8.column1" name="v8c1b" />
+    <matrix copySource="v9.column1" name="v9c1b" />
+  </p>
+  <p>Column 2:
+    <matrix copySource="v1.columns[2]" name="v1c2" />
+    <matrix copySource="v2.columns[2]" name="v2c2" />
+    <matrix copySource="v3.columns[2]" name="v3c2" />
+    <matrix copySource="v4.columns[2]" name="v4c2" />
+    <matrix copySource="v5.columns[2]" name="v5c2" />
+    <matrix copySource="v6.columns[2]" name="v6c2" />
+    <matrix copySource="v7.columns[2]" name="v7c2" />
+    <matrix copySource="v8.columns[2]" name="v8c2" />
+    <matrix copySource="v9.columns[2]" name="v9c2" />
+  </p>
+  <p>Column 2 b:
+    <matrix copySource="v1.column2" name="v1c2b" />
+    <matrix copySource="v2.column2" name="v2c2b" />
+    <matrix copySource="v3.column2" name="v3c2b" />
+    <matrix copySource="v4.column2" name="v4c2b" />
+    <matrix copySource="v5.column2" name="v5c2b" />
+    <matrix copySource="v6.column2" name="v6c2b" />
+    <matrix copySource="v7.column2" name="v7c2b" />
+    <matrix copySource="v8.column2" name="v8c2b" />
+    <matrix copySource="v9.column2" name="v9c2b" />
+  </p>
+
+  <p>Matrix entry 12:
+    <math copySource="v1.matrix[1][2]" name="v1me12" />
+    <math copySource="v2.matrix[1][2]" name="v2me12" />
+    <math copySource="v3.matrix[1][2]" name="v3me12" />
+    <math copySource="v4.matrix[1][2]" name="v4me12" />
+    <math copySource="v5.matrix[1][2]" name="v5me12" />
+    <math copySource="v6.matrix[1][2]" name="v6me12" />
+    <math copySource="v7.matrix[1][2]" name="v7me12" />
+    <math copySource="v8.matrix[1][2]" name="v8me12" />
+    <math copySource="v9.matrix[1][2]" name="v9me12" />
+  </p>
+  <p>Matrix entry 12 b:
+    <math copySource="v1.rows[1][2]" name="v1me12b" />
+    <math copySource="v2.rows[1][2]" name="v2me12b" />
+    <math copySource="v3.rows[1][2]" name="v3me12b" />
+    <math copySource="v4.rows[1][2]" name="v4me12b" />
+    <math copySource="v5.rows[1][2]" name="v5me12b" />
+    <math copySource="v6.rows[1][2]" name="v6me12b" />
+    <math copySource="v7.rows[1][2]" name="v7me12b" />
+    <math copySource="v8.rows[1][2]" name="v8me12b" />
+    <math copySource="v9.rows[1][2]" name="v9me12b" />
+  </p>
+  <p>Matrix entry 12 c:
+    <math copySource="v1.columns[2][1]" name="v1me12c" />
+    <math copySource="v2.columns[2][1]" name="v2me12c" />
+    <math copySource="v3.columns[2][1]" name="v3me12c" />
+    <math copySource="v4.columns[2][1]" name="v4me12c" />
+    <math copySource="v5.columns[2][1]" name="v5me12c" />
+    <math copySource="v6.columns[2][1]" name="v6me12c" />
+    <math copySource="v7.columns[2][1]" name="v7me12c" />
+    <math copySource="v8.columns[2][1]" name="v8me12c" />
+    <math copySource="v9.columns[2][1]" name="v9me12c" />
+  </p>
+  <p>Matrix entry 12 d:
+    <math copySource="v1.row1[2]" name="v1me12d" />
+    <math copySource="v2.row1[2]" name="v2me12d" />
+    <math copySource="v3.row1[2]" name="v3me12d" />
+    <math copySource="v4.row1[2]" name="v4me12d" />
+    <math copySource="v5.row1[2]" name="v5me12d" />
+    <math copySource="v6.row1[2]" name="v6me12d" />
+    <math copySource="v7.row1[2]" name="v7me12d" />
+    <math copySource="v8.row1[2]" name="v8me12d" />
+    <math copySource="v9.row1[2]" name="v9me12d" />
+  </p>
+  <p>Matrix entry 12 e:
+    <math copySource="v1.column2[1]" name="v1me12e" />
+    <math copySource="v2.column2[1]" name="v2me12e" />
+    <math copySource="v3.column2[1]" name="v3me12e" />
+    <math copySource="v4.column2[1]" name="v4me12e" />
+    <math copySource="v5.column2[1]" name="v5me12e" />
+    <math copySource="v6.column2[1]" name="v6me12e" />
+    <math copySource="v7.column2[1]" name="v7me12e" />
+    <math copySource="v8.column2[1]" name="v8me12e" />
+    <math copySource="v9.column2[1]" name="v9me12e" />
+  </p>
+  <p>Matrix entry 12 f:
+    <math copySource="v1.matrixEntry1_2" name="v1me12f" />
+    <math copySource="v2.matrixEntry1_2" name="v2me12f" />
+    <math copySource="v3.matrixEntry1_2" name="v3me12f" />
+    <math copySource="v4.matrixEntry1_2" name="v4me12f" />
+    <math copySource="v5.matrixEntry1_2" name="v5me12f" />
+    <math copySource="v6.matrixEntry1_2" name="v6me12f" />
+    <math copySource="v7.matrixEntry1_2" name="v7me12f" />
+    <math copySource="v8.matrixEntry1_2" name="v8me12f" />
+    <math copySource="v9.matrixEntry1_2" name="v9me12f" />
+  </p>
+  <p>Matrix entry 21:
+    <math copySource="v1.matrix[2][1]" name="v1me21" />
+    <math copySource="v2.matrix[2][1]" name="v2me21" />
+    <math copySource="v3.matrix[2][1]" name="v3me21" />
+    <math copySource="v4.matrix[2][1]" name="v4me21" />
+    <math copySource="v5.matrix[2][1]" name="v5me21" />
+    <math copySource="v6.matrix[2][1]" name="v6me21" />
+    <math copySource="v7.matrix[2][1]" name="v7me21" />
+    <math copySource="v8.matrix[2][1]" name="v8me21" />
+    <math copySource="v9.matrix[2][1]" name="v9me21" />
+  </p>
+  <p>Matrix entry 21 b:
+    <math copySource="v1.rows[2][1]" name="v1me21b" />
+    <math copySource="v2.rows[2][1]" name="v2me21b" />
+    <math copySource="v3.rows[2][1]" name="v3me21b" />
+    <math copySource="v4.rows[2][1]" name="v4me21b" />
+    <math copySource="v5.rows[2][1]" name="v5me21b" />
+    <math copySource="v6.rows[2][1]" name="v6me21b" />
+    <math copySource="v7.rows[2][1]" name="v7me21b" />
+    <math copySource="v8.rows[2][1]" name="v8me21b" />
+    <math copySource="v9.rows[2][1]" name="v9me21b" />
+  </p>
+  <p>Matrix entry 21 c:
+    <math copySource="v1.columns[1][2]" name="v1me21c" />
+    <math copySource="v2.columns[1][2]" name="v2me21c" />
+    <math copySource="v3.columns[1][2]" name="v3me21c" />
+    <math copySource="v4.columns[1][2]" name="v4me21c" />
+    <math copySource="v5.columns[1][2]" name="v5me21c" />
+    <math copySource="v6.columns[1][2]" name="v6me21c" />
+    <math copySource="v7.columns[1][2]" name="v7me21c" />
+    <math copySource="v8.columns[1][2]" name="v8me21c" />
+    <math copySource="v9.columns[1][2]" name="v9me21c" />
+  </p>
+  <p>Matrix entry 21 d:
+    <math copySource="v1.row2[1]" name="v1me21d" />
+    <math copySource="v2.row2[1]" name="v2me21d" />
+    <math copySource="v3.row2[1]" name="v3me21d" />
+    <math copySource="v4.row2[1]" name="v4me21d" />
+    <math copySource="v5.row2[1]" name="v5me21d" />
+    <math copySource="v6.row2[1]" name="v6me21d" />
+    <math copySource="v7.row2[1]" name="v7me21d" />
+    <math copySource="v8.row2[1]" name="v8me21d" />
+    <math copySource="v9.row2[1]" name="v9me21d" />
+  </p>
+  <p>Matrix entry 21 e:
+    <math copySource="v1.column1[2]" name="v1me21e" />
+    <math copySource="v2.column1[2]" name="v2me21e" />
+    <math copySource="v3.column1[2]" name="v3me21e" />
+    <math copySource="v4.column1[2]" name="v4me21e" />
+    <math copySource="v5.column1[2]" name="v5me21e" />
+    <math copySource="v6.column1[2]" name="v6me21e" />
+    <math copySource="v7.column1[2]" name="v7me21e" />
+    <math copySource="v8.column1[2]" name="v8me21e" />
+    <math copySource="v9.column1[2]" name="v9me21e" />
+  </p>
+  <p>Matrix entry 21 f:
+    <math copySource="v1.matrixEntry2_1" name="v1me21f" />
+    <math copySource="v2.matrixEntry2_1" name="v2me21f" />
+    <math copySource="v3.matrixEntry2_1" name="v3me21f" />
+    <math copySource="v4.matrixEntry2_1" name="v4me21f" />
+    <math copySource="v5.matrixEntry2_1" name="v5me21f" />
+    <math copySource="v6.matrixEntry2_1" name="v6me21f" />
+    <math copySource="v7.matrixEntry2_1" name="v7me21f" />
+    <math copySource="v8.matrixEntry2_1" name="v8me21f" />
+    <math copySource="v9.matrixEntry2_1" name="v9me21f" />
+  </p>
+
+  <p>Graph vectors</p>
+  <graph>
+    <vector copySource="v1.vector" name="v1vb" />
+    <vector copySource="v2.vector" name="v2vb" />
+    <vector copySource="v3.vector" name="v3vb" />
+    <vector copySource="v4.vector" name="v4vb" />
+    <vector copySource="v5.vector" name="v5vb" />
+    <vector copySource="v6.vector" name="v6vb" />
+    <vector copySource="v7.vector" name="v7vb" />
+    <vector copySource="v8.vector" name="v8vb" />
+    <vector copySource="v9.vector" name="v9vb" />
+  </graph>
+
+  <p>Change matrices</p>
+  <p><matrixInput name="mi1" showSizeControls="false" bindValueTo="$v1.matrix" /></p>
+  <p><matrixInput name="mi2" showSizeControls="false" bindValueTo="$v2.matrix" /></p>
+  <p><matrixInput name="mi3" showSizeControls="false" bindValueTo="$v3.matrix" /></p>
+  <p><matrixInput name="mi4" showSizeControls="false" bindValueTo="$v4.matrix" /></p>
+  <p><matrixInput name="mi5" showSizeControls="false" bindValueTo="$v5.matrix" /></p>
+  <p><matrixInput name="mi6" showSizeControls="false" bindValueTo="$v6.matrix" /></p>
+  <p><matrixInput name="mi7" showSizeControls="false" bindValueTo="$v7.matrix" /></p>
+  <p><matrixInput name="mi8" showSizeControls="false" bindValueTo="$v8.matrix" /></p>
+  <p><matrixInput name="mi9" showSizeControls="false" bindValueTo="$v9.matrix" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', "[12]");
+    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', "[12]");
+    cy.get('#\\/v3 .mjx-mrow').eq(0).should('have.text', "(1,2)");
+    cy.get('#\\/v4 .mjx-mrow').eq(0).should('have.text', "(1,2)′");
+    cy.get('#\\/v5 .mjx-mrow').eq(0).should('have.text', "(1,2)T");
+    cy.get('#\\/v6 .mjx-mrow').eq(0).should('have.text', "1,2");
+    cy.get('#\\/v7 .mjx-mrow').eq(0).should('have.text', "(1,2)");
+    cy.get('#\\/v8 .mjx-mrow').eq(0).should('have.text', "(1,2)′");
+    cy.get('#\\/v9 .mjx-mrow').eq(0).should('have.text', "(1,2)T");
+
+    cy.get("#\\/v1nd").should('have.text', '2')
+    cy.get("#\\/v2nd").should('have.text', '2')
+    cy.get("#\\/v3nd").should('have.text', '2')
+    cy.get("#\\/v4nd").should('have.text', '2')
+    cy.get("#\\/v5nd").should('have.text', '2')
+    cy.get("#\\/v6nd").should('have.text', '2')
+    cy.get("#\\/v7nd").should('have.text', '2')
+    cy.get("#\\/v8nd").should('have.text', '2')
+    cy.get("#\\/v9nd").should('have.text', '2')
+
+    cy.get("#\\/v1v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v2v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v3v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v4v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v5v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v6v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v7v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v8v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v9v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+
+    cy.get("#\\/v1vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v2vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v3vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v4vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v5vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v6vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v7vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v8vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v9vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+
+    cy.get("#\\/v1x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v2x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v3x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v4x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v5x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v6x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v7x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v8x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v9x .mjx-mrow").eq(0).should('have.text', '1')
+
+    cy.get("#\\/v1xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v2xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v3xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v4xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v5xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v6xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v7xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v8xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v9xb .mjx-mrow").eq(0).should('have.text', '1')
+
+    cy.get("#\\/v1y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9y .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9yb .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1ms").should('have.text', '2, 1')
+    cy.get("#\\/v2ms").should('have.text', '1, 2')
+    cy.get("#\\/v3ms").should('have.text', '2, 1')
+    cy.get("#\\/v4ms").should('have.text', '1, 2')
+    cy.get("#\\/v5ms").should('have.text', '1, 2')
+    cy.get("#\\/v6ms").should('have.text', '2, 1')
+    cy.get("#\\/v7ms").should('have.text', '2, 1')
+    cy.get("#\\/v8ms").should('have.text', '1, 2')
+    cy.get("#\\/v9ms").should('have.text', '1, 2')
+
+    cy.get("#\\/v1nr").should('have.text', '2')
+    cy.get("#\\/v2nr").should('have.text', '1')
+    cy.get("#\\/v3nr").should('have.text', '2')
+    cy.get("#\\/v4nr").should('have.text', '1')
+    cy.get("#\\/v5nr").should('have.text', '1')
+    cy.get("#\\/v6nr").should('have.text', '2')
+    cy.get("#\\/v7nr").should('have.text', '2')
+    cy.get("#\\/v8nr").should('have.text', '1')
+    cy.get("#\\/v9nr").should('have.text', '1')
+
+    cy.get("#\\/v1nc").should('have.text', '1')
+    cy.get("#\\/v2nc").should('have.text', '2')
+    cy.get("#\\/v3nc").should('have.text', '1')
+    cy.get("#\\/v4nc").should('have.text', '2')
+    cy.get("#\\/v5nc").should('have.text', '2')
+    cy.get("#\\/v6nc").should('have.text', '1')
+    cy.get("#\\/v7nc").should('have.text', '1')
+    cy.get("#\\/v8nc").should('have.text', '2')
+    cy.get("#\\/v9nc").should('have.text', '2')
+
+    cy.get("#\\/v1m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v2m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v3m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v4m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v5m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v6m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v7m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v8m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v9m .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/v1mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v2mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v3mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v4mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v5mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v6mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v7mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v8mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v9mm .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/v1r1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v2r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v3r1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v4r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v5r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v6r1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v7r1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v8r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v9r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/v1r1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v2r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v3r1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v4r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v5r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v6r1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v7r1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v8r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v9r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/v1r1c .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v2r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v3r1c .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v4r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v5r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v6r1c .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v7r1c .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v8r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v9r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/v1r2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v2r2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v3r2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v4r2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v5r2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v6r2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v7r2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v8r2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v9r2 .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/v1r2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v2r2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v3r2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v4r2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v5r2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v6r2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v7r2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v8r2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v9r2b .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/v1r2c .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v2r2c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v3r2c .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v4r2c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v5r2c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v6r2c .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v7r2c .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v8r2c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v9r2c .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/v1c1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v2c1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v3c1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v4c1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v5c1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v6c1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v7c1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v8c1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v9c1 .mjx-mrow").eq(0).should('have.text', '[1]')
+
+    cy.get("#\\/v1c1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v2c1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v3c1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v4c1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v5c1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v6c1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v7c1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v8c1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v9c1b .mjx-mrow").eq(0).should('have.text', '[1]')
+
+    cy.get("#\\/v1c2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v2c2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v3c2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v4c2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v5c2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v6c2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v7c2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v8c2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v9c2 .mjx-mrow").eq(0).should('have.text', '[2]')
+
+    cy.get("#\\/v1c2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v2c2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v3c2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v4c2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v5c2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v6c2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v7c2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v8c2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v9c2b .mjx-mrow").eq(0).should('have.text', '[2]')
+
+    cy.get("#\\/v1me12 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v2me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3me12 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v4me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6me12 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v7me12 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v8me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9me12 .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1me12b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v2me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3me12b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v4me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6me12b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v7me12b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v8me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9me12b .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1me12c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v2me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3me12c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v4me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6me12c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v7me12c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v8me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9me12c .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1me12d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v2me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3me12d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v4me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6me12d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v7me12d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v8me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9me12d .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1me12e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v2me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3me12e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v4me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6me12e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v7me12e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v8me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9me12e .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1me12f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v2me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v3me12f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v4me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v5me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v6me12f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v7me12f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v8me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v9me12f .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/v1me21 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v3me21 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v5me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v6me21 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7me21 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v9me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/v1me21b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v3me21b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v5me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v6me21b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7me21b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v9me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/v1me21c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v3me21c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v5me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v6me21c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7me21c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v9me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/v1me21d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v3me21d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v5me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v6me21d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7me21d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v9me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/v1me21e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v3me21e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v5me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v6me21e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7me21e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v9me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/v1me21f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v2me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v3me21f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v4me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v5me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v6me21f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v7me21f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v8me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v9me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+
+    cy.log('move vectors')
+
+    cy.window().then(async (win) => {
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v1vb",
+        args: {
+          headcoords: [2, 1]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v2vb",
+        args: {
+          headcoords: [2, 2]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v3vb",
+        args: {
+          headcoords: [2, 3]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v4vb",
+        args: {
+          headcoords: [2, 4]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v5vb",
+        args: {
+          headcoords: [2, 5]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v6vb",
+        args: {
+          headcoords: [2, 6]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v7vb",
+        args: {
+          headcoords: [2, 7]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v8vb",
+        args: {
+          headcoords: [2, 8]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v9vb",
+        args: {
+          headcoords: [2, 9]
+        }
+      })
+
+    })
+
+    cy.get('#\\/v9 .mjx-mrow').should('contain.text', "(2,9)T");
+
+    cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', "[21]");
+    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', "[22]");
+    cy.get('#\\/v3 .mjx-mrow').eq(0).should('have.text', "(2,3)");
+    cy.get('#\\/v4 .mjx-mrow').eq(0).should('have.text', "(2,4)′");
+    cy.get('#\\/v5 .mjx-mrow').eq(0).should('have.text', "(2,5)T");
+    cy.get('#\\/v6 .mjx-mrow').eq(0).should('have.text', "2,6");
+    cy.get('#\\/v7 .mjx-mrow').eq(0).should('have.text', "(2,7)");
+    cy.get('#\\/v8 .mjx-mrow').eq(0).should('have.text', "(2,8)′");
+    cy.get('#\\/v9 .mjx-mrow').eq(0).should('have.text', "(2,9)T");
+
+
+    cy.log('change from matrix inputs')
+
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi1_component_1_0 textarea').type("{end}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/mi2_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi2_component_0_1 textarea').type("{end}{backspace}-2{enter}", { force: true })
+    cy.get('#\\/mi3_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi3_component_1_0 textarea').type("{end}{backspace}-3{enter}", { force: true })
+    cy.get('#\\/mi4_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi4_component_0_1 textarea').type("{end}{backspace}-4{enter}", { force: true })
+    cy.get('#\\/mi5_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi5_component_0_1 textarea').type("{end}{backspace}-5{enter}", { force: true })
+    cy.get('#\\/mi6_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi6_component_1_0 textarea').type("{end}{backspace}-6{enter}", { force: true })
+    cy.get('#\\/mi7_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi7_component_1_0 textarea').type("{end}{backspace}-7{enter}", { force: true })
+    cy.get('#\\/mi8_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi8_component_0_1 textarea').type("{end}{backspace}-8{enter}", { force: true })
+    cy.get('#\\/mi9_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi9_component_0_1 textarea').type("{end}{backspace}-9{enter}", { force: true })
+
+
+    cy.get('#\\/v9 .mjx-mrow').should('contain.text', "(3,−9)T");
+
+    cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', "[3−1]");
+    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', "[3−2]");
+    cy.get('#\\/v3 .mjx-mrow').eq(0).should('have.text', "(3,−3)");
+    cy.get('#\\/v4 .mjx-mrow').eq(0).should('have.text', "(3,−4)′");
+    cy.get('#\\/v5 .mjx-mrow').eq(0).should('have.text', "(3,−5)T");
+    cy.get('#\\/v6 .mjx-mrow').eq(0).should('have.text', "3,−6");
+    cy.get('#\\/v7 .mjx-mrow').eq(0).should('have.text', "(3,−7)");
+    cy.get('#\\/v8 .mjx-mrow').eq(0).should('have.text', "(3,−8)′");
+    cy.get('#\\/v9 .mjx-mrow').eq(0).should('have.text', "(3,−9)T");
+
+  });
+
+  it('matrix state variables, non vector matrices', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>Originals: <math format="latex" name="m1">
+    \\begin{pmatrix}
+      1 & 2\\\\
+      3 & 4\\\\
+      5 & 6
+    \\end{pmatrix}
+  </math>
+  <matrix name="m2">
+    <row>1 2</row>
+    <row>3 4</row>
+    <row>5 6</row>
+  </matrix>
+  <matrix name="m3">
+    <column>1 3 5</column>
+    <column>2 4 6</column>
+  </matrix>
+  </p>
+  <p>Matrix size:
+    <numberList copySource="m1.matrixSize" name="m1ms" />
+    <numberList copySource="m2.matrixSize" name="m2ms" />
+    <numberList copySource="m3.matrixSize" name="m3ms" />
+  </p>
+  <p>N rows:
+    <integer copySource="m1.nRows" name="m1nr" />
+    <integer copySource="m2.nRows" name="m2nr" />
+    <integer copySource="m3.nRows" name="m3nr" />
+  </p>
+  <p>N columns:
+    <integer copySource="m1.nColumns" name="m1nc" />
+    <integer copySource="m2.nColumns" name="m2nc" />
+    <integer copySource="m3.nColumns" name="m3nc" />
+  </p>
+  <p>Matrices:
+    <matrix copySource="m1.matrix" name="m1m" />
+    <matrix copySource="m2.matrix" name="m2m" />
+    <matrix copySource="m3.matrix" name="m3m" />
+  </p>
+  <p>Matrices as math:
+    <math copySource="m1.matrix" name="m1mm" />
+    <math copySource="m2.matrix" name="m2mm" />
+    <math copySource="m3.matrix" name="m3mm" />
+  </p>
+  <p>Row 1:
+    <matrix copySource="m1.matrix[1]" name="m1r1" />
+    <matrix copySource="m2.matrix[1]" name="m2r1" />
+    <matrix copySource="m3.matrix[1]" name="m3r1" />
+  </p>
+  <p>Row 1 b:
+    <matrix copySource="m1.row1" name="m1r1b" />
+    <matrix copySource="m2.row1" name="m2r1b" />
+    <matrix copySource="m3.row1" name="m3r1b" />
+  </p>
+  <p>Row 1 c:
+    <matrix copySource="m1.rows[1]" name="m1r1c" />
+    <matrix copySource="m2.rows[1]" name="m2r1c" />
+    <matrix copySource="m3.rows[1]" name="m3r1c" />
+  </p>
+  <p>Row 2:
+    <matrix copySource="m1.matrix[2]" name="m1r2" />
+    <matrix copySource="m2.matrix[2]" name="m2r2" />
+    <matrix copySource="m3.matrix[2]" name="m3r2" />
+  </p>
+  <p>Row 2 b:
+    <matrix copySource="m1.row2" name="m1r2b" />
+    <matrix copySource="m2.row2" name="m2r2b" />
+    <matrix copySource="m3.row2" name="m3r2b" />
+  </p>
+  <p>Row 2 c:
+    <matrix copySource="m1.rows[2]" name="m1r2c" />
+    <matrix copySource="m2.rows[2]" name="m2r2c" />
+    <matrix copySource="m3.rows[2]" name="m3r2c" />
+  </p>
+  <p>Row 3:
+    <matrix copySource="m1.matrix[3]" name="m1r3" />
+    <matrix copySource="m2.matrix[3]" name="m2r3" />
+    <matrix copySource="m3.matrix[3]" name="m3r3" />
+  </p>
+  <p>Row 3 b:
+    <matrix copySource="m1.row3" name="m1r3b" />
+    <matrix copySource="m2.row3" name="m2r3b" />
+    <matrix copySource="m3.row3" name="m3r3b" />
+  </p>
+  <p>Row 3 c:
+    <matrix copySource="m1.rows[3]" name="m1r3c" />
+    <matrix copySource="m2.rows[3]" name="m2r3c" />
+    <matrix copySource="m3.rows[3]" name="m3r3c" />
+  </p>
+  <p>Row 4:
+    <matrix copySource="m1.matrix[4]" name="m1r4" />
+    <matrix copySource="m2.matrix[4]" name="m2r4" />
+    <matrix copySource="m3.matrix[4]" name="m3r4" />
+  </p>
+  <p>Row 4 b:
+    <matrix copySource="m1.row4" name="m1r4b" />
+    <matrix copySource="m2.row4" name="m2r4b" />
+    <matrix copySource="m3.row4" name="m3r4b" />
+  </p>
+  <p>Row 4 c:
+    <matrix copySource="m1.rows[4]" name="m1r4c" />
+    <matrix copySource="m2.rows[4]" name="m2r4c" />
+    <matrix copySource="m3.rows[4]" name="m3r4c" />
+  </p>
+  <p>Column 1:
+    <matrix copySource="m1.columns[1]" name="m1c1" />
+    <matrix copySource="m2.columns[1]" name="m2c1" />
+    <matrix copySource="m3.columns[1]" name="m3c1" />
+  </p>
+  <p>Column 1 b:
+    <matrix copySource="m1.column1" name="m1c1b" />
+    <matrix copySource="m2.column1" name="m2c1b" />
+    <matrix copySource="m3.column1" name="m3c1b" />
+  </p>
+  <p>Column 2:
+    <matrix copySource="m1.columns[2]" name="m1c2" />
+    <matrix copySource="m2.columns[2]" name="m2c2" />
+    <matrix copySource="m3.columns[2]" name="m3c2" />
+  </p>
+  <p>Column 2 b:
+    <matrix copySource="m1.column2" name="m1c2b" />
+    <matrix copySource="m2.column2" name="m2c2b" />
+    <matrix copySource="m3.column2" name="m3c2b" />
+  </p>
+  <p>Column 3:
+    <matrix copySource="m1.columns[3]" name="m1c3" />
+    <matrix copySource="m2.columns[3]" name="m2c3" />
+    <matrix copySource="m3.columns[3]" name="m3c3" />
+  </p>
+  <p>Column 3 b:
+    <matrix copySource="m1.column3" name="m1c3b" />
+    <matrix copySource="m2.column3" name="m2c3b" />
+    <matrix copySource="m3.column3" name="m3c3b" />
+  </p>
+
+  <p>Matrix entry 12:
+    <math copySource="m1.matrix[1][2]" name="m1me12" />
+    <math copySource="m2.matrix[1][2]" name="m2me12" />
+    <math copySource="m3.matrix[1][2]" name="m3me12" />
+  </p>
+  <p>Matrix entry 12 b:
+    <math copySource="m1.rows[1][2]" name="m1me12b" />
+    <math copySource="m2.rows[1][2]" name="m2me12b" />
+    <math copySource="m3.rows[1][2]" name="m3me12b" />
+  </p>
+  <p>Matrix entry 12 c:
+    <math copySource="m1.columns[2][1]" name="m1me12c" />
+    <math copySource="m2.columns[2][1]" name="m2me12c" />
+    <math copySource="m3.columns[2][1]" name="m3me12c" />
+  </p>
+  <p>Matrix entry 12 d:
+    <math copySource="m1.row1[2]" name="m1me12d" />
+    <math copySource="m2.row1[2]" name="m2me12d" />
+    <math copySource="m3.row1[2]" name="m3me12d" />
+  </p>
+  <p>Matrix entry 12 e:
+    <math copySource="m1.column2[1]" name="m1me12e" />
+    <math copySource="m2.column2[1]" name="m2me12e" />
+    <math copySource="m3.column2[1]" name="m3me12e" />
+  </p>
+  <p>Matrix entry 12 f:
+    <math copySource="m1.matrixEntry1_2" name="m1me12f" />
+    <math copySource="m2.matrixEntry1_2" name="m2me12f" />
+    <math copySource="m3.matrixEntry1_2" name="m3me12f" />
+  </p>
+  <p>Matrix entry 31:
+    <math copySource="m1.matrix[3][1]" name="m1me31" />
+    <math copySource="m2.matrix[3][1]" name="m2me31" />
+    <math copySource="m3.matrix[3][1]" name="m3me31" />
+  </p>
+  <p>Matrix entry 31 b:
+    <math copySource="m1.rows[3][1]" name="m1me31b" />
+    <math copySource="m2.rows[3][1]" name="m2me31b" />
+    <math copySource="m3.rows[3][1]" name="m3me31b" />
+  </p>
+  <p>Matrix entry 31 c:
+    <math copySource="m1.columns[1][3]" name="m1me31c" />
+    <math copySource="m2.columns[1][3]" name="m2me31c" />
+    <math copySource="m3.columns[1][3]" name="m3me31c" />
+  </p>
+  <p>Matrix entry 31 d:
+    <math copySource="m1.row3[1]" name="m1me31d" />
+    <math copySource="m2.row3[1]" name="m2me31d" />
+    <math copySource="m3.row3[1]" name="m3me31d" />
+  </p>
+  <p>Matrix entry 31 e:
+    <math copySource="m1.column1[3]" name="m1me31e" />
+    <math copySource="m2.column1[3]" name="m2me31e" />
+    <math copySource="m3.column1[3]" name="m3me31e" />
+  </p>
+  <p>Matrix entry 31 f:
+    <math copySource="m1.matrixEntry3_1" name="m1me31f" />
+    <math copySource="m2.matrixEntry3_1" name="m2me31f" />
+    <math copySource="m3.matrixEntry3_1" name="m3me31f" />
+  </p>
+  <p>Matrix entry 23:
+    <math copySource="m1.matrix[2][3]" name="m1me23" />
+    <math copySource="m2.matrix[2][3]" name="m2me23" />
+    <math copySource="m3.matrix[2][3]" name="m3me23" />
+  </p>
+  <p>Matrix entry 23 b:
+    <math copySource="m1.rows[2][3]" name="m1me23b" />
+    <math copySource="m2.rows[2][3]" name="m2me23b" />
+    <math copySource="m3.rows[2][3]" name="m3me23b" />
+  </p>
+  <p>Matrix entry 23 c:
+    <math copySource="m1.columns[3][2]" name="m1me23c" />
+    <math copySource="m2.columns[3][2]" name="m2me23c" />
+    <math copySource="m3.columns[3][2]" name="m3me23c" />
+  </p>
+  <p>Matrix entry 23 d:
+    <math copySource="m1.row2[3]" name="m1me23d" />
+    <math copySource="m2.row2[3]" name="m2me23d" />
+    <math copySource="m3.row2[3]" name="m3me23d" />
+  </p>
+  <p>Matrix entry 23 e:
+    <math copySource="m1.column3[2]" name="m1me23e" />
+    <math copySource="m2.column3[2]" name="m2me23e" />
+    <math copySource="m3.column3[2]" name="m3me23e" />
+  </p>
+  <p>Matrix entry 23 f:
+    <math copySource="m1.matrixEntry2_3" name="m1me23f" />
+    <math copySource="m2.matrixEntry2_3" name="m2me23f" />
+    <math copySource="m3.matrixEntry2_3" name="m3me23f" />
+  </p>
+
+
+  <p>Change matrices</p>
+  <p><matrixInput name="mi1" showSizeControls="false" bindValueTo="$m1.matrix" /></p>
+  <p><matrixInput name="mi2" showSizeControls="false" bindValueTo="$m2.matrix" /></p>
+  <p><matrixInput name="mi3" showSizeControls="false" bindValueTo="$m3.matrix" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', "⎡⎢⎣123456⎤⎥⎦");
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', "⎡⎢⎣123456⎤⎥⎦");
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', "⎡⎢⎣123456⎤⎥⎦");
+
+    cy.get("#\\/m1ms").should('have.text', '3, 2')
+    cy.get("#\\/m2ms").should('have.text', '3, 2')
+    cy.get("#\\/m3ms").should('have.text', '3, 2')
+
+    cy.get("#\\/m1nr").should('have.text', '3')
+    cy.get("#\\/m2nr").should('have.text', '3')
+    cy.get("#\\/m3nr").should('have.text', '3')
+
+    cy.get("#\\/m1nc").should('have.text', '2')
+    cy.get("#\\/m2nc").should('have.text', '2')
+    cy.get("#\\/m3nc").should('have.text', '2')
+
+    cy.get("#\\/m1m .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣123456⎤⎥⎦')
+    cy.get("#\\/m2m .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣123456⎤⎥⎦')
+    cy.get("#\\/m3m .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣123456⎤⎥⎦')
+
+    cy.get("#\\/m1mm .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣123456⎤⎥⎦')
+    cy.get("#\\/m2mm .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣123456⎤⎥⎦')
+    cy.get("#\\/m3mm .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣123456⎤⎥⎦')
+
+    cy.get("#\\/m1r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/m2r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/m3r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/m1r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/m2r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/m3r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/m1r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/m2r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/m3r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+
+    cy.get("#\\/m1r2 .mjx-mrow").eq(0).should('have.text', '[34]')
+    cy.get("#\\/m2r2 .mjx-mrow").eq(0).should('have.text', '[34]')
+    cy.get("#\\/m3r2 .mjx-mrow").eq(0).should('have.text', '[34]')
+
+    cy.get("#\\/m1r2b .mjx-mrow").eq(0).should('have.text', '[34]')
+    cy.get("#\\/m2r2b .mjx-mrow").eq(0).should('have.text', '[34]')
+    cy.get("#\\/m3r2b .mjx-mrow").eq(0).should('have.text', '[34]')
+
+    cy.get("#\\/m1r2c .mjx-mrow").eq(0).should('have.text', '[34]')
+    cy.get("#\\/m2r2c .mjx-mrow").eq(0).should('have.text', '[34]')
+    cy.get("#\\/m3r2c .mjx-mrow").eq(0).should('have.text', '[34]')
+    
+    cy.get("#\\/m1r3 .mjx-mrow").eq(0).should('have.text', '[56]')
+    cy.get("#\\/m2r3 .mjx-mrow").eq(0).should('have.text', '[56]')
+    cy.get("#\\/m3r3 .mjx-mrow").eq(0).should('have.text', '[56]')
+
+    cy.get("#\\/m1r3b .mjx-mrow").eq(0).should('have.text', '[56]')
+    cy.get("#\\/m2r3b .mjx-mrow").eq(0).should('have.text', '[56]')
+    cy.get("#\\/m3r3b .mjx-mrow").eq(0).should('have.text', '[56]')
+
+    cy.get("#\\/m1r3c .mjx-mrow").eq(0).should('have.text', '[56]')
+    cy.get("#\\/m2r3c .mjx-mrow").eq(0).should('have.text', '[56]')
+    cy.get("#\\/m3r3c .mjx-mrow").eq(0).should('have.text', '[56]')
+
+    cy.get("#\\/m1r4 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m2r4 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m3r4 .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/m1r4b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m2r4b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m3r4b .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/m1r4c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m2r4c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m3r4c .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/m1c1 .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣135⎤⎥⎦')
+    cy.get("#\\/m2c1 .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣135⎤⎥⎦')
+    cy.get("#\\/m3c1 .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣135⎤⎥⎦')
+
+    cy.get("#\\/m1c1b .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣135⎤⎥⎦')
+    cy.get("#\\/m2c1b .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣135⎤⎥⎦')
+    cy.get("#\\/m3c1b .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣135⎤⎥⎦')
+
+    cy.get("#\\/m1c2 .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣246⎤⎥⎦')
+    cy.get("#\\/m2c2 .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣246⎤⎥⎦')
+    cy.get("#\\/m3c2 .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣246⎤⎥⎦')
+
+    cy.get("#\\/m1c2b .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣246⎤⎥⎦')
+    cy.get("#\\/m2c2b .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣246⎤⎥⎦')
+    cy.get("#\\/m3c2b .mjx-mrow").eq(0).should('have.text', '⎡⎢⎣246⎤⎥⎦')
+
+    cy.get("#\\/m1c3 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m2c3 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m3c3 .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/m1c3b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m2c3b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/m3c3b .mjx-mrow").eq(0).should('have.text', '[]')
+
+    cy.get("#\\/m1me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m2me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m3me12 .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/m1me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m2me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m3me12b .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/m1me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m2me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m3me12c .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/m1me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m2me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m3me12d .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/m1me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m2me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m3me12e .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/m1me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m2me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/m3me12f .mjx-mrow").eq(0).should('have.text', '2')
+
+    cy.get("#\\/m1me31 .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m2me31 .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m3me31 .mjx-mrow").eq(0).should('have.text', '5')
+
+    cy.get("#\\/m1me31b .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m2me31b .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m3me31b .mjx-mrow").eq(0).should('have.text', '5')
+
+    cy.get("#\\/m1me31c .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m2me31c .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m3me31c .mjx-mrow").eq(0).should('have.text', '5')
+
+    cy.get("#\\/m1me31d .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m2me31d .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m3me31d .mjx-mrow").eq(0).should('have.text', '5')
+
+    cy.get("#\\/m1me31e .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m2me31e .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m3me31e .mjx-mrow").eq(0).should('have.text', '5')
+
+    cy.get("#\\/m1me31f .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m2me31f .mjx-mrow").eq(0).should('have.text', '5')
+    cy.get("#\\/m3me31f .mjx-mrow").eq(0).should('have.text', '5')
+
+
+    cy.get("#\\/m1me23 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m2me23 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m3me23 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/m1me23b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m2me23b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m3me23b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/m1me23c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m2me23c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m3me23c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/m1me23d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m2me23d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m3me23d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/m1me23e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m2me23e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m3me23e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get("#\\/m1me23f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m2me23f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/m3me23f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+
+
+    cy.log('change from matrix inputs')
+
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}a{enter}", { force: true })
+    cy.get('#\\/mi1_component_0_1 textarea').type("{end}{backspace}b{enter}", { force: true })
+    cy.get('#\\/mi1_component_1_0 textarea').type("{end}{backspace}c{enter}", { force: true })
+    cy.get('#\\/mi1_component_1_1 textarea').type("{end}{backspace}d{enter}", { force: true })
+    cy.get('#\\/mi1_component_2_0 textarea').type("{end}{backspace}e{enter}", { force: true })
+    cy.get('#\\/mi1_component_2_1 textarea').type("{end}{backspace}f{enter}", { force: true })
+
+    cy.get('#\\/mi2_component_0_0 textarea').type("{end}{backspace}g{enter}", { force: true })
+    cy.get('#\\/mi2_component_0_1 textarea').type("{end}{backspace}h{enter}", { force: true })
+    cy.get('#\\/mi2_component_1_0 textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get('#\\/mi2_component_1_1 textarea').type("{end}{backspace}j{enter}", { force: true })
+    cy.get('#\\/mi2_component_2_0 textarea').type("{end}{backspace}k{enter}", { force: true })
+    cy.get('#\\/mi2_component_2_1 textarea').type("{end}{backspace}l{enter}", { force: true })
+
+    cy.get('#\\/mi3_component_0_0 textarea').type("{end}{backspace}m{enter}", { force: true })
+    cy.get('#\\/mi3_component_0_1 textarea').type("{end}{backspace}n{enter}", { force: true })
+    cy.get('#\\/mi3_component_1_0 textarea').type("{end}{backspace}o{enter}", { force: true })
+    cy.get('#\\/mi3_component_1_1 textarea').type("{end}{backspace}p{enter}", { force: true })
+    cy.get('#\\/mi3_component_2_0 textarea').type("{end}{backspace}q{enter}", { force: true })
+    cy.get('#\\/mi3_component_2_1 textarea').type("{end}{backspace}r{enter}", { force: true })
+
+    cy.get('#\\/m3 .mjx-mrow').should('contain.text', "⎡⎢⎣mnopqr⎤⎥⎦");
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', "⎡⎢⎣abcdef⎤⎥⎦");
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', "⎡⎢⎣ghijkl⎤⎥⎦");
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', "⎡⎢⎣mnopqr⎤⎥⎦");
   });
 
   it('simplify complex numbers', () => {

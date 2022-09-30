@@ -4,9 +4,9 @@ import { useRecoilValue } from 'recoil';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { toastType, useToast } from '../Toast';
-import { viewerDoenetMLAtom } from '../ToolPanels/EditorViewer';
 import axios from 'axios';
 import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
+import { viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 
 export default function PageLink() {
   const addToast = useToast();

@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
-import { getFromText, mathStateVariableFromNumberStateVariable, roundForDisplay, textToAst } from '../utils/math.js';
+import { getFromText, mathStateVariableFromNumberStateVariable, numberToMathExpression, roundForDisplay, textToAst } from '../utils/math.js';
 import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic.js';
 
 export default class NumberComponent extends InlineComponent {
@@ -832,6 +832,14 @@ export default class NumberComponent extends InlineComponent {
                     number = dependencyValues.valueOnNaN;
                   }
 
+                } else if (number?.re === Infinity || number?.re === -Infinity || number?.im === Infinity || number?.im === -Infinity) {
+                  // if start with Infinity*i, evaluate_to_constant makes it Infinity+Infinity*i,
+                  // but if start with Infinity+Infinity*i, evaluate_to_constant makes is NaN+NaN*i
+                  // To make sure displayed value (which has one more pass through evaluate_to_constant)
+                  // and value match, pass through evaluate_to_constant a second time in this case
+                  number = numberToMathExpression(number).evaluate_to_constant();
+                } else if (number?.im === 0) {
+                  number = number.re;
                 }
               } catch (e) {
                 number = dependencyValues.valueOnNaN;
@@ -843,7 +851,7 @@ export default class NumberComponent extends InlineComponent {
             if (Number.isNaN(number)) {
               number = dependencyValues.valueOnNaN;
             }
-            return { setValue: { value: number} }
+            return { setValue: { value: number } }
           }
         } else {
 
@@ -870,7 +878,7 @@ export default class NumberComponent extends InlineComponent {
                 }
                 child = dependencyValues.numberChildrenByCode[tree];
                 if (child !== undefined) {
-                  return child.stateValues.value;
+                  return numberToMathExpression(child.stateValues.value).tree;
                 }
                 return tree;
               }
@@ -888,7 +896,19 @@ export default class NumberComponent extends InlineComponent {
               number = dependencyValues.valueOnNaN;
             }
 
-            if (Number.isFinite(number) || number === Infinity || number === -Infinity) {
+            if (!Number.isNaN(number) &&
+              (typeof number === "number" || (typeof number?.re === "number" && typeof number?.im === "number"))
+            ) {
+
+              if (number.re === Infinity || number.re === -Infinity || number.im === Infinity || number.im === -Infinity) {
+                // if start with Infinity*i, evaluate_to_constant makes it Infinity+Infinity*i,
+                // but if start with Infinity+Infinity*i, evaluate_to_constant makes is NaN+NaN*i
+                // To make sure displayed value (which has one more pass through evaluate_to_constant)
+                // and value match, pass through evaluate_to_constant a second time in this case
+                number = numberToMathExpression(number).evaluate_to_constant();
+              } else if (number.im === 0) {
+                number = number.re;
+              }
               return { setValue: { value: number } };
 
             }
@@ -914,8 +934,8 @@ export default class NumberComponent extends InlineComponent {
             valueOnInvalid: dependencyValues.valueOnNaN,
           });
 
-          // fractionSatisfied will be either 0 or 1 as have not
-          // specified matchPartial
+          // fractionSatisfied will be either 0 or 1 (or valueOnNaN)
+          // as have not specified matchPartial
 
           return { setValue: { value: fractionSatisfied } }
 
@@ -933,6 +953,10 @@ export default class NumberComponent extends InlineComponent {
         if (value === null) {
           return NaN;
         }
+        if (typeof value === "number" || (typeof value?.re === "number" && typeof value?.im === "number")) {
+          return value;
+        }
+
         let number = Number(value);
         if (Number.isNaN(number)) {
           try {
@@ -958,13 +982,19 @@ export default class NumberComponent extends InlineComponent {
         let desiredValue = desiredStateVariableValues.value;
         if (desiredValue instanceof me.class) {
           desiredValue = desiredValue.evaluate_to_constant();
-          if (!Number.isFinite(desiredValue)) {
+          if (Number.isNaN(desiredValue) || !(
+            typeof desiredValue === "number" || (typeof desiredValue?.re === "number" && typeof desiredValue?.im === "number")
+          )) {
             desiredValue = dependencyValues.valueOnNaN;
           }
         } else {
-          desiredValue = Number(desiredValue);
-          if (Number.isNaN(desiredValue)) {
-            desiredValue = dependencyValues.valueOnNaN;
+          if (Number.isNaN(desiredValue) || !(
+            typeof desiredValue === "number" || (typeof desiredValue?.re === "number" && typeof desiredValue?.im === "number")
+          )) {
+            desiredValue = Number(desiredValue);
+            if (Number.isNaN(desiredValue)) {
+              desiredValue = dependencyValues.valueOnNaN;
+            }
           }
         }
 
@@ -975,7 +1005,7 @@ export default class NumberComponent extends InlineComponent {
               success: true,
               instructions: [{
                 setDependency: "allChildren",
-                desiredValue: me.fromAst(desiredValue),
+                desiredValue: numberToMathExpression(desiredValue),
                 childIndex: 0,
                 variableIndex: 0,
               }]
@@ -994,13 +1024,13 @@ export default class NumberComponent extends InlineComponent {
           if (dependencyValues.stringChild.length === 0) {
             instructions = [{
               setEssentialValue: "value",
-              value: desiredValue,
+              value: numberToMathExpression(desiredValue).evaluate_to_constant(), // to normalize form
             }];
           } else {
             // TODO: would it be more efficient to defer setting value of string?
             instructions = [{
               setDependency: "stringChild",
-              desiredValue: desiredValue.toString(),
+              desiredValue: numberToMathExpression(desiredValue).toString(),
               childIndex: 0,
               variableIndex: 0,
             }];
@@ -1044,13 +1074,9 @@ export default class NumberComponent extends InlineComponent {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits
         let rounded = roundForDisplay({
-          value: dependencyValues.value,
+          value: numberToMathExpression(dependencyValues.value),
           dependencyValues, usedDefault
-        });
-
-        if (rounded instanceof me.class) {
-          rounded = rounded.tree;
-        }
+        }).evaluate_to_constant();
 
         return {
           setValue: {
@@ -1100,7 +1126,7 @@ export default class NumberComponent extends InlineComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
-        return { setValue: { text: me.fromAst(dependencyValues.valueForDisplay).toString(params) } };
+        return { setValue: { text: numberToMathExpression(dependencyValues.valueForDisplay).toString(params) } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let desiredNumber = Number(desiredStateVariableValues.text);
@@ -1186,7 +1212,7 @@ export default class NumberComponent extends InlineComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
-        return { setValue: { latex: me.fromAst(dependencyValues.valueForDisplay).toLatex(params) } };
+        return { setValue: { latex: numberToMathExpression(dependencyValues.valueForDisplay).toLatex(params) } };
       }
     }
 

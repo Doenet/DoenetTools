@@ -3,52 +3,16 @@ import PageViewer, { scrollableContainerAtom } from '../../../Viewer/PageViewer'
 import useEventListener from '../../../_utils/hooks/useEventListener'
 import {
   useRecoilValue,
-  atom,
   useRecoilCallback,
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
 import { profileAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
-import {
-  fileByPageId,
-  pageVariantInfoAtom,
-  pageVariantPanelAtom,
-} from '../ToolHandlers/CourseToolHandler';
 import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 import axios from 'axios';
 import { useLocation } from 'react-router';
-
-export const viewerDoenetMLAtom = atom({
-  key: "viewerDoenetMLAtom",
-  default: ""
-})
-
-export const textEditorDoenetMLAtom = atom({
-  key: "textEditorDoenetMLAtom",
-  default: ""
-})
-
-export const updateTextEditorDoenetMLAtom = atom({
-  key: "updateTextEditorDoenetMLAtom",
-  default: ""
-})
-
-// TODO: change to pageId
-//Boolean initialized editor tool start up
-export const editorPageIdInitAtom = atom({
-  key: "editorPageIdInitAtom",
-  default: ""
-})
-
-export const refreshNumberAtom = atom({
-  key: "refreshNumberAtom",
-  default: 0
-})
-
-export const editorViewerErrorStateAtom = atom({
-  key: "editorViewerErrorStateAtom",
-  default: false
-})
+import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 
 export const useUpdateViewer = () => {
   const updateViewer = useRecoilCallback(({ snapshot, set }) => async () => {

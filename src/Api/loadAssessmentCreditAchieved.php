@@ -10,11 +10,24 @@ include 'permissionsAndSettingsForOneCourseFunction.php';
 
 $jwtArray = include 'jwtArray.php';
 $requestorUserId = $jwtArray['userId'];
+$examUserId = array_key_exists("examineeUserId", $jwtArray)
+    ? $jwtArray["examineeUserId"]
+    : "";
+$examDoenetId = array_key_exists("doenetId", $jwtArray)
+    ? $jwtArray["doenetId"]
+    : "";
+
+
 
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 $tool = mysqli_real_escape_string($conn, $_REQUEST['tool']);
 $studentUserId = mysqli_real_escape_string($conn, $_REQUEST['userId']);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST['attemptNumber']);
+
+//If javascript didn't send a userId use the signed in $requestorUserId
+if ($studentUserId == '') {
+    $studentUserId = $requestorUserId;
+}
 
 $success = true;
 $databaseError = false;
@@ -29,12 +42,20 @@ if ($doenetId == '') {
 } elseif ($tool == '') {
     $success = false;
     $message = 'Internal Error: missing tool';
+} elseif ($requestorUserId == "" ) {
+    if ($examUserId == "") {
+        $success = false;
+        $message = "No access - Need to sign in";
+    } elseif ($examDoenetId != $doenetId) {
+        $success = false;
+        $message = "No access for doenetId: $doenetId";
+    } else {
+        $requestorUserId = $examUserId;
+        $studentUserId = $examUserId;
+    }
 }
 
-//If javascript didn't send a userId use the signed in $requestorUserId
-if ($studentUserId == '') {
-    $studentUserId = $requestorUserId;
-}
+
 
 //find courseId
 if ($success) {

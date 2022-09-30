@@ -32,21 +32,23 @@ export default React.memo(function Video(props) {
   useEffect(() => {
     if (SVs.youtube) {
       let cName = cssesc(id);
-      player.current = new window.YT.Player(cName, {
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          modestbranding: 1,
-          rel: 0
-        },
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange,
-          onPlaybackRateChange
-        }
-      });
+      if (window.YT) {
+        player.current = new window.YT.Player(cName, {
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            modestbranding: 1,
+            rel: 0
+          },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+            onPlaybackRateChange
+          }
+        });
+      }
     }
-  }, []);
+  }, [window.YT]);
   function pollCurrentTime() {
     let currentTime = player.current.getCurrentTime();
     let timeInterval;
@@ -74,7 +76,10 @@ export default React.memo(function Video(props) {
   }
   function onPlayerReady(event) {
     callAction({
-      action: actions.recordVideoReady
+      action: actions.recordVideoReady,
+      args: {
+        duration: player.current.getDuration()
+      }
     });
   }
   function onPlayerStateChange(event) {
@@ -104,6 +109,8 @@ export default React.memo(function Video(props) {
             rate
           }];
           lastPlayedTime.current = currentTime2;
+          preSkipTime.current = currentTime2;
+          postSkipTime.current = null;
           callAction({
             action: actions.recordVideoStarted,
             args: {
@@ -116,16 +123,18 @@ export default React.memo(function Video(props) {
         }
         break;
       case window.YT.PlayerState.PAUSED:
+        let lastState = lastPlayerState.current;
+        let beginTime = lastPlayedTime.current;
+        let pausedTime = player.current.getCurrentTime();
         pauseTimeoutId.current = setTimeout(function() {
-          let currentTime2 = player.current.getCurrentTime();
           clearInterval(pollIntervalId.current);
-          if (lastPlayerState.current === window.YT.PlayerState.PLAYING) {
-            rates.current[rates.current.length - 1].endingPoint = currentTime2;
+          if (lastState === window.YT.PlayerState.PLAYING && pausedTime > beginTime) {
+            rates.current[rates.current.length - 1].endingPoint = pausedTime;
             callAction({
               action: actions.recordVideoWatched,
               args: {
-                beginTime: lastPlayedTime.current,
-                endTime: currentTime2,
+                beginTime,
+                endTime: pausedTime,
                 duration,
                 rates: rates.current
               }
@@ -135,11 +144,11 @@ export default React.memo(function Video(props) {
           callAction({
             action: actions.recordVideoPaused,
             args: {
-              endTime: currentTime2,
+              endTime: pausedTime,
               duration
             }
           });
-          lastPausedTime.current = currentTime2;
+          lastPausedTime.current = pausedTime;
           lastPlayerState.current = event.data;
         }, 250);
         break;
@@ -147,37 +156,45 @@ export default React.memo(function Video(props) {
         clearTimeout(pauseTimeoutId.current);
         let currentTime = player.current.getCurrentTime();
         if (lastPlayedTime.current !== null) {
-          rates.current[rates.current.length - 1].endingPoint = preSkipTime.current;
-          callAction({
-            action: actions.recordVideoWatched,
-            args: {
-              beginTime: lastPlayedTime.current,
-              endTime: preSkipTime.current,
-              duration,
-              rates: rates.current
-            }
-          });
+          let beginTime2 = lastPlayedTime.current;
+          if (preSkipTime.current > beginTime2) {
+            rates.current[rates.current.length - 1].endingPoint = preSkipTime.current;
+            callAction({
+              action: actions.recordVideoWatched,
+              args: {
+                beginTime: beginTime2,
+                endTime: preSkipTime.current,
+                duration,
+                rates: rates.current
+              }
+            });
+            beginTime2 = preSkipTime.current;
+          }
           callAction({
             action: actions.recordVideoSkipped,
             args: {
-              beginTime: preSkipTime.current,
+              beginTime: beginTime2,
               endTime: currentTime,
               duration
             }
           });
           lastPlayerState.current = event.data;
           lastPlayedTime.current = null;
+          preSkipTime.current = currentTime;
+          postSkipTime.current = null;
         }
         break;
       case window.YT.PlayerState.ENDED:
         clearInterval(pollIntervalId.current);
-        if (rates.current.length > 0) {
-          rates.current[rates.current.length - 1].endingPoint = player.current.getCurrentTime();
+        let begin = lastPlayedTime.current;
+        let end = player.current.getCurrentTime();
+        if (rates.current.length > 0 && begin !== null && end > begin) {
+          rates.current[rates.current.length - 1].endingPoint = end;
           callAction({
             action: actions.recordVideoWatched,
             args: {
-              beginTime: lastPlayedTime.current,
-              endTime: player.current.getCurrentTime(),
+              beginTime: begin,
+              endTime: end,
               duration,
               rates: rates.current
             }
