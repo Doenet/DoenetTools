@@ -66,18 +66,16 @@ function UploadChoices({ doenetId, maxAttempts }){
 
     const refreshGradebook = useRecoilCallback(({set,snapshot})=> 
     async ({doenetId, addToast})=>{
-        const driveId = await snapshot.getPromise(searchParamAtomFamily('driveId'));
+        const courseId = await snapshot.getPromise(searchParamAtomFamily('courseId'));
 
-        let doenetIdPayload = { params: { doenetId } };
-        let driveIdPayload = {params: { driveId }}
+        //TODO: switch this to a refersher with sync
+        const {data: {assignmentAttemptsData}} = await axios.get('/api/loadGradebookAssignmentAttempts.php', { params: { courseId, doenetId } })
+        const {data: { gradebookEnrollment },} = await axios.get('/api/loadGradebookEnrollment.php', {params: { courseId }})
+        const {data: {overviewData}} = await axios.get('/api/loadGradebookOverview.php', {params: { courseId }})
 
-        let attemptData = await axios.get('/api/loadGradebookAssignmentAttempts.php', doenetIdPayload)
-        let studentData = await axios.get('/api/loadGradebookEnrollment.php', driveIdPayload)
-        let overView = await axios.get('/api/loadGradebookOverview.php', driveIdPayload)
-
-        set(attemptDataQuerry(doenetId),attemptData.data);
-        set(studentDataQuerry,studentData.data);
-        set(overViewDataQuerry,overView.data);
+        set(attemptDataQuerry(doenetId),assignmentAttemptsData);
+        set(studentDataQuerry,gradebookEnrollment);
+        set(overViewDataQuerry,overviewData);
 
         addToast(`Updated scores!`);
         set(processGradesAtom,'Assignment Table')
@@ -125,7 +123,7 @@ function UploadChoices({ doenetId, maxAttempts }){
         if (email !== ''){
             emails.push(email); //needed for payload
             scores.push(score); //needed for payload
-            tableRows.push(<tr> <td>{name}</td><td>{email}</td><td>{id}</td><td>{score}</td></tr>)
+            tableRows.push(<tr key={email}> <td>{name}</td><td>{email}</td><td>{id}</td><td>{score}</td></tr>)
         }
     }
 
