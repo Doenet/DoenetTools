@@ -43,6 +43,12 @@ export default class MatchesPattern extends BooleanComponent {
       defaultValue: [],
       public: true,
     }
+    attributes.matchExpressionWithBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchExpressionWithBlanks",
+      defaultValue: false,
+      public: true,
+    };
 
     return attributes;
   }
@@ -194,6 +200,10 @@ export default class MatchesPattern extends BooleanComponent {
           dependencyType: "stateVariable",
           variableName: "excludeMatches"
         },
+        matchExpressionWithBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchExpressionWithBlanks"
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -203,7 +213,7 @@ export default class MatchesPattern extends BooleanComponent {
 
         let mathValue = dependencyValues.mathChildren[0].stateValues.value;
 
-        if (mathValue.variables().includes("\uff3f")) {
+        if (mathValue.variables().includes("\uff3f") && !dependencyValues.matchExpressionWithBlanks) {
           // don't match a math value with a blank
           return { setValue: { value: false, allPatternMatches: [] } }
         }
