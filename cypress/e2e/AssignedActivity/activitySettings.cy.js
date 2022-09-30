@@ -139,7 +139,7 @@ describe('Activity Settings Test', function () {
   // })
 
   // in tbl course content
-  it.only('Set Item Weights',()=>{
+  it('Set Item Weights',()=>{
     let itemWeights = 5
     cy.get('[data-test="Item Weights"]').clear()
     cy.get('[data-test="Item Weights"]').type(itemWeights, {force: true})
