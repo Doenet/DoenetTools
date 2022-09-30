@@ -91,11 +91,8 @@ describe('Assigned Activity Test', function () {
     cy.get('[data-test="Due Date Checkbox"]').click();
     cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
     cy.get('[data-test="Assigned Date Checkbox"]').click();
-
-    // Prevent scrolling behavior when entering the due date
-    // cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(2000); // Wait for activity to be saved and assigned
+    // cy.wait(2000); // Wait for activity to be saved and assigned
 
     // Sign in as a student
     cy.signin({ userId: studentUserId });
@@ -120,11 +117,8 @@ describe('Assigned Activity Test', function () {
     cy.get('[data-test="Assigned Date"]').should('have.value', formatDateWithYear(assignedDate) + ' ' + formatTime(assignedDate));
     cy.get('[data-test="Due Date Checkbox"]').click();
     cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
-
-    // Prevent scrolling behavior when entering the due date
-    // cy.get('[data-test="Due Date"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(formatDateWithYear(dueDate) + ' ' + formatTime(dueDate) + `{enter}`, {scrollBehavior:false});
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(2000); // Wait for activity to be saved and assigned
+    // cy.wait(2000); // Wait for activity to be saved and assigned
 
     // Sign in as a student
     // Check if the Content By Week page contains the correct activity with the assigned date and due date
