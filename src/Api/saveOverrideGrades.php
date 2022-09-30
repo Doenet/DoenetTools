@@ -12,7 +12,7 @@ date_default_timezone_set('UTC');
 // America/Chicago
 
 $jwtArray = include 'jwtArray.php';
-$userId = $jwtArray['userId'];
+$requestorUserId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents('php://input'), true);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
