@@ -138,13 +138,17 @@ describe('Activity Settings Test', function () {
   //   // cy.get('[data-test="Attempt Limit"]')
   // })
 
-  // db located where?
-  // it('Set Item Weights',()=>{
-  //   let itemWeight = 5
-  //   cy.get('[data-test="Item Weights"]').clear()
-  //   cy.get('[data-test="Item Weights"]').type(itemWeight, {force: true})
-  //   cy.get('[data-test="Menu Panel"]').click({force: true})
-  // })
+  // in tbl course content
+  it.only('Set Item Weights',()=>{
+    let itemWeights = 5
+    cy.get('[data-test="Item Weights"]').clear()
+    cy.get('[data-test="Item Weights"]').type(itemWeights, {force: true})
+    cy.get('[data-test="Menu Panel"]').click({force: true})
+
+    cy.task('queryDb', `SELECT jsonDefinition FROM course_content WHERE doenetId="${doenetId}"`).then((result) => {
+      expect(result[0].jsonDefinition).to.contains(`"itemWeights": [${itemWeights}]`)
+    })
+  })
 
   it('Individualize',()=>{
     cy.get('[data-test="Individualize"]').click()
