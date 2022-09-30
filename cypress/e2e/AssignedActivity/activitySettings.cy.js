@@ -1,25 +1,17 @@
 
-describe('Activity Settings Test', { defaultCommandTimeout: 15000 }, function () {
+describe('Activity Settings Test', function () {
     const userId = "cyuserId";
     const studentUserId = "cyStudentUserId";
-    // const userId = "devuserId";
     const courseId = "courseid1";
     const doenetId = "activity1id";
     const pageDoenetId = "_page1id";
 
     
     before(() => {
-      // cy.clearAllOfAUsersActivities({userId})
       cy.signin({ userId });
       cy.clearAllOfAUsersCoursesAndItems({ userId });
       cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
       cy.createCourse({ userId, courseId, studentUserId });
-      // cy.clearIndexedDB();
-      // cy.clearAllOfAUsersActivities({ userId })
-      // cy.clearAllOfAUsersActivities({ userId: studentUserId })
-      // cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId});
-      // cy.visit(`course?tool=navigation&courseId=${courseId}`)
-      // cy.get('.navigationRow').click()
     })
     
     beforeEach(() => {
