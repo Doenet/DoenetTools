@@ -12,7 +12,6 @@ import { Styles,
 import {
     atom,
     useSetRecoilState,
-    useRecoilState,
     useRecoilValue,
     useRecoilValueLoadable,
     useRecoilCallback
@@ -43,7 +42,6 @@ export const entriesGradesAtom = atom({
     });
 
 const getUserId = (students, name) => {
-    console.log(students, name)
     for(let userId in students){
         //console.log(userId, students[userId].firstName);
         
@@ -84,19 +82,21 @@ function UploadChoices({ doenetId, maxAttempts }){
         addToast(`Updated scores!`);
         set(processGradesAtom,'Assignment Table')
     })
+
     if (assignments.state !== 'hasValue'){
         return null;
     }
+
     const totalPointsOrPercent = assignments.contents?.[doenetId]?.totalPointsOrPercent;
 
-    if (!headers.includes("SIS User ID")){
-        addToast("Need a column header named 'SIS User ID' ", toastType.ERROR);
+    if (!headers.includes("Email")){
+        addToast("Need a column header named 'Email' ", toastType.ERROR);
         setProcess('Assignment Table')
         return null;
     }
 
     let columnIndexes = [];
-    let validColumns = headers.filter((value,i)=>{
+    let validColumns = headers.filter((_,i)=>{
         //TODO: Handle percent.  We need number to handle 200.00 is 200
         let columnPoints = Number(rows?.[0]?.[i])
         if (columnPoints == totalPointsOrPercent){ columnIndexes.push(i) }
@@ -104,7 +104,7 @@ function UploadChoices({ doenetId, maxAttempts }){
     })
 
     if (validColumns.length < 1){
-        addToast(`Need a column with an assignment worth ${totalPointsOrPercent} points`, toastType.ERROR);
+        addToast(`Need a column with an assignment worth ${totalPointsOrPercent} points in the second row`, toastType.ERROR);
         setProcess('Assignment Table')
         return null;
     }
@@ -237,7 +237,7 @@ export default function GradebookAssignmentView(){
     let courseId = useRecoilValue(searchParamAtomFamily('courseId'))
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
-    let [process,setProcess] = useRecoilState(processGradesAtom);
+    let process = useRecoilValue(processGradesAtom);
     const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
     let { canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
     let assignments = useRecoilValueLoadable(assignmentData);
@@ -293,10 +293,9 @@ export default function GradebookAssignmentView(){
             Footer: totalPossiblePoints,
             accessor: "a"+i,
             disableFilters: true,
-            Cell: row  =><a onClick = {(e) =>{
+            Cell: row  =><a onClick = {() =>{
                 //TODO: proper access method from tableV8
                 let name = row.cell.row.cells[0].value.props.children
-                console.log(name)
                 let userId = getUserId(students.contents, name);
                 
                 //e.stopPropagation()
@@ -328,7 +327,7 @@ export default function GradebookAssignmentView(){
         let row = {};
 
         let name = firstName + " " + lastName
-        row["student"] = <a onClick = {(e) =>{
+        row["student"] = <a onClick = {() =>{
             setPageToolView({
                 page: 'course',
                 tool: 'gradebookStudentAssignment',
