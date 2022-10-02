@@ -849,7 +849,6 @@ function GradebookOverview() {
   //     return {};
   //   }
 
-  console.log('rows', overviewTable.rows);
   return (
     <Styles>
       <Table

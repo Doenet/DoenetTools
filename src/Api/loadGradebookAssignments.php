@@ -45,6 +45,7 @@ if ($success) {
                 cc.label, 
                 a.gradeCategory,
                 a.totalPointsOrPercent,
+                a.assignedDate,
                 ua.userId,
                 ua.isUnassigned
             FROM assignment AS a
@@ -61,6 +62,7 @@ if ($success) {
         $result = $conn->query(
             "SELECT a.doenetId, 
                 cc.label, 
+                a.assignedDate,
                 a.gradeCategory,
                 a.totalPointsOrPercent
             FROM assignment AS a
@@ -85,6 +87,7 @@ if ($success) {
             $arr = [
                 'label' => $row['label'],
                 'category' => $row['gradeCategory'],
+                'assignedDate' => $row['assignedDate'],
                 'totalPointsOrPercent' => $row['totalPointsOrPercent'],
             ];
             array_push($response_arr, [$doenetId, $arr]);
