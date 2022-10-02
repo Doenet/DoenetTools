@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 const Container = styled.div `
     display: ${props => props.align};
-    width: auto;
     align-items: center;
 `;
 
@@ -108,10 +107,7 @@ const DropdownMenu = (props) => {
 
   const labelVisible = props.label ? 'static' : 'none';
 
-  var width = props.width;
-  if (props.width == 'menu') {
-    width = '210px';
-  };
+  var width = '210px';
 
   var align = 'flex';
   var label = '';
