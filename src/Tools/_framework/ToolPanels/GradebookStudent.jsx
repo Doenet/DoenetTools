@@ -4,6 +4,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
 } from 'recoil';
+import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import {
@@ -34,29 +35,12 @@ export default function GradebookStudent() {
       disableFilters: true,
       disableSortBy: true,
     },
-    // {
-    //     Header: "Possible Points",
-    //     accessor: "possiblepoints",
-    //     disableFilters: true,
-    //     disableSortBy: true,
-    // },
-    // {
-    //     Header: "Score",
-    //     accessor: "score",
-    //     disableFilters: true,
-    //     disableSortBy: true,
-
-    // },
-    // {
-    //     Header: "Percentage",
-    //     accessor: "percentage",
-    //     disableFilters: true,
-    //     disableSortBy: true,
-
-    // }
   ];
 
   overviewTable.rows = [];
+  let totalAssignedPoints = 0;
+  let totalScore = 0;
+
 
   if (
     assignments.state == 'hasValue' &&
@@ -74,7 +58,6 @@ export default function GradebookStudent() {
       { category: 'Participation' },
     ];
 
-    let totalScore = 0;
     let totalPossiblePoints = 0;
 
     for (let {
@@ -90,6 +73,9 @@ export default function GradebookStudent() {
       });
       let scores = [];
       let allpossiblepoints = [];
+      let allassignedpoints = [];
+      let earnedallassignedpoints = [];
+      let categoryAssignedPointsAreAllDashes = true;
 
       for (let doenetId in assignments.contents) {
         let inCategory = assignments.contents[doenetId].category;
@@ -97,15 +83,33 @@ export default function GradebookStudent() {
           continue;
         }
 
+        let assignedpoints = '-';
         let possiblepoints =
           assignments.contents[doenetId].totalPointsOrPercent * 1;
         let credit = overView.contents[userId].assignments[doenetId];
         let score = possiblepoints * credit;
+        const assignedDate = assignments.contents[doenetId].assignedDate;
         allpossiblepoints.push(possiblepoints);
         scores.push(score);
-
+        
         score = Math.round(score * 100) / 100;
         let percentage = Math.round(credit * 1000) / 10 + '%';
+
+        const convertedTZAssignedDate = UTCDateStringToDate(assignedDate)
+
+        if (assignedDate == null || //No assignment date
+        // credit != null || //has taken the activity
+        credit > 0 || //positive credit for the activity
+        convertedTZAssignedDate < new Date() //AssignedDate has past
+        ){
+          assignedpoints = possiblepoints;
+          allassignedpoints.push(possiblepoints)
+          earnedallassignedpoints.push(score)
+          categoryAssignedPointsAreAllDashes = false;
+          console.log("NOT A DASH!")
+        }
+        console.log("/n")
+
         let assignment = (
           <a
             onClick={() => {
@@ -131,6 +135,7 @@ export default function GradebookStudent() {
         overviewTable.rows.push({
           assignment,
           possiblepoints,
+          assignedpoints,
           score,
           percentage,
         });
@@ -139,6 +144,9 @@ export default function GradebookStudent() {
       let numberScores = scores.length;
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
       let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      let categoryAssignedPoints = allassignedpoints.reduce((a, c) => a + c, 0) * scaleFactor;
+      if (categoryAssignedPointsAreAllDashes){categoryAssignedPoints = '-'}
+
 
       allpossiblepoints = allpossiblepoints
         .sort((a, b) => b - a)
@@ -155,6 +163,9 @@ export default function GradebookStudent() {
       }
       totalScore += categoryScore;
       totalPossiblePoints += categoryPossiblePoints;
+      if (categoryAssignedPoints != '-'){
+        totalAssignedPoints += categoryAssignedPoints;
+      }
 
       categoryScore = Math.round(categoryScore * 100) / 100;
       categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
@@ -184,6 +195,7 @@ export default function GradebookStudent() {
         ),
         score: categoryScore,
         possiblepoints: categoryPossiblePoints,
+        assignedpoints: categoryAssignedPoints,
         percentage: categoryPercentage,
       });
     }
@@ -202,6 +214,13 @@ export default function GradebookStudent() {
         disableSortBy: true,
       },
       {
+        Header: 'Assigned Points',
+        Footer: totalAssignedPoints,
+        accessor: 'assignedpoints',
+        disableFilters: true,
+        disableSortBy: true,
+      },
+      {
         Header: 'Score',
         Footer: totalScore,
         accessor: 'score',
@@ -216,13 +235,6 @@ export default function GradebookStudent() {
         disableSortBy: true,
       },
     );
-    // overviewTable.rows.push({
-    //     // assignment:"Subtotal for ${category} Description ",
-    //     assignment:<b>Course Total</b>,
-    //     score:totalScore,
-    //     possiblepoints:totalPossiblePoints,
-    //     percentage:totalPercentage
-    // });
   }
 
   let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`;
@@ -231,6 +243,9 @@ export default function GradebookStudent() {
     <>
       <div style={{ marginLeft: '18px' }}>
         <b>Gradebook for {studentName}</b>
+      </div>
+      <div style={{ marginLeft: '18px' }}>
+        <b>Current Score {totalScore}/{totalAssignedPoints}</b>
       </div>
       <Styles>
         <Table
