@@ -106,9 +106,7 @@ export default function GradebookStudent() {
           allassignedpoints.push(possiblepoints)
           earnedallassignedpoints.push(score)
           categoryAssignedPointsAreAllDashes = false;
-          console.log("NOT A DASH!")
         }
-        console.log("/n")
 
         let assignment = (
           <a
