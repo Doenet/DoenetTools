@@ -404,6 +404,7 @@ export default function Increment(props) {
             alert={props.alert}
             disabled={props.disabled}
             onClick={decrementOnClick}
+            data-test={`Decrement ${props.dataTest}`}
           >
             {decreaseIcon}
           </DecreaseButton>
@@ -443,6 +444,7 @@ export default function Increment(props) {
             aria-labelledby="increment-label"
             aria-label="Increase"
             aria-disabled={props.disabled ? true : false}
+            data-test={`Increment ${props.dataTest}`}
           >
             {increaseIcon}
           </IncreaseButton>

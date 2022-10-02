@@ -1,5 +1,25 @@
 const { defineConfig } = require('cypress')
 
+// This is for db data testing/checking (CANNOT GET DATA AND CHECK VIA CYPRESS)
+//For connecting to SQL Server
+const mysql = require('mysql')
+function queryTestDb(query, config) {
+  // creates a new mysql connection using credentials from cypress.json env's
+  const connection = mysql.createConnection(config.env.db)
+  // start connection to db
+  connection.connect()
+  // exec query + disconnect to db as a Promise
+  return new Promise((resolve, reject) => {
+    connection.query(query, (error, results) => {
+      if (error) reject(error)
+      else {
+        connection.end()
+        return resolve(results)
+      }
+    })
+  })
+}
+
 module.exports = defineConfig({
   numTestsKeptInMemory: 20,
   defaultCommandTimeout: 10000,
@@ -13,7 +33,17 @@ module.exports = defineConfig({
     
         return launchOptions;
       });
+      on('task', { queryDb: query => { return queryTestDb(query, config) }, }); //For running sql query
     },
+    
     baseUrl: 'http://localhost',
   },
+  env: {
+    db: {
+      host: "localhost",
+      user: "root",
+      password: "helloworld",
+      database: "doenet_local"
+    }
+  }
 })

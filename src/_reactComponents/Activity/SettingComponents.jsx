@@ -516,6 +516,7 @@ export const AttemptAggregation = ({ courseId, doenetId }) => {
       <LabelText>Attempt Aggregation</LabelText>
       <InputControl>
         <DropdownMenu
+          dataTest="Attempt Aggregation"
           width="menu"
           valueIndex={attemptAggregation === 'm' ? 1 : 2}
           items={[
@@ -943,6 +944,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={pinnedUntilDate !== null && pinnedUntilDate !== undefined}
+          dataTest="Pin Assignment Checkbox"
           onClick={() => {
             let valueDescription = 'None';
             let value = null;
@@ -974,6 +976,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
         />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <DateTime
+            dataTest="Pinned After Date"
             disabled={pinnedAfterDate === null || pinnedAfterDate === undefined}
             disabledText="No Pinned After Date"
             disabledOnClick={() => {
@@ -1030,6 +1033,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
           />
 
           <DateTime
+            dataTest="Pinned Until Date"
             style={{ marginTop: '5px' }}
             disabled={pinnedUntilDate === null || pinnedUntilDate === undefined}
             disabledText="No Pinned Until Date"

@@ -138,7 +138,7 @@ const DropdownMenu = (props) => {
       isMulti={props.isMulti ? props.isMulti : false}
       isDisabled={props.disabled ? true : false}
       aria-disabled={props.disabled ? true : false}
-      
+      data-test={`${props.dataTest} Dropdown`}
     />
     </Container>
   );
