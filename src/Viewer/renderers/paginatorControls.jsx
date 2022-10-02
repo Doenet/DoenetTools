@@ -1,6 +1,8 @@
 
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
+import Button from '../../_reactComponents/PanelHeaderComponents/Button';
+import styled from 'styled-components';
 
 export default React.memo(function PaginatorControls(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props,false);
@@ -10,15 +12,15 @@ export default React.memo(function PaginatorControls(props) {
   }
 
   return <p id={id}><a name={id} />
-      <button id={id + "_previous"}
+      <Button id={id + "_previous"}
         onClick={() => {callAction({action:actions.setPage, args:{ number: SVs.currentPage - 1 }})}}
         disabled={SVs.disabled || !(SVs.currentPage > 1)}
-      >{SVs.previousLabel}</button>
+      >{SVs.previousLabel}</Button>
       {" " + SVs.pageLabel} {SVs.currentPage} of {SVs.nPages + " "}
-      <button id={id + "_next"}
+      <Button id={id + "_next"}
         onClick={() => {callAction({action:actions.setPage, args:{ number: SVs.currentPage + 1 }})}}
         disabled={SVs.disabled || !(SVs.currentPage < SVs.nPages)}
-      >{SVs.nextLabel}</button>
+      >{SVs.nextLabel}</Button>
     </p>;
 })
 

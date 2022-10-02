@@ -3,6 +3,13 @@ import useDoenetRenderer from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import VisibilitySensor from 'react-visibility-sensor-v2';
+import styled from 'styled-components';
+
+const ViewerStyling = styled.div`
+&: focus {
+  outline: 2px solid var(--canvas);
+}
+`;
 
 export default React.memo(function CodeViewer(props){
   let {name, id, SVs, children, actions, callAction} = useDoenetRenderer(props,false);
@@ -44,7 +51,7 @@ export default React.memo(function CodeViewer(props){
   }
  
   let contentPanel = 
-    <div style={{
+    <ViewerStyling style={{
       width: sizeToCSS(SVs.width),
       height: sizeToCSS(SVs.height),
       maxWidth: "100%",
@@ -58,7 +65,7 @@ export default React.memo(function CodeViewer(props){
       <div style={{ overflowY: "scroll", width: sizeToCSS(viewerWidth), maxWidth: "100%", height: sizeToCSS(viewerHeight) }} id={id + "_content"}>
         {children}
       </div>
-    </div>
+    </ViewerStyling>
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
