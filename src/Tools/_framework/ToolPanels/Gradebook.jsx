@@ -140,7 +140,7 @@ const assignmentDataQuerry = atom({
       try {
         const {
           data: { success, message, assignments },
-        } = await axios.get('/api/loadAssignments.php', {
+        } = await axios.get('/api/loadGradebookAssignments.php', {
           params: { courseId },
         });
         if (success) {
