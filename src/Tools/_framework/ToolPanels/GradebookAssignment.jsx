@@ -111,7 +111,6 @@ function UploadChoices({ doenetId, maxAttempts }) {
     return null;
   }
 
-  console.log('headers', headers)
   let columnIndexes = [];
   let validColumns = headers.filter((_, i) => {
     //TODO: Handle percent.  We need number to handle 200.00 is 200
@@ -122,7 +121,6 @@ function UploadChoices({ doenetId, maxAttempts }) {
     return columnPoints == totalPointsOrPercent;
   });
 
-  console.log({validColumns, columnIndexes})
 
   if (validColumns.length < 1) {
     addToast(
@@ -137,8 +135,6 @@ function UploadChoices({ doenetId, maxAttempts }) {
     setScoreIndex(columnIndexes[0]); //Default to the first one
   }
 
-  console.log("rows", rows)
-
   let studentColumn = headers.indexOf("Student");
   let emailColumn = headers.indexOf("Email");
 
@@ -146,7 +142,7 @@ function UploadChoices({ doenetId, maxAttempts }) {
   let emails = [];
   let scores = [];
   for (let row of rows) {
-    let name = studentColumn === -1 ? null: row[studentColumn];
+    let name = studentColumn === -1 ? null : row[studentColumn];
     let email = row[emailColumn];
     let score = row[scoreIndex];
 
@@ -274,7 +270,6 @@ function UploadChoices({ doenetId, maxAttempts }) {
                 emails,
                 scores,
               };
-              console.log('payload', payload)
               axios
                 .post('/api/saveOverrideGrades.php', payload)
                 .catch((e) => {
@@ -282,13 +277,12 @@ function UploadChoices({ doenetId, maxAttempts }) {
                   setProcess('Assignment Table');
                 })
                 .then(({ data }) => {
-                  console.log('data', data)
+                  // TODO: show warning from data.failedEmails
                   if (data.success) {
                     refreshGradebook({ doenetId, addToast });
                     // addToast(`Updated scores!`);
                     // setProcess('Assignment Table')
                   } else {
-                    console.log('>>>>data', data);
                     addToast(data.message, toastType.ERROR);
                   }
                 });
@@ -315,8 +309,6 @@ export default function GradebookAssignmentView() {
     effectivePermissionsByCourseId(courseId),
   );
   let assignments = useRecoilValueLoadable(assignmentData);
-
-  console.log(`gradebook assignment view`, assignments, attempts)
 
   useEffect(() => {
     if (canViewAndModifyGrades === '1') {
@@ -345,8 +337,11 @@ export default function GradebookAssignmentView() {
 
   for (let userId in attempts.contents) {
     if (attempts.contents[userId]?.attempts) {
-      let len = Object.keys(attempts.contents[userId].attempts).length;
-      if (len > maxAttempts) maxAttempts = len;
+      let lastAttemptNumber = Math.max(...Object.keys(attempts.contents[userId].attempts).map(Number))
+
+      if (lastAttemptNumber > maxAttempts) {
+        maxAttempts = lastAttemptNumber;
+      }
     }
   }
 
@@ -439,7 +434,7 @@ export default function GradebookAssignmentView() {
       // }
       // </Link>
     }
-    
+
     let totalCredit = attempts.contents[userId]?.credit;
     let totalPointsEarned =
       Math.round(totalCredit * totalPossiblePoints * 100) / 100;
