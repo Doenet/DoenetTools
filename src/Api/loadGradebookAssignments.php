@@ -10,16 +10,16 @@ include 'permissionsAndSettingsForOneCourseFunction.php';
 
 $jwtArray = include 'jwtArray.php';
 $requestorUserId = $jwtArray['userId'];
-$allUsers = true;
 $success = true;
 $message = '';
+$allUsers = true;
 
-if (!isset($_REQUEST['courseId'])) {
+if (!isset($_GET['courseId'])) {
     $success = false;
     $message = 'Request error, missing courseId';
 }
 
-//Check permissions
+//Permissions check
 if ($success) {
     $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
@@ -39,32 +39,41 @@ if ($success) {
 }
 
 if ($success) {
-    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
-
     if ($allUsers) {
         $result = $conn->query(
-            "SELECT 
-                a.doenetId, 
-                ua.credit, 
-                ua.userId
+            "SELECT a.doenetId, 
+                cc.label, 
+                a.gradeCategory,
+                a.totalPointsOrPercent,
+                a.assignedDate,
+                ua.userId,
+                ua.isUnassigned
             FROM assignment AS a
-            JOIN user_assignment AS ua
+            LEFT JOIN course_content as cc
+                ON a.doenetId = cc.doenetId
+            LEFT JOIN user_assignment as ua
                 ON a.doenetId = ua.doenetId
             WHERE a.courseId = '$courseId'
-                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')
+                AND cc.isAssigned = '1'
+                AND cc.isDeleted = '0'
             ORDER BY a.dueDate"
         );
     } else {
         $result = $conn->query(
-            "SELECT 
-                a.doenetId, 
-                ua.credit, 
-                ua.userId
+            "SELECT a.doenetId, 
+                cc.label, 
+                a.assignedDate,
+                a.gradeCategory,
+                a.totalPointsOrPercent
             FROM assignment AS a
-            JOIN user_assignment AS ua
+            LEFT JOIN course_content as cc
+                ON a.doenetId = cc.doenetId
+            LEFT JOIN user_assignment as ua
                 ON a.doenetId = ua.doenetId
-            WHERE a.courseId = '$courseId'
                 AND ua.userId = '$requestorUserId'
+            WHERE a.courseId = '$courseId'
+                AND cc.isAssigned = '1'
+                AND cc.isDeleted = '0'
                 AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')
             ORDER BY a.dueDate"
         );
@@ -72,14 +81,22 @@ if ($success) {
 
     $response_arr = [];
 
-    while ($row = $result->fetch_assoc()) {
-        array_push($response_arr, [
-            $row['doenetId'],
-            $row['credit'],
-            $row['userId'],
-        ]);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $doenetId = $row['doenetId'];
+            $arr = [
+                'label' => $row['label'],
+                'category' => $row['gradeCategory'],
+                'assignedDate' => $row['assignedDate'],
+                'totalPointsOrPercent' => $row['totalPointsOrPercent'],
+            ];
+            array_push($response_arr, [$doenetId, $arr]);
+        }
+    } else {
+        $message = 'No assignments found for this course';
     }
 }
+
 // set response code - 200 OK
 http_response_code(200);
 
@@ -87,7 +104,8 @@ http_response_code(200);
 echo json_encode([
     'success' => $success,
     'message' => $message,
-    'overviewData' => $response_arr,
+    'assignments' => $response_arr,
 ]);
+
 $conn->close();
 ?>

@@ -3,6 +3,28 @@ import useDoenetRenderer from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import CodeMirror from '../../Tools/_framework/CodeMirror';
 import VisibilitySensor from 'react-visibility-sensor-v2';
+import styled from 'styled-components';
+
+const EditorStyling= styled.div`
+&: focus {
+  outline: 2px solid black;
+  outline-offset: 2px;
+}
+`;
+const InnerDiv= styled.div`
+padding: 0;
+border: var(--mainBorder);
+border-radius: var(--mainBorderRadius);
+height: sizeToCSS(componentHeight);
+width: sizeToCSS(componentWidth),
+max-width: 100%;
+display: flex;
+flex-direction: column;
+&: focus {
+  outline: 2px solid black;
+  outline-offset: 2px;
+}
+`;
 
 export default React.memo(function CodeEditor(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRenderer(props);
@@ -81,10 +103,10 @@ export default React.memo(function CodeEditor(props) {
     </>
   }
 
-  let editor = <div
+  let editor = <EditorStyling
     key={editorKey}
     id={editorKey}
-
+    tabIndex="0"
     style={editorStyle}>
     <CodeMirror
       // key = {codemirrorKey}
@@ -120,28 +142,23 @@ export default React.memo(function CodeEditor(props) {
 
       }}
     />
-  </div>
+  </EditorStyling>
 
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <div style={{ margin: "12px 0" }}>
+      <div style={{ margin: "12px 0" }} >
         <a name={id} />
-        <div style={{
-          padding: "0",
-          border: "var(--mainBorder)",
-          borderRadius: "var(--mainBorderRadius)",
-          height: sizeToCSS(componentHeight),
-          width: sizeToCSS(componentWidth),
-          maxWidth: "100%",
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-        id={id}>
+        <InnerDiv 
+        id={id}
+        >
           {editor}
           {viewer}
-        </div>
+          
+
+        </InnerDiv>
       </div>
+
     </VisibilitySensor>
   )
 

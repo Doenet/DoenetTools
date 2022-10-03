@@ -56,7 +56,8 @@ if ($success) {
             RIGHT JOIN user_assignment AS ua
                 ON ua.doenetId = uaa.doenetId 
                 AND ua.userId = uaa.userId
-            WHERE uaa.doenetId = '$doenetId'"
+            WHERE uaa.doenetId = '$doenetId'
+                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')"
         );
     } else {
         $result = $conn->query(
@@ -72,7 +73,7 @@ if ($success) {
                 AND ua.userId = uaa.userId
             WHERE uaa.doenetId = '$doenetId'
                 AND uaa.userId = '$requestorUserId'
-        "
+                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')"
         );
     }
 

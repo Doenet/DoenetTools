@@ -190,7 +190,9 @@ function SelectionMenu(props){
       backgroundColor: 'var(--canvas)',
       color:'var(--canvastext)',
       borderLeft:"8px solid var(--mainBlue)"
-      }}>
+      }}
+      data-test="Menu Panel"
+      >
         {/* <h3 style={{textAlign: "center", width: "240px", height: "35px",
  fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3> */}
         {props.children}
