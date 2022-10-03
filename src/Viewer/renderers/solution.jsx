@@ -3,30 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';
-import styled from 'styled-components';
-const SpanStyling= styled.span`
-display: block;
-margin: SVs.open ? 12px 4px 0px 4px : 12px 4px 12px 4px;
-padding: 6px;
-border: 2px solid black;
-border-top-left-radius: 5px;
-border-top-right-radius: 5px;
-border-bottom-left-radius: SVs.open ? 0px : 5px;
-border-bottom-right-radius: SVs.open ? 0px : 5px;
-background-color: var(--mainGray);
-cursor: pointer;
-&: focus {
-  outline: 2px solid var(--canvastext);
-  outline-offset: 2px;
-}
-`;
 
-const BlockStyling= styled.span`
-&: focus {
-  outline: 2px solid var(--canvastext);
-  outline-offset: 2px;
-}
-`;
 export default React.memo(function Solution(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
@@ -96,14 +73,26 @@ export default React.memo(function Solution(props) {
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <aside id={id}  style={{ margin: "12px 0" }}>
       <a name={id} />
-      <SpanStyling
-        tabIndex="0"
+      <span
         id={id + '_button'}
+        style={{
+          display: 'block',
+          margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
+          padding: '6px',
+          border: '2px solid var(--canvastext)',
+          borderTopLeftRadius: '5px',
+          borderTopRightRadius: '5px',
+          borderBottomLeftRadius: SVs.open ? '0px' : '5px',
+          borderBottomRightRadius: SVs.open ? '0px' : '5px',
+          backgroundColor: 'var(--mainGray)',
+          cursor: 'pointer',
+        
+        }}
         onClick={onClickFunction}
       >
         {icon} Solution {SVs.message}
-      </SpanStyling>
-      <BlockStyling style={infoBlockStyle} tabIndex="0">{childrenToRender}</BlockStyling>
+      </span>
+      <span style={infoBlockStyle}>{childrenToRender}</span>
     </aside>
     </VisibilitySensor>
   );

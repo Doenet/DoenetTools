@@ -3,14 +3,7 @@ import { retrieveMediaForCid } from '../../Core/utils/retrieveMedia';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import VisibilitySensor from 'react-visibility-sensor-v2';
-import styled from 'styled-components';
 
-const ImageStyled= styled.img`
-&: focus {
-  outline: 2px solid var(--canvastext);
-  outline-offset: 2px;
-}
-`
 export default React.memo(function Image(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
   let [url, setUrl] = useState(null)
@@ -70,12 +63,11 @@ export default React.memo(function Image(props) {
         <a name={id} />
         {
           url || SVs.source ?
-            <ImageStyled
+            <img
               id={id}
               src={url ? url : SVs.source ? SVs.source : ""}
               style={imageStyle}
               alt={SVs.description}
-              tabIndex="0"
             />
             :
             <div
