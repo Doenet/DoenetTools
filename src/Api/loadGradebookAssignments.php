@@ -66,7 +66,7 @@ if ($success) {
                 a.gradeCategory,
                 a.totalPointsOrPercent
             FROM assignment AS a
-            LEFT JOIN course_content as cc
+            INNER JOIN course_content as cc
                 ON a.doenetId = cc.doenetId
             LEFT JOIN user_assignment as ua
                 ON a.doenetId = ua.doenetId
