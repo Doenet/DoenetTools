@@ -63,7 +63,7 @@ export default React.memo(function Feedback(props) {
       </SpanStyling>
       <FeedbackStyling
         id={id}
-        tabIndex="0"
+        // tabIndex="0"
       >
         <a name={id} />
 
