@@ -74,7 +74,6 @@ export default function GradebookStudent() {
       let scores = [];
       let allpossiblepoints = [];
       let allassignedpoints = [];
-      let earnedallassignedpoints = [];
       let categoryAssignedPointsAreAllDashes = true;
 
       for (let doenetId in assignments.contents) {
@@ -104,7 +103,6 @@ export default function GradebookStudent() {
         ){
           assignedpoints = possiblepoints;
           allassignedpoints.push(possiblepoints)
-          earnedallassignedpoints.push(score)
           categoryAssignedPointsAreAllDashes = false;
         }
 
@@ -163,6 +161,7 @@ export default function GradebookStudent() {
       totalPossiblePoints += categoryPossiblePoints;
       if (categoryAssignedPoints != '-'){
         totalAssignedPoints += categoryAssignedPoints;
+        categoryAssignedPoints = Math.round(categoryAssignedPoints * 100) / 100;
       }
 
       categoryScore = Math.round(categoryScore * 100) / 100;
@@ -202,6 +201,7 @@ export default function GradebookStudent() {
 
     totalScore = Math.round(totalScore * 100) / 100;
     totalPossiblePoints = Math.round(totalPossiblePoints * 100) / 100;
+    totalAssignedPoints = Math.round(totalAssignedPoints * 100) / 100;
 
     overviewTable.headers.push(
       {
