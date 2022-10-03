@@ -12,10 +12,10 @@ const FeedbackStyling = styled.aside`
   border-top: 0px;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
-  &: focus {
-    outline: 2px solid var(--canvastext);
-    outline-offset: 2px;
-  }
+  //   &: focus {
+  //   outline: 2px solid var(--canvastext);
+  //   outline-offset: 2px;
+  //  }
 `;
 const SpanStyling = styled.span`
   display: block;
