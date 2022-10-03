@@ -22,6 +22,7 @@ cursor: pointer;
 }
 `;
 
+
 export default React.memo(function Solution(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
@@ -132,6 +133,7 @@ export default React.memo(function Solution(props) {
         {icon} Solution {SVs.message} (click to {openCloseText})
       </SpanStyling>
       <span style={infoBlockStyle} >{childrenToRender}</span>
+
     </aside>
     </VisibilitySensor>
   );
