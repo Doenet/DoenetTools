@@ -9,10 +9,27 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 import styled from 'styled-components';
 
 const SpanStyling= styled.span`
+
+display: block;
+margin: SVs.open ? 12px 4px 0px 4px : 12px 4px 12px 4px;
+padding: 6px;
+border: 2px solid black;
+border-top-left-radius: 5px;
+border-top-right-radius: 5px;
+border-bottom-left-radius: SVs.open ? 0px : 5px;
+border-bottom-right-radius: SVs.open ? 0px : 5px;
+background-color: var(--mainGray);
+cursor: pointer;
 &: focus {
   outline: 2px solid var(--canvastext);
   outline-offset: 2px;
 }
+`;
+const BlockStyling = styled.span`
+  &: focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 
 
@@ -115,6 +132,7 @@ export default React.memo(function Hint(props) {
     <aside id={id} key={id}>
       <a name={id} />
       <SpanStyling
+
         style={{
           display: 'block',
           margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
@@ -134,6 +152,13 @@ export default React.memo(function Hint(props) {
       > {icon} {title} (click to {openCloseText})
       </SpanStyling>
       <span style={infoBlockStyle} >{info}</span>
+        tabIndex="0"
+        data-test="hint-heading"
+        onClick={onClickFunction}
+      >
+        {twirlIcon} {icon} {title} (click to {openCloseText})
+      </SpanStyling>
+      <BlockStyling style={infoBlockStyle} tabIndex="0">{info}</BlockStyling>
     </aside>
     </VisibilitySensor>
   );

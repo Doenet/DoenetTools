@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import styled from 'styled-components';
+
 import P from '../../Core/components/P';
 const SpanStyling= styled.span`
 display: block;
@@ -22,6 +23,12 @@ cursor: pointer;
 }
 `;
 
+const BlockStyling= styled.span`
+&: focus {
+  outline: 2px solid var(--canvastext);
+  outline-offset: 2px;
+}
+`;
 export default React.memo(function Solution(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
@@ -124,14 +131,19 @@ export default React.memo(function Solution(props) {
         backgroundColor: 'var(--mainGray)',
         cursor: 'pointer',
       }}
+
         tabIndex="0"
         id={id + '_button'}
         onClick={onClickFunction}
         onKeyDown= {onKeyPressFunction}
       >
+
         {icon} Solution {SVs.message} (click to {openCloseText})
       </SpanStyling>
       <span style={infoBlockStyle} >{childrenToRender}</span>
+        {icon} Solution {SVs.message}
+      </SpanStyling>
+      <BlockStyling style={infoBlockStyle} tabIndex="0">{childrenToRender}</BlockStyling>
     </aside>
     </VisibilitySensor>
   );
