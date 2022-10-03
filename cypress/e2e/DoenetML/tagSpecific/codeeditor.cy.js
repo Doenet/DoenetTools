@@ -51,7 +51,7 @@ describe('Code Editor Tag Tests', function () {
     });
 
     cy.log('wait for debounce to update value')
-    cy.wait(4000)
+    cy.wait(1500)
     cy.get('#\\/_p1').should('have.text', 'Hello!')
     cy.get('#\\/_p2').should('have.text', 'Hello!')
 
@@ -648,7 +648,7 @@ describe('Code Editor Tag Tests', function () {
         expect(stateVariables['/x'].stateValues.value).eq("x");
         expect(stateVariables['/sx'].stateValues.value).eq("y");
         expect(stateVariables['/P']).eq(undefined);
-        expect(stateVariables['/sP'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/sP'].stateValues.vector).eqls([3, 4]);
         expect(stateVariables['/result/x'].stateValues.value).eq("x");
         expect(stateVariables['/static/x'].stateValues.value).eq("y");
         expect(stateVariables['/result/P']).eq(undefined);
@@ -706,8 +706,8 @@ describe('Code Editor Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/x'].stateValues.value).eq("y");
         expect(stateVariables['/sx'].stateValues.value).eq("y");
-        expect(stateVariables['/P'].stateValues.xs).eqls([3, 4]);
-        expect(stateVariables['/sP'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/P'].stateValues.vector).eqls([3, 4]);
+        expect(stateVariables['/sP'].stateValues.vector).eqls([3, 4]);
         expect(stateVariables['/result/x'].stateValues.value).eq("y");
         expect(stateVariables['/static/x'].stateValues.value).eq("y");
         expect(stateVariables['/result/P'].stateValues.xs).eqls([3, 4]);
@@ -775,8 +775,8 @@ describe('Code Editor Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/x'].stateValues.value).eq("y");
         expect(stateVariables['/sx'].stateValues.value).eq("y");
-        expect(stateVariables['/P'].stateValues.xs).eqls([5, 7]);
-        expect(stateVariables['/sP'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/P'].stateValues.vector).eqls([5, 7]);
+        expect(stateVariables['/sP'].stateValues.vector).eqls([3, 4]);
         expect(stateVariables['/result/x'].stateValues.value).eq("y");
         expect(stateVariables['/static/x'].stateValues.value).eq("y");
         expect(stateVariables['/result/P'].stateValues.xs).eqls([5, 7]);

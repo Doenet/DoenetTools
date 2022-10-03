@@ -538,6 +538,116 @@ describe('MatchesPattern Tag Tests', function () {
 
   })
 
+  it('match expression with blanks', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Pattern: <math name="pattern"> < </math></p>
+  <p>Expression: <mathinput name="expr" /></p>
+  <p><booleanInput name="matchBlanks"><label>Match expression with blanks</label></booleanInput> <boolean name="matchBlanks2" copySource="matchBlanks" /></p>
+
+  <p>Matches: <matchesPattern name="match" pattern="$pattern" matchExpressionWithBlanks="$matchBlanks">
+    $expr
+  </matchesPattern></p>
+  <p>Matches: <copy source="match.patternMatches" assignNames="m1 m2" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    let desiredResults = {
+      '': {
+        default: false,
+        blanks: false,
+      },
+      '<': {
+        default: false,
+        blanks: ['\uff3f', '\uff3f'],
+      },
+      '>': {
+        default: false,
+        blanks: ['\uff3f', '\uff3f'],
+      },
+      'x<y': {
+        default: ["x", "y"],
+        blanks: ["x", "y"],
+      },
+      'x>y': {
+        default: ["y", "x"],
+        blanks: ["y", "x"],
+      },
+      'a>': {
+        default: false,
+        blanks: ['\uff3f', "a"],
+      },
+      'a<': {
+        default: false,
+        blanks: ["a", '\uff3f'],
+      },
+      '>c': {
+        default: false,
+        blanks: ['c', '\uff3f'],
+      },
+      '<c': {
+        default: false,
+        blanks: ['\uff3f', 'c'],
+      },
+      'q/r{rightArrow} < st': {
+        default: ["qr", "st"],
+        blanks: ["qr", "st"],
+      },
+      'q/{rightArrow}  < st': {
+        default: false,
+        blanks: ["q\uff3f", "st"],
+      },
+    }
+
+
+
+    for (let expr in desiredResults) {
+      cy.log(`trying: ${expr}`)
+      cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
+      cy.get('#\\/matchBlanks').click();
+      cy.get('#\\/matchBlanks2').should('have.text', "true") // to make sure change occured
+
+      let dResults = desiredResults[expr];
+
+      let res = dResults.blanks;
+      if (res) {
+        cy.get(`#\\/match`).should('have.text', 'true');
+        cy.get(`#\\/m1 .mjx-mrow`).eq(0).should('have.text', res[0]);
+        cy.get(`#\\/m2 .mjx-mrow`).eq(0).should('have.text', res[1]);
+      } else {
+        cy.get(`#\\/match`).should('have.text', 'false');
+        cy.get(`#\\/m1`).should('not.exist');
+        cy.get(`#\\/m2`).should('not.exist');
+
+      }
+
+      cy.get('#\\/matchBlanks').click();
+      cy.get('#\\/matchBlanks2').should('have.text', "false") // to make sure change occured
+
+
+      res = dResults.default;
+      if (res) {
+        cy.get(`#\\/match`).should('have.text', 'true');
+        cy.get(`#\\/m1 .mjx-mrow`).eq(0).should('have.text', res[0]);
+        cy.get(`#\\/m2 .mjx-mrow`).eq(0).should('have.text', res[1]);
+      } else {
+        cy.get(`#\\/match`).should('have.text', 'false');
+        cy.get(`#\\/m1`).should('not.exist');
+        cy.get(`#\\/m2`).should('not.exist');
+
+      }
+    }
+
+  })
+
+
 })
 
 

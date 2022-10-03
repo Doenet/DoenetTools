@@ -15338,7 +15338,7 @@ describe('Answer Tag Tests', function () {
     cy.log("add another choice");
     cy.get("#\\/num textarea").type("{end}{backspace}4{enter}", { force: true });
 
-    cy.get('#\\/_choiceinput1 li:nth-of-type(4)').should('be.visible')
+    cy.get('#\\/_choiceinput1 label:nth-of-type(4)').should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15429,7 +15429,7 @@ describe('Answer Tag Tests', function () {
     cy.log("go back to 3 choices")
     cy.get("#\\/num textarea").type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/_choiceinput1 li:nth-of-type(4)').should('not.exist')
+    cy.get('#\\/_choiceinput1 label:nth-of-type(4)').should('not.exist')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15502,7 +15502,7 @@ describe('Answer Tag Tests', function () {
     cy.log("create 6 choices");
     cy.get("#\\/num textarea").type("{end}{backspace}6{enter}", { force: true });
 
-    cy.get('#\\/_choiceinput1 li:nth-of-type(6)').should('be.visible')
+    cy.get('#\\/_choiceinput1 label:nth-of-type(6)').should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15856,7 +15856,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log("toggle inline")
       cy.get('#\\/inline').click();
-      cy.get(`${choiceinputAnchor} li:nth-of-type(3)`).should('be.visible')
+      cy.get(`${choiceinputAnchor} label:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('correct')

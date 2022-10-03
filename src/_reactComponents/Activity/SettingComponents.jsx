@@ -516,6 +516,7 @@ export const AttemptAggregation = ({ courseId, doenetId }) => {
       <LabelText>Attempt Aggregation</LabelText>
       <InputControl>
         <DropdownMenu
+          dataTest="Attempt Aggregation"
           width="menu"
           valueIndex={attemptAggregation === 'm' ? 1 : 2}
           items={[
@@ -604,6 +605,7 @@ export const GradeCategory = ({ courseId, doenetId }) => {
     <InputWrapper>
       <LabelText>Grade Category</LabelText>
       <DropdownMenu
+        defaultIndex={"7"}
         valueIndex={
           {
             gateway: 1,
@@ -612,6 +614,7 @@ export const GradeCategory = ({ courseId, doenetId }) => {
             'problem sets': 4,
             projects: 5,
             participation: 6,
+            'No Category': 7,
           }[gradeCategory]
         }
         items={[
@@ -621,6 +624,7 @@ export const GradeCategory = ({ courseId, doenetId }) => {
           ['problem sets', 'Problem Sets'],
           ['projects', 'Projects'],
           ['participation', 'Participation'],
+          ['NULL', 'No Category'],
         ]}
         dataTest="Grade Category"
         onChange={({ value: val }) => {
@@ -943,6 +947,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={pinnedUntilDate !== null && pinnedUntilDate !== undefined}
+          dataTest="Pin Assignment Checkbox"
           onClick={() => {
             let valueDescription = 'None';
             let value = null;
@@ -974,6 +979,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
         />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <DateTime
+            dataTest="Pinned After Date"
             disabled={pinnedAfterDate === null || pinnedAfterDate === undefined}
             disabledText="No Pinned After Date"
             disabledOnClick={() => {
@@ -1030,6 +1036,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
           />
 
           <DateTime
+            dataTest="Pinned Until Date"
             style={{ marginTop: '5px' }}
             disabled={pinnedUntilDate === null || pinnedUntilDate === undefined}
             disabledText="No Pinned Until Date"

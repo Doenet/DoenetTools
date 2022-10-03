@@ -135,13 +135,13 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
 
     //Day of the Week
     const dotwLabel = [
+      'Sunday',
       'Monday',
       'Tuesday',
       'Wednesday',
       'Thursday',
       'Friday',
       'Saturday',
-      'Sunday',
     ];
     return `${dotwLabel[dt.getDay()]} - ${time}`;
   }

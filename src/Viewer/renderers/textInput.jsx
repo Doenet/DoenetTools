@@ -197,7 +197,7 @@ export default function TextInput(props) {
       }
       checkWorkButton = 
       <Button
-        id={name + '_submit'}
+        id={id + '_submit'}
         tabIndex="0"
         disabled={disabled}
         style={checkWorkStyle}
@@ -220,7 +220,7 @@ export default function TextInput(props) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
           checkWorkButton = 
             <Button
-              id={name + '_correct'}
+              id={id + '_correct'}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCheck} />
@@ -234,7 +234,7 @@ export default function TextInput(props) {
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = 
             <Button
-              id={name + '_partial'}
+              id={id + '_partial'}
               style={checkWorkStyle}
             >
               {partialCreditContents}
@@ -244,7 +244,7 @@ export default function TextInput(props) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = 
             <Button
-              id={name + '_incorrect'}
+              id={id + '_incorrect'}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faTimes} />
@@ -255,7 +255,7 @@ export default function TextInput(props) {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = 
           <Button
-            id={name + '_saved'}
+            id={id + '_saved'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCloud} />
@@ -271,8 +271,8 @@ export default function TextInput(props) {
         </span>
       </>
     } else if (SVs.numberOfAttemptsLeft == 1) {
-      checkworkComponent = <>
-        {checkworkComponent}
+      checkWorkButton = <>
+        {checkWorkButton}
         <span>
           (1 attempt remaining)
         </span>
@@ -323,8 +323,8 @@ export default function TextInput(props) {
   }
 
   return <React.Fragment>
-    <a name={name} />
-    <span className="textInputSurroundingBox" id={name} style={{display: "inline-flex"}}>
+    <a name={id} />
+    <span className="textInputSurroundingBox" id={id} style={{display: "inline-flex"}}>
       {input}
       {checkWorkButton}
     </span>

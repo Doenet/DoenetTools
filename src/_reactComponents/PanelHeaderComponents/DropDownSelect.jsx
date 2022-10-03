@@ -1,3 +1,7 @@
+/**
+* DEBT - This file is not being used. It should just be removed.
+*/
+
 import React from "react";
 import SelectBox from "./SelectBox";
 

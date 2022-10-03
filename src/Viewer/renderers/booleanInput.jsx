@@ -125,7 +125,7 @@ export default React.memo(function BooleanInput(props) {
             }
           }}
         >
-          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+          <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         </Button>
     } else {
       if (SVs.showCorrectness) {
@@ -235,7 +235,7 @@ export default React.memo(function BooleanInput(props) {
   }
 
   return <React.Fragment>
-    <span id={id} className="button-container">
+    <span id={id}>
       <a name={id} />
       {input}
     </span>
