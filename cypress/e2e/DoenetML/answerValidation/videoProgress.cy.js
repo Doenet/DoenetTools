@@ -120,7 +120,7 @@ describe('Video progress tests', function () {
     cy.get('#\\/pause').click();
 
 
-    cy.get('#\\/seconds').should('have.text', '12').then(() => {
+    cy.get('#\\/seconds').contains(/1(2|3)/).then(() => {
       // put inside then so that get updated value of local variable credit
       cy.get('#\\/credit').should('not.have.text', `${credit}`);
       cy.get('#\\/credit').should('not.contain', `3`);  // should contain a 3 after the intermediate skip
@@ -138,7 +138,7 @@ describe('Video progress tests', function () {
     cy.get('#\\/skip1').click();
     cy.get('#\\/time').contains("157");
 
-    cy.get('#\\/seconds').should('have.text', '12')
+    cy.get('#\\/seconds').contains(/1(2|3)/)
 
     cy.get('#\\/credit').invoke('text').then(text => {
       expect(Number(text)).eq(credit);
@@ -154,7 +154,7 @@ describe('Video progress tests', function () {
     cy.get('#\\/pause').click();
     cy.get('#\\/state').contains("stopped")
 
-    cy.get('#\\/seconds').should('have.text', '12')
+    cy.get('#\\/seconds').contains(/1(2|3)/)
     cy.get('#\\/credit').invoke('text').then(text => {
       expect(Number(text)).eq(credit);
     });

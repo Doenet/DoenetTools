@@ -241,9 +241,8 @@ export default function GradebookStudentAssignmentView(){
     console.log, ('userId',userId)
 
     if (attemptNumber > 0 && 
-        attemptsInfo[attemptNumber] &&
-        attemptsInfo[attemptNumber].cid !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
-        ){
+        attemptsInfo[attemptNumber]
+    ){
         let cid = attemptsInfo[attemptNumber].cid
         let requestedVariantIndex = attemptsInfo[attemptNumber].variantIndex;
         // let doenetML = attemptsInfo[attemptNumber].doenetML;
@@ -259,8 +258,9 @@ export default function GradebookStudentAssignmentView(){
         // doenetML={doenetML}
         doenetId={doenetId}
         userId={userId}
-        snapshotOnly={true}
-
+        forceDisable={true}
+        forceShowCorrectness={true}
+        forceShowSolution={solutionDisplayMode !== "none"}
         flags={{
           showCorrectness: true,
           readOnly: true,

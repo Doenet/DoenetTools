@@ -21,10 +21,8 @@ $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 if ($courseId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing courseId';
-}
-
-// Check if enrolled in course
-if (!array_key_exists($courseId,$permissionsAndSettingsByCourseId)){
+}else if (!array_key_exists($courseId,$permissionsAndSettingsByCourseId)){
+  // Check if enrolled in course
   $success = FALSE;
   $message = "No access to view course materials.";
 }
@@ -48,10 +46,17 @@ if ($success) {
   a.assignedDate, 
   a.dueDate, 
   a.pinnedAfterDate,
-  a.pinnedUntilDate
+  a.pinnedUntilDate,
+  a.gradeCategory,
+  a.totalPointsOrPercent,
+  ua.credit,
+  ua.creditOverride
   FROM course_content AS cc
   LEFT JOIN assignment AS a
   ON cc.doenetId = a.doenetId
+  LEFT JOIN user_assignment AS ua
+  ON cc.doenetId = ua.doenetId AND
+  ua.userId='$userId'
   WHERE (cc.courseId='$courseId'
   AND cc.isAssigned = '1'
   AND cc.isDeleted = '0'
@@ -73,6 +78,10 @@ if ($success) {
         array_push($assignments,array(
           "type"=>$row['type'], 
           "label"=>$row['label'],
+          "gradeCategory"=>$row['gradeCategory'],
+          "totalPointsOrPercent"=>$row['totalPointsOrPercent'],
+          "credit"=>$row['credit'],
+          "creditOverride"=>$row['creditOverride'],
           "pinnedAfterDate"=>$row['pinnedAfterDate'],
           "creationDate"=>$row['creationDate'],
           "assignedDate"=>$row['assignedDate'],
@@ -88,6 +97,10 @@ if ($success) {
         array_push($pinned,array(            // pinned items 
           "type"=>$row['type'],
           "label"=>$row['label'],
+          "gradeCategory"=>$row['gradeCategory'],
+          "totalPointsOrPercent"=>$row['totalPointsOrPercent'],
+          "credit"=>$row['credit'],
+          "creditOverride"=>$row['creditOverride'],
           "pinnedAfterDate"=>$row['pinnedAfterDate'],
           "creationDate"=>$row['creationDate'],
           "assignedDate"=>$row['assignedDate'],

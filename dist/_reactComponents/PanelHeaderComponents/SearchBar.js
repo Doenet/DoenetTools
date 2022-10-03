@@ -67,7 +67,7 @@ const Label = styled.p`
 `;
 const Container = styled.div`
     display: ${(props) => props.align};
-    width: 235px;
+    /* width: 235px; */
     align-items: center;
 `;
 export default function Searchbar(props) {

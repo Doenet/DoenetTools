@@ -256,6 +256,9 @@ export default function checkEquality({
     };
   }
 
+  let partialMatchesOnRecursion = false;
+  let matchByExactPositionsOnRecursion = false;
+
   if (haveMathExpressions) {
     // if can convert same type of math-expression
     // change object1 and object2 to array of asts
@@ -428,6 +431,8 @@ export default function checkEquality({
         object2 = convertMatrixToArrayOfTuples(object2.tree.slice(1))
 
         matchByExactPositions = true;
+        matchByExactPositionsOnRecursion = true;
+        partialMatchesOnRecursion = true;
 
       } else {
         return { fraction_equal: 0 };
@@ -570,8 +575,8 @@ export default function checkEquality({
     for (let i = 0; i < minN; i++) {
       let sub_results = checkEquality({
         object1: me.fromAst(object1[i]), object2: me.fromAst(object2[i]),
-        isUnordered, partialMatches,
-        matchByExactPositions,
+        isUnordered: false, partialMatches: partialMatchesOnRecursion,
+        matchByExactPositions: matchByExactPositionsOnRecursion,
         symbolicEquality,
         simplify, expand,
         allowedErrorInNumbers,
@@ -618,8 +623,8 @@ export default function checkEquality({
       for (let j = 0; j < nelts2; j++) {
         let sub_results = checkEquality({
           object1: me.fromAst(object1[i]), object2: me.fromAst(object2[j]),
-          isUnordered, partialMatches,
-          matchByExactPositions,
+          isUnordered: false, partialMatches: partialMatchesOnRecursion,
+          matchByExactPositions: matchByExactPositionsOnRecursion,
           symbolicEquality,
           simplify, expand,
           allowedErrorInNumbers,
@@ -661,8 +666,8 @@ export default function checkEquality({
 
       let sub_results = checkEquality({
         object1: me.fromAst(expr1), object2: me.fromAst(expr2),
-        isUnordered, partialMatches,
-        matchByExactPositions,
+        isUnordered: false, partialMatches: partialMatchesOnRecursion,
+        matchByExactPositions: matchByExactPositionsOnRecursion,
         symbolicEquality,
         simplify, expand,
         allowedErrorInNumbers,

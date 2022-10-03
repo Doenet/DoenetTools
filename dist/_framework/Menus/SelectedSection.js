@@ -69,6 +69,7 @@ export default function SelectedSection() {
     }), /* @__PURE__ */ React.createElement(Textfield, {
       label: "Label",
       vertical: true,
+      "data-test": "Label Section",
       width: "menu",
       value: itemTextFieldLabel,
       onChange: (e) => setItemTextFieldLabel(e.target.value),

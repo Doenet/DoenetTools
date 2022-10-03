@@ -13,7 +13,7 @@ $userId = mysqli_real_escape_string($conn, $_REQUEST['userId']);
 
 
 
-//TODO: code should be by proctor someday
+//TODO: code should be by proctor
 $sql = "
 SELECT c.courseId
 FROM course_content AS cc
@@ -41,6 +41,7 @@ $expirationTime = 2147483647;
 $payload = [
     'examineeUserId' => $userId,
     'doenetId' => $doenetId,
+    'examPasscode' => $code,
 ];
 $jwt = JWT::encode($payload, $key);
 

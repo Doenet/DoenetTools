@@ -65,6 +65,7 @@ export default function SelectedPage() {
     }
   })), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Label",
+    "data-test": "Label Page",
     vertical: true,
     width: "menu",
     value: itemTextFieldLabel,

@@ -12,13 +12,11 @@ import {
   searchParamAtomFamily,
   profileAtom,
 } from '../NewToolRoot';
-import {
-  activityVariantPanelAtom,
-} from '../ToolHandlers/CourseToolHandler';
 
 import axios from 'axios';
 import { returnNumberOfActivityVariantsForCid } from '../../../_utils/activityUtils';
 import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { activityVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 
 
 export default function DraftAssignmentViewer() {

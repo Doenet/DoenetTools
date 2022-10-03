@@ -4,7 +4,7 @@ import {Link} from "../../_snowpack/pkg/react-router-dom.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import {itemByDoenetId} from "../../_reactComponents/Course/CourseActions.js";
-import {scrollableContainerAtom} from "../ActivityViewer.js";
+import {scrollableContainerAtom} from "../PageViewer.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default React.memo(function Ref(props) {
   let {name, id, SVs, children} = useDoenetRender(props);
@@ -113,7 +113,7 @@ export default React.memo(function Ref(props) {
       } else {
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = {fromLink: true};
-        Object.defineProperty(stateObj, "previousScrollPosition", {get: () => scrollableContainer[scrollAttribute], enumerable: true});
+        Object.defineProperty(stateObj, "previousScrollPosition", {get: () => scrollableContainer?.[scrollAttribute], enumerable: true});
         return /* @__PURE__ */ React.createElement(Link, {
           target: targetForATag,
           id,

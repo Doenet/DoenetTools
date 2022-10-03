@@ -114,7 +114,9 @@ function formatDueDate(dt, classTimes) {
       let classEndDT = new Date(dt.getTime());
       const [endhours, endminutes] = classTime.endTime.split(":");
       classEndDT.setHours(endhours, endminutes, 0, 0);
-      if (dt >= classStartDT && dt < classEndDT) {
+      if (dt.getTime() == classStartDT.getTime()) {
+        return "Before Class";
+      } else if (dt > classStartDT && dt < classEndDT) {
         return "In Class";
       } else if (dt.getTime() == classEndDT.getTime()) {
         return "End of Class";
@@ -137,7 +139,6 @@ function buildRows({
   rowLabel = "",
   assignments,
   clickCallback,
-  doubleClickCallback,
   completedArray,
   setCompletedArray,
   classTimes,
@@ -183,23 +184,22 @@ function buildRows({
       let oneClick = (e) => {
         e.stopPropagation();
         clickCallback({
-          driveId: assignment.driveId,
-          itemId: assignment.itemId,
-          driveInstanceId: "currentContent",
-          type: assignment.itemType,
-          instructionType: "one item",
-          parentFolderId: assignment.parentFolderId
+          courseId: assignment.courseId,
+          doenetId: assignment.doenetId
         });
       };
-      let path = `${assignment.driveId}:${assignment.parentFolderId}:${assignment.itemId}:${assignment.itemType}`;
-      let doubleClick = () => doubleClickCallback({
-        type: assignment.itemType,
-        doenetId: assignment.doenetId,
-        path
-      });
       let checked = completedArray.includes(assignment.doenetId);
       if (!showCompleted && checked) {
         continue;
+      }
+      let score = "";
+      if (assignment.gradeCategory) {
+        const totalPointsOrPercent = Number(assignment.totalPointsOrPercent);
+        let pointsAwarded = Math.round(assignment.credit * totalPointsOrPercent * 100) / 100;
+        if (assignment.creditOverride) {
+          pointsAwarded = Math.round(assignment.creditOverride * totalPointsOrPercent * 100) / 100;
+        }
+        score = `${pointsAwarded}/${totalPointsOrPercent}`;
       }
       let checkbox = /* @__PURE__ */ React.createElement(Checkbox, {
         checked,
@@ -233,27 +233,34 @@ function buildRows({
           style: {
             backgroundColor: bgColor,
             padding: "8px",
-            borderBottom: "2px solid black"
+            borderBottom: "2px solid black",
+            cursor: "pointer"
           },
-          onClick: oneClick,
-          onDoubleClick: doubleClick
+          onClick: oneClick
         }, assignment.label), /* @__PURE__ */ React.createElement("td", {
           style: {
             backgroundColor: bgColor,
             padding: "8px",
-            borderBottom: "2px solid black"
+            borderBottom: "2px solid black",
+            cursor: "pointer"
           },
-          onClick: oneClick,
-          onDoubleClick: doubleClick
+          onClick: oneClick
         }, displayAssignedDate), /* @__PURE__ */ React.createElement("td", {
           style: {
             backgroundColor: bgColor,
             padding: "8px",
-            borderBottom: "2px solid black"
+            borderBottom: "2px solid black",
+            cursor: "pointer"
           },
-          onClick: oneClick,
-          onDoubleClick: doubleClick
+          onClick: oneClick
         }, displayDueDate), /* @__PURE__ */ React.createElement("td", {
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black",
+            textAlign: "center"
+          }
+        }, score), /* @__PURE__ */ React.createElement("td", {
           style: {
             backgroundColor: bgColor,
             padding: "8px",
@@ -268,27 +275,34 @@ function buildRows({
           style: {
             backgroundColor: bgColor,
             padding: "8px",
-            borderBottom: "2px solid black"
+            borderBottom: "2px solid black",
+            cursor: "pointer"
           },
-          onClick: oneClick,
-          onDoubleClick: doubleClick
+          onClick: oneClick
         }, assignment.label), /* @__PURE__ */ React.createElement("td", {
           style: {
             backgroundColor: bgColor,
             padding: "8px",
-            borderBottom: "2px solid black"
+            borderBottom: "2px solid black",
+            cursor: "pointer"
           },
-          onClick: oneClick,
-          onDoubleClick: doubleClick
+          onClick: oneClick
         }, displayAssignedDate), /* @__PURE__ */ React.createElement("td", {
           style: {
             backgroundColor: bgColor,
             padding: "8px",
-            borderBottom: "2px solid black"
+            borderBottom: "2px solid black",
+            cursor: "pointer"
           },
-          onClick: oneClick,
-          onDoubleClick: doubleClick
+          onClick: oneClick
         }, displayDueDate), /* @__PURE__ */ React.createElement("td", {
+          style: {
+            backgroundColor: bgColor,
+            padding: "8px",
+            borderBottom: "2px solid black",
+            textAlign: "center"
+          }
+        }, score), /* @__PURE__ */ React.createElement("td", {
           style: {
             backgroundColor: bgColor,
             padding: "8px",
@@ -342,33 +356,10 @@ export default function Next7Days({courseId}) {
       setCompletedArray(data.completed);
     }
   });
-  const clickCallback = useRecoilCallback(({set}) => (info) => {
-    switch (info.instructionType) {
-      case "one item":
-        set(selectedMenuPanelAtom, `Selected${info.type}`);
-        break;
-      case "range to item":
-      case "add item":
-        set(selectedMenuPanelAtom, `SelectedMulti`);
-        break;
-      case "clear all":
-        set(selectedMenuPanelAtom, null);
-        break;
-      default:
-        throw new Error("NavigationPanel found invalid select instruction");
-    }
-    set(selectedDriveItems({
-      driveId: info.driveId,
-      driveInstanceId: info.driveInstanceId,
-      itemId: info.itemId
-    }), {
-      instructionType: info.instructionType,
-      parentFolderId: info.parentFolderId
-    });
-    set(selectedDriveAtom, info.driveId);
-  }, []);
-  const doubleClickCallback = useRecoilCallback(({snapshot}) => async ({type, doenetId, path}) => {
-    let {canEditContent} = await snapshot.getPromise(effectivePermissionsByCourseId(courseId));
+  const clickCallback = useRecoilCallback(({set, snapshot}) => async (info) => {
+    const courseId2 = info.courseId;
+    const doenetId = info.doenetId;
+    let {canEditContent} = await snapshot.getPromise(effectivePermissionsByCourseId(courseId2));
     if (canEditContent === "1") {
       let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
       let pageId = findFirstPageOfActivity(itemObj.content);
@@ -391,7 +382,7 @@ export default function Next7Days({courseId}) {
         }
       });
     }
-  }, [courseId, setPageToolView]);
+  }, []);
   if (!initialized && courseId !== "") {
     setInitialized(true);
     loadAssignmentArray(courseId);
@@ -419,7 +410,6 @@ export default function Next7Days({courseId}) {
       rowLabel: pinnedName,
       assignments: pinnedArray,
       clickCallback,
-      doubleClickCallback,
       completedArray,
       setCompletedArray,
       classTimes,
@@ -443,7 +433,6 @@ export default function Next7Days({courseId}) {
         rowLabel: "Overdue",
         assignments: overdueArray,
         clickCallback,
-        doubleClickCallback,
         completedArray,
         setCompletedArray,
         classTimes,
@@ -486,7 +475,6 @@ export default function Next7Days({courseId}) {
       dotw: dotwLabel[index],
       assignments: dayAssignments,
       clickCallback,
-      doubleClickCallback,
       completedArray,
       setCompletedArray,
       classTimes,
@@ -522,7 +510,7 @@ export default function Next7Days({courseId}) {
     style: {width: "850px", borderSpacing: "0em .2em"}
   }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", {
     style: {
-      width: "150px",
+      width: "100px",
       padding: "8px",
       textAlign: "left",
       borderBottom: "2px solid black"
@@ -549,6 +537,13 @@ export default function Next7Days({courseId}) {
       borderBottom: "2px solid black"
     }
   }, "Due"), /* @__PURE__ */ React.createElement("th", {
+    style: {
+      width: "50px",
+      padding: "8px",
+      textAlign: "left",
+      borderBottom: "2px solid black"
+    }
+  }, "Score"), /* @__PURE__ */ React.createElement("th", {
     style: {
       width: "100px",
       padding: "8px",

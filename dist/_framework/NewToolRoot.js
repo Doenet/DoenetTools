@@ -326,7 +326,7 @@ let navigationObj = {
       currentMainPanel: "Dashboard",
       menuPanelCap: "DriveInfoCap",
       currentMenus: ["ClassTimes", "CurrentContent"],
-      menusTitles: ["Class Times", "Current Content"],
+      menusTitles: ["Class Times", "Content by week settings"],
       menusInitOpen: [false, false],
       headerControls: ["DashboardBreadCrumb"],
       onLeave: "DashboardLeave",

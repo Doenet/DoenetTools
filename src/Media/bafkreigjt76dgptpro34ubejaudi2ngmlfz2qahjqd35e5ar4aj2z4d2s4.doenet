@@ -1,0 +1,46 @@
+<p>Enter anything mathematically equivalent to <m>x^2+2x+1</m>:
+  <answer>x^2+2x+1</answer>
+</p>
+
+<p>Enter <m>x^2+2x+1</m> exactly: <answer symbolicEquality>x^2+2x+1</answer></p>
+
+<p>Enter <m>x^2+2x+1</m> or some mathematically equivalent forms (not factored):
+  <answer symbolicEquality simplifyOnCompare>x^2+2x+1</answer>
+</p>
+
+<p>Enter <m>x^2+2x+1</m> or an expression that can be expanded to match:
+  <answer symbolicEquality simplifyOnCompare expandOnCompare>x^2+2x+1</answer>
+</p>
+
+<p>Enter <em>hello</em>: <answer type="text">hello</answer></p> 
+
+<p>A dog is a type of</p>
+<answer>
+  <choiceinput>
+    <choice credit="1">animal</choice>
+    <choice>vegetable</choice>
+    <choice>mineral</choice>
+    <choice credit="0.5">being</choice>
+  </choiceinput>
+</answer>   
+
+<p>A dog is a type of 
+<answer>
+  <choiceinput inline>
+    <choice credit="1">animal</choice>
+    <choice>vegetable</choice>
+    <choice>mineral</choice>
+    <choice credit="0.5">being</choice>
+  </choiceinput>
+</answer>  
+</p>
+
+<p>A dog is a type of </p>
+<answer>
+  <choiceinput shuffleOrder>
+    <choice credit="1">animal</choice>
+    <choice>vegetable</choice>
+    <choice>mineral</choice>
+    <choice credit="0.5">being</choice>
+  </choiceinput>
+</answer> 
