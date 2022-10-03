@@ -57,7 +57,7 @@ if ($success) {
                 ON ua.doenetId = uaa.doenetId 
                 AND ua.userId = uaa.userId
             WHERE uaa.doenetId = '$doenetId'
-                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')"
+                AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')"
         );
     } else {
         $result = $conn->query(
@@ -73,7 +73,7 @@ if ($success) {
                 AND ua.userId = uaa.userId
             WHERE uaa.doenetId = '$doenetId'
                 AND uaa.userId = '$requestorUserId'
-                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')"
+                AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')"
         );
     }
 

@@ -74,7 +74,7 @@ if ($success) {
             WHERE a.courseId = '$courseId'
                 AND cc.isAssigned = '1'
                 AND cc.isDeleted = '0'
-                AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')
+                AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')
             ORDER BY a.dueDate"
         );
     }
