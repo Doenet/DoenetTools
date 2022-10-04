@@ -7,6 +7,16 @@ import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
+import styled from 'styled-components';
+
+const SpanStyling= styled.span`
+&: focus {
+  outline: 2px solid var(--canvastext);
+  outline-offset: 2px;
+}
+`;
+
+
 export default React.memo(function Hint(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
@@ -52,7 +62,7 @@ export default React.memo(function Hint(props) {
   }
 
 
-  let twirlIcon = <FontAwesomeIcon icon={twirlIsClosed} />;
+  //let twirlIcon = <FontAwesomeIcon icon={twirlIsClosed} />;
   let icon = <FontAwesomeIcon icon={lightOff} />;
   let info = null;
   let infoBlockStyle = { display: 'none' };
@@ -61,11 +71,18 @@ export default React.memo(function Hint(props) {
       action: actions.revealHint,
     });
   };
+  let  onKeyPressFunction = (e) => {
+    if(e.key === "Enter"){
+      callAction({
+        action: actions.revealHint,
+      });
+    }
+  };
 
   let openCloseText = 'open';
 
   if (SVs.open) {
-    twirlIcon = <FontAwesomeIcon icon={twirlIsOpen} />;
+   // twirlIcon = <FontAwesomeIcon icon={twirlIsOpen} />;
     openCloseText = 'close';
     icon = <FontAwesomeIcon icon={lightOn} />;
     info = children;
@@ -79,6 +96,14 @@ export default React.memo(function Hint(props) {
       borderBottomRightRadius: '5px',
       backgroundColor: 'white',
     };
+    onKeyPressFunction = (e) => {
+      if(e.key === "Enter"){
+        callAction({
+          action: actions.closeHint,
+        });
+      }
+    };
+  
     onClickFunction = () => {
       callAction({
         action: actions.closeHint,
@@ -90,7 +115,9 @@ export default React.memo(function Hint(props) {
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <aside id={id} key={id}>
       <a name={id} />
-      <span
+
+      <SpanStyling
+
         style={{
           display: 'block',
           margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
@@ -103,12 +130,15 @@ export default React.memo(function Hint(props) {
           backgroundColor: 'var(--mainGray)',
           cursor: 'pointer',
         }}
+
+        tabIndex="0"
         data-test="hint-heading"
         onClick={onClickFunction}
-      >
-        {twirlIcon} {icon} {title} (click to {openCloseText})
-      </span>
-      <span style={infoBlockStyle}>{info}</span>
+        onKeyDown={onKeyPressFunction}
+      > {icon} {title} (click to {openCloseText})
+      </SpanStyling>
+      <span style={infoBlockStyle} >{info}</span>
+
     </aside>
     </VisibilitySensor>
   );
