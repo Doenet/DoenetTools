@@ -173,7 +173,7 @@ export default function ToolRoot() {
       key={MainPanelKey}
       fallback={
         <LoadingFallback>
-          <Svg>
+          <Svg viewBox="0 0 130 140">
             <DonutG1>
               <Circle
                 id="donut" 
@@ -192,7 +192,7 @@ export default function ToolRoot() {
               />
             </DonutG1>
           </Svg>
-          <Svg>
+          <Svg viewBox="0 0 130 140">
             <DonutG2>
               <Circle
                 id="donut" 
@@ -211,7 +211,7 @@ export default function ToolRoot() {
               />
             </DonutG2>
           </Svg>
-          <Svg>
+          <Svg viewBox="0 0 130 140">
             <DonutG3>
               <Circle
                 id="donut" 
