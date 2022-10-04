@@ -47,7 +47,7 @@ if ($success) {
             a.assignedDate,
             a.totalPointsOrPercent
         FROM assignment AS a
-        LEFT JOIN course_content as cc
+        INNER JOIN course_content as cc
         ON a.doenetId = cc.doenetId
         LEFT JOIN user_assignment AS ua
 		  ON cc.doenetId = ua.doenetId
@@ -55,7 +55,7 @@ if ($success) {
         WHERE a.courseId = '$courseId'
             AND cc.isAssigned = '1'
             AND cc.isDeleted = '0'
-            AND (ua.isUnassigned IS NULL OR ua.isUnassigned = '0')
+            AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')
         ORDER BY a.dueDate"
     );
     $response_arr = [];
