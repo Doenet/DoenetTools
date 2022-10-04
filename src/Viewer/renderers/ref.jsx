@@ -17,17 +17,16 @@ import styled from 'styled-components';
 //     }
 //   `;
 
+
 export default React.memo(function Ref(props) {
   let { name, id, SVs, children } = useDoenetRender(props);
-  console.log('ref tag');
+
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
   const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
   let { search } = useLocation();
   let navigate = useNavigate();
-
-  
 
 
   if (SVs.hidden) {
@@ -106,12 +105,12 @@ export default React.memo(function Ref(props) {
 
   if (SVs.createButton) {
     if (externalUri) {
-      return <span id={id} style={{display: "inline-block" }}><a name={id} />
-        <Button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</Button>
+      return <span id={id}><a name={id} />
+        <button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
       </span>;
     } else {
-      return <span id={id} style={{display: "inline-block" }}><a name={id} />
-        <Button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</Button>
+      return <span id={id}><a name={id} />
+        <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
       </span>;
     }
     
@@ -124,6 +123,7 @@ export default React.memo(function Ref(props) {
         console.log('first case');
         return <a style={{color: 'var(--mainBlue)',
           borderRadius: '5px'}} target={targetForATag} id={name} name={name} href={url} >{linkContent} </a>
+
       } else {
 
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
@@ -134,6 +134,7 @@ export default React.memo(function Ref(props) {
         style={{color: 'var(--mainBlue)',
         borderRadius: '5px'}}
         target={targetForATag} id={id} name={id} to={url} state={stateObj} >{linkContent}</Link>
+
       }
     } else {
       return <span id={id}>{linkContent}</span>

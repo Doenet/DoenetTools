@@ -6,6 +6,7 @@ import { faLightbulb as lightOn } from '@fortawesome/free-regular-svg-icons';
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';
+
 import styled from 'styled-components';
 
 const SpanStyling= styled.span`
@@ -114,7 +115,9 @@ export default React.memo(function Hint(props) {
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <aside id={id} key={id}>
       <a name={id} />
+
       <SpanStyling
+
         style={{
           display: 'block',
           margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
@@ -127,6 +130,7 @@ export default React.memo(function Hint(props) {
           backgroundColor: 'var(--mainGray)',
           cursor: 'pointer',
         }}
+
         tabIndex="0"
         data-test="hint-heading"
         onClick={onClickFunction}
@@ -134,6 +138,7 @@ export default React.memo(function Hint(props) {
       > {icon} {title} (click to {openCloseText})
       </SpanStyling>
       <span style={infoBlockStyle} >{info}</span>
+
     </aside>
     </VisibilitySensor>
   );

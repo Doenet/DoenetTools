@@ -1,13 +1,7 @@
 import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
-import styled from 'styled-components';
-const FigureStyling = styled.figure`
-&: focus {
-  outline: 2px solid var(--canvastext);
-  outline-offset: 2px;
-}
-`;
+
 export default React.memo(function Figure(props) {
   let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
 
@@ -63,11 +57,11 @@ export default React.memo(function Figure(props) {
 
     return (
       <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <FigureStyling id={id} style={{ margin: "12px 0" }} tabIndex="0">
+      <figure id={id} style={{ margin: "12px 0" }}>
         <a name={id} />
         {childrenToRender}
         <figcaption id={ id + "_caption" }>{caption}</figcaption>
-      </FigureStyling>
+      </figure>
       </VisibilitySensor>
     )
 })
