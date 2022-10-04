@@ -6,16 +6,16 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 import styled from 'styled-components';
 import P from '../../Core/components/P';
 const SpanStyling= styled.span`
-display: block;
-margin: SVs.open ? 12px 4px 0px 4px : 12px 4px 12px 4px;
-padding: 6px;
-border: 2px solid black;
-border-top-left-radius: 5px;
-border-top-right-radius: 5px;
-border-bottom-left-radius: SVs.open ? 0px : 5px;
-border-bottom-right-radius: SVs.open ? 0px : 5px;
-background-color: var(--mainGray);
-cursor: pointer;
+// display: block;
+// margin: SVs.open ? 12px 4px 0px 4px : 12px 4px 12px 4px;
+// padding: 6px;
+// border: 2px solid black;
+// border-top-left-radius: 5px;
+// border-top-right-radius: 5px;
+// border-bottom-left-radius: SVs.open ? 0px : 5px;
+// border-bottom-right-radius: SVs.open ? 0px : 5px;
+// background-color: var(--mainGray);
+// cursor: pointer;
 &: focus {
   outline: 2px solid var(--canvastext);
   outline-offset: 2px;
