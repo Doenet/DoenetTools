@@ -399,7 +399,7 @@ describe('Angle Tag Tests', function () {
       expect(Number(text)).closeTo(1, 1E-6)
     })
     cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).eq('180π')
+      expect(Number(text)).closeTo(180 / Math.PI, 1E-6)
     })
     cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(1, 1E-6)
@@ -408,7 +408,7 @@ describe('Angle Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(1, 1E-12);
-      expect(stateVariables['/_angle1'].stateValues.degrees).eqls(["/", 180, "pi"]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(180 / Math.PI, 1E-12)
     })
 
     cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}pi/3{enter}', { force: true });
@@ -471,7 +471,7 @@ describe('Angle Tag Tests', function () {
       expect(Number(text)).closeTo(4, 1E-6)
     })
     cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).eq('720π')
+      expect(Number(text)).closeTo(4 * 180 / Math.PI, 1E-6)
     })
     cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(4, 1E-6)
@@ -480,7 +480,7 @@ describe('Angle Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(4, 1E-12);
-      expect(me.fromAst(stateVariables['/_angle1'].stateValues.degrees).evaluate_to_constant()).closeTo(4 * 180 / Math.PI, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(4 * 180 / Math.PI, 1E-12);
     })
 
     cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}3pi/2{enter}', { force: true });
@@ -543,7 +543,7 @@ describe('Angle Tag Tests', function () {
       expect(Number(text)).closeTo(0.00001, 1E-6)
     })
     cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).eq('0.0018π')
+      expect(Number(text)).closeTo(0.0018 / Math.PI, 1E-6)
     })
     cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(0.00001, 1E-6)
@@ -552,7 +552,7 @@ describe('Angle Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(0.00001, 1E-12);
-      expect(me.fromAst(stateVariables['/_angle1'].stateValues.degrees).evaluate_to_constant()).closeTo(0.0018 / Math.PI, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(0.0018 / Math.PI, 1E-12);
     })
 
 
