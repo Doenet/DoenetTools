@@ -17,7 +17,7 @@ export default function WelcomeUMNPlacementExam() {
       setPageToolView({
         page: 'umnalgpl',
         // page: 'umn/algpl',
-        tool: 'assessment',
+        tool: 'exam',
         view: '',
         params: {
           doenetId:"_Xzibs2aYiKJbZsZ69bBZP",
