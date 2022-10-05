@@ -129,6 +129,8 @@ export default function ToolRoot() {
     People: lazy(() => import('./ToolPanels/People')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
+    UMNEndExamPanel: lazy(() => import('./ToolPanels/UMNEndExamPanel')),
+    UMNWelcomePlacementExam: lazy(() => import('./ToolPanels/UMNWelcomePlacementExam')),
     GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
     GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
     RolesEditor: lazy(() => import('./ToolPanels/RoleEditor')),
@@ -438,7 +440,58 @@ export default function ToolRoot() {
 // footer: {height,open,component}
 // initialProportion: 1,
 
+// /umn/1271qual
+// /umn/1151qual
+// /umn/algpl
+// /umn/ to pick or algpl
+
 let navigationObj = {
+  umn: {
+    default: {
+      defaultTool: 'umnalgplredirect',
+    },
+    umnalgplredirect: {
+      pageName: 'umnalgplredirect', //???How to redirect?
+      menuPanelCap: 'AssignmentInfoCap',
+      currentMainPanel: 'AssignmentViewer',
+      currentMenus: ['TimerMenu'],
+      menusTitles: ['Time Remaining'],
+      menusInitOpen: [true],
+      headerControls: [],
+      displaySettings: false,
+      waitForMenuSuppression: true,
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+    }
+  },
+  umnalgpl: {
+    default: {
+      defaultTool: 'welcome',
+    },
+    welcome: {
+      pageName: 'welcome',
+      currentMainPanel: 'UMNWelcomePlacementExam',
+      // displaySettings: false,
+      hasNoMenuPanel: true,
+    },
+    exam: {
+      pageName: 'exam',
+      menuPanelCap: 'AssignmentInfoCap',
+      currentMainPanel: 'AssignmentViewer',
+      currentMenus: ['TimerMenu'],
+      menusTitles: ['Time Remaining'],
+      menusInitOpen: [true],
+      headerControls: [],
+      displaySettings: false,
+      waitForMenuSuppression: true,
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+    },
+    endExam: {
+      pageName: 'endExam',
+      currentMainPanel: 'UMNEndExamPanel',
+      displaySettings: false,
+      hasNoMenuPanel: true,
+    },
+  },
   exam: {
     default: {
       defaultTool: 'chooseLearner',
