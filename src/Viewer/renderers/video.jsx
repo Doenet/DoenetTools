@@ -8,7 +8,13 @@ import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import cssesc from 'cssesc';
 import VisibilitySensor from 'react-visibility-sensor-v2';
-
+import styled from 'styled-components';
+const VideoStyling = styled.div`
+&: focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
+`;
 
 export default React.memo(function Video(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
@@ -482,10 +488,10 @@ export default React.memo(function Video(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <div style={outerStyle} id={id + "_outer"}>
+      <VideoStyling  tabIndex="0" style={outerStyle} id={id + "_outer"}>
         <a name={id} />
         {videoTag}
-      </div>
+      </VideoStyling>
     </VisibilitySensor>
   )
 
