@@ -922,6 +922,7 @@ export default function PageViewer(props) {
     }
     setStage('recalcParams')
     coreId.current = nanoid();
+    initialCoreData.current = {};
     setPageContentChanged(true);
     return null;
   }

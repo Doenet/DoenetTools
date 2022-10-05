@@ -516,6 +516,259 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
+  it('select three numbers from 1 to 3, exclude combinations with two 1s', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample1" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample2" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample3" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample4" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample5" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample6" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample7" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample8" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample9" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample10" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample11" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample12" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample13" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample14" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample15" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample16" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample17" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample18" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample19" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample20" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let allowedCombinations = [
+      [1,2,2], [1,2,3], [1,3,2], [1,3,3],
+      [2,1,2], [2,1,3], [3,1,2], [3,1,3],
+      [2,2,1], [2,3,1], [3,2,1], [3,3,1],
+      [2,2,2], [2,2,3], [2,3,2], [3,2,2],
+      [3,3,2], [3,2,3], [2,3,3], [3,3,3]
+    ];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let ind = 1; ind <= 20; ind++) {
+        let num1 = stateVariables[stateVariables['/sample' + ind].replacements[0].componentName].stateValues.value;
+        let num2 = stateVariables[stateVariables['/sample' + ind].replacements[1].componentName].stateValues.value;
+        let num3 = stateVariables[stateVariables['/sample' + ind].replacements[2].componentName].stateValues.value;
+
+        expect(allowedCombinations.some(v => v[0] === num1 && v[1] === num2 && v[2] === num3)).eq(true);
+      }
+    })
+  });
+
+  it('select three numbers from 1 to 3, exclude combinations with two 1s, duplicate excludes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample1" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample2" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample3" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample4" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample5" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample6" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample7" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample8" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample9" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample10" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample11" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample12" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample13" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample14" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample15" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample16" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample17" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample18" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample19" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample20" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let allowedCombinations = [
+      [1,2,2], [1,2,3], [1,3,2], [1,3,3],
+      [2,1,2], [2,1,3], [3,1,2], [3,1,3],
+      [2,2,1], [2,3,1], [3,2,1], [3,3,1],
+      [2,2,2], [2,2,3], [2,3,2], [3,2,2],
+      [3,3,2], [3,2,3], [2,3,3], [3,3,3]
+    ];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let ind = 1; ind <= 20; ind++) {
+        let num1 = stateVariables[stateVariables['/sample' + ind].replacements[0].componentName].stateValues.value;
+        let num2 = stateVariables[stateVariables['/sample' + ind].replacements[1].componentName].stateValues.value;
+        let num3 = stateVariables[stateVariables['/sample' + ind].replacements[2].componentName].stateValues.value;
+
+        expect(allowedCombinations.some(v => v[0] === num1 && v[1] === num2 && v[2] === num3)).eq(true);
+      }
+    })
+  });
+
+  it('select four numbers from 0 to 3, exclude positions of each number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample1" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample2" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample3" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample4" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample5" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample6" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample7" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample8" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample9" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample10" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample11" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample12" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample13" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample14" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample15" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample16" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample17" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample18" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample19" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample20" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let ind = 1; ind <= 20; ind++) {
+        let num1 = stateVariables[stateVariables['/sample' + ind].replacements[0].componentName].stateValues.value;
+        let num2 = stateVariables[stateVariables['/sample' + ind].replacements[1].componentName].stateValues.value;
+        let num3 = stateVariables[stateVariables['/sample' + ind].replacements[2].componentName].stateValues.value;
+        let num4 = stateVariables[stateVariables['/sample' + ind].replacements[3].componentName].stateValues.value;
+
+        expect([1,2,3].includes(num1)).eq(true);
+        expect([0,2,3].includes(num2)).eq(true);
+        expect([0,1,3].includes(num3)).eq(true);
+        expect([0,1,2].includes(num4)).eq(true);
+
+      }
+    })
+  });
+
+  it('select three numbers from 1 to 3, without replacement exclude positions of each number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample1" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample2" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample3" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample4" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample5" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample6" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample7" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample8" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample9" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample10" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample11" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample12" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample13" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample14" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample15" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample16" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample17" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample18" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample19" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample20" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let ind = 1; ind <= 20; ind++) {
+        let num1 = stateVariables[stateVariables['/sample' + ind].replacements[0].componentName].stateValues.value;
+        let num2 = stateVariables[stateVariables['/sample' + ind].replacements[1].componentName].stateValues.value;
+        let num3 = stateVariables[stateVariables['/sample' + ind].replacements[2].componentName].stateValues.value;
+
+        expect([2,3].includes(num1)).eq(true);
+        expect([1,3].includes(num2)).eq(true);
+        expect([1,2].includes(num3)).eq(true);
+
+      }
+    })
+  });
+
+  it('select three numbers from 1 to 3, without replacement, exclude any place for 1', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence numberToSelect="3" name="sample1" from="1" to="3" excludecombinations="(1 _ _) (_ 1 _) (_ _ 1)" /></aslist></p>
+    `}, "*");
+    });
+
+    cy.document().should('contain.text', "Excluded over 70%")
+
+  });
+
+  it('select 10 numbers from 1 to 10, without replacement, exclude positions of each number', () => {
+    // make sure that exclude combinations does not enumerate all combinations excluded
+    // to count them
+    
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample1" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample2" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample3" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample4" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample5" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample6" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample7" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample8" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample9" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numberToSelect="10" name="sample10" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+
+    let allNumbers = [1,2,3,4,5,6,7,8,9,10]
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let ind = 1; ind <= 10; ind++) {
+
+        for(let j=0; j< 10; j++) {
+          let num = stateVariables[stateVariables['/sample' + ind].replacements[j].componentName].stateValues.value;
+
+          let validNums = [...allNumbers];
+          validNums.splice(j, 1);
+
+          expect(validNums.includes(num)).eq(true);
+
+        }
+
+      }
+    })
+  });
+
   it('select five even numbers with replacement from -4 to 4, excluding 0', () => {
     cy.window().then(async (win) => {
       win.postMessage({
