@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil';
 import { useToast } from '../../Tools/_framework/Toast';
-import { DateToUTCDateString } from '../../_utils/dateUtilityFunction';
+import { DateToUTCDateString, DateToUTCDateWithoutSecondsString } from '../../_utils/dateUtilityFunction';
 import { itemByDoenetId } from '../Course/CourseActions';
-import { formatDateWithYear, formatHours, formatMinutes, getAmPm } from '../../../cypress/e2e/AsStudent/assignedActivity.cy.js';
 
 const dateFormatKeys = [
   'assignedDate',
@@ -40,7 +39,7 @@ export const useActivity = (courseId, doenetId) => {
         if (updateDBObj['dueDate'] !== undefined &&
         updateDBObj['dueDate'] !== null
         ){
-          updateDBObj['dueDate'] = formatDateWithYear(updateDBObj['dueDate']) + ', ' + formatHours(updateDBObj['dueDate']) + formatMinutes(updateDBObj['dueDate']) + getAmPm(updateDBObj['dueDate'].getHours())
+          updateDBObj['dueDate'] = DateToUTCDateWithoutSecondsString(new Date(updateDBObj['dueDate']))
         }
 
         // Update pinned After Date to UTC time for the database

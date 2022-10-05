@@ -92,7 +92,7 @@ describe('Assigned Activity Test', function () {
     cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
     cy.get('[data-test="Assigned Date Checkbox"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    // cy.wait(2000); // Wait for activity to be saved and assigned
+    cy.wait(1000); // Wait for activity to be saved and assigned
 
     // Sign in as a student
     cy.signin({ userId: studentUserId });
@@ -101,7 +101,7 @@ describe('Assigned Activity Test', function () {
     // Check if the Content page contains the correct activity with the due date
     cy.get('.navigationRow').should('have.length', 1); // Need this to wait for the row to appear
     cy.get('[data-test="rowLabel"]').contains('Cypress Activity');
-    cy.get('.navigationRow').eq(0).get('.navigationColumn2').contains(dueDate.toLocaleString());
+    cy.get('.navigationRow').eq(0).get('.navigationColumn2').contains(formatDateWithYear(dueDate) + ', ' + formatHours(dueDate) + ':' + formatMinutes(dueDate) + ':00');
   
   })
 
@@ -118,7 +118,7 @@ describe('Assigned Activity Test', function () {
     cy.get('[data-test="Due Date Checkbox"]').click();
     cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
     cy.get('[data-test="Assign Activity"]').click();
-    // cy.wait(2000); // Wait for activity to be saved and assigned
+    cy.wait(1000); // Wait for activity to be saved and assigned
 
     // Sign in as a student
     // Check if the Content By Week page contains the correct activity with the assigned date and due date
