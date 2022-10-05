@@ -1,5 +1,4 @@
 import Sequence from './Sequence';
-import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { getFromText } from '../utils/math';
@@ -52,16 +51,35 @@ export default class SelectFromSequence extends Sequence {
           dependencyType: "attributeComponent",
           attributeName: "excludeCombinations",
           variableNames: ["lists"]
-        }
+        },
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        numberToSelect: {
+          dependencyType: "stateVariable",
+          variableName: "numberToSelect"
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.excludeCombinations !== null) {
-          return {
-            setValue:
-            {
-              excludedCombinations:
-                dependencyValues.excludeCombinations.stateValues.lists
+          let excludedCombinations = dependencyValues.excludeCombinations.stateValues.lists
+            .map(x => x.slice(0, dependencyValues.numberToSelect))
+            .filter(x => x.length === dependencyValues.numberToSelect);
+
+          if (dependencyValues.type === "number") {
+            while (true) {
+              let result = mergeContainingCombinations(excludedCombinations);
+              if (result.merged) {
+                excludedCombinations = result.combinations;
+              } else {
+                break;
+              }
             }
+          }
+
+          return {
+            setValue: { excludedCombinations }
           }
         } else {
           return { setValue: { excludedCombinations: [] } }
@@ -668,6 +686,31 @@ function makeSelection({ dependencyValues }) {
 
   let numberCombinationsExcluded = dependencyValues.excludedCombinations.length;
 
+  if (dependencyValues.type === "number") {
+    // account for fact that an excluded combination with a NaN is a wildcard
+    // this could be an overestimate, as different combinations could match the same value
+    numberCombinationsExcluded = 0;
+    let nValues = dependencyValues.length - dependencyValues.exclude.length;
+    for (let comb of dependencyValues.excludedCombinations) {
+      let numNans = comb.reduce((a, c) => a + (Number.isNaN(c) ? 1 : 0), 0);
+
+      if (numNans > 0) {
+        if (dependencyValues.withReplacement) {
+          numberCombinationsExcluded += Math.pow(nValues, numNans);
+        } else {
+          let n = nValues - dependencyValues.numberToSelect + numNans;
+          let nExcl = n;
+          for (let i = 1; i < numNans; i++) {
+            nExcl *= n - i;
+          }
+          numberCombinationsExcluded += nExcl;
+        }
+      } else {
+        numberCombinationsExcluded += 1;
+      }
+    }
+  }
+
   let selectedValues, selectedIndices;
 
   if (numberCombinationsExcluded === 0) {
@@ -726,7 +769,28 @@ function makeSelection({ dependencyValues }) {
       }
 
       if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
-        throw Error("Excluded over 70% of combinations in selectFromSequence");
+
+        if (dependencyValues.type === "number" &&
+          dependencyValues.excludedCombinations.some(x => x.some(Number.isNaN))
+        ) {
+
+
+          let numberDuplicated = estimateNumberOfDuplicateCombinations(
+            dependencyValues.excludedCombinations,
+            dependencyValues.length - dependencyValues.exclude.length,
+            dependencyValues.withReplacement
+          );
+
+          numberCombinationsExcluded -= numberDuplicated;
+
+          if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
+            throw Error("Excluded over 70% of combinations in selectFromSequence");
+          }
+
+        } else {
+          throw Error("Excluded over 70% of combinations in selectFromSequence");
+        }
+
       }
 
     }
@@ -909,8 +973,186 @@ function checkForExcludedCombination({ type, excludedCombinations, values }) {
   if (type === "math") {
     return excludedCombinations.some(x => x.every((v, i) => v.equals(values[i])));
   } else if (type === "number") {
-    return excludedCombinations.some(x => x.every((v, i) => Math.abs(v - values[i]) <= 1E-14 * Math.max(Math.abs(v), Math.abs(values[i]))));
+    // if one entry of excluded combinations is NaN, then it is a wildcard
+    // that will match any value
+    return excludedCombinations.some(x => x.every((v, i) => Number.isNaN(v) || Math.abs(v - values[i]) <= 1E-14 * Math.max(Math.abs(v), Math.abs(values[i]))));
   } else {
     return excludedCombinations.some(x => x.every((v, i) => v === values[i]));
   }
+}
+
+function mergeContainingCombinations(combinations) {
+
+  if (combinations.length === 0) {
+    return { merged: false, combinations: [] }
+  }
+
+  let mergedCombinations = [combinations[0]];
+
+  let mergedAtLeastOne = false;
+
+  for (let comb of combinations.slice(1)) {
+
+    let newCombinations = [];
+    let merged = false;
+
+    for (let oldComb of mergedCombinations) {
+      if (merged) {
+        newCombinations.push(oldComb);
+        continue;
+      }
+      let newComb = [];
+      merged = true;
+      let mergingInto = null;
+      for (let k = 0; k < comb.length; k++) {
+        let v1 = comb[k], v2 = oldComb[k];
+        if (Number.isNaN(v1)) {
+          if (Number.isNaN(v2)) {
+            newComb.push(NaN);
+          } else {
+            // want to merge into 1
+            if (mergingInto === 2) {
+              // already merging into 2, so cannot merge
+              merged = false;
+              break;
+            } else {
+              newComb.push(NaN);
+              mergingInto = 1;
+            }
+          }
+        } else if (Number.isNaN(v2)) {
+          // want to merge into 2
+          if (mergingInto === 1) {
+            // already merging into 1, so cannot merge
+            merged = false;
+            break;
+          } else {
+            newComb.push(NaN);
+            mergingInto = 2;
+          }
+        } else {
+          if (v1 === v2) {
+            newComb.push(v1);
+          } else {
+            merged = false;
+            break;
+          }
+        }
+      }
+
+      if (merged) {
+        newCombinations.push(newComb)
+      } else {
+        newCombinations.push(oldComb)
+      }
+
+    }
+
+    if (merged) {
+      mergedAtLeastOne = true;
+    } else {
+      newCombinations.push(comb);
+    }
+
+    mergedCombinations = newCombinations;
+  }
+
+  return {
+    merged: mergedAtLeastOne,
+    combinations: mergedCombinations
+  }
+
+}
+
+function estimateNumberOfDuplicateCombinations(combinations, nValues, withReplacement) {
+  // if have wildcards, get better estimate of number excluded 
+
+
+  let nCombs = combinations.length;
+
+  if (nCombs === 0) {
+    return 0;
+  }
+
+  let duplicateCombinations = [];
+  for (let i = 0; i < nCombs; i++) {
+    let comb1 = combinations[i];
+    for (let j = i + 1; j < nCombs; j++) {
+      let comb2 = combinations[j];
+      let foundDuplicate = true;
+      let duplicate = [];
+      for (let k = 0; k < comb1.length; k++) {
+        let v1 = comb1[k], v2 = comb2[k];
+        if (Number.isNaN(v1)) {
+          if (Number.isNaN(v2)) {
+            duplicate.push(NaN);
+          } else {
+            duplicate.push(v2)
+          }
+        } else if (Number.isNaN(v2)) {
+          duplicate.push(v1);
+        } else {
+          if (v1 === v2) {
+            duplicate.push(v1);
+          } else {
+            foundDuplicate = false;
+            break;
+          }
+        }
+      }
+
+      if (foundDuplicate) {
+        if (withReplacement) {
+          duplicateCombinations.push(duplicate);
+        } else {
+          let nonNanEntries = duplicate.filter(x => !Number.isNaN(x))
+          if ([...new Set(nonNanEntries)].length === nonNanEntries.length) {
+            duplicateCombinations.push(duplicate);
+          }
+        }
+      }
+    }
+  }
+
+  // TODO: get a more accurate count of the number of excluded combinations.
+  // This is just a heuristic to reduce the count
+  while (true) {
+    let result = mergeContainingCombinations(duplicateCombinations);
+
+    if (result.merged) {
+      duplicateCombinations = result.combinations;
+    } else {
+      break;
+    }
+
+  }
+
+  let numberDuplicated = 0;
+
+  if (duplicateCombinations.length > 0) {
+    for (let comb of duplicateCombinations) {
+      let numNans = comb.reduce((a, c) => a + (Number.isNaN(c) ? 1 : 0), 0);
+
+      if (numNans > 0) {
+        if (withReplacement) {
+          numberDuplicated += Math.pow(nValues, numNans);
+        } else {
+          let n = nValues - comb.length + numNans;
+          let nDup = n;
+          for (let i = 1; i < numNans; i++) {
+            nDup *= n - i;
+          }
+          numberDuplicated += nDup;
+        }
+      } else {
+        numberDuplicated += 1;
+      }
+    }
+
+  }
+
+  numberDuplicated -= estimateNumberOfDuplicateCombinations(duplicateCombinations, nValues, withReplacement)
+
+  return numberDuplicated;
+
 }
