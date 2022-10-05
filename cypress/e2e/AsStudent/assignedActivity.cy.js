@@ -1,4 +1,4 @@
-describe('Assigned Activity Test', function () {
+describe('Assigned Activity Tests', function () {
   const userId = "cyuserId";
   const studentUserId = "cyStudentUserId";
   const courseId = "courseid1";
