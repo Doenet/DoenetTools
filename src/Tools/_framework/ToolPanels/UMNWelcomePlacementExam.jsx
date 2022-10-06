@@ -15,9 +15,9 @@ export default function WelcomeUMNPlacementExam() {
   <p>welcome!</p>
   <Button onClick={ () => {
       setPageToolView({
-        page: 'umnalgpl',
-        // page: 'umn/algpl',
-        tool: 'exam',
+        // page: 'umnmathpl',
+        page: 'umn',
+        tool: 'mathplexam',
         view: '',
         params: {
           doenetId:"_Xzibs2aYiKJbZsZ69bBZP",

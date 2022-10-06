@@ -442,38 +442,21 @@ export default function ToolRoot() {
 
 // /umn/1271qual
 // /umn/1151qual
-// /umn/algpl
+// /umn/mathpl
 // /umn/ to pick or algpl
 
 let navigationObj = {
   umn: {
     default: {
-      defaultTool: 'umnalgplredirect',
+      defaultTool: 'mathplwelcome',
     },
-    umnalgplredirect: {
-      pageName: 'umnalgplredirect', //???How to redirect?
-      menuPanelCap: 'AssignmentInfoCap',
-      currentMainPanel: 'AssignmentViewer',
-      currentMenus: ['TimerMenu'],
-      menusTitles: ['Time Remaining'],
-      menusInitOpen: [true],
-      headerControls: [],
-      displaySettings: false,
-      waitForMenuSuppression: true,
-      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
-    }
-  },
-  umnalgpl: {
-    default: {
-      defaultTool: 'welcome',
-    },
-    welcome: {
+    mathplwelcome: {
       pageName: 'welcome',
       currentMainPanel: 'UMNWelcomePlacementExam',
       // displaySettings: false,
       hasNoMenuPanel: true,
     },
-    exam: {
+    mathplexam: {
       pageName: 'exam',
       menuPanelCap: 'AssignmentInfoCap',
       currentMainPanel: 'AssignmentViewer',
@@ -485,13 +468,16 @@ let navigationObj = {
       waitForMenuSuppression: true,
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
-    endExam: {
+    mathplendExam: {
       pageName: 'endExam',
       currentMainPanel: 'UMNEndExamPanel',
       displaySettings: false,
       hasNoMenuPanel: true,
     },
   },
+
+   
+  
   exam: {
     default: {
       defaultTool: 'chooseLearner',
