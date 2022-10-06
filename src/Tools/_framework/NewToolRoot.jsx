@@ -468,7 +468,7 @@ let navigationObj = {
       waitForMenuSuppression: true,
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
-    mathplendExam: {
+    endExam: {
       pageName: 'endExam',
       currentMainPanel: 'UMNEndExamPanel',
       displaySettings: false,
@@ -552,6 +552,18 @@ let navigationObj = {
       menusInitOpen: [],
       headerControls: ['AssignmentBreadCrumb'],
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+    },
+    endExam: {
+      pageName: 'endExam',
+      currentMainPanel: 'EndExamPanel',
+      // displaySettings: false,
+      // hasNoMenuPanel: true,
+      menuPanelCap: 'AssignmentInfoCap',
+      currentMenus: ['CreditAchieved'],
+      menusTitles: ['Credit Achieved'],
+      menusInitOpen: [true],
+      headerControls: ['AssignmentBreadCrumb'],
+      // waitForMenuSuppression: true,
     },
     gradebook: {
       pageName: 'Gradebook',

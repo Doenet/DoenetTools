@@ -16,6 +16,7 @@ import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'reco
 import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../_reactComponents/PanelHeaderComponents/ActionButton';
 import ButtonGroup from '../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
 
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
@@ -40,6 +41,8 @@ export const itemWeightsAtom = atom({
 
 export default function ActivityViewer(props) {
   const toast = useToast();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
 
   const [errMsg, setErrMsg] = useState(null);
 
@@ -1139,9 +1142,20 @@ export default function ActivityViewer(props) {
 
     await saveState({ overrideThrottle: true })
 
-    // TODO: what should this do in general?
-    window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
-
+    // // TODO: what should this do in general?
+    // window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
+    setPageToolView((prev)=>{
+      return {
+        page:prev.page,
+        tool: 'endExam',
+        view: '',
+        params: {
+          doenetId:props.doenetId,
+          attemptNumber,
+          itemWeights:itemWeights.join(",")
+        }
+      }
+    });
   }
 
   if (errMsg !== null) {
