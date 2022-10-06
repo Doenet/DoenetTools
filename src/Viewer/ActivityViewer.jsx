@@ -1152,7 +1152,7 @@ export default function ActivityViewer(props) {
         params: {
           doenetId:props.doenetId,
           attemptNumber,
-          itemWeights:itemWeights.join(",")
+          itemWeights:itemWeights.join(","),
         }
       }
     });

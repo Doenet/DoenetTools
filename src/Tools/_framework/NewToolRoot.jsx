@@ -448,17 +448,17 @@ export default function ToolRoot() {
 let navigationObj = {
   umn: {
     default: {
-      defaultTool: 'mathplwelcome',
+      defaultTool: 'welcome',
     },
-    mathplwelcome: {
+    welcome: {
       pageName: 'welcome',
       currentMainPanel: 'UMNWelcomePlacementExam',
       // displaySettings: false,
       hasNoMenuPanel: true,
     },
-    mathplexam: {
+    exam: {
       pageName: 'exam',
-      menuPanelCap: 'AssignmentInfoCap',
+      // menuPanelCap: 'AssignmentInfoCap',
       currentMainPanel: 'AssignmentViewer',
       currentMenus: ['TimerMenu'],
       menusTitles: ['Time Remaining'],
