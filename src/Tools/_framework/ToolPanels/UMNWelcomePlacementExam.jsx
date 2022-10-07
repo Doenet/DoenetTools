@@ -24,12 +24,14 @@ export default function WelcomeUMNPlacementExam() {
  const doenetIdToExamInfo = {
   _Xzibs2aYiKJbZsZ69bBZP:{
     examName:'Placement Exam',
-
+  },
+  _tnDtMiI7Nc6tHtVm6To7c:{
+    examName:'Math1151 Exam'
   }
  }
-
+console.log("doenetId",doenetId)
 const info = doenetIdToExamInfo[doenetId];
-
+console.log("info",info)
 
  const startExamLink =  () => {
   let params = {
