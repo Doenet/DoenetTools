@@ -9265,7 +9265,7 @@ export default class Core {
       return;
     }
 
-    if (await component.stateValues.fixed && !instruction.overrideFixed) {
+    if (await component.stateValues.fixed && !instruction.overrideFixed && !stateVarObj.ignoreFixed) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`);
       return;
     }
