@@ -5,6 +5,7 @@ import { MathJax } from "better-react-mathjax";
 const ButtonStyling = styled.button`
   margin: ${props => props.theme.margin};
   height: 24px;
+  width: ${props => props.width};
   border-style: hidden;
   // border-color: var(--canvastext);
   // border-width: 2px;
@@ -70,9 +71,9 @@ export default function Button(props) {
   //     };
   if (props.width) {
     if (props.width === "menu") {
-      button.width = '100%';
+      button.width = 'var(--menuWidth)';
       if (props.label) {
-        container.width = 'menu';
+        container.width = 'var(--menuWidth)';
         button.width = '100%';
       }
     } 

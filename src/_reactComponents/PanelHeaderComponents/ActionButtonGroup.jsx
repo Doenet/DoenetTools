@@ -10,6 +10,7 @@ const Container = styled.div`
 
 const LabelContainer = styled.div`
   display: ${(props) => props.align};
+  width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
   align-items: ${(props) => props.alignItems};
 `;
 
@@ -37,11 +38,6 @@ const verticalActionGroup = {
 };
 
 const ActionButtonGroup = (props) => {
-  var labelContainer = {};
-  labelContainer.width = props.width;
-  if (props.width === 'menu') {
-    labelContainer.width = 'var(--menuWidth)';
-  }
   let first_prop = props.vertical ? 'first_vert' : 'first';
   let last_prop = props.vertical ? 'last_vert' : 'last';
   let overflow_prop = props.width ? 'no_overflow' : 'overflow';
@@ -77,7 +73,7 @@ const ActionButtonGroup = (props) => {
 
   return (
     <>
-      <LabelContainer style={labelContainer} align={align} alignItems={alignItems}>
+      <LabelContainer align={align} alignItems={alignItems} width={props.width}>
         <Label labelVisible={labelVisible} align={align}>
           {label}
         </Label>

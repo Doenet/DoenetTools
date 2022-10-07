@@ -6,6 +6,8 @@ import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVar
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import Button from '../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 
 
@@ -24,6 +26,8 @@ import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/Acti
 ReactDOM.render(
 
 <ActionButtonGroup width="menu">
+  <ActionButton/>
+  <ActionButton/>
   <ActionButton/>
   <ActionButton/>
   <ActionButton/>
