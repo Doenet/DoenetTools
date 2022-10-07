@@ -337,6 +337,7 @@ export default function ChooseLearnerPanel(props) {
           timeZoneCorrectLastExamDate = <ButtonGroup>
             <Button value='Resume' onClick={() => {
               localStorage.clear(); //Clear out the profile of the last exam taker
+              indexedDB.deleteDatabase('keyval-store'); //Clear out the profile of the last exam taker
               axios.get('/api/signOut.php');
               setChoosenLearner(learner);
               setStage('student final check');
@@ -362,6 +363,7 @@ export default function ChooseLearnerPanel(props) {
               value='Start'
               onClick={() => {
                 localStorage.clear(); //Clear out the profile of the last exam taker
+                indexedDB.deleteDatabase('keyval-store'); //Clear out the profile of the last exam taker
                 axios.get('/api/signOut.php');
                 setChoosenLearner(learner);
                 setStage('student final check');
