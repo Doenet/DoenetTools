@@ -929,4 +929,36 @@ describe('Math Display Tag Tests', function () {
 
   })
 
+  it('change essential latex', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    
+    <m name="m" />
+    <p><updateValue name="uv" target="m.latex" type="text" newValue="\\frac{1}{2}" ><label>Change latex</label></updateValue></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m'].stateValues.latex).eq("");
+    });
+    cy.get('#\\/uv').click();
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '12')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m'].stateValues.latex).eq("\\frac{1}{2}");
+    });
+
+  })
+
 })
