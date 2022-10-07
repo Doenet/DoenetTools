@@ -40,7 +40,7 @@ const ActionButtonGroup = (props) => {
   var container = {};
   container.width = props.width;
   if (props.width === 'menu') {
-    container.width = '100%';
+    container.width = getComputedStyle(document.documentElement).getPropertyValue("--menuWidth");
   }
   let first_prop = props.vertical ? 'first_vert' : 'first';
   let last_prop = props.vertical ? 'last_vert' : 'last';

@@ -66,7 +66,7 @@ export default function ActionButton(props) {
     if (props.width === 'menu') {
       // Makes the action button group the correct width in the menu panel
       // Does not work when 235px due to the LabelContainer div in ActionButtonGroup
-      actionButton.width = '216px';
+      actionButton.width = getComputedStyle(document.documentElement).getPropertyValue("--menuWidth");
       if (props.label) {
         container.width = '235px';
         actionButton.width = '100%';
