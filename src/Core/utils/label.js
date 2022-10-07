@@ -155,7 +155,7 @@ export function returnLabelStateVariableDefinitions() {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "label",
+            setEssentialValue: "label",
             value: desiredStateVariableValues.label
           }]
         }

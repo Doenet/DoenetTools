@@ -122,7 +122,7 @@ export default React.memo(function Ref(props) {
         // as it removes the # from the url.  So we use a <a> directly in this case.
         console.log('first case');
         return <a style={{color: 'var(--mainBlue)',
-          borderRadius: '5px'}} target={targetForATag} id={name} name={name} href={url} >{linkContent} </a>
+          borderRadius: '5px'}} target={targetForATag} id={name} name={name} href={url} >{linkContent}</a>
 
       } else {
 
