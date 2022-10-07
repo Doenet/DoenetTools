@@ -33,6 +33,7 @@ import CollapseSection from '../../_reactComponents/PanelHeaderComponents/Collap
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
 import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
+import Tooltip from '../../_reactComponents/PanelHeaderComponents/Tooltip.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -1381,6 +1382,25 @@ export default function attempt() {
           propCode: { vertical },
           description: 'Aligns buttons vertically',
         },
+      ],
+    },
+    {
+      name: 'Tooltip',
+      id: 'tooltip',
+      code: Tooltip,
+      codePreview: '<Tooltip/>',
+      req_props: null,
+      req_children: null,
+      use: 'Adds description of elements',
+      props: [
+        {name: 'Icon', 
+        propPreview: '<Tooltip  icon={<FontAwesomeIcon icon={faCode}/>}> />',
+        propCode: {icon: <FontAwesomeIcon icon={faCode} />},
+        description: 'See Style Guide for more info on how to use FontAwesomeIcons. Changes icon in circle',},
+        {name: 'Text',
+        propPreview: '<Tooltip text="This is the tooltip for a tooltip"/>',
+        propCode: {text: "This is the tooltip for a tooltip"},
+        description: 'Changes text in textbox'},    
       ],
     },
     {
