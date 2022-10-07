@@ -2060,4 +2060,32 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('update essential label value', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <updateValue target="uv.label" newValue="Hello!" type="text" name="uv"  />
+    `}, "*");
+    });
+
+    cy.get('#\\/uv').should('contain.text', 'Button')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/uv'].stateValues.label).eq("");
+    });
+
+    cy.get('#\\/uv').click();
+
+    cy.get('#\\/uv').should('contain.text', 'Hello!')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/uv'].stateValues.label).eq("Hello!");
+    });
+
+
+  })
+
 });
