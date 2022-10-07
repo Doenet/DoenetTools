@@ -192,7 +192,7 @@ export default function attempt() {
           name: 'Vertical Label',
           propPreview: '<ActionButtonGroup label="What: " verticalLabel/>',
           propCode: { label: 'What: ', verticalLabel },
-          description: 'Adds label to componenet on top',
+          description: 'Adds label to component on top',
         },
       ],
     },

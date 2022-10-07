@@ -4,6 +4,10 @@ import { parseAndCompile } from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems';
+import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+
+
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
 //     contentIds: [],
@@ -18,25 +22,15 @@ import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedIt
 // })
 
 ReactDOM.render(
-  <RelatedItems 
-    width="100px" 
-    size="8"
-    options={
-      [
-        <option value='Keagan'>Keagan</option>,
-        <option value='Keagan'>Keagan</option>,
-        <option value='Keagan'>Keagan</option>
-      ]
-    }
-    onChange={(data) => console.log(data)}
-    onBlur={(e) => console.log(e.target.value)}
-    disabled
-  >
-  </RelatedItems>,
+
+<ActionButtonGroup width="menu">
+  <ActionButton/>
+  <ActionButton/>
+  <ActionButton/>
+  <ActionButton/>
+</ActionButtonGroup>,
   document.getElementById('root'),
 );
-
-options.push(<option value='Keagan'>Keagan</option>);
 
 
 // const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
