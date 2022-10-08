@@ -10,6 +10,7 @@ export default function SignOut() {
 
   useEffect(() => {
     localStorage.clear(); //Clear out the profile
+    indexedDB.deleteDatabase('keyval-store'); //Clear out the rest of the profile
 
     axios
       .get('/api/signOut.php', {params: {}})
