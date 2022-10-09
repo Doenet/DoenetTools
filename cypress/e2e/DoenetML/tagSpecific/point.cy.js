@@ -12598,39 +12598,39 @@ describe('Point Tag Tests', function () {
     <text>a</text>
 
     <graph>
-      <point x="1">
+      <point xs="1">
         <constraints>
           <constrainTo><function>x^2</function></constrainTo>
         </constraints>
       </point>
-      <point x="2">
+      <point xs="2">
         <constraints>
           <constrainTo>
             <curve><function>x^2</function><function>x^3</function></curve>
           </constrainTo>
         </constraints>
       </point>
-      <point x="3">
+      <point xs="3">
         <constraints>
           <constrainTo><circle/></constrainTo>
         </constraints>
       </point>
-      <point x="4">
+      <point xs="4">
         <constraints>
           <constrainTo><line>y=2x</line></constrainTo>
         </constraints>
       </point>
-      <point x="5">
+      <point xs="5">
         <constraints>
           <constrainTo><polygon vertices="(1,2) (3,4) (5,-6)" /></constrainTo>
         </constraints>
       </point>
-      <point x="6">
+      <point xs="6">
         <constraints>
           <constrainTo><polyline vertices="(1,2) (3,4) (5,-6)" /></constrainTo>
         </constraints>
       </point>
-      <point x="7">
+      <point xs="7">
         <constraints>
           <constrainTo><parabola/></constrainTo>
         </constraints>
