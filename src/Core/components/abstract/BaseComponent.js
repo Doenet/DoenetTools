@@ -414,6 +414,7 @@ export default class BaseComponent {
       hasEssential: true,
       doNotShadowEssential: true,
       defaultValue: false,
+      provideEssentialValuesInDefinition: true,
       returnDependencies: () => ({
         disabledAttr: {
           dependencyType: "attributeComponent",
@@ -437,8 +438,7 @@ export default class BaseComponent {
           variableName: "disabled"
         },
       }),
-      definition({ dependencyValues, usedDefault }) {
-
+      definition({ dependencyValues, usedDefault, essentialValues }) {
         if (dependencyValues.readOnly) {
           return { setValue: { disabled: true } }
         }
@@ -447,6 +447,12 @@ export default class BaseComponent {
           return {
             setValue: {
               disabled: dependencyValues.disabledAttr.stateValues.value
+            }
+          }
+        } else if(essentialValues.disabled !== undefined) {
+          return {
+            useEssentialOrDefaultValue: {
+              disabled: true
             }
           }
         }
@@ -509,6 +515,7 @@ export default class BaseComponent {
       hasEssential: true,
       doNotShadowEssential: true,
       ignoreFixed: true,
+      provideEssentialValuesInDefinition: true,
       returnDependencies: () => ({
         fixedAttr: {
           dependencyType: "attributeComponent",
@@ -532,11 +539,17 @@ export default class BaseComponent {
           attributeName: "ignoreParentFixed"
         },
       }),
-      definition({ dependencyValues, usedDefault }) {
+      definition({ dependencyValues, usedDefault, essentialValues }) {
         if (dependencyValues.fixedAttr !== null) {
           return {
             setValue: {
               fixed: dependencyValues.fixedAttr.stateValues.value
+            }
+          }
+        } else if(essentialValues.fixed !== undefined) {
+          return {
+            useEssentialOrDefaultValue: {
+              fixed: true
             }
           }
         }
