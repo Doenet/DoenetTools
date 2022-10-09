@@ -407,12 +407,13 @@ export default class Point extends GraphicalComponent {
 
         // if have a component child, they will overwrite any other component values
         // so is a minimum for nDimensions
+        // Exception if only x is specified, least nDimensions at zero
+        // so that only specifying x still gives a 2D point
+        // (If want 1D point, specify via other means, such as coords or xs)
         if (dependencyValues.z !== null) {
           nDimensions = 3;
         } else if (dependencyValues.y !== null) {
           nDimensions = 2;
-        } else if (dependencyValues.x !== null) {
-          nDimensions = 1;
         } else {
           nDimensions = 0;
         }

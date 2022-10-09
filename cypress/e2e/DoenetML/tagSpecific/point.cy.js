@@ -12119,4 +12119,206 @@ describe('Point Tag Tests', function () {
 
   });
 
+  it('copy point with no arguments, specify individual coordinates', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph name="g">
+      <point name="A" labelIsName />
+      <point copySource="A" name="B" labelIsName x="1" />
+      <point copySource="A" name="C" labelIsName y="1" />
+      <point copySource="B" name="D" labelIsName y="2" />
+    </graph>
+
+    <graph copySource="g" name="g2" newNamespace />
+
+    <coords copySource="A" name="Ac" />
+    <coords copySource="B" name="Bc" />
+    <coords copySource="C" name="Cc" />
+    <coords copySource="D" name="Dc" />
+    <coords copySource="g2/A" name="Ac2" />
+    <coords copySource="g2/B" name="Bc2" />
+    <coords copySource="g2/C" name="Cc2" />
+    <coords copySource="g2/D" name="Dc2" />
+ 
+    `}, "*");
+    });
+
+   
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(0,0)");
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(1,0)");
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(0,1)");
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(1,2)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(0,0)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(1,0)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(0,1)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(1,2)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/A',
+        args: { x: 3, y: 4 }
+      })
+    })
+
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(3,4)");
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(1,4)");
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(1,2)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(3,4)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(1,4)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(1,2)");
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/B',
+        args: { x: 5, y: 6 }
+      })
+    })
+
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(5,6)");
+
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(3,6)");
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(5,2)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(3,6)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(5,6)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(5,2)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/C',
+        args: { x: 7, y: 8 }
+      })
+    })
+
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(7,8)");
+    
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(7,6)");
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(5,6)");
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(5,2)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(7,6)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(5,6)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(7,8)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(5,2)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/D',
+        args: { x: 9, y: 10 }
+      })
+    })
+
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(9,10)");
+    
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(7,6)");
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(9,6)");
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(7,8)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(7,6)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(9,6)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(7,8)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(9,10)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/g2/D',
+        args: { x: -1, y: -2 }
+      })
+    })
+
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(−1,−2)");
+    
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(7,6)");
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(−1,6)");
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(7,8)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(7,6)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(−1,6)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(7,8)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(−1,−2)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/g2/C',
+        args: { x: -3, y: -4 }
+      })
+    })
+
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(−3,−4)");
+    
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(−3,6)");
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(−1,6)");
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(−1,−2)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(−3,6)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(−1,6)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(−3,−4)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(−1,−2)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/g2/B',
+        args: { x: -5, y: -6 }
+      })
+    })
+
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(−5,−6)");
+    
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(−3,−6)");
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(−3,−4)");
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(−5,−2)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(−3,−6)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(−5,−6)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(−3,−4)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(−5,−2)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/g2/A',
+        args: { x: -7, y: -8 }
+      })
+    })
+
+    cy.get('#\\/Ac .mjx-mrow').should('contain.text', "(−7,−8)");
+    
+    cy.get('#\\/Bc .mjx-mrow').should('contain.text', "(−5,−8)");
+    cy.get('#\\/Cc .mjx-mrow').should('contain.text', "(−7,−4)");
+    cy.get('#\\/Dc .mjx-mrow').should('contain.text', "(−5,−2)");
+
+    cy.get('#\\/Ac2 .mjx-mrow').should('contain.text', "(−7,−8)");
+    cy.get('#\\/Bc2 .mjx-mrow').should('contain.text', "(−5,−8)");
+    cy.get('#\\/Cc2 .mjx-mrow').should('contain.text', "(−7,−4)");
+    cy.get('#\\/Dc2 .mjx-mrow').should('contain.text', "(−5,−2)");
+
+
+
+
+  });
+
 })
