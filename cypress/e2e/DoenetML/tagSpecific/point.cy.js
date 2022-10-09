@@ -334,14 +334,14 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/g2point2label').should('have.text', '_point2')
     cy.get('#\\/P3label').should('have.text', 'P')
     cy.get('#\\/Q3label').should('have.text', '_point2')
-    cy.get('#\\/P4label').should('have.text', '')
-    cy.get('#\\/Q4label').should('have.text', '')
+    cy.get('#\\/P4label').should('have.text', 'P')
+    cy.get('#\\/Q4label').should('have.text', '_point2')
     cy.get('#\\/g5Plabel').should('have.text', 'P')
     cy.get('#\\/g5point2label').should('have.text', '_point2')
     cy.get('#\\/g6Plabel').should('have.text', 'P')
     cy.get('#\\/g6point2label').should('have.text', '_point2')
-    cy.get('#\\/g7Plabel').should('have.text', '')
-    cy.get('#\\/g7point2label').should('have.text', '')
+    cy.get('#\\/g7Plabel').should('have.text', 'P')
+    cy.get('#\\/g7point2label').should('have.text', '_point2')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -367,10 +367,10 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/P3'].stateValues.labelForGraph).eq('P')
       expect(stateVariables['/Q3'].stateValues.label).eq(`_point2`)
       expect(stateVariables['/Q3'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
-      expect(stateVariables['/P4'].stateValues.label).eq('')
-      expect(stateVariables['/P4'].stateValues.labelForGraph).eq('')
-      expect(stateVariables['/Q4'].stateValues.label).eq(``)
-      expect(stateVariables['/Q4'].stateValues.labelForGraph).eq(``)
+      expect(stateVariables['/P4'].stateValues.label).eq('P')
+      expect(stateVariables['/P4'].stateValues.labelForGraph).eq('P')
+      expect(stateVariables['/Q4'].stateValues.label).eq(`_point2`)
+      expect(stateVariables['/Q4'].stateValues.labelForGraph).eq(`&UnderBar;point2`)
       expect(stateVariables[P5Name].stateValues.label).eq('P')
       expect(stateVariables[P5Name].stateValues.labelForGraph).eq('P')
       expect(stateVariables[Q5Name].stateValues.label).eq(`_point2`)
@@ -379,10 +379,10 @@ describe('Point Tag Tests', function () {
       expect(stateVariables[P6Name].stateValues.labelForGraph).eq('P')
       expect(stateVariables[Q6Name].stateValues.label).eq(`_point2`)
       expect(stateVariables[Q6Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
-      expect(stateVariables[P7Name].stateValues.label).eq('')
-      expect(stateVariables[P7Name].stateValues.labelForGraph).eq('')
-      expect(stateVariables[Q7Name].stateValues.label).eq(``)
-      expect(stateVariables[Q7Name].stateValues.labelForGraph).eq(``)
+      expect(stateVariables[P7Name].stateValues.label).eq('P')
+      expect(stateVariables[P7Name].stateValues.labelForGraph).eq('P')
+      expect(stateVariables[Q7Name].stateValues.label).eq(`_point2`)
+      expect(stateVariables[Q7Name].stateValues.labelForGraph).eq(`&UnderBar;point2`)
     })
 
   })
@@ -684,6 +684,14 @@ describe('Point Tag Tests', function () {
   <p><text copySource="E" copyProp="label" name="lE" /></p>
   <p><label copySource="_point4" copyProp="label" name="lp4" /></p>
   <p><label copySource="_copy3" copyProp="label" name="lc3" /></p>
+
+  <p><textinput bindValueTo="$A.label" name="tiA" /></p>
+  <p><textinput bindValueTo="$B.label" name="tiB" /></p>
+  <p><textinput bindValueTo="$C.label" name="tiC" /></p>
+  <p><textinput bindValueTo="$D.label" name="tiD" /></p>
+  <p><textinput bindValueTo="$E.label" name="tiE" /></p>
+  <p><textinput bindValueTo="$_point4.label" name="tip4" /></p>
+  <p><textinput bindValueTo="$_copy3.label" name="tic3" /></p>
     `}, "*");
     });
 
@@ -716,6 +724,1124 @@ describe('Point Tag Tests', function () {
       expect(stateVariables[c3p].stateValues.label).eq('A')
       expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
     })
+
+
+    cy.get('#\\/tiA_input').type("{end}{backspace}F{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'F');
+    cy.get("#\\/lB").should('have.text', 'F');
+    cy.get("#\\/lC").should('have.text', 'F');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'E');
+    cy.get("#\\/lp4").should('have.text', '_point4');
+    cy.get("#\\/lc3").should('have.text', 'A');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('F')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('F')
+      expect(stateVariables['/B'].stateValues.label).eq('F')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('F')
+      expect(stateVariables['/C'].stateValues.label).eq('F')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('F')
+      expect(stateVariables['/D'].stateValues.label).eq('D')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('D')
+      expect(stateVariables['/E'].stateValues.label).eq('E')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('E')
+      expect(stateVariables['/_point4'].stateValues.label).eq('_point4')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('&UnderBar;point4')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('A')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
+    })
+
+
+    cy.get('#\\/tiB_input').type("{end}{backspace}G{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'G');
+    cy.get("#\\/lB").should('have.text', 'G');
+    cy.get("#\\/lC").should('have.text', 'G');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'E');
+    cy.get("#\\/lp4").should('have.text', '_point4');
+    cy.get("#\\/lc3").should('have.text', 'A');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('G')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('G')
+      expect(stateVariables['/B'].stateValues.label).eq('G')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('G')
+      expect(stateVariables['/C'].stateValues.label).eq('G')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('G')
+      expect(stateVariables['/D'].stateValues.label).eq('D')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('D')
+      expect(stateVariables['/E'].stateValues.label).eq('E')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('E')
+      expect(stateVariables['/_point4'].stateValues.label).eq('_point4')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('&UnderBar;point4')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('A')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
+    })
+
+
+    cy.get('#\\/tiC_input').type("{end}{backspace}H{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'H');
+    cy.get("#\\/lB").should('have.text', 'H');
+    cy.get("#\\/lC").should('have.text', 'H');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'E');
+    cy.get("#\\/lp4").should('have.text', '_point4');
+    cy.get("#\\/lc3").should('have.text', 'A');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('H')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/B'].stateValues.label).eq('H')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/C'].stateValues.label).eq('H')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/D'].stateValues.label).eq('D')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('D')
+      expect(stateVariables['/E'].stateValues.label).eq('E')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('E')
+      expect(stateVariables['/_point4'].stateValues.label).eq('_point4')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('&UnderBar;point4')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('A')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
+    })
+
+
+    cy.get('#\\/tiD_input').type("{end}{backspace}I{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'H');
+    cy.get("#\\/lB").should('have.text', 'H');
+    cy.get("#\\/lC").should('have.text', 'H');
+    cy.get("#\\/lD").should('have.text', 'I');
+    cy.get("#\\/lE").should('have.text', 'E');
+    cy.get("#\\/lp4").should('have.text', '_point4');
+    cy.get("#\\/lc3").should('have.text', 'A');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('H')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/B'].stateValues.label).eq('H')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/C'].stateValues.label).eq('H')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/D'].stateValues.label).eq('I')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('I')
+      expect(stateVariables['/E'].stateValues.label).eq('E')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('E')
+      expect(stateVariables['/_point4'].stateValues.label).eq('_point4')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('&UnderBar;point4')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('A')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
+    })
+
+
+    cy.get('#\\/tiE_input').type("{end}{backspace}J{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'H');
+    cy.get("#\\/lB").should('have.text', 'H');
+    cy.get("#\\/lC").should('have.text', 'H');
+    cy.get("#\\/lD").should('have.text', 'I');
+    cy.get("#\\/lE").should('have.text', 'J');
+    cy.get("#\\/lp4").should('have.text', '_point4');
+    cy.get("#\\/lc3").should('have.text', 'A');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('H')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/B'].stateValues.label).eq('H')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/C'].stateValues.label).eq('H')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/D'].stateValues.label).eq('I')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('I')
+      expect(stateVariables['/E'].stateValues.label).eq('J')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('J')
+      expect(stateVariables['/_point4'].stateValues.label).eq('_point4')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('&UnderBar;point4')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('A')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
+    })
+
+
+    cy.get('#\\/tip4_input').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}K{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'H');
+    cy.get("#\\/lB").should('have.text', 'H');
+    cy.get("#\\/lC").should('have.text', 'H');
+    cy.get("#\\/lD").should('have.text', 'I');
+    cy.get("#\\/lE").should('have.text', 'J');
+    cy.get("#\\/lp4").should('have.text', 'K');
+    cy.get("#\\/lc3").should('have.text', 'A');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('H')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/B'].stateValues.label).eq('H')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/C'].stateValues.label).eq('H')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/D'].stateValues.label).eq('I')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('I')
+      expect(stateVariables['/E'].stateValues.label).eq('J')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('J')
+      expect(stateVariables['/_point4'].stateValues.label).eq('K')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('K')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('A')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('A')
+    })
+
+
+    cy.get('#\\/tic3_input').type("{end}{backspace}L{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'H');
+    cy.get("#\\/lB").should('have.text', 'H');
+    cy.get("#\\/lC").should('have.text', 'H');
+    cy.get("#\\/lD").should('have.text', 'I');
+    cy.get("#\\/lE").should('have.text', 'J');
+    cy.get("#\\/lp4").should('have.text', 'K');
+    cy.get("#\\/lc3").should('have.text', 'L');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.label).eq('H')
+      expect(stateVariables['/A'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/B'].stateValues.label).eq('H')
+      expect(stateVariables['/B'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/C'].stateValues.label).eq('H')
+      expect(stateVariables['/C'].stateValues.labelForGraph).eq('H')
+      expect(stateVariables['/D'].stateValues.label).eq('I')
+      expect(stateVariables['/D'].stateValues.labelForGraph).eq('I')
+      expect(stateVariables['/E'].stateValues.label).eq('J')
+      expect(stateVariables['/E'].stateValues.labelForGraph).eq('J')
+      expect(stateVariables['/_point4'].stateValues.label).eq('K')
+      expect(stateVariables['/_point4'].stateValues.labelForGraph).eq('K')
+      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      expect(stateVariables[c3p].stateValues.label).eq('L')
+      expect(stateVariables[c3p].stateValues.labelForGraph).eq('L')
+    })
+
+  })
+
+  it('label, labelIsName and copies, start with label', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+  
+    <point name="A">
+      <label>A</label>
+    </point>
+    <point copysource="A" name="B" x="1" />
+    <point copysource="A" labelIsName name="C" x="2" />
+    <point copysource="A" name="D" x="3"><label>D</label></point>
+
+    <point copysource="B" name="E" x="1" y="1" />
+    <point copysource="B" labelIsName name="F" x="2" y="1" />
+    <point copysource="B" name="G" x="3" y="1"><label>G</label></point>
+
+    <point copysource="C" name="H" x="1" y="2" />
+    <point copysource="C" labelIsName name="I" x="2" y="2" />
+    <point copysource="C" name="J" x="3" y="2"><label>J</label></point>
+
+    <point copysource="D" name="K" x="1" y="3" />
+    <point copysource="D" labelIsName name="L" x="2" y="3" />
+    <point copysource="D" name="M" x="3" y="3"><label>M</label></point>
+
+  </graph>
+
+  <p><text copySource="A.label" name="lA" /></p>
+  <p><text copySource="B.label" name="lB" /></p>
+  <p><text copySource="C.label" name="lC" /></p>
+  <p><text copySource="D.label" name="lD" /></p>
+  <p><text copySource="E.label" name="lE" /></p>
+  <p><text copySource="F.label" name="lF" /></p>
+  <p><text copySource="G.label" name="lG" /></p>
+  <p><text copySource="H.label" name="lH" /></p>
+  <p><text copySource="I.label" name="lI" /></p>
+  <p><text copySource="J.label" name="lJ" /></p>
+  <p><text copySource="K.label" name="lK" /></p>
+  <p><text copySource="L.label" name="lL" /></p>
+  <p><text copySource="M.label" name="lM" /></p>
+
+  <p>Change label of A: <textinput bindValueTo="$A.label" name="tiA" /></p>
+  <p>Change label of B: <textinput bindValueTo="$B.label" name="tiB" /></p>
+  <p>Change label of C: <textinput bindValueTo="$C.label" name="tiC" /></p>
+  <p>Change label of D: <textinput bindValueTo="$D.label" name="tiD" /></p>
+  <p>Change label of E: <textinput bindValueTo="$E.label" name="tiE" /></p>
+  <p>Change label of F: <textinput bindValueTo="$F.label" name="tiF" /></p>
+  <p>Change label of G: <textinput bindValueTo="$G.label" name="tiG" /></p>
+  <p>Change label of H: <textinput bindValueTo="$H.label" name="tiH" /></p>
+  <p>Change label of I: <textinput bindValueTo="$I.label" name="tiI" /></p>
+  <p>Change label of J: <textinput bindValueTo="$J.label" name="tiJ" /></p>
+  <p>Change label of K: <textinput bindValueTo="$K.label" name="tiK" /></p>
+  <p>Change label of L: <textinput bindValueTo="$L.label" name="tiL" /></p>
+  <p>Change label of M: <textinput bindValueTo="$M.label" name="tiM" /></p>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/lA").should('have.text', 'A');
+    cy.get("#\\/lB").should('have.text', 'A');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'A');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiA_input').type("{end}{backspace}N{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'N');
+    cy.get("#\\/lB").should('have.text', 'N');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'N');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiB_input').type("{end}{backspace}O{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiC_input').type("{end}{backspace}P{enter}");
+
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiD_input').type("{end}{backspace}Q{enter}");
+
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiE_input').type("{end}{backspace}R{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiF_input').type("{end}{backspace}S{enter}");
+
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiG_input').type("{end}{backspace}T{enter}");
+
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiH_input').type("{end}{backspace}U{enter}");
+    
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiI_input').type("{end}{backspace}V{enter}");
+
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiJ_input').type("{end}{backspace}W{enter}");
+
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiK_input').type("{end}{backspace}X{enter}");
+    
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiL_input').type("{end}{backspace}Y{enter}");
+    
+    cy.get("#\\/lL").should('have.text', 'Y');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiM_input').type("{end}{backspace}Z{enter}");
+
+    cy.get("#\\/lM").should('have.text', 'Z');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lL").should('have.text', 'Y');
+
+  })
+
+  it('label, labelIsName and copies, start with labelIsName', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+  
+    <point name="A" labelIsName />
+    <point copysource="A" name="B" x="1" />
+    <point copysource="A" labelIsName name="C" x="2" />
+    <point copysource="A" name="D" x="3"><label>D</label></point>
+
+    <point copysource="B" name="E" x="1" y="1" />
+    <point copysource="B" labelIsName name="F" x="2" y="1" />
+    <point copysource="B" name="G" x="3" y="1"><label>G</label></point>
+
+    <point copysource="C" name="H" x="1" y="2" />
+    <point copysource="C" labelIsName name="I" x="2" y="2" />
+    <point copysource="C" name="J" x="3" y="2"><label>J</label></point>
+
+    <point copysource="D" name="K" x="1" y="3" />
+    <point copysource="D" labelIsName name="L" x="2" y="3" />
+    <point copysource="D" name="M" x="3" y="3"><label>M</label></point>
+
+  </graph>
+
+  <p><text copySource="A.label" name="lA" /></p>
+  <p><text copySource="B.label" name="lB" /></p>
+  <p><text copySource="C.label" name="lC" /></p>
+  <p><text copySource="D.label" name="lD" /></p>
+  <p><text copySource="E.label" name="lE" /></p>
+  <p><text copySource="F.label" name="lF" /></p>
+  <p><text copySource="G.label" name="lG" /></p>
+  <p><text copySource="H.label" name="lH" /></p>
+  <p><text copySource="I.label" name="lI" /></p>
+  <p><text copySource="J.label" name="lJ" /></p>
+  <p><text copySource="K.label" name="lK" /></p>
+  <p><text copySource="L.label" name="lL" /></p>
+  <p><text copySource="M.label" name="lM" /></p>
+
+  <p>Change label of A: <textinput bindValueTo="$A.label" name="tiA" /></p>
+  <p>Change label of B: <textinput bindValueTo="$B.label" name="tiB" /></p>
+  <p>Change label of C: <textinput bindValueTo="$C.label" name="tiC" /></p>
+  <p>Change label of D: <textinput bindValueTo="$D.label" name="tiD" /></p>
+  <p>Change label of E: <textinput bindValueTo="$E.label" name="tiE" /></p>
+  <p>Change label of F: <textinput bindValueTo="$F.label" name="tiF" /></p>
+  <p>Change label of G: <textinput bindValueTo="$G.label" name="tiG" /></p>
+  <p>Change label of H: <textinput bindValueTo="$H.label" name="tiH" /></p>
+  <p>Change label of I: <textinput bindValueTo="$I.label" name="tiI" /></p>
+  <p>Change label of J: <textinput bindValueTo="$J.label" name="tiJ" /></p>
+  <p>Change label of K: <textinput bindValueTo="$K.label" name="tiK" /></p>
+  <p>Change label of L: <textinput bindValueTo="$L.label" name="tiL" /></p>
+  <p>Change label of M: <textinput bindValueTo="$M.label" name="tiM" /></p>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/lA").should('have.text', 'A');
+    cy.get("#\\/lB").should('have.text', 'A');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'A');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiA_input').type("{end}{backspace}N{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'N');
+    cy.get("#\\/lB").should('have.text', 'N');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'N');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiB_input').type("{end}{backspace}O{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiC_input').type("{end}{backspace}P{enter}");
+
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiD_input').type("{end}{backspace}Q{enter}");
+
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiE_input').type("{end}{backspace}R{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiF_input').type("{end}{backspace}S{enter}");
+
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiG_input').type("{end}{backspace}T{enter}");
+
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiH_input').type("{end}{backspace}U{enter}");
+    
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiI_input').type("{end}{backspace}V{enter}");
+
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiJ_input').type("{end}{backspace}W{enter}");
+
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiK_input').type("{end}{backspace}X{enter}");
+    
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiL_input').type("{end}{backspace}Y{enter}");
+    
+    cy.get("#\\/lL").should('have.text', 'Y');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiM_input').type("{end}{backspace}Z{enter}");
+
+    cy.get("#\\/lM").should('have.text', 'Z');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lL").should('have.text', 'Y');
+
+  })
+
+  it('label, labelIsName and copies, copy in labels', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+  
+    <point name="A" >
+      <label copySource="Al" />
+    </point>
+    <point copysource="A" name="B" x="1" />
+    <point copysource="A" labelIsName name="C" x="2" />
+    <point copysource="A" name="D" x="3"><label copySource="Dl"/></point>
+
+    <point copysource="B" name="E" x="1" y="1" />
+    <point copysource="B" labelIsName name="F" x="2" y="1" />
+    <point copysource="B" name="G" x="3" y="1"><label copysource="Gl" /></point>
+
+    <point copysource="C" name="H" x="1" y="2" />
+    <point copysource="C" labelIsName name="I" x="2" y="2" />
+    <point copysource="C" name="J" x="3" y="2"><label copySource="Jl" /></point>
+
+    <point copysource="D" name="K" x="1" y="3" />
+    <point copysource="D" labelIsName name="L" x="2" y="3" />
+    <point copysource="D" name="M" x="3" y="3"><label>M</label></point>
+
+  </graph>
+
+  <label name="Al0">A</label>
+  <label name="Al" copySource="Al0" />
+  <label name="Dl">D</label>
+  <label name="Gl0">G</label>
+  <label name="Gl" copySource="Gl0" />
+  <label name="Jl0">J</label>
+  <label name="Jl1" copySource="Jl0" />
+  <label name="Jl" copySource="Jl1" />
+
+
+  <p><text copySource="A.label" name="lA" /></p>
+  <p><text copySource="B.label" name="lB" /></p>
+  <p><text copySource="C.label" name="lC" /></p>
+  <p><text copySource="D.label" name="lD" /></p>
+  <p><text copySource="E.label" name="lE" /></p>
+  <p><text copySource="F.label" name="lF" /></p>
+  <p><text copySource="G.label" name="lG" /></p>
+  <p><text copySource="H.label" name="lH" /></p>
+  <p><text copySource="I.label" name="lI" /></p>
+  <p><text copySource="J.label" name="lJ" /></p>
+  <p><text copySource="K.label" name="lK" /></p>
+  <p><text copySource="L.label" name="lL" /></p>
+  <p><text copySource="M.label" name="lM" /></p>
+
+  <p>Change label of A: <textinput bindValueTo="$A.label" name="tiA" /></p>
+  <p>Change label of B: <textinput bindValueTo="$B.label" name="tiB" /></p>
+  <p>Change label of C: <textinput bindValueTo="$C.label" name="tiC" /></p>
+  <p>Change label of D: <textinput bindValueTo="$D.label" name="tiD" /></p>
+  <p>Change label of E: <textinput bindValueTo="$E.label" name="tiE" /></p>
+  <p>Change label of F: <textinput bindValueTo="$F.label" name="tiF" /></p>
+  <p>Change label of G: <textinput bindValueTo="$G.label" name="tiG" /></p>
+  <p>Change label of H: <textinput bindValueTo="$H.label" name="tiH" /></p>
+  <p>Change label of I: <textinput bindValueTo="$I.label" name="tiI" /></p>
+  <p>Change label of J: <textinput bindValueTo="$J.label" name="tiJ" /></p>
+  <p>Change label of K: <textinput bindValueTo="$K.label" name="tiK" /></p>
+  <p>Change label of L: <textinput bindValueTo="$L.label" name="tiL" /></p>
+  <p>Change label of M: <textinput bindValueTo="$M.label" name="tiM" /></p>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/lA").should('have.text', 'A');
+    cy.get("#\\/lB").should('have.text', 'A');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'A');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiA_input').type("{end}{backspace}N{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'N');
+    cy.get("#\\/lB").should('have.text', 'N');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'N');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiB_input').type("{end}{backspace}O{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lC").should('have.text', 'C');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'C');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiC_input').type("{end}{backspace}P{enter}");
+
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lD").should('have.text', 'D');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'D');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiD_input').type("{end}{backspace}Q{enter}");
+
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lA").should('have.text', 'O');
+    cy.get("#\\/lB").should('have.text', 'O');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lE").should('have.text', 'O');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiE_input').type("{end}{backspace}R{enter}");
+
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'F');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiF_input').type("{end}{backspace}S{enter}");
+
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lG").should('have.text', 'G');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiG_input').type("{end}{backspace}T{enter}");
+
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'P');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lH").should('have.text', 'P');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiH_input').type("{end}{backspace}U{enter}");
+    
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'I');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiI_input').type("{end}{backspace}V{enter}");
+
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lJ").should('have.text', 'J');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiJ_input').type("{end}{backspace}W{enter}");
+
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'Q');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lK").should('have.text', 'Q');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiK_input').type("{end}{backspace}X{enter}");
+    
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lL").should('have.text', 'L');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiL_input').type("{end}{backspace}Y{enter}");
+    
+    cy.get("#\\/lL").should('have.text', 'Y');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lM").should('have.text', 'M');
+
+
+    cy.get('#\\/tiM_input').type("{end}{backspace}Z{enter}");
+
+    cy.get("#\\/lM").should('have.text', 'Z');
+    cy.get("#\\/lA").should('have.text', 'R');
+    cy.get("#\\/lB").should('have.text', 'R');
+    cy.get("#\\/lC").should('have.text', 'U');
+    cy.get("#\\/lD").should('have.text', 'X');
+    cy.get("#\\/lE").should('have.text', 'R');
+    cy.get("#\\/lF").should('have.text', 'S');
+    cy.get("#\\/lG").should('have.text', 'T');
+    cy.get("#\\/lH").should('have.text', 'U');
+    cy.get("#\\/lI").should('have.text', 'V');
+    cy.get("#\\/lJ").should('have.text', 'W');
+    cy.get("#\\/lK").should('have.text', 'X');
+    cy.get("#\\/lL").should('have.text', 'Y');
 
   })
 

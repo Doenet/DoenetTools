@@ -9549,7 +9549,7 @@ export default class Core {
               newStateVariableValues
             });
           }
-        } else if (dep.dependencyType === "attributeComponent") {
+        } else if (["attributeComponent", "shadowSource", "adapterSource", "targetComponent"].includes(dep.dependencyType)) {
           let cName = dep.downstreamComponentNames[0];
           let varName = dep.mappedDownstreamVariableNamesByComponent[0][newInstruction.variableIndex];
           if (!varName) {
@@ -9568,7 +9568,7 @@ export default class Core {
             workspace,
             newStateVariableValues
           });
-        } else if (["stateVariable", "parentStateVariable"].includes(dep.dependencyType)
+        } else if (["stateVariable", "parentStateVariable", "adapterSourceStateVariable", "sourceCompositeStateVariable"].includes(dep.dependencyType)
           && dep.downstreamComponentNames.length === 1
         ) {
 
