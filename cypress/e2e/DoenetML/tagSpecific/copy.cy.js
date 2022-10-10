@@ -229,7 +229,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables['/B'].stateValues.label).eq("B");
       expect(stateVariables['/B2'].stateValues.label).eq("A");
       expect(stateVariables['/B3'].stateValues.label).eq("B");
-      expect(stateVariables['/B4'].stateValues.label).eq("A");
+      expect(stateVariables['/B4'].stateValues.label).eq("B4");
       expect(stateVariables['/B5'].stateValues.label).eq("A");
       expect(stateVariables['/B6'].stateValues.label).eq("B");
       expect(stateVariables['/C'].stateValues.label).eq("C");
@@ -238,16 +238,16 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables['/C4'].stateValues.label).eq("C4");
       expect(stateVariables['/C5'].stateValues.label).eq("A");
       expect(stateVariables['/C6'].stateValues.label).eq("C");
-      expect(stateVariables['/C7'].stateValues.label).eq("B");
+      expect(stateVariables['/C7'].stateValues.label).eq("C7");
       expect(stateVariables['/C8'].stateValues.label).eq("B");
       expect(stateVariables['/C9'].stateValues.label).eq("C");
-      expect(stateVariables['/C10'].stateValues.label).eq("A");
-      expect(stateVariables['/C11'].stateValues.label).eq("A");
+      expect(stateVariables['/C10'].stateValues.label).eq("C10");
+      expect(stateVariables['/C11'].stateValues.label).eq("B4");
       expect(stateVariables['/C12'].stateValues.label).eq("C");
-      expect(stateVariables['/C13'].stateValues.label).eq("A");
+      expect(stateVariables['/C13'].stateValues.label).eq("C13");
       expect(stateVariables['/C14'].stateValues.label).eq("A");
       expect(stateVariables['/C15'].stateValues.label).eq("C");
-      expect(stateVariables['/C16'].stateValues.label).eq("B");
+      expect(stateVariables['/C16'].stateValues.label).eq("C16");
       expect(stateVariables['/C17'].stateValues.label).eq("B");
       expect(stateVariables['/C18'].stateValues.label).eq("C");
 

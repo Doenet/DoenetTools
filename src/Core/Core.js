@@ -6304,6 +6304,10 @@ export default class Core {
         }
       }
 
+      if (this.flags.autoSubmit && result.answerCreditPotentiallyChanged) {
+        this.recordAnswerToAutoSubmit(component.componentName);
+      }
+
     }
 
     for (let vName in varsChanged) {
@@ -6428,8 +6432,7 @@ export default class Core {
     //   indicating the mark stale process should recurse,
     //   but the variable should be marked to allow later mark stale
     //   processes that involve the variable to process the variable again
-    // - updateReplacements: set to true if need to update composite
-    //   replacements after marking this variable stale
+    // - other attributes that not processed in this function but returned
 
 
     let stateVarObj = component.state[varName];
@@ -6755,6 +6758,10 @@ export default class Core {
               for (let vName of result.updateDependencies) {
                 component.state[vName].needDependenciesUpdated = true;
               }
+            }
+
+            if (this.flags.autoSubmit && result.answerCreditPotentiallyChanged) {
+              this.recordAnswerToAutoSubmit(upDepComponent.componentName);
             }
 
           }
@@ -10330,6 +10337,37 @@ export default class Core {
       await this.saveChangesToDatabase(true)
     }
 
+  }
+
+  recordAnswerToAutoSubmit(componentName) {
+    if (!this.answersToSubmit) {
+      this.answersToSubmit = [];
+    }
+
+    if (!this.answersToSubmit.includes(componentName)) {
+      this.answersToSubmit.push(componentName)
+    }
+
+
+    clearTimeout(this.submitAnswersTimeout);
+
+    //Debounce the submit answers
+    this.submitAnswersTimeout = setTimeout(() => {
+      this.autoSubmitAnswers();
+    }, 1000);
+  }
+
+  async autoSubmitAnswers() {
+
+    let toSubmit = this.answersToSubmit;
+    this.answersToSubmit = [];
+    for(let componentName of toSubmit) {
+      let component = this._components[componentName];
+
+      if(component.actions.submitAnswer) {
+        await this.requestAction({componentName, actionName: "submitAnswer"});
+      }
+    }
   }
 
 }
