@@ -605,8 +605,12 @@ export default class Core {
 
     let newChildrenInstructions = {};
 
+    // copy components with changed children and reset for next time
+    let componentsWithChangedChildrenToRenderInProgress = this.componentsWithChangedChildrenToRender;
+    this.componentsWithChangedChildrenToRender = new Set([]);
+
     //TODO: Figure out what we need from here
-    for (let componentName of this.componentsWithChangedChildrenToRender) {
+    for (let componentName of componentsWithChangedChildrenToRenderInProgress) {
       if (componentName in this.componentsToRender) {
         // check to see if current children who render are
         // different from last time rendered
@@ -665,7 +669,8 @@ export default class Core {
             if (child.componentName) {
               let deletedNames = this.deleteFromComponentsToRender({
                 componentName: child.componentName,
-                recurseToChildren: true
+                recurseToChildren: true,
+                componentsWithChangedChildrenToRenderInProgress
               });
               deletedRenderers.push(...deletedNames);
             }
@@ -677,7 +682,7 @@ export default class Core {
             for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
               if (indicesToRender.includes(ind)) {
                 if (child.rendererType) {
-                  let results = await this.initializeRenderedComponentInstruction(child);
+                  let results = await this.initializeRenderedComponentInstruction(child, componentsWithChangedChildrenToRenderInProgress);
                   childrenToRender.push(results.componentToRender);
                   rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
                 } else if (typeof child === "string") {
@@ -693,7 +698,7 @@ export default class Core {
 
           newChildrenInstructions[componentName] = childrenToRender;
 
-          this.componentsWithChangedChildrenToRender.delete(componentName);
+          componentsWithChangedChildrenToRenderInProgress.delete(componentName);
 
           if (!componentNamesToUpdate.includes(componentName)) {
             componentNamesToUpdate.push(componentName);
@@ -704,9 +709,6 @@ export default class Core {
       }
     }
 
-
-    // reset for next time
-    this.componentsWithChangedChildrenToRender = new Set([]);
 
 
     for (let componentName of componentNamesToUpdate) {
@@ -765,7 +767,7 @@ export default class Core {
 
   }
 
-  async initializeRenderedComponentInstruction(component) {
+  async initializeRenderedComponentInstruction(component, componentsWithChangedChildrenToRenderInProgress = new Set([])) {
 
     if (component.rendererType === undefined) {
       return;
@@ -806,7 +808,7 @@ export default class Core {
       for (let [ind, child] of component.activeChildren.entries()) {
         if (indicesToRender.includes(ind)) {
           if (child.rendererType) {
-            let results = await this.initializeRenderedComponentInstruction(child);
+            let results = await this.initializeRenderedComponentInstruction(child, componentsWithChangedChildrenToRenderInProgress);
             childrenToRender.push(results.componentToRender);
             rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
             rendererStatesToForceUpdate.push(...results.rendererStatesToForceUpdate);
@@ -838,7 +840,7 @@ export default class Core {
       childrenInstructions: childrenToRender,
     }
 
-    this.componentsWithChangedChildrenToRender.delete(componentName);
+    componentsWithChangedChildrenToRenderInProgress.delete(componentName);
 
 
     let requestActions = {};
@@ -878,6 +880,7 @@ export default class Core {
   deleteFromComponentsToRender({
     componentName,
     recurseToChildren = true,
+    componentsWithChangedChildrenToRenderInProgress
   }) {
     let deletedComponentNames = [componentName]
     if (recurseToChildren) {
@@ -887,13 +890,14 @@ export default class Core {
           let additionalDeleted = this.deleteFromComponentsToRender({
             componentName: child.componentName,
             recurseToChildren,
+            componentsWithChangedChildrenToRenderInProgress
           })
           deletedComponentNames.push(...additionalDeleted);
         }
       }
     }
     delete this.componentsToRender[componentName];
-    this.componentsWithChangedChildrenToRender.delete(componentName);
+    componentsWithChangedChildrenToRenderInProgress.delete(componentName);
 
     return deletedComponentNames;
   }
@@ -5869,7 +5873,7 @@ export default class Core {
     let component = this._components[componentName];
 
     // mark stale always includes additional state variables defined
-    await this.markStateVariableAndUpstreamDependentsStale({
+      await this.markStateVariableAndUpstreamDependentsStale({
       component,
       varName,
     });
@@ -10361,11 +10365,11 @@ export default class Core {
 
     let toSubmit = this.answersToSubmit;
     this.answersToSubmit = [];
-    for(let componentName of toSubmit) {
+    for (let componentName of toSubmit) {
       let component = this._components[componentName];
 
-      if(component.actions.submitAnswer) {
-        await this.requestAction({componentName, actionName: "submitAnswer"});
+      if (component.actions.submitAnswer) {
+        await this.requestAction({ componentName, actionName: "submitAnswer" });
       }
     }
   }
