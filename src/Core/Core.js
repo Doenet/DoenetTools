@@ -5873,7 +5873,7 @@ export default class Core {
     let component = this._components[componentName];
 
     // mark stale always includes additional state variables defined
-      await this.markStateVariableAndUpstreamDependentsStale({
+    await this.markStateVariableAndUpstreamDependentsStale({
       component,
       varName,
     });
