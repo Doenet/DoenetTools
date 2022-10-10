@@ -449,7 +449,7 @@ export default class BaseComponent {
               disabled: dependencyValues.disabledAttr.stateValues.value
             }
           }
-        } else if(essentialValues.disabled !== undefined) {
+        } else if (essentialValues.disabled !== undefined) {
           return {
             useEssentialOrDefaultValue: {
               disabled: true
@@ -546,7 +546,7 @@ export default class BaseComponent {
               fixed: dependencyValues.fixedAttr.stateValues.value
             }
           }
-        } else if(essentialValues.fixed !== undefined) {
+        } else if (essentialValues.fixed !== undefined) {
           return {
             useEssentialOrDefaultValue: {
               fixed: true
