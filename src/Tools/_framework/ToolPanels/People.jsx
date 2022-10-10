@@ -95,6 +95,7 @@ export default function People() {
               setProcess(csvPeopleProcess.IDLE);
             }}
             value="Cancel"
+            data-test="Cancel"
           />
           <Button
             onClick={() => {
@@ -118,6 +119,7 @@ export default function People() {
               });
             }}
             value="Merge"
+            data-test="Merge"
             alert
           />
         </ButtonGroup>
@@ -136,9 +138,10 @@ export default function People() {
             onClick={() => {
               setShowWithdrawn(!showWithdrawn);
             }}
+            dataTest="Show Withdrawn"
             checked={showWithdrawn}
           />
-          <CheckboxLabelText>Show Withdrawn </CheckboxLabelText>
+          <CheckboxLabelText>Show Withdrawn</CheckboxLabelText>
         </InputWrapper>
       ) : null}
       <PeopleTabelHeader
@@ -146,50 +149,54 @@ export default function People() {
         numberOfVisibleColumns={numberOfVisibleColumns}
         setNumberOfVisibleColumns={setNumberOfVisibleColumns}
       />
-      {peopleTableData.map(
-        ({
-          email,
-          firstName,
-          lastName,
-          screenName,
-          dateEnrolled,
-          roleId,
-          withdrew,
-        }) => {
-          const columnsJSX = [
+      <div data-test="People Table">
+        {peopleTableData.map(
+          ({
             email,
-            <RoleDropdown
-              key={'role'}
-              valueRoleId={roleId}
-              onChange={({ value: newRoleId }) => {
-                modifyUserRole(email, newRoleId, () => {});
-              }}
-              width="150px"
-            />,
+            firstName,
+            lastName,
+            screenName,
             dateEnrolled,
-            <Button
-              key={'withdraw'}
-              value={withdrew === '0' ? 'Withdraw' : 'Enroll'}
-              onClick={(e) => {
-                if (withdrew === '0') {
-                  withDrawLearners(e, email);
-                } else {
-                  enrollLearners(e, email);
-                }
-              }}
-            />,
-          ];
-          if (!showWithdrawn && withdrew === '1') return null;
-          return (
-            <PeopleTableRow
-              key={email}
-              label={`${firstName} ${lastName} (${screenName})`}
-              numberOfVisibleColumns={numberOfVisibleColumns}
-              columnsJSX={columnsJSX}
-            />
-          );
-        },
-      )}
+            roleId,
+            withdrew,
+          }) => {
+            const columnsJSX = [
+              email,
+              <RoleDropdown
+                key={'role'}
+                valueRoleId={roleId}
+                onChange={({ value: newRoleId }) => {
+                  modifyUserRole(email, newRoleId, () => {});
+                }}
+                width="150px"
+              />,
+              dateEnrolled,
+              <Button
+                key={'withdraw'}
+                value={withdrew === '0' ? 'Withdraw' : 'Enroll'}
+                data-test={withdrew === '0' ? `Withdraw ${email}` : `Enroll ${email}`}
+                onClick={(e) => {
+                  if (withdrew === '0') {
+                    withDrawLearners(e, email);
+                  } else {
+                    enrollLearners(e, email);
+                  }
+                }}
+              />,
+            ];
+            if (!showWithdrawn && withdrew === '1') return null;
+            return (
+              <PeopleTableRow
+                key={email}
+                label={`${firstName} ${lastName} (${screenName})`}
+                numberOfVisibleColumns={numberOfVisibleColumns}
+                columnsJSX={columnsJSX}
+              />
+            );
+          },
+        )}
+      </div>
+      
       {peopleTableData.length === 0 ? (
         <p>No Students are currently enrolled in the course</p>
       ) : null}

@@ -237,6 +237,7 @@ export function AddUserWithOptions({ courseId }) {
     <UserWithOptionsContainer>
       <Textfield
         label="First"
+        data-test="First"
         width="250px"
         value={userData.firstName}
         onChange={(e) => {
@@ -246,6 +247,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="Last"
+        data-test="Last"
         width="250px"
         value={userData.lastName}
         onChange={(e) => {
@@ -257,6 +259,7 @@ export function AddUserWithOptions({ courseId }) {
         <Button
           width="50px"
           value="Add User"
+          data-test="Add User"
           onClick={handleEmailChange}
           disabled={!isEmailValid}
           vertical
@@ -264,6 +267,7 @@ export function AddUserWithOptions({ courseId }) {
       </ButtonFlexContainer>
       <Textfield
         label="Email"
+        data-test="Email"
         width="250px"
         value={emailInput}
         onChange={(e) => {
@@ -277,6 +281,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="Section"
+        data-test="Section"
         width="250px"
         value={userData.section}
         onChange={(e) => {
@@ -286,6 +291,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="External Id"
+        data-test="External Id"
         width="250px"
         value={userData.externalId}
         onChange={(e) => {
@@ -295,6 +301,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <DropdownMenu
         label="Role"
+        dataTest="role"
         width="190px"
         items={
           //TODO reduce to hide roles as needed
