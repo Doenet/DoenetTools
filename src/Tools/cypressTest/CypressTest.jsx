@@ -22,6 +22,7 @@ function Test() {
     allowLocalState: false,
     allowSaveSubmissions: false,
     allowSaveEvents: false,
+    autoSubmit: false,
     paginate: true,
   }
   let testSettings = JSON.parse(localStorage.getItem("test settings"))
@@ -56,6 +57,7 @@ function Test() {
   const [allowLocalState, setAllowLocalState] = useState(testSettings.allowLocalState);
   const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(testSettings.allowSaveSubmissions);
   const [allowSaveEvents, setAllowSaveEvents] = useState(testSettings.allowSaveEvents);
+  const [autoSubmit, setAutoSubmit] = useState(testSettings.autoSubmit);
   const [paginate, setPaginate] = useState(testSettings.paginate);
   const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
@@ -230,6 +232,17 @@ function Test() {
           }
         } />Allow Save Events</label>
       </div>
+      <div>
+        <label> <input id="testRunner_autoSubmit" type='checkbox' checked={autoSubmit} onChange={
+          () => {
+            testSettings.autoSubmit = !testSettings.autoSubmit;
+            localStorage.setItem("test settings", JSON.stringify(testSettings))
+            setAutoSubmit(was => !was)
+            setUpdateNumber(was => was + 1)
+
+          }
+        } />Auto Submit Answers</label>
+      </div>
       <hr />
       <div>
         <label> <input id="testRunner_paginate" type='checkbox' checked={paginate} onChange={
@@ -273,6 +286,7 @@ function Test() {
         allowLocalState,
         allowSaveSubmissions,
         allowSaveEvents,
+        autoSubmit,
       }}
       attemptNumber={attemptNumber}
       requestedVariantIndex={requestedVariantIndex.current}
@@ -301,6 +315,7 @@ function Test() {
         allowLocalState,
         allowSaveSubmissions,
         allowSaveEvents,
+        autoSubmit,
       }}
       attemptNumber={attemptNumber}
       requestedVariantIndex={requestedVariantIndex.current}

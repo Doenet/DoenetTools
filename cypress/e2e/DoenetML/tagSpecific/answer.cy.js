@@ -21307,4 +21307,243 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('auto submit', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Enter x: <answer name="x">x</answer></p>
+  <p name="pSubX">Submitted response: $x</p>
+  <p name="pCreditX">Credit for this answer: $x.creditAchieved</p>
+  
+  <p>Select the correct answer:
+  <answer name="correct">
+    <choice credit="1">correct</choice>
+    <choice>incorrect</choice>
+  </answer></p>
+  <p name="pSubCorrect">Submitted response: $correct</p>
+  <p name="pCreditCorrect">Credit for this answer: $correct.creditAchieved</p>
+  
+  <graph size="small">
+    <point name="P" labelIsName />
+  </graph>
+  
+  <p>Move point P into first quadrant
+    <answer name="firstQuad"><award><when>$P.x > 0 and $P.y > 0</when></award></answer>
+  </p>
+  
+  <p name="pSubFirstQuad">Submitted response: <aslist>$firstQuad.submittedResponses</aslist></p>
+  <p name="pCreditFirstQuad">Credit for this answer: $firstQuad.creditAchieved</p>
+
+  <p name="pCreditDoc">Document credit achieved: $_document1.creditAchieved</p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+
+      let choiceinputName = stateVariables['/correct'].stateValues.inputChildren[0].componentName
+      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
+
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(choiceinputSubmitAnchor).should('be.visible');
+      cy.get(cesc('#/firstQuad_submit')).should('be.visible')
+
+    })
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_autoSubmit').click();
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+
+      let choiceinputName = stateVariables['/correct'].stateValues.inputChildren[0].componentName
+      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
+
+
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(cesc('#/firstQuad_submit')).should('not.exist')
+
+    })
+
+    cy.get('#\\/pSubX').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 0');
+    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 0');
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0')
+
+
+    cy.get('#\\/x textarea').type("y", { force: true });
+
+    cy.wait(1500); // wait for debounce
+
+    cy.get('#\\/pSubX').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 0');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0')
+
+    cy.get('#\\/x textarea').blur();
+    cy.get('#\\/pSubX .mjx-mrow').should('contain.text', 'y');
+    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 0');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0')
+
+    
+    cy.get('#\\/x textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/pSubX .mjx-mrow').should('contain.text', 'x');
+    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 1');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.333')
+
+    cy.get('#\\/_choice1').click();
+    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: correct');
+    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 1');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.667')
+
+    cy.get('#\\/_choice2').click();
+    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: incorrect');
+    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 0');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.333')
+
+    cy.get('#\\/_choice1').click();
+    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: correct');
+    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 1');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.667')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: 1 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: 2 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 3 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 6, y: 4 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 7, y: 5 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 8, y: 6 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -5 }
+      })
+    })
+
+    cy.wait(200);
+    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+
+    
+    cy.get('#\\/pSubFirstQuad .mjx-mrow').should('contain.text', '3');
+    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(0).should('have.text', "3");
+    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(1).should('have.text', "−5");
+
+
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.667')
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 8 }
+      })
+    })
+
+    cy.get('#\\/pSubFirstQuad .mjx-mrow').should('contain.text', '9');
+    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(0).should('have.text', "9");
+    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(1).should('have.text', "8");
+
+    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 1');
+    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 1')
+
+
+  });
+
 })
