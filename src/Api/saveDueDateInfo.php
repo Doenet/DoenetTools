@@ -6,9 +6,10 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
 $jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
+$requestorUserId = $jwtArray['userId'];
 
 $success = true;
 $message = '';
@@ -23,49 +24,49 @@ if ($doenetId == ""){
     $message = 'Internal Error: missing doenetId';
 }elseif ($searchUserId == ""){
     $success = FALSE;
-    $message = 'Internal Error: missing searchUserId';
+    $message = 'Internal Error: missing userId';
 }elseif ($newDateString == ""){
     $success = FALSE;
     $message = 'Internal Error: missing newDateString';
 }
 
-//Check permissions 
+/// get courseId from doenetId
 if ($success){
-
     $sql = "
-    SELECT du.canEditContent AS canEditContent
-    FROM drive_user AS du
-    LEFT JOIN drive_content AS dc
-    ON dc.driveId = du.driveId
-    WHERE dc.doenetId = '$doenetId'
-    and du.userId = '$userId'
+        SELECT courseId
+        FROM assignment
+        WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);  
-    if ($result->num_rows > 0){
-        $row = $result->fetch_assoc();
-        if ($row['canEditContent'] == '0'){
-            $success = FALSE;
-            $message = 'No permission to store dueDate';
-        }
-    }else{
+    if ($result->num_rows == 0){
         $success = FALSE;
-        $message = 'No permission to store dueDate';
+        $message = 'No assignment matches doenetId';
+    } else {
+        $row = $result->fetch_assoc();
+        $courseId = $row['courseId'];
     }
 }
 
-// check to make sure assignment exists
-// if ($success){
-//     $sql = "
-//         SELECT doenetId
-//         FROM assignment
-//         WHERE assignment.doenetId = '$doenetId'
-//     ";
-//     $result = $conn->query($sql);  
-//     if ($result->num_rows == 0){
-//         $success = FALSE;
-//         $message = 'No assignment matches doenetId';
-//     }
-// }
+//Check permissions 
+if ($success){
+
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $requestorUserId,
+        $courseId
+    );
+
+    if ($requestorPermissions == false) {
+        $success = false;
+        $message = 'You are not authorized to view or modify grade data';
+    } elseif ($requestorPermissions['canViewAndModifyGrades'] != '1') {
+        $success = false;
+        $message = 'You are not authorized to modify grade data';
+    }
+
+}
+
+
 
 if ($success){
     //Because sending null wont allow for param testing
@@ -79,7 +80,6 @@ if ($success){
         dueDateOverride = VALUES(dueDateOverride)
         ";
     }else{
-        //CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
         $sql = "
         INSERT INTO user_assignment
         (doenetId,userId,dueDateOverride)
