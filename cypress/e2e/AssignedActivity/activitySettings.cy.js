@@ -230,6 +230,14 @@ describe('Activity Settings Test', function () {
     })
   })
 
+  it('Auto Submit',()=>{
+    cy.get('[data-test="Auto Submit"]').click()
+
+    cy.task('queryDb', `SELECT autoSubmit FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
+      expect(result[0].autoSubmit).to.equal(1)
+    })
+  })
+
   // db located where?
   // it('Make Publicly Visible',()=>{
   //   cy.get('[data-test="Make Publicly Visible"]').click()

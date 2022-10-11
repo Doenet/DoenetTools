@@ -90,6 +90,7 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
     solutionDisplayMode: flags.solutionDisplayMode,
     showFeedback: flags.showFeedback,
     showHints: flags.showHints,
+    autoSubmit: flags.autoSubmit,
   }
 
 
@@ -141,6 +142,7 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
         solutionDisplayMode: flags.solutionDisplayMode,
         showFeedback: flags.showFeedback,
         showHints: flags.showHints,
+        autoSubmit: flags.autoSubmit,
         rendererState: JSON.stringify(rendererState, serializedComponentsReplacer),
         coreInfo: JSON.stringify(coreInfo, serializedComponentsReplacer)
       }

@@ -1319,4 +1319,90 @@ describe('Single page activity tests', function () {
 
   })
 
+  it('Auto submit answers', () => {
+    const doenetML = `
+<p>Enter x: <answer name="x">x</answer></p>
+<p>Enter hello: <answer type="text" name="hello">hello</answer></p>
+<p>Select correct: <answer inline name="correct"><choice credit="1">correct</choice><choice>incorrect</choice></answer></p>
+<p>Move point to first quadrant</p>
+<graph><point name="P" /></graph>
+<answer name="firstQuad"><award><when>$P.x >0 and $P.y > 0</when></award></answer>
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+    cy.get('[data-test="Auto Submit"]').click();
+    cy.get('[data-test="toast"]').contains('Updated Auto Submit to True');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="Attempt Aggregation"] > div:nth-child(2)').click().type("{downArrow}{enter}")
+    cy.get('[data-test="toast"]').contains('Updated Attempt Aggregation to Last Attempt');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get('#\\/_p1').should("have.text", "Enter x: ")
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+
+
+    cy.get('#\\/x textarea').type("x", {force: true}).blur();
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
+
+    cy.get('#\\/x textarea').type("{end}{backspace}y", {force: true}).blur();
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+
+    cy.get('#\\/hello input').type("hello").blur();
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
+
+    cy.get('#\\/correct select').select(1).blur();
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
+
+    cy.get('#\\/correct select').select(2).blur();
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: '/P',
+        args: { x: 2, y: 3 }
+      })
+    })
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: '/P',
+        args: { x: -2, y: 3 }
+      })
+    })
+    
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: '/P',
+        args: { x: 9, y: 1 }
+      })
+    })
+
+    cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
+
+
+  })
+
 })
