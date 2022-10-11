@@ -206,6 +206,7 @@ export default function EditorViewer() {
       solutionDisplayMode: solutionDisplayMode,
       showFeedback: true,
       showHints: true,
+      autoSubmit: false,
       allowLoadState: false,
       allowSaveState: false,
       allowLocalState: false,

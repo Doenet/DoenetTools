@@ -1116,6 +1116,7 @@ export const useCourse = (courseId) => {
             paginate: true,
             showFinishButton: false,
             proctorMakesAvailable: false,
+            autoSubmit: false,
             pinnedAfterDate: null,
             pinnedUntilDate: null,
             ...data.itemEntered,
