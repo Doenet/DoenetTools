@@ -45,11 +45,11 @@ if ($success){
         $row = $result->fetch_assoc();
         if ($row['canEditContent'] == '0'){
             $success = FALSE;
-            $message = 'No permisson to store dueDate';
+            $message = 'No permission to store dueDate';
         }
     }else{
         $success = FALSE;
-        $message = 'No permisson to store dueDate';
+        $message = 'No permission to store dueDate';
     }
 }
 

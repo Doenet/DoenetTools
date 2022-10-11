@@ -14,7 +14,7 @@ $message = '';
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
-$permissonKeys = [
+$permissionKeys = [
     'label',
     'isIncludedInGradebook',
     'canViewUnassignedContent',
@@ -51,7 +51,7 @@ if ($roleId == '') {
 }
 if (!array_key_exists('permissions', $_POST)) {
     $success = false;
-    $message = 'Internal Error: missing permissons';
+    $message = 'Internal Error: missing permissions';
 }
 
 //Check permissions
@@ -68,7 +68,7 @@ if ($success) {
     }
 }
 
-//Bail on user trying to grant or remove isOwner through a role permisson update.
+//Bail on user trying to grant or remove isOwner through a role permission update.
 if ($success && array_key_exists('isOwner', $_POST['permissions'])) {
     $success = false;
     $message = 'isOwner is only available on the owner role';
@@ -99,7 +99,7 @@ if ($success && array_key_exists('label', $_POST['permissions'])) {
     }
 }
 
-//enforce permisson pairs
+//enforce permission pairs
 if ($success) {
     //isAdmin grants all
     $newRoleIsAdmin = mysqli_real_escape_string(
@@ -107,15 +107,15 @@ if ($success) {
         $_POST['permissions']['isAdmin']
     );
     if ($newRoleIsAdmin == '1') {
-        foreach ($permissonKeys as $permisson) {
+        foreach ($permissionKeys as $permission) {
             if (
-                $permisson != 'label' &&
-                $permisson != 'isIncludedInGradebook' &&
-                $permisson != 'dataAccessPermission'
+                $permission != 'label' &&
+                $permission != 'isIncludedInGradebook' &&
+                $permission != 'dataAccessPermission'
             ) {
-                array_push($segments, "$permisson = '1'");
-                $updatedPermissions[$permisson] = '1';
-                unset($_POST['permissions'][$permisson]);
+                array_push($segments, "$permission = '1'");
+                $updatedPermissions[$permission] = '1';
+                unset($_POST['permissions'][$permission]);
             }
         }
         array_push($segments, "dataAccessPermission = 'Identified'");
@@ -167,7 +167,7 @@ if ($success) {
     }
 }
 
-//Make permissons assignment
+//Make permissions assignment
 if ($success) {
     $isDeleted = mysqli_real_escape_string(
         $conn,
@@ -204,14 +204,14 @@ if ($success) {
             }
         }
     } else {
-        foreach ($permissonKeys as $permisson) {
-            if (array_key_exists($permisson, $_POST['permissions'])) {
+        foreach ($permissionKeys as $permission) {
+            if (array_key_exists($permission, $_POST['permissions'])) {
                 $sanitizedNewValue = mysqli_real_escape_string(
                     $conn,
-                    $_POST['permissions'][$permisson]
+                    $_POST['permissions'][$permission]
                 );
-                array_push($segments, "$permisson = '$sanitizedNewValue'");
-                $updatedPermissions[$permisson] = "'$sanitizedNewValue'";
+                array_push($segments, "$permission = '$sanitizedNewValue'");
+                $updatedPermissions[$permission] = "'$sanitizedNewValue'";
             }
         }
         $updates = implode(',', $segments);

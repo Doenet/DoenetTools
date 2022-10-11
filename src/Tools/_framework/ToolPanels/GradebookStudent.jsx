@@ -12,7 +12,7 @@ import {
   Table,
   studentData,
   assignmentData,
-  overViewData,
+  overviewData,
   gradeSorting,
 } from './Gradebook';
 
@@ -23,7 +23,7 @@ export default function GradebookStudent() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let assignments = useRecoilValueLoadable(assignmentData);
   let students = useRecoilValueLoadable(studentData);
-  let overView = useRecoilValueLoadable(overViewData);
+  let overview = useRecoilValueLoadable(overviewData);
 
   let overviewTable = {};
 
@@ -45,7 +45,7 @@ export default function GradebookStudent() {
   if (
     assignments.state == 'hasValue' &&
     students.state === 'hasValue' &&
-    overView.state === 'hasValue' &&
+    overview.state === 'hasValue' &&
     userId !== null &&
     userId !== ''
   ) {
@@ -85,7 +85,10 @@ export default function GradebookStudent() {
         let assignedpoints = '-';
         let possiblepoints =
           assignments.contents[doenetId].totalPointsOrPercent * 1;
-        let credit = overView.contents[userId].assignments[doenetId];
+        let credit = overview.contents[userId].assignments[doenetId];
+        if(credit === null && assignments.contents[doenetId].isGloballyAssigned === "0") {
+          continue;
+        }
         let score = possiblepoints * credit;
         const assignedDate = assignments.contents[doenetId].assignedDate;
         allpossiblepoints.push(possiblepoints);

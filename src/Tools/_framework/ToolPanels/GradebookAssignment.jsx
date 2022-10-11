@@ -5,9 +5,9 @@ import {
   studentData,
   attemptData,
   assignmentData,
-  attemptDataQuerry,
-  studentDataQuerry,
-  overViewDataQuerry,
+  attemptDataQuery,
+  studentDataQuery,
+  overviewDataQuery,
 } from './Gradebook';
 
 import {
@@ -84,14 +84,14 @@ function UploadChoices({ doenetId, maxAttempts }) {
           params: { courseId },
         });
         const {
-          data: { overviewData },
+          data: { overview },
         } = await axios.get('/api/loadGradebookOverview.php', {
           params: { courseId },
         });
 
-        set(attemptDataQuerry(doenetId), assignmentAttemptsData);
-        set(studentDataQuerry, gradebookEnrollment);
-        set(overViewDataQuerry, overviewData);
+        set(attemptDataQuery(doenetId), assignmentAttemptsData);
+        set(studentDataQuery, gradebookEnrollment);
+        set(overviewDataQuery, overview);
 
         addToast(`Updated scores!`);
         set(processGradesAtom, 'Assignment Table');

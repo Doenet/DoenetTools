@@ -24,7 +24,7 @@ if ($doenetId == ""){
 
 $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
 
-if ($permissions["dataAccessPermisson"] != 'Identified'){
+if ($permissions["dataAccessPermission"] != 'Identified'){
   $success = FALSE;
   $message = "You need permission to view data";
 }

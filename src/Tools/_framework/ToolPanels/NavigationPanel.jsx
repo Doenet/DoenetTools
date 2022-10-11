@@ -71,7 +71,7 @@ const Td3Span = styled.span`
 `;
 
 export default function NavigationPanel() {
-  //TODO: swtich to effectivePermissons
+  //TODO: switch to effectivePermissions
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { canEditContent } = useRecoilValue(
     effectivePermissionsByCourseId(courseId),
