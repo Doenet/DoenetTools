@@ -105,6 +105,14 @@ export default class MathComponent extends InlineComponent {
       fallBackToParentStateVariable: "splitSymbols",
     }
 
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "parseScientificNotation",
+    }
+
     attributes.groupCompositeReplacements = {
       createPrimitiveOfType: "boolean",
       createStateVariable: "groupCompositeReplacements",
@@ -765,6 +773,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "splitSymbols"
         },
+        parseScientificNotation: {
+          dependencyType: "stateVariable",
+          variableName: "parseScientificNotation"
+        },
         groupCompositeReplacements: {
           dependencyType: "stateVariable",
           variableName: "groupCompositeReplacements"
@@ -1256,7 +1268,8 @@ export default class MathComponent extends InlineComponent {
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let fromText = getFromText({
           functionSymbols: await stateValues.functionSymbols,
-          splitSymbols: await stateValues.splitSymbols
+          splitSymbols: await stateValues.splitSymbols,
+          parseScientificNotation: await stateValues.parseScientificNotation
         });
 
         let expr;
@@ -1938,7 +1951,7 @@ export default class MathComponent extends InlineComponent {
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   if (!(("stringMathChildren" in changes && changes.stringMathChildren.componentIdentitiesChanged)
-    || "format" in changes || "splitSymbols" in changes
+    || "format" in changes || "splitSymbols" in changes || "parseScientificNotation" in changes
     || "functionSymbols" in changes || "mathChildrenFunctionSymbols" in changes
   )) {
     // if component identities of stringMathChildren didn't change
@@ -2111,7 +2124,8 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     if (dependencyValues.format === "text") {
       let fromText = getFromText({
         functionSymbols,
-        splitSymbols: dependencyValues.splitSymbols
+        splitSymbols: dependencyValues.splitSymbols,
+        parseScientificNotation: dependencyValues.parseScientificNotation
       });
       try {
         expressionWithCodes = fromText(inputString);
@@ -2123,7 +2137,8 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     else if (dependencyValues.format === "latex") {
       let fromLatex = getFromLatex({
         functionSymbols,
-        splitSymbols: dependencyValues.splitSymbols
+        splitSymbols: dependencyValues.splitSymbols,
+        parseScientificNotation: dependencyValues.parseScientificNotation
       });
       try {
         expressionWithCodes = fromLatex(inputString);

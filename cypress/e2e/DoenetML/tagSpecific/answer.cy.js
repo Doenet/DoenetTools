@@ -21400,7 +21400,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 0');
     cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0')
 
-    
+
     cy.get('#\\/x textarea').type("{end}{backspace}x{enter}", { force: true });
     cy.get('#\\/pSubX .mjx-mrow').should('contain.text', 'x');
     cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 1');
@@ -21518,7 +21518,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
     cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
 
-    
+
     cy.get('#\\/pSubFirstQuad .mjx-mrow').should('contain.text', '3');
     cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(0).should('have.text', "3");
     cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(1).should('have.text', "−5");
@@ -21544,6 +21544,153 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 1')
 
 
+  });
+
+  it('submitted responses from copy source', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  
+  <p><answer name="x">x</answer> 
+    <math name="xsr" copySource="x" />
+    <math name="xcr" copySource="x.currentResponse" />
+  </p>
+  <p><answer name="hello" type="text">hello</answer>
+    <text name="hellosr" copySource="hello" />
+    <text name="hellocr" copySource="hello.currentResponse" />
+  </p>
+  <p><answer name="b" type="boolean" forceFullCheckworkButton>true</answer> 
+    <boolean name="bsr" copySource="b" />
+    <boolean name="bcr" copySource="b.currentResponse" />
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/xsr .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/xcr .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.get('#\\/x textarea').type("x", { force: true }).blur();
+    cy.get('#\\/xcr .mjx-mrow').should('contain.text', 'x');
+    cy.get('#\\/xsr .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/x textarea').type("{enter}", { force: true })
+    cy.get('#\\/xsr .mjx-mrow').should('contain.text', 'x');
+    cy.get('#\\/xcr .mjx-mrow').should('contain.text', 'x');
+
+    cy.get('#\\/hellosr').should('have.text', '')
+    cy.get('#\\/hellocr').should('have.text', '')
+
+    cy.get('#\\/hello input').type("hello").blur();
+    cy.get('#\\/hellocr').should('have.text', 'hello')
+    cy.get('#\\/hellosr').should('have.text', '')
+    cy.get('#\\/hello input').type("{enter}");
+    cy.get('#\\/hellosr').should('have.text', 'hello')
+    cy.get('#\\/hellocr').should('have.text', 'hello')
+
+    cy.get('#\\/bsr').should("have.text", "false")
+    cy.get('#\\/bcr').should("have.text", "false")
+    cy.get('#\\/b .checkmark').click();
+    cy.get('#\\/bcr').should("have.text", "true")
+    cy.get('#\\/bsr').should("have.text", "false")
+    cy.get('#\\/b_submit').click();
+    cy.get('#\\/bsr').should("have.text", "true")
+    cy.get('#\\/bcr').should("have.text", "true")
+  });
+
+  it('parse scientific notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  
+  <p><answer name="np1"><mathinput name="minp1" />4E3</answer> <math name="np1a" copySource="np1" /></p>
+  <p><answer name="np2"><mathinput name="minp2" /><math>4E3</math></answer> <math name="np2a" copySource="np2" /></p>
+  <p><answer name="np3"><mathinput name="minp3" /><award><math>4E3</math></award></answer> <math name="np3a" copySource="np3" /></p>
+  <p><answer name="np4"><mathinput name="minp4" /><award><when><math>4E3</math>=$minp4</when></award></answer> <math name="np4a" copySource="np4" /></p>
+
+  <p><answer parseScientificNotation name="p1"><mathinput name="mip1" />4E3</answer> <math name="p1a" copySource="p1" /></p>
+  <p><answer parseScientificNotation name="p2"><mathinput name="mip2" /><math>4E3</math></answer> <math name="p2a" copySource="p2" /></p>
+  <p><answer parseScientificNotation name="p3"><mathinput name="mip3" /><award><math>4E3</math></award></answer> <math name="p3a" copySource="p3" /></p>
+  <p><answer parseScientificNotation name="p4"><mathinput name="mip4" /><award><when><math parseScientificNotation>4E3</math>=$mip4</when></award></answer> <math name="p4a" copySource="p4" /></p>
+
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/minp1 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/minp1_correct").should('be.visible');
+    cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '4E3');
+  
+    cy.get('#\\/minp2 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/minp2_correct").should('be.visible');
+    cy.get('#\\/np2a .mjx-mrow').eq(0).should('have.text', '4E3');
+
+    cy.get('#\\/minp3 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/minp3_correct").should('be.visible');
+    cy.get('#\\/np3a .mjx-mrow').eq(0).should('have.text', '4E3');
+
+    cy.get('#\\/minp4 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/minp4_correct").should('be.visible');
+    cy.get('#\\/np4a .mjx-mrow').eq(0).should('have.text', '4E3');
+  
+
+    cy.get('#\\/mip1 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/mip1_correct").should('be.visible');
+    cy.get('#\\/p1a .mjx-mrow').eq(0).should('have.text', '4000');
+  
+    cy.get('#\\/mip2 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/mip2_correct").should('be.visible');
+    cy.get('#\\/p2a .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get('#\\/mip3 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/mip3_correct").should('be.visible');
+    cy.get('#\\/p3a .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get('#\\/mip4 textarea').type("4E3{enter}", { force: true })
+    cy.get("#\\/mip4_correct").should('be.visible');
+    cy.get('#\\/p4a .mjx-mrow').eq(0).should('have.text', '4000');
+  
+
+
+    cy.get('#\\/minp1 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/minp1_incorrect").should('be.visible');
+    cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '4000');
+  
+    cy.get('#\\/minp2 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/minp2_incorrect").should('be.visible');
+    cy.get('#\\/np2a .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get('#\\/minp3 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/minp3_incorrect").should('be.visible');
+    cy.get('#\\/np3a .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get('#\\/minp4 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/minp4_incorrect").should('be.visible');
+    cy.get('#\\/np4a .mjx-mrow').eq(0).should('have.text', '4000');
+  
+
+    cy.get('#\\/mip1 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/mip1_correct").should('be.visible');
+    cy.get('#\\/p1a .mjx-mrow').eq(0).should('have.text', '4000');
+  
+    cy.get('#\\/mip2 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/mip2_correct").should('be.visible');
+    cy.get('#\\/p2a .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get('#\\/mip3 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/mip3_correct").should('be.visible');
+    cy.get('#\\/p3a .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get('#\\/mip4 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get("#\\/mip4_correct").should('be.visible');
+    cy.get('#\\/p4a .mjx-mrow').eq(0).should('have.text', '4000');
+  
   });
 
 })

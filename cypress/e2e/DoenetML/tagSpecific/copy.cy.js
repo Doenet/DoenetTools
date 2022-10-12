@@ -6352,7 +6352,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/E2')).should('not.exist')
     cy.get(cesc('#/F2')).should('not.exist')
 
-    cy.get('#\\/n textarea').type("1{enter}", {force:true});
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
 
     cy.get(cesc('#/A2') + ' .mjx-mrow').should('contain.text', '(1,2)')
     cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
@@ -6388,7 +6388,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/E2')).should('not.exist')
     cy.get(cesc('#/F2')).should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force:true});
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
 
     cy.get(cesc('#/D2') + ' .mjx-mrow').should('contain.text', '(2,3)')
     cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
@@ -6425,7 +6425,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
     cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", {force:true});
+    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true });
 
     cy.get(cesc('#/A2')).should('not.exist')
     cy.get(cesc('#/B2')).should('not.exist')
@@ -6434,7 +6434,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/E2')).should('not.exist')
     cy.get(cesc('#/F2')).should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force:true});
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
 
     cy.get(cesc('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
     cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
@@ -13922,6 +13922,8 @@ describe('Copy Tag Tests', function () {
   });
 
   it('isPlainCopy does not mean isPlainMacro', () => {
+
+    // a plain copy copies children, unlike a macro
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -13932,6 +13934,8 @@ describe('Copy Tag Tests', function () {
     
     <p name="p3">x2/y: $(x2/y)</p>
 
+    <p name="p4">$x</p>
+
     `}, "*");
     });
 
@@ -13941,6 +13945,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/p1') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
     cy.get(cesc('#/p2') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
     cy.get(cesc('#/p3') + " .mjx-mrow").eq(0).should('have.text', 'y');
+    cy.get(cesc('#/p4') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
 
 
     cy.window().then(async (win) => {
@@ -13948,6 +13953,99 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/x2"].activeChildren.length).eq(2)
 
       expect(stateVariables["/x2/y"].stateValues.value).eq("y")
+
+      let macroName = stateVariables["/p4"].activeChildren[0].componentName;
+      expect(stateVariables[macroName].activeChildren.length).eq(0);
+
+
+    });
+
+
+  });
+
+  it('plain copies and macros with createComponentOfType', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><mathinput name="mi"/>  <mathinput copySource="mi" />  <math copySource="mi" /></p>
+
+    <p>$mi{createComponentOfType='mathinput'}, $mi, $mi{createComponentOfType='math'}</p> 
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '\uff3f')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mi3Anchor = cesc('#' + stateVariables["/_p2"].activeChildren[0].componentName);
+      let m2Anchor = cesc('#' + stateVariables["/_p2"].activeChildren[2].componentName);
+      let m3Anchor = cesc('#' + stateVariables["/_p2"].activeChildren[4].componentName);
+
+      cy.get(m2Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
+      cy.get(m3Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
+
+
+      cy.log('mathinputs change with immediate value')
+      cy.get('#\\/mi textarea').type("x", { force: true })
+
+      cy.get('#\\/_mathinput2 .mq-editable-field').should('have.text', 'x')
+      cy.get(mi3Anchor + ' .mq-editable-field').should('have.text', 'x')
+
+      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '\uff3f')
+      cy.get(m2Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
+      cy.get(m3Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
+
+      cy.log('maths change with value')
+      cy.get('#\\/mi textarea').blur();
+
+      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'x')
+      cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'x')
+      cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'x')
+
+
+      cy.log('mathinputs change with immediate value')
+      cy.get('#\\/_mathinput2 textarea').type("{end}{backspace}y", { force: true })
+
+      cy.get('#\\/mi .mq-editable-field').should('have.text', 'y')
+      cy.get(mi3Anchor + ' .mq-editable-field').should('have.text', 'y')
+
+      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'x')
+      cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'x')
+      cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'x')
+
+      cy.log('maths change with value')
+      cy.get('#\\/_mathinput2 textarea').blur();
+
+      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'y')
+      cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'y')
+      cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'y')
+
+      
+      cy.log('mathinputs change with immediate value')
+      cy.get(mi3Anchor + ' textarea').type("{end}{backspace}z", { force: true })
+
+      cy.get('#\\/mi .mq-editable-field').should('have.text', 'z')
+      cy.get('#\\/_mathinput2 .mq-editable-field').should('have.text', 'z')
+
+      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'y')
+      cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'y')
+      cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'y')
+
+      cy.log('maths change with value')
+      cy.get(mi3Anchor + ' textarea').blur();
+
+      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'z')
+      cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'z')
+      cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'z')
+      
 
     });
 

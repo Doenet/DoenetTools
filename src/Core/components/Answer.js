@@ -184,6 +184,13 @@ export default class Answer extends InlineComponent {
       public: true,
     }
 
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+    }
+
     // temporary attribute until fix toast
     attributes.suppressToast = {
       createComponentOfType: "boolean",
