@@ -6,8 +6,12 @@ import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVar
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield';
+import Form from '../../_reactComponents/PanelHeaderComponents/Form';
 
 
 
@@ -24,15 +28,32 @@ import ButtonGroup from '../../_reactComponents/PanelHeaderComponents/ButtonGrou
 // })
 
 ReactDOM.render(
-
-<ActionButtonGroup width="menu">
+/* <ActionButtonGroup width="menu">
   <ActionButton/>
   <ActionButton/>
   <ActionButton/>
   <ActionButton/>
   <ActionButton/>
   <ActionButton/>
-</ActionButtonGroup>,
+  <ActionButton/>
+</ActionButtonGroup>, */
+/* <ButtonGroup width="menu">
+  <Button/>
+  <Button/>
+  <Button/>
+  <Button/>
+  <Button/>
+  <Button/>
+</ButtonGroup>, */
+<ButtonGroup width="menu">
+  <Button/>
+  <Button/>
+  <Button/>
+  <Button/>
+  <Button/>
+  <Button/>
+</ButtonGroup>,
+/* <Form width="menu" label="hello"/>, */
   document.getElementById('root'),
 );
 

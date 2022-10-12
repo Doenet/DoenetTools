@@ -43,7 +43,7 @@ const Progress = styled.p`
 export default function ProgressBar(props) {
   const [fillWidth, setFillWidth] = useState("0px");
   const [donutPosition, setDonutPosition] = useState("12.5px");
-  const [barWidth, setBarWidth] = useState(props.width ? props.width : 235); // Default to the width of the navigation panel
+  const [barWidth, setBarWidth] = useState(props.width ? props.width : 240); // Default to the width of the navigation panel
   const height = props.donutIcon ? "25px" : "10px";
   const radius = props.donutIcon ? "12.5px" : "5px";
   const ariaLabel = props.ariaLabel ? props.ariaLabel : null;

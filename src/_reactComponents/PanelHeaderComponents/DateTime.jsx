@@ -23,7 +23,7 @@ export default function DateTime(props) {
     : 'var(--mainBorder)';
   borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
-  let width = props.width ? props.width : '170px';
+  let width = (props.width === 'menu' ? 'var(--menuWidth)' : '170px');
 
   useEffect(() => {
     //todo try lastValid update

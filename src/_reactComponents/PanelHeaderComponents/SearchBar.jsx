@@ -12,7 +12,7 @@ const SearchBar = styled.input `
     padding: 0px 70px 0px 30px;
     color: var(--canvastext);
     overflow: hidden;
-    width: ${props => props.width === 'menu' ? '130px' : '220px'};
+    width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : '220px'};
     font-size: 14px;
     cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
     &:focus {

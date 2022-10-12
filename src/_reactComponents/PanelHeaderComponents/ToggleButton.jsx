@@ -134,9 +134,9 @@ export default function ToggleButton(props) {
 
   if (props.width) {
     if (props.width === 'menu') {
-      toggleButton.width = '235px';
+      toggleButton.width = 'var(--menuWidth)';
       if (props.label) {
-        container.width = '235px';
+        container.width = 'var(--menuWidth)';
         toggleButton.width = '100%';
       }
     }

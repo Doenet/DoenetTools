@@ -79,7 +79,7 @@ export default function Button(props) {
     } 
   };
 
-  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+  const labelVisible = props.label ? 'static' : 'none';
   var label = '';
   if (props.label) {
     label = props.label;

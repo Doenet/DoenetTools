@@ -451,8 +451,8 @@ export default function attempt() {
       props: [
         {
           name: 'Width',
-          propPreview: '<DateTime width="300px" />',
-          propCode: { width: '300px' },
+          propPreview: '<DateTime width="menu" />',
+          propCode: { width: 'menu' },
           description: 'Sets width to fill menu panel width',
         },
         {
@@ -721,6 +721,12 @@ export default function attempt() {
       req_children: null,
       use: 'Text input with increment and decrement buttons. Also has dropdown menu to select given values',
       props: [
+        {
+          name: 'Width',
+          propPreview: '<Increment width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
         {
           name: 'Font',
           propPreview: '<Increment font/>',

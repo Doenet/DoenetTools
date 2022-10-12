@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const Textarea = styled.textarea`
   margin: 0px 4px 0px 0px;
   height: 24px;
+  width: ${props => props.width};
   border: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};
   border-radius: var(--mainBorderRadius);
   font-family: Arial;
@@ -61,9 +62,9 @@ export default function TextArea(props) {
   var inputWidth = "";
   if (props.width) {
     if (props.width === "menu") {
-      inputWidth = '235px';
+      inputWidth = 'var(--menuWidth)';
       if (props.label) {
-        container.width = '235px';
+        container.width = 'var(--menuWidth)';
         inputWidth = '100%';
       }
     } 
