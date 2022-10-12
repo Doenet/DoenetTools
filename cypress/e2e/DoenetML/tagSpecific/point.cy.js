@@ -4247,6 +4247,280 @@ describe('Point Tag Tests', function () {
 
   });
 
+  it('point constrained to graph, no baseOnGraph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point x="1" y="2" name="A">
+      <constraints>
+        <constrainToGraph/>
+      </constraints>
+    </point>
+    <point x="3" y="4" name="C">
+      <constraints>
+        <constrainToGraph buffer="0.025" />
+      </constraints>
+    </point>
+  </graph>
+
+  <graph xmin="-20" xmax="20" ymin="-20" ymax="20" >
+    <copy target="A" assignNames="B" />
+    <copy target="C" assignNames="D" />
+  </graph>
+
+  <math><copy prop="coords" target="A" /></math>
+  <boolean><copy prop="constraintUsed" target="A" /></boolean>
+  <math><copy prop="coords" target="B" /></math>
+  <boolean><copy prop="constraintUsed" target="B" /></boolean>
+  <math><copy prop="coords" target="C" /></math>
+  <boolean><copy prop="constraintUsed" target="C" /></boolean>
+  <math><copy prop="coords" target="D" /></math>
+  <boolean><copy prop="constraintUsed" target="D" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
+    cy.log(`move point A to (105,3)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 105, y: 3 }
+      })
+    })
+
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,3)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(3);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(3);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.8,3)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.8,3)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+    cy.log(`move point A to (-30,11)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: -30, y: 11 }
+      })
+    })
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9.8,9.8)');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9.8,9.8)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9.8,9.8)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+    cy.log(`move point A to (-3,1)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: -3, y: 1 }
+      })
+    })
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,1)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(1);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(1);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−3,1)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−3,1)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+    cy.log(`move point B to (-17,18)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: -17, y: 18 }
+      })
+    })
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9.8,9.8)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-17);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(18);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9.8,9.8)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−17,18)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+
+    cy.log(`move point B to (56,-91)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: 56, y: -91 }
+      })
+    })
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,−9.8)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(-9.8);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(19.6);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(-19.6);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.8,−9.8)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(19.6,−19.6)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+    cy.log(`move point C to (56,-91)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/C",
+        args: { x: 56, y: -91 }
+      })
+    })
+    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(9.5,−9.5)');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/C'].stateValues.xs)[0]).eq(9.5);
+      expect((stateVariables['/C'].stateValues.xs)[1]).eq(-9.5);
+      expect(stateVariables['/C'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/D'].stateValues.xs)[0]).eq(9.5);
+      expect((stateVariables['/D'].stateValues.xs)[1]).eq(-9.5);
+      expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
+    })
+
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.5,−9.5)')
+    });
+    cy.get('#\\/_boolean3').should('have.text', "true")
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.5,−9.5)')
+    });
+    cy.get('#\\/_boolean4').should('have.text', "true")
+
+
+    cy.log(`move point D to (5,15)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/D",
+        args: { x: 5, y: 15 }
+      })
+    })
+    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(5,9.5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/C'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/C'].stateValues.xs)[1]).eq(9.5);
+      expect(stateVariables['/C'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/D'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/D'].stateValues.xs)[1]).eq(15);
+      expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,9.5)')
+    });
+    cy.get('#\\/_boolean3').should('have.text', "true")
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,15)')
+    });
+    cy.get('#\\/_boolean4').should('have.text', "true")
+
+
+    cy.log(`move point D to (-65,-79)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/D",
+        args: { x: -65, y: -79 }
+      })
+    })
+    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(−9.5,−9.5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/C'].stateValues.xs)[0]).eq(-9.5);
+      expect((stateVariables['/C'].stateValues.xs)[1]).eq(-9.5);
+      expect(stateVariables['/C'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/D'].stateValues.xs)[0]).eq(-19);
+      expect((stateVariables['/D'].stateValues.xs)[1]).eq(-19);
+      expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9.5,−9.5)')
+    });
+    cy.get('#\\/_boolean3').should('have.text', "true")
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−19,−19)')
+    });
+    cy.get('#\\/_boolean4').should('have.text', "true")
+
+
+
+  });
+
   it('three points with one constrained to grid', () => {
     cy.window().then(async (win) => {
       win.postMessage({
