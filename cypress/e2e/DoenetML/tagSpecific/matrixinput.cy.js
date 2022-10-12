@@ -5783,4 +5783,39 @@ describe('MatrixInput Tag Tests', function () {
 
   })
 
+  it('parse scientific notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><matrixInput name="mi1" prefill="5E+1" /> <math name="m1" copySource="mi1" /></p>
+  <p><matrixInput name="mi2" prefill="5E+1" parseScientificNotation /> <math name="m2" copySource="mi2" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi1 .mq-editable-field').should('have.text', '5E+1')
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '[5E+1]')
+    cy.get('#\\/mi2 .mq-editable-field').should('have.text', '50')
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '[50]')
+
+    cy.get('#\\/mi1 textarea').type("{end}{shift+home}{backspace}2x−3E+2{enter}", { force: true }).blur();
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '[2x−3E+2]')
+
+    cy.get('#\\/mi1 .mq-editable-field').should('have.text', '2x−3E+2')
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '[2x−3E+2]')
+
+    cy.get('#\\/mi2 textarea').type("{end}{shift+home}{backspace}2x-3E+2{enter}", { force: true }).blur();
+
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', '[2x−300]')
+
+    cy.get('#\\/mi2 .mq-editable-field').should('have.text', '2x−3E+2')
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '[2x−300]')
+
+
+  });
+
 });

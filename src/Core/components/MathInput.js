@@ -45,7 +45,7 @@ export default class MathInput extends Input {
       createStateVariable: "prefill",
       defaultValue: me.fromAst("\uff3f"),
       public: true,
-      copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols"],
+      copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols", "parseScientificNotation"],
     };
     attributes.format = {
       createComponentOfType: "text",
@@ -65,6 +65,13 @@ export default class MathInput extends Input {
       defaultValue: true,
       public: true,
       fallBackToParentStateVariable: "splitSymbols",
+    };
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "parseScientificNotation",
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
@@ -449,6 +456,7 @@ export default class MathInput extends Input {
           let fromLatex = getFromLatex({
             functionSymbols: await stateValues.functionSymbols,
             splitSymbols: await stateValues.splitSymbols,
+            parseScientificNotation: await stateValues.parseScientificNotation,
           });
 
           try {
