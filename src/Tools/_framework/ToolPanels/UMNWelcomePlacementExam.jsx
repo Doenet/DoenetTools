@@ -16,8 +16,9 @@ export default function WelcomeUMNPlacementExam() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   let extended = useRecoilValue(searchParamAtomFamily('extended'));
-  // let [takenStatus, setTakenStatus] = useState('Page Init'); //'Page Init' | 'Never Started' | 'In Progress' | 'Completed'
-  let [takenStatus, setTakenStatus] = useState('Completed'); //'Page Init' | 'Never Started' | 'In Progress' | 'Completed'
+  //takenStatus = 'Page Init' | 'Not Started' (as in the attempt not started) | 'In Progress' | 'Completed'
+  let [takenStatus, setTakenStatus] = useState('Page Init'); 
+  // let [takenStatus, setTakenStatus] = useState('Completed'); //'Page Init' | 'Not Started' | 'In Progress' | 'Completed'
   const [examName, setExamName] = useState("Calculus Placement Exam");
   const [learnerFirstName, setLearnerFirstName] = useState(null);
   const [learnerLastName, setLearnerLastName] = useState(null);
@@ -55,7 +56,7 @@ export default function WelcomeUMNPlacementExam() {
       console.log("resp",resp.data)
       const {success, status, examName, firstName, lastName} = resp.data;
       if (success){
-        // setTakenStatus(status);
+        setTakenStatus(status);
         setExamName(examName);
         setLearnerFirstName(firstName);
         setLearnerLastName(lastName);
@@ -112,9 +113,7 @@ export default function WelcomeUMNPlacementExam() {
     </>
   }
 
-  //Never Started
- 
-  
+  //Not Started
 
   if (startWarningMessageOpen){
    return <div
@@ -158,7 +157,7 @@ export default function WelcomeUMNPlacementExam() {
           margin: '20',
         }}
       >
-        <h2 style={{ textAlign: 'center' }}>Welcome Kevin Charles!</h2>
+        <h2 style={{ textAlign: 'center' }}>Welcome {learnerFirstName} {learnerLastName}!</h2>
         <h2 style={{ textAlign: 'center' }}>{examName}</h2>
   <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
 

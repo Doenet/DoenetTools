@@ -1385,7 +1385,9 @@ export default function ActivityViewer(props) {
   if (props.showFinishButton) {
     if (finishAssessmentMessageOpen) {
       finishAssessmentPrompt = <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap" }}>
-        Are you sure you want to finish this assessment?
+       <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
+       Are you sure you want to finish this assessment?
+        </div> 
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
             <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
