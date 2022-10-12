@@ -24,6 +24,7 @@ describe('Activity Settings From Database Test', function () {
     paginate: 0,
     showFinishButton: 1,
     proctorMakesAvailable: 1,
+    autoSubmit: 0,
     pinnedAfterDate: '2024-01-01 00:00:00',
     pinnedUntilDate: '2025-12-31 00:00:00'
   }
@@ -119,6 +120,10 @@ describe('Activity Settings From Database Test', function () {
 
   it('Proctor Makes Available',()=>{
     cy.get('[data-test="Proctor Makes Available"]').should('have.attr', 'aria-checked', activitySettings.proctorMakesAvailable ? "true" : "false")
+  })
+
+  it('Auto Submit',()=>{
+    cy.get('[data-test="Auto Submit"]').should('have.attr', 'aria-checked', activitySettings.autoSubmit ? "true" : "false")
   })
 
   // db located where?

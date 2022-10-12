@@ -28,9 +28,11 @@ $showCorrectness = mysqli_real_escape_string($conn, $_REQUEST['showCorrectness']
 $solutionDisplayMode = mysqli_real_escape_string($conn, $_REQUEST['solutionDisplayMode']);
 $showFeedback = mysqli_real_escape_string($conn, $_REQUEST['showFeedback']);
 $showHints = mysqli_real_escape_string($conn, $_REQUEST['showHints']);
+$autoSubmit = mysqli_real_escape_string($conn, $_REQUEST['autoSubmit']);
 
 if ($showFeedback == "true"){ $showFeedback = '1'; } else { $showFeedback = '0'; }
 if ($showHints == "true"){ $showHints = '1'; } else { $showHints = '0'; }
+if ($autoSubmit == "true"){ $autoSubmit = '1'; } else { $autoSubmit = '0'; }
 if ($showCorrectness == "true"){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
 
 $effectiveUserId = $requestorUserId;
@@ -148,6 +150,7 @@ if ($success) {
             AND solutionDisplayMode = '$solutionDisplayMode'
             AND showFeedback = '$showFeedback'
             AND showHints = '$showHints'
+            AND autoSubmit = '$autoSubmit'
             "
         );
 

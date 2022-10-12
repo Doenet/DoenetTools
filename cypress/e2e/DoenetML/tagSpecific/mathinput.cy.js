@@ -6925,8 +6925,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(["^", "a", ["+",  ["*", "b", "c"], "d"]])
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["^", "a", ["+",  ["*", "b", "c"], "d"]])
+      expect(stateVariables["/mi"].stateValues.value).eqls(["^", "a", ["+", ["*", "b", "c"], "d"]])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["^", "a", ["+", ["*", "b", "c"], "d"]])
       expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{bc+d}')
       expect(stateVariables["/rv"].stateValues.value).eqls('a^{bc+d}')
     });
@@ -6939,8 +6939,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', '\uff3f']])
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', '\uff3f']])
+      expect(stateVariables["/mi"].stateValues.value).eqls(['+', ["^", "a", ["+", ["*", "b", "c"], "d"]], ['-', '\uff3f']])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(['+', ["^", "a", ["+", ["*", "b", "c"], "d"]], ['-', '\uff3f']])
       expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{bc+d}-')
       expect(stateVariables["/rv"].stateValues.value).eqls('a^{bc+d}-')
     });
@@ -6953,8 +6953,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', 'e']])
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', 'e']])
+      expect(stateVariables["/mi"].stateValues.value).eqls(['+', ["^", "a", ["+", ["*", "b", "c"], "d"]], ['-', 'e']])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(['+', ["^", "a", ["+", ["*", "b", "c"], "d"]], ['-', 'e']])
       expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{bc+d}-e')
       expect(stateVariables["/rv"].stateValues.value).eqls('a^{bc+d}-e')
     });
@@ -7038,6 +7038,41 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('ab+c')
       expect(stateVariables["/rv"].stateValues.value).eqls('ab+c')
     });
+
+  });
+
+  it('parse scientific notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><mathinput name="mi1" prefill="5E+1" /> <math name="m1" copySource="mi1" /></p>
+  <p><mathinput name="mi2" prefill="5E+1" parseScientificNotation /> <math name="m2" copySource="mi2" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi1 .mq-editable-field').should('have.text', '5E+1')
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '5E+1')
+    cy.get('#\\/mi2 .mq-editable-field').should('have.text', '50')
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '50')
+
+    cy.get('#\\/mi1 textarea').type("{end}{shift+home}{backspace}2x−3E+2{enter}", { force: true }).blur();
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '2x−3E+2')
+
+    cy.get('#\\/mi1 .mq-editable-field').should('have.text', '2x−3E+2')
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '2x−3E+2')
+
+    cy.get('#\\/mi2 textarea').type("{end}{shift+home}{backspace}2x-3E+2{enter}", { force: true }).blur();
+
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', '2x−300')
+
+    cy.get('#\\/mi2 .mq-editable-field').should('have.text', '2x−3E+2')
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '2x−300')
+
 
   });
 

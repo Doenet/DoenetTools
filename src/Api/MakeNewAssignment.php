@@ -51,6 +51,9 @@ else if ($showCorrectness){ $showCorrectness = '1';}
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
 else if($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
+$autoSubmit = mysqli_real_escape_string($conn,$_POST["autoSubmit"]);
+if ($autoSubmit == ''){ $autoSubmit = '0';}
+else if($autoSubmit){ $autoSubmit = '1';}
 
 $success = TRUE;
 $message = "";
@@ -84,7 +87,8 @@ if ($success){
       showFeedback=$showFeedback,
       showHints=$showHints,
       showCorrectness=$showCorrectness,
-      proctorMakesAvailable=$proctorMakesAvailable
+      proctorMakesAvailable=$proctorMakesAvailable,
+      autoSubmit=$autoSubmit
       WHERE doenetId='$doenetId'
       ";
           $result = $conn->query($sqlUpdate); 
@@ -109,7 +113,8 @@ if ($success){
       showFeedback,
       showHints,
       showCorrectness,
-      proctorMakesAvailable)
+      proctorMakesAvailable,
+      autoSubmit)
       VALUES
       (
         '$doenetId',
@@ -128,7 +133,8 @@ if ($success){
       '$showFeedback',
       '$showHints',
       '$showCorrectness',
-      '$proctorMakesAvailable')
+      '$proctorMakesAvailable',
+      '$autoSubmit')
       ";
     
   $result = $conn->query($sql); 

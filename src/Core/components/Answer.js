@@ -184,6 +184,13 @@ export default class Answer extends InlineComponent {
       public: true,
     }
 
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+    }
+
     // temporary attribute until fix toast
     attributes.suppressToast = {
       createComponentOfType: "boolean",
@@ -677,7 +684,6 @@ export default class Answer extends InlineComponent {
             "valueToRecordOnSubmit",
             "valueRecordedAtSubmit",
             "value",
-            "immediateValue"
           ],
           childIndices: stateValues.inputChildIndices,
           variablesOptional: true,
@@ -1173,6 +1179,10 @@ export default class Answer extends InlineComponent {
           variableNames: [
             "suppressAnswerSubmitButtons",
           ]
+        },
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
         }
       }),
       definition: function ({ dependencyValues, componentName }) {
@@ -1180,16 +1190,13 @@ export default class Answer extends InlineComponent {
         let delegateCheckWorkToInput = false;
         let delegateCheckWork = false;
 
-        if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
+        if (dependencyValues.autoSubmit) {
+          delegateCheckWork = true;
+        } else if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
           delegateCheckWorkToAncestor = delegateCheckWork = true;
-        } else if (dependencyValues.sectionAncestor) {
-          let ancestorState = dependencyValues.sectionAncestor.stateValues;
-          if (ancestorState.suppressAnswerSubmitButtons) {
-            delegateCheckWorkToAncestor = delegateCheckWork = true;
-          }
-        }
-
-        if (!delegateCheckWorkToAncestor && dependencyValues.inputChildren.length === 1 &&
+        } else if (dependencyValues.sectionAncestor?.stateValues.suppressAnswerSubmitButtons) {
+          delegateCheckWorkToAncestor = delegateCheckWork = true;
+        } else if (dependencyValues.inputChildren.length === 1 &&
           !dependencyValues.forceFullCheckworkButton
         ) {
           delegateCheckWorkToInput = delegateCheckWork = true;
@@ -1338,15 +1345,27 @@ export default class Answer extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.autoSubmit = {
+      returnDependencies: () => ({
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { autoSubmit: Boolean(dependencyValues.autoSubmit) } }
+      }
+    }
 
     stateVariableDefinitions.creditAchievedDependencies = {
       shadowVariable: true,
-      returnDependencies: () => ({
+      stateVariablesDeterminingDependencies: ["autoSubmit"],
+      returnDependencies: ({ stateValues }) => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
           variableNames: ["creditAchievedIfSubmit"],
-          includeImmediateValueWithValue: true,
-          includeRawValueWithImmediateValue: true,
+          includeImmediateValueWithValue: !stateValues.autoSubmit,
+          includeRawValueWithImmediateValue: !stateValues.autoSubmit,
           includeOnlyEssentialValues: true,
         },
       }),
@@ -1366,6 +1385,7 @@ export default class Answer extends InlineComponent {
           }
         }
       },
+      markStale: () => ({ answerCreditPotentiallyChanged: true }),
     }
 
 
@@ -1806,7 +1826,7 @@ export default class Answer extends InlineComponent {
       if (response.toString) {
         try {
           responseText.push(response.toString())
-        } catch(e) {
+        } catch (e) {
           responseText.push('\uff3f')
         }
       } else {

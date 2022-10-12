@@ -17,6 +17,7 @@ import {
   MakePublic,
   PinAssignment,
   ProctorMakesAvailable,
+  AutoSubmit,
   ShowCorrectness,
   ShowCreditAchieved,
   Paginate,
@@ -290,6 +291,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
           <Paginate {...sharedProps} />
           <ShowFinishButton {...sharedProps} />
           <ProctorMakesAvailable {...sharedProps} />
+          <AutoSubmit {...sharedProps} />
           <MakePublic {...sharedProps} />
           <ShowDoenetMLSource {...sharedProps} />
         </div>

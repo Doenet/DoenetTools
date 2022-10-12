@@ -3,7 +3,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useRecoilCallback } from 'recoil';
 import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { assignmentData, overViewData, studentData } from '../ToolPanels/Gradebook';
+import { assignmentData, overviewData, studentData } from '../ToolPanels/Gradebook';
 import axios from 'axios';
 
 
@@ -37,7 +37,7 @@ export default function GradeDownload(){
   ];
     let assignments = await snapshot.getPromise(assignmentData);
     let students = await snapshot.getPromise(studentData); //Need more id data
-    let overview = await snapshot.getPromise(overViewData);
+    let overview = await snapshot.getPromise(overviewData);
 
     let { data } = await axios.get('/api/getEnrollment.php', { params: { driveId } })
     let enrollmentArray = data.enrollmentArray;

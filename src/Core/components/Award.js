@@ -138,6 +138,14 @@ export default class Award extends BaseComponent {
       fallBackToParentStateVariable: "splitSymbols",
     }
 
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "parseScientificNotation",
+    }
+
     return attributes;
 
   }

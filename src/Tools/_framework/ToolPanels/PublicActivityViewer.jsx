@@ -73,6 +73,7 @@ export default function Public(props) {
           solutionDisplayMode: 'button',
           showFeedback: true,
           showHints: true,
+          autoSubmit: false,
           allowLoadState: false,
           allowSaveState: false,
           allowLocalState: false,

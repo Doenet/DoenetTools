@@ -31,7 +31,7 @@ if ($studentUserId == '') {
     $studentUserId = $requestorUserId;
 }
 
-//Permisson check to view others grades
+//Permission check to view others grades
 if ($success && $studentUserId != $requestorUserId) {
     $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 

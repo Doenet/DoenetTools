@@ -264,6 +264,7 @@ export default class BaseComponent {
       },
       fixed: {
         createComponentOfType: "boolean",
+        ignoreFixed: true,
       },
       modifyIndirectly: {
         createComponentOfType: "boolean",
@@ -393,7 +394,15 @@ export default class BaseComponent {
         }
       }),
       markStale: () => ({ updateParentRenderedChildren: true }),
-
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "hide",
+            desiredValue: desiredStateVariableValues.hidden,
+          }]
+        }
+      }
     }
 
     stateVariableDefinitions.disabled = {
@@ -405,6 +414,7 @@ export default class BaseComponent {
       hasEssential: true,
       doNotShadowEssential: true,
       defaultValue: false,
+      provideEssentialValuesInDefinition: true,
       returnDependencies: () => ({
         disabledAttr: {
           dependencyType: "attributeComponent",
@@ -428,8 +438,7 @@ export default class BaseComponent {
           variableName: "disabled"
         },
       }),
-      definition({ dependencyValues, usedDefault }) {
-
+      definition({ dependencyValues, usedDefault, essentialValues }) {
         if (dependencyValues.readOnly) {
           return { setValue: { disabled: true } }
         }
@@ -438,6 +447,12 @@ export default class BaseComponent {
           return {
             setValue: {
               disabled: dependencyValues.disabledAttr.stateValues.value
+            }
+          }
+        } else if (essentialValues.disabled !== undefined) {
+          return {
+            useEssentialOrDefaultValue: {
+              disabled: true
             }
           }
         }
@@ -468,6 +483,26 @@ export default class BaseComponent {
           return { setValue: { disabled } }
         }
       },
+      inverseDefinition({ dependencyValues, desiredStateVariableValues }) {
+        if (dependencyValues.disabledAttr !== null) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "disabledAttr",
+              desiredValue: desiredStateVariableValues.disabled,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "disabled",
+              value: desiredStateVariableValues.disabled
+            }]
+          }
+        }
+      }
     }
 
     stateVariableDefinitions.fixed = {
@@ -479,6 +514,8 @@ export default class BaseComponent {
       defaultValue: false,
       hasEssential: true,
       doNotShadowEssential: true,
+      ignoreFixed: true,
+      provideEssentialValuesInDefinition: true,
       returnDependencies: () => ({
         fixedAttr: {
           dependencyType: "attributeComponent",
@@ -497,12 +534,22 @@ export default class BaseComponent {
           dependencyType: "adapterSourceStateVariable",
           variableName: "fixed"
         },
+        ignoreParentFixed: {
+          dependencyType: "doenetAttribute",
+          attributeName: "ignoreParentFixed"
+        },
       }),
-      definition({ dependencyValues, usedDefault }) {
+      definition({ dependencyValues, usedDefault, essentialValues }) {
         if (dependencyValues.fixedAttr !== null) {
           return {
             setValue: {
               fixed: dependencyValues.fixedAttr.stateValues.value
+            }
+          }
+        } else if (essentialValues.fixed !== undefined) {
+          return {
+            useEssentialOrDefaultValue: {
+              fixed: true
             }
           }
         }
@@ -510,7 +557,7 @@ export default class BaseComponent {
         let fixed = false;
         let useEssential = true;
 
-        if (dependencyValues.parentFixed !== null && !usedDefault.parentFixed) {
+        if (dependencyValues.parentFixed !== null && !usedDefault.parentFixed && !dependencyValues.ignoreParentFixed) {
           fixed = fixed || dependencyValues.parentFixed;
           useEssential = false;
         }
@@ -532,6 +579,26 @@ export default class BaseComponent {
         }
         else {
           return { setValue: { fixed } }
+        }
+      },
+      inverseDefinition({ dependencyValues, desiredStateVariableValues }) {
+        if (dependencyValues.fixedAttr !== null) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "fixedAttr",
+              desiredValue: desiredStateVariableValues.fixed,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "fixed",
+              value: desiredStateVariableValues.fixed
+            }]
+          }
         }
       }
     }

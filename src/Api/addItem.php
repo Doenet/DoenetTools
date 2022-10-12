@@ -38,6 +38,7 @@ $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
+$autoSubmit = mysqli_real_escape_string($conn,$_POST["autoSubmit"]);
 if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
 if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
 if ($assignedDate == ''){$assignedDate = 'NULL';} else {$assignedDate = "'$assignedDate'"; }
@@ -48,6 +49,7 @@ if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
 if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
 if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
 if ($proctorMakesAvailable){ $proctorMakesAvailable = '1'; } else { $proctorMakesAvailable = '0'; }
+if ($autoSubmit){ $autoSubmit = '1'; } else { $autoSubmit = '0'; }
 
 $success = true;
 $message = '';
@@ -180,7 +182,8 @@ if ($success) {
             showFeedback,
             showHints,
             showCorrectness,
-            proctorMakesAvailable)
+            proctorMakesAvailable,
+            autoSubmit)
             VALUES
             (
             '$doenetId',
@@ -199,7 +202,8 @@ if ($success) {
             '$showFeedback',
             '$showHints',
             '$showCorrectness',
-            '$proctorMakesAvailable')
+            '$proctorMakesAvailable',
+            '$autoSubmit')
             ";
           
             $result = $conn->query($sql); 
@@ -255,7 +259,8 @@ if ($success) {
                 showFeedback,
                 showHints,
                 showCorrectness,
-                proctorMakesAvailable)
+                proctorMakesAvailable,
+                autoSubmit)
                 VALUES
                 (
                 '$doenetId',
@@ -274,7 +279,8 @@ if ($success) {
                 '$showFeedback',
                 '$showHints',
                 '$showCorrectness',
-                '$proctorMakesAvailable')
+                '$proctorMakesAvailable',
+                '$autoSubmit')
             ";
 
             $result = $conn->query($sql);
