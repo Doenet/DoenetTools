@@ -46,14 +46,25 @@ export default class ConstrainToGraph extends ConstraintComponent {
           dependencyType: "stateVariable",
           variableName: "buffer"
         },
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+        }
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
 
-            if (dependencyValues.constraintAncestor === null ||
-              dependencyValues.constraintAncestor.stateValues.graphXmin === null
-            ) {
+            let ancestor;
+            if (dependencyValues.constraintAncestor !== null &&
+              dependencyValues.constraintAncestor.stateValues.graphXmin !== null) {
+              ancestor = "constraints";
+            } else if (dependencyValues.graphAncestor !== null &&
+              dependencyValues.graphAncestor.stateValues.xmin !== null) {
+              ancestor = "graph";
+            }
+            if (!ancestor) {
               return {};
             }
 
@@ -67,8 +78,15 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
-              let xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
+              let xmin, xmax;
+
+              if (ancestor === "constraints") {
+                xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
+                xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
+              } else {
+                xmin = dependencyValues.graphAncestor.stateValues.xmin;
+                xmax = dependencyValues.graphAncestor.stateValues.xmax;
+              }
 
               if (!(Number.isFinite(xmin) && Number.isFinite(xmax))) {
                 return {};
@@ -100,8 +118,15 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
-              let ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
+              let ymin, ymax;
+
+              if (ancestor === "constraints") {
+                ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
+                ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
+              } else {
+                ymin = dependencyValues.graphAncestor.stateValues.ymin;
+                ymax = dependencyValues.graphAncestor.stateValues.ymax;
+              }
 
               if (!(Number.isFinite(ymin) && Number.isFinite(ymax))) {
                 return {};
