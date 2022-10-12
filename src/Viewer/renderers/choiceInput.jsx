@@ -10,7 +10,7 @@ import './choiceInput.css';
 // Moved most of checkWorkStyle styling into Button
 const Button = styled.button `
   position: relative;
-  /* width: 24px; */
+  width: 24px;
   height: 24px;
   color: #ffffff;
   background-color: var(--mainBlue);

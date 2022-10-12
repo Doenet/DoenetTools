@@ -11,7 +11,7 @@ import styled from 'styled-components';
   display: inline-block;
   color: white;
   background-color: var(--mainBlue);
-  /* padding: 2px; */
+  padding: 2px;
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
