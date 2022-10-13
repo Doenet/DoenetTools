@@ -63,7 +63,7 @@ export default function SelectedCollectionLink() {
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast('Every item must have a label.');
+      //addToast('Every item must have a label.');
     }
     //Only update the server when it changes
     if (itemObj.label !== effectiveItemLabel){
@@ -132,7 +132,7 @@ export default function SelectedCollectionLink() {
       label="Label"
       vertical
       width="menu"
-      data-test="Label Collection"
+      dataTest="Label Collection"
       value={itemTextFieldLabel}
       onChange={(e) => setItemTextFieldLabel(e.target.value)}
       onKeyDown={(e) => {

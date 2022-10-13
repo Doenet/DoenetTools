@@ -57,7 +57,7 @@ const useSyncedTextfeildState = (syncCB, remoteValue = '') => {
         effectiveLabel = 'Untitled Course';
       }
       setLocalValue(effectiveLabel);
-      addToast('A Course must have a label.');
+      // addToast('A Course must have a label.');
     }
 
     if (remoteValue !== effectiveLabel) {
@@ -327,9 +327,9 @@ export function ManageUsers({ courseId, editable = false }) {
       selectedUserData?.email,
       selectedUserPermissons?.roleId,
       () => {
-        addToast(
-          `${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`,
-        );
+        // addToast(
+        //   `${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`,
+        // );
         //TODO set call for courseUsers
         setSelectedUserData((prev) => ({
           ...prev,
@@ -339,7 +339,7 @@ export function ManageUsers({ courseId, editable = false }) {
         }));
       },
       (err) => {
-        addToast(err, toastType.ERROR);
+        // addToast(err, toastType.ERROR);
         setSelectedUserPermissons(selectedUserData.permissons);
       },
     );
@@ -535,16 +535,16 @@ export function MangeRoles({ courseId }) {
       permissonEdits,
       () => {
         setEdited(false);
-        addToast(
-          `Permissions for ${
-            permissonEdits?.roleLabel ?? selectedRolePermissons.roleLabel
-          } updated successfully`,
-        );
+        // addToast(
+        //   `Permissions for ${
+        //     permissonEdits?.roleLabel ?? selectedRolePermissons.roleLabel
+        //   } updated successfully`,
+        // );
         setPermissonEdits({});
       },
       (error) => {
         setSelectedRolePermissons(selectedRolePermissons);
-        addToast(error, toastType.ERROR);
+        // addToast(error, toastType.ERROR);
       },
     );
   };
@@ -554,7 +554,7 @@ export function MangeRoles({ courseId }) {
       selectedRolePermissons.roleId,
       { isDeleted: '1' },
       () => {
-        addToast(`${selectedRolePermissons.roleLabel} successfully deleted`);
+        // addToast(`${selectedRolePermissons.roleLabel} successfully deleted`);
         setEdited(false);
         setPermissonEdits({});
       },
@@ -761,7 +761,7 @@ export function AddRole({ courseId }) {
 
   const handleSave = () => {
     modifyRolePermissions('', { roleLabel: `Role ${roles.length}` }, () => {
-      addToast(`Create a new role: Role ${roles.length}`);
+      // addToast(`Create a new role: Role ${roles.length}`);
     });
   };
 
@@ -787,7 +787,7 @@ export function DeleteCourse({ courseId }) {
   const handelDelete = () => {
     deleteCourse(() => {
       setCourseCardsSelection([]);
-      addToast(`${label} deleted`, toastType.SUCCESS);
+      // addToast(`${label} deleted`, toastType.SUCCESS);
     });
   };
 

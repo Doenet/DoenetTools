@@ -1351,16 +1351,16 @@ export default function ActivityViewer(props) {
   let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
     pageControlsTop = <div style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}>
-      <Button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+      <Button dataTest={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
       <p style={{ margin: '5px' }}>{ } Page {currentPage} of {nPages} { }</p>
-      <Button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+      <Button dataTest={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
     </div>
 
     if (renderedPages[currentPage - 1]) {
       pageControlsBottom = <div style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}>
-        <Button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+        <Button dataTest={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
         <p style={{ margin: '5px' }}>{ } Page {currentPage} of {nPages} { }</p>
-        <Button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+        <Button dataTest={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
       </div>
     }
 
@@ -1374,15 +1374,15 @@ export default function ActivityViewer(props) {
         Are you sure you want to finish this assessment?
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
-            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
-            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert disabled={processingSubmitAll}></Button>
+            <Button onClick={submitAllAndFinishAssessment} dataTest="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
+            <Button onClick={() => setFinishAssessmentMessageOpen(false)} dataTest="CancelFinishAssessment" value="No" alert disabled={processingSubmitAll}></Button>
           </ButtonGroup>
         </div>
 
       </div>
     } else {
       finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "5px" }}>
-        <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
+        <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} dataTest="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
       </div>
     }
   }

@@ -40,7 +40,7 @@ export default function GradeSettings(){
           }
           setDueDate(localTimeZoneDueDate);
         }else{
-          addToast(`ERROR: ${data.message}`, toastType.ERROR);
+          (`ERROR: ${data.message}`, toastType.ERROR);
 
         }
       } catch (e){
