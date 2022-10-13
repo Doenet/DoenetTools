@@ -4330,6 +4330,24 @@ class ChildDependency extends Dependency {
     }
 
 
+    this.shadowDepthByChild = [];
+
+    for (let child of activeChildrenMatched) {
+      let shadowDepth = 0;
+
+      let childSource = child;
+      let parentSource = parent;
+
+      while (childSource?.shadows && childSource.shadows.compositeName === parentSource?.shadows?.compositeName) {
+        shadowDepth++;
+        parentSource = this.dependencyHandler._components[parentSource.shadows.componentName];
+        childSource = this.dependencyHandler._components[childSource.shadows.componentName];
+      }
+
+      this.shadowDepthByChild.push(shadowDepth);
+    }
+
+
     this.activeChildrenIndices = activeChildrenIndices;
 
     let downstreamComponentNames = [];
@@ -4372,8 +4390,10 @@ class ChildDependency extends Dependency {
     let resultValueWithPrimitives = [];
     let resultInd = 0;
 
-    for (let primitiveOrNull of this.downstreamPrimitives) {
+    for (let [ind, primitiveOrNull] of this.downstreamPrimitives.entries()) {
       if (primitiveOrNull === null) {
+        let val = result.value[resultInd];
+        val.shadowDepth = this.shadowDepthByChild[ind];
         resultValueWithPrimitives.push(result.value[resultInd]);
         resultInd++;
       } else {
@@ -5706,7 +5726,7 @@ class ReplacementDependency extends Dependency {
         dep: this
       })
 
-      
+
     }
     let downstreamComponentNames = [];
     let downstreamComponentTypes = [];
@@ -6732,9 +6752,9 @@ class CountAmongSiblingsDependency extends Dependency {
       .filter(x => x.componentType === childComponentType);
     let value = childrenOfSameType.map(x => x.componentName).indexOf(this.upstreamComponentName) + 1;
 
-    if(this.parentName === this.dependencyHandler.core.documentName) {
+    if (this.parentName === this.dependencyHandler.core.documentName) {
       let previousCounts = this.dependencyHandler.core.previousComponentTypeCounts[childComponentType]
-      if(previousCounts) {
+      if (previousCounts) {
         value += previousCounts;
       }
     }

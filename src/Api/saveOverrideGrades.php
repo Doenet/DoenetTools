@@ -70,10 +70,13 @@ if ($success) {
         $success = false;
         $message = 'You are not authorized to view or modify grade data';
     } elseif ($requestorPermissions['canViewAndModifyGrades'] != '1') {
-        $allUsers = false;
+        $success = false;
         $message = 'You are only allowed to view your own data';
     }
 }
+
+
+$failedEmails = [];
 
 if ($success) {
     foreach ($emails as $key => $email) {
@@ -91,6 +94,7 @@ if ($success) {
         );
         //Uploaded data requires students who are enrolled
         if ($result->num_rows < 1) {
+            array_push($failedEmails, $email);
             continue;
         }
         $row = $result->fetch_assoc();
@@ -193,6 +197,7 @@ if ($success) {
 $response_arr = [
     'success' => $success,
     'message' => $message,
+    'failedEmails' => $failedEmails,
 ];
 
 // set response code - 200 OK

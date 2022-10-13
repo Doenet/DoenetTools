@@ -1,0 +1,4 @@
+﻿Email,ExternalId,FirstName,LastName,Section
+csvtest1@gmail.com,exIdCsv1,,lastCsv1,csvSec1
+csvtest2@gmail.com,exIdCsv2,firstCsv2,,csvSec2
+csvtest3@gmail.com,exIdCsv3,,lastCsv3,csvSec3

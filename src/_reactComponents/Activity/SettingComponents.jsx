@@ -917,6 +917,18 @@ export const ProctorMakesAvailable = ({ courseId, doenetId }) => {
   );
 };
 
+export const AutoSubmit = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="autoSubmit"
+      description="Auto Submit"
+      dataTest="Auto Submit"
+    />
+  );
+};
+
 export const PinAssignment = ({ courseId, doenetId }) => {
   const addToast = useToast();
   const {

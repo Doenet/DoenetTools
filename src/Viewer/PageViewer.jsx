@@ -636,6 +636,7 @@ export default function PageViewer(props) {
           solutionDisplayMode: props.flags.solutionDisplayMode,
           showFeedback: props.flags.showFeedback,
           showHints: props.flags.showHints,
+          autoSubmit: props.flags.autoSubmit,
         }
       }
 
@@ -922,6 +923,7 @@ export default function PageViewer(props) {
     }
     setStage('recalcParams')
     coreId.current = nanoid();
+    initialCoreData.current = {};
     setPageContentChanged(true);
     return null;
   }

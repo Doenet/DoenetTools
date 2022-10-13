@@ -66,7 +66,6 @@ export class M extends InlineComponent {
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        console.log({desiredStateVariableValues, dependencyValues})
         if (typeof desiredStateVariableValues.latex !== "string") {
           return { success: false }
         }
@@ -75,21 +74,13 @@ export class M extends InlineComponent {
           return {
             success: true,
             instructions: [{
-              setStateVAriable: "latex",
+              setEssentialValue: "latex",
               value: desiredStateVariableValues.latex
             }]
           }
         } else if (dependencyValues.inlineChildren.length === 1) {
           let child = dependencyValues.inlineChildren[0];
           if (typeof child !== "object") {
-            console.log({
-              success: true,
-              instructions: [{
-                setDependency: "inlineChildren",
-                desiredValue: desiredStateVariableValues.latex,
-                childIndex: 0,
-              }]
-            })
             return {
               success: true,
               instructions: [{

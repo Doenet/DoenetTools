@@ -17,15 +17,15 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 if (array_key_exists('courseId', $_POST)) {
     $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
 
-    $permissons = permissionsAndSettingsForOneCourseFunction(
+    $permissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
         $userId,
         $courseId
     );
-    $allowed = $permissons['canModifyCourseSettings'] == '1';
+    $allowed = $permissions['canModifyCourseSettings'] == '1';
 
     if (array_key_exists('defaultRole', $_POST)) {
-        $allowed = $allowed && $permissons['canManageUsers'];
+        $allowed = $allowed && $permissions['canManageUsers'];
     }
 
     if ($allowed) {
