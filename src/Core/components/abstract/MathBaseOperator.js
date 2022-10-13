@@ -670,7 +670,7 @@ export default class MathOperator extends MathComponent {
         mathNumberListChildren: {
           dependencyType: "child",
           childGroups: ["mathLists", "numberLists"],
-          variableNames: ["nComponents", "canBeModified"],
+          variableNames: ["nComponents"],
         },
         isNumericOperator: {
           dependencyType: "stateVariable",
@@ -700,8 +700,7 @@ export default class MathOperator extends MathComponent {
           // in macros, where children aren't copied
           if (dependencyValues.mathNumberChildren.length + dependencyValues.mathNumberListChildren.length > 0) {
             let nModifiable = dependencyValues.mathNumberChildren.filter(x => x.stateValues.canBeModified).length +
-              dependencyValues.mathNumberListChildren.filter(x => x.stateValues.canBeModified)
-                .reduce((a, c) => a + c.stateValues.nComponents, 0)
+              dependencyValues.mathNumberListChildren.reduce((a, c) => a + c.stateValues.nComponents, 0)
 
             if (nModifiable !== 1) {
               canBeModified = false;
