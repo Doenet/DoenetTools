@@ -36,7 +36,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -293,7 +293,7 @@ export default function MathInput(props) {
       <span className="textInputSurroundingBox" id={id} style={{ marginBottom: "12px" }}>
         <span>
           <EditableMathField
-            style={{border: "var(--mainBorder)", marginRight: "6px", marginBottom: "12px"}}
+            style={{border: "var(--mainBorder)", marginRight: "4px", marginBottom: "4px"}} // Usually we have a 12px marginBottom, but we keep it at 4px here due to matrixInput
             latex={rendererValue.current}
             config={{
               autoCommands:

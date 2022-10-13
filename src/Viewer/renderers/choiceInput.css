@@ -156,7 +156,7 @@
     border: var(--mainBorder);
     border-radius: var(--mainBorderRadius);
     height: 24px;
-    margin: 0px 6px 12px 0px;
+    margin: 0px 4px 12px 0px;
 }
 
 .custom-select:hover {

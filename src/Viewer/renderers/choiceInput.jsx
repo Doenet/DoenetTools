@@ -21,7 +21,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);

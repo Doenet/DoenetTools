@@ -15,7 +15,7 @@ import styled from 'styled-components';
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -168,7 +168,7 @@ export default React.memo(function Answer(props) {
       </>
     }
 
-    return <span id={id}>
+    return <span id={id} style={{ marginBottom: "12px" }}>
       <a name={id} />
       {inputChildrenToRender}
       {checkworkComponent}

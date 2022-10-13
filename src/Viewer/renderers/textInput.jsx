@@ -19,7 +19,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -302,7 +302,7 @@ export default function TextInput(props) {
       textAreaWidth={textAreaWidth}
       textAreaHeight={textAreaHeight}
       surroundingBorder={surroundingBorder}
-      style={{margin: "0px 6px 12px 0px"}}
+      style={{margin: "0px 4px 12px 0px"}}
 
     />
   } else {
@@ -318,7 +318,7 @@ export default function TextInput(props) {
       onFocus={handleFocus}
       inputWidth={inputWidth}
       surroundingBorder={surroundingBorder}
-      style={{margin: "0px 6px 12px 0px"}}
+      style={{margin: "0px 4px 12px 0px"}}
     />
   }
 
