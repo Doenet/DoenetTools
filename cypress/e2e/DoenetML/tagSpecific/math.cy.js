@@ -683,10 +683,10 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <p><math>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-13)y</math></p>
-  <p><math displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
   `}, "*");
     });
 

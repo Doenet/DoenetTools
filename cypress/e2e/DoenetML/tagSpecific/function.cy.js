@@ -3950,10 +3950,10 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <function name="f1" domain="(-pi,2pi)" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)</function>
-      <function name="f2" domain="[-pi,2pi]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)+1</function>
-      <function name="f3" domain="(-3pi/2,3pi/2]" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+2</function>
-      <function name="f4" domain="[-3pi/2,3pi/2)" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+3</function>
+      <function name="f1" domain="(-pi,2pi)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f2" domain="[-pi,2pi]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)+1</function>
+      <function name="f3" domain="(-3pi/2,3pi/2]" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+2</function>
+      <function name="f4" domain="[-3pi/2,3pi/2)" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+3</function>
     </graph>
     <p><copy prop="extrema" target="f1" assignNames="f1e1 f1e2 f1e3" /></p>
     <p><copy prop="extrema" target="f2" assignNames="f2e1 f2e2 f2e3 f2e4 f2e5" /></p>
@@ -3961,19 +3961,19 @@ describe('Function Tag Tests', function () {
     <p><copy prop="extrema" target="f4" assignNames="f4e1 f4e2 f4e3 f4e4" /></p>
 
     <graph>
-      <function name="f1a" domain="[-pi+1E-6,2pi-1E-6]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)</function>
-      <function name="f3a" domain="[-3pi/2+1E-6,3pi/2]" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+2</function>
-      <function name="f4a" domain="[-3pi/2,3pi/2-1E-6]" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+3</function>
+      <function name="f1a" domain="[-pi+10^(-6),2pi-10^(-6)]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f3a" domain="[-3pi/2+10^(-6),3pi/2]" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+2</function>
+      <function name="f4a" domain="[-3pi/2,3pi/2-10^(-6)]" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+3</function>
     </graph>
     <p><copy prop="extrema" target="f1a" assignNames="f1ae1 f1ae2 f1ae3" /></p>
     <p><copy prop="extrema" target="f3a" assignNames="f3ae1 f3ae2 f3ae3 f3ae4" /></p>
     <p><copy prop="extrema" target="f4a" assignNames="f4ae1 f4ae2 f4ae3 f4ae4" /></p>
 
     <graph>
-      <function name="f5" domain="(0,3pi)" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)</function>
-      <function name="f6" domain="[0,3pi]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)+1</function>
-      <function name="f7" domain="(0,3pi]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x-pi)+4</function>
-      <function name="f8" domain="[0,3pi)" displayDecimals="5" displaySmallAsZero="10^-6">cos(x-pi)+5</function>
+      <function name="f5" domain="(0,3pi)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f6" domain="[0,3pi]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)+1</function>
+      <function name="f7" domain="(0,3pi]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+4</function>
+      <function name="f8" domain="[0,3pi)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+5</function>
       
     </graph>
     <p><copy prop="extrema" target="f5" assignNames="f5e1 f5e2 f5e3" /></p>
@@ -3982,10 +3982,10 @@ describe('Function Tag Tests', function () {
     <p><copy prop="extrema" target="f8" assignNames="f8e1 f8e2 f8e3 f8e4" /></p>
 
     <graph>
-      <function name="f9" domain="(-3pi, 0)" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)</function>
-      <function name="f10" domain="[-3pi, 0]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)+1</function>
-      <function name="f11" domain="(-3pi, 0]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x-pi)+4</function>
-      <function name="f12" domain="[-3pi, 0)" displayDecimals="5" displaySmallAsZero="10^-6">cos(x-pi)+5</function>
+      <function name="f9" domain="(-3pi, 0)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f10" domain="[-3pi, 0]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)+1</function>
+      <function name="f11" domain="(-3pi, 0]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+4</function>
+      <function name="f12" domain="[-3pi, 0)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+5</function>
       
     </graph>
     <p><copy prop="extrema" target="f9" assignNames="f9e1 f9e2 f9e3" /></p>
@@ -4448,7 +4448,7 @@ describe('Function Tag Tests', function () {
     <graph>
       <function name="f1" domain="(-sqrt(2),sqrt(10))" maxima="(-sqrt(2),sqrt(3))" minima="(sqrt(10), sqrt(11))" displayDecimals="5"/>
       <function name="f2" domain="[-sqrt(2),sqrt(10)]" maxima="(-sqrt(2),sqrt(3)+1)" minima="(sqrt(10), sqrt(11)+1)" displayDecimals="5"/>
-      <function name="f3" domain="[-sqrt(2)+1E-12,sqrt(10)-1E-12]" maxima="(-sqrt(2),sqrt(3)+2)" minima="(sqrt(10), sqrt(11)+2)" displayDecimals="5"/>
+      <function name="f3" domain="[-sqrt(2)+10^(-12),sqrt(10)-10^(-12)]" maxima="(-sqrt(2),sqrt(3)+2)" minima="(sqrt(10), sqrt(11)+2)" displayDecimals="5"/>
     </graph>
     <p><copy prop="extrema" target="f1" assignNames="f1e1 f1e2 f1e3" /></p>
     <p><copy prop="extrema" target="f2" assignNames="f2e1 f2e2 f2e3 f2e4 f2e5" /></p>
@@ -4457,7 +4457,7 @@ describe('Function Tag Tests', function () {
     <graph>
       <function name="f4" domain="(0,sqrt(10))" maxima="(0,sqrt(3))" minima="(sqrt(10), sqrt(11))" displayDecimals="5"/>
       <function name="f5" domain="[0,sqrt(10)]" maxima="(0,sqrt(3)+1)" minima="(sqrt(10), sqrt(11)+1)" displayDecimals="5"/>
-      <function name="f6" domain="[0+1E-12,sqrt(10)-1E-12]" maxima="(0,sqrt(3)+2)" minima="(sqrt(10), sqrt(11)+2)" displayDecimals="5"/>
+      <function name="f6" domain="[0+10^(-12),sqrt(10)-10^(-12)]" maxima="(0,sqrt(3)+2)" minima="(sqrt(10), sqrt(11)+2)" displayDecimals="5"/>
     </graph>
     <p><copy prop="extrema" target="f4" assignNames="f4e1 f4e2 f4e3" /></p>
     <p><copy prop="extrema" target="f5" assignNames="f5e1 f5e2 f5e3 f5e4 f5e5" /></p>
@@ -4466,7 +4466,7 @@ describe('Function Tag Tests', function () {
     <graph>
       <function name="f7" domain="(-sqrt(2),0)" maxima="(-sqrt(2),sqrt(3))" minima="(0, sqrt(11))" displayDecimals="5"/>
       <function name="f8" domain="[-sqrt(2),0]" maxima="(-sqrt(2),sqrt(3)+1)" minima="(0, sqrt(11)+1)" displayDecimals="5"/>
-      <function name="f9" domain="[-sqrt(2)+1E-12,0-1E-12]" maxima="(-sqrt(2),sqrt(3)+2)" minima="(0, sqrt(11)+2)" displayDecimals="5"/>
+      <function name="f9" domain="[-sqrt(2)+10^(-12),0-10^(-12)]" maxima="(-sqrt(2),sqrt(3)+2)" minima="(0, sqrt(11)+2)" displayDecimals="5"/>
     </graph>
     <p><copy prop="extrema" target="f7" assignNames="f7e1 f7e2 f7e3" /></p>
     <p><copy prop="extrema" target="f8" assignNames="f8e1 f8e2 f8e3 f8e4 f8e5" /></p>
