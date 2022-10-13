@@ -539,7 +539,7 @@ export default class Choiceinput extends Input {
 
     }
 
-    stateVariableDefinitions.choiceComponentType = {
+    stateVariableDefinitions.componentType = {
       returnDependencies: () => ({
         choiceChildren: {
           dependencyType: "child",
@@ -548,11 +548,11 @@ export default class Choiceinput extends Input {
         },
       }),
       definition({ dependencyValues }) {
-        let choiceComponentType = "text";
+        let componentType = "text";
         if (dependencyValues.choiceChildren.length > 0 && dependencyValues.choiceChildren.every(x => x.stateValues.math)) {
-          choiceComponentType = "math";
+          componentType = "math";
         }
-        return { setValue: { choiceComponentType } };
+        return { setValue: { componentType } };
       }
     }
 
@@ -795,16 +795,16 @@ export default class Choiceinput extends Input {
               dependencyType: "stateVariable",
               variableName: "choiceMaths"
             },
-            choiceComponentType: {
+            componentType: {
               dependencyType: "stateVariable",
-              variableName: "choiceComponentType"
+              variableName: "componentType"
             },
           }
         };
       },
       arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
         let selectedValues = {};
-        let componentType = globalDependencyValues.choiceComponentType;
+        let componentType = globalDependencyValues.componentType;
 
 
         for (let arrayKey of arrayKeys) {

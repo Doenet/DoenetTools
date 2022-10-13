@@ -96,19 +96,20 @@ export default class Choice extends InlineComponent {
 
         if (dependencyValues.inlineChildren.length === 1) {
           let child = dependencyValues.inlineChildren[0];
-          let value = child.stateValues.value;
-          if (value instanceof me.class) {
-            math = value;
-          } else if (typeof value === "number") {
-            math = me.fromAst(value);
-          } else if (typeof child.stateValues.latex === "string") {
-            try {
-              math = me.fromLatex(child.stateValues.latex);
-            } catch (e) {
+          if (typeof child === "object") {
+            let value = child.stateValues.value;
+            if (value instanceof me.class) {
+              math = value;
+            } else if (typeof value === "number") {
+              math = me.fromAst(value);
+            } else if (typeof child.stateValues.latex === "string") {
+              try {
+                math = me.fromLatex(child.stateValues.latex);
+              } catch (e) {
 
+              }
             }
           }
-
         }
 
         return { setValue: { math } }
