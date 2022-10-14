@@ -683,10 +683,10 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <p><math>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-13)y</math></p>
-  <p><math displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
   `}, "*");
     });
 
@@ -4958,6 +4958,113 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/e5 .mjx-mrow').eq(0).should('have.text', '−abci');
     cy.get('#\\/e6 .mjx-mrow').eq(0).should('have.text', 'ac+adi+bci−bd');
     cy.get('#\\/e7 .mjx-mrow').eq(0).should('have.text', 'a2+b2');
+
+  });
+
+  it('parse scientific notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math simplify name="m1"><math>2E+3</math>+3E+2</math>
+  <math simplify name="m2" parseScientificNotation><math>2E+3</math>+3E+2</math>
+  <math simplify name="m3"><math parseScientificNotation>2E+3</math>+3E+2</math>
+  <math simplify name="m4" parseScientificNotation><math parseScientificNotation="false">2E+3</math>+3E+2</math></p>
+
+
+  <p><math format="latex" simplify name="m1a"><math format="latex">2E+3</math>+3E+2</math>
+  <math format="latex" simplify name="m2a" parseScientificNotation><math format="latex">2E+3</math>+3E+2</math>
+  <math format="latex" simplify name="m3a"><math format="latex" parseScientificNotation>2E+3</math>+3E+2</math>
+  <math format="latex" simplify name="m4a" parseScientificNotation><math format="latex" parseScientificNotation="false">2E+3</math>+3E+2</math></p>
+
+  <p><math simplify name="m5"><math>2E3</math>+3E2</math>
+  <math simplify name="m6" parseScientificNotation><math>2E3</math>+3E2</math>
+  <math simplify name="m7"><math parseScientificNotation>2E3</math>+3E2</math>
+  <math simplify name="m8" parseScientificNotation><math parseScientificNotation="false">2E3</math>+3E2</math>
+  </p>
+
+  <p><math format="latex" simplify name="m5a"><math format="latex">2E3</math>+3E2</math>
+  <math format="latex" simplify name="m6a" parseScientificNotation><math format="latex">2E3</math>+3E2</math>
+  <math format="latex" simplify name="m7a"><math format="latex" parseScientificNotation>2E3</math>+3E2</math>
+  <math format="latex" simplify name="m8a" parseScientificNotation><math format="latex" parseScientificNotation="false">2E3</math>+3E2</math>
+  </p>
+
+  <p><booleanInput name="p1"><label>parse 1</label></booleanInput>
+  <booleanInput name="p2"><label>parse 2</label></booleanInput>
+  </p>
+  <p><math simplify name="m9" parseScientificNotation="$p1"><math parseScientificNotation="$p2">2E+3</math>+3E+2</math></p>
+  <p><math format="latex" simplify name="m9a" parseScientificNotation="$p1"><math format="latex" parseScientificNotation="$p2">2E+3</math>+3E+2</math></p>
+  <p><math simplify name="m10" parseScientificNotation="$p1"><math parseScientificNotation="$p2">2E3</math>+3E2</math></p>
+  <p><math format="latex" simplify name="m10a" parseScientificNotation="$p1"><math format="latex" parseScientificNotation="$p2">2E3</math>+3E2</math></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '2E+303');
+    cy.get('#\\/m1a .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m2a .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m3a .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m4a .mjx-mrow').eq(0).should('have.text', '2E+303');
+
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2E3+300');
+    cy.get('#\\/m5a .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m6a .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m7a .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+    cy.get('#\\/m8a .mjx-mrow').eq(0).should('have.text', '2E3+300');
+
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+
+    cy.get('#\\/p1').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '2E+303');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '2E+303');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '2E3+300');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '2E3+300');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2E+303');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '2E+303');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '2E3+300');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '2E3+300');
+
+    cy.get('#\\/p2').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '2300');
+
+    cy.get('#\\/p1').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '3E+2002');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '3E+2002');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '3E2+2000');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '3E2+2000');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+
+    cy.get('#\\/p2').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '5E+5');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '5E+5');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '3E2+2E3');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '3E2+2E3');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
 
   });
 

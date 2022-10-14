@@ -21,9 +21,11 @@ $showCorrectness = mysqli_real_escape_string($conn, $_POST['showCorrectness']);
 $solutionDisplayMode = mysqli_real_escape_string($conn, $_POST['solutionDisplayMode']);
 $showFeedback = mysqli_real_escape_string($conn, $_POST['showFeedback']);
 $showHints = mysqli_real_escape_string($conn, $_POST['showHints']);
+$autoSubmit = mysqli_real_escape_string($conn, $_POST['autoSubmit']);
 
 if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
 if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
+if ($autoSubmit){ $autoSubmit = '1'; } else { $autoSubmit = '0'; }
 if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
 
 $success = true;
@@ -80,8 +82,8 @@ if ($success) {
 
 if ($success) {
     $sql = "INSERT INTO initial_renderer_state
-        (cid, variantIndex, showCorrectness, solutionDisplayMode, showFeedback, showHints, rendererState, coreInfo) 
-        VALUES ('$cid', '$variantIndex', '$showCorrectness', '$solutionDisplayMode', '$showFeedback', '$showHints', '$rendererState', '$coreInfo')
+        (cid, variantIndex, showCorrectness, solutionDisplayMode, showFeedback, showHints, autoSubmit, rendererState, coreInfo) 
+        VALUES ('$cid', '$variantIndex', '$showCorrectness', '$solutionDisplayMode', '$showFeedback', '$showHints', '$autoSubmit', '$rendererState', '$coreInfo')
         ";
 
     $conn->query($sql);

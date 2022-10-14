@@ -267,6 +267,7 @@ export default function GradebookStudentAssignmentView(){
           solutionDisplayMode,
           showFeedback: true,
           showHints: true,
+          autoSubmit: false,
           allowLoadState: true,
           allowSaveState: false,
           allowLocalState: false,

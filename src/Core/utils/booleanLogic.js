@@ -1,6 +1,6 @@
 import checkEquality from './checkEquality';
 import me from 'math-expressions';
-import { textToAst, getFromText, appliedFunctionSymbolsDefault, numberToMathExpression } from './math';
+import { getFromText, appliedFunctionSymbolsDefault, numberToMathExpression } from './math';
 import { deepCompare } from './deepFunctions';
 
 const appliedFunctionSymbolsWithBooleanOperators = [
@@ -10,7 +10,12 @@ const appliedFunctionSymbolsWithBooleanOperators = [
 
 var fromTextUnsplit = getFromText({
   splitSymbols: false,
-  appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators
+  appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators,
+  parseScientificNotation: false,
+});
+
+var fromTextSplit = getFromText({
+  parseScientificNotation: false,
 });
 
 export function buildParsedExpression({ dependencyValues, componentInfoObjects }) {
@@ -801,7 +806,7 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
 
   if (!Array.isArray(logicTree)) {
     if (typeof logicTree === "string" && !foundNonMath && !init) {
-      return me.fromAst(textToAst.convert(logicTree)).tree;  // split string
+      return fromTextSplit(logicTree).tree;  // split string
     } else {
       return logicTree;
     }

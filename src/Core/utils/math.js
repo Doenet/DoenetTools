@@ -11,7 +11,7 @@ export var appliedFunctionSymbolsDefault = [
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
-  'count', 'mod', 're', 'im','det', 'trace',
+  'count', 'mod', 're', 'im', 'det', 'trace',
 ];
 
 export var appliedFunctionSymbolsDefaultLatex = [
@@ -38,9 +38,10 @@ export function getFromText({
   functionSymbols,
   appliedFunctionSymbols = appliedFunctionSymbolsDefault,
   splitSymbols = true,
+  parseScientificNotation = false,
 }) {
   return x => me.fromAst((new me.converters.textToAstObj({
-    appliedFunctionSymbols, functionSymbols, splitSymbols,
+    appliedFunctionSymbols, functionSymbols, splitSymbols, parseScientificNotation
   })).convert(x))
 }
 
@@ -53,17 +54,18 @@ export function getFromLatex({
   functionSymbols,
   appliedFunctionSymbols = appliedFunctionSymbolsDefaultLatex,
   splitSymbols = true,
+  parseScientificNotation = false,
 }) {
   if (splitSymbols) {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,
-      allowedLatexSymbols,
-    })).convert(wrapWordIncludingNumberWithVar(x)))
+      allowedLatexSymbols, parseScientificNotation
+    })).convert(wrapWordIncludingNumberWithVar(x, parseScientificNotation)))
   } else {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,
-      allowedLatexSymbols,
-    })).convert(wrapWordWithVar(x)))
+      allowedLatexSymbols, parseScientificNotation
+    })).convert(wrapWordWithVar(x, parseScientificNotation)))
   }
 
 }
@@ -535,7 +537,7 @@ export function mergeListsWithOtherContainers(tree) {
 
 }
 
-export function wrapWordWithVar(string) {
+export function wrapWordWithVar(string, parseScientificNotation) {
 
   // wrap words that aren't already in a \var with a \var
 
@@ -546,26 +548,44 @@ export function wrapWordWithVar(string) {
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length;
-    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
+    newString += wrapWordWithVarSub(string.substring(0, beginMatch), parseScientificNotation);
     newString += string.substring(beginMatch, endMatch);
     string = string.substring(endMatch);
     match = string.match(regex);
   }
-  newString += wrapWordWithVarSub(string);
+  newString += wrapWordWithVarSub(string, parseScientificNotation);
 
   return newString;
 
 }
 
-function wrapWordWithVarSub(string) {
+function wrapWordWithVarSub(string, parseScientificNotation) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+  const regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+
+  let regexSN;
+
+  if (parseScientificNotation) {
+    const sci_notat_exp_regex = '(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))';
+    regexSN = new RegExp('([0-9]+(\\.[0-9]*)?' + sci_notat_exp_regex + ')|(\\.[0-9]+' + sci_notat_exp_regex + ')');
+  }
+
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
+    if (parseScientificNotation) {
+      let matchSN = string.match(regexSN)
+      if (matchSN && matchSN.index < endMatch && matchSN.index + matchSN[0].length > beginMatch) {
+        // skip because is part of scientific notation
+        newString += string.substring(0, endMatch);
+        string = string.substring(endMatch);
+        match = string.match(regex);
+        continue;
+      }
+    }
     if (match[1] === "\\") {
       // start with backslash, so skip
       newString += string.substring(0, endMatch);
@@ -586,7 +606,7 @@ function wrapWordWithVarSub(string) {
 
 }
 
-export function wrapWordIncludingNumberWithVar(string) {
+export function wrapWordIncludingNumberWithVar(string, parseScientificNotation) {
 
   let newString = "";
 
@@ -595,26 +615,44 @@ export function wrapWordIncludingNumberWithVar(string) {
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length;
-    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
+    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch), parseScientificNotation);
     newString += string.substring(beginMatch, endMatch);
     string = string.substring(endMatch);
     match = string.match(regex);
   }
-  newString += wrapWordIncludingNumberWithVarSub(string);
+  newString += wrapWordIncludingNumberWithVarSub(string, parseScientificNotation);
 
   return newString;
 
 }
 
-function wrapWordIncludingNumberWithVarSub(string) {
+function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  const regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+
+  let regexSN;
+
+  if (parseScientificNotation) {
+    const sci_notat_exp_regex = '(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))';
+    regexSN = new RegExp('([0-9]+(\\.[0-9]*)?' + sci_notat_exp_regex + ')|(\\.[0-9]+' + sci_notat_exp_regex + ')');
+  }
+
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
+    if (parseScientificNotation) {
+      let matchSN = string.match(regexSN)
+      if (matchSN && matchSN.index < endMatch && matchSN.index + matchSN[0].length > beginMatch) {
+        // skip because is part of scientific notation
+        newString += string.substring(0, endMatch);
+        string = string.substring(endMatch);
+        match = string.match(regex);
+        continue;
+      }
+    }
     if (match[1] === "\\" || match[1][0] === "^") {
       // start with backslash or with a ^ and optional space
       // so skip

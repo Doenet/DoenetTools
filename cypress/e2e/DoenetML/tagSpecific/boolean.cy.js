@@ -196,7 +196,7 @@ describe('Boolean Tag Tests', function () {
     <mathinput prefill="1" name="i" />
 
     <boolean>mod($i,2) = 1</boolean>
-    <boolean>abs(cos(pi*$i/2)) < 1E-12</boolean>
+    <boolean>abs(cos(pi*$i/2)) < 10^(-12)</boolean>
     <boolean>(-1)^$i = 1</boolean>
     <boolean>floor(($i+1)/2) = ceil(($i-1)/2)</boolean>
     

@@ -419,6 +419,10 @@ export default class Copy extends CompositeComponent {
         targetComponent: {
           dependencyType: "stateVariable",
           variableName: "targetComponent"
+        },
+        typeAttr: {
+          dependencyType: "attributePrimitive",
+          attributeName: "createComponentOfType"
         }
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
@@ -426,6 +430,34 @@ export default class Copy extends CompositeComponent {
           && !componentInfoObjects.isCompositeComponent({
             componentType: dependencyValues.targetComponent?.componentType,
           })
+
+          if (isPlainMacro && dependencyValues.typeAttr) {
+            // typically, if specify createComponentOfType (i.e., typeAttr is defined)
+            // then we wouldn't have a plain macro
+            // However, if we specified a different componentType
+            // and the variable for the plain macro is that componentType (or its undefined)
+            // then we'll keep it as a plain macro
+  
+            isPlainMacro = false;
+  
+            let componentTypeFromAttr = componentInfoObjects.
+              componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+  
+            let targetClass = componentInfoObjects.allComponentClasses[dependencyValues.targetComponent?.componentType];
+  
+            if (targetClass) {
+              let varInfo = componentInfoObjects.publicStateVariableInfo[targetClass.componentType].stateVariableDescriptions[targetClass.variableForPlainMacro];
+  
+              if (componentTypeFromAttr !== targetClass.componentType && varInfo && (
+                varInfo.createComponentOfType === undefined
+                || varInfo.createComponentOfType === componentTypeFromAttr
+              )) {
+                isPlainMacro = true;
+              }
+  
+            }
+          }
+
         return { setValue: { isPlainMacro } }
       }
     }
@@ -439,13 +471,45 @@ export default class Copy extends CompositeComponent {
         targetComponent: {
           dependencyType: "stateVariable",
           variableName: "targetComponent"
+        },
+        typeAttr: {
+          dependencyType: "attributePrimitive",
+          attributeName: "createComponentOfType"
         }
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
         let isPlainCopy = dependencyValues.isPlainCopy
           && !componentInfoObjects.isCompositeComponent({
             componentType: dependencyValues.targetComponent?.componentType,
-          })
+          });
+
+        if (isPlainCopy && dependencyValues.typeAttr) {
+          // typically, if specify createComponentOfType (i.e., typeAttr is defined)
+          // then we wouldn't have a plain copy
+          // However, if we specified a different componentType
+          // and the variable for the plain copy is that componentType (or its undefined)
+          // then we'll keep it as a plain copy
+
+          isPlainCopy = false;
+
+          let componentTypeFromAttr = componentInfoObjects.
+            componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+
+          let targetClass = componentInfoObjects.allComponentClasses[dependencyValues.targetComponent?.componentType];
+
+          if (targetClass) {
+            let varInfo = componentInfoObjects.publicStateVariableInfo[targetClass.componentType].stateVariableDescriptions[targetClass.variableForPlainCopy];
+
+            if (componentTypeFromAttr !== targetClass.componentType && varInfo && (
+              varInfo.createComponentOfType === undefined
+              || varInfo.createComponentOfType === componentTypeFromAttr
+            )) {
+              isPlainCopy = true;
+            }
+
+          }
+        }
+
         return { setValue: { isPlainCopy } }
       }
     }

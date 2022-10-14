@@ -78,7 +78,7 @@ export class MatrixInput extends Input {
       createStateVariable: "prefill",
       defaultValue: me.fromAst("\uff3f"),
       public: true,
-      copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols"],
+      copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols", "parseScientificNotation"],
     };
     attributes.format = {
       createComponentOfType: "text",
@@ -96,6 +96,12 @@ export class MatrixInput extends Input {
       createComponentOfType: "boolean",
       createStateVariable: "splitSymbols",
       defaultValue: true,
+      public: true,
+    };
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
       public: true,
     };
     attributes.displayDigits = {
@@ -1799,6 +1805,11 @@ export class MatrixInput extends Input {
     }
 
 
+    stateVariableDefinitions.componentType = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { componentType: "matrix" } })
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -1855,6 +1866,12 @@ export class MatrixInput extends Input {
     }
   }
 
+  static adapters = [
+    {
+      stateVariable: "value",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+    }
+  ];
 }
 
 
@@ -2255,7 +2272,7 @@ export default class MatrixComponentInput extends BaseComponent {
 
     // don't specify attributes on matrixComponentInput
     // instead gets these state variables from the parent matrixInput:
-    // format, functionSymbols, splitSymbols
+    // format, functionSymbols, splitSymbols, parseScientificNotation
     // displayDigits, displayDecimals, displaySmallAsZero, unionFromU
     stateVariableDefinitions.format = {
       returnDependencies: () => ({
@@ -2293,6 +2310,19 @@ export default class MatrixComponentInput extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return { setValue: { splitSymbols: dependencyValues.parentSplitSymbols } }
+      }
+    }
+
+    stateVariableDefinitions.parseScientificNotation = {
+      returnDependencies: () => ({
+        parentParseScientificNotation: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "matrixInput",
+          variableName: "parseScientificNotation",
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { parseScientificNotation: dependencyValues.parentParseScientificNotation } }
       }
     }
 
@@ -2575,6 +2605,7 @@ export default class MatrixComponentInput extends BaseComponent {
           let fromLatex = getFromLatex({
             functionSymbols: await stateValues.functionSymbols,
             splitSymbols: await stateValues.splitSymbols,
+            parseScientificNotation: await stateValues.parseScientificNotation,
           });
 
           try {

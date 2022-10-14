@@ -46,13 +46,10 @@ if ($success) {
                 a.gradeCategory,
                 a.totalPointsOrPercent,
                 a.assignedDate,
-                ua.userId,
-                ua.isUnassigned
+                cc.isGloballyAssigned
             FROM assignment AS a
-            LEFT JOIN course_content as cc
+            INNER JOIN course_content as cc
                 ON a.doenetId = cc.doenetId
-            LEFT JOIN user_assignment as ua
-                ON a.doenetId = ua.doenetId
             WHERE a.courseId = '$courseId'
                 AND cc.isAssigned = '1'
                 AND cc.isDeleted = '0'
@@ -64,7 +61,8 @@ if ($success) {
                 cc.label, 
                 a.assignedDate,
                 a.gradeCategory,
-                a.totalPointsOrPercent
+                a.totalPointsOrPercent,
+                cc.isGloballyAssigned
             FROM assignment AS a
             INNER JOIN course_content as cc
                 ON a.doenetId = cc.doenetId
@@ -89,6 +87,7 @@ if ($success) {
                 'category' => $row['gradeCategory'],
                 'assignedDate' => $row['assignedDate'],
                 'totalPointsOrPercent' => $row['totalPointsOrPercent'],
+                'isGloballyAssigned' => $row['isGloballyAssigned'],
             ];
             array_push($response_arr, [$doenetId, $arr]);
         }

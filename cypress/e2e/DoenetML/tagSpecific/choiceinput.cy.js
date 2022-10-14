@@ -1023,7 +1023,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.log('select x^2/2 from first input');
     let selectedIndex = 1;
     let inputText = "x22";
-    cy.get(`#\\/ci1_choice${selectedIndex}_input`).should('not.be.visible').click({force:true}); // input is invisible (covered by text), but click it anyway
+    cy.get(`#\\/ci1_choice${selectedIndex}_input`).should('not.be.visible').click({ force: true }); // input is invisible (covered by text), but click it anyway
     checkChoices(selectedIndex, inputText, ["/", ["^", "x", 2], 2])
 
     cy.log('Type 3')
@@ -1864,5 +1864,69 @@ describe('ChoiceInput Tag Tests', function () {
     })
   })
 
+  it('math choices', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput>
+      <choice><math>x + x</math></choice>
+      <choice><m>y+y</m></choice>
+      <choice><me>z+z</me></choice>
+      <choice><men>u+u</men></choice>
+    </choiceinput>
+
+    <p>Selected value: <copy prop='selectedvalue' source="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' source="_choiceinput1" /></p>
+    <p>Selected value: $_choiceinput1</p>
+    <p>Selected value simplified: $_choiceinput1{simplify}</p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/_p1').should('have.text', 'Selected value: ')
+    cy.get('#\\/_p2').should('have.text', 'Selected index: ')
+    cy.get('#\\/_p3').should('have.text', 'Selected value: ')
+    cy.get('#\\/_p4').should('have.text', 'Selected value simplified: ')
+
+
+    cy.get(`#\\/_choiceinput1_choice1_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'x+x');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'x+x');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 1')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'x+x');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2x');
+
+
+    cy.get(`#\\/_choiceinput1_choice2_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'y+y');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'y+y');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 2')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'y+y');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2y');
+
+
+    cy.get(`#\\/_choiceinput1_choice3_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'z+z');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'z+z');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 3')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'z+z');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2z');
+
+    cy.get(`#\\/_choiceinput1_choice4_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'u+u');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'u+u');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 4')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'u+u');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2u');
+
+  });
 
 });
