@@ -3,7 +3,7 @@
     /* display: inline-block; */
     position: relative;
     padding-left: 24px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     margin-right: 2px; /* 2px less than other components (6px marginRight) due to the 2px marginLeft on label */
     cursor: pointer;
     -webkit-user-select: none;

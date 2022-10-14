@@ -23,7 +23,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 4px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -93,6 +93,7 @@ export default React.memo(function BooleanInput(props) {
 
   let checkWorkStyle = {
     cursor: 'pointer',
+    padding: "1px 6px 1px 6px",
   }
 
   //Assume we don't have a check work button

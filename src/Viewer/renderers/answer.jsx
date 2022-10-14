@@ -15,7 +15,7 @@ import styled from 'styled-components';
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 4px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -70,6 +70,7 @@ export default React.memo(function Answer(props) {
 
     let checkWorkStyle = {
       cursor: 'pointer',
+      padding: "1px 6px 1px 6px",
     }
 
     if (disabled) {
@@ -168,13 +169,13 @@ export default React.memo(function Answer(props) {
       </>
     }
 
-    return <span id={id} style={{ marginBottom: "12px" }}>
+    return <span id={id} style={{ marginBottom: "4px" }}>
       <a name={id} />
       {inputChildrenToRender}
       {checkworkComponent}
     </span>;
   } else {
-    return <span id={id} style={{ marginBottom: "12px" }}><a name={id} />{inputChildrenToRender}</span>;
+    return <span id={id} style={{ marginBottom: "4px" }}><a name={id} />{inputChildrenToRender}</span>;
   }
 
 })

@@ -52,7 +52,7 @@ const Matrix = styled.div`
     padding: 2px;
     border: none;
     border-radius: var(--mainBorderRadius);
-    margin: 0px 4px 12px 0px;
+    margin: 0px 4px 4px 0px;
 
 
     &:hover {
@@ -100,6 +100,7 @@ export default React.memo(function MatrixInput(props) {
 
   let checkWorkStyle = {
     cursor: "pointer",
+    padding: "1px 6px 1px 6px",
   }
 
   //Assume we don't have a check work button
@@ -224,7 +225,7 @@ export default React.memo(function MatrixInput(props) {
 
   let rowNumControls = null;
   if (SVs.showSizeControls) {
-    rowNumControls = <span style={{margin: "0px 4px 12px 0px"}}>
+    rowNumControls = <span style={{margin: "0px 4px 4px 0px"}}>
       <ActionButtonGroup>
       <ActionButton id={id + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
@@ -243,7 +244,7 @@ export default React.memo(function MatrixInput(props) {
   }
   let colNumControls = null;
   if (SVs.showSizeControls) {
-    colNumControls = <span style={{margin: "0px 4px 12px 0px"}}>
+    colNumControls = <span style={{margin: "0px 4px 4px 0px"}}>
       <ActionButtonGroup>
       <ActionButton id={id + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
@@ -264,7 +265,7 @@ export default React.memo(function MatrixInput(props) {
 
   return <React.Fragment>
     <a name={id} />
-      <div style={{display: "inline-flex", marginBottom: "12px"}}>
+      <div style={{display: "inline-flex", marginBottom: "4px"}}>
         <Matrix className="matrixInputSurroundingBox" id={id} style={{paddingLeft: "4px", paddingTop: "4px"}}>
           <table><tbody>
             {matrixInputs}

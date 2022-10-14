@@ -5,7 +5,7 @@
     display: block;
     position: relative;
     padding-left: 24px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -80,7 +80,7 @@
     display: block;
     position: relative;
     padding-left: 24px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -156,7 +156,7 @@
     border: var(--mainBorder);
     border-radius: var(--mainBorderRadius);
     height: 24px;
-    margin: 0px 4px 12px 0px;
+    margin: 0px 4px 4px 0px;
 }
 
 .custom-select:hover {

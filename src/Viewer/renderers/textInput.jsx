@@ -15,11 +15,11 @@ const Button = styled.button `
   display: inline-block;
   color: white;
   background-color: var(--mainBlue);
-  /* padding: 2px; */
+  padding: 2px;
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 4px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -187,6 +187,7 @@ export default function TextInput(props) {
 
     let checkWorkStyle = {
       cursor: 'pointer',
+      padding: "1px 6px 1px 6px",
     }
 
     if (validationState === "unvalidated") {
@@ -302,7 +303,7 @@ export default function TextInput(props) {
       textAreaWidth={textAreaWidth}
       textAreaHeight={textAreaHeight}
       surroundingBorder={surroundingBorder}
-      style={{margin: "0px 4px 12px 0px"}}
+      style={{margin: "0px 4px 4px 0px"}}
 
     />
   } else {
@@ -318,7 +319,7 @@ export default function TextInput(props) {
       onFocus={handleFocus}
       inputWidth={inputWidth}
       surroundingBorder={surroundingBorder}
-      style={{margin: "0px 4px 12px 0px"}}
+      style={{margin: "0px 4px 4px 0px"}}
     />
   }
 
