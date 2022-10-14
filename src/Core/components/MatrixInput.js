@@ -1805,6 +1805,11 @@ export class MatrixInput extends Input {
     }
 
 
+    stateVariableDefinitions.componentType = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { componentType: "matrix" } })
+    }
+
     return stateVariableDefinitions;
   }
 
