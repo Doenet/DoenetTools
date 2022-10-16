@@ -653,8 +653,8 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
         continue;
       }
     }
-    if (match[1] === "\\" || match[1][0] === "^") {
-      // start with backslash or with a ^ and optional space
+    if (match[1] === "\\" || match[1][0] === "^" || match[1][0] === "_") {
+      // start with backslash or with a ^ or _ and optional space
       // so skip
       newString += string.substring(0, endMatch);
       string = string.substring(endMatch);
