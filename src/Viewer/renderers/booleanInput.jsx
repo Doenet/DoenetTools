@@ -105,8 +105,6 @@ export default React.memo(function BooleanInput(props) {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         checkWorkStyle.cursor = 'not-allowed';
-      } else {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
       checkWorkButton = 
         <Button
@@ -126,7 +124,7 @@ export default React.memo(function BooleanInput(props) {
             }
           }}
         >
-          <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+          <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         </Button>
     } else {
       if (SVs.showCorrectness) {

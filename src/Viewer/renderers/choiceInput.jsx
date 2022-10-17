@@ -126,6 +126,7 @@ export default React.memo(function ChoiceInput(props) {
     let checkWorkStyle = {
       cursor: 'pointer',
       padding: "1px 6px 1px 6px",
+      width: "24px"
     }
 
     //Assume we don't have a check work button
@@ -135,8 +136,6 @@ export default React.memo(function ChoiceInput(props) {
       if (validationState === "unvalidated") {
         if (disabled) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-        } else {
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
         }
         checkWorkButton = <Button
           id={id + '_submit'}
@@ -155,7 +154,7 @@ export default React.memo(function ChoiceInput(props) {
             }
           }}
         >
-          <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+          <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         </Button>
       } else {
         if (SVs.showCorrectness) {
@@ -264,9 +263,8 @@ export default React.memo(function ChoiceInput(props) {
     let checkWorkStyle = {
       height: "24px",
       display: "inline-block",
-      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
       padding: "1px 6px 1px 6px",
-      color: "white",
+      cursor: 'pointer',
       // fontWeight: "bold",
     }
 
@@ -299,7 +297,7 @@ export default React.memo(function ChoiceInput(props) {
               }
             }}
           >
-            <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+            <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
             &nbsp;
             {checkWorkText}
           </Button>);
