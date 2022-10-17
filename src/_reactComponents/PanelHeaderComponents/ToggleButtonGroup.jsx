@@ -6,6 +6,7 @@ const Container = styled.div`
   width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
   // height: 'fit-content';
   // margin: 2px 0px 2px 0px ;
+  flex-wrap: wrap;
 `;
 
 const toggleGroup = {

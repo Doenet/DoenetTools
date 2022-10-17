@@ -10,7 +10,7 @@ const Container = styled.div`
 
 export default function ButtonGroup(props) {
     const buttonGroup = {
-        margin: '0px 2px 0px 2px',
+        margin: '0px 2px 4px 2px',
         borderRadius: '0',
         padding: '0px 12px 0px 10px'
     }; 

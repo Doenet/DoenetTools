@@ -12,7 +12,7 @@ const SearchBar = styled.input `
     padding: 0px 70px 0px 30px;
     color: var(--canvastext);
     overflow: hidden;
-    width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : '220px'};
+    width: ${props => props.width === 'menu' ? (props.noSearchButton ? '180px' : '130px') : '220px'};
     font-size: 14px;
     cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
     &:focus {
@@ -73,7 +73,7 @@ const Label = styled.p `
 
 const Container = styled.div `
     display: ${props => props.align};
-    /* width: 235px; */
+    width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : '220px'};
     align-items: center;
 `;
 
@@ -179,7 +179,7 @@ export default function Searchbar(props) {
     };
 
     return (
-        <Container align={align}>
+        <Container align={align} width={width}>
             <Label id="search-label" labelVisible={labelVisible} align={align}>{label}</Label>
             <div style={{display: "table-cell"}} >
                 <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
@@ -196,6 +196,7 @@ export default function Searchbar(props) {
                     id="searchbar" 
                     type="text" 
                     width={width}
+                    noSearchButton={props.noSearchButton}
                     placeholder={placeholder} 
                     onChange={onChange}
                     onBlur={(e) => { handleBlur(e) }}

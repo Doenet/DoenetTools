@@ -6,6 +6,7 @@ const Container = styled.div`
   display: ${(props) => (props.vertical ? 'static' : 'flex')};
   overflow: auto;
   min-width: 0;
+  /* flex-wrap: wrap; */
 `;
 
 const LabelContainer = styled.div`

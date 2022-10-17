@@ -1213,7 +1213,7 @@ export default function attempt() {
         {
           name: 'Submit Button Text',
           propPreview: '<Form submitButton="add Text" />',
-          propCode: { submitButton: 'add Text' },
+          propCode: { submitButton: 'Add Text Here' },
           description: 'Changes the button text',
         },
         {

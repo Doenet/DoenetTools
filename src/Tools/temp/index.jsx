@@ -37,22 +37,26 @@ ReactDOM.render(
   <ActionButton/>
   <ActionButton/>
 </ActionButtonGroup>,*/
-<ButtonGroup width="menu">
+/*<ButtonGroup width="menu">
   <Button/>
   <Button/>
   <Button/>
   <Button/>
   <Button/>
   <Button/>
-</ButtonGroup>,
-/* <ButtonGroup width="menu">
   <Button/>
-  <Button/>
-  <Button/>
-  <Button/>
-  <Button/>
-  <Button/>
-</ButtonGroup>, */
+</ButtonGroup>,*/
+<ToggleButtonGroup width="menu">
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+  <ToggleButton value="a"/>
+</ToggleButtonGroup>,
 /* <Form width="menu" label="hello"/>, */
   document.getElementById('root'),
 );
