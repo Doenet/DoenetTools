@@ -8198,6 +8198,7 @@ export default class Core {
         for (let aName in component.actions) {
           if (aName.toLowerCase() === actionNameLower) {
             action = component.actions[aName];
+            actionName = aName;
             break;
           }
         }
@@ -8272,6 +8273,9 @@ export default class Core {
     updateInstructions, transient = false, event, skippable = false,
     overrideReadOnly = false
   }) {
+
+    // Note: the transient flag is now ignored
+    // as the debounce is preventing too many updates from occurring
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
@@ -10318,6 +10322,11 @@ export default class Core {
 
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
+
+    if (this.submitAnswersTimeout) {
+      clearTimeout(this.submitAnswersTimeout);
+      await this.autoSubmitAnswers();
+    }
 
     this.stopProcessingRequests = true;
 
