@@ -1366,12 +1366,13 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.creditAchievedDependencies = {
       shadowVariable: true,
-      returnDependencies: () => ({
+      stateVariablesDeterminingDependencies: ["autoSubmit"],
+      returnDependencies: ({ stateValues }) => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
           variableNames: ["creditAchievedIfSubmit"],
-          includeImmediateValueWithValue: true,
-          includeRawValueWithImmediateValue: true,
+          includeImmediateValueWithValue: !stateValues.autoSubmit,
+          includeRawValueWithImmediateValue: !stateValues.autoSubmit,
           includeOnlyEssentialValues: true,
         },
       }),

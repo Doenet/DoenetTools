@@ -469,7 +469,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let originalChoices = [
       "The function is f(ξ) = sin(ξ).",
-      "The sum of λ^2 and 2 λ^2 is 3 λ^2.",
+      "The sum of λ² and 2 λ² is 3 λ².",
       "The sequence is 1, 2, 3, 4, 5.",
       "Can't convert this latex: \\int_a^b q(t) \\, dt."
     ];
@@ -966,7 +966,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
-    let textOrder = ["(x^2)/2", "y", "∂f/∂x", "3", "1/(e^x)"];
+    let textOrder = ["(x²)/2", "y", "∂f/∂x", "3", "1/(e^x)"];
 
     let checkChoices = function (selectedIndex, inputText, inputMath) {
 
