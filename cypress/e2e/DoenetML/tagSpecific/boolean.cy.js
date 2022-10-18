@@ -636,6 +636,52 @@ describe('Boolean Tag Tests', function () {
 
   })
 
+  it('boolean with symbolic functions', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="t1">
+      <math>(f(a)-g(b))(x)</math> = <math>(g(b)-f(a))(-x)</math>
+    </boolean>
+    <boolean name="t2">
+      <math>(f(a)-g(f))(x)</math> = <math>(g(f)-f(a))(-x)</math>
+    </boolean>
+    <boolean name="t3">
+      <math>(f_3(a)-g_2(b))(x)</math> = <math>(g_2(b)-f_3(a))(-x)</math>
+    </boolean>
+    <boolean name="t4">
+      <math>(f^3(a)-g^2(b))(x)</math> = <math>(g^2(b)-f^3(a))(-x)</math>
+    </boolean>
+    <boolean name="f1">
+      <math>(f(a)-g(b))(x)</math> = <math>(f(b)-g(a))(-x)</math>
+    </boolean>
+    <boolean name="f2">
+      <math>(f(a)-g(f))(x)</math> = <math>(f(g)-g(a))(-x)</math>
+    </boolean>
+    <boolean name="f3">
+      <math>(f_3(a)-g_2(b))(x)</math> = <math>(g_3(b)-f_2(a))(-x)</math>
+    </boolean>
+    <boolean name="f4">
+      <math>(f^3(a)-g^2(b))(x)</math> = <math>(g^3(b)-f^2(a))(-x)</math>
+    </boolean>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/t1').should('have.text', "true")
+    cy.get('#\\/t2').should('have.text', "true")
+    cy.get('#\\/t3').should('have.text', "true")
+    cy.get('#\\/t4').should('have.text', "true")
+
+    cy.get('#\\/f1').should('have.text', "false")
+    cy.get('#\\/f2').should('have.text', "false")
+    cy.get('#\\/f3').should('have.text', "false")
+    cy.get('#\\/f4').should('have.text', "false")
+
+  })
+
 })
 
 

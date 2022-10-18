@@ -1133,20 +1133,20 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/dig5aText').should('have.text', '62.1')
     cy.get('#\\/dig5apadText').should('have.text', '62.100')
-    cy.get('#\\/dig5bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dig5bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dig5bpadText').should('have.text', '162.10 * 10⁻³')
     cy.get('#\\/dig5cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dig5cpadText').should('have.text', '1.3000 x + 4.0000 π')
     cy.get('#\\/dec5aText').should('have.text', '62.1')
     cy.get('#\\/dec5apadText').should('have.text', '62.10000')
-    cy.get('#\\/dec5bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dec5bpadText').should('have.text', '162.10000 * 10^(-3)')
+    cy.get('#\\/dec5bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dec5bpadText').should('have.text', '162.10000 * 10⁻³')
     cy.get('#\\/dec5cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dec5cpadText').should('have.text', '1.30000 x + 4.00000 π')
     cy.get('#\\/dig5dec1aText').should('have.text', '62.1')
     cy.get('#\\/dig5dec1apadText').should('have.text', '62.100')
-    cy.get('#\\/dig5dec1bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dig5dec1bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5dec1bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dig5dec1bpadText').should('have.text', '162.10 * 10⁻³')
     cy.get('#\\/dig5dec1cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dig5dec1cpadText').should('have.text', '1.3000 x + 4.0000 π')
 
@@ -1919,6 +1919,7 @@ describe('Math Tag Tests', function () {
   <p><math format="latex" name="m8a">\\var{x2}_2x</math></p>
   <p><math format="latex" name="m9">2x_x2</math></p>
   <p><math format="latex" name="m9a">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m9b">2x_{x2}</math></p>
   <p><math format="latex" name="m10">xy uv x2y 2x x2</math></p>
   <p><math format="latex" name="m10a">xy uv \\var{x2y} 2x \\var{x2}</math></p>
   <p><math format="latex" name="m11" splitSymbols="false">xy_uv</math></p>
@@ -1979,9 +1980,12 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('x22x')
     })
     cy.get('#\\/m9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2xx2')
+      expect(text.trim()).equal('2xx⋅2')
     })
     cy.get('#\\/m9a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m9b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2xx2')
     })
     cy.get('#\\/m10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2043,8 +2047,9 @@ describe('Math Tag Tests', function () {
       expect(stateVariables['/m7'].stateValues.value).eqls(["*", "x", ["_", "y", "u"], "v"]);
       expect(stateVariables['/m8'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
       expect(stateVariables['/m8a'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x"], 2]);
       expect(stateVariables['/m9a'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m9b'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
       expect(stateVariables['/m10'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m10a'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m11'].stateValues.value).eqls(["_", "xy", "uv"]);
