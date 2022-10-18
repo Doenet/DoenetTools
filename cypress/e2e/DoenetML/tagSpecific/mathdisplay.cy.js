@@ -961,4 +961,32 @@ describe('Math Display Tag Tests', function () {
 
   })
 
+  it('subscripts and superscripts numbers to unicode text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><m name="m1">2x_1y_{23}+z_{456}-a_{7+8-90}</m></p>
+  <p><m name="m2">2x^1y^{23}+z^{456}-a^{7+8-90}</m></p>
+  <p name="m1t">$m1.text</p>
+  <p name="m2t">$m2.text</p>
+
+  <p><md name="md">
+    <mrow>2x_1y_{23}+z_{456}-a_{7+8-90}</mrow>
+    <mrow>2x^1y^{23}+z^{456}-a^{7+8-90}</mrow>
+    </md>
+  </p>
+  <p name="mdt">$md.text</p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get('#\\/m1t').should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀')
+    cy.get('#\\/m2t').should('have.text', '2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
+    cy.get('#\\/mdt').should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀\\\\\n2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
+
+  });
+
 })

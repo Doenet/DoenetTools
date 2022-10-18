@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition } from '../utils/math';
+import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition, superSubscriptsToUnicode, unicodeToSuperSubscripts } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -1271,7 +1271,7 @@ export default class MathComponent extends InlineComponent {
             text = '';
           }
         }
-        return { setValue: { text } };
+        return { setValue: { text: superSubscriptsToUnicode(text.toString()) } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let fromText = getFromText({
@@ -1282,7 +1282,7 @@ export default class MathComponent extends InlineComponent {
 
         let expr;
         try {
-          expr = fromText(desiredStateVariableValues.text);
+          expr = fromText(unicodeToSuperSubscripts(desiredStateVariableValues.text));
         } catch (e) {
           return { success: false }
         }
