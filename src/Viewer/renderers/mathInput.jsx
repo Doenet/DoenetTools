@@ -196,8 +196,13 @@ export default function MathInput(props) {
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.color = 'black';
         checkWorkStyle.cursor = 'not-allowed';
-        ;
+        
+        let disabledStyle = {
+          backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
+          cursor: 'not-allowed'
+        }
       }
       checkWorkButton = (
         <Button
@@ -294,7 +299,7 @@ export default function MathInput(props) {
       <span className="textInputSurroundingBox" id={id} style={{ marginBottom: "4px" }}>
         <span>
           <EditableMathField
-            style={{border: "var(--mainBorder)", marginRight: "4px", marginBottom: "4px"}}
+            style={{border: "var(--mainBorder)", marginRight: "4px", marginBottom: "4px",}}
             latex={rendererValue.current}
             config={{
               autoCommands:
