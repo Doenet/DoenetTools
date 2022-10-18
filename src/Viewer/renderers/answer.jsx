@@ -55,7 +55,7 @@ export default React.memo(function Answer(props) {
   }
 
 
-  if (!SVs.delegateCheckWork) {
+  if (!SVs.delegateCheckWork && !SVs.suppressCheckwork) {
 
     let validationState = "unvalidated";
     if (SVs.justSubmitted || SVs.numberOfAttemptsLeft < 1) {

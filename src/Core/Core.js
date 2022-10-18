@@ -8198,6 +8198,7 @@ export default class Core {
         for (let aName in component.actions) {
           if (aName.toLowerCase() === actionNameLower) {
             action = component.actions[aName];
+            actionName = aName;
             break;
           }
         }
@@ -8273,6 +8274,9 @@ export default class Core {
     overrideReadOnly = false
   }) {
 
+    // Note: the transient flag is now ignored
+    // as the debounce is preventing too many updates from occurring
+
     if (this.flags.readOnly && !overrideReadOnly) {
 
       let sourceInformation = {};
@@ -8344,25 +8348,27 @@ export default class Core {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
-      let sourceInformation = {};
+      if (!canSkipUpdatingRenderer) {
+        let sourceInformation = {};
 
-      for (let instruction of updateInstructions) {
+        for (let instruction of updateInstructions) {
 
-        let componentSourceInformation = sourceInformation[instruction.componentName];
-        if (!componentSourceInformation) {
-          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+          let componentSourceInformation = sourceInformation[instruction.componentName];
+          if (!componentSourceInformation) {
+            componentSourceInformation = sourceInformation[instruction.componentName] = {};
+          }
+
+          if (instruction.sourceInformation) {
+            Object.assign(componentSourceInformation, instruction.sourceInformation);
+          }
         }
 
-        if (instruction.sourceInformation) {
-          Object.assign(componentSourceInformation, instruction.sourceInformation);
-        }
+        await this.updateRendererInstructions({
+          componentNamesToUpdate: updateInstructions.map(x => x.componentName),
+          sourceOfUpdate: { sourceInformation },
+          actionId,
+        });
       }
-
-      await this.updateRendererInstructions({
-        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
-        sourceOfUpdate: { sourceInformation },
-        actionId,
-      });
 
       return;
 
@@ -10318,6 +10324,11 @@ export default class Core {
 
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
+
+    if (this.submitAnswersTimeout) {
+      clearTimeout(this.submitAnswersTimeout);
+      await this.autoSubmitAnswers();
+    }
 
     this.stopProcessingRequests = true;
 

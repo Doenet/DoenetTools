@@ -92,8 +92,8 @@ export class Li extends BaseComponent {
   static returnChildGroups() {
 
     return [{
-      group: "inlinesBlocks",
-      componentTypes: ["_inline", "_block"]
+      group: "anything",
+      componentTypes: ["_base"]
     }]
 
   }
