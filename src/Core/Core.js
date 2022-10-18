@@ -8348,25 +8348,27 @@ export default class Core {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
-      let sourceInformation = {};
+      if (!canSkipUpdatingRenderer) {
+        let sourceInformation = {};
 
-      for (let instruction of updateInstructions) {
+        for (let instruction of updateInstructions) {
 
-        let componentSourceInformation = sourceInformation[instruction.componentName];
-        if (!componentSourceInformation) {
-          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+          let componentSourceInformation = sourceInformation[instruction.componentName];
+          if (!componentSourceInformation) {
+            componentSourceInformation = sourceInformation[instruction.componentName] = {};
+          }
+
+          if (instruction.sourceInformation) {
+            Object.assign(componentSourceInformation, instruction.sourceInformation);
+          }
         }
 
-        if (instruction.sourceInformation) {
-          Object.assign(componentSourceInformation, instruction.sourceInformation);
-        }
+        await this.updateRendererInstructions({
+          componentNamesToUpdate: updateInstructions.map(x => x.componentName),
+          sourceOfUpdate: { sourceInformation },
+          actionId,
+        });
       }
-
-      await this.updateRendererInstructions({
-        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
-        sourceOfUpdate: { sourceInformation },
-        actionId,
-      });
 
       return;
 
