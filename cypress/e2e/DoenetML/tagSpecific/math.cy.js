@@ -5068,6 +5068,35 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('subscripts and superscripts numbers to unicode text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">2x_1y_23+z_456-a_(7+8-90)</math></p>
+  <p><math name="m2">2x^1y^23+z^456-a^(7+8-90)</math></p>
+  <p><math name="m3">a^2 - b_2</math></p>
+  <p name="m1t">$m1.text</p>
+  <p name="m2t">$m2.text</p>
+  <p name="m3t">$m3.text</p>
+  <p><text name="t1">a₂-b²</text></p>
+  
+  <p><updateValue name="uv" type="text" target="m3.text" newValue="$t1.text" ><label>Update via text</label></updateValue></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get('#\\/m1t').should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀')
+    cy.get('#\\/m2t').should('have.text', '2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
+    cy.get('#\\/m3t').should('have.text', 'a² - b₂')
+
+    cy.get('#\\/uv').click();
+    cy.get('#\\/m3t').should('have.text', 'a₂ - b²')
+
+
+  });
+
 
 })
 

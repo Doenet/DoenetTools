@@ -99,7 +99,7 @@ export default React.memo(function BooleanInput(props) {
   //Assume we don't have a check work button
   let checkWorkButton = null;
   let icon = props.icon;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
 
     if (validationState === "unvalidated") {
       if (disabled) {
