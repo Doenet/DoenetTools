@@ -1,7 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import { M } from './MMeMen';
 import me from 'math-expressions';
-import { latexToAst } from '../utils/math';
+import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
 
 export class Md extends InlineComponent {
   static componentType = "md";
@@ -111,7 +111,7 @@ export class Md extends InlineComponent {
             }
             if (mrow.stateValues.numbered) {
               lastLatex += `\\tag{${mrow.stateValues.equationTag}}`
-            } else{
+            } else {
               lastLatex += '\\notag '
             }
             for (let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
@@ -146,6 +146,10 @@ export class Md extends InlineComponent {
 
 
     stateVariableDefinitions.text = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         latex: {
           dependencyType: "stateVariable",
@@ -165,7 +169,7 @@ export class Md extends InlineComponent {
           // just return latex if can't parse with math-expressions
           return { setValue: { text: dependencyValues.latex } };
         }
-        return { setValue: { text: expressionText } };
+        return { setValue: { text: superSubscriptsToUnicode(expressionText.toString()) } };
       }
     }
 
