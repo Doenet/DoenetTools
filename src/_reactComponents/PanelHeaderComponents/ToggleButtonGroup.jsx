@@ -6,13 +6,13 @@ const Container = styled.div`
   width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
   // height: 'fit-content';
   // margin: 2px 0px 2px 0px ;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 `;
 
 const toggleGroup = {
   margin: '0px -2px 0px -2px',
   borderRadius: '0',
-  padding: '0px 12px 0px 10px',
+  // padding: '0px 12px 0px 10px',
 };
 
 const verticalToggleGroup = {

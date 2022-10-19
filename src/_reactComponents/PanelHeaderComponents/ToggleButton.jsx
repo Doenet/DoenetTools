@@ -90,7 +90,7 @@ export default function ToggleButton(props) {
 
   var container = {
     display: `${align}`,
-    width: 'auto',
+    // width: 'auto',
     alignItems: 'center',
   };
 

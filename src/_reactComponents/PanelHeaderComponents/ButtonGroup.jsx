@@ -4,7 +4,7 @@ import styled, { ThemeProvider } from 'styled-components';
 const Container = styled.div`
   display: ${(props) => props.vertical ? 'static' : 'flex'};
   width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   // margin: 2px 0px 2px 0px
 `;
 
