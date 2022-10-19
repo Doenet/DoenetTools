@@ -15,7 +15,7 @@ describe('ODEsystem Tag Tests', function () {
     <text>a</text>
     <p>a = <mathinput name="a" prefill="1"/></p>
     <p>initial condition = <mathinput name="ic" prefill="1"/></p>
-    <p>tol = <mathinput name="tol" prefill="1E-6"/></p>
+    <p>tol = <mathinput name="tol" parseScientificNotation prefill="1E-6"/></p>
     <odesystem name="ode" tolerance="$tol" initialconditions="$ic">
     <righthandside simplify>$a x</righthandside>
 
@@ -205,7 +205,7 @@ describe('ODEsystem Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>tol = <mathinput name="tol" prefill="1E-6"/></p>
+  <p>tol = <mathinput name="tol" parseScientificNotation prefill="1E-6"/></p>
   <p>T = <mathinput name="T" prefill="10"/></p>
   <p>maxiter = <mathinput name="maxiter" prefill="1000"/></p>
   <p>chunksize = <mathinput name="chunksize" prefill="10"/></p>

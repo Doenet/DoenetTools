@@ -341,7 +341,7 @@ export default function PageViewer(props) {
     }
   }
 
-  function forceRendererState({ rendererState, forceDisable, forceShowCorrectness, forceShowSolution }) {
+  function forceRendererState({ rendererState, forceDisable, forceShowCorrectness, forceShowSolution, forceUnsuppressCheckwork }) {
     for (let componentName in rendererState) {
       let stateValues = rendererState[componentName].stateValues;
       if (forceDisable && stateValues.disabled === false) {
@@ -349,6 +349,9 @@ export default function PageViewer(props) {
       }
       if (forceShowCorrectness && stateValues.showCorrectness === false) {
         stateValues.showCorrectness = true;
+      }
+      if (forceUnsuppressCheckwork && stateValues.suppressCheckwork === true) {
+        stateValues.suppressCheckwork = false;
       }
       if (forceShowSolution && rendererState[componentName].childrenInstructions?.length > 0) {
         // look for a child that has a componentType solution
@@ -368,7 +371,7 @@ export default function PageViewer(props) {
   function initializeRenderers(args) {
 
     if (args.rendererState) {
-      if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution) {
+      if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution || props.forceUnsuppressCheckwork) {
         forceRendererState({ rendererState: args.rendererState, ...props })
       }
       for (let componentName in args.rendererState) {

@@ -100,7 +100,7 @@ export default function TextInput(props) {
         baseVariableValue: rendererValue,
       });
 
-      if (SVs.includeCheckWork && validationState === "unvalidated") {
+      if (SVs.includeCheckWork && !SVs.suppressCheckwork && validationState === "unvalidated") {
         callAction({
           action: actions.submitAnswer,
         })
@@ -183,7 +183,7 @@ export default function TextInput(props) {
 
   // Assume we don't have a check work button
   let checkWorkButton = null;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
 
     let checkWorkStyle = {
       cursor: 'pointer',

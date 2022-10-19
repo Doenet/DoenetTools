@@ -1150,6 +1150,19 @@ export default class Answer extends InlineComponent {
       targetVariableName: "submittedResponse1"
     };
 
+    stateVariableDefinitions.suppressCheckwork = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
+      }
+    }
+
     stateVariableDefinitions.delegateCheckWork = {
       additionalStateVariablesDefined:
         [
@@ -1180,19 +1193,13 @@ export default class Answer extends InlineComponent {
             "suppressAnswerSubmitButtons",
           ]
         },
-        autoSubmit: {
-          dependencyType: "flag",
-          flagName: "autoSubmit"
-        }
       }),
-      definition: function ({ dependencyValues, componentName }) {
+      definition: function ({ dependencyValues }) {
         let delegateCheckWorkToAncestor = false;
         let delegateCheckWorkToInput = false;
         let delegateCheckWork = false;
 
-        if (dependencyValues.autoSubmit) {
-          delegateCheckWork = true;
-        } else if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
+        if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
           delegateCheckWorkToAncestor = delegateCheckWork = true;
         } else if (dependencyValues.sectionAncestor?.stateValues.suppressAnswerSubmitButtons) {
           delegateCheckWorkToAncestor = delegateCheckWork = true;

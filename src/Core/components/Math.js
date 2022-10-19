@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition } from '../utils/math';
+import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition, superSubscriptsToUnicode, unicodeToSuperSubscripts } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -137,6 +137,9 @@ export default class MathComponent extends InlineComponent {
     }, {
       group: "strings",
       componentTypes: ["string"]
+    }, {
+      group: "displayedMaths",
+      componentTypes: ["m", "me", "men"]
     }]
 
   }
@@ -753,6 +756,11 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "child",
           childGroups: ["maths"],
         },
+        displayedMathChildren: {
+          dependencyType: "child",
+          childGroups: ["displayedMaths"],
+          variableNames: ["latex"]
+        },
         format: {
           dependencyType: "stateVariable",
           variableName: "format",
@@ -1263,7 +1271,7 @@ export default class MathComponent extends InlineComponent {
             text = '';
           }
         }
-        return { setValue: { text } };
+        return { setValue: { text: superSubscriptsToUnicode(text.toString()) } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let fromText = getFromText({
@@ -1274,7 +1282,7 @@ export default class MathComponent extends InlineComponent {
 
         let expr;
         try {
-          expr = fromText(desiredStateVariableValues.text);
+          expr = fromText(unicodeToSuperSubscripts(desiredStateVariableValues.text));
         } catch (e) {
           return { success: false }
         }
@@ -1318,6 +1326,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "child",
           childGroups: ["maths"],
           variableNames: ["canBeModified"],
+        },
+        displayedMathChildren: {
+          dependencyType: "child",
+          childGroups: ["displayedMaths"],
         },
         expressionWithCodes: {
           dependencyType: "stateVariable",
@@ -1951,7 +1963,7 @@ export default class MathComponent extends InlineComponent {
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   if (!(("stringMathChildren" in changes && changes.stringMathChildren.componentIdentitiesChanged)
-    || "format" in changes || "splitSymbols" in changes || "parseScientificNotation" in changes
+    || "displayedMathChildren" in changes || "format" in changes || "splitSymbols" in changes || "parseScientificNotation" in changes
     || "functionSymbols" in changes || "mathChildrenFunctionSymbols" in changes
   )) {
     // if component identities of stringMathChildren didn't change
@@ -1962,11 +1974,24 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     // return { noChanges: ["expressionWithCodes"] };
   }
 
-  // if don't have any string or math children,
-  // set expressionWithCodes to be null,
-  // which will indicate that value should use valueShadow
   if (dependencyValues.stringMathChildren.length === 0) {
-    return { setValue: { expressionWithCodes: null } }
+    if (dependencyValues.displayedMathChildren.length > 0) {
+      let expr;
+      try {
+        expr = me.fromLatex(dependencyValues.displayedMathChildren[0].stateValues.latex);
+      } catch (e) {
+        expr = me.fromAst("\uff3f");
+      }
+      return {
+        setValue: { expressionWithCodes: expr },
+        setEssentialValue: { expressionWithCodes: expr }
+      };
+    } else {
+      // if don't have any string or math children,
+      // set expressionWithCodes to be null,
+      // which will indicate that value should use valueShadow
+      return { setValue: { expressionWithCodes: null } }
+    }
   }
 
   let inputString = "";
@@ -2251,19 +2276,33 @@ function determineCanBeModified({ dependencyValues }) {
     };
   }
 
-  // if have no math children, then can directly set value
-  // to any specified expression
   if (dependencyValues.mathChildrenModifiable.length === 0) {
-    return {
-      setValue: {
-        canBeModified: true,
-        constantChildIndices: null,
-        codeForExpression: null,
-        inverseMaps: null,
-        template: null,
-        mathChildrenMapped: null,
-      }
-    };
+    if (dependencyValues.displayedMathChildren.length > 0) {
+      // don't invert displayed math children
+      return {
+        setValue: {
+          canBeModified: false,
+          constantChildIndices: null,
+          codeForExpression: null,
+          inverseMaps: null,
+          template: null,
+          mathChildrenMapped: null,
+        }
+      };
+    } else {
+      // if have no math children, then can directly set value
+      // to any specified expression
+      return {
+        setValue: {
+          canBeModified: true,
+          constantChildIndices: null,
+          codeForExpression: null,
+          inverseMaps: null,
+          template: null,
+          mathChildrenMapped: null,
+        }
+      };
+    }
   }
 
   // determine if can calculate value of activeChildren from

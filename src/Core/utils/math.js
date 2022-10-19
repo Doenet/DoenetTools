@@ -653,8 +653,8 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
         continue;
       }
     }
-    if (match[1] === "\\" || match[1][0] === "^") {
-      // start with backslash or with a ^ and optional space
+    if (match[1] === "\\" || match[1][0] === "^" || match[1][0] === "_") {
+      // start with backslash or with a ^ or _ and optional space
       // so skip
       newString += string.substring(0, endMatch);
       string = string.substring(endMatch);
@@ -676,6 +676,129 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
 
 export function stripLatex(latex) {
   return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
+}
+
+export function superSubscriptsToUnicode(text) {
+
+  let charToSubscriptUnicode = {
+    '0': '\u2080',
+    '1': '\u2081',
+    '2': '\u2082',
+    '3': '\u2083',
+    '4': '\u2084',
+    '5': '\u2085',
+    '6': '\u2086',
+    '7': '\u2087',
+    '8': '\u2088',
+    '9': '\u2089',
+    '+': '\u208A',
+    '-': '\u208B',
+    ' ': '',
+  }
+
+  let charToSuperscriptUnicode = {
+    '0': '\u2070',
+    '1': '\u00B9',
+    '2': '\u00B2',
+    '3': '\u00B3',
+    '4': '\u2074',
+    '5': '\u2075',
+    '6': '\u2076',
+    '7': '\u2077',
+    '8': '\u2078',
+    '9': '\u2079',
+    '+': '\u207A',
+    '-': '\u207B',
+    ' ': '',
+  }
+
+  function replaceSubscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += charToSubscriptUnicode[char];
+    }
+
+    return newVal;
+  }
+
+  function replaceSuperscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += charToSuperscriptUnicode[char];
+    }
+
+    return newVal;
+  }
+
+  text = text.replaceAll(/_(\d+)/g, replaceSubscripts)
+  text = text.replaceAll(/_\(([\d +-]+)\)/g, replaceSubscripts)
+  text = text.replaceAll(/\^(\d+)/g, replaceSuperscripts)
+  text = text.replaceAll(/\^\(([\d +-]+)\)/g, replaceSuperscripts)
+
+  return text;
+
+}
+
+export function unicodeToSuperSubscripts(text) {
+
+  let subscriptUnicodeToChar = {
+    '\u2080': '0',
+    '\u2081': '1',
+    '\u2082': '2',
+    '\u2083': '3',
+    '\u2084': '4',
+    '\u2085': '5',
+    '\u2086': '6',
+    '\u2087': '7',
+    '\u2088': '8',
+    '\u2089': '9',
+    '\u208A': '+',
+    '\u208B': '-',
+  }
+
+  let superscriptUnicodeToChar = {
+    '\u2070': '0',
+    '\u00B9': '1',
+    '\u00B2': '2',
+    '\u00B3': '3',
+    '\u2074': '4',
+    '\u2075': '5',
+    '\u2076': '6',
+    '\u2077': '7',
+    '\u2078': '8',
+    '\u2079': '9',
+    '\u207A': '+',
+    '\u207B': '-',
+  }
+
+  function replaceSubscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += subscriptUnicodeToChar[char];
+    }
+
+    return '_(' + newVal + ')';
+  }
+
+  function replaceSuperscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += superscriptUnicodeToChar[char];
+    }
+
+    return '^(' + newVal + ')';
+  }
+
+
+  text = text.replaceAll(/([\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089\u208A\u208B]+)/g, replaceSubscripts)
+  text = text.replaceAll(/([\u2070\u00B9\u00B2\u00B3\u2074\u2075\u2076\u2077\u2078\u2079\u207A\u207B]+)/g, replaceSuperscripts)
+
+  return text;
+
 }
 
 export const mathjaxConfig = {
