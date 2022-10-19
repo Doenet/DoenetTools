@@ -73,7 +73,6 @@ export const Styles = styled.div`
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-
     }
 
     th:first-child {
@@ -88,7 +87,7 @@ export const Styles = styled.div`
       height: 100%;
     } */
 
-    tr:first-child th > p{
+    tr:first-child th > p {
       margin: 0px 0px 4px 0px;
       padding: 0px;
     }
@@ -98,7 +97,6 @@ export const Styles = styled.div`
       text-align: left;
       transform: rotate(180deg);
       max-height: 160px;
-
     }
 
     thead tr:only-child th:not(:first-child) > p {
@@ -459,10 +457,10 @@ export function Table({ columns, data }) {
     footerGroups,
     rows,
     prepareRow,
-    state,
-    visibleColumns,
-    preGlobalFilteredRows,
-    setGlobalFilter,
+    // state,
+    // visibleColumns,
+    // preGlobalFilteredRows,
+    // setGlobalFilter,
   } = useTable(
     {
       columns,
@@ -574,6 +572,22 @@ function DefaultColumnFilter({
   );
 }
 
+/**
+ * <p>
+ * scaleFactor: scale points by this value
+ * maximumNumber: calculate based off the top n scores
+ * maximumVaule: point cap applied after all calculations
+ * </p>
+ */
+export const gradeCategories = [
+  { category: 'Gateway', scaleFactor: 0 },
+  { category: 'Exams', maximumValue: 5 },
+  { category: 'Quizzes', maximumNumber: 10 },
+  { category: 'Problem sets', maximumNumber: 30 },
+  { category: 'Projects' },
+  { category: 'Participation' },
+];
+
 function GradebookOverview() {
   //const { openOverlay, activateMenuPanel } = useToolControlHelper();
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
@@ -602,15 +616,6 @@ function GradebookOverview() {
     return null;
   }
 
-  let gradeCategories = [
-    { category: 'Gateway', scaleFactor: 0 },
-    { category: 'Exams' },
-    { category: 'Quizzes', maximumNumber: 10 },
-    { category: 'Problem sets', maximumNumber: 30 },
-    { category: 'Projects' },
-    { category: 'Participation' },
-  ];
-
   let overviewTable = {};
   overviewTable.headers = [];
   overviewTable.rows = [];
@@ -629,6 +634,7 @@ function GradebookOverview() {
     category,
     scaleFactor = 1,
     maximumNumber = Infinity,
+    maximumValue = Infinity,
   } of gradeCategories) {
     let allpossiblepoints = [];
 
@@ -681,31 +687,32 @@ function GradebookOverview() {
     }
     let numberScores = allpossiblepoints.length;
 
+    //Sort by points value and retain the maximumNumber
     allpossiblepoints = allpossiblepoints
       .sort((a, b) => b - a)
       .slice(0, maximumNumber);
-    let categoryPossiblePoints =
+
+    //Scale by scareFactor
+    let scaledPossiblePoints =
       allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+
+    //cap value to maximumValue
+    let categoryPossiblePoints = Math.min(scaledPossiblePoints, maximumValue);
 
     //category total
     // possiblePointRow[category] = categoryPossiblePoints;
     totalPossiblePoints += categoryPossiblePoints;
     categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
 
-    let description = '';
+    let description = [];
     if (numberScores > maximumNumber) {
-      description = (
-        <div style={{ fontSize: '.7em' }}>
-          (Based on top {maximumNumber} scores)
-        </div>
-      );
+      description.push(`top ${maximumNumber} scores`);
     }
     if (scaleFactor !== 1) {
-      description = (
-        <div style={{ fontSize: '.7em' }}>
-          (Based on rescaling by {scaleFactor * 100}%)
-        </div>
-      );
+      description.push(`rescaling by ${scaleFactor * 100}%`);
+    }
+    if (scaledPossiblePoints > maximumValue) {
+      description.push(`a cap of ${maximumValue} points`);
     }
 
     if (hasAssignments) {
@@ -715,7 +722,12 @@ function GradebookOverview() {
           {
             Header: (
               <div>
-                {`${category} Total`} {description}{' '}
+                {`${category} Total`}{' '}
+                {description.length && (
+                  <div style={{ fontSize: '.7em' }}>
+                    Based on {description.join(',')}
+                  </div>
+                )}
               </div>
             ),
             accessor: category,
@@ -782,6 +794,7 @@ function GradebookOverview() {
       category,
       scaleFactor = 1,
       maximumNumber = Infinity,
+      maximumValue = Infinity,
     } of gradeCategories) {
       let scores = [];
 
@@ -814,6 +827,7 @@ function GradebookOverview() {
                 },
               });
             }}
+            role="button"
           >
             {score}
           </a>
@@ -822,8 +836,14 @@ function GradebookOverview() {
       }
 
       // let numberScores = scores.length;
+      //Sort by points value and retain the maximumNumber
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
-      let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+
+      //Scale by scareFactor
+      let scaledScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+
+      //cap value to maximumValue
+      let categoryScore = Math.min(scaledScore, maximumValue);
 
       totalScore += categoryScore;
 

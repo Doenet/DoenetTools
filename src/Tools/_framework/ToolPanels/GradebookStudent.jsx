@@ -14,6 +14,7 @@ import {
   assignmentData,
   overviewData,
   gradeSorting,
+  gradeCategories,
 } from './Gradebook';
 
 export default function GradebookStudent() {
@@ -41,7 +42,6 @@ export default function GradebookStudent() {
   let totalAssignedPoints = 0;
   let totalScore = 0;
 
-
   if (
     assignments.state == 'hasValue' &&
     students.state === 'hasValue' &&
@@ -49,21 +49,13 @@ export default function GradebookStudent() {
     userId !== null &&
     userId !== ''
   ) {
-    let gradeCategories = [
-      { category: 'Gateway', scaleFactor: 0 },
-      { category: 'Exams' },
-      { category: 'Quizzes', maximumNumber: 10 },
-      { category: 'Problem sets', maximumNumber: 30 },
-      { category: 'Projects' },
-      { category: 'Participation' },
-    ];
-
     let totalPossiblePoints = 0;
 
     for (let {
       category,
       scaleFactor = 1,
       maximumNumber = Infinity,
+      maximumValue = Infinity,
     } of gradeCategories) {
       // let c = <b>{assignment?.category}</b>;
 
@@ -86,26 +78,30 @@ export default function GradebookStudent() {
         let possiblepoints =
           assignments.contents[doenetId].totalPointsOrPercent * 1;
         let credit = overview.contents[userId].assignments[doenetId];
-        if(credit === null && assignments.contents[doenetId].isGloballyAssigned === "0") {
+        if (
+          credit === null &&
+          assignments.contents[doenetId].isGloballyAssigned === '0'
+        ) {
           continue;
         }
         let score = possiblepoints * credit;
         const assignedDate = assignments.contents[doenetId].assignedDate;
         allpossiblepoints.push(possiblepoints);
         scores.push(score);
-        
+
         score = Math.round(score * 100) / 100;
         let percentage = Math.round(credit * 1000) / 10 + '%';
 
-        const convertedTZAssignedDate = UTCDateStringToDate(assignedDate)
+        const convertedTZAssignedDate = UTCDateStringToDate(assignedDate);
 
-        if (assignedDate == null || //No assignment date
-        // credit != null || //has taken the activity
-        credit > 0 || //positive credit for the activity
-        convertedTZAssignedDate < new Date() //AssignedDate has past
-        ){
+        if (
+          assignedDate == null || //No assignment date
+          // credit != null || //has taken the activity
+          credit > 0 || //positive credit for the activity
+          convertedTZAssignedDate < new Date() //AssignedDate has past
+        ) {
           assignedpoints = possiblepoints;
-          allassignedpoints.push(possiblepoints)
+          allassignedpoints.push(possiblepoints);
           categoryAssignedPointsAreAllDashes = false;
         }
 
@@ -141,17 +137,34 @@ export default function GradebookStudent() {
       }
 
       let numberScores = scores.length;
+
+      //Sort by points value and retain the maximumNumber
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
-      let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
-      let categoryAssignedPoints = allassignedpoints.reduce((a, c) => a + c, 0) * scaleFactor;
-      if (categoryAssignedPointsAreAllDashes){categoryAssignedPoints = '-'}
 
+      //Scale by scareFactor
+      let scaledScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      let scaledAssignedPoints =
+        allassignedpoints.reduce((a, c) => a + c, 0) * scaleFactor;
 
+      //cap value to maximumValue
+      let categoryScore = Math.min(scaledScore, maximumValue);
+      let categoryAssignedPoints = Math.min(scaledAssignedPoints, maximumValue);
+
+      if (categoryAssignedPointsAreAllDashes) {
+        categoryAssignedPoints = '-';
+      }
+
+      //Sort by points value and retain the maximumNumber
       allpossiblepoints = allpossiblepoints
         .sort((a, b) => b - a)
         .slice(0, maximumNumber);
-      let categoryPossiblePoints =
+
+      //Scale by scareFactor
+      let scaledPossiblePoints =
         allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+
+      //cap value to maximumValue
+      let categoryPossiblePoints = Math.min(scaledPossiblePoints, maximumValue);
 
       let categoryPercentage = '0%';
 
@@ -162,7 +175,7 @@ export default function GradebookStudent() {
       }
       totalScore += categoryScore;
       totalPossiblePoints += categoryPossiblePoints;
-      if (categoryAssignedPoints != '-'){
+      if (categoryAssignedPoints != '-') {
         totalAssignedPoints += categoryAssignedPoints;
         categoryAssignedPoints = Math.round(categoryAssignedPoints * 100) / 100;
       }
@@ -170,27 +183,27 @@ export default function GradebookStudent() {
       categoryScore = Math.round(categoryScore * 100) / 100;
       categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
 
-      let description = '';
+      let description = [];
       if (numberScores > maximumNumber) {
-        description = (
-          <div style={{ fontSize: '.8em' }}>
-            (Based on top {maximumNumber} scores)
-          </div>
-        );
+        description.push(`top ${maximumNumber} scores`);
       }
       if (scaleFactor !== 1) {
-        description = (
-          <div style={{ fontSize: '.8em' }}>
-            (Based on rescaling by {scaleFactor * 100}%)
-          </div>
-        );
+        description.push(`rescaling by ${scaleFactor * 100}%`);
       }
+      if (scaledPossiblePoints > maximumValue) {
+        description.push(`a cap of ${maximumValue} points`);
+      }
+
       overviewTable.rows.push({
         // assignment:"Subtotal for ${category} Description ",
         assignment: (
           <b>
             {`Subtotal for ${category}`}
-            {description}
+            {description.length > 0 && (
+              <div style={{ fontSize: '.7em' }}>
+                Based on {description.join(',')}
+              </div>
+            )}
           </b>
         ),
         score: categoryScore,
@@ -246,7 +259,9 @@ export default function GradebookStudent() {
         <b>Gradebook for {studentName}</b>
       </div>
       <div style={{ marginLeft: '18px' }}>
-        <b>Current Score {totalScore}/{totalAssignedPoints}</b>
+        <b>
+          Current Score {totalScore}/{totalAssignedPoints}
+        </b>
       </div>
       <Styles>
         <Table
