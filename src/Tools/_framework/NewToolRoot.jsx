@@ -129,7 +129,7 @@ export default function ToolRoot() {
     People: lazy(() => import('./ToolPanels/People')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
-    UMNEndExamPanel: lazy(() => import('./ToolPanels/UMNEndExamPanel')),
+    EndPlacementExamPanel: lazy(() => import('./ToolPanels/EndPlacementExamPanel')),
     UMNWelcomePlacementExam: lazy(() => import('./ToolPanels/UMNWelcomePlacementExam')),
     GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
     GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
@@ -446,16 +446,17 @@ export default function ToolRoot() {
 // /umn/ to pick or algpl
 
 let navigationObj = {
-  umn: {
+  placementExam: {
     default: {
-      defaultTool: 'welcome',
+      // defaultTool: 'welcome',
+      defaultTool: 'exam',
     },
-    welcome: {
-      pageName: 'welcome',
-      currentMainPanel: 'UMNWelcomePlacementExam',
-      // displaySettings: false,
-      hasNoMenuPanel: true,
-    },
+    // welcome: {
+    //   pageName: 'welcome',
+    //   currentMainPanel: 'UMNWelcomePlacementExam',
+    //   // displaySettings: false,
+    //   hasNoMenuPanel: true,
+    // },
     exam: {
       pageName: 'exam',
       // menuPanelCap: 'AssignmentInfoCap',
@@ -470,14 +471,21 @@ let navigationObj = {
     },
     endExam: {
       pageName: 'endExam',
-      currentMainPanel: 'UMNEndExamPanel',
+      currentMainPanel: 'EndPlacementExamPanel',
       displaySettings: false,
       hasNoMenuPanel: true,
     },
   },
-
-   
-  
+  umn: {
+    default:{
+      defaultTool: 'signIn',
+    },
+    signIn:{
+      pageName: 'signIn',
+      currentMainPanel: 'signInRedirector',
+      displaySettings: false,
+    }
+  },
   exam: {
     default: {
       defaultTool: 'chooseLearner',

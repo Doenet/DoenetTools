@@ -23,7 +23,7 @@ const ScoreContainer = styled.div`
   cursor: auto;
 `
 
-export default function EndExamPanel() {
+export default function EndPlacementExamPanel() {
   return <>
   <p>Custom End Exam!</p>
   </>
