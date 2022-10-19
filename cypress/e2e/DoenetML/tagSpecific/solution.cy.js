@@ -74,6 +74,30 @@ describe('Solution Tag Tests', function () {
 
   });
 
+  it("empty solution", () => {
+    // an empty solution was creating an infinite loop
+    // as the zero replacements were always treated as uninitialized
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <solution name="sol" />
+  <boolean name="solOpen" copySource="sol.open" />
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/solOpen').should('have.text', 'false');
+
+    cy.get("#\\/sol_button").click();
+    cy.get('#\\/solOpen').should('have.text', 'true');
+
+    cy.get("#\\/sol_button").click();
+    cy.get('#\\/solOpen').should('have.text', 'false');
+
+    
+  })
+
 })
 
 
