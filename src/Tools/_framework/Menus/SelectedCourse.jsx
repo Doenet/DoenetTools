@@ -36,7 +36,7 @@ export default function SelectedCourse() {
     courseCardsSelection.length > 1 &&
     courseCardsSelection[0]?.isOwner
   ) {
-    //should be aware of all course permissons
+    //should be aware of all course permissions
     return (
       <>
         <h2> {courseCardsSelection.length} Courses Selected</h2>

@@ -683,10 +683,10 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <p><math>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-13)y</math></p>
-  <p><math displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
   `}, "*");
     });
 
@@ -1133,20 +1133,20 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/dig5aText').should('have.text', '62.1')
     cy.get('#\\/dig5apadText').should('have.text', '62.100')
-    cy.get('#\\/dig5bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dig5bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dig5bpadText').should('have.text', '162.10 * 10⁻³')
     cy.get('#\\/dig5cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dig5cpadText').should('have.text', '1.3000 x + 4.0000 π')
     cy.get('#\\/dec5aText').should('have.text', '62.1')
     cy.get('#\\/dec5apadText').should('have.text', '62.10000')
-    cy.get('#\\/dec5bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dec5bpadText').should('have.text', '162.10000 * 10^(-3)')
+    cy.get('#\\/dec5bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dec5bpadText').should('have.text', '162.10000 * 10⁻³')
     cy.get('#\\/dec5cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dec5cpadText').should('have.text', '1.30000 x + 4.00000 π')
     cy.get('#\\/dig5dec1aText').should('have.text', '62.1')
     cy.get('#\\/dig5dec1apadText').should('have.text', '62.100')
-    cy.get('#\\/dig5dec1bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dig5dec1bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5dec1bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dig5dec1bpadText').should('have.text', '162.10 * 10⁻³')
     cy.get('#\\/dig5dec1cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dig5dec1cpadText').should('have.text', '1.3000 x + 4.0000 π')
 
@@ -1919,6 +1919,7 @@ describe('Math Tag Tests', function () {
   <p><math format="latex" name="m8a">\\var{x2}_2x</math></p>
   <p><math format="latex" name="m9">2x_x2</math></p>
   <p><math format="latex" name="m9a">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m9b">2x_{x2}</math></p>
   <p><math format="latex" name="m10">xy uv x2y 2x x2</math></p>
   <p><math format="latex" name="m10a">xy uv \\var{x2y} 2x \\var{x2}</math></p>
   <p><math format="latex" name="m11" splitSymbols="false">xy_uv</math></p>
@@ -1979,9 +1980,12 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('x22x')
     })
     cy.get('#\\/m9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2xx2')
+      expect(text.trim()).equal('2xx⋅2')
     })
     cy.get('#\\/m9a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m9b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2xx2')
     })
     cy.get('#\\/m10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2043,8 +2047,9 @@ describe('Math Tag Tests', function () {
       expect(stateVariables['/m7'].stateValues.value).eqls(["*", "x", ["_", "y", "u"], "v"]);
       expect(stateVariables['/m8'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
       expect(stateVariables['/m8a'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x"], 2]);
       expect(stateVariables['/m9a'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m9b'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
       expect(stateVariables['/m10'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m10a'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m11'].stateValues.value).eqls(["_", "xy", "uv"]);
@@ -4958,6 +4963,142 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/e5 .mjx-mrow').eq(0).should('have.text', '−abci');
     cy.get('#\\/e6 .mjx-mrow').eq(0).should('have.text', 'ac+adi+bci−bd');
     cy.get('#\\/e7 .mjx-mrow').eq(0).should('have.text', 'a2+b2');
+
+  });
+
+  it('parse scientific notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math simplify name="m1"><math>2E+3</math>+3E+2</math>
+  <math simplify name="m2" parseScientificNotation><math>2E+3</math>+3E+2</math>
+  <math simplify name="m3"><math parseScientificNotation>2E+3</math>+3E+2</math>
+  <math simplify name="m4" parseScientificNotation><math parseScientificNotation="false">2E+3</math>+3E+2</math></p>
+
+
+  <p><math format="latex" simplify name="m1a"><math format="latex">2E+3</math>+3E+2</math>
+  <math format="latex" simplify name="m2a" parseScientificNotation><math format="latex">2E+3</math>+3E+2</math>
+  <math format="latex" simplify name="m3a"><math format="latex" parseScientificNotation>2E+3</math>+3E+2</math>
+  <math format="latex" simplify name="m4a" parseScientificNotation><math format="latex" parseScientificNotation="false">2E+3</math>+3E+2</math></p>
+
+  <p><math simplify name="m5"><math>2E3</math>+3E2</math>
+  <math simplify name="m6" parseScientificNotation><math>2E3</math>+3E2</math>
+  <math simplify name="m7"><math parseScientificNotation>2E3</math>+3E2</math>
+  <math simplify name="m8" parseScientificNotation><math parseScientificNotation="false">2E3</math>+3E2</math>
+  </p>
+
+  <p><math format="latex" simplify name="m5a"><math format="latex">2E3</math>+3E2</math>
+  <math format="latex" simplify name="m6a" parseScientificNotation><math format="latex">2E3</math>+3E2</math>
+  <math format="latex" simplify name="m7a"><math format="latex" parseScientificNotation>2E3</math>+3E2</math>
+  <math format="latex" simplify name="m8a" parseScientificNotation><math format="latex" parseScientificNotation="false">2E3</math>+3E2</math>
+  </p>
+
+  <p><booleanInput name="p1"><label>parse 1</label></booleanInput>
+  <booleanInput name="p2"><label>parse 2</label></booleanInput>
+  </p>
+  <p><math simplify name="m9" parseScientificNotation="$p1"><math parseScientificNotation="$p2">2E+3</math>+3E+2</math></p>
+  <p><math format="latex" simplify name="m9a" parseScientificNotation="$p1"><math format="latex" parseScientificNotation="$p2">2E+3</math>+3E+2</math></p>
+  <p><math simplify name="m10" parseScientificNotation="$p1"><math parseScientificNotation="$p2">2E3</math>+3E2</math></p>
+  <p><math format="latex" simplify name="m10a" parseScientificNotation="$p1"><math format="latex" parseScientificNotation="$p2">2E3</math>+3E2</math></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '2E+303');
+    cy.get('#\\/m1a .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m2a .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m3a .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m4a .mjx-mrow').eq(0).should('have.text', '2E+303');
+
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2E3+300');
+    cy.get('#\\/m5a .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m6a .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m7a .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+    cy.get('#\\/m8a .mjx-mrow').eq(0).should('have.text', '2E3+300');
+
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+
+    cy.get('#\\/p1').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '2E+303');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '2E+303');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '2E3+300');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '2E3+300');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2E+303');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '2E+303');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '2E3+300');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '2E3+300');
+
+    cy.get('#\\/p2').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '2300');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '2300');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '2300');
+
+    cy.get('#\\/p1').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '3E+2002');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '3E+2002');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '3E2+2000');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '3E2+2000');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '3E+2002');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '3E2+2000');
+
+    cy.get('#\\/p2').click();
+    cy.get('#\\/m9 .mjx-mrow').should('contain.text', '5E+5');
+    cy.get('#\\/m9a .mjx-mrow').should('contain.text', '5E+5');
+    cy.get('#\\/m10 .mjx-mrow').should('contain.text', '3E2+2E3');
+    cy.get('#\\/m10a .mjx-mrow').should('contain.text', '3E2+2E3');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m9a .mjx-mrow').eq(0).should('have.text', '5E+5');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+    cy.get('#\\/m10a .mjx-mrow').eq(0).should('have.text', '3E2+2E3');
+
+  });
+
+  it('subscripts and superscripts numbers to unicode text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">2x_1y_23+z_456-a_(7+8-90)</math></p>
+  <p><math name="m2">2x^1y^23+z^456-a^(7+8-90)</math></p>
+  <p><math name="m3">a^2 - b_2</math></p>
+  <p name="m1t">$m1.text</p>
+  <p name="m2t">$m2.text</p>
+  <p name="m3t">$m3.text</p>
+  <p><text name="t1">a₂-b²</text></p>
+  
+  <p><updateValue name="uv" type="text" target="m3.text" newValue="$t1.text" ><label>Update via text</label></updateValue></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get('#\\/m1t').should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀')
+    cy.get('#\\/m2t').should('have.text', '2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
+    cy.get('#\\/m3t').should('have.text', 'a² - b₂')
+
+    cy.get('#\\/uv').click();
+    cy.get('#\\/m3t').should('have.text', 'a₂ - b²')
+
 
   });
 

@@ -207,6 +207,7 @@ export default class Video extends BlockComponent {
       shadowingInstructions: {
         createComponentOfType: "text"
       },
+      ignoreFixed: true,
       returnDependencies: () => ({}),
       definition() {
         return { useEssentialOrDefaultValue: { state: true } }
@@ -235,6 +236,7 @@ export default class Video extends BlockComponent {
       shadowingInstructions: {
         createComponentOfType: "number"
       },
+      ignoreFixed: true,
       returnDependencies: () => ({}),
       definition() {
         return { useEssentialOrDefaultValue: { time: true } }
@@ -261,6 +263,7 @@ export default class Video extends BlockComponent {
       shadowingInstructions: {
         createComponentOfType: "number"
       },
+      ignoreFixed: true,
       returnDependencies: () => ({}),
       definition: () => ({ useEssentialOrDefaultValue: { duration: true } }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
@@ -351,6 +354,7 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "playing",
       }],
+      overrideReadOnly: true,
     })
   }
 
@@ -442,6 +446,7 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
+      overrideReadOnly: true,
     })
   }
 
@@ -476,6 +481,7 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
+      overrideReadOnly: true,
     })
   }
 
@@ -506,6 +512,7 @@ export default class Video extends BlockComponent {
         stateVariable: "duration",
         value: duration,
       }],
+      overrideReadOnly: true,
       doNotSave: true  // video actions don't count as changing page state
     })
   }
@@ -518,6 +525,7 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "playing",
       }],
+      overrideReadOnly: true,
     })
   }
 
@@ -529,6 +537,7 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
+      overrideReadOnly: true,
     })
   }
 
@@ -540,6 +549,7 @@ export default class Video extends BlockComponent {
         stateVariable: "time",
         value: time,
       }],
+      overrideReadOnly: true,
     })
   }
 

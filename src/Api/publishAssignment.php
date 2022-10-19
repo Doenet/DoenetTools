@@ -46,6 +46,8 @@ $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 if ($showCorrectness == ''){ $showCorrectness = '1';}
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
+$autoSubmit = mysqli_real_escape_string($conn,$_POST["autoSubmit"]);
+if ($autoSubmit == ''){ $autoSubmit = '0';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
 $isPublished =  mysqli_real_escape_string($conn,$_POST["assignment_isPublished"]);
@@ -89,6 +91,7 @@ showFeedback = '$showFeedback',
 showHints = '$showHints',
 showCorrectness = '$showCorrectness',
 proctorMakesAvailable = '$proctorMakesAvailable',
+autoSubmit = '$autoSubmit',
 courseId='$courseId',
 isPublished = '$isPublished'
 WHERE assignmentId = '$assignmentId'
@@ -115,6 +118,7 @@ $result = $conn->query($sql);
   showHints,
   showCorrectness,
   proctorMakesAvailable,
+  autoSubmit,
   isPublished,
   sourceDoenetId)
   VALUES
@@ -135,6 +139,7 @@ $result = $conn->query($sql);
   '$showHints',
   '$showCorrectness',
   '$proctorMakesAvailable',
+  '$autoSubmit',
   '$isPublished',
   '$doenetId')
   ";

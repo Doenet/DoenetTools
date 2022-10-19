@@ -699,17 +699,17 @@ const unfilteredCourseRolesByCourseId = atomFamily({
 export const courseRolesByCourseId = selectorFamily({
   key: 'filteredCourseRolesByCourseId',
   get: courseId => ({get}) => {
-    const permissonsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
+    const permissionsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
     const roles = get(unfilteredCourseRolesByCourseId(courseId));
 
-    const ignoreKeys = ['isIncludedInGradebook', 'sectionPermissonOnly', 'dataAccessPermission', 'roleId', 'roleLabel'];
+    const ignoreKeys = ['isIncludedInGradebook', 'sectionPermissionOnly', 'dataAccessPermission', 'roleId', 'roleLabel'];
     let filteredRoles = roles?.filter((role) => {
       let valid = 
-        role.roleId === permissonsAndSettings.roleId 
+        role.roleId === permissionsAndSettings.roleId 
         || !Object.keys(role).every((permKey) => (
-              (role[permKey] ?? '0') === permissonsAndSettings[permKey] 
+              (role[permKey] ?? '0') === permissionsAndSettings[permKey] 
               || ignoreKeys.includes(permKey) 
-              ||  (role[permKey] ?? '0') === '1' && permissonsAndSettings[permKey] === '0'
+              ||  (role[permKey] ?? '0') === '1' && permissionsAndSettings[permKey] === '0'
           ))
       return (valid)
     }) ?? [];
@@ -717,7 +717,7 @@ export const courseRolesByCourseId = selectorFamily({
   }
 })
 
-export const courseRolePermissonsByCourseIdRoleId = selectorFamily({
+export const courseRolePermissionsByCourseIdRoleId = selectorFamily({
   key: 'courseRoleByCourseIdRoleId',
   get: ({courseId, roleId}) => ({get}) => {
     return get(unfilteredCourseRolesByCourseId(courseId))?.find(({roleId: candidateRoleId}) => candidateRoleId === roleId) ?? {};
@@ -1116,6 +1116,7 @@ export const useCourse = (courseId) => {
             paginate: true,
             showFinishButton: false,
             proctorMakesAvailable: false,
+            autoSubmit: false,
             pinnedAfterDate: null,
             pinnedUntilDate: null,
             ...data.itemEntered,
@@ -1568,7 +1569,7 @@ export const useCourse = (courseId) => {
             actionType, 
             roleId: serverRoleId,
             updatedPermissions
-        }} = await axios.post('/api/updateRolePermissons.php', {
+        }} = await axios.post('/api/updateRolePermissions.php', {
               courseId, 
               roleId, 
               permissions: {...newPermissions, label: newPermissions?.roleLabel}

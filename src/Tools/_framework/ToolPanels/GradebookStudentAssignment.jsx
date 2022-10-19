@@ -261,12 +261,14 @@ export default function GradebookStudentAssignmentView(){
         forceDisable={true}
         forceShowCorrectness={true}
         forceShowSolution={solutionDisplayMode !== "none"}
+        forceUnsuppressCheckwork={true}
         flags={{
           showCorrectness: true,
           readOnly: true,
           solutionDisplayMode,
           showFeedback: true,
           showHints: true,
+          autoSubmit: false,
           allowLoadState: true,
           allowSaveState: false,
           allowLocalState: false,

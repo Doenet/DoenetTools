@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { latexToAst } from '../utils/math';
+import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
 
 export class M extends InlineComponent {
   static componentType = "m";
@@ -188,6 +188,10 @@ export class M extends InlineComponent {
 
 
     stateVariableDefinitions.text = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         latex: {
           dependencyType: "stateVariable",
@@ -202,7 +206,8 @@ export class M extends InlineComponent {
           // just return latex if can't parse with math-expressions
           return { setValue: { text: dependencyValues.latex } };
         }
-        return { setValue: { text: expression.toString() } };
+
+        return { setValue: { text: superSubscriptsToUnicode(expression.toString()) } };
       }
     }
 

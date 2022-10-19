@@ -1329,6 +1329,7 @@ export default function ActivityViewer(props) {
         forceDisable={props.forceDisable}
         forceShowCorrectness={props.forceShowCorrectness}
         forceShowSolution={props.forceShowSolution}
+        forceUnsuppressCheckwork={props.forceUnsuppressCheckwork}
         flags={flags}
         activityVariantIndex={variantIndex}
         requestedVariantIndex={variantsByPage[ind]}

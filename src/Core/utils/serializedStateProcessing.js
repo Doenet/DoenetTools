@@ -648,7 +648,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
               component.componentType = newComponent.componentType;
 
               if (propArray.length === 0 &&
-                !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
+                !(component.attributes.prop || component.attributes.propIndex)
               ) {
                 component.doenetAttributes.isPlainCopy = true;
               }
@@ -710,7 +710,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
         } else {
           // have copy with just a simple target prop that is a targetName
           if (component.componentType === "copy" &&
-            !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
+            !(component.attributes.prop || component.attributes.propIndex)
           ) {
             if (!component.doenetAttributes) {
               component.doenetAttributes = {};

@@ -58,8 +58,8 @@ export default function MathInput(props) {
 
   // Need to use ref for includeCheckWork
   // or handlePressEnter doesn't get the new value when the SV changes
-  let includeCheckWork = useRef(SVs.includeCheckWork);
-  includeCheckWork.current = SVs.includeCheckWork;
+  let includeCheckWork = useRef(SVs.includeCheckWork && !SVs.suppressCheckwork);
+  includeCheckWork.current = SVs.includeCheckWork && !SVs.suppressCheckwork;
 
   if (!ignoreUpdate) {
     rendererValue.current = SVs.rawRendererValue;
@@ -187,7 +187,7 @@ export default function MathInput(props) {
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
     let checkWorkStyle = {
       cursor: 'pointer',
     }

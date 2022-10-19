@@ -1945,4 +1945,43 @@ describe('Feedback Tag Tests', function () {
 
   });
 
+  it('feedback inside invalid children', () => {
+    // The following DoenetML was a minimal working example to trigger a bug
+    // where the children of _li1 where not being updated on the second submission
+    // (due to being marked stale from invalid children in the middle of the first
+    // time that they were being updated)
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>
+          <ul>
+            <li>
+              x: <answer name="ans"><mathinput name="mi" />x</answer>   
+              <feedback name="fb" condition="$ans.nSubmissions > 1">You answered at least twice</feedback>
+            </li>
+            <li>$ans</li>
+          </ul>
+        </p>
+        `
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fb").should('not.exist');
+
+    cy.get('#\\/mi_submit').click();
+    cy.get('#\\/mi_incorrect').should('be.visible');
+    cy.get('#\\/_li2 .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.get("#\\/fb").should('not.exist');
+
+    cy.get('#\\/mi textarea').type("y{enter}", { force: true });
+
+    cy.get('#\\/_li2 .mjx-mrow').should('contain.text', 'y');
+    cy.get("#\\/fb").should('have.text', 'You answered at least twice');
+
+  });
+
 });

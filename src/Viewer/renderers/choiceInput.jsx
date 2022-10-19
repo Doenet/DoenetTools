@@ -129,7 +129,7 @@ export default React.memo(function ChoiceInput(props) {
 
     //Assume we don't have a check work button
     let checkWorkButton = null;
-    if (SVs.includeCheckWork) {
+    if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
 
       if (validationState === "unvalidated") {
         if (disabled) {
@@ -271,7 +271,7 @@ export default React.memo(function ChoiceInput(props) {
 
     let checkworkComponent = null;
 
-    if (SVs.includeCheckWork) {
+    if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
 
       if (validationState === "unvalidated") {
 

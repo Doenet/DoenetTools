@@ -96,12 +96,15 @@ export default function LoadPeople({ style }) {
   return (
     <div style={style}>
       <div key="drop" {...getRootProps()}>
-        <input {...getInputProps()} />
+        <input {...getInputProps()} data-test="Import CSV file" />
         {isDragActive ? (
           <p>Drop the files here</p>
         ) : (
           <ButtonGroup vertical>
-            <Button width="menu" value="Import CSV file" />
+            <Button 
+              width="menu" 
+              value="Import CSV file"               
+            />
           </ButtonGroup>
         )}
       </div>

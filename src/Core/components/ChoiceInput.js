@@ -371,6 +371,52 @@ export default class Choiceinput extends Input {
 
     }
 
+    stateVariableDefinitions.choiceMaths = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      isArray: true,
+      entryPrefixes: ["choiceMath"],
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        numberChoices: {
+          dependencyType: "stateVariable",
+          variableName: "numberChoices",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberChoices];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          choiceOrder: {
+            dependencyType: "stateVariable",
+            variableName: "choiceOrder"
+          },
+          choiceChildren: {
+            dependencyType: "child",
+            childGroups: ["choices"],
+            variableNames: ["math"]
+          },
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(
+          i => globalDependencyValues.choiceChildren[i - 1]
+        );
+
+        return {
+          setValue: {
+            choiceMaths: choiceChildrenOrdered.map(x => x.stateValues.math),
+          }
+        }
+      }
+
+    }
+
     stateVariableDefinitions.choicePreselects = {
       isArray: true,
       returnArraySizeDependencies: () => ({
@@ -494,8 +540,20 @@ export default class Choiceinput extends Input {
     }
 
     stateVariableDefinitions.componentType = {
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { componentType: "text" } })
+      returnDependencies: () => ({
+        choiceChildren: {
+          dependencyType: "child",
+          childGroups: ["choices"],
+          variableNames: ["math"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        let componentType = "text";
+        if (dependencyValues.choiceChildren.length > 0 && dependencyValues.choiceChildren.every(x => x.stateValues.math)) {
+          componentType = "math";
+        }
+        return { setValue: { componentType } };
+      }
     }
 
     stateVariableDefinitions.indicesMatchedByBoundValue = {
@@ -709,7 +767,7 @@ export default class Choiceinput extends Input {
     stateVariableDefinitions.selectedValues = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        hasVariableComponentType: true,
       },
       isArray: true,
       entryPrefixes: ["selectedValue"],
@@ -732,20 +790,39 @@ export default class Choiceinput extends Input {
             choiceTexts: {
               dependencyType: "stateVariable",
               variableName: "choiceTexts"
-            }
+            },
+            choiceMaths: {
+              dependencyType: "stateVariable",
+              variableName: "choiceMaths"
+            },
+            componentType: {
+              dependencyType: "stateVariable",
+              variableName: "componentType"
+            },
           }
         };
       },
       arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
         let selectedValues = {};
+        let componentType = globalDependencyValues.componentType;
+
 
         for (let arrayKey of arrayKeys) {
-          selectedValues[arrayKey] = globalDependencyValues.choiceTexts[
-            globalDependencyValues.selectedIndices[arrayKey] - 1
-          ]
+          if (componentType === "math") {
+            selectedValues[arrayKey] = globalDependencyValues.choiceMaths[
+              globalDependencyValues.selectedIndices[arrayKey] - 1
+            ]
+          } else {
+            selectedValues[arrayKey] = globalDependencyValues.choiceTexts[
+              globalDependencyValues.selectedIndices[arrayKey] - 1
+            ]
+          }
         }
 
-        return { setValue: { selectedValues } }
+        return {
+          setValue: { selectedValues },
+          setCreateComponentOfType: { selectedValues: componentType },
+        }
 
       },
     }

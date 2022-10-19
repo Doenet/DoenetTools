@@ -130,6 +130,7 @@ export default function ChooseLearnerPanel(props) {
   let [filter, setFilter] = useState('')
   let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
   let [message, setMessage] = useState('');
+  let [selectedExamLabel, setSelectedExamLabel] = useState('');
 
 
   const addToast = useToast();
@@ -263,6 +264,7 @@ export default function ChooseLearnerPanel(props) {
             return;
           }else{
             setDoenetId(exam.doenetId, courseId)
+            setSelectedExamLabel(exam.label);
             setStage('choose learner');
           }
           
@@ -384,9 +386,10 @@ export default function ChooseLearnerPanel(props) {
             position: 'sticky',
             paddingLeft: "50px", 
             paddingBottom: "15px",
+            display: "flex",
           }}
         >
-          <SearchBar autoFocus onChange={setFilter} width='100%'/>
+        <div style={{marginRight:"15px",fontSize:"16pt"}}>Exam: {selectedExamLabel}</div>  <SearchBar autoFocus onChange={setFilter} width='100%'/> 
         </div>
         <table>
           <thead>
@@ -424,6 +427,8 @@ export default function ChooseLearnerPanel(props) {
       }}
     >
       <div>
+        <div style={{marginRight:"15px",fontSize:"16pt"}}>Exam: {selectedExamLabel}</div>
+        <div></div>
         <div><b>Is this you?</b></div>
         <div>Name: {choosenLearner.firstName} {choosenLearner.lastName}</div>
         <div>ID: {choosenLearner.studentId}</div>

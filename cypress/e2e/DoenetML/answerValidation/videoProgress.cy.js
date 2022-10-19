@@ -128,7 +128,7 @@ describe('Video progress tests', function () {
 
     cy.get('#\\/credit').invoke('text').then(text => {
       credit = Number(text);
-      expect(credit).gte(0.04).lte(0.042);
+      expect(credit).gte(0.04).lte(0.045);
     });
 
     cy.get('#\\/progress').invoke('text').then(text => {
