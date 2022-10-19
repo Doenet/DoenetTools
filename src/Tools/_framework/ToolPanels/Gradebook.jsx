@@ -581,11 +581,11 @@ function DefaultColumnFilter({
  */
 export const gradeCategories = [
   { category: 'Gateway', scaleFactor: 0 },
-  { category: 'Exams', maximumValue: 5 },
+  { category: 'Exams' },
   { category: 'Quizzes', maximumNumber: 10 },
   { category: 'Problem sets', maximumNumber: 30 },
   { category: 'Projects' },
-  { category: 'Participation' },
+  { category: 'Participation', maximumValue: 50 },
 ];
 
 function GradebookOverview() {
