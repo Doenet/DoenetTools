@@ -31,6 +31,9 @@ if (
 ) {
     $database = 'doenet_local';
     $dbhost = 'mysql';
+    $_SERVER['givenName'] = "chocolate";  //For shib test on localhost
+    $_SERVER['surname'] = "eclair"; //For shib test on localhost
+    $_SERVER['mail'] = "eclair@doenet.org"; //For shib test on localhost
 }
 
 if ($_SERVER['HTTP_HOST'] == 'localhost:3000') {

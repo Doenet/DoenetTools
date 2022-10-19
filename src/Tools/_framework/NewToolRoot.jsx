@@ -128,9 +128,10 @@ export default function ToolRoot() {
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
     People: lazy(() => import('./ToolPanels/People')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
+    SignInRedirector: lazy(() => import('./ToolPanels/SignInRedirector')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
     EndPlacementExamPanel: lazy(() => import('./ToolPanels/EndPlacementExamPanel')),
-    UMNWelcomePlacementExam: lazy(() => import('./ToolPanels/UMNWelcomePlacementExam')),
+    WelcomePlacementExam: lazy(() => import('./ToolPanels/WelcomePlacementExam')),
     GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
     GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
     RolesEditor: lazy(() => import('./ToolPanels/RoleEditor')),
@@ -453,7 +454,7 @@ let navigationObj = {
     },
     // welcome: {
     //   pageName: 'welcome',
-    //   currentMainPanel: 'UMNWelcomePlacementExam',
+    //   currentMainPanel: 'WelcomePlacementExam',
     //   // displaySettings: false,
     //   hasNoMenuPanel: true,
     // },
@@ -482,8 +483,9 @@ let navigationObj = {
     },
     signIn:{
       pageName: 'signIn',
-      currentMainPanel: 'signInRedirector',
+      currentMainPanel: 'SignInRedirector',
       displaySettings: false,
+      hasNoMenuPanel: true,
     }
   },
   exam: {
