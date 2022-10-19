@@ -187,7 +187,7 @@ export default function TextInput(props) {
 
     let checkWorkStyle = {
       cursor: 'pointer',
-      padding: "1px 6px 1px 6px",
+      padding: '1px 6px 1px 6px',
     }
 
     if (validationState === "unvalidated") {
@@ -228,7 +228,7 @@ export default function TextInput(props) {
           //partial credit
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = "50px";
+          checkWorkStyle.width = '44px';
 
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = 
@@ -252,6 +252,7 @@ export default function TextInput(props) {
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
         checkWorkButton = 
           <Button
             id={id + '_saved'}
