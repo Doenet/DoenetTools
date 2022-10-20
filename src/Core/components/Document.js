@@ -778,6 +778,8 @@ export default class Document extends BaseComponent {
       sharedParameters.variantIndicesToIgnore = await variantControlChild.state.variantIndicesToIgnore.value;
     }
 
+    sharedParameters.subpartVariantRng = new sharedParameters.rngClass(sharedParameters.variantSeed + 's');
+
     // console.log("Document variant name: " + sharedParameters.variantName);
 
     // if subvariants were specified, add those to the corresponding descendants

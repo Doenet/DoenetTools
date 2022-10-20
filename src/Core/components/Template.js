@@ -220,7 +220,8 @@ export default class Template extends CompositeComponent {
 
     setUpVariantSeedAndRng({
       serializedComponent, sharedParameters,
-      descendantVariantComponents
+      descendantVariantComponents,
+      useSubpartVariantRng: true,
     });
 
   }

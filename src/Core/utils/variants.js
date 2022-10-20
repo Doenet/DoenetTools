@@ -46,7 +46,12 @@ export function getVariantsForDescendantsForUniqueVariants({
 export function setUpVariantSeedAndRng({
   serializedComponent, sharedParameters,
   descendantVariantComponents,
+  useSubpartVariantRng = false
 }) {
+
+  // Note: use subpartVariantRng for containers that don't actually select anything random.
+  // That way, adding such a non-random component to the DoenetML
+  // does not change the values selected by other components that use the regular variantRng.
 
   let variantSeed;
   // check if desiredVariant was specified
@@ -61,11 +66,16 @@ export function setUpVariantSeedAndRng({
     // if variant seed wasn't specifed
 
     // randomly pick variant seed
-    variantSeed = sharedParameters.variantRng().toString().slice(2);
+    if(useSubpartVariantRng) {
+      variantSeed = sharedParameters.subpartVariantRng().toString().slice(2);
+    } else {
+      variantSeed = sharedParameters.variantRng().toString().slice(2);
+    }
   }
 
   sharedParameters.variantSeed = variantSeed;
   sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+  sharedParameters.subpartVariantRng = new sharedParameters.rngClass(sharedParameters.variantSeed + 's');
 
   // if subvariants were specified, add those the corresponding descendants
 

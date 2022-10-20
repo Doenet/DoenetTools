@@ -865,7 +865,8 @@ export default class SectioningComponent extends BlockComponent {
 
       setUpVariantSeedAndRng({
         serializedComponent, sharedParameters,
-        descendantVariantComponents
+        descendantVariantComponents,
+        useSubpartVariantRng: true,
       });
 
 
@@ -877,6 +878,8 @@ export default class SectioningComponent extends BlockComponent {
       sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
       sharedParameters.variantIndicesToIgnore = await variantControlChild.state.variantIndicesToIgnore.value;
     }
+
+    sharedParameters.subpartVariantRng = new sharedParameters.rngClass(sharedParameters.variantSeed + 's');
 
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantControlChild.stateValues.selectedSeed);
