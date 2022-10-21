@@ -29,12 +29,12 @@ if ($domain=="localhost"){
   $isSecure = false;
 }
 $isHttpOnly = true;
-$expirationTime = time() - 3600;
+$expirationTime = -3600;
 
-setcookie("JWT", $value, $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
-setcookie("JWT_JS", 1, $expirationTime, $path, $domain, $isSecure, false);
-setcookie("EJWT", $value, $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
-setcookie("EJWT_JS", 1, $expirationTime, $path, $domain, $isSecure, false);
+setcookie("JWT", "", $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
+setcookie("JWT_JS", "", $expirationTime, $path, $domain, $isSecure, false);
+setcookie("EJWT", "", $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
+setcookie("EJWT_JS", "", $expirationTime, $path, $domain, $isSecure, false);
 // setcookie("JWT", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
 // setcookie("JWT_JS", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
 // setcookie("TrackingConsent", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
