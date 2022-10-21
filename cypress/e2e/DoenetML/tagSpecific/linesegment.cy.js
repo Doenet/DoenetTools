@@ -3420,4 +3420,52 @@ describe('LineSegment Tag Tests', function () {
     })
   });
 
+  it('label positioning', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g">
+      <lineSegment endPoints="(1,2) (3,4)" labelPosition="$labelPos" name="ls">
+        <label>$label</label>
+      </lineSegment>
+    </graph>
+
+    <p>label: <textinput name="label" prefill="line segment" /></p>
+    <p>position:
+    <choiceinput inline preselectChoice="1" name="labelPos">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+    </choiceinput>
+    </p>
+
+    <p name="pPos">Position: $ls.labelPosition</p>
+    <p name="pLabel">Label: $ls.label</p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+
+    cy.get('#\\/pPos').should('have.text', 'Position: upperright')
+    cy.get('#\\/pLabel').should('contain.text', 'Label: line segment')
+
+    cy.get('#\\/label_input').clear().type("nothing{enter}")
+    cy.get('#\\/pLabel').should('contain.text', 'Label: nothing')
+
+    cy.get('#\\/labelPos').select("upperLeft")
+    cy.get('#\\/pPos').should('have.text', 'Position: upperleft')
+    cy.get('#\\/labelPos').select("lowerRight")
+    cy.get('#\\/pPos').should('have.text', 'Position: lowerright')
+    cy.get('#\\/labelPos').select("lowerLeft")
+    cy.get('#\\/pPos').should('have.text', 'Position: lowerleft')
+
+  });
+
+
 });
