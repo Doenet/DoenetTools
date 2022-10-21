@@ -565,7 +565,7 @@ let navigationObj = {
     },
     endExam: {
       pageName: 'endExam',
-      currentMainPanel: 'EndExamPanel',
+      currentMainPanel: 'EndExamPanel', //TODO: figure out what the course end exam does
       // displaySettings: false,
       // hasNoMenuPanel: true,
       menuPanelCap: 'AssignmentInfoCap',

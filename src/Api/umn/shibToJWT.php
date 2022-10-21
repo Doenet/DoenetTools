@@ -17,7 +17,9 @@ $firstName = $_SERVER['givenName'];
 $lastName = $_SERVER['surname'];
 $email = $_SERVER['mail'];
 $success = TRUE;
-$needToClearOutPreviousUser = FALSE;
+$needToClearOutPreviousUser = TRUE;
+
+$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
 if ($email == ''){
   $success = FALSE;
@@ -38,26 +40,28 @@ if ($success){
       $row = $result->fetch_assoc();
       $dbUserId = $row['userId'];
       $hasDoenetAccount = TRUE;
-      if ($dbUserId != $userId){
-        //Need to clear out previous sign in
-        $needToClearOutPreviousUser = TRUE;
-
-        $domain = $_SERVER["SERVER_NAME"];
-        if ($domain == 'apache'){$domain = 'localhost';}
-        $isSecure = true;
-        if ($domain == 'apache') {
-            $domain = 'localhost';
-        }
-        if ($domain == 'localhost') {
-            $isSecure = false;
-        }
-        $isHttpOnly = true;
-        $expirationTime = -3600;
-   
-        setcookie("JWT", "", $expirationTime, "/", $domain, $isSecure, $isHttpOnly);
-        setcookie("JWT_JS", "", $expirationTime, "/", $domain, $isSecure, false);
+      if($dbUserId == $userId){
+        $needToClearOutPreviousUser = FALSE;
       }
     }
+
+  if ($needToClearOutPreviousUser){
+    //Need to clear out previous sign in
+    $domain = $_SERVER["SERVER_NAME"];
+    if ($domain == 'apache'){$domain = 'localhost';}
+    $isSecure = true;
+    if ($domain == 'apache') {
+        $domain = 'localhost';
+    }
+    if ($domain == 'localhost') {
+        $isSecure = false;
+    }
+    $isHttpOnly = true;
+    $expirationTime = -3600;
+
+    setcookie("JWT", "", $expirationTime, "/", $domain, $isSecure, $isHttpOnly);
+    setcookie("JWT_JS", "", $expirationTime, "/", $domain, $isSecure, false);
+  }
 
   if (!$hasDoenetAccount){
     //Create a Doenet Acct
@@ -86,7 +90,7 @@ if ($success){
 
   }
 
-  if ($dbUserId != $userId){
+  if ($needToClearOutPreviousUser){
     //Sign in JWT cookie
     $deviceNames = include "../deviceNames.php";
     $randomNumber = rand(0,(count($deviceNames) - 1));
@@ -140,12 +144,60 @@ if ($success){
     );
   }
 }
+
+$isEnrolled = FALSE;
+//Enroll if not enrolled
+if ($success){
+  //Check course for autoenrollment
+  $sql = "
+  SELECT c.canAutoEnroll, cc.courseId, c.defaultRoleId
+  FROM course_content AS cc
+  INNER JOIN course AS c
+  ON c.courseId = cc.courseId
+  WHERE doenetId = '$doenetId'
+  ";
+  $result = $conn->query($sql);
+  if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $canAutoEnroll = $row['canAutoEnroll'];
+    $courseId = $row['courseId'];
+    $defaultRoleId = $row['defaultRoleId'];
+    
+    //Check if they are enrolled
+    $sql = "
+    SELECT userId
+    FROM course_user 
+    WHERE userId = '$dbUserId'
+    AND courseId = '$courseId'
+    ";
+    $result = $conn->query($sql);
+    if ($result->num_rows == 0) {
+      if ($canAutoEnroll == '1'){
+        //Enroll the student
+        $sql = "
+        INSERT INTO course_user
+        (courseId,userId,dateEnrolled,roleId)
+        VALUES
+        ('$courseId','$dbUserId',NOW(),'$defaultRoleId')
+      ";
+      $result = $conn->query($sql);
+      $isEnrolled = TRUE;
+      }
+      
+
+    }else{
+      $isEnrolled = TRUE;
+    }
+      
+  }
+}
+
   
 
 $response_arr = [
   'success' => $success,
   'needToClearOutPreviousUser' => $needToClearOutPreviousUser,
-  // 'dbUserId' => $dbUserId
+  'isEnrolled' => $isEnrolled,
 ];
 
 // set response code - 200 OK
