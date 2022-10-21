@@ -447,7 +447,7 @@ export default function ToolRoot() {
 // /umn/ to pick or algpl
 
 let navigationObj = {
-  placementExam: {
+  placementexam: {
     default: {
       // defaultTool: 'welcome',
       defaultTool: 'exam',
