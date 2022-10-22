@@ -269,7 +269,7 @@ export default function AssignmentViewer() {
           cid = resp.data.cid;
         }
 
-        console.log(`retrieved cid: ${cid}`);
+        // console.log(`retrieved cid: ${cid}`);
 
         setCidChanged(resp.data.cidChanged);
 
@@ -428,6 +428,16 @@ export default function AssignmentViewer() {
     [setSuppressMenus, effectivePermissions],
   );
 
+  const setActivityAsCompleted = useRecoilCallback(({ set }) =>
+  async () => {
+    set(itemByDoenetId(doenetId),(prev)=>{
+      let next = {...prev}
+      next.completed = true;
+      next.completedDate = new Date();
+      return next;
+    })
+  },[doenetId]);
+
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
 
     if (hash && hash !== "#page1") {
@@ -570,6 +580,13 @@ export default function AssignmentViewer() {
     return null;
   }
 
+  if (!itemObj?.canViewAfterCompleted && itemObj.completed){
+    return <>
+    <p>Can&#39;t take again.</p>
+    {/* <p>Completed on {itemObj.completedDate}</p> */}
+    </>
+  }
+
   // console.log(`>>>>stage -${stage}-`)
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
@@ -642,6 +659,7 @@ export default function AssignmentViewer() {
         paginate={paginate}
         showFinishButton={showFinishButton}
         cidChangedCallback={() => setCidChanged(true)}
+        setActivityAsCompleted={setActivityAsCompleted}
       // generatedVariantCallback={variantCallback}
       />
     </>

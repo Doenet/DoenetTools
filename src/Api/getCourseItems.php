@@ -226,7 +226,9 @@ $activityDoenetIds = [];
 		a.showFinishButton AS showFinishButton,
 		a.proctorMakesAvailable AS proctorMakesAvailable,
 		a.autoSubmit AS autoSubmit,
-		a.canViewAfterCompleted
+		a.canViewAfterCompleted,
+		ua.completed,
+		ua.completedDate
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
 		ON a.doenetId = cc.doenetId
@@ -274,6 +276,8 @@ $activityDoenetIds = [];
 					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
 					"autoSubmit" => $row['autoSubmit'] == '1' ? true : false,
           "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '0') == '1' ? true : false,
+          "completed" => nullishCoalesce($row['completed'], '0') == '1' ? true : false,
+					"completedDate" => $row['completedDate'],
 
 				);
 
