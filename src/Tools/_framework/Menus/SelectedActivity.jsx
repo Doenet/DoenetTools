@@ -29,6 +29,7 @@ import {
   ShowSolutionInGradebook,
   TimeLimit,
   TotalPointsOrPercent,
+  CanViewAfterCompleted,
 } from '../../../_reactComponents/Activity/SettingComponents';
 import {
   itemByDoenetId,
@@ -294,6 +295,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
           <AutoSubmit {...sharedProps} />
           <MakePublic {...sharedProps} />
           <ShowDoenetMLSource {...sharedProps} />
+          <CanViewAfterCompleted {...sharedProps} />
         </div>
         <PinAssignment {...sharedProps} />
       </>
