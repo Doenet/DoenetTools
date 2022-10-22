@@ -47,6 +47,12 @@ export default class MathInput extends Input {
       public: true,
       copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols", "parseScientificNotation"],
     };
+    attributes.prefillLatex = {
+      createComponentOfType: "latex",
+      createStateVariable: "prefillLatex",
+      defaultValue: "",
+      public: true,
+    }
     attributes.format = {
       createComponentOfType: "text",
       createStateVariable: "format",
@@ -175,10 +181,30 @@ export default class MathInput extends Input {
         prefill: {
           dependencyType: "stateVariable",
           variableName: "prefill"
-        }
+        },
+        prefillLatex: {
+          dependencyType: "stateVariable",
+          variableName: "prefillLatex"
+        },
+        unionFromU: {
+          dependencyType: "stateVariable",
+          variableName: "unionFromU"
+        },
+        functionSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "functionSymbols"
+        },
+        splitSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "splitSymbols"
+        },
+        parseScientificNotation: {
+          dependencyType: "stateVariable",
+          variableName: "parseScientificNotation"
+        },
       }),
       set: convertValueToMathExpression,
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         if (dependencyValues.mathChild.length > 0) {
           return { setValue: { value: dependencyValues.mathChild[0].stateValues.value } };
         } else if (dependencyValues.bindValueTo) {
@@ -187,7 +213,20 @@ export default class MathInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                defaultValue: dependencyValues.prefill
+                get defaultValue() {
+                  if (!usedDefault.prefill || usedDefault.prefillLatex) {
+                    return dependencyValues.prefill
+                  } else {
+                    return calculateMathExpressionFromLatex({
+                      latex: dependencyValues.prefillLatex,
+                      unionFromU: dependencyValues.unionFromU,
+                      functionSymbols: dependencyValues.functionSymbols,
+                      splitSymbols: dependencyValues.splitSymbols,
+                      parseScientificNotation: dependencyValues.parseScientificNotation
+                    });
+                  }
+
+                }
               }
             }
           }
@@ -247,13 +286,13 @@ export default class MathInput extends Input {
         }
       }),
       set: convertValueToMathExpression,
-      definition: function ({ dependencyValues, changes, justUpdatedForNewComponent }) {
+      definition: function ({ dependencyValues, changes, justUpdatedForNewComponent, usedDefault }) {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
-        // console.log(changes);
+        // console.log(changes, usedDefault);
         // console.log(`justUpdatedForNewComponent: ${justUpdatedForNewComponent}`)
 
-        if (changes.value && !justUpdatedForNewComponent) {
+        if (changes.value && !justUpdatedForNewComponent && !usedDefault.value) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
@@ -401,12 +440,19 @@ export default class MathInput extends Input {
           dependencyType: "stateVariable",
           variableName: "dontUpdateRawValueInDefinition"
         },
-
+        prefill: {
+          dependencyType: "stateVariable",
+          variableName: "prefill"
+        },
+        prefillLatex: {
+          dependencyType: "stateVariable",
+          variableName: "prefillLatex"
+        },
       }),
-      definition({ dependencyValues, essentialValues, justUpdatedForNewComponent, componentName }) {
+      definition({ dependencyValues, essentialValues, justUpdatedForNewComponent, usedDefault }) {
 
         // console.log(`definition of raw value for ${componentName}`)
-        // console.log(JSON.parse(JSON.stringify(dependencyValues)), JSON.parse(JSON.stringify(essentialValues)))
+        // console.log(JSON.parse(JSON.stringify(dependencyValues)), JSON.parse(JSON.stringify(essentialValues)), JSON.parse(JSON.stringify(usedDefault)))
 
         // use deepCompare of trees rather than equalsViaSyntax
         // so even tiny numerical differences that are within double precision are detected
@@ -417,7 +463,14 @@ export default class MathInput extends Input {
             || dependencyValues.dontUpdateRawValueInDefinition
           )
         ) {
-          let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex({ showBlanks: false }));
+
+          let rawRendererValue
+          if (usedDefault.immediateValue && usedDefault.prefill && !usedDefault.prefillLatex) {
+            rawRendererValue = stripLatex(dependencyValues.prefillLatex);
+          } else {
+            rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex({ showBlanks: false }));
+          }
+
           if (dependencyValues.hideNaN && rawRendererValue === "NaN") {
             rawRendererValue = '';
           }
@@ -445,28 +498,7 @@ export default class MathInput extends Input {
 
         // console.log(`inverse definition of rawRenderer value for ${componentName}`, desiredStateVariableValues, JSON.parse(JSON.stringify(essentialValues)))
 
-        const calculateMathExpressionFromLatex = async (text) => {
 
-          let expression;
-
-          text = normalizeLatexString(text, {
-            unionFromU: await stateValues.unionFromU,
-          });
-
-          let fromLatex = getFromLatex({
-            functionSymbols: await stateValues.functionSymbols,
-            splitSymbols: await stateValues.splitSymbols,
-            parseScientificNotation: await stateValues.parseScientificNotation,
-          });
-
-          try {
-            expression = fromLatex(text);
-          } catch (e) {
-            // TODO: error on bad text
-            expression = me.fromAst('\uFF3F');
-          }
-          return expression;
-        };
 
 
         let instructions = [];
@@ -483,8 +515,17 @@ export default class MathInput extends Input {
             })
           }
 
-          let currentMath = await calculateMathExpressionFromLatex(currentValue);
-          let desiredMath = await calculateMathExpressionFromLatex(desiredValue);
+          let unionFromU = await stateValues.unionFromU;
+          let functionSymbols = await stateValues.functionSymbols;
+          let splitSymbols = await stateValues.splitSymbols;
+          let parseScientificNotation = await stateValues.parseScientificNotation;
+
+          let currentMath = calculateMathExpressionFromLatex({
+            latex: currentValue, unionFromU, functionSymbols, splitSymbols, parseScientificNotation
+          });
+          let desiredMath = calculateMathExpressionFromLatex({
+            latex: desiredValue, unionFromU, functionSymbols, splitSymbols, parseScientificNotation
+          });
 
           // use deepCompare of trees rather than equalsViaSyntax
           // so even tiny numerical differences that within double precision are detected
@@ -508,9 +549,16 @@ export default class MathInput extends Input {
             value: desiredStateVariableValues.rawRendererValue
           })
 
+          let unionFromU = await stateValues.unionFromU;
+          let functionSymbols = await stateValues.functionSymbols;
+          let splitSymbols = await stateValues.splitSymbols;
+          let parseScientificNotation = await stateValues.parseScientificNotation;
 
-          let currentMath = await calculateMathExpressionFromLatex(essentialValues.rawRendererValue);
-
+          let currentMath = calculateMathExpressionFromLatex({
+            latex: essentialValues.rawRendererValue, 
+            unionFromU, functionSymbols, splitSymbols, parseScientificNotation
+          });
+          
           // use deepCompare of trees rather than equalsViaSyntax
           // so even tiny numerical differences that are within double precision are detected
           if (!deepCompare(desiredStateVariableValues.rawRendererValue.tree, currentMath.tree)) {
@@ -680,3 +728,27 @@ export default class MathInput extends Input {
   ];
 
 }
+
+
+function calculateMathExpressionFromLatex({ latex, unionFromU, functionSymbols, splitSymbols, parseScientificNotation }) {
+
+  let expression;
+
+  latex = normalizeLatexString(latex, {
+    unionFromU,
+  });
+
+  let fromLatex = getFromLatex({
+    functionSymbols,
+    splitSymbols,
+    parseScientificNotation,
+  });
+
+  try {
+    expression = fromLatex(latex);
+  } catch (e) {
+    // TODO: error on bad latex
+    expression = me.fromAst('\uFF3F');
+  }
+  return expression;
+};

@@ -21623,6 +21623,8 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '\uff3f');
+
     cy.get('#\\/minp1 textarea').type("4E3{enter}", { force: true })
     cy.get("#\\/minp1_correct").should('be.visible');
     cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '4E3');
