@@ -16,6 +16,7 @@ import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelH
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
+  coursePermissionsAndSettingsByCourseId,
 } from '../../../_reactComponents/Course/CourseActions';
 
 const movingGradient = keyframes`
@@ -184,6 +185,12 @@ export default function NavigationPanel() {
         }
       },
   );
+
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+  if (course?.canViewCourse == '0'){
+    return <h1>No Access to view this page.</h1>
+  }
 
   return (
     <Suspense

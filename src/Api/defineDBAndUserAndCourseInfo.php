@@ -138,6 +138,7 @@ if (array_key_exists("examineeUserId",$settings->ejwt_array)){
     cr.canModifyCourseSettings,
     cr.canViewUsers,
     cr.canManageUsers,
+    cr.canViewCourse,
     cr.isAdmin,
     cr.dataAccessPermission,
     cr.isOwner
@@ -177,6 +178,7 @@ if (array_key_exists("examineeUserId",$settings->ejwt_array)){
                     $settings->row['canModifyActivitySettings'],
                 'canModifyCourseSettings' => $settings->row['canModifyCourseSettings'],
                 'canViewUsers' => $settings->row['canViewUsers'],
+                'canViewCourse' => $settings->row['canViewCourse'],
                 'canManageUsers' => $settings->row['canManageUsers'],
                 'isAdmin' => $settings->row['isAdmin'],
                 'dataAccessPermission' => $settings->row['dataAccessPermission'],
