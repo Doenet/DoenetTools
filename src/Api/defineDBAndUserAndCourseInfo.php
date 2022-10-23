@@ -69,7 +69,8 @@ if (array_key_exists("examineeUserId",$settings->ejwt_array)){
     c.isPublic,
     c.image,
     c.color,
-    c.defaultRoleId
+    c.defaultRoleId,
+    c.canAutoEnroll
     FROM course_content AS cc
     LEFT JOIN course AS c
     ON c.courseId = cc.courseId
@@ -88,6 +89,7 @@ if (array_key_exists("examineeUserId",$settings->ejwt_array)){
             'image' => $settings->row['image'],
             'color' => $settings->row['color'],
             'defaultRoleId' => $settings->row['defaultRoleId'],
+            'canAutoEnroll' => $settings->row['canAutoEnroll'],
             'roleId' => $settings->row['roleId'],
             'roleLabel' => $settings->row['roleLabel'],
             'isIncludedInGradebook' => '1',
@@ -121,6 +123,7 @@ if (array_key_exists("examineeUserId",$settings->ejwt_array)){
     c.image,
     c.color,
     c.defaultRoleId,
+    c.canAutoEnroll,
     cr.roleId,
     cr.label AS roleLabel,
     cr.isIncludedInGradebook,
@@ -159,6 +162,7 @@ if (array_key_exists("examineeUserId",$settings->ejwt_array)){
                 'image' => $settings->row['image'],
                 'color' => $settings->row['color'],
                 'defaultRoleId' => $settings->row['defaultRoleId'],
+                'canAutoEnroll' => $settings->row['canAutoEnroll'],
                 'roleId' => $settings->row['roleId'],
                 'roleLabel' => $settings->row['roleLabel'],
                 'isIncludedInGradebook' => $settings->row['isIncludedInGradebook'],

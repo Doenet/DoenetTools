@@ -807,8 +807,11 @@ function findContentsChildIds(content){
 }
 
 export const useCourse = (courseId) => {
-  const { label, color, image, defaultRoleId } = useRecoilValue(
-    coursePermissionsAndSettingsByCourseId(courseId),
+  const { label, color, image, defaultRoleId, canAutoEnroll } = useRecoilValue(
+    coursePermissionsAndSettingsByCourseId(courseId)
+  );
+  let coursePermissionsAndSettings = useRecoilValue(
+    coursePermissionsAndSettingsByCourseId(courseId)
   );
   const addToast = useToast();
 
@@ -3228,6 +3231,7 @@ export const useCourse = (courseId) => {
     color, 
     image,
     defaultRoleId,
+    canAutoEnroll,
     create, 
     deleteItem, 
     deleteCourse, 
