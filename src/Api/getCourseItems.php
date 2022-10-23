@@ -111,7 +111,7 @@ $activityDoenetIds = [];
           "showFinishButton" => nullishCoalesce($row['showFinishButton'], '0') == '1' ? true : false,
           "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
           "autoSubmit" => nullishCoalesce($row['autoSubmit'], '0') == '1' ? true : false,
-          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '0') == '1' ? true : false,
+          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '1') == '1' ? true : false,
 					
 				);
 
@@ -275,7 +275,7 @@ $activityDoenetIds = [];
 					"showFinishButton" => $row['showFinishButton'] == '1' ? true : false,
 					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
 					"autoSubmit" => $row['autoSubmit'] == '1' ? true : false,
-          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '0') == '1' ? true : false,
+          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '1') == '1' ? true : false,
           "completed" => nullishCoalesce($row['completed'], '0') == '1' ? true : false,
 					"completedDate" => $row['completedDate'],
 

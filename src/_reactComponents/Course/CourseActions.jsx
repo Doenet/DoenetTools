@@ -1122,6 +1122,7 @@ export const useCourse = (courseId) => {
             autoSubmit: false,
             pinnedAfterDate: null,
             pinnedUntilDate: null,
+            canViewAfterCompleted: '1',
             ...data.itemEntered,
           }
           set(itemByDoenetId(createdActivityDoenentId), newActivityObj);
