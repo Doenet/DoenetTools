@@ -2828,12 +2828,19 @@ export default class Core {
                 }]
               };
             } else {
-              // no component or primitive, so value is essential and give it the desired value
+              // no component or primitive, so value is essential and give it the desired value, but validated
+
+              let attributeValue = validateAttributeValue({
+                value: desiredStateVariableValues[varName],
+                attributeSpecification,
+                attribute: attrName
+              })
+
               return {
                 success: true,
                 instructions: [{
                   setEssentialValue: varName,
-                  value: desiredStateVariableValues[varName]
+                  value: attributeValue
                 }]
               };
             }
@@ -3200,12 +3207,17 @@ export default class Core {
                 }]
               };
             } else {
-              // no component or primitive, so value is essential and give it the desired value
+              // no component or primitive, so value is essential and give it the desired value, but validated
+              let attributeValue = validateAttributeValue({
+                value: desiredStateVariableValues[varName],
+                attributeSpecification,
+                attribute: attrName
+              })
               return {
                 success: true,
                 instructions: [{
                   setEssentialValue: varName,
-                  value: desiredStateVariableValues[varName]
+                  value: attributeValue
                 }]
               };
             }
