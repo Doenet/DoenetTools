@@ -103,7 +103,26 @@ export default React.memo(function MathComponent(props) {
     jsxMathAttributes.anchory = anchory;
 
     
-    let newMathJXG = board.create('text', [0, 0, '\\(' + SVs.latex + '\\)'], jsxMathAttributes);
+    let beginDelim, endDelim;
+    if (SVs.renderMode === "inline") {
+      beginDelim = "\\(";
+      endDelim = "\\)";
+    } else if (SVs.renderMode === "display") {
+      beginDelim = "\\[";
+      endDelim = "\\]";
+    } else if (SVs.renderMode === "numbered") {
+      beginDelim = `\\begin{gather}\\tag{${SVs.equationTag}}`;
+      endDelim = "\\end{gather}";
+    } else if (SVs.renderMode === "align") {
+      beginDelim = "\\begin{align}";
+      endDelim = "\\end{align}";
+    } else {
+      // treat as inline if have unrecognized renderMode
+      beginDelim = "\\(";
+      endDelim = "\\)";
+    }
+  
+    let newMathJXG = board.create('text', [0, 0, beginDelim + SVs.latex + endDelim], jsxMathAttributes);
 
     newMathJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -200,8 +219,27 @@ export default React.memo(function MathComponent(props) {
       mathJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       anchorPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, anchorCoords);
 
+      let beginDelim, endDelim;
+      if (SVs.renderMode === "inline") {
+        beginDelim = "\\(";
+        endDelim = "\\)";
+      } else if (SVs.renderMode === "display") {
+        beginDelim = "\\[";
+        endDelim = "\\]";
+      } else if (SVs.renderMode === "numbered") {
+        beginDelim = `\\begin{gather}\\tag{${SVs.equationTag}}`;
+        endDelim = "\\end{gather}";
+      } else if (SVs.renderMode === "align") {
+        beginDelim = "\\begin{align}";
+        endDelim = "\\end{align}";
+      } else {
+        // treat as inline if have unrecognized renderMode
+        beginDelim = "\\(";
+        endDelim = "\\)";
+      }
+    
 
-      mathJXG.current.setText('\\(' + SVs.latex + '\\)')
+      mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
 
       let visible = !SVs.hidden;
 
@@ -283,8 +321,8 @@ export default React.memo(function MathComponent(props) {
 
   }
 
-  // not in graph
-  
+  // not in board
+
   if (SVs.hidden) {
     return null;
   }
