@@ -193,7 +193,7 @@ export default class Graph extends BlockComponent {
 
     return [{
       group: "graphical",
-      componentTypes: ["_graphical"]
+      componentTypes: ["_graphical", "text", "image", "math", "m", "md", "label"]
     },
     {
       group: "xlabels",
