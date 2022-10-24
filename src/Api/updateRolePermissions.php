@@ -31,6 +31,7 @@ $permissionKeys = [
     'canManageUsers',
     'isAdmin',
     'sectionPermissionOnly',
+    'canViewCourse'
 ];
 
 $_POST = json_decode(file_get_contents('php://input'), true);
