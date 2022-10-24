@@ -1159,8 +1159,8 @@ export default function ActivityViewer(props) {
       //   };
     }
       //Set assignment as completed for the user in the Data Base and Recoil
-      let resp = await axios.get('/api/updateActivityToCompleted.php', {
-        params: { doenetId:props.doenetId },
+      let resp = await axios.get('/api/saveCompleted.php', {
+        params: { doenetId:props.doenetId, isCompleted:true },
       });
       // console.log("resp",resp.data)
       if (resp.data.success){
