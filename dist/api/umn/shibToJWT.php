@@ -5,7 +5,7 @@ header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include '../db_connection.php';
+include 'db_connection.php';
 
 use \Firebase\JWT\JWT;
 require_once "../vendor/autoload.php";

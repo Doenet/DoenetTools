@@ -23,6 +23,7 @@ module.exports = {
     'src/Media/profile_pictures': '/profile_pictures',
     'src/Parser': '/parser',
     'src/Api': '/api',
+    'src/Api/umn': '/api/umn',
     'src/Api/vendor': '/api/vendor',
     'src/Tools/singlepage': '/',
     'src/_reactComponents': '/_reactComponents',
