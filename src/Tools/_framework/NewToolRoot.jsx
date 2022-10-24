@@ -112,7 +112,6 @@ export default function ToolRoot() {
     SignIn: lazy(() => import('./ToolPanels/SignIn')),
     SignOut: lazy(() => import('./ToolPanels/SignOut')),
     NavigationPanel: lazy(() => import('./ToolPanels/NavigationPanel')),
-    AttemptsByPersonPanel: lazy(() => import('./ToolPanels/AttemptsByPersonPanel')),
     Dashboard: lazy(() => import('./ToolPanels/Dashboard')),
     Gradebook: lazy(() => import('./ToolPanels/Gradebook')),
     GradebookAssignment: lazy(() => import('./ToolPanels/GradebookAssignment')),
@@ -628,6 +627,7 @@ let navigationObj = {
     //   headerControls: ["GradebookBreadCrumb"],
     //   // onLeave:"",
     // },
+    // menuPanelCap: 'ContentInfoCap',
     navigation: {
       //allFilesInCourse
       pageName: 'Course',
@@ -641,17 +641,6 @@ let navigationObj = {
       headerControls: ['NavigationBreadCrumb'],
       onLeave: 'NavigationLeave',
       waitForMenuSuppression: true,
-    },
-    attemptsbyperson: {
-      pageName: 'attemptsbyperson',
-      currentMainPanel: 'AttemptsByPersonPanel',
-      menuPanelCap: 'ContentInfoCap',
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ['NavigationBreadCrumb'],
-      // onLeave: 'NavigationLeave',
-      // waitForMenuSuppression: true,
     },
     editor: {
       //singleFile
