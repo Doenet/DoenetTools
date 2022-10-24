@@ -2828,12 +2828,19 @@ export default class Core {
                 }]
               };
             } else {
-              // no component or primitive, so value is essential and give it the desired value
+              // no component or primitive, so value is essential and give it the desired value, but validated
+
+              let attributeValue = validateAttributeValue({
+                value: desiredStateVariableValues[varName],
+                attributeSpecification,
+                attribute: attrName
+              })
+
               return {
                 success: true,
                 instructions: [{
                   setEssentialValue: varName,
-                  value: desiredStateVariableValues[varName]
+                  value: attributeValue
                 }]
               };
             }
@@ -3200,12 +3207,17 @@ export default class Core {
                 }]
               };
             } else {
-              // no component or primitive, so value is essential and give it the desired value
+              // no component or primitive, so value is essential and give it the desired value, but validated
+              let attributeValue = validateAttributeValue({
+                value: desiredStateVariableValues[varName],
+                attributeSpecification,
+                attribute: attrName
+              })
               return {
                 success: true,
                 instructions: [{
                   setEssentialValue: varName,
-                  value: desiredStateVariableValues[varName]
+                  value: attributeValue
                 }]
               };
             }
@@ -10412,9 +10424,8 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
 
   if (attributeSpecification.validValues) {
     if (!attributeSpecification.validValues.includes(value)) {
-      let firstValue = attributeSpecification.validValues[0]
-      console.warn(`Invalid value ${value} for attribute ${attribute}, using value ${firstValue}`);
-      value = firstValue;
+      console.warn(`Invalid value ${value} for attribute ${attribute}, using value ${attributeSpecification.defaultValue}`);
+      value = attributeSpecification.defaultValue;
     }
   } else if (attributeSpecification.clamp) {
     if (value < attributeSpecification.clamp[0]) {
