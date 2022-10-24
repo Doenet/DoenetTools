@@ -27,6 +27,7 @@ import {
   suppressMenusAtom,
 } from '../NewToolRoot';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 
 // React Table Styling
 export const Styles = styled.div`
@@ -592,6 +593,13 @@ function GradebookOverview() {
   // console.log(">>>>students",students)
   // console.log(">>>>assignments",assignments)
   // console.log(">>>>overview",overview)
+
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+  if (course?.canViewCourse == '0'){
+    return <h1>No Access to view this page.</h1>
+  }
+
 
   //Protect from values not being loaded
   if (
