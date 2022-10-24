@@ -10424,9 +10424,8 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
 
   if (attributeSpecification.validValues) {
     if (!attributeSpecification.validValues.includes(value)) {
-      let firstValue = attributeSpecification.validValues[0]
-      console.warn(`Invalid value ${value} for attribute ${attribute}, using value ${firstValue}`);
-      value = firstValue;
+      console.warn(`Invalid value ${value} for attribute ${attribute}, using value ${attributeSpecification.defaultValue}`);
+      value = attributeSpecification.defaultValue;
     }
   } else if (attributeSpecification.clamp) {
     if (value < attributeSpecification.clamp[0]) {
