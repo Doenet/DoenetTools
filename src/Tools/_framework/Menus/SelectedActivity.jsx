@@ -277,23 +277,9 @@ export function AssignmentSettings({ doenetId, courseId }) {
         <AssignedDate {...sharedProps} />
         <DueDate {...sharedProps} />
         <TimeLimit {...sharedProps} />
-        <br />
-
+    
         <AttemptLimit {...sharedProps} />
         <AttemptAggregation {...sharedProps} />
-        <ActionButton value='Manage Attempts By Person' onClick={()=>{
-          setPageToolView({
-              page: 'course',
-              tool: 'attemptsbyperson',
-              view: '',
-              params: {
-                doenetId,
-                courseId
-              }
-          });
-        }}/>
-        <br />
-
         <TotalPointsOrPercent {...sharedProps} />
         <GradeCategory {...sharedProps} />
         <ItemWeights {...sharedProps} />
