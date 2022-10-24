@@ -29,7 +29,7 @@ export default React.memo(function Image(props) {
 
   let currentOffset = useRef(null);
 
-  const urlOrSource = url ? url : SVs.source ? SVs.source : "";
+  const urlOrSource = (SVs.cid ? url : SVs.source) || "";
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -232,6 +232,9 @@ export default React.memo(function Image(props) {
 
 
     if (imageJXG.current === null) {
+      if (SVs.cid && !url) {
+        return null;
+      }
       createImageJXG();
     } else {
 
