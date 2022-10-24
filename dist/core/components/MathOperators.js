@@ -353,6 +353,58 @@ export class Round extends MathBaseOperatorOneInput {
   }
 }
 
+export class setSmallToZero extends MathBaseOperatorOneInput {
+  static componentType = "setSmallToZero";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.threshold = {
+      createComponentOfType: "number",
+      createStateVariable: "threshold",
+      defaultValue: 1E-14,
+      public: true,
+    };
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({
+        threshold: {
+          dependencyType: "stateVariable",
+          variableName: "threshold"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        setValue: {
+          mathOperator: function (value) {
+
+            return value.evaluate_numbers({ skip_ordering: true, set_small_zero: dependencyValues.threshold });
+
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.inverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          inverseMathOperator: value => value
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+
 
 export class ConvertSetToList extends MathBaseOperatorOneInput {
   static componentType = "convertSetToList";
@@ -820,6 +872,53 @@ export class Min extends MathBaseOperator {
       })
     }
 
+    stateVariableDefinitions.inverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          inverseMathOperator: function ({ desiredValue, canBeModified }) {
+            // if have just one input that can be modified, set that one to desired value
+            if (canBeModified.filter(x => x).length === 1) {
+              let inputNumber = canBeModified.indexOf(true);
+              if (inputNumber >= 0) {
+                return {
+                  success: true,
+                  inputValue: desiredValue,
+                  inputNumber,
+                }
+              }
+            }
+            return { success: false }
+          }
+        }
+      })
+    }
+
+    stateVariableDefinitions.inverseNumericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          inverseNumericOperator: function ({ desiredValue, canBeModified, desiredMathValue }) {
+            // if have just one input that can be modified, set that one to desired value
+            if (canBeModified.filter(x => x).length === 1) {
+              let inputNumber = canBeModified.indexOf(true);
+              if (inputNumber >= 0) {
+                if (!Number.isFinite(desiredValue)) {
+                  desiredValue = desiredMathValue
+                }
+                return {
+                  success: true,
+                  inputValue: desiredValue,
+                  inputNumber,
+                }
+              }
+            }
+            return { success: false }
+          }
+        }
+      })
+    }
+
 
     return stateVariableDefinitions;
 
@@ -858,6 +957,52 @@ export class Max extends MathBaseOperator {
       })
     }
 
+    stateVariableDefinitions.inverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          inverseMathOperator: function ({ desiredValue, canBeModified }) {
+            // if have just one input that can be modified, set that one to desired value
+            if (canBeModified.filter(x => x).length === 1) {
+              let inputNumber = canBeModified.indexOf(true);
+              if (inputNumber >= 0) {
+                return {
+                  success: true,
+                  inputValue: desiredValue,
+                  inputNumber,
+                }
+              }
+            }
+            return { success: false }
+          }
+        }
+      })
+    }
+
+    stateVariableDefinitions.inverseNumericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          inverseNumericOperator: function ({ desiredValue, canBeModified, desiredMathValue }) {
+            // if have just one input that can be modified, set that one to desired value
+            if (canBeModified.filter(x => x).length === 1) {
+              let inputNumber = canBeModified.indexOf(true);
+              if (inputNumber >= 0) {
+                if (!Number.isFinite(desiredValue)) {
+                  desiredValue = desiredMathValue
+                }
+                return {
+                  success: true,
+                  inputValue: desiredValue,
+                  inputNumber,
+                }
+              }
+            }
+            return { success: false }
+          }
+        }
+      })
+    }
 
     return stateVariableDefinitions;
 
@@ -920,7 +1065,7 @@ export class Gcd extends MathBaseOperator {
       definition: () => ({
         setValue: {
           numericOperator: function (inputs) {
-            if(inputs.every(Number.isInteger)) {
+            if (inputs.every(Number.isInteger)) {
               return gcd(...inputs);
             }
             return NaN;

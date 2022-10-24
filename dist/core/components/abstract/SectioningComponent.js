@@ -277,7 +277,7 @@ export default class SectioningComponent extends BlockComponent {
         let includeAutoName = dependencyValues.includeAutoName || !haveTitleChild;
 
         if (includeAutoNumber) {
-          if(includeAutoName) {
+          if (includeAutoName) {
             titlePrefix = dependencyValues.sectionName + " ";
           }
           titlePrefix += dependencyValues.sectionNumber;
@@ -739,6 +739,19 @@ export default class SectioningComponent extends BlockComponent {
         }
 
         return { setValue: { createSubmitAllButton, suppressAnswerSubmitButtons } }
+      }
+    }
+
+    stateVariableDefinitions.suppressCheckwork = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
       }
     }
 

@@ -1,4 +1,5 @@
 import InlineComponent from './abstract/InlineComponent.js';
+import me from '../../_snowpack/pkg/math-expressions.js';
 
 export default class Choice extends InlineComponent {
   static componentType = "choice";
@@ -75,6 +76,45 @@ export default class Choice extends InlineComponent {
       }
     }
 
+
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      returnDependencies: () => ({
+        inlineChildren: {
+          dependencyType: "child",
+          childGroups: ["children"],
+          variableNames: ["value", "latex"],
+          variablesOptional: true
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let math = null;
+
+        if (dependencyValues.inlineChildren.length === 1) {
+          let child = dependencyValues.inlineChildren[0];
+          if (typeof child === "object") {
+            let value = child.stateValues.value;
+            if (value instanceof me.class) {
+              math = value;
+            } else if (typeof value === "number") {
+              math = me.fromAst(value);
+            } else if (typeof child.stateValues.latex === "string") {
+              try {
+                math = me.fromLatex(child.stateValues.latex);
+              } catch (e) {
+
+              }
+            }
+          }
+        }
+
+        return { setValue: { math } }
+      }
+    }
 
     stateVariableDefinitions.selected = {
       defaultValue: false,
@@ -201,6 +241,6 @@ export default class Choice extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static adapters = ["submitted"];
+  static adapters = ["submitted", "text", "math"];
 
 }

@@ -1,9 +1,9 @@
 import React, {useRef} from "../../_snowpack/pkg/react.js";
-import {textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom} from "./EditorViewer.js";
 import {
   useRecoilValue,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
+import {textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom} from "../../_sharedRecoil/EditorViewerRecoil.js";
 import CodeMirror from "../CodeMirror.js";
 export default function GuestDoenetMLEditor(props) {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);

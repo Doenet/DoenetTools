@@ -33,6 +33,16 @@ export default class LineSegment extends GraphicalComponent {
       forRenderer: true
     }
 
+    attributes.labelPosition = {
+      createComponentOfType: "text",
+      createStateVariable: "labelPosition",
+      defaultValue: "upperright",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft"]
+    }
+
     return attributes;
   }
 

@@ -3,7 +3,6 @@ import Select from "../../_snowpack/pkg/react-select.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const Container = styled.div`
     display: ${(props) => props.align};
-    width: auto;
     align-items: center;
 `;
 const Label = styled.p`
@@ -90,11 +89,7 @@ const DropdownMenu = (props) => {
     return {value, label: label2};
   });
   const labelVisible = props.label ? "static" : "none";
-  var width = props.width;
-  if (props.width == "menu") {
-    width = "210px";
-  }
-  ;
+  var width = "210px";
   var align = "flex";
   var label = "";
   if (props.label) {
@@ -125,7 +120,8 @@ const DropdownMenu = (props) => {
     closeMenuOnSelect: true,
     isMulti: props.isMulti ? props.isMulti : false,
     isDisabled: props.disabled ? true : false,
-    "aria-disabled": props.disabled ? true : false
+    "aria-disabled": props.disabled ? true : false,
+    "data-test": `${props.dataTest} Dropdown`
   }));
 };
 export default DropdownMenu;

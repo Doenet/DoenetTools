@@ -12,12 +12,10 @@ import {
   searchParamAtomFamily,
   profileAtom
 } from "../NewToolRoot.js";
-import {
-  activityVariantPanelAtom
-} from "../ToolHandlers/CourseToolHandler.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {returnNumberOfActivityVariantsForCid} from "../../_utils/activityUtils.js";
 import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
+import {activityVariantPanelAtom} from "../../_sharedRecoil/PageViewerRecoil.js";
 export default function DraftAssignmentViewer() {
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const courseId = useRecoilValue(courseIdAtom);
@@ -32,6 +30,7 @@ export default function DraftAssignmentViewer() {
       paginate,
       showFeedback,
       showHints,
+      autoSubmit,
       cid,
       doenetId,
       solutionDisplayMode
@@ -71,6 +70,7 @@ export default function DraftAssignmentViewer() {
     paginate: paginate2,
     showFeedback: showFeedback2,
     showHints: showHints2,
+    autoSubmit: autoSubmit2,
     showSolution,
     proctorMakesAvailable
   }) => {
@@ -102,6 +102,7 @@ export default function DraftAssignmentViewer() {
       paginate: paginate2,
       showFeedback: showFeedback2,
       showHints: showHints2,
+      autoSubmit: autoSubmit2,
       cid: cid2,
       doenetId: doenetId2,
       solutionDisplayMode: solutionDisplayMode2
@@ -128,6 +129,7 @@ export default function DraftAssignmentViewer() {
       solutionDisplayMode,
       showFeedback,
       showHints,
+      autoSubmit,
       allowLoadState: false,
       allowSaveState: false,
       allowLocalState: false,

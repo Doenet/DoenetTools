@@ -16,12 +16,12 @@ const Button = styled.button`
   background-color: var(--mainBlue);
   display: inline-block;
   /* text-align: center; */
-  /* padding: 2px; */
+  padding: 2px;
   /* z-index: 0; */
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -73,17 +73,16 @@ export default React.memo(function BooleanInput(props) {
   let disabled = SVs.disabled;
   const inputKey = id + "_input";
   let checkWorkStyle = {
-    cursor: "pointer"
+    cursor: "pointer",
+    padding: "1px 6px 1px 6px"
   };
   let checkWorkButton = null;
   let icon = props.icon;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
     if (validationState === "unvalidated") {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         checkWorkStyle.cursor = "not-allowed";
-      } else {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
       checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
         id: id + "_submit",
@@ -101,6 +100,7 @@ export default React.memo(function BooleanInput(props) {
           }
         }
       }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        style: {},
         icon: faLevelDownAlt,
         transform: {rotate: 90}
       }));
@@ -117,7 +117,7 @@ export default React.memo(function BooleanInput(props) {
         } else if (validationState === "partialcorrect") {
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = "50px";
+          checkWorkStyle.width = "44px";
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: id + "_partial",
@@ -134,6 +134,7 @@ export default React.memo(function BooleanInput(props) {
         }
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.padding = "1px 8px 1px 4px";
         checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
           id: id + "_saved",
           style: checkWorkStyle
@@ -188,8 +189,7 @@ export default React.memo(function BooleanInput(props) {
     }
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
-    id,
-    className: "button-container"
+    id
   }, /* @__PURE__ */ React.createElement("a", {
     name: id
   }), input), checkWorkButton);

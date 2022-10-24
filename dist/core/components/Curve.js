@@ -3426,8 +3426,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     // or if finding nearest point as a function failed,
     // find the overall nearest point from the curve to (x1,x2)
 
-    let minfunc = function (t) {
-      let x = -10 * Math.log(1 / t - 1);
+    let minfunc = function (x) {
 
       let dx1 = x1;
       let dx2 = x2;
@@ -3449,10 +3448,10 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let minT = 0;
     let maxT = 1;
     if (parMin !== -Infinity) {
-      minT = 1 / (Math.exp(-parMin / 10) + 1);
+      minT = parMin;
     }
     if (parMax !== -Infinity) {
-      maxT = 1 / (Math.exp(-parMax / 10) + 1);
+      maxT = parMax;
     }
 
     let Nsteps = nDiscretizationPoints;
@@ -3502,7 +3501,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let result = numerics.fminbr(minfunc, [tIntervalMin, tIntervalMax]);
     tAtMin = result.x;
 
-    let x1AtMin = -10 * Math.log(1 / tAtMin - 1);
+    let x1AtMin = tAtMin;
     let x2AtMin = f(x1AtMin)
 
     let currentD2;

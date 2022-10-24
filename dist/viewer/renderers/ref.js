@@ -6,6 +6,8 @@ import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import {itemByDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 import {scrollableContainerAtom} from "../PageViewer.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 export default React.memo(function Ref(props) {
   let {name, id, SVs, children} = useDoenetRender(props);
   const pageToolView = useRecoilValue(pageToolViewAtom);
@@ -104,7 +106,12 @@ export default React.memo(function Ref(props) {
   } else {
     if (haveValidTarget) {
       if (externalUri || url === "#") {
+        console.log("first case");
         return /* @__PURE__ */ React.createElement("a", {
+          style: {
+            color: "var(--mainBlue)",
+            borderRadius: "5px"
+          },
           target: targetForATag,
           id: name,
           name,
@@ -114,7 +121,12 @@ export default React.memo(function Ref(props) {
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = {fromLink: true};
         Object.defineProperty(stateObj, "previousScrollPosition", {get: () => scrollableContainer?.[scrollAttribute], enumerable: true});
+        console.log("second case");
         return /* @__PURE__ */ React.createElement(Link, {
+          style: {
+            color: "var(--mainBlue)",
+            borderRadius: "5px"
+          },
           target: targetForATag,
           id,
           name: id,

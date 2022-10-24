@@ -38,7 +38,9 @@ export function returnLabelStateVariableDefinitions() {
       },
     },
     hasEssential: true,
+    doNotShadowEssential: true,
     defaultValue: "",
+    provideEssentialValuesInDefinition: true,
     additionalStateVariablesDefined: [{
       variableName: "labelHasLatex",
       forRenderer: true,
@@ -49,6 +51,8 @@ export function returnLabelStateVariableDefinitions() {
         childGroups: ["labels"],
         variableNames: ["value", "hasLatex"]
       },
+      // Note: assuming component has a labelIsName attribute
+      // that creates an attribute component and state variable
       labelIsName: {
         dependencyType: "stateVariable",
         variableName: "labelIsName"
@@ -60,18 +64,32 @@ export function returnLabelStateVariableDefinitions() {
       componentNameAndShadowSourceNames: {
         dependencyType: "stateVariable",
         variableName: "componentNameAndShadowSourceNames"
-      }
+      },
+      shadowSource: {
+        dependencyType: "shadowSource",
+        variableNames: ["label", "labelHasLatex"]
+      },
     }),
-    definition({ dependencyValues }) {
-      if (dependencyValues.labelChild.length > 0) {
-        let labelChild = dependencyValues.labelChild[dependencyValues.labelChild.length - 1]
+    definition({ dependencyValues, essentialValues }) {
+
+      let labelChild = dependencyValues.labelChild[dependencyValues.labelChild.length - 1];
+
+      if (labelChild && !labelChild.shadowDepth) {
+
         return {
           setValue: {
             label: labelChild.stateValues.value,
             labelHasLatex: labelChild.stateValues.hasLatex
           }
         }
-      } else if (dependencyValues.labelIsName) {
+      } else if (essentialValues.label !== undefined) {
+        return {
+          useEssentialOrDefaultValue: {
+            label: true
+          },
+          setValue: { labelHasLatex: false }
+        }
+      } else if (dependencyValues.labelIsName && !dependencyValues.labelIsNameAttr.shadowDepth) {
 
         // find a valid name for a label from the component name
         // or the name of one of its shadow targets,
@@ -79,8 +97,7 @@ export function returnLabelStateVariableDefinitions() {
         // i.e., starting with closest component that had the attribute
 
         let label = "__";
-        let cNames = dependencyValues.componentNameAndShadowSourceNames
-          .slice(dependencyValues.labelIsNameAttr.shadowDepth);
+        let cNames = dependencyValues.componentNameAndShadowSourceNames;
 
         for (let cN of cNames) {
           let lastSlash = cN.lastIndexOf('/');
@@ -94,8 +111,10 @@ export function returnLabelStateVariableDefinitions() {
           // it is an automatically generated component name that has random characters in it
           // Don't display name, as they are for internal use only (and the user cannot refer to them)
           return {
-            useEssentialOrDefaultValue: { label: true },
-            setValue: { labelHasLatex: false }
+            setValue: {
+              label: "",
+              labelHasLatex: false
+            }
           }
         }
 
@@ -126,6 +145,14 @@ export function returnLabelStateVariableDefinitions() {
             labelHasLatex: false
           }
         }
+      } else if (typeof dependencyValues.shadowSource?.stateValues.label === "string") {
+        return {
+          setValue: {
+            label: dependencyValues.shadowSource.stateValues.label,
+            labelHasLatex: Boolean(dependencyValues.shadowSource.stateValues.labelHasLatex)
+          }
+        }
+
       } else {
         return {
           useEssentialOrDefaultValue: { label: true },
@@ -138,8 +165,10 @@ export function returnLabelStateVariableDefinitions() {
         return { success: false }
       }
 
-      if (dependencyValues.labelChild.length > 0) {
-        let lastLabelInd = dependencyValues.labelChild.length - 1;
+      let lastLabelInd = dependencyValues.labelChild.length - 1;
+      let labelChild = dependencyValues.labelChild[lastLabelInd];
+
+      if (labelChild && !labelChild.shadowDepth) {
         return {
           success: true,
           instructions: [{
@@ -149,13 +178,28 @@ export function returnLabelStateVariableDefinitions() {
             variableIndex: 0
           }]
         }
-      } else if (dependencyValues.labelIsName) {
-        return { success: false }
+      } else if (dependencyValues.labelIsName && !dependencyValues.labelIsNameAttr.shadowDepth) {
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "label",
+            value: desiredStateVariableValues.label
+          }]
+        }
+      } else if (typeof dependencyValues.shadowSource?.stateValues.label === "string") {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "shadowSource",
+            desiredValue: desiredStateVariableValues.label,
+            variableIndex: 0
+          }]
+        }
       } else {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "label",
+            setEssentialValue: "label",
             value: desiredStateVariableValues.label
           }]
         }

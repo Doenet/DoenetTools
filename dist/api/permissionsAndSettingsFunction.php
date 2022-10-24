@@ -25,6 +25,7 @@ function getpermissionsAndSettings($conn, $userId)
       cr.canModifyCourseSettings,
       cr.canViewUsers,
       cr.canManageUsers,
+      cr.canViewCourse,
       cr.isAdmin,
       cr.dataAccessPermission,
       cr.isOwner
@@ -64,6 +65,7 @@ function getpermissionsAndSettings($conn, $userId)
                 'canModifyCourseSettings' => $row['canModifyCourseSettings'],
                 'canViewUsers' => $row['canViewUsers'],
                 'canManageUsers' => $row['canManageUsers'],
+                'canViewCourse' => $row['canViewCourse'],
                 'isAdmin' => $row['isAdmin'],
                 'dataAccessPermission' => $row['dataAccessPermission'],
                 'isOwner' => $row['isOwner'],
