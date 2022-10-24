@@ -18,6 +18,7 @@ module.exports = {
     'src/Core': '/core',
     'src/Viewer': '/viewer',
     'src/Tools/_framework': '/_framework',
+    'src/Tools/umn': '/umn',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
     'src/Parser': '/parser',
