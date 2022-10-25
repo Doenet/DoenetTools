@@ -68,6 +68,18 @@ export default class Input extends InlineComponent {
 
     }
 
+    stateVariableDefinitions.suppressCheckwork = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
+      }
+    }
 
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,

@@ -1,6 +1,6 @@
 import checkEquality from './checkEquality.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
-import { textToAst, getFromText, appliedFunctionSymbolsDefault } from './math.js';
+import { getFromText, appliedFunctionSymbolsDefault, numberToMathExpression } from './math.js';
 import { deepCompare } from './deepFunctions.js';
 
 const appliedFunctionSymbolsWithBooleanOperators = [
@@ -10,7 +10,12 @@ const appliedFunctionSymbolsWithBooleanOperators = [
 
 var fromTextUnsplit = getFromText({
   splitSymbols: false,
-  appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators
+  appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators,
+  parseScientificNotation: false,
+});
+
+var fromTextSplit = getFromText({
+  parseScientificNotation: false,
 });
 
 export function buildParsedExpression({ dependencyValues, componentInfoObjects }) {
@@ -223,7 +228,7 @@ export function evaluateLogic({ logicTree,
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
-        return child.stateValues.value;
+        return numberToMathExpression(child.stateValues.value).tree;
       }
       child = dependencyValues.numberListChildrenByCode[tree];
 
@@ -580,7 +585,7 @@ export function evaluateLogic({ logicTree,
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
-        return child.stateValues.value;
+        return numberToMathExpression(child.stateValues.value).tree;
       }
       child = dependencyValues.numberListChildrenByCode[tree];
       if (child !== undefined) {
@@ -801,7 +806,7 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
 
   if (!Array.isArray(logicTree)) {
     if (typeof logicTree === "string" && !foundNonMath && !init) {
-      return me.fromAst(textToAst.convert(logicTree)).tree;  // split string
+      return fromTextSplit(logicTree).tree;  // split string
     } else {
       return logicTree;
     }

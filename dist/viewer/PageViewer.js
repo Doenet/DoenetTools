@@ -250,7 +250,7 @@ export default function PageViewer(props) {
       });
     }
   }
-  function forceRendererState({rendererState: rendererState2, forceDisable, forceShowCorrectness, forceShowSolution}) {
+  function forceRendererState({rendererState: rendererState2, forceDisable, forceShowCorrectness, forceShowSolution, forceUnsuppressCheckwork}) {
     for (let componentName in rendererState2) {
       let stateValues = rendererState2[componentName].stateValues;
       if (forceDisable && stateValues.disabled === false) {
@@ -258,6 +258,9 @@ export default function PageViewer(props) {
       }
       if (forceShowCorrectness && stateValues.showCorrectness === false) {
         stateValues.showCorrectness = true;
+      }
+      if (forceUnsuppressCheckwork && stateValues.suppressCheckwork === true) {
+        stateValues.suppressCheckwork = false;
       }
       if (forceShowSolution && rendererState2[componentName].childrenInstructions?.length > 0) {
         for (let childInst of rendererState2[componentName].childrenInstructions) {
@@ -273,7 +276,7 @@ export default function PageViewer(props) {
   }
   function initializeRenderers(args) {
     if (args.rendererState) {
-      if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution) {
+      if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution || props.forceUnsuppressCheckwork) {
         forceRendererState({rendererState: args.rendererState, ...props});
       }
       for (let componentName in args.rendererState) {
@@ -451,7 +454,8 @@ export default function PageViewer(props) {
           showCorrectness: props.flags.showCorrectness,
           solutionDisplayMode: props.flags.solutionDisplayMode,
           showFeedback: props.flags.showFeedback,
-          showHints: props.flags.showHints
+          showHints: props.flags.showHints,
+          autoSubmit: props.flags.autoSubmit
         }
       };
       try {
@@ -654,6 +658,7 @@ export default function PageViewer(props) {
     }
     setStage("recalcParams");
     coreId.current = nanoid();
+    initialCoreData.current = {};
     setPageContentChanged(true);
     return null;
   }

@@ -1,7 +1,8 @@
 import InlineComponent from './abstract/InlineComponent.js';
 import { M } from './MMeMen.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
-import { latexToAst } from '../utils/math.js';
+import { latexToAst, superSubscriptsToUnicode } from '../utils/math.js';
+import { returnSelectedStyleStateVariableDefinition } from '../utils/style.js';
 
 export class Md extends InlineComponent {
   static componentType = "md";
@@ -9,6 +10,45 @@ export class Md extends InlineComponent {
 
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "latex";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.layer = {
+      createComponentOfType: "number",
+      createStateVariable: "layer",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.anchor = {
+      createComponentOfType: "point",
+    }
+
+    attributes.anchorPosition = {
+      createComponentOfType: "text",
+      createStateVariable: "anchorPosition",
+      defaultValue: "upperleft",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
+    }
+
+    attributes.styleNumber.defaultValue = 0;
+
+    return attributes;
+
+  };
 
   static returnChildGroups() {
 
@@ -23,6 +63,10 @@ export class Md extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
 
     stateVariableDefinitions.mrowChildNames = {
       forRenderer: true,
@@ -45,6 +89,7 @@ export class Md extends InlineComponent {
       defaultValue: "",
       hasEssential: true,
       shadowVariable: true,
+      forRenderer: true,
       returnDependencies: () => ({
         mrowChildren: {
           dependencyType: "child",
@@ -111,7 +156,7 @@ export class Md extends InlineComponent {
             }
             if (mrow.stateValues.numbered) {
               lastLatex += `\\tag{${mrow.stateValues.equationTag}}`
-            } else{
+            } else {
               lastLatex += '\\notag '
             }
             for (let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
@@ -146,6 +191,10 @@ export class Md extends InlineComponent {
 
 
     stateVariableDefinitions.text = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         latex: {
           dependencyType: "stateVariable",
@@ -165,7 +214,7 @@ export class Md extends InlineComponent {
           // just return latex if can't parse with math-expressions
           return { setValue: { text: dependencyValues.latex } };
         }
-        return { setValue: { text: expressionText } };
+        return { setValue: { text: superSubscriptsToUnicode(expressionText.toString()) } };
       }
     }
 
@@ -181,8 +230,111 @@ export class Md extends InlineComponent {
       definition: () => ({ setValue: { numbered: false } })
     }
 
+    stateVariableDefinitions.anchor = {
+      defaultValue: me.fromText("(0,0)"),
+      public: true,
+      forRenderer: true,
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "point"
+      },
+      returnDependencies: () => ({
+        anchorAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "anchor",
+          variableNames: ["coords"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.anchorAttr) {
+          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
+        } else {
+          return { useEssentialOrDefaultValue: { anchor: true } }
+        }
+      },
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !await stateValues.draggable) {
+          return { success: false };
+        }
+
+        if (dependencyValues.anchorAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "anchorAttr",
+              desiredValue: desiredStateVariableValues.anchor,
+              variableIndex: 0,
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "anchor",
+              value: desiredStateVariableValues.anchor
+            }]
+          }
+        }
+
+      }
+    }
+
     return stateVariableDefinitions;
   }
+
+  
+  async moveMath({ x, y, z, transient, actionId }) {
+    let components = ["vector"];
+    if (x !== undefined) {
+      components[1] = x;
+    }
+    if (y !== undefined) {
+      components[2] = y;
+    }
+    if (z !== undefined) {
+      components[3] = z;
+    }
+    if (transient) {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        transient,
+        actionId,
+      });
+    } else {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        actionId,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            x, y, z
+          }
+        }
+      });
+    }
+
+  }
+
+
+  actions = {
+    moveMath: this.moveMath.bind(this),
+  };
 
 }
 

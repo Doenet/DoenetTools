@@ -8,16 +8,14 @@ import {
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
-import {
-  pageVariantInfoAtom,
-  pageVariantPanelAtom
-} from "../ToolHandlers/CourseToolHandler.js";
 import {findFirstPageOfActivity} from "../../_reactComponents/Course/CourseActions.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import {editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom, useUpdateViewer} from "./EditorViewer.js";
 import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
 import {parseActivityDefinition} from "../../_utils/activityUtils.js";
+import {editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom} from "../../_sharedRecoil/EditorViewerRecoil.js";
 import {useLocation} from "../../_snowpack/pkg/react-router.js";
+import {pageVariantInfoAtom, pageVariantPanelAtom} from "../../_sharedRecoil/PageViewerRecoil.js";
+import {useUpdateViewer} from "./EditorViewer.js";
 export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
@@ -140,6 +138,7 @@ export default function EditorViewer() {
       solutionDisplayMode,
       showFeedback: true,
       showHints: true,
+      autoSubmit: false,
       allowLoadState: false,
       allowSaveState: false,
       allowLocalState: false,

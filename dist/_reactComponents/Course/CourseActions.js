@@ -12,9 +12,60 @@ import {
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
 import {useToast, toastType} from "../../_framework/Toast.js";
-import {fileByPageId, fileByCid} from "../../_framework/ToolHandlers/CourseToolHandler.js";
 import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 import {useValidateEmail} from "../../_utils/hooks/useValidateEmail.js";
+export const fileByCid = atomFamily({
+  key: "fileByCid",
+  default: selectorFamily({
+    key: "fileByCid/Default",
+    get: (cid) => async () => {
+      if (!cid) {
+        return "";
+      }
+      try {
+        const server = await axios.get(`/media/${cid}.doenet`);
+        return server.data;
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        return "Error Loading";
+      }
+    }
+  })
+});
+export const fileByPageId = atomFamily({
+  key: "fileByPageId",
+  default: selectorFamily({
+    key: "fileByPageId/Default",
+    get: (doenetId) => async () => {
+      if (!doenetId) {
+        return "";
+      }
+      try {
+        const server = await axios.get(`/media/byPageId/${doenetId}.doenet`);
+        return server.data;
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        return "Error Loading";
+      }
+    }
+  })
+});
 const peopleAtomByCourseId = atomFamily({
   key: "peopleAtomByCourseId",
   default: [],
@@ -463,17 +514,17 @@ const unfilteredCourseRolesByCourseId = atomFamily({
 export const courseRolesByCourseId = selectorFamily({
   key: "filteredCourseRolesByCourseId",
   get: (courseId) => ({get}) => {
-    const permissonsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
+    const permissionsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
     const roles = get(unfilteredCourseRolesByCourseId(courseId));
-    const ignoreKeys = ["isIncludedInGradebook", "sectionPermissonOnly", "dataAccessPermission", "roleId", "roleLabel"];
+    const ignoreKeys = ["isIncludedInGradebook", "sectionPermissionOnly", "dataAccessPermission", "roleId", "roleLabel"];
     let filteredRoles = roles?.filter((role) => {
-      let valid = role.roleId === permissonsAndSettings.roleId || !Object.keys(role).every((permKey) => (role[permKey] ?? "0") === permissonsAndSettings[permKey] || ignoreKeys.includes(permKey) || (role[permKey] ?? "0") === "1" && permissonsAndSettings[permKey] === "0");
+      let valid = role.roleId === permissionsAndSettings.roleId || !Object.keys(role).every((permKey) => (role[permKey] ?? "0") === permissionsAndSettings[permKey] || ignoreKeys.includes(permKey) || (role[permKey] ?? "0") === "1" && permissionsAndSettings[permKey] === "0");
       return valid;
     }) ?? [];
     return filteredRoles;
   }
 });
-export const courseRolePermissonsByCourseIdRoleId = selectorFamily({
+export const courseRolePermissionsByCourseIdRoleId = selectorFamily({
   key: "courseRoleByCourseIdRoleId",
   get: ({courseId, roleId}) => ({get}) => {
     return get(unfilteredCourseRolesByCourseId(courseId))?.find(({roleId: candidateRoleId}) => candidateRoleId === roleId) ?? {};
@@ -534,7 +585,8 @@ function findContentsChildIds(content) {
   return collectionAliasOrderAndPageIds;
 }
 export const useCourse = (courseId) => {
-  const {label, color, image, defaultRoleId} = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  const {label, color, image, defaultRoleId, canAutoEnroll} = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  let coursePermissionsAndSettings2 = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   const addToast = useToast();
   function insertPageOrOrderToActivityInSpecificOrder({
     content,
@@ -746,8 +798,8 @@ export const useCourse = (courseId) => {
     console.log("previousDoenetId", previousDoenetId);
     console.log("previousContainingDoenetId", previousContainingDoenetId);
     let newDoenetId;
-    let coursePermissionsAndSettings2 = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(courseId));
-    if (coursePermissionsAndSettings2.canEditContent != "1") {
+    let coursePermissionsAndSettings3 = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(courseId));
+    if (coursePermissionsAndSettings3.canEditContent != "1") {
       return null;
     }
     if (itemType == "activity") {
@@ -773,8 +825,10 @@ export const useCourse = (courseId) => {
         paginate: true,
         showFinishButton: false,
         proctorMakesAvailable: false,
+        autoSubmit: false,
         pinnedAfterDate: null,
         pinnedUntilDate: null,
+        canViewAfterCompleted: "1",
         ...data.itemEntered
       };
       set(itemByDoenetId(createdActivityDoenentId), newActivityObj);
@@ -1128,7 +1182,7 @@ export const useCourse = (courseId) => {
           roleId: serverRoleId,
           updatedPermissions
         }
-      } = await axios.post("/api/updateRolePermissons.php", {
+      } = await axios.post("/api/updateRolePermissions.php", {
         courseId,
         roleId,
         permissions: {...newPermissions, label: newPermissions?.roleLabel}
@@ -1165,7 +1219,7 @@ export const useCourse = (courseId) => {
     try {
       let resp = await axios.post("/api/deleteCourse.php", {courseId});
       if (resp.status < 300) {
-        set(coursePermissionsAndSettings, (prev) => prev.filter((c) => c.courseId !== courseId));
+        set(coursePermissionsAndSettings2, (prev) => prev.filter((c) => c.courseId !== courseId));
         successCallback?.();
       } else {
         throw new Error(`response code: ${resp.status}`);
@@ -2368,6 +2422,7 @@ ${childrenString}</document>`;
     color,
     image,
     defaultRoleId,
+    canAutoEnroll,
     create,
     deleteItem,
     deleteCourse,

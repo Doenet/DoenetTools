@@ -1140,8 +1140,7 @@ export default class NumberComponent extends InlineComponent {
           }
         } else {
           let fromText = getFromText({
-            functionSymbols: await stateValues.functionSymbols,
-            splitSymbols: await stateValues.splitSymbols
+            parseScientificNotation: false,
           });
 
           let expr;

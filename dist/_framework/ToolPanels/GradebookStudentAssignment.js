@@ -12,6 +12,7 @@ import {currentAttemptNumber} from "./AssignmentViewer.js";
 import PageViewer from "../../viewer/PageViewer.js";
 import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import ActivityViewer from "../../viewer/ActivityViewer.js";
+import {coursePermissionsAndSettingsByCourseId} from "../../_reactComponents/Course/CourseActions.js";
 const getUserId = (students, name) => {
   for (let userId in students) {
     if (students[userId].firstName + " " + students[userId].lastName == name) {
@@ -60,6 +61,10 @@ export default function GradebookStudentAssignmentView() {
       setSuppressMenus([]);
     }
   }, [canViewAndModifyGrades, setSuppressMenus]);
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  if (course?.canViewCourse == "0") {
+    return /* @__PURE__ */ React.createElement("h1", null, "No Access to view this page.");
+  }
   if (!doenetId || !userId) {
     return null;
   }
@@ -170,12 +175,14 @@ export default function GradebookStudentAssignmentView() {
       forceDisable: true,
       forceShowCorrectness: true,
       forceShowSolution: solutionDisplayMode !== "none",
+      forceUnsuppressCheckwork: true,
       flags: {
         showCorrectness: true,
         readOnly: true,
         solutionDisplayMode,
         showFeedback: true,
         showHints: true,
+        autoSubmit: false,
         allowLoadState: true,
         allowSaveState: false,
         allowLocalState: false,

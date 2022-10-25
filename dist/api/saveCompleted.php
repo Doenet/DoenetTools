@@ -11,6 +11,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
+$isCompleted = mysqli_real_escape_string($conn,$_REQUEST["isCompleted"]);
 
 $success = TRUE;
 $message = "";
@@ -37,13 +38,15 @@ if ($success){
         
         }else{
           $row = $result->fetch_assoc();
-          $completed = $row['completed'];
+          $prevcompleted = $row['completed'];
+          
+          if ($prevcompleted == '0' || $isCompleted){
           $sql = "UPDATE user_assignment 
                 SET completed=1,completedDate=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
                 WHERE userId = '$userId'
                 AND doenetId = '$doenetId'
           ";
-          if ($completed == '1'){
+          }else{
                 $sql = "UPDATE user_assignment 
                 SET completed=0,completedDate=NULL
                 WHERE userId = '$userId'

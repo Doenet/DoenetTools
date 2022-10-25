@@ -48,9 +48,12 @@ if ($success) {
                 ua.credit, 
                 ua.userId
             FROM assignment AS a
-            JOIN user_assignment AS ua
+            INNER JOIN user_assignment AS ua
                 ON a.doenetId = ua.doenetId
+            INNER JOIN course_content as cc
+                ON a.doenetId = cc.doenetId
             WHERE a.courseId = '$courseId'
+                AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')
             ORDER BY a.dueDate"
         );
     } else {
@@ -60,10 +63,13 @@ if ($success) {
                 ua.credit, 
                 ua.userId
             FROM assignment AS a
-            JOIN user_assignment AS ua
+            INNER JOIN user_assignment AS ua
                 ON a.doenetId = ua.doenetId
+            INNER JOIN course_content as cc
+                ON a.doenetId = cc.doenetId
             WHERE a.courseId = '$courseId'
                 AND ua.userId = '$requestorUserId'
+                AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')
             ORDER BY a.dueDate"
         );
     }
@@ -85,7 +91,7 @@ http_response_code(200);
 echo json_encode([
     'success' => $success,
     'message' => $message,
-    'overviewData' => $response_arr,
+    'overview' => $response_arr,
 ]);
 $conn->close();
 ?>

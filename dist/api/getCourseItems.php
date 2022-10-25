@@ -65,7 +65,9 @@ $activityDoenetIds = [];
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
 		a.paginate AS paginate,
 		a.showFinishButton AS showFinishButton,
-		a.proctorMakesAvailable AS proctorMakesAvailable
+		a.proctorMakesAvailable AS proctorMakesAvailable,
+		a.autoSubmit AS autoSubmit,
+		a.canViewAfterCompleted
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
 		ON a.doenetId = cc.doenetId
@@ -108,6 +110,9 @@ $activityDoenetIds = [];
           "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
           "showFinishButton" => nullishCoalesce($row['showFinishButton'], '0') == '1' ? true : false,
           "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
+          "autoSubmit" => nullishCoalesce($row['autoSubmit'], '0') == '1' ? true : false,
+          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '1') == '1' ? true : false,
+					
 				);
 
 				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
@@ -219,7 +224,11 @@ $activityDoenetIds = [];
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
 		a.paginate AS paginate,
 		a.showFinishButton AS showFinishButton,
-		a.proctorMakesAvailable AS proctorMakesAvailable
+		a.proctorMakesAvailable AS proctorMakesAvailable,
+		a.autoSubmit AS autoSubmit,
+		a.canViewAfterCompleted,
+		ua.completed,
+		ua.completedDate
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
 		ON a.doenetId = cc.doenetId
@@ -265,6 +274,11 @@ $activityDoenetIds = [];
 					"paginate" => $row['paginate'] == '1' ? true : false,
 					"showFinishButton" => $row['showFinishButton'] == '1' ? true : false,
 					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
+					"autoSubmit" => $row['autoSubmit'] == '1' ? true : false,
+          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '1') == '1' ? true : false,
+          "completed" => nullishCoalesce($row['completed'], '0') == '1' ? true : false,
+					"completedDate" => $row['completedDate'],
+
 				);
 
 				

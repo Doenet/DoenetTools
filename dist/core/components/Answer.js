@@ -184,6 +184,13 @@ export default class Answer extends InlineComponent {
       public: true,
     }
 
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+    }
+
     // temporary attribute until fix toast
     attributes.suppressToast = {
       createComponentOfType: "boolean",
@@ -201,11 +208,48 @@ export default class Answer extends InlineComponent {
       // if chidren are strings and macros
       // wrap with award and type
 
+      function checkForResponseDescendant(components) {
+        for (let component of components) {
+          if (component?.attributes?.isResponse && component.attributes.isResponse.primitive !== false) {
+            // idea: catch either isResponse = true or isResponse.primitive=true
+            return true;
+          } else if (component.children && checkForResponseDescendant(component.children)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function addResponsesToCompositeDescendants(components) {
+
+        for (let component of components) {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: component.componentType,
+            baseComponentType: "_composite"
+          })) {
+
+            if (!component.attributes) {
+              component.attributes = {};
+            }
+            // Note we don't add the attribute as {primitive: true}
+            // because the composite don't have the attribute isResponse
+            // but pass it on to their replacements
+            component.attributes.isResponse = true;
+
+          } else if (component.children) {
+            addResponsesToCompositeDescendants(component.children)
+          }
+        }
+
+      }
+
+
       let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
       let foundMath = false, foundText = false, foundBoolean = false;
       let nChoicesFound = 0;
       let definitelyDoNotAddInput = false, mayNeedInput = false;
+      let foundResponse = false;
 
       let childIsWrappable = [];
       for (let child of matchedChildren) {
@@ -242,6 +286,9 @@ export default class Answer extends InlineComponent {
           nChoicesFound++;
         } else if (componentIsSpecifiedType(child, "award")) {
           childIsWrappable.push(false);
+          if (child.attributes?.sourcesAreResponses) {
+            foundResponse = true;
+          }
           if (child.children?.length > 0) {
             for (let grandChild of child.children) {
               if (typeof grandChild !== "object") {
@@ -274,7 +321,7 @@ export default class Answer extends InlineComponent {
                 inheritedComponentType: grandChild.componentType,
                 baseComponentType: "_composite"
               })
-                && !grandChild.props?.componentType
+                && !grandChild.attributes?.createComponentOfType?.primitive
               ) {
                 mayNeedInput = true;
               } else if (componentIsSpecifiedType(grandChild, "orbitalDiagram")) {
@@ -306,7 +353,7 @@ export default class Answer extends InlineComponent {
           inheritedComponentType: child.componentType,
           baseComponentType: "_composite"
         })
-          && !child.props?.componentType
+          && !child.attributes?.createComponentOfType?.primitive
         ) {
           // have a composite without specified componentType
           childIsWrappable.push(true);
@@ -316,6 +363,10 @@ export default class Answer extends InlineComponent {
           childIsWrappable.push(true);
           mayNeedInput = true;
         }
+      }
+
+      if (definitelyDoNotAddInput) {
+        foundResponse = true;
       }
 
       if (nChoicesFound > 0) {
@@ -335,6 +386,34 @@ export default class Answer extends InlineComponent {
           return {
             success: true,
             newChildren: [choiceinput]
+          }
+        }
+      }
+
+
+      if (!mayNeedInput && !foundResponse) {
+        // recurse to all descendants of awards to see if have a response
+        for (let child of matchedChildren) {
+          if (componentIsSpecifiedType(child, "award")) {
+            if (child.children?.length > 0) {
+              if (checkForResponseDescendant(child.children)) {
+                foundResponse = true;
+                break;
+              }
+            }
+          }
+        }
+
+
+        if (!foundResponse) {
+          // definitely have a case where there is not a response
+          // look inside each award and add isResponse to any composites
+          for (let child of matchedChildren) {
+            if (componentIsSpecifiedType(child, "award")) {
+              if (child.children?.length > 0) {
+                addResponsesToCompositeDescendants(child.children)
+              }
+            }
           }
         }
       }
@@ -605,7 +684,6 @@ export default class Answer extends InlineComponent {
             "valueToRecordOnSubmit",
             "valueRecordedAtSubmit",
             "value",
-            "immediateValue"
           ],
           childIndices: stateValues.inputChildIndices,
           variablesOptional: true,
@@ -1072,6 +1150,19 @@ export default class Answer extends InlineComponent {
       targetVariableName: "submittedResponse1"
     };
 
+    stateVariableDefinitions.suppressCheckwork = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
+      }
+    }
+
     stateVariableDefinitions.delegateCheckWork = {
       additionalStateVariablesDefined:
         [
@@ -1101,23 +1192,18 @@ export default class Answer extends InlineComponent {
           variableNames: [
             "suppressAnswerSubmitButtons",
           ]
-        }
+        },
       }),
-      definition: function ({ dependencyValues, componentName }) {
+      definition: function ({ dependencyValues }) {
         let delegateCheckWorkToAncestor = false;
         let delegateCheckWorkToInput = false;
         let delegateCheckWork = false;
 
         if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
           delegateCheckWorkToAncestor = delegateCheckWork = true;
-        } else if (dependencyValues.sectionAncestor) {
-          let ancestorState = dependencyValues.sectionAncestor.stateValues;
-          if (ancestorState.suppressAnswerSubmitButtons) {
-            delegateCheckWorkToAncestor = delegateCheckWork = true;
-          }
-        }
-
-        if (!delegateCheckWorkToAncestor && dependencyValues.inputChildren.length === 1 &&
+        } else if (dependencyValues.sectionAncestor?.stateValues.suppressAnswerSubmitButtons) {
+          delegateCheckWorkToAncestor = delegateCheckWork = true;
+        } else if (dependencyValues.inputChildren.length === 1 &&
           !dependencyValues.forceFullCheckworkButton
         ) {
           delegateCheckWorkToInput = delegateCheckWork = true;
@@ -1266,15 +1352,27 @@ export default class Answer extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.autoSubmit = {
+      returnDependencies: () => ({
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { autoSubmit: Boolean(dependencyValues.autoSubmit) } }
+      }
+    }
 
     stateVariableDefinitions.creditAchievedDependencies = {
       shadowVariable: true,
-      returnDependencies: () => ({
+      stateVariablesDeterminingDependencies: ["autoSubmit"],
+      returnDependencies: ({ stateValues }) => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
           variableNames: ["creditAchievedIfSubmit"],
-          includeImmediateValueWithValue: true,
-          includeRawValueWithImmediateValue: true,
+          includeImmediateValueWithValue: !stateValues.autoSubmit,
+          includeRawValueWithImmediateValue: !stateValues.autoSubmit,
           includeOnlyEssentialValues: true,
         },
       }),
@@ -1294,6 +1392,7 @@ export default class Answer extends InlineComponent {
           }
         }
       },
+      markStale: () => ({ answerCreditPotentiallyChanged: true }),
     }
 
 
@@ -1732,7 +1831,11 @@ export default class Answer extends InlineComponent {
     let responseText = [];
     for (let response of currentResponses) {
       if (response.toString) {
-        responseText.push(response.toString())
+        try {
+          responseText.push(response.toString())
+        } catch (e) {
+          responseText.push('\uff3f')
+        }
       } else {
         responseText.push(response)
       }

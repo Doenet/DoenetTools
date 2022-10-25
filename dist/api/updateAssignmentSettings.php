@@ -42,7 +42,7 @@ $settingKeys = array(
   "gradeCategory","individualize", "showSolution", "showSolutionInGradebook", 
   "showFeedback", "showHints", "showCorrectness", "showCreditAchievedMenu",
   "paginate", "showFinishButton",  
-  "proctorMakesAvailable", "pinnedUntilDate", "pinnedAfterDate"
+  "proctorMakesAvailable", "autoSubmit", "pinnedUntilDate", "pinnedAfterDate","canViewAfterCompleted"
 );
 
 $providedValues = [];
@@ -67,7 +67,7 @@ if (array_key_exists("totalPointsOrPercent", $providedValues) && $providedValues
 $boolKeys = array(
   "individualize", "showSolution", "showSolutionInGradebook", "showFeedback",
   "showHints","showCorrectness","showCreditAchievedMenu",
-  "paginate","showFinishButton","proctorMakesAvailable"
+  "paginate","showFinishButton","proctorMakesAvailable","autoSubmit","canViewAfterCompleted"
 );
 
 foreach ($boolKeys as $key) {
