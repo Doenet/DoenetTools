@@ -65,7 +65,7 @@ export default React.memo(function Chart(props) {
   //     });
   //   }
 
-  }, []);
+  // }, []);
 
 
   return <>
