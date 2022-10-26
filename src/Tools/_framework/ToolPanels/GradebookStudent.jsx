@@ -59,6 +59,8 @@ export default function GradebookStudent() {
     ];
 
     let totalPossiblePoints = 0;
+    let sortedAssignments = Object.entries(assignments.contents);
+    sortedAssignments.sort((a, b) => (a[1].sortOrder < b[1].sortOrder ? -1 : 1));
 
     for (let {
       category,
@@ -76,7 +78,7 @@ export default function GradebookStudent() {
       let allassignedpoints = [];
       let categoryAssignedPointsAreAllDashes = true;
 
-      for (let doenetId in assignments.contents) {
+      for (let [doenetId] of sortedAssignments) {
         let inCategory = assignments.contents[doenetId].category;
         if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
