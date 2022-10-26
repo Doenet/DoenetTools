@@ -723,7 +723,7 @@ function GradebookOverview() {
             Header: (
               <div>
                 {`${category} Total`}{' '}
-                {description.length && (
+                {description.length > 0 && (
                   <div style={{ fontSize: '.7em' }}>
                     Based on {description.join(',')}
                   </div>
