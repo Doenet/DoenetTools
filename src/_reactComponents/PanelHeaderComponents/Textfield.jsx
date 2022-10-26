@@ -17,7 +17,6 @@ const TextfieldStyling = styled.input`
   background-color: var(--canvas);
   cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
   pointer-events: ${props => props.disabled ? 'none' : 'auto'};
-  width: ${props => props.inputWidth};
   &:focus {
     outline: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};
     outline-offset: 2px;

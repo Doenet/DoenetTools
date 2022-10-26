@@ -11,6 +11,7 @@ import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/Togg
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield';
+import Textarea from '../../_reactComponents/PanelHeaderComponents/TextArea';
 import Form from '../../_reactComponents/PanelHeaderComponents/Form';
 
 
@@ -59,7 +60,7 @@ ReactDOM.render(
 </ToggleButtonGroup>,*/
 /*<Form width="menu"/>,*/
 <Textfield width="menu"/>,
-/* <Textfield width="menu"/>, */
+/*<Textarea width="menu"/>,*/
   document.getElementById('root'),
 );
 
