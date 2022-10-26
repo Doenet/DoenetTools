@@ -57,6 +57,10 @@ if ($success) {
   LEFT JOIN user_assignment AS ua
   ON cc.doenetId = ua.doenetId AND
   ua.userId='$userId'
+  ";
+
+  if($permissionsAndSettingsByCourseId[$courseId]["canEditContent"] == '1') {
+    $sql = $sql . "
   WHERE (cc.courseId='$courseId'
   AND cc.isAssigned = '1'
   AND cc.isDeleted = '0'
@@ -66,8 +70,24 @@ if ($success) {
   AND cc.isDeleted = '0'
   AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
   AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-  ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC, cc.sortOrder
-  ";
+    ";
+  } else {
+    $sql = $sql . "
+  WHERE (cc.courseId='$courseId'
+  AND cc.isAssigned = '1'
+  AND cc.isDeleted = '0'
+  AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')
+  AND a.dueDate IS NOT NULL) 
+  OR (cc.courseId='$courseId'
+  AND cc.isAssigned = '1'
+  AND cc.isDeleted = '0'
+  AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')
+  AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+  AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+    ";
+  }
+
+  $sql = $sql . "ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC, cc.sortOrder";
 
   $result = $conn->query($sql); 
   $assignments = [];

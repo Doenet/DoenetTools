@@ -27,6 +27,47 @@
 import 'cypress-wait-until';
 import 'cypress-file-upload';
 
+Cypress.Commands.add("createUserRole", ({courseId,roleId,label="no label"}) => {
+  cy.task('queryDb', `
+  SELECT roleId
+  FROM course_role 
+  WHERE courseId="${courseId}"
+  AND roleId="${roleId}"`).then((result)=>{
+    //Only insert if not a duplicate
+    if (result.length == 0){
+      cy.log("here",result.length)
+      cy.task('queryDb', `
+        INSERT INTO course_role 
+        SET courseId="${courseId}", roleId="${roleId}", label="${label}"`);
+    }
+  })
+});
+
+Cypress.Commands.add("updateRolePerm", ({roleId,permName,newValue}) => {
+  cy.task('queryDb', `
+  UPDATE course_role 
+  SET ${permName}="${newValue}"
+  WHERE roleId="${roleId}"
+  `);
+});
+
+Cypress.Commands.add("setUserRole", ({userId,courseId,roleId}) => {
+  cy.task('queryDb', `
+  UPDATE course_user 
+  SET roleId="${roleId}"
+  WHERE userId="${userId}"
+  AND courseId="${courseId}"
+  `);
+});
+
+Cypress.Commands.add("setUserUpload", ({userId,newValue='1'}) => {
+  cy.task('queryDb', `
+  UPDATE user 
+  SET canUpload="${newValue}"
+  WHERE userId="${userId}"
+  `);
+});
+
 Cypress.Commands.add("signin", ({userId}) => {
   cy.request(`/cyapi/cypressAutoSignin.php?userId=${userId}`)
     // .then((resp)=>{

@@ -151,24 +151,24 @@ if ($success) {
         $message = 'server error: no such role';
     } elseif ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $newPermisson = $row['isAdmin'];
+        $newPermission = $row['isAdmin'];
     }
 
     if (
         // ($requestorPermissions['isOwner'] != '1' ||
         $requestorPermissions['isAdmin'] != '1' &&
         $targetUserPermissions['isAdmin'] == '1' &&
-        $newPermisson == '0'
+        $newPermission == '0'
     ) {
         $success = false;
         $message =
-            'Operation Denied: missing permisson to demote users with role modification privileges';
+            'Operation Denied: missing permission to demote users with role modification privileges';
     }
 
-    if ($requestorPermissions['isAdmin'] != '1' && $newPermisson == '1') {
+    if ($requestorPermissions['isAdmin'] != '1' && $newPermission == '1') {
         $success = false;
         $message =
-            'Operation Denied: missing permisson to promote users to role modification privileges';
+            'Operation Denied: missing permission to promote users to role modification privileges';
     }
 }
 

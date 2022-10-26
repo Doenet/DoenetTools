@@ -245,10 +245,10 @@ export default function HomePage(props) {
     href: "/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
   }, "DoenetML Reference"))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
-  }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "From May 23 - May 26, 2022, we hosted a ", /* @__PURE__ */ React.createElement(LinkStyling, {
+  }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "From May 22 - May 26, 2023, we will host the second ", /* @__PURE__ */ React.createElement(LinkStyling, {
     style: {color: "var(--whiteBlankLink)"},
-    href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
-  }, "workshop"), " on developing content and learning experiments in Doenet.  Held at the University of Minnesota, the workshop for instructors of college STEM courses was a hands-on introduction to authoring and running experiments, led by the developers of Doenet."), /* @__PURE__ */ React.createElement(Paragraph, null, "For information about future workshops, please contact us at ", /* @__PURE__ */ React.createElement(LinkStyling, {
+    href: "https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2023"
+  }, "workshop"), " on developing content and learning experiments in Doenet.  It will be held at the University of Minnesota, the workshop for instructors of college STEM courses will be a hands-on introduction to authoring and running experiments, led by the developers of Doenet."), /* @__PURE__ */ React.createElement(Paragraph, null, "Applications to the workshop will open in January, 2023. For information, please contact us at ", /* @__PURE__ */ React.createElement(LinkStyling, {
     style: {color: "var(--whiteBlankLink)"},
     href: "mailto:info@doenet.org"
   }, "info@doenet.org"), "."))), /* @__PURE__ */ React.createElement(LightBlueColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
@@ -256,10 +256,18 @@ export default function HomePage(props) {
   }, "Timeline"), /* @__PURE__ */ React.createElement(Paragraph, null, "Doenet was conceived in 2018 and began as a partnership of the University of Minnesota, Ohio State University and Ithaca College.  We piloted Doenet content in 2020 and ran our first courses with Doenet in 2021.  We have used Doenet for both content delivery and assessment, incorporating learning experiments in order to perform analyses on the effectiveness of the materials."), /* @__PURE__ */ React.createElement(Paragraph, null, "In 2022, we are beginning to expand the availability of Doenet beyond the original partner institutions."))), /* @__PURE__ */ React.createElement(Footer, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", {
     style: {marginBottom: "0px"}
   }, "Contact us"), /* @__PURE__ */ React.createElement("div", {
-    style: {marginBottom: "40px"}
+    style: {marginBottom: "10px"}
   }, /* @__PURE__ */ React.createElement(LinkStyling, {
     href: "mailto:info@doenet.org"
-  }, "info@doenet.org")), /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement(LinkStyling, {
+  }, "info@doenet.org")), /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "10px"}
+  }, /* @__PURE__ */ React.createElement(LinkStyling, {
+    href: "https://github.com/Doenet/"
+  }, "GitHub")), /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "40px"}
+  }, /* @__PURE__ */ React.createElement(LinkStyling, {
+    href: "https://discord.gg/PUduwtKJ5h"
+  }, "Discord Server")), /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement(LinkStyling, {
     rel: "license",
     href: "http://creativecommons.org/licenses/by/4.0/"
   }, /* @__PURE__ */ React.createElement("img", {

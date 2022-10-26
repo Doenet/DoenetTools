@@ -29,6 +29,7 @@ import {
   ShowSolutionInGradebook,
   TimeLimit,
   TotalPointsOrPercent,
+  CanViewAfterCompleted,
 } from '../../../_reactComponents/Activity/SettingComponents';
 import {
   itemByDoenetId,
@@ -261,6 +262,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
       totalPointsOrPercent,
     },
   } = useActivity(courseId, doenetId);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const sharedProps = {
     courseId,
@@ -275,6 +277,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
         <AssignedDate {...sharedProps} />
         <DueDate {...sharedProps} />
         <TimeLimit {...sharedProps} />
+    
         <AttemptLimit {...sharedProps} />
         <AttemptAggregation {...sharedProps} />
         <TotalPointsOrPercent {...sharedProps} />
@@ -294,6 +297,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
           <AutoSubmit {...sharedProps} />
           <MakePublic {...sharedProps} />
           <ShowDoenetMLSource {...sharedProps} />
+          <CanViewAfterCompleted {...sharedProps} />
         </div>
         <PinAssignment {...sharedProps} />
       </>

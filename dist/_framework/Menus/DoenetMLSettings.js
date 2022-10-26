@@ -1,5 +1,4 @@
 import React from "../../_snowpack/pkg/react.js";
-import {editorPageIdInitAtom} from "../ToolPanels/EditorViewer.js";
 import {useToast, toastType} from "../Toast.js";
 import {
   useRecoilValue
@@ -13,6 +12,7 @@ import {
   faClipboard
 } from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {editorPageIdInitAtom} from "../../_sharedRecoil/EditorViewerRecoil.js";
 export default function DoenetMLSettings(props) {
   const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
   const link = `http://${window.location.host}/content/#/?doenetId=${initializedDoenetId}`;

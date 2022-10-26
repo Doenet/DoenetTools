@@ -106,7 +106,8 @@ if ($success) {
 		showCreditAchievedMenu,
 		paginate,
 		showFinishButton,
-		proctorMakesAvailable
+		proctorMakesAvailable,
+		autoSubmit
 		FROM assignment
         WHERE doenetId='$doenetId'
 		";
@@ -138,6 +139,8 @@ if ($success) {
             "showFinishButton" => $row["showFinishButton"] == "1" ? true : false,
             "proctorMakesAvailable" =>
                 $row["proctorMakesAvailable"] == "1" ? true : false,
+            "autoSubmit" =>
+                $row["autoSubmit"] == "1" ? true : false,
         ];
 
         if($previousAssignedCid != $cid && !is_null($assignmentSettings["numberOfAttemptsAllowed"])) {

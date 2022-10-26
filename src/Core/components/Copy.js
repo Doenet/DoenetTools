@@ -423,40 +423,44 @@ export default class Copy extends CompositeComponent {
         typeAttr: {
           dependencyType: "attributePrimitive",
           attributeName: "createComponentOfType"
+        },
+        targetSubnames: {
+          dependencyType: "stateVariable",
+          variableName: "targetSubnames"
         }
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
         let isPlainMacro = dependencyValues.isPlainMacro
-          && !componentInfoObjects.isCompositeComponent({
+          && (!componentInfoObjects.isCompositeComponent({
             componentType: dependencyValues.targetComponent?.componentType,
-          })
+          }) || dependencyValues.targetSubnames);
 
-          if (isPlainMacro && dependencyValues.typeAttr) {
-            // typically, if specify createComponentOfType (i.e., typeAttr is defined)
-            // then we wouldn't have a plain macro
-            // However, if we specified a different componentType
-            // and the variable for the plain macro is that componentType (or its undefined)
-            // then we'll keep it as a plain macro
-  
-            isPlainMacro = false;
-  
-            let componentTypeFromAttr = componentInfoObjects.
-              componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
-  
-            let targetClass = componentInfoObjects.allComponentClasses[dependencyValues.targetComponent?.componentType];
-  
-            if (targetClass) {
-              let varInfo = componentInfoObjects.publicStateVariableInfo[targetClass.componentType].stateVariableDescriptions[targetClass.variableForPlainMacro];
-  
-              if (componentTypeFromAttr !== targetClass.componentType && varInfo && (
-                varInfo.createComponentOfType === undefined
-                || varInfo.createComponentOfType === componentTypeFromAttr
-              )) {
-                isPlainMacro = true;
-              }
-  
+        if (isPlainMacro && dependencyValues.typeAttr) {
+          // typically, if specify createComponentOfType (i.e., typeAttr is defined)
+          // then we wouldn't have a plain macro
+          // However, if we specified a different componentType
+          // and the variable for the plain macro is that componentType (or its undefined)
+          // then we'll keep it as a plain macro
+
+          isPlainMacro = false;
+
+          let componentTypeFromAttr = componentInfoObjects.
+            componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+
+          let targetClass = componentInfoObjects.allComponentClasses[dependencyValues.targetComponent?.componentType];
+
+          if (targetClass) {
+            let varInfo = componentInfoObjects.publicStateVariableInfo[targetClass.componentType].stateVariableDescriptions[targetClass.variableForPlainMacro];
+
+            if (componentTypeFromAttr !== targetClass.componentType && varInfo && (
+              varInfo.createComponentOfType === undefined
+              || varInfo.createComponentOfType === componentTypeFromAttr
+            )) {
+              isPlainMacro = true;
             }
+
           }
+        }
 
         return { setValue: { isPlainMacro } }
       }
@@ -475,13 +479,17 @@ export default class Copy extends CompositeComponent {
         typeAttr: {
           dependencyType: "attributePrimitive",
           attributeName: "createComponentOfType"
+        },
+        targetSubnames: {
+          dependencyType: "stateVariable",
+          variableName: "targetSubnames"
         }
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
         let isPlainCopy = dependencyValues.isPlainCopy
-          && !componentInfoObjects.isCompositeComponent({
+          && (!componentInfoObjects.isCompositeComponent({
             componentType: dependencyValues.targetComponent?.componentType,
-          });
+          }) || dependencyValues.targetSubnames);
 
         if (isPlainCopy && dependencyValues.typeAttr) {
           // typically, if specify createComponentOfType (i.e., typeAttr is defined)

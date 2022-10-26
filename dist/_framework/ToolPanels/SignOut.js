@@ -8,6 +8,7 @@ export default function SignOut() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   useEffect(() => {
     localStorage.clear();
+    indexedDB.deleteDatabase("keyval-store");
     axios.get("/api/signOut.php", {params: {}}).then((resp) => {
       setSignOutAttempted(true);
     }).catch((error) => {

@@ -162,6 +162,7 @@ import Label from './components/Label';
 import MatchesPattern from './components/MatchesPattern';
 import Matrix from './components/Matrix';
 import EigenDecomposition from './components/linearAlgebra/EigenDecomposition';
+import Latex from './components/Latex';
 
 
 //Extended
@@ -321,6 +322,7 @@ const componentTypeArray = [
   MatchesPattern,
   Matrix,
   EigenDecomposition,
+  Latex,
 
   BaseComponent,
   InlineComponent,

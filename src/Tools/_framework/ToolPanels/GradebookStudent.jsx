@@ -4,6 +4,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
 } from 'recoil';
+import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
@@ -24,6 +25,11 @@ export default function GradebookStudent() {
   let assignments = useRecoilValueLoadable(assignmentData);
   let students = useRecoilValueLoadable(studentData);
   let overview = useRecoilValueLoadable(overviewData);
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+  if (course?.canViewCourse == '0'){
+    return <h1>No Access to view this page.</h1>
+  }
 
   let overviewTable = {};
 

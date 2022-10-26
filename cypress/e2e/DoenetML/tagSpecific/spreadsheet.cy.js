@@ -1461,7 +1461,7 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('x^2');
+      expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('x²');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][3]).eq('true');

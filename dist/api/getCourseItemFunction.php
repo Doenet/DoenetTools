@@ -51,6 +51,7 @@ function getCourseItemFunction($conn,$type,$doenetId){
     a.showHints,
     a.showSolution,
     a.proctorMakesAvailable,
+    a.autoSubmit,
     a.numberOfAttemptsAllowed
     FROM course_content AS cc
     LEFT JOIN
@@ -84,6 +85,7 @@ function getCourseItemFunction($conn,$type,$doenetId){
       "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
       "showFinishButton" => nullishCoalesce($row['showFinishButton'], '0') == '1' ? true : false,
       "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
+      "autoSubmit" => nullishCoalesce($row['autoSubmit'], '0') == '1' ? true : false,
       );
     
     $json = json_decode($row['json'],true);

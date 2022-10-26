@@ -18,6 +18,7 @@ export default React.memo(function Line(props) {
   let pointsAtDown = useRef(false);
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
+  let previousLabelPosition = useRef(null);
   let pointCoords = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
@@ -48,12 +49,13 @@ export default React.memo(function Line(props) {
     }
 
     let fixed = !SVs.draggable || SVs.fixed;
+    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withlabel,
       fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -66,17 +68,52 @@ export default React.memo(function Line(props) {
       highlight: !fixed,
     };
 
-    jsxLineAttributes.label = {
-      highlight: false
-    }
-    if (SVs.labelHasLatex) {
-      jsxLineAttributes.label.useMathJax = true
-    }
+    if (withlabel) {
 
-    if (SVs.applyStyleToLabel) {
-      jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      let anchorx, anchory, offset;
+      if (SVs.labelPosition === "upperright") {
+        offset = [5, 5];
+        anchorx = "left";
+        anchory = "bottom";
+      } else if (SVs.labelPosition === "upperleft") {
+        offset = [-5, 5];
+        anchorx = "right";
+        anchory = "bottom";
+      } else if (SVs.labelPosition === "lowerright") {
+        offset = [5, -5];
+        anchorx = "left";
+        anchory = "top";
+      } else {
+        // lower left
+        offset = [-5, -5];
+        anchorx = "right";
+        anchory = "top";
+      }
+
+      jsxLineAttributes.label = {
+        offset,
+        anchorx,
+        anchory,
+        position: "top",
+        highlight: false
+      }
+
+      if (SVs.labelHasLatex) {
+        jsxLineAttributes.label.useMathJax = true
+      }
+
+      if (SVs.applyStyleToLabel) {
+        jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        jsxLineAttributes.label.strokeColor = "#000000";
+      }
     } else {
-      jsxLineAttributes.label.strokeColor = "#000000";
+      jsxLineAttributes.label = {
+        highlight: false
+      }
+      if (SVs.labelHasLatex) {
+        jsxLineAttributes.label.useMathJax = true
+      }
     }
 
     let through = [
@@ -266,13 +303,42 @@ export default React.memo(function Line(props) {
       lineJXG.current.needsUpdate = true;
       lineJXG.current.update()
       if (lineJXG.current.hasLabel) {
+        lineJXG.current.label.needsUpdate = true;
         if (SVs.applyStyleToLabel) {
           lineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
         } else {
           lineJXG.current.label.visProp.strokecolor = "#000000";
         }
-        lineJXG.current.label.needsUpdate = true;
-        lineJXG.current.label.update();
+        if (SVs.labelPosition !== previousLabelPosition.current) {
+          let anchorx, anchory, offset;
+          if (SVs.labelPosition === "upperright") {
+            offset = [5, 5];
+            anchorx = "left";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "upperleft") {
+            offset = [-5, 5];
+            anchorx = "right";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "lowerright") {
+            offset = [5, -5];
+            anchorx = "left";
+            anchory = "top";
+          } else {
+            // lower left
+            offset = [-5, -5];
+            anchorx = "right";
+            anchory = "top";
+          }
+
+          lineJXG.current.label.visProp.anchorx = anchorx;
+          lineJXG.current.label.visProp.anchory = anchory;
+          lineJXG.current.label.visProp.offset = offset;
+          previousLabelPosition.current = SVs.labelPosition;
+          lineJXG.current.label.fullUpdate();
+        } else {
+          lineJXG.current.label.update();
+        }
+
       }
       board.updateRenderer();
     }

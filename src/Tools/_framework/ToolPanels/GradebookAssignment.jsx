@@ -26,6 +26,7 @@ import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/Dropdo
 import { suppressMenusAtom } from '../NewToolRoot';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import axios from 'axios';
+import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 
 export const processGradesAtom = atom({
   key: 'processGradesAtom',
@@ -317,6 +318,12 @@ export default function GradebookAssignmentView() {
       setSuppressMenus(['GradeUpload']);
     }
   }, [canViewAndModifyGrades, setSuppressMenus]);
+
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+  if (course?.canViewCourse == '0'){
+    return <h1>No Access to view this page.</h1>
+  }
 
   //Wait for attempts and students to load
   if (

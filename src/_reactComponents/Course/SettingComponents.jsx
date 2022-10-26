@@ -672,6 +672,12 @@ export function MangeRoles({ courseId }) {
         onClick={handleCheckboxClick}
         permissionKey={'canModifyCourseSettings'}
       />
+      <RolePermissionCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissions.roleId}
+        onClick={handleCheckboxClick}
+        permissionKey={'canViewCourse'}
+      />
       <DropdownMenu
         label="Data Access Level"
         title=""
