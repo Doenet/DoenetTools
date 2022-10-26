@@ -602,6 +602,19 @@ export default class Document extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.suppressCheckwork = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        autoSubmit: {
+          dependencyType: "flag",
+          flagName: "autoSubmit"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 

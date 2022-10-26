@@ -25,7 +25,7 @@ import RelatedItems from "../PanelHeaderComponents/RelatedItems.js";
 import {RoleDropdown} from "../PanelHeaderComponents/RoleDropdown.js";
 import Textfield from "../PanelHeaderComponents/Textfield.js";
 import {
-  courseRolePermissonsByCourseIdRoleId,
+  courseRolePermissionsByCourseIdRoleId,
   courseRolesByCourseId,
   peopleByCourseId,
   useCourse
@@ -195,6 +195,7 @@ export function AddUserWithOptions({courseId}) {
   };
   return /* @__PURE__ */ React.createElement(UserWithOptionsContainer, null, /* @__PURE__ */ React.createElement(Textfield, {
     label: "First",
+    "data-test": "First",
     width: "250px",
     value: userData.firstName,
     onChange: (e) => {
@@ -203,6 +204,7 @@ export function AddUserWithOptions({courseId}) {
     vertical: true
   }), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Last",
+    "data-test": "Last",
     width: "250px",
     value: userData.lastName,
     onChange: (e) => {
@@ -212,11 +214,13 @@ export function AddUserWithOptions({courseId}) {
   }), /* @__PURE__ */ React.createElement(ButtonFlexContainer, null, /* @__PURE__ */ React.createElement(Button, {
     width: "50px",
     value: "Add User",
+    "data-test": "Add User",
     onClick: handleEmailChange,
     disabled: !isEmailValid,
     vertical: true
   })), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Email",
+    "data-test": "Email",
     width: "250px",
     value: emailInput,
     onChange: (e) => {
@@ -230,6 +234,7 @@ export function AddUserWithOptions({courseId}) {
     alert: emailInput !== "" && !isEmailValid
   }), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Section",
+    "data-test": "Section",
     width: "250px",
     value: userData.section,
     onChange: (e) => {
@@ -238,6 +243,7 @@ export function AddUserWithOptions({courseId}) {
     vertical: true
   }), /* @__PURE__ */ React.createElement(Textfield, {
     label: "External Id",
+    "data-test": "External Id",
     width: "250px",
     value: userData.externalId,
     onChange: (e) => {
@@ -246,6 +252,7 @@ export function AddUserWithOptions({courseId}) {
     vertical: true
   }), /* @__PURE__ */ React.createElement(DropdownMenu, {
     label: "Role",
+    dataTest: "role",
     width: "190px",
     items: roles?.map(({roleLabel, roleId}) => [roleId, roleLabel]) ?? [],
     onChange: ({value: selectedRoleId}) => {
@@ -262,19 +269,19 @@ export function ManageUsers({courseId, editable = false}) {
   const courseUsersRecoil = useRecoilValue(peopleByCourseId(courseId));
   const courseRolesRecoil = useRecoilValue(courseRolesByCourseId(courseId));
   const [selectedUserData, setSelectedUserData] = useState(null);
-  const [selectedUserPermissons, setSelectedUserPermissons] = useState(null);
+  const [selectedUserPermissions, setSelectedUserPermissions] = useState(null);
   const handleRoleChange = async () => {
-    modifyUserRole(selectedUserData?.email, selectedUserPermissons?.roleId, () => {
-      addToast(`${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`);
+    modifyUserRole(selectedUserData?.email, selectedUserPermissions?.roleId, () => {
+      addToast(`${selectedUserData.screenName} is now a ${selectedUserPermissions.roleLabel}`);
       setSelectedUserData((prev) => ({
         ...prev,
-        roleId: selectedUserPermissons.roleId,
-        roleLabel: selectedUserPermissons.roleLabel,
-        permissions: selectedUserPermissons
+        roleId: selectedUserPermissions.roleId,
+        roleLabel: selectedUserPermissions.roleLabel,
+        permissions: selectedUserPermissions
       }));
     }, (err) => {
       addToast(err, toastType.ERROR);
-      setSelectedUserPermissons(selectedUserData.permissons);
+      setSelectedUserPermissions(selectedUserData.permissions);
     });
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(RelatedItems, {
@@ -286,25 +293,25 @@ export function ManageUsers({courseId, editable = false}) {
     }, user.screenName, " (", user.email, ")")) ?? [],
     onChange: ({target: {value: idx}}) => {
       let user = courseUsersRecoil[idx];
-      let permissons = courseRolesRecoil?.find(({roleId}) => roleId === user.roleId) ?? {};
-      setSelectedUserData({...user, permissons});
-      setSelectedUserPermissons(permissons);
+      let permissions = courseRolesRecoil?.find(({roleId}) => roleId === user.roleId) ?? {};
+      setSelectedUserData({...user, permissions});
+      setSelectedUserPermissions(permissions);
     },
     vertical: true
   }), /* @__PURE__ */ React.createElement(RoleDropdown, {
     label: "Assigned Role",
     title: "",
     onChange: ({value: selectedRoleId}) => {
-      setSelectedUserPermissons(courseRolesRecoil?.find(({roleId}) => roleId === selectedRoleId) ?? null);
+      setSelectedUserPermissions(courseRolesRecoil?.find(({roleId}) => roleId === selectedRoleId) ?? null);
     },
-    valueRoleId: selectedUserPermissons?.roleId,
-    disabled: selectedUserData?.permissons?.isOwner === "1" || !editable,
+    valueRoleId: selectedUserPermissions?.roleId,
+    disabled: selectedUserData?.permissions?.isOwner === "1" || !editable,
     vertical: true
   }), editable && /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Assign Role",
     onClick: handleRoleChange,
-    disabled: selectedUserData?.permissons?.isOwner === "1"
+    disabled: selectedUserData?.permissions?.isOwner === "1"
   }));
 }
 const useRolePermissionCheckbox = ({
@@ -314,7 +321,7 @@ const useRolePermissionCheckbox = ({
   disabledConditional,
   onClick
 }) => {
-  const recoilValue = useRecoilValueLoadable(courseRolePermissonsByCourseIdRoleId(recoilKey)).getValue();
+  const recoilValue = useRecoilValueLoadable(courseRolePermissionsByCourseIdRoleId(recoilKey)).getValue();
   const [checked, setChecked] = useState(false);
   const reset = useCallback(() => {
     setChecked(checkedConditional(destructureFunction(recoilValue)));
@@ -338,19 +345,19 @@ const useRolePermissionCheckbox = ({
   };
   return {checked, disabled, onClick: clickFunction}, reset;
 };
-function RolePermissonCheckbox({
+function RolePermissionCheckbox({
   courseId,
   roleId,
-  permissonKey,
+  permissionKey,
   onClick,
   invert = false,
-  parentPermissonKey = ""
+  parentPermissionKey = ""
 }) {
   const {
-    [permissonKey]: recoilValue,
-    [parentPermissonKey]: overrideRecoilValue,
+    [permissionKey]: recoilValue,
+    [parentPermissionKey]: overrideRecoilValue,
     isOwner
-  } = useRecoilValueLoadable(courseRolePermissonsByCourseIdRoleId({courseId, roleId})).getValue();
+  } = useRecoilValueLoadable(courseRolePermissionsByCourseIdRoleId({courseId, roleId})).getValue();
   const [localValue, setLocalValue] = useState("0");
   useEffect(() => {
     setLocalValue(isOwner === "1" && !invert || overrideRecoilValue === "1" || recoilValue === "1" ? "1" : "0");
@@ -365,54 +372,54 @@ function RolePermissonCheckbox({
         value: localValue,
         set: setLocalValue,
         event: e,
-        permissonKey
+        permissionKey
       });
     },
     disabled: overrideRecoilValue === "1" || isOwner === "1"
-  }), /* @__PURE__ */ React.createElement(CheckboxLabelText, null, permissonKey));
+  }), /* @__PURE__ */ React.createElement(CheckboxLabelText, null, permissionKey));
 }
 export function MangeRoles({courseId}) {
   const addToast = useToast();
   const {modifyRolePermissions} = useCourse(courseId);
   const courseRolesRecoil = useRecoilValue(courseRolesByCourseId(courseId));
   const [selectedRoleId, setSelectedRoleId] = useState(courseRolesRecoil[0].roleId);
-  const [selectedRolePermissons, setSelectedRolePermissons] = useState(courseRolesRecoil[0]);
+  const [selectedRolePermissions, setSelectedRolePermissions] = useState(courseRolesRecoil[0]);
   useEffect(() => {
     const permissions = courseRolesRecoil?.find(({roleId}) => roleId === selectedRoleId);
     if (permissions) {
-      setSelectedRolePermissons(permissions);
+      setSelectedRolePermissions(permissions);
     } else {
       setSelectedRoleId(courseRolesRecoil[0].roleId);
     }
   }, [courseRolesRecoil, selectedRoleId]);
-  const [permissonEdits, setPermissonEdits] = useState({});
+  const [permissionEdits, setPermissionEdits] = useState({});
   const [edited, setEdited] = useState(false);
   const handleSave = () => {
-    modifyRolePermissions(selectedRolePermissons.roleId, permissonEdits, () => {
+    modifyRolePermissions(selectedRolePermissions.roleId, permissionEdits, () => {
       setEdited(false);
-      addToast(`Permissions for ${permissonEdits?.roleLabel ?? selectedRolePermissons.roleLabel} updated successfully`);
-      setPermissonEdits({});
+      addToast(`Permissions for ${permissionEdits?.roleLabel ?? selectedRolePermissions.roleLabel} updated successfully`);
+      setPermissionEdits({});
     }, (error) => {
-      setSelectedRolePermissons(selectedRolePermissons);
+      setSelectedRolePermissions(selectedRolePermissions);
       addToast(error, toastType.ERROR);
     });
   };
   const handleDelete = () => {
-    modifyRolePermissions(selectedRolePermissons.roleId, {isDeleted: "1"}, () => {
-      addToast(`${selectedRolePermissons.roleLabel} successfully deleted`);
+    modifyRolePermissions(selectedRolePermissions.roleId, {isDeleted: "1"}, () => {
+      addToast(`${selectedRolePermissions.roleLabel} successfully deleted`);
       setEdited(false);
-      setPermissonEdits({});
+      setPermissionEdits({});
     }, (error) => {
-      setSelectedRolePermissons(selectedRolePermissons);
+      setSelectedRolePermissions(selectedRolePermissions);
       addToast(error, toastType.ERROR);
     });
   };
-  const handleCheckboxClick = ({value, set, permissonKey}) => {
+  const handleCheckboxClick = ({value, set, permissionKey}) => {
     let newValue = "0";
     if (value === "0") {
       newValue = "1";
     }
-    setPermissonEdits((prev) => ({...prev, [permissonKey]: newValue}));
+    setPermissionEdits((prev) => ({...prev, [permissionKey]: newValue}));
     set(newValue);
     if (!edited) {
       setEdited(true);
@@ -431,100 +438,105 @@ export function MangeRoles({courseId}) {
   }), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Label",
     width: "menu",
-    value: permissonEdits?.roleLabel ?? selectedRolePermissons.roleLabel,
+    value: permissionEdits?.roleLabel ?? selectedRolePermissions.roleLabel,
     vertical: true,
     onChange: (e) => {
-      setPermissonEdits((prev) => ({...prev, roleLabel: e.target.value}));
+      setPermissionEdits((prev) => ({...prev, roleLabel: e.target.value}));
       if (!edited) {
         setEdited(true);
       }
     },
-    disabled: selectedRolePermissons.isOwner === "1"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    disabled: selectedRolePermissions.isOwner === "1"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "isIncludedInGradebook",
+    permissionKey: "isIncludedInGradebook",
     invert: true
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canViewContentSource",
-    parentPermissonKey: "canEditContent"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canViewContentSource",
+    parentPermissionKey: "canEditContent"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canViewUnassignedContent",
-    parentPermissonKey: "canEditContent"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canViewUnassignedContent",
+    parentPermissionKey: "canEditContent"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canEditContent"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canEditContent"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canPublishContent"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canPublishContent"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canProctor"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canProctor"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canViewAndModifyGrades"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canViewAndModifyGrades"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canViewActivitySettings",
-    parentPermissonKey: "canModifyActivitySettings"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canViewActivitySettings",
+    parentPermissionKey: "canModifyActivitySettings"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canModifyActivitySettings"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canModifyActivitySettings"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canModifyCourseSettings"
+    permissionKey: "canModifyCourseSettings"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
+    courseId,
+    roleId: selectedRolePermissions.roleId,
+    onClick: handleCheckboxClick,
+    permissionKey: "canViewCourse"
   }), /* @__PURE__ */ React.createElement(DropdownMenu, {
     label: "Data Access Level",
     title: "",
     items: ["None", "Aggregated", "Anonymized", "Identified"].map((value) => [value, value]),
     onChange: ({value: dataAccessPermission}) => {
-      setPermissonEdits((prev) => ({...prev, dataAccessPermission}));
+      setPermissionEdits((prev) => ({...prev, dataAccessPermission}));
       if (!edited) {
         setEdited(true);
       }
     },
-    valueIndex: ["None", "Aggregated", "Anonymized", "Identified"].findIndex((value) => value === (permissonEdits?.dataAccessPermission ?? selectedRolePermissons.dataAccessPermission)) + 1,
+    valueIndex: ["None", "Aggregated", "Anonymized", "Identified"].findIndex((value) => value === (permissionEdits?.dataAccessPermission ?? selectedRolePermissions.dataAccessPermission)) + 1,
     vertical: true,
-    disabled: selectedRolePermissons.isOwner === "1",
+    disabled: selectedRolePermissions.isOwner === "1",
     width: "menu"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canViewUsers",
-    parentPermissonKey: "canManageUsers"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canViewUsers",
+    parentPermissionKey: "canManageUsers"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "canManageUsers",
-    parentPermissonKey: "isAdmin"
-  }), /* @__PURE__ */ React.createElement(RolePermissonCheckbox, {
+    permissionKey: "canManageUsers",
+    parentPermissionKey: "isAdmin"
+  }), /* @__PURE__ */ React.createElement(RolePermissionCheckbox, {
     courseId,
-    roleId: selectedRolePermissons.roleId,
+    roleId: selectedRolePermissions.roleId,
     onClick: handleCheckboxClick,
-    permissonKey: "isAdmin"
+    permissionKey: "isAdmin"
   }), edited && /* @__PURE__ */ React.createElement(ButtonGroup, {
     vertical: true
   }, /* @__PURE__ */ React.createElement(Button, {

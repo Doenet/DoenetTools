@@ -354,7 +354,8 @@ export default function Increment(props) {
     ref: decrementRef,
     alert: props.alert,
     disabled: props.disabled,
-    onClick: decrementOnClick
+    onClick: decrementOnClick,
+    "data-test": `Decrement ${props.dataTest}`
   }, decreaseIcon), /* @__PURE__ */ React.createElement(TextField, {
     "aria-labelledby": "increment-label",
     "aria-haspopup": "true",
@@ -391,7 +392,8 @@ export default function Increment(props) {
     onClick: incrementOnClick,
     "aria-labelledby": "increment-label",
     "aria-label": "Increase",
-    "aria-disabled": props.disabled ? true : false
+    "aria-disabled": props.disabled ? true : false,
+    "data-test": `Increment ${props.dataTest}`
   }, increaseIcon)), !props.deactivateDropdown && menuOptions && menuToggle && /* @__PURE__ */ React.createElement(Menu, {
     ref: menuRef,
     maxHeight: props.maxHeight ? props.maxHeight : "150px"

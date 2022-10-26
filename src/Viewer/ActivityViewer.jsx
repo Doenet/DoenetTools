@@ -16,6 +16,7 @@ import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'reco
 import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../_reactComponents/PanelHeaderComponents/ActionButton';
 import ButtonGroup from '../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
 
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
@@ -40,6 +41,8 @@ export const itemWeightsAtom = atom({
 
 export default function ActivityViewer(props) {
   const toast = useToast();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
 
   const [errMsg, setErrMsg] = useState(null);
 
@@ -388,7 +391,6 @@ export default function ActivityViewer(props) {
 
   }
 
-
   function calculateCidDefinition() {
 
     if (activityDefinitionFromProps) {
@@ -464,7 +466,6 @@ export default function ActivityViewer(props) {
     }
 
   }
-
 
   async function loadState() {
 
@@ -736,7 +737,6 @@ export default function ActivityViewer(props) {
     return { localInfo, cid, attemptNumber };
 
   }
-
 
   async function saveState({ overrideThrottle = false, overrideStage = false } = {}) {
 
@@ -1139,10 +1139,55 @@ export default function ActivityViewer(props) {
 
     await saveState({ overrideThrottle: true })
 
-    // TODO: what should this do in general?
-    window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
+  // console.log("activityInfo here",activityInfo)
 
+    //Clear out history of exam if canViewAfterCompleted setting set as false
+    if (!activityInfo.canViewAfterCompleted){
+      console.log("CLEAR state from viewer and cache")
+      //Simple answer for now - lose all state info
+      //idb_set ???
+      
+      // var req = indexedDB.deleteDatabase('keyval-store') 
+      //   req.onsuccess = function () {
+      //     console.log("Deleted database successfully");
+      //   };
+      //   req.onerror = function () {
+      //     console.log("Couldn't delete database");
+      //   };
+      //   req.onblocked = function () {
+      //       console.log("Couldn't delete database due to the operation being blocked");
+      //   };
+    }
+      //Set assignment as completed for the user in the Data Base and Recoil
+      let resp = await axios.get('/api/saveCompleted.php', {
+        params: { doenetId:props.doenetId, isCompleted:true },
+      });
+      // console.log("resp",resp.data)
+      if (resp.data.success){
+
+        //Mark activity as completed in Recoil
+        props?.setActivityAsCompleted();
+
+        //Go to end exam for the specific page
+        setPageToolView((prev)=>{
+          return {
+            page:prev.page,
+            tool: 'endExam',
+            view: '',
+            params: {
+              doenetId:props.doenetId,
+              attemptNumber,
+              itemWeights:itemWeights.join(","),
+            }
+          }
+        });
+
+      }
+    
+
+   
   }
+
 
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
@@ -1372,7 +1417,9 @@ export default function ActivityViewer(props) {
   if (props.showFinishButton) {
     if (finishAssessmentMessageOpen) {
       finishAssessmentPrompt = <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap" }}>
-        Are you sure you want to finish this assessment?
+       <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
+       Are you sure you want to finish this assessment?
+        </div> 
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
             <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>

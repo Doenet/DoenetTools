@@ -20,6 +20,7 @@ import {
   faChartPie,
   faTasks
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {coursePermissionsAndSettingsByCourseId} from "../../_reactComponents/Course/CourseActions.js";
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
@@ -35,6 +36,10 @@ export default function Dashboard(props) {
   useEffect(() => {
     setSuppressMenus(canModifyCourseSettings === "1" ? [] : ["ClassTimes"]);
   }, [canModifyCourseSettings, setSuppressMenus]);
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  if (course?.canViewCourse == "0") {
+    return /* @__PURE__ */ React.createElement("h1", null, "No Access to view this page.");
+  }
   return /* @__PURE__ */ React.createElement("div", {
     style: props?.style ?? {}
   }, /* @__PURE__ */ React.createElement("div", {

@@ -7,12 +7,6 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {itemHistoryAtom} from "../ToolHandlers/CourseToolHandler.js";
-import {
-  editorPageIdInitAtom,
-  updateTextEditorDoenetMLAtom,
-  textEditorDoenetMLAtom,
-  viewerDoenetMLAtom
-} from "../ToolPanels/EditorViewer.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import RelatedItems from "../../_reactComponents/PanelHeaderComponents/RelatedItems.js";
 import {
@@ -27,6 +21,8 @@ import {useToast, toastType} from "../Toast.js";
 import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
 import {editorSaveTimestamp} from "../ToolPanels/DoenetMLEditor.js";
 import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
+import {editorPageIdInitAtom, textEditorDoenetMLAtom, viewerDoenetMLAtom, updateTextEditorDoenetMLAtom} from "../../_sharedRecoil/EditorViewerRecoil.js";
+import {cidFromText} from "../../core/utils/cid.js";
 export const currentDraftSelectedAtom = atom({
   key: "currentDraftSelectedAtom",
   default: true

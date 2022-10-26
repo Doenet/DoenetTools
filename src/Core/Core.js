@@ -10011,7 +10011,7 @@ export default class Core {
 
     axios.post('/api/saveCreditForItem.php', payload)
       .then(resp => {
-        console.log('>>>>saveCreditForItem resp', resp.data);
+        // console.log('>>>>saveCreditForItem resp', resp.data);
 
         if (resp.status === null) {
           postMessage({

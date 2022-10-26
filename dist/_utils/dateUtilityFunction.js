@@ -50,6 +50,15 @@ export function dateUtilityFunction(date, isTimeIncluded){
     pad(date.getUTCSeconds());
   }
 
+  export function DateToUTCDateWithoutSecondsString(date){
+    var pad = function(num) { return ('00'+num).slice(-2) };
+    return date.getUTCFullYear()         + '-' +
+    pad(date.getUTCMonth() + 1)  + '-' +
+    pad(date.getUTCDate())       + ' ' +
+    pad(date.getUTCHours())      + ':' +
+    pad(date.getUTCMinutes());
+  }
+
   export function DateToDateString(date){
     var pad = function(num) { return ('00'+num).slice(-2) };
     return date.getFullYear()         + '-' +

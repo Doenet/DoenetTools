@@ -5,8 +5,52 @@ import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_sn
 import {sizeToCSS} from "./utils/css.js";
 import {rendererState} from "./useDoenetRenderer.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const Button = styled.button`
+  position: relative;
+  height: 24px;
+  width: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  padding: 2px;
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 4px 4px 0px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
+const TextArea = styled.textarea`
+  width: ${(props) => props.textAreaWidth};
+  height: ${(props) => props.textAreaHeight}; // Same height as the checkWorkButton, accounting for the borders
+  font-size: 14px;
+  border: ${(props) => props.surroundingBorder}; // Turns blue on focus
+
+  &:focus {
+    outline: var(--mainBorder);
+    outline-offset: 2px;
+  }
+`;
+const Input = styled.input`
+  width: ${(props) => props.inputWidth}px;
+  height: 20px; // Same height as the checkWorkButton, accounting for the borders
+  font-size: 14px;
+  border: ${(props) => props.surroundingBorder}; // Turns blue on focus
+
+  &:focus {
+    outline: var(--mainBorder);
+    outline-offset: 2px;
+  }
+`;
 export default function TextInput(props) {
   let {name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
+  let textAreaWidth = sizeToCSS(SVs.width);
+  let textAreaHeight = sizeToCSS(SVs.height);
+  let inputWidth = SVs.size * 10;
   TextInput.baseStateVariable = "immediateValue";
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
   const setRendererState = useSetRecoilState(rendererState(rendererName));
@@ -37,7 +81,7 @@ export default function TextInput(props) {
         action: actions.updateValue,
         baseVariableValue: rendererValue
       });
-      if (SVs.includeCheckWork && validationState === "unvalidated") {
+      if (SVs.includeCheckWork && !SVs.suppressCheckwork && validationState === "unvalidated") {
         callAction({
           action: actions.submitAnswer
         });
@@ -95,31 +139,18 @@ export default function TextInput(props) {
   }
   let disabled = SVs.disabled;
   const inputKey = id + "_input";
-  let surroundingBorderColor = "#efefef";
-  if (focused.current) {
-    surroundingBorderColor = "#82a5ff";
-  }
+  let surroundingBorder = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
   let checkWorkButton = null;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
     let checkWorkStyle = {
-      position: "relative",
-      width: "30px",
-      height: "24px",
-      fontSize: "20px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      display: "inline-block",
-      textAlign: "center",
-      top: "3px",
-      padding: "2px"
+      cursor: "pointer",
+      padding: "1px 6px 1px 6px"
     };
     if (validationState === "unvalidated") {
       if (disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-      } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
       }
-      checkWorkButton = /* @__PURE__ */ React.createElement("button", {
+      checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
         id: id + "_submit",
         tabIndex: "0",
         disabled,
@@ -135,14 +166,15 @@ export default function TextInput(props) {
           }
         }
       }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        style: {},
         icon: faLevelDownAlt,
         transform: {rotate: 90}
       }));
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: id + "_correct",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -151,15 +183,15 @@ export default function TextInput(props) {
         } else if (validationState === "partialcorrect") {
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = "50px";
+          checkWorkStyle.width = "44px";
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: id + "_partial",
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: id + "_incorrect",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -168,7 +200,8 @@ export default function TextInput(props) {
         }
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+        checkWorkStyle.padding = "1px 8px 1px 4px";
+        checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
           id: id + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -178,13 +211,15 @@ export default function TextInput(props) {
     }
     if (SVs.numberOfAttemptsLeft < 0) {
       checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(1 attempt remaining)"));
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
       checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
     }
   }
   let input;
   if (SVs.expanded) {
-    input = /* @__PURE__ */ React.createElement("textarea", {
+    input = /* @__PURE__ */ React.createElement(TextArea, {
       key: inputKey,
       id: inputKey,
       value: rendererValue,
@@ -194,16 +229,13 @@ export default function TextInput(props) {
       onKeyDown: handleKeyDown,
       onBlur: handleBlur,
       onFocus: handleFocus,
-      style: {
-        width: sizeToCSS(SVs.width),
-        height: sizeToCSS(SVs.height),
-        fontSize: "14px",
-        borderWidth: "1px",
-        padding: "4px"
-      }
+      textAreaWidth,
+      textAreaHeight,
+      surroundingBorder,
+      style: {margin: "0px 4px 4px 0px"}
     });
   } else {
-    input = /* @__PURE__ */ React.createElement("input", {
+    input = /* @__PURE__ */ React.createElement(Input, {
       key: inputKey,
       id: inputKey,
       value: rendererValue,
@@ -213,20 +245,16 @@ export default function TextInput(props) {
       onKeyDown: handleKeyDown,
       onBlur: handleBlur,
       onFocus: handleFocus,
-      style: {
-        width: `${SVs.size * 10}px`,
-        height: "22px",
-        fontSize: "14px",
-        borderWidth: "1px",
-        borderColor: surroundingBorderColor,
-        padding: "4px"
-      }
+      inputWidth,
+      surroundingBorder,
+      style: {margin: "0px 4px 4px 0px"}
     });
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name: id
   }), /* @__PURE__ */ React.createElement("span", {
     className: "textInputSurroundingBox",
-    id
+    id,
+    style: {display: "inline-flex"}
   }, input, checkWorkButton));
 }

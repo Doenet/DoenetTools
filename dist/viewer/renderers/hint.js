@@ -6,6 +6,13 @@ import {faLightbulb as lightOn} from "../../_snowpack/pkg/@fortawesome/free-regu
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const SpanStyling = styled.span`
+&: focus {
+  outline: 2px solid var(--canvastext);
+  outline-offset: 2px;
+}
+`;
 export default React.memo(function Hint(props) {
   let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
   let onChangeVisibility = (isVisible) => {
@@ -38,9 +45,6 @@ export default React.memo(function Hint(props) {
   if (!title) {
     title = SVs.title;
   }
-  let twirlIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: twirlIsClosed
-  });
   let icon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: lightOff
   });
@@ -51,11 +55,15 @@ export default React.memo(function Hint(props) {
       action: actions.revealHint
     });
   };
+  let onKeyPressFunction = (e) => {
+    if (e.key === "Enter") {
+      callAction({
+        action: actions.revealHint
+      });
+    }
+  };
   let openCloseText = "open";
   if (SVs.open) {
-    twirlIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: twirlIsOpen
-    });
     openCloseText = "close";
     icon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: lightOn
@@ -71,6 +79,13 @@ export default React.memo(function Hint(props) {
       borderBottomRightRadius: "5px",
       backgroundColor: "white"
     };
+    onKeyPressFunction = (e) => {
+      if (e.key === "Enter") {
+        callAction({
+          action: actions.closeHint
+        });
+      }
+    };
     onClickFunction = () => {
       callAction({
         action: actions.closeHint
@@ -85,7 +100,7 @@ export default React.memo(function Hint(props) {
     key: id
   }, /* @__PURE__ */ React.createElement("a", {
     name: id
-  }), /* @__PURE__ */ React.createElement("span", {
+  }), /* @__PURE__ */ React.createElement(SpanStyling, {
     style: {
       display: "block",
       margin: SVs.open ? "12px 4px 0px 4px" : "12px 4px 12px 4px",
@@ -98,9 +113,11 @@ export default React.memo(function Hint(props) {
       backgroundColor: "var(--mainGray)",
       cursor: "pointer"
     },
+    tabIndex: "0",
     "data-test": "hint-heading",
-    onClick: onClickFunction
-  }, twirlIcon, " ", icon, " ", title, " (click to ", openCloseText, ")"), /* @__PURE__ */ React.createElement("span", {
+    onClick: onClickFunction,
+    onKeyDown: onKeyPressFunction
+  }, " ", icon, " ", title, " (click to ", openCloseText, ")"), /* @__PURE__ */ React.createElement("span", {
     style: infoBlockStyle
   }, info)));
 });

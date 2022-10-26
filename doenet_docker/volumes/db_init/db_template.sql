@@ -91,6 +91,7 @@ CREATE TABLE `assignment` (
   `showFinishButton` tinyint(1) NOT NULL DEFAULT '0',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   `autoSubmit` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewAfterCompleted` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Can''t navigate back to view and don''t show in gradebook',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -102,7 +103,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0,0,0);
+INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0,0,0,1);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -273,9 +274,10 @@ CREATE TABLE `course` (
   `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `browserExamKeys` text COLLATE utf8_unicode_ci,
   `lastSeenExamKey` varchar(66) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `canAutoEnroll` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -284,6 +286,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
+INSERT INTO `course` VALUES (3,'umnMathPlacement','UMN Placement Exams',0,0,'picture11.jpg','none','7VhPa3uv4pClP0WNyEDQJ',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -312,7 +315,7 @@ CREATE TABLE `course_content` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `courseId` (`courseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -321,6 +324,7 @@ CREATE TABLE `course_content` (
 
 LOCK TABLES `course_content` WRITE;
 /*!40000 ALTER TABLE `course_content` DISABLE KEYS */;
+INSERT INTO `course_content` VALUES (5,'activity','umnMathPlacement','umnMathPlacementExam','umnMathPlacement','Math Placement Exam','2022-10-21 19:03:04',0,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_aKljogmtDcZPvpstQjuMK\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}');
 /*!40000 ALTER TABLE `course_content` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -364,6 +368,7 @@ CREATE TABLE `course_role` (
   `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled Role',
   `isIncludedInGradebook` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewCourse` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'This is to hide the course from navigation initially for placement exams',
   `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
   `canViewContentSource` tinyint(1) NOT NULL DEFAULT '0',
   `canEditContent` tinyint(1) NOT NULL DEFAULT '0',
@@ -391,6 +396,7 @@ CREATE TABLE `course_role` (
 
 LOCK TABLES `course_role` WRITE;
 /*!40000 ALTER TABLE `course_role` DISABLE KEYS */;
+INSERT INTO `course_role` VALUES ('umnMathPlacement','7VhPa3uv4pClP0WNyEDQJ','Student',1,0,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),('umnMathPlacement','dx39LHmbs6dzvU4aVdJHr','Author',0,1,1,1,1,1,0,0,0,0,0,'Aggregate',0,0,0,0,NULL),('umnMathPlacement','JCrC2g6iRxFN55OZPj3eL','Owner',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,1,NULL);
 /*!40000 ALTER TABLE `course_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -426,6 +432,7 @@ CREATE TABLE `course_user` (
 
 LOCK TABLES `course_user` WRITE;
 /*!40000 ALTER TABLE `course_user` DISABLE KEYS */;
+INSERT INTO `course_user` VALUES ('umnMathPlacement','devuserid',NULL,'2022-10-21 18:36:28',NULL,_binary '\0',NULL,NULL,NULL,NULL,1,'JCrC2g6iRxFN55OZPj3eL');
 /*!40000 ALTER TABLE `course_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -778,6 +785,7 @@ CREATE TABLE `pages` (
 
 LOCK TABLES `pages` WRITE;
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
+INSERT INTO `pages` VALUES ('umnMathPlacement','umnMathPlacementExam','_aKljogmtDcZPvpstQjuMK','Untitled',0);
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1012,4 +1020,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-10-11  1:45:04
+-- Dump completed on 2022-10-22 16:24:24

@@ -77,7 +77,8 @@ export default function People() {
       onClick: () => {
         setProcess(csvPeopleProcess.IDLE);
       },
-      value: "Cancel"
+      value: "Cancel",
+      "data-test": "Cancel"
     }), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => {
         const mergePayload = {
@@ -100,6 +101,7 @@ export default function People() {
         });
       },
       value: "Merge",
+      "data-test": "Merge",
       alert: true
     })));
   }
@@ -113,12 +115,15 @@ export default function People() {
     onClick: () => {
       setShowWithdrawn(!showWithdrawn);
     },
+    dataTest: "Show Withdrawn",
     checked: showWithdrawn
-  }), /* @__PURE__ */ React.createElement(CheckboxLabelText, null, "Show Withdrawn ")) : null, /* @__PURE__ */ React.createElement(PeopleTabelHeader, {
+  }), /* @__PURE__ */ React.createElement(CheckboxLabelText, null, "Show Withdrawn")) : null, /* @__PURE__ */ React.createElement(PeopleTabelHeader, {
     columnLabels: ["Name", "Email", "Role", "Date Added"],
     numberOfVisibleColumns,
     setNumberOfVisibleColumns
-  }), peopleTableData.map(({
+  }), /* @__PURE__ */ React.createElement("div", {
+    "data-test": "People Table"
+  }, peopleTableData.map(({
     email,
     firstName,
     lastName,
@@ -142,6 +147,7 @@ export default function People() {
       /* @__PURE__ */ React.createElement(Button, {
         key: "withdraw",
         value: withdrew === "0" ? "Withdraw" : "Enroll",
+        "data-test": withdrew === "0" ? `Withdraw ${email}` : `Enroll ${email}`,
         onClick: (e) => {
           if (withdrew === "0") {
             withDrawLearners(e, email);
@@ -159,7 +165,7 @@ export default function People() {
       numberOfVisibleColumns,
       columnsJSX
     });
-  }), peopleTableData.length === 0 ? /* @__PURE__ */ React.createElement("p", null, "No Students are currently enrolled in the course") : null);
+  })), peopleTableData.length === 0 ? /* @__PURE__ */ React.createElement("p", null, "No Students are currently enrolled in the course") : null);
 }
 function PeopleTabelHeader({
   columnLabels,

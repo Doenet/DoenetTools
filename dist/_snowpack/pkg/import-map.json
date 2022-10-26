@@ -37,6 +37,7 @@
     "idb-keyval": "./idb-keyval.js",
     "js-cookie": "./js-cookie.js",
     "json-stringify-deterministic": "./json-stringify-deterministic.js",
+    "lodash": "./lodash.js",
     "lodash.debounce": "./lodash.debounce.js",
     "lodash/cloneDeep": "./lodash/cloneDeep.js",
     "lorem-ipsum": "./lorem-ipsum.js",

@@ -628,7 +628,10 @@ export default function VirtualKeyboard() {
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(y\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("type ^2")
+      onClick: () => {
+        callback("type ^2");
+        callback("keystroke Right");
+      }
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(a^2\\)")), /* @__PURE__ */ React.createElement(Button, {

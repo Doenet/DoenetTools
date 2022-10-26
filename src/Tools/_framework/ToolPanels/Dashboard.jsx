@@ -20,6 +20,7 @@ import {
   faChartPie,
   faTasks,
 } from '@fortawesome/free-solid-svg-icons';
+import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -37,6 +38,13 @@ export default function Dashboard(props) {
   useEffect(() => {
     setSuppressMenus(canModifyCourseSettings === '1' ? [] : ['ClassTimes']);
   }, [canModifyCourseSettings, setSuppressMenus]);
+
+
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+  if (course?.canViewCourse == '0'){
+    return <h1>No Access to view this page.</h1>
+  }
 
   return (
     <div style={props?.style ?? {}}>
