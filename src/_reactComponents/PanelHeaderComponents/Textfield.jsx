@@ -77,6 +77,7 @@ export default function Textfield(props) {
   var inputWidth = ""
   if (props.width) {
     if (props.width === "menu") {
+      container.width = 'var(--menuWidth)';
       inputWidth = 'var(--menuWidth)';
       if (props.label) {
         container.width = 'var(--menuWidth)';

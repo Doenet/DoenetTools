@@ -59,8 +59,9 @@ ReactDOM.render(
   <ToggleButton value="abedgdgd"/>
 </ToggleButtonGroup>,*/
 /*<Form width="menu"/>,*/
-<Textfield width="menu"/>,
-/*<Textarea width="menu"/>,*/
+/*<Textfield label="hello!" width="menu"/>,*/
+/*<Textarea label="hello!" width="menu"/>,*/
+<ToggleButton label="hello!" width="menu"></ToggleButton>,
   document.getElementById('root'),
 );
 

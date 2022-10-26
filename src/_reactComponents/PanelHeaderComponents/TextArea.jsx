@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const Textarea = styled.textarea`
-  margin: 0px 4px 0px 0px;
+  /* margin: 0px 4px 0px 0px; */
   height: 24px;
   width: ${props => props.width};
   border: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};
@@ -61,6 +61,7 @@ export default function TextArea(props) {
   var inputWidth = "";
   if (props.width) {
     if (props.width === "menu") {
+      container.width = 'var(--menuWidth)';
       inputWidth = 'var(--menuWidth)';
       if (props.label) {
         container.width = 'var(--menuWidth)';
