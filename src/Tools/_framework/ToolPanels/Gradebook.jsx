@@ -740,7 +740,6 @@ function GradebookOverview() {
       overviewTable.headers.push({
         Header: (
           <div>
-            {`${category} Total`} {description}{' '}
           </div>
         ),
         accessor: category,
