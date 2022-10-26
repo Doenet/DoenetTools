@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const TextfieldStyling = styled.input`
-  margin: 0px 4px 0px 0px;
+  /* margin: 0px 4px 0px 0px; */
   height: 24px;
   width: ${props => props.width}; // Menu prop
   border: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};

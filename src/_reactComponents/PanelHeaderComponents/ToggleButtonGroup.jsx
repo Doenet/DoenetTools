@@ -7,12 +7,13 @@ const Container = styled.div`
   // height: 'fit-content';
   // margin: 2px 0px 2px 0px ;
   /* flex-wrap: wrap; */
+  overflow: clip;
 `;
 
 const toggleGroup = {
   margin: '0px -2px 0px -2px',
   borderRadius: '0',
-  // padding: '0px 12px 0px 10px',
+  padding: '0px 12px 0px 10px',
 };
 
 const verticalToggleGroup = {

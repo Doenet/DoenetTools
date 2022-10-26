@@ -28,7 +28,7 @@ import Form from '../../_reactComponents/PanelHeaderComponents/Form';
 // })
 
 ReactDOM.render(
-<ActionButtonGroup width="menu">
+/*<ActionButtonGroup width="menu">
   <ActionButton/>
   <ActionButton/>
   <ActionButton/>
@@ -36,7 +36,7 @@ ReactDOM.render(
   <ActionButton/>
   <ActionButton/>
   <ActionButton/>
-</ActionButtonGroup>,
+</ActionButtonGroup>,*/
 /*<ButtonGroup width="menu">
   <Button/>
   <Button/>
@@ -57,7 +57,9 @@ ReactDOM.render(
   <ToggleButton value="abe"/>
   <ToggleButton value="abedgdgd"/>
 </ToggleButtonGroup>,*/
-/* <Form width="menu" label="hello"/>, */
+/*<Form width="menu"/>,*/
+<Textfield width="menu"/>,
+/* <Textfield width="menu"/>, */
   document.getElementById('root'),
 );
 
