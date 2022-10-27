@@ -23,8 +23,19 @@ export default function DateTime(props) {
     : 'var(--mainBorder)';
   borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
-  let width = (props.width === 'menu' ? 'var(--menuWidth)' : '170px');
 
+  var containerWidth = "170px";
+  var inputWidth = "170px";
+  if (props.width) {
+    if (props.width === "menu") {
+      containerWidth = 'var(--menuWidth)';
+      inputWidth = 'var(--menuWidth)';
+      if (props.label) {
+        containerWidth = 'var(--menuWidth)';
+        inputWidth = '100%';
+      }
+    } 
+  };
   useEffect(() => {
     //todo try lastValid update
     setLastValid(props.value);
@@ -57,7 +68,7 @@ export default function DateTime(props) {
 
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
     return (
-      <div>
+      <div style={{width: containerWidth}}>
         {props.label ? (
           <Label id="checkbox-label" vertical={props.vertical}>
             {props.label}
@@ -68,7 +79,7 @@ export default function DateTime(props) {
           style={{
             border: borderColor,
             cursor: cursorStyle,
-            width: width,
+            width: inputWidth,
             color: 'var(--canvastext)',
             backgroundColor: 'var(--canvas)',
             ...props.style,
@@ -114,7 +125,7 @@ export default function DateTime(props) {
           color: 'var(--canvastext)',
           backgroundColor: 'var(--canvas)',
           height: '18px',
-          width: '170px',
+          width: inputWidth,
           border: '2px solid var(--mainGray)',
           borderRadius: 'var(--mainBorderRadius)',
           ...props.style,

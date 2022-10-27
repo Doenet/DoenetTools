@@ -863,7 +863,7 @@ export default function attempt() {
           propPreview: '<ProgressBar width=400 />',
           propCode: { width: 400, progress: 0.4 },
           description:
-            'Changes the width of the component in px; pass in the number without any units',
+            'Changes the width of the component in px; pass in the number without any units; default width is var(--menuWidth)=200px which must be updated manually',
         },
         {
           name: 'Progress Label',

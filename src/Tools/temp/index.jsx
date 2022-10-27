@@ -13,6 +13,7 @@ import ButtonGroup from '../../_reactComponents/PanelHeaderComponents/ButtonGrou
 import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield';
 import Textarea from '../../_reactComponents/PanelHeaderComponents/TextArea';
 import Form from '../../_reactComponents/PanelHeaderComponents/Form';
+import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime';
 
 
 
@@ -61,7 +62,8 @@ ReactDOM.render(
 /*<Form width="menu"/>,*/
 /*<Textfield label="hello!" width="menu"/>,*/
 /*<Textarea label="hello!" width="menu"/>,*/
-<ToggleButton label="hello!" width="menu"></ToggleButton>,
+/* <ToggleButton label="hello!" width="menu"></ToggleButton>, */
+<DateTime width="menu"/>,
   document.getElementById('root'),
 );
 
