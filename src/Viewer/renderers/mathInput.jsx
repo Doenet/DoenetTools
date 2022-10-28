@@ -189,6 +189,7 @@ export default function MathInput(props) {
     border: "var(--mainBorder)",
     marginRight: "4px", 
     marginBottom: "4px",
+    backgroundColor: "rgba(239, 239, 239, 0.3)"
   }
 
   let checkWorkStyle = {
@@ -196,6 +197,10 @@ export default function MathInput(props) {
     padding: "1px 6px 1px 6px",
   }
 
+  let mathInputWrapper = { // Style the EditableMathField Wrapper
+    cursor: "pointer",
+    marginBottom: "4px",
+  }
   if (SVs.disabled) {
     checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     checkWorkStyle.color = 'black';
@@ -203,27 +208,13 @@ export default function MathInput(props) {
 
     mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     mathInputStyle.pointerEvents = 'none';
-    mathInputStyle.cursor = 'not-allowed';
+    mathInputWrapper.cursor = 'not-allowed'
   }
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-    // let checkWorkStyle = {
-    //   cursor: "pointer",
-    //   padding: "1px 6px 1px 6px",
-    // }
-
     if (validationState.current === 'unvalidated') {
-    //   if (SVs.disabled) {
-    //     checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-    //     checkWorkStyle.color = 'black';
-    //     checkWorkStyle.cursor = 'not-allowed';
-
-    //     mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-    //     mathInputStyle.pointerEvents = 'none';
-    //     mathInputStyle.cursor = 'not-allowed';
-    //   }
       checkWorkButton = (
         <Button
           id={id + '_submit'}
@@ -317,7 +308,7 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={id} />
 
-      <span className="textInputSurroundingBox" id={id} style={{ marginBottom: "4px" }}>
+      <span className="textInputSurroundingBox" id={id} style={mathInputWrapper}>
         <span>
           <EditableMathField
             style={mathInputStyle}
