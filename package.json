@@ -1,14 +1,9 @@
 {
   "name": "doenet_tools",
   "scripts": {
-    "start": "docker compose up",
+    "start": "npx snowpack dev",
     "start:ci": "docker compose up -d",
-    "start:dev": "npm install --omit=optional && npx snowpack dev",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
-    "dev:cmd": "docker compose exec dev",
-    "dev:restart": "docker compose restart dev",
-    "dev:install": "docker compose exec dev npm install",
-    "dev:uninstall": "docker compose exec dev npm uninstall",
     "build": "docker compose run --rm dev npx snowpack build --config snowpack.deploy.config.js",
     "build:ci": "snowpack build --out dist_ci --no-watch",
     "build:clean": "snowpack build --clean --reload --config snowpack.deploy.config.js",
