@@ -731,7 +731,7 @@ export default function attempt() {
         {
           name: 'Min',
           propPreview: '<Increment min={-1} />',
-          propCode: { min: -1, value: 0 },
+          propCode: { min: -1 },
           description:
             'Restricts the menu to have values greater or equal to min',
         },
