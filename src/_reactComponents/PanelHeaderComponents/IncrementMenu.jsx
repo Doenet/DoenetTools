@@ -114,11 +114,10 @@ export default function Increment(props) {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    console.log(isNaN(0));
     // to handle placeholder issue
     if (props.placeholder && value === "") {
       setValue("")
-    }else if ((props.font || !values.length) && (!value)) {
+    } else if ((props.font || !values.length) && (!value)) {
       setValue(0)
     } 
     // make sure onChange doesn't fire on manual typing
@@ -126,17 +125,6 @@ export default function Increment(props) {
       props.onChange(value)
     }
   }, [value])
-
-  const containerOnBlur = e => {
-    const currentTarget = e.currentTarget;
-    // Give browser time to focus the next element
-    requestAnimationFrame(() => {
-      // Check if the new focused element is a child of the original container
-      if (!currentTarget.contains(document.activeElement)) {
-        props.onBlur && props.onBlur(isNaN(value) ? value : parseInt(value))
-      }
-    });
-  }
 
   useEffect(() => {
     if (props.value !== undefined) 
@@ -231,10 +219,23 @@ export default function Increment(props) {
     setValue(tempValue)
   }
 
-  const onTextFieldEnter = () => {
-    if (textFieldRef.current) {
+  //execute when the whole increment container blurs
+  const containerOnBlur = e => {
+    const currentTarget = e.currentTarget;
+    // Give browser time to focus the next element
+    requestAnimationFrame(() => {
+      // Check if the new focused element is a child of the original container
+      if (!currentTarget.contains(document.activeElement)) {
+        props.onBlur && props.onBlur(!isNaN(value) ? parseInt(value) : value)
+      }
+    });
+  }
+
+  const onTextfieldKeyDown = e => {
+    props.onKeyDown(e);
+    if (e.key === 'Enter' && textFieldRef.current) {
       textFieldRef.current.blur();
-    } 
+    };
   };
 
   return (
@@ -271,14 +272,7 @@ export default function Increment(props) {
             disabled={props.disabled ? true : false}
             onChange={e => setValue(e.target.value)}
             onBlur={validateValue}
-            onKeyDown={(e) => {
-              if (props.onKeyDown) {
-                props.onKeyDown(e);
-              };
-              if (e.key === 'Enter') {
-                onTextFieldEnter(e);
-              };
-            }}
+            onKeyDown={props.onKeyDown && onTextfieldKeyDown}
           />
           <IncreaseButton
             alert={props.alert}
