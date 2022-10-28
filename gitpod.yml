@@ -1,0 +1,32 @@
+tasks:
+  - name: Docker 
+    command: docker compose up
+  - name: Dev server
+    init: npm install
+    command: npm start
+    openIn: tab-after
+ports:
+  - name: Live site
+    port: 80
+    onOpen: open-browser
+  - name: Database
+    port: 3306
+    onOpen: notify
+  - name: Static site
+    port: 8080
+    onOpen: ignore
+github:
+  prebuilds:
+    master: true
+    pullRequests: true
+    pullRequestsFromForks: true
+    addBadge: true
+    addCheck: false
+vscode:
+  extensions:
+    - esbenp.prettier-vscode
+    - ms-azuretools.vscode-docker
+    - manuth.eslint-language-service
+    - eamodio.gitlens
+
+  
