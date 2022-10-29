@@ -52,7 +52,7 @@ const Matrix = styled.div`
     padding: 2px;
     border: none;
     border-radius: var(--mainBorderRadius);
-    margin: 0px 12px 12px 0px;
+    margin: 0px 4px 4px 0px;
 
 
     &:hover {
@@ -100,6 +100,7 @@ export default React.memo(function MatrixInput(props) {
 
   let checkWorkStyle = {
     cursor: "pointer",
+    padding: "1px 6px 1px 6px",
   }
 
   //Assume we don't have a check work button
@@ -145,7 +146,7 @@ export default React.memo(function MatrixInput(props) {
 
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = "50px";
+          checkWorkStyle.width = '44px';
 
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = <Button
@@ -165,6 +166,7 @@ export default React.memo(function MatrixInput(props) {
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
         checkWorkButton = <Button
           id={id + '_saved'}
           style={checkWorkStyle}
@@ -208,7 +210,7 @@ export default React.memo(function MatrixInput(props) {
 
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(
-        <td style={{ margin: "12px"}} key={colInd} id={id + "_component_" + rowInd + "_" + colInd}>
+        <td style={{ margin: "4px"}} key={colInd} id={id + "_component_" + rowInd + "_" + colInd}>
           {children[rowInd * SVs.numColumns + colInd]}
         </td>
       )
@@ -224,7 +226,7 @@ export default React.memo(function MatrixInput(props) {
 
   let rowNumControls = null;
   if (SVs.showSizeControls) {
-    rowNumControls = <span style={{margin: "0px 12px 12px 0px"}}>
+    rowNumControls = <span style={{margin: "0px 4px 4px 0px"}}>
       <ActionButtonGroup>
       <ActionButton id={id + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
@@ -243,7 +245,7 @@ export default React.memo(function MatrixInput(props) {
   }
   let colNumControls = null;
   if (SVs.showSizeControls) {
-    colNumControls = <span style={{margin: "0px 12px 12px 0px"}}>
+    colNumControls = <span style={{margin: "0px 4px 4px 0px"}}>
       <ActionButtonGroup>
       <ActionButton id={id + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
@@ -264,13 +266,13 @@ export default React.memo(function MatrixInput(props) {
 
   return <React.Fragment>
     <a name={id} />
-      <div style={{display: "inline-flex", marginBottom: "12px"}}>
-        <Matrix className="matrixInputSurroundingBox" id={id} style={{paddingLeft: "12px", paddingTop: "12px"}}>
+      <div style={{display: "inline-flex", marginBottom: "4px"}}>
+        <Matrix className="matrixInputSurroundingBox" id={id} style={{paddingLeft: "4px", paddingTop: "4px"}}>
           <table><tbody>
             {matrixInputs}
           </tbody></table>
         </Matrix>
-        <div style={{marginRight: "12px"}}></div>
+        <div style={{marginRight: "4px"}}></div>
         {rowNumControls}
         {colNumControls}
         {checkWorkButton}

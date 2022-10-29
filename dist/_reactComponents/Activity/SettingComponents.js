@@ -23,9 +23,9 @@ import ActionButtonGroup from "../PanelHeaderComponents/ActionButtonGroup.js";
 import ActionButton from "../PanelHeaderComponents/ActionButton.js";
 import {toastType, useToast} from "../../_framework/Toast.js";
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
-import {useSaveDraft} from "../../_framework/ToolPanels/DoenetMLEditor.js";
-import {prerenderActivity} from "../../_utils/activityUtils.js";
+import {prerenderActivity} from "../../_utils/activtyWebWorker.js";
 import Textfield from "../PanelHeaderComponents/Textfield.js";
+import {useSaveDraft} from "../../_utils/hooks/useSaveDraft.js";
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
   display: ${(props) => props.flex ? "flex" : "block"};
@@ -423,6 +423,7 @@ export const AttemptAggregation = ({courseId, doenetId}) => {
     setAttemptAggregation(recoilValue);
   }, [recoilValue]);
   return /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(LabelText, null, "Attempt Aggregation"), /* @__PURE__ */ React.createElement(InputControl, null, /* @__PURE__ */ React.createElement(DropdownMenu, {
+    dataTest: "Attempt Aggregation",
     width: "menu",
     valueIndex: attemptAggregation === "m" ? 1 : 2,
     items: [
@@ -487,13 +488,15 @@ export const GradeCategory = ({courseId, doenetId}) => {
     setGradeCategory(recoilValue);
   }, [recoilValue]);
   return /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(LabelText, null, "Grade Category"), /* @__PURE__ */ React.createElement(DropdownMenu, {
+    defaultIndex: "7",
     valueIndex: {
       gateway: 1,
       exams: 2,
       quizzes: 3,
       "problem sets": 4,
       projects: 5,
-      participation: 6
+      participation: 6,
+      "No Category": 7
     }[gradeCategory],
     items: [
       ["gateway", "Gateway"],
@@ -501,7 +504,8 @@ export const GradeCategory = ({courseId, doenetId}) => {
       ["quizzes", "Quizzes"],
       ["problem sets", "Problem Sets"],
       ["projects", "Projects"],
-      ["participation", "Participation"]
+      ["participation", "Participation"],
+      ["NULL", "No Category"]
     ],
     dataTest: "Grade Category",
     onChange: ({value: val}) => {
@@ -724,6 +728,15 @@ export const ShowDoenetMLSource = ({courseId, doenetId}) => {
     dataTest: "Show DoenetML Source"
   });
 };
+export const CanViewAfterCompleted = ({courseId, doenetId}) => {
+  return /* @__PURE__ */ React.createElement(CheckedSetting, {
+    courseId,
+    doenetId,
+    keyToUpdate: "canViewAfterCompleted",
+    description: "Can View After Completed",
+    dataTest: "Can View After Completed"
+  });
+};
 export const ProctorMakesAvailable = ({courseId, doenetId}) => {
   return /* @__PURE__ */ React.createElement(CheckedSetting, {
     courseId,
@@ -731,6 +744,15 @@ export const ProctorMakesAvailable = ({courseId, doenetId}) => {
     keyToUpdate: "proctorMakesAvailable",
     description: "Proctor Makes Available",
     dataTest: "Proctor Makes Available"
+  });
+};
+export const AutoSubmit = ({courseId, doenetId}) => {
+  return /* @__PURE__ */ React.createElement(CheckedSetting, {
+    courseId,
+    doenetId,
+    keyToUpdate: "autoSubmit",
+    description: "Auto Submit",
+    dataTest: "Auto Submit"
   });
 };
 export const PinAssignment = ({courseId, doenetId}) => {
@@ -761,6 +783,7 @@ export const PinAssignment = ({courseId, doenetId}) => {
       icon: faCalendarTimes
     }),
     checked: pinnedUntilDate !== null && pinnedUntilDate !== void 0,
+    dataTest: "Pin Assignment Checkbox",
     onClick: () => {
       let valueDescription = "None";
       let value = null;
@@ -788,6 +811,7 @@ export const PinAssignment = ({courseId, doenetId}) => {
   }), /* @__PURE__ */ React.createElement("div", {
     style: {display: "flex", flexDirection: "column"}
   }, /* @__PURE__ */ React.createElement(DateTime, {
+    dataTest: "Pinned After Date",
     disabled: pinnedAfterDate === null || pinnedAfterDate === void 0,
     disabledText: "No Pinned After Date",
     disabledOnClick: () => {
@@ -834,6 +858,7 @@ export const PinAssignment = ({courseId, doenetId}) => {
       }
     }
   }), /* @__PURE__ */ React.createElement(DateTime, {
+    dataTest: "Pinned Until Date",
     style: {marginTop: "5px"},
     disabled: pinnedUntilDate === null || pinnedUntilDate === void 0,
     disabledText: "No Pinned Until Date",

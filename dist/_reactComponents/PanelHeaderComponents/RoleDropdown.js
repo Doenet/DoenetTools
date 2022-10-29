@@ -3,7 +3,7 @@ import {atomFamily, selectorFamily, useRecoilValue} from "../../_snowpack/pkg/re
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {
   coursePermissionsAndSettingsByCourseId,
-  courseRolePermissonsByCourseIdRoleId,
+  courseRolePermissionsByCourseIdRoleId,
   courseRolesByCourseId
 } from "../Course/CourseActions.js";
 import DropdownMenu from "./DropdownMenu.js";
@@ -12,11 +12,11 @@ export const effectiveRoleIdByCourseId = atomFamily({
   default: null
 });
 export const effectivePermissionsByCourseId = selectorFamily({
-  key: "effectivePermissons",
+  key: "effectivePermissions",
   get: (courseId) => ({get}) => {
     const roleId = get(effectiveRoleIdByCourseId(courseId));
     if (roleId !== null) {
-      return get(courseRolePermissonsByCourseIdRoleId({courseId, roleId}));
+      return get(courseRolePermissionsByCourseIdRoleId({courseId, roleId}));
     }
     return get(coursePermissionsAndSettingsByCourseId(courseId));
   }

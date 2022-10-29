@@ -101,7 +101,7 @@ export default React.memo(function Section(props) {
       break;
   }
   let checkworkComponent = null;
-  if (SVs.createSubmitAllButton) {
+  if (SVs.createSubmitAllButton && !SVs.suppressCheckwork) {
     updateValidationState();
     let checkWorkStyle = {
       height: "23px",

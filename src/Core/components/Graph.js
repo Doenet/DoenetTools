@@ -192,16 +192,16 @@ export default class Graph extends BlockComponent {
   static returnChildGroups() {
 
     return [{
-      group: "graphical",
-      componentTypes: ["_graphical"]
-    },
-    {
       group: "xlabels",
       componentTypes: ["xlabel"]
     },
     {
       group: "ylabels",
       componentTypes: ["ylabel"]
+    },
+    {
+      group: "graphical",
+      componentTypes: ["_graphical", "text", "image", "math", "m", "md", "label"]
     },
     {
       group: "childrenThatShouldNotBeHere",

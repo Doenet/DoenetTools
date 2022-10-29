@@ -56,7 +56,10 @@ if ($success) {
             RIGHT JOIN user_assignment AS ua
                 ON ua.doenetId = uaa.doenetId 
                 AND ua.userId = uaa.userId
-            WHERE uaa.doenetId = '$doenetId'"
+            INNER JOIN course_content as cc
+                ON ua.doenetId = cc.doenetId
+            WHERE uaa.doenetId = '$doenetId'
+                AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')"
         );
     } else {
         $result = $conn->query(
@@ -70,14 +73,18 @@ if ($success) {
             RIGHT JOIN user_assignment AS ua
                 ON ua.doenetId = uaa.doenetId 
                 AND ua.userId = uaa.userId
+            INNER JOIN course_content as cc
+                ON ua.doenetId = cc.doenetId
             WHERE uaa.doenetId = '$doenetId'
                 AND uaa.userId = '$requestorUserId'
-        "
+                AND (cc.isGloballyAssigned = '1' OR ua.isUnassigned = '0')"
         );
     }
 
     $response_arr = [];
     if ($result->num_rows > 0) {
+        $num = $result->num_rows;
+        $message = "$num attempts found";
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr, [
                 $row['userId'],
@@ -88,8 +95,7 @@ if ($success) {
             ]);
         }
     } else {
-        $success = false;
-        $message = "No such assignment '$doenetId'";
+        $message = "No attempts found for '$doenetId'";
     }
 }
 

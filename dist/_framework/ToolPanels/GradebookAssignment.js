@@ -5,14 +5,13 @@ import {
   studentData,
   attemptData,
   assignmentData,
-  attemptDataQuerry,
-  studentDataQuerry,
-  overViewDataQuerry
+  attemptDataQuery,
+  studentDataQuery,
+  overviewDataQuery
 } from "./Gradebook.js";
 import {
   atom,
   useSetRecoilState,
-  useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
   useRecoilCallback
@@ -25,6 +24,7 @@ import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownM
 import {suppressMenusAtom} from "../NewToolRoot.js";
 import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {coursePermissionsAndSettingsByCourseId} from "../../_reactComponents/Course/CourseActions.js";
 export const processGradesAtom = atom({
   key: "processGradesAtom",
   default: "Assignment Table"
@@ -38,7 +38,6 @@ export const entriesGradesAtom = atom({
   default: []
 });
 const getUserId = (students, name) => {
-  console.log(students, name);
   for (let userId in students) {
     if (students[userId].firstName + " " + students[userId].lastName == name) {
       return userId;
@@ -57,15 +56,25 @@ function UploadChoices({doenetId, maxAttempts}) {
   let [attemptNumber, setAttemptNumber] = useState(null);
   let [selectedAttemptIndex, setSelectedAttemptIndex] = useState(1);
   const refreshGradebook = useRecoilCallback(({set, snapshot}) => async ({doenetId: doenetId2, addToast: addToast2}) => {
-    const driveId = await snapshot.getPromise(searchParamAtomFamily("driveId"));
-    let doenetIdPayload = {params: {doenetId: doenetId2}};
-    let driveIdPayload = {params: {driveId}};
-    let attemptData2 = await axios.get("/api/loadGradebookAssignmentAttempts.php", doenetIdPayload);
-    let studentData2 = await axios.get("/api/loadGradebookEnrollment.php", driveIdPayload);
-    let overView = await axios.get("/api/loadGradebookOverview.php", driveIdPayload);
-    set(attemptDataQuerry(doenetId2), attemptData2.data);
-    set(studentDataQuerry, studentData2.data);
-    set(overViewDataQuerry, overView.data);
+    const courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
+    const {
+      data: {assignmentAttemptsData}
+    } = await axios.get("/api/loadGradebookAssignmentAttempts.php", {
+      params: {courseId, doenetId: doenetId2}
+    });
+    const {
+      data: {gradebookEnrollment}
+    } = await axios.get("/api/loadGradebookEnrollment.php", {
+      params: {courseId}
+    });
+    const {
+      data: {overview}
+    } = await axios.get("/api/loadGradebookOverview.php", {
+      params: {courseId}
+    });
+    set(attemptDataQuery(doenetId2), assignmentAttemptsData);
+    set(studentDataQuery, gradebookEnrollment);
+    set(overviewDataQuery, overview);
     addToast2(`Updated scores!`);
     set(processGradesAtom, "Assignment Table");
   });
@@ -73,13 +82,13 @@ function UploadChoices({doenetId, maxAttempts}) {
     return null;
   }
   const totalPointsOrPercent = assignments.contents?.[doenetId]?.totalPointsOrPercent;
-  if (!headers.includes("SIS User ID")) {
-    addToast("Need a column header named 'SIS User ID' ", toastType.ERROR);
+  if (!headers.includes("Email")) {
+    addToast("Need a column header named 'Email' ", toastType.ERROR);
     setProcess("Assignment Table");
     return null;
   }
   let columnIndexes = [];
-  let validColumns = headers.filter((value, i) => {
+  let validColumns = headers.filter((_, i) => {
     let columnPoints = Number(rows?.[0]?.[i]);
     if (columnPoints == totalPointsOrPercent) {
       columnIndexes.push(i);
@@ -87,25 +96,28 @@ function UploadChoices({doenetId, maxAttempts}) {
     return columnPoints == totalPointsOrPercent;
   });
   if (validColumns.length < 1) {
-    addToast(`Need a column with an assignment worth ${totalPointsOrPercent} points`, toastType.ERROR);
+    addToast(`Need a column with an assignment worth ${totalPointsOrPercent} points in the second row`, toastType.ERROR);
     setProcess("Assignment Table");
     return null;
   }
   if (!scoreIndex) {
     setScoreIndex(columnIndexes[0]);
   }
+  let studentColumn = headers.indexOf("Student");
+  let emailColumn = headers.indexOf("Email");
   let tableRows = [];
   let emails = [];
   let scores = [];
   for (let row of rows) {
-    let name = row[0];
-    let id = row[1];
-    let email = row[3];
+    let name = studentColumn === -1 ? null : row[studentColumn];
+    let email = row[emailColumn];
     let score = row[scoreIndex];
     if (email !== "") {
       emails.push(email);
       scores.push(score);
-      tableRows.push(/* @__PURE__ */ React.createElement("tr", null, " ", /* @__PURE__ */ React.createElement("td", null, name), /* @__PURE__ */ React.createElement("td", null, email), /* @__PURE__ */ React.createElement("td", null, id), /* @__PURE__ */ React.createElement("td", null, score)));
+      tableRows.push(/* @__PURE__ */ React.createElement("tr", {
+        key: email
+      }, " ", /* @__PURE__ */ React.createElement("td", null, name), /* @__PURE__ */ React.createElement("td", null, email), /* @__PURE__ */ React.createElement("td", null, score)));
     }
   }
   let importTable = /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", {
@@ -113,8 +125,6 @@ function UploadChoices({doenetId, maxAttempts}) {
   }, "Student"), /* @__PURE__ */ React.createElement("th", {
     style: {width: "200px"}
   }, "Email"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "100px"}
-  }, "ID"), /* @__PURE__ */ React.createElement("th", {
     style: {width: "50px"}
   }, "Score")), tableRows);
   let dropdownItems = [];
@@ -138,9 +148,9 @@ function UploadChoices({doenetId, maxAttempts}) {
     }
   }
   {
-    attemptNumber ? /* @__PURE__ */ React.createElement("div", null, "Use column ", /* @__PURE__ */ React.createElement("b", null, validColumns[Number(selectedColumnIndex) - 1]), " as ", /* @__PURE__ */ React.createElement("b", null, "Attempt Number ", attemptNumber), " to ", Number(maxAttempts) + 1 === attemptNumber ? "insert" : "override", " scores?") : null;
+    attemptNumber ? /* @__PURE__ */ React.createElement("div", null, "Use column ", /* @__PURE__ */ React.createElement("b", null, validColumns[Number(selectedColumnIndex) - 1]), " as", " ", /* @__PURE__ */ React.createElement("b", null, "Attempt Number ", attemptNumber), " to", " ", Number(maxAttempts) + 1 === attemptNumber ? "insert" : "override", " ", "scores?") : null;
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, validColumns.length, " column", validColumns.length > 1 ? "s" : null, " match ", totalPointsOrPercent, " total points "), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(DropdownMenu, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, validColumns.length, " column", validColumns.length > 1 ? "s" : null, " match", " ", totalPointsOrPercent, " total points", " "), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(DropdownMenu, {
     items: dropdownItems,
     valueIndex: selectedColumnIndex,
     width: "400px",
@@ -179,7 +189,6 @@ function UploadChoices({doenetId, maxAttempts}) {
         if (data.success) {
           refreshGradebook({doenetId, addToast});
         } else {
-          console.log(">>>>data", data);
           addToast(data.message, toastType.ERROR);
         }
       });
@@ -192,17 +201,21 @@ export default function GradebookAssignmentView() {
   let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let students = useRecoilValueLoadable(studentData);
-  let [process, setProcess] = useRecoilState(processGradesAtom);
+  let process = useRecoilValue(processGradesAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let {canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   let assignments = useRecoilValueLoadable(assignmentData);
   useEffect(() => {
     if (canViewAndModifyGrades === "1") {
-      setSuppressMenus(["GradeUpload"]);
-    } else {
       setSuppressMenus([]);
+    } else {
+      setSuppressMenus(["GradeUpload"]);
     }
   }, [canViewAndModifyGrades, setSuppressMenus]);
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  if (course?.canViewCourse == "0") {
+    return /* @__PURE__ */ React.createElement("h1", null, "No Access to view this page.");
+  }
   if (attempts.state !== "hasValue" || students.state !== "hasValue" || assignments.state !== "hasValue") {
     return null;
   }
@@ -212,9 +225,10 @@ export default function GradebookAssignmentView() {
   let maxAttempts = 0;
   for (let userId in attempts.contents) {
     if (attempts.contents[userId]?.attempts) {
-      let len = Object.keys(attempts.contents[userId].attempts).length;
-      if (len > maxAttempts)
-        maxAttempts = len;
+      let lastAttemptNumber = Math.max(...Object.keys(attempts.contents[userId].attempts).map(Number));
+      if (lastAttemptNumber > maxAttempts) {
+        maxAttempts = lastAttemptNumber;
+      }
     }
   }
   if (process === "Upload Choice Table") {
@@ -236,15 +250,20 @@ export default function GradebookAssignmentView() {
       accessor: "a" + i,
       disableFilters: true,
       Cell: (row) => /* @__PURE__ */ React.createElement("a", {
-        onClick: (e) => {
+        onClick: () => {
           let name = row.cell.row.cells[0].value.props.children;
-          console.log(name);
           let userId = getUserId(students.contents, name);
           setPageToolView({
             page: "course",
             tool: "gradebookStudentAssignment",
             view: "",
-            params: {courseId, doenetId, userId, attemptNumber: i, previousCrumb: "assignment"}
+            params: {
+              courseId,
+              doenetId,
+              userId,
+              attemptNumber: i,
+              previousCrumb: "assignment"
+            }
           });
         }
       }, row.value)
@@ -263,7 +282,7 @@ export default function GradebookAssignmentView() {
     let row = {};
     let name = firstName + " " + lastName;
     row["student"] = /* @__PURE__ */ React.createElement("a", {
-      onClick: (e) => {
+      onClick: () => {
         setPageToolView({
           page: "course",
           tool: "gradebookStudentAssignment",

@@ -948,10 +948,7 @@ export function applyMacros(serializedComponents, componentInfoObjects) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
         if (attribute.component) {
-          let comp = attribute.component;
-          if (comp.children) {
-            applyMacros(comp.children, componentInfoObjects);
-          }
+          applyMacros([attribute.component], componentInfoObjects)
         } else if (attribute.childrenForComponent) {
           applyMacros(attribute.childrenForComponent, componentInfoObjects);
         }

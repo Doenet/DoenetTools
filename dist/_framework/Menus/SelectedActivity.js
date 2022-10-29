@@ -17,6 +17,7 @@ import {
   MakePublic,
   PinAssignment,
   ProctorMakesAvailable,
+  AutoSubmit,
   ShowCorrectness,
   ShowCreditAchieved,
   Paginate,
@@ -27,7 +28,8 @@ import {
   ShowSolution,
   ShowSolutionInGradebook,
   TimeLimit,
-  TotalPointsOrPercent
+  TotalPointsOrPercent,
+  CanViewAfterCompleted
 } from "../../_reactComponents/Activity/SettingComponents.js";
 import {
   itemByDoenetId,
@@ -218,6 +220,7 @@ export function AssignmentSettings({doenetId, courseId}) {
       totalPointsOrPercent
     }
   } = useActivity(courseId, doenetId);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const sharedProps = {
     courseId,
     doenetId,
@@ -264,9 +267,13 @@ export function AssignmentSettings({doenetId, courseId}) {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(ProctorMakesAvailable, {
       ...sharedProps
+    }), /* @__PURE__ */ React.createElement(AutoSubmit, {
+      ...sharedProps
     }), /* @__PURE__ */ React.createElement(MakePublic, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(ShowDoenetMLSource, {
+      ...sharedProps
+    }), /* @__PURE__ */ React.createElement(CanViewAfterCompleted, {
       ...sharedProps
     })), /* @__PURE__ */ React.createElement(PinAssignment, {
       ...sharedProps

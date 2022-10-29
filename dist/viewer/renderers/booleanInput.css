@@ -3,7 +3,8 @@
     /* display: inline-block; */
     position: relative;
     padding-left: 24px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
+    margin-right: 2px; /* 2px less than other components (6px marginRight) due to the 2px marginLeft on label */
     cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -11,10 +12,9 @@
     user-select: none;
 }
 
-.button-container {
+/* .button-container {
     display: inline-block;
     position: relative;
-    /* padding-left: 30px; */
     margin-bottom: 12px;
     margin-right: 2px;
     cursor: pointer;
@@ -22,7 +22,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-}
+} */
   
 /* Hide the browser's default checkbox */
 .container input {
@@ -58,7 +58,7 @@
 
 /* When a checkbox has focus, add a dark blue outline */
 .container:focus-within input ~ .checkmark {
-    outline: 2px solid var(--mainBlue);
+    outline: 2px solid black;
     outline-offset: 2px;
 }
   

@@ -23,13 +23,13 @@ if ($success) {
     $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
     //check user has permission to view users
-    $permissons = permissionsAndSettingsForOneCourseFunction(
+    $permissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
         $userId,
         $courseId
     );
 
-    if ($permissons['canViewUsers'] != '1') {
+    if ($permissions['canViewUsers'] != '1') {
         $success = false;
     }
 }

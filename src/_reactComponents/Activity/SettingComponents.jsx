@@ -905,6 +905,18 @@ export const ShowDoenetMLSource = ({ courseId, doenetId }) => {
   );
 };
 
+export const CanViewAfterCompleted = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="canViewAfterCompleted"
+      description="Can View After Completed"
+      dataTest="Can View After Completed"
+    />
+  );
+};
+
 export const ProctorMakesAvailable = ({ courseId, doenetId }) => {
   return (
     <CheckedSetting

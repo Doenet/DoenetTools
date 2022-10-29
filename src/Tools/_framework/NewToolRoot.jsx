@@ -128,7 +128,10 @@ export default function ToolRoot() {
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
     People: lazy(() => import('./ToolPanels/People')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
+    SignInRedirector: lazy(() => import('./ToolPanels/SignInRedirector')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
+    EndPlacementExamPanel: lazy(() => import('./ToolPanels/EndPlacementExamPanel')),
+    WelcomePlacementExam: lazy(() => import('./ToolPanels/WelcomePlacementExam')),
     GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
     GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
     RolesEditor: lazy(() => import('./ToolPanels/RoleEditor')),
@@ -433,12 +436,57 @@ export default function ToolRoot() {
 // supportPanelIndex:0,
 // hasNoMenuPanel: true,
 // headerControls:["BackButton"],
-// hasNoMenuPanel: true,
 // waitForMenuSuppression:true,
 // footer: {height,open,component}
 // initialProportion: 1,
 
+// /umn/1271qual
+// /umn/1151qual
+// /umn/mathpl
+// /umn/ to pick or algpl
+
 let navigationObj = {
+  placementexam: {
+    default: {
+      // defaultTool: 'welcome',
+      defaultTool: 'exam',
+    },
+    // welcome: {
+    //   pageName: 'welcome',
+    //   currentMainPanel: 'WelcomePlacementExam',
+    //   // displaySettings: false,
+    //   hasNoMenuPanel: true,
+    // },
+    exam: {
+      pageName: 'exam',
+      // menuPanelCap: 'AssignmentInfoCap',
+      currentMainPanel: 'AssignmentViewer',
+      currentMenus: ['TimerMenu'],
+      menusTitles: ['Time Remaining'],
+      menusInitOpen: [true],
+      headerControls: [],
+      displaySettings: false,
+      waitForMenuSuppression: true,
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+    },
+    endExam: {
+      pageName: 'endExam',
+      currentMainPanel: 'EndPlacementExamPanel',
+      displaySettings: false,
+      hasNoMenuPanel: true,
+    },
+  },
+  umn: {
+    default:{
+      defaultTool: 'signIn',
+    },
+    signIn:{
+      pageName: 'signIn',
+      currentMainPanel: 'SignInRedirector',
+      displaySettings: false,
+      hasNoMenuPanel: true,
+    }
+  },
   exam: {
     default: {
       defaultTool: 'chooseLearner',
@@ -514,6 +562,18 @@ let navigationObj = {
       headerControls: ['AssignmentBreadCrumb'],
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
+    endExam: {
+      pageName: 'endExam',
+      currentMainPanel: 'EndExamPanel', //TODO: figure out what the course end exam does
+      // displaySettings: false,
+      // hasNoMenuPanel: true,
+      menuPanelCap: 'AssignmentInfoCap',
+      currentMenus: ['CreditAchieved'],
+      menusTitles: ['Credit Achieved'],
+      menusInitOpen: [true],
+      headerControls: ['AssignmentBreadCrumb'],
+      // waitForMenuSuppression: true,
+    },
     gradebook: {
       pageName: 'Gradebook',
       currentMainPanel: 'Gradebook',
@@ -567,6 +627,7 @@ let navigationObj = {
     //   headerControls: ["GradebookBreadCrumb"],
     //   // onLeave:"",
     // },
+    // menuPanelCap: 'ContentInfoCap',
     navigation: {
       //allFilesInCourse
       pageName: 'Course',

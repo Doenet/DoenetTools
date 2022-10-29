@@ -565,7 +565,7 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write y')}>
           <MathJax dynamic>\(y\)</MathJax>
         </Button>
-        <Button onClick={() => callback('type ^2')}>
+        <Button onClick={() => { callback('type ^2'); callback('keystroke Right') }}>
           <MathJax dynamic>\(a^2\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd ^')}>

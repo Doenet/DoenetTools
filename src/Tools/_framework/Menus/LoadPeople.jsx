@@ -1,17 +1,24 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import parse from 'csv-parse';
-import { atom, useSetRecoilState } from 'recoil';
+import { atom, useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { toastType, useToast } from '../Toast';
+import { coursePermissionsAndSettings, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { searchParamAtomFamily } from '../NewToolRoot';
+import CheckboxButton from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+// import Tooltip from '../../../_reactComponents/PanelHeaderComponents/Tooltip';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 export const peopleTableDataAtom = atom({
   key: 'peopleTableDataAtom',
   default: [],
 });
+
 export const processAtom = atom({
   key: 'processAtom',
   default: 'Idle',
@@ -24,6 +31,7 @@ export const validHeaders = Object.freeze({
   Section: 'Section',
   ExternalId: 'ExternalId',
 });
+
 export const headersAtom = atom({
   key: 'headersAtom',
   default: [],
@@ -46,6 +54,7 @@ export const entriesAtom = atom({
   key: 'entriesAtom',
   default: [],
 });
+
 export const enrolllearnerAtom = atom({
   key: 'enrolllearnerAtom',
   default: '',
@@ -62,6 +71,30 @@ export default function LoadPeople({ style }) {
   const setProcess = useSetRecoilState(processAtom);
   const setHeaders = useSetRecoilState(headersAtom);
   const setEntries = useSetRecoilState(entriesAtom);
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  let {canAutoEnroll} = useCourse(courseId);
+
+  const [localAutoEnroll,setLocalAutoEnroll] = useState(canAutoEnroll);
+
+
+ useEffect(()=>{
+  let value = false;
+  if (canAutoEnroll == '1'){ value = true;}
+  setLocalAutoEnroll(value)
+ },[canAutoEnroll])
+
+ const setAutoEnroll = useRecoilCallback((set)=> async (courseId,autoEnroll)=>{
+   let canAutoEnroll = 0;
+   if (autoEnroll){canAutoEnroll = 1;}
+
+  let {data} = await axios.post('/api/modifyCourse.php',{courseId,canAutoEnroll})
+  // console.log("data",data)
+  set(coursePermissionsAndSettings,(prev)=>{
+    let next = {...prev}
+    next.canAutoEnroll = canAutoEnroll
+    return next
+  })
+ })
 
   const onDrop = useCallback(
     (file) => {
@@ -134,6 +167,11 @@ export default function LoadPeople({ style }) {
           <b>Section</b>
         </div>
       </CollapseSection>
+      {/* <p style={{display:'flex'}}><CheckboxButton /> Auto Enroll <Tooltip text='test' /></p> */}
+      <p style={{display:'flex'}}><CheckboxButton dataTest={'Auto Enroll'} checked={localAutoEnroll} onClick={()=>{
+        setLocalAutoEnroll(!localAutoEnroll)
+        setAutoEnroll(courseId,!localAutoEnroll)
+        }} /> <span style={{marginLeft:'10px'}}>Auto Enrollment</span> </p>
     </div>
   );
 }

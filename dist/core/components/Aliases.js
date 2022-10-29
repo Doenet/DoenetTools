@@ -3,7 +3,7 @@ import TextOrInline from './abstract/TextOrInline.js';
 import Template from './Template.js';
 import MathComponent from './Math.js';
 import Label from './Label.js';
-
+import MathList from './MathList.js';
 
 
 export class Columns extends TextComponent {
@@ -41,4 +41,14 @@ export class Xlabel extends Label {
 export class Ylabel extends Label {
   static componentType = "ylabel";
   static rendererType = "label";
+}
+
+export class MatrixRow extends MathList {
+  static componentType = "matrixRow";
+  static rendererType = "mathList";
+}
+
+export class MatrixColumn extends MathList {
+  static componentType = "matrixColumn";
+  static rendererType = "mathList";
 }

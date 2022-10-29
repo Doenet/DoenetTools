@@ -11,11 +11,11 @@ import styled from 'styled-components';
   display: inline-block;
   color: white;
   background-color: var(--mainBlue);
-  /* padding: 2px; */
+  padding: 2px;
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -70,6 +70,7 @@ export default React.memo(function Answer(props) {
 
     let checkWorkStyle = {
       cursor: 'pointer',
+      padding: "1px 6px 1px 6px",
     }
 
     if (disabled) {
@@ -92,7 +93,7 @@ export default React.memo(function Answer(props) {
           }
         }}
       >
-        <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         &nbsp;
         {checkWorkText}
       </Button>);
@@ -168,13 +169,13 @@ export default React.memo(function Answer(props) {
       </>
     }
 
-    return <span id={id}>
+    return <span id={id} style={{ marginBottom: "4px" }}>
       <a name={id} />
       {inputChildrenToRender}
       {checkworkComponent}
     </span>;
   } else {
-    return <span id={id} style={{ marginBottom: "12px" }}><a name={id} />{inputChildrenToRender}</span>;
+    return <span id={id} style={{ marginBottom: "4px" }}><a name={id} />{inputChildrenToRender}</span>;
   }
 
 })

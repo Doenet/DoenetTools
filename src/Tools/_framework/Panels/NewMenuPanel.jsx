@@ -274,6 +274,8 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
     EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
     AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
     DraftActivityCap:lazy(() => import('../MenuPanelCaps/DraftActivityCap')),
+    ContentInfoCap:lazy(() => import('../MenuPanelCaps/ContentInfoCap')),
+    
   }).current;
 
   const LazyMenuObj = useRef({

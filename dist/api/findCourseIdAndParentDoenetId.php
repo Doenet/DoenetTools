@@ -41,7 +41,7 @@ if ($doenetId == '') {
 
 if ($success) {
     //check user has permission to view
-    $permissons = permissionsAndSettingsForOneCourseFunction(
+    $permissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
         $userId,
         $courseId
@@ -54,7 +54,7 @@ if ($success) {
     //         'message' => 'User Unauthorized',
     //     ]);
     // }
-    if ($permissons == false) {
+    if ($permissions == false) {
         http_response_code(403); //User if forbidden from operation
         echo json_encode([
             'message' => 'User lacks permission',
