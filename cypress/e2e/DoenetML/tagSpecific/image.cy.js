@@ -198,61 +198,62 @@ describe('Image Tag Tests', function () {
     <text>a</text>
 
     <graph >
-    <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" width="$width1%" aspectRatio="$aspectRatio1" anchor="$anchorCoords1" name="image1" anchorPosition="$anchorPosition1" draggable="$draggable1"/>
-    <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" name="image2" />
-  </graph>
-  
-  <p name="pAnchor1">Anchor 1 coordinates: $image1.anchor</p>
-  <p name="pAnchor2">Anchor 2 coordinates: $image2.anchor</p>
-  <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="(1,3)" /></p>
-  <p name="pChangeAnchor1a">Change anchor 1 coordinates a: <mathinput name="anchorCoords1a" bindValueTo="$image1.anchor" /></p>
-  <p name="pChangeAnchor2">Change anchor 2 coordinates: <mathinput name="anchorCoords2" bindValueTo="$image2.anchor" /></p>
-  <p name="pAnchorPosition1">Anchor position 1: $image1.anchorPosition</p>
-  <p name="pAnchorPosition2">Anchor position 2: $image2.anchorPosition</p>
-  <p>Change anchor position 1
-  <choiceinput inline preselectChoice="1" name="anchorPosition1">
-    <choice>upperRight</choice>
-    <choice>upperLeft</choice>
-    <choice>lowerRight</choice>
-    <choice>lowerLeft</choice>
-    <choice>left</choice>
-    <choice>right</choice>
-    <choice>top</choice>
-    <choice>bottom</choice>
-    <choice>center</choice>
-  </choiceinput>
-  </p>
-  <p>Change anchor position 2
-  <choiceinput inline name="anchorPosition2" bindValueTo="$image2.anchorPosition">
-    <choice>upperRight</choice>
-    <choice>upperLeft</choice>
-    <choice>lowerRight</choice>
-    <choice>lowerLeft</choice>
-    <choice>left</choice>
-    <choice>right</choice>
-    <choice>top</choice>
-    <choice>bottom</choice>
-    <choice>center</choice>
-  </choiceinput>
-  </p>
-  <p name="pWidth1">Width 1: $image1.width</p>
-  <p name="pWidth2">Width 2: $image2.width</p>
-  <p>Change width 1 <mathinput name="width1" prefill="40" /></p>
-  <p>Change width 1a <mathinput name="width1a" bindValueTo="$image1.width" /></p>
-  <p>Change width 2 <mathinput name="width2" bindValueTo="$image2.width" /></p>
-  <p name="pAspectRatio1">Aspect Ratio 1: $image1.aspectRatio</p>
-  <p name="pAspectRatio2">Aspect Ratio 2: $image2.AspectRatio</p>
-  <p>Change aspect ratio 1 <mathinput name="aspectRatio1" prefill="1" /></p>
-  <p>Change aspect ratio 1a <mathinput name="aspectRatio1a" bindValueTo="$image1.aspectRatio" /></p>
-  <p>Change aspect ratio 2 <mathinput name="aspectRatio2" bindValueTo="$image2.aspectRatio" /></p>
-  <p name="pDraggable1">Draggable 1: $draggable1</p>
-  <p name="pDraggable2">Draggable 2: $draggable2</p>
-  <p>Change draggable 1 <booleanInput name="draggable1" prefill="true" /></p>
-  <p>Change draggable 2 <booleanInput name="draggable2" bindValueTo="$image2.draggable" /></p>
-  <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
-  
-  <image copySource="image1" name="image1a" />
-  <image copySource="image2" name="image2a" />
+      <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" width="$width1%" aspectRatio="$aspectRatio1" anchor="$anchorCoords1" name="image1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1"/>
+      <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" name="image2" />
+    </graph>
+    
+    <p name="pAnchor1">Anchor 1 coordinates: $image1.anchor</p>
+    <p name="pAnchor2">Anchor 2 coordinates: $image2.anchor</p>
+    <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="(1,3)" /></p>
+    <p name="pChangeAnchor1a">Change anchor 1 coordinates a: <mathinput name="anchorCoords1a" bindValueTo="$image1.anchor" /></p>
+    <p name="pChangeAnchor2">Change anchor 2 coordinates: <mathinput name="anchorCoords2" bindValueTo="$image2.anchor" /></p>
+    <p name="pPositionFromAnchor1">Position from anchor 1: $image1.positionFromAnchor</p>
+    <p name="pPositionFromAnchor2">Position from anchor 2: $image2.positionFromAnchor</p>
+    <p>Change position from anchor 1
+    <choiceinput inline preselectChoice="1" name="positionFromAnchor1">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p>Change position from anchor 2
+    <choiceinput inline name="positionFromAnchor2" bindValueTo="$image2.positionFromAnchor">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p name="pWidth1">Width 1: $image1.width</p>
+    <p name="pWidth2">Width 2: $image2.width</p>
+    <p>Change width 1 <mathinput name="width1" prefill="40" /></p>
+    <p>Change width 1a <mathinput name="width1a" bindValueTo="$image1.width" /></p>
+    <p>Change width 2 <mathinput name="width2" bindValueTo="$image2.width" /></p>
+    <p name="pAspectRatio1">Aspect Ratio 1: $image1.aspectRatio</p>
+    <p name="pAspectRatio2">Aspect Ratio 2: $image2.AspectRatio</p>
+    <p>Change aspect ratio 1 <mathinput name="aspectRatio1" prefill="1" /></p>
+    <p>Change aspect ratio 1a <mathinput name="aspectRatio1a" bindValueTo="$image1.aspectRatio" /></p>
+    <p>Change aspect ratio 2 <mathinput name="aspectRatio2" bindValueTo="$image2.aspectRatio" /></p>
+    <p name="pDraggable1">Draggable 1: $draggable1</p>
+    <p name="pDraggable2">Draggable 2: $draggable2</p>
+    <p>Change draggable 1 <booleanInput name="draggable1" prefill="true" /></p>
+    <p>Change draggable 2 <booleanInput name="draggable2" bindValueTo="$image2.draggable" /></p>
+    <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
+    
+    <image copySource="image1" name="image1a" />
+    <image copySource="image2" name="image2a" />
+
 
     `}, "*");
     });
@@ -262,10 +263,10 @@ describe('Image Tag Tests', function () {
     cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
     cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pAnchorPosition1").should('have.text', 'Anchor position 1: upperright')
-    cy.get("#\\/pAnchorPosition2").should('have.text', 'Anchor position 2: upperleft')
-    cy.get("#\\/anchorPosition1").should('have.value', '1')
-    cy.get("#\\/anchorPosition2").should('have.value', '2')
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
+    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
+    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
     cy.get("#\\/pWidth1").should('have.text', 'Width 1: 40%')
     cy.get("#\\/pWidth2").should('have.text', 'Width 2: 50%')
     cy.get("#\\/pAspectRatio1").should('have.text', 'Aspect Ratio 1: 1')
@@ -321,12 +322,12 @@ describe('Image Tag Tests', function () {
     cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(7,6)')
 
 
-    cy.log('change anchor position');
-    cy.get('#\\/anchorPosition1').select("lowerLeft")
-    cy.get('#\\/anchorPosition2').select("lowerRight")
+    cy.log('change position from anchor');
+    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
+    cy.get('#\\/positionFromAnchor2').select("lowerRight")
 
-    cy.get("#\\/pAnchorPosition1").should('have.text', 'Anchor position 1: lowerleft')
-    cy.get("#\\/pAnchorPosition2").should('have.text', 'Anchor position 2: lowerright')
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
 
 
 
@@ -416,17 +417,17 @@ describe('Image Tag Tests', function () {
     <text>a</text>
 
     <graph >
-    <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" width="$width1" aspectRatio="$aspectRatio1" name="image1" />
-  </graph>
-  
-  <p name="pWidth1">Width 1: $image1.width</p>
-  <p>Change width 1 <mathinput name="width1" prefill="5" /></p>
-  <p>Change width 1a <mathinput name="width1a" bindValueTo="$image1.width" /></p>
-  <p name="pAspectRatio1">Aspect Ratio 1: $image1.aspectRatio</p>
-  <p>Change aspect ratio 1 <mathinput name="aspectRatio1" prefill="1" /></p>
-  <p>Change aspect ratio 1a <mathinput name="aspectRatio1a" bindValueTo="$image1.aspectRatio" /></p>
-  
-  <image copySource="image1" name="image1a" />
+      <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" width="$width1" aspectRatio="$aspectRatio1" name="image1" />
+    </graph>
+    
+    <p name="pWidth1">Width 1: $image1.width</p>
+    <p>Change width 1 <mathinput name="width1" prefill="5" /></p>
+    <p>Change width 1a <mathinput name="width1a" bindValueTo="$image1.width" /></p>
+    <p name="pAspectRatio1">Aspect Ratio 1: $image1.aspectRatio</p>
+    <p>Change aspect ratio 1 <mathinput name="aspectRatio1" prefill="1" /></p>
+    <p>Change aspect ratio 1a <mathinput name="aspectRatio1a" bindValueTo="$image1.aspectRatio" /></p>
+    
+    <image copySource="image1" name="image1a" />
 
     `}, "*");
     });
