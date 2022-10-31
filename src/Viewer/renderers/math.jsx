@@ -12,6 +12,7 @@ export default React.memo(function MathComponent(props) {
 
   let mathJXG = useRef(null);
   let anchorPointJXG = useRef(null);
+  let anchorRel = useRef(null);
 
   const board = useContext(BoardContext);
 
@@ -23,7 +24,7 @@ export default React.memo(function MathComponent(props) {
   let calculatedY = useRef(null);
 
   let lastPositionFromCore = useRef(null);
-  let previousAnchorPosition = useRef(null);
+  let previousPositionFromAnchor = useRef(null);
 
 
   function createMathJXG() {
@@ -70,39 +71,40 @@ export default React.memo(function MathComponent(props) {
     jsxMathAttributes.anchor = newAnchorPointJXG;
 
     let anchorx, anchory;
-    if (SVs.anchorPosition === "upperright") {
-      anchorx = "right";
-      anchory = "top";
-    } else if (SVs.anchorPosition === "upperleft") {
-      anchorx = "left";
-      anchory = "top";
-    } else if (SVs.anchorPosition === "lowerright") {
-      anchorx = "right";
-      anchory = "bottom";
-    } else if (SVs.anchorPosition === "lowerleft") {
-      anchorx = "left";
-      anchory = "bottom";
-    } else if (SVs.anchorPosition === "top") {
+    if (SVs.positionFromAnchor === "center") {
       anchorx = "middle";
-      anchory = "top";
-    } else if (SVs.anchorPosition === "bottom") {
-      anchorx = "middle";
-      anchory = "bottom";
-    } else if (SVs.anchorPosition === "left") {
-      anchorx = "left";
       anchory = "middle";
-    } else if (SVs.anchorPosition === "right") {
+    } else if (SVs.positionFromAnchor === "lowerleft") {
       anchorx = "right";
+      anchory = "top";
+    } else if (SVs.positionFromAnchor === "lowerright") {
+      anchorx = "left";
+      anchory = "top";
+    } else if (SVs.positionFromAnchor === "upperleft") {
+      anchorx = "right";
+      anchory = "bottom";
+    } else if (SVs.positionFromAnchor === "upperright") {
+      anchorx = "left";
+      anchory = "bottom";
+    } else if (SVs.positionFromAnchor === "bottom") {
+      anchorx = "middle";
+      anchory = "top";
+    } else if (SVs.positionFromAnchor === "top") {
+      anchorx = "middle";
+      anchory = "bottom";
+    } else if (SVs.positionFromAnchor === "right") {
+      anchorx = "left";
       anchory = "middle";
     } else {
-      // anchorPosition === center
-      anchorx = "middle";
+      // positionFromAnchor === left
+      anchorx = "right";
       anchory = "middle";
     }
     jsxMathAttributes.anchorx = anchorx;
     jsxMathAttributes.anchory = anchory;
+    anchorRel.current = [anchorx, anchory];
 
-    
+
     let beginDelim, endDelim;
     if (SVs.renderMode === "inline") {
       beginDelim = "\\(";
@@ -121,7 +123,7 @@ export default React.memo(function MathComponent(props) {
       beginDelim = "\\(";
       endDelim = "\\)";
     }
-  
+
     let newMathJXG = board.create('text', [0, 0, beginDelim + SVs.latex + endDelim], jsxMathAttributes);
 
     newMathJXG.on('down', function (e) {
@@ -158,15 +160,38 @@ export default React.memo(function MathComponent(props) {
       var o = board.origin.scrCoords;
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+      let width = newMathJXG.size[0] / board.unitX;
+      let height = newMathJXG.size[1] / board.unitY;
+
+      let anchorx = anchorRel.current[0];
+      let anchory = anchorRel.current[1];
+
+      let offsetx = 0;
+      if (anchorx === "middle") {
+        offsetx = -width / 2
+      } else if (anchorx === "right") {
+        offsetx = -width;
+      }
+      let offsety = 0;
+      if (anchory === "middle") {
+        offsety = -height / 2
+      } else if (anchory === "top") {
+        offsety = -height;
+      }
+
+      let xminAdjusted = xmin + 0.04 * (xmax - xmin) - offsetx - width;
+      let xmaxAdjusted = xmax - 0.04 * (xmax - xmin) - offsetx;
+      let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
+      let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
       calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
         - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
 
       calculatedY.current = (o[2] -
         (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
         / board.unitY;
-      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
+      calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
         action: actions.moveMath,
@@ -178,7 +203,7 @@ export default React.memo(function MathComponent(props) {
         }
       });
 
-      newMathJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0,0]);
+      newMathJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
       //Protect against very small unintended drags
@@ -192,9 +217,20 @@ export default React.memo(function MathComponent(props) {
 
     mathJXG.current = newMathJXG;
     anchorPointJXG.current = newAnchorPointJXG;
-    previousAnchorPosition.current = SVs.anchorPosition;
+    previousPositionFromAnchor.current = SVs.positionFromAnchor;
 
+    // Note: no idea why one has to update the math after waiting
+    // But, if we don't do that, the math isn't positioned correctly if any anchors are "middle",
+    // and, especially for displayed math, the drag handlers may not be called
+    // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
+    setTimeout(() => {
 
+      mathJXG.current.needsUpdate = true;
+      mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
+      mathJXG.current.update();
+      board.updateRenderer();
+
+    }, 1000)
   }
 
   if (board) {
@@ -237,7 +273,7 @@ export default React.memo(function MathComponent(props) {
         beginDelim = "\\(";
         endDelim = "\\)";
       }
-    
+
 
       mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
 
@@ -270,43 +306,44 @@ export default React.memo(function MathComponent(props) {
 
       mathJXG.current.visProp.highlight = !fixed;
       mathJXG.current.visProp.fixed = fixed;
-      
+
       mathJXG.current.needsUpdate = true;
 
-      if (SVs.anchorPosition !== previousAnchorPosition.current) {
+      if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
         let anchorx, anchory;
-        if (SVs.anchorPosition === "upperright") {
-          anchorx = "right";
-          anchory = "top";
-        } else if (SVs.anchorPosition === "upperleft") {
-          anchorx = "left";
-          anchory = "top";
-        } else if (SVs.anchorPosition === "lowerright") {
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (SVs.anchorPosition === "lowerleft") {
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (SVs.anchorPosition === "top") {
+        if (SVs.positionFromAnchor === "center") {
           anchorx = "middle";
-          anchory = "top";
-        } else if (SVs.anchorPosition === "bottom") {
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (SVs.anchorPosition === "left") {
-          anchorx = "left";
           anchory = "middle";
-        } else if (SVs.anchorPosition === "right") {
+        } else if (SVs.positionFromAnchor === "lowerleft") {
           anchorx = "right";
+          anchory = "top";
+        } else if (SVs.positionFromAnchor === "lowerright") {
+          anchorx = "left";
+          anchory = "top";
+        } else if (SVs.positionFromAnchor === "upperleft") {
+          anchorx = "right";
+          anchory = "bottom";
+        } else if (SVs.positionFromAnchor === "upperright") {
+          anchorx = "left";
+          anchory = "bottom";
+        } else if (SVs.positionFromAnchor === "bottom") {
+          anchorx = "middle";
+          anchory = "top";
+        } else if (SVs.positionFromAnchor === "top") {
+          anchorx = "middle";
+          anchory = "bottom";
+        } else if (SVs.positionFromAnchor === "right") {
+          anchorx = "left";
           anchory = "middle";
         } else {
-          // anchorPosition === center
-          anchorx = "middle";
+          // positionFromAnchor === left
+          anchorx = "right";
           anchory = "middle";
         }
         mathJXG.current.visProp.anchorx = anchorx;
         mathJXG.current.visProp.anchory = anchory;
-        previousAnchorPosition.current = SVs.anchorPosition;
+        anchorRel.current = [anchorx, anchory];
+        previousPositionFromAnchor.current = SVs.positionFromAnchor;
         mathJXG.current.fullUpdate();
       } else {
         mathJXG.current.update();
@@ -358,7 +395,7 @@ export default React.memo(function MathComponent(props) {
 
   // Note: when a component type gets switched, sometimes state variables change before renderer
   // so protect against case where the latexWithInputChildren is gone but renderer is still math
-  if(!SVs.latexWithInputChildren) {
+  if (!SVs.latexWithInputChildren) {
     return null;
   }
 
@@ -371,7 +408,7 @@ export default React.memo(function MathComponent(props) {
   ];
   if (SVs.mrowChildNames) {
     anchors.push(...SVs.mrowChildNames.map(x =>
-     <a name={x} key={x} id={x} />
+      <a name={x} key={x} id={x} />
     ))
   }
 
