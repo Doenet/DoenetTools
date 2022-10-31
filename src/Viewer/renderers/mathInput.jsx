@@ -201,14 +201,21 @@ export default function MathInput(props) {
     cursor: "pointer",
     marginBottom: "4px",
   }
+
   if (SVs.disabled) {
+    // Disable the checkWorkButton
     checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     checkWorkStyle.color = 'black';
     checkWorkStyle.cursor = 'not-allowed';
 
+    // Disable the mathInput
     mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     mathInputStyle.pointerEvents = 'none';
-    mathInputWrapper.cursor = 'not-allowed'
+    mathInputWrapper.cursor = 'not-allowed';
+
+    // Disable tab indexing on mathInput (currently not working)
+    mathInputWrapper.tabIndex = '-1';
+    mathInputStyle.tabIndex = '-1';
   }
 
   //Assume we don't have a check work button
