@@ -106,7 +106,7 @@ export default function Increment(props) {
   };
 
   const values = props.values || (props.font && FONT_SIZES) || []
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(props.value || 0);
   const [index, setIndex] = useState(0);
   const incrementRef = useRef(null);
   const textFieldRef = useRef(null);
@@ -117,7 +117,7 @@ export default function Increment(props) {
     // to handle placeholder issue
     if (props.placeholder && value === "") {
       setValue("")
-    } else if ((props.font || !values.length) && (!value)) {
+    } else if ((props.font || !values.length) && !value) {
       setValue(0)
     } 
     // make sure onChange doesn't fire on manual typing
@@ -144,7 +144,13 @@ export default function Increment(props) {
     
     if (props.value && props.values) 
       setIndex(props.values.indexOf(props.value))
-  }, [])
+
+  }, [props.value]) //need to put this two as dependency because we might wanna change value manually from the parent component
+
+  // useEffect(() => {
+  //   console.log("value prop changed");
+  //   setValue(props.value)
+  // }, [props.value])
 
   const incrementOnClick = () => {
     if (textFieldRef.current) {
