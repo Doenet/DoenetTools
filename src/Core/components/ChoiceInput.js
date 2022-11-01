@@ -180,10 +180,14 @@ export default class Choiceinput extends Input {
           dependencyType: "stateVariable",
           variableName: "shuffleOrder"
         },
-        variantRng: {
+        variantSeed: {
           dependencyType: "value",
-          value: sharedParameters.variantRng,
-          doNotProxy: true,
+          value: sharedParameters.variantSeed
+        },
+        rngClass: {
+          dependencyType: "value",
+          value: sharedParameters.rngClass,
+          doNotProxy: true
         },
         variants: {
           dependencyType: "variants",
@@ -220,12 +224,13 @@ export default class Choiceinput extends Input {
             }
           }
 
+          let variantRng = dependencyValues.rngClass(dependencyValues.variantSeed + "co");
 
           // shuffle order every time get new children
           // https://stackoverflow.com/a/12646864
           choiceOrder = [...Array(numberChoices).keys()].map(x => x + 1)
           for (let i = numberChoices - 1; i > 0; i--) {
-            const rand = dependencyValues.variantRng();
+            const rand = variantRng();
             const j = Math.floor(rand * (i + 1));
             [choiceOrder[i], choiceOrder[j]] = [choiceOrder[j], choiceOrder[i]];
           }
@@ -1176,7 +1181,7 @@ export default class Choiceinput extends Input {
       } else {
         if (componentInfoObjects.isInheritedComponentType({
           inheritedComponentType: child.componentType,
-          baseComponentType: "composite"
+          baseComponentType: "_composite"
         })
           && child.attributes.createComponentOfType?.primitive === "choice"
         ) {
@@ -1206,6 +1211,10 @@ export default class Choiceinput extends Input {
     let result = super.determineNumberOfUniqueVariants({
       serializedComponent, componentInfoObjects
     });
+
+    if (!result.success) {
+      return { success: false }
+    }
 
     let numberOfVariants = result.numberOfVariants * numberOfPermutations;
 

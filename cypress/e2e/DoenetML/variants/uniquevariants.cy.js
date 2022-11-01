@@ -1623,7 +1623,7 @@ describe('Specifying unique variant tests', function () {
 
         });
 
-        cy.wait(2000);  // wait for 1 second debounce
+        cy.wait(1500);  // wait for 1 second debounce
 
         cy.reload();
 
@@ -1792,7 +1792,7 @@ describe('Specifying unique variant tests', function () {
 
 
 
-      cy.wait(2000);  // wait for 1 second debounce
+      cy.wait(1500);  // wait for 1 second debounce
       cy.reload();
 
       cy.window().then(async (win) => {
@@ -1897,7 +1897,138 @@ describe('Specifying unique variant tests', function () {
           });
         }
 
-        cy.wait(2000);  // wait for 1 second debounce
+        cy.wait(1500);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML: `<text>${ind}</text>${doenetML}`,
+            requestedVariantIndex: ind,
+          }, "*");
+        })
+
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/ci"];
+        }))
+
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[2] - 1])
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[2] - 1]])
+        });
+
+        cy.get(`#\\/ci_choice1_input`).click();
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0] - 1])
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0] - 1]])
+        });
+      })
+    }
+
+
+
+    cy.log("7th variant repeats first order")
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_newAttempt').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+    cy.reload();
+
+    let ind = 7;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `<text>${ind}</text>${doenetML}`,
+        requestedVariantIndex: ind,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables['/ci'].stateValues.choiceOrder;
+      let selectedOrder = choiceOrder.join(",")
+      expect(selectedOrder).eq(ordersFound[0]);
+
+    });
+
+  });
+
+  it('single shuffled choiceinput, choices copied in', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    let doenetML = `
+    <variantControl uniquevariants />
+    <choice name="red">red</choice>
+    <group name="twoChoices">
+      <choice>blue</choice>
+      <choice>green</choice>
+    </group>
+
+    <choiceinput name="ci" shuffleOrder>
+      <choice copySource="red" />
+      <copy source="twoChoices" createComponentOfType="choice" nComponents="2" />
+    </choiceinput>
+    <p>Selected value: <copy prop='selectedvalue' target="ci" assignNames="selectedValue" /></p>
+
+    `
+
+    let ordersFound = [];
+    let choices = ["red", "blue", "green"];
+
+    cy.log("get all orders in first 6 variants")
+    for (let ind = 1; ind <= 6; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let choiceOrder = stateVariables['/ci'].stateValues.choiceOrder;
+        let selectedOrder = choiceOrder.join(",")
+        expect(ordersFound.includes(selectedOrder)).eq(false);
+        ordersFound.push(selectedOrder);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
+
+        for (let i = 0; i < 3; i++) {
+          cy.get(`#\\/ci_choice${i + 1}_input`).click();
+          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i] - 1])
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i] - 1]])
+          });
+        }
+
+        cy.wait(1500);  // wait for 1 second debounce
         cy.reload();
 
         cy.window().then(async (win) => {
@@ -2024,7 +2155,7 @@ describe('Specifying unique variant tests', function () {
           });
         }
 
-        cy.wait(2000);  // wait for 1 second debounce
+        cy.wait(1500);  // wait for 1 second debounce
         cy.reload();
 
         cy.window().then(async (win) => {
@@ -2153,7 +2284,7 @@ describe('Specifying unique variant tests', function () {
           });
         }
 
-        cy.wait(2000);  // wait for 1 second debounce
+        cy.wait(1500);  // wait for 1 second debounce
         cy.reload();
 
         cy.window().then(async (win) => {
@@ -2221,6 +2352,250 @@ describe('Specifying unique variant tests', function () {
     });
 
   });
+
+  it('shuffle', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    let doenetML = `
+    <variantControl uniquevariants />
+    <p name="pList"><aslist><shuffle name="sh">
+      <text>red</text>
+      <text>blue</text>
+      <text>green</text>
+    </shuffle></aslist></p>
+    <p><booleanInput name="bi" /><boolean name="b" copySource="bi" /></p>
+
+    `
+
+    let ordersFound = [];
+    let colors = ["red", "blue", "green"];
+
+    cy.log("get all orders in first 6 variants")
+    for (let ind = 1; ind <= 6; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let componentOrder = stateVariables['/sh'].stateValues.componentOrder;
+        expect([...componentOrder].sort()).eqls([1, 2, 3])
+
+        let selectedOrder = componentOrder.join(",")
+        expect(ordersFound.includes(selectedOrder)).eq(false);
+        ordersFound.push(selectedOrder);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
+
+        cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+
+
+        // check reloading for just one variant
+        if (ind === 4) {
+          cy.get('#\\/bi').click();
+          cy.get("#\\/b").should('have.text', 'true')
+
+          cy.wait(1500);  // wait for 1 second debounce
+          cy.reload();
+
+          cy.window().then(async (win) => {
+            win.postMessage({
+              doenetML: `<text>${ind}</text>${doenetML}`,
+              requestedVariantIndex: ind,
+            }, "*");
+          })
+
+          // to wait for page to load
+          cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+          cy.get("#\\/b").should('have.text', 'true')
+          cy.get('#\\/bi').click();
+          cy.get("#\\/b").should('have.text', 'false')
+
+
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            expect(stateVariables['/sh'].stateValues.componentOrder).eqls(componentOrder)
+          });
+        }
+
+      })
+    }
+
+
+
+    cy.log("7th variant repeats first order")
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_newAttempt').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+    cy.reload();
+
+    let ind = 7;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `<text>${ind}</text>${doenetML}`,
+        requestedVariantIndex: ind,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let componentOrder = stateVariables['/sh'].stateValues.componentOrder;
+      let selectedOrder = componentOrder.join(",")
+      expect(selectedOrder).eq(ordersFound[0]);
+
+      cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+
+    });
+
+  });
+
+  it('shuffle, copy in components', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    let doenetML = `
+    <variantControl uniquevariants />
+    <text name="red">red</text>
+    <group name="twoColors">
+      <text>blue</text>
+      <text>green</text>
+    </group>
+    <p name="pList"><aslist><shuffle name="sh">
+      <text copySource="red" />
+      <copy source="twoColors" createComponentOfType="text" nComponents="2" />
+    </shuffle></aslist></p>
+    <p><booleanInput name="bi" /><boolean name="b" copySource="bi" /></p>
+
+    `
+
+    let ordersFound = [];
+    let colors = ["red", "blue", "green"];
+
+    cy.log("get all orders in first 6 variants")
+    for (let ind = 1; ind <= 6; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let componentOrder = stateVariables['/sh'].stateValues.componentOrder;
+        expect([...componentOrder].sort()).eqls([1, 2, 3])
+
+        let selectedOrder = componentOrder.join(",")
+        expect(ordersFound.includes(selectedOrder)).eq(false);
+        ordersFound.push(selectedOrder);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
+
+        cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+
+
+        // check reloading for just one variant
+        if (ind === 4) {
+          cy.get('#\\/bi').click();
+          cy.get("#\\/b").should('have.text', 'true')
+
+          cy.wait(1500);  // wait for 1 second debounce
+          cy.reload();
+
+          cy.window().then(async (win) => {
+            win.postMessage({
+              doenetML: `<text>${ind}</text>${doenetML}`,
+              requestedVariantIndex: ind,
+            }, "*");
+          })
+
+          // to wait for page to load
+          cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+          cy.get("#\\/b").should('have.text', 'true')
+          cy.get('#\\/bi').click();
+          cy.get("#\\/b").should('have.text', 'false')
+
+
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            expect(stateVariables['/sh'].stateValues.componentOrder).eqls(componentOrder)
+          });
+        }
+
+      })
+    }
+
+
+
+    cy.log("7th variant repeats first order")
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_newAttempt').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+    cy.reload();
+
+    let ind = 7;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `<text>${ind}</text>${doenetML}`,
+        requestedVariantIndex: ind,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let componentOrder = stateVariables['/sh'].stateValues.componentOrder;
+      let selectedOrder = componentOrder.join(",")
+      expect(selectedOrder).eq(ordersFound[0]);
+
+      cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+
+    });
+
+  })
 
   it('document and problems with unique variants', () => {
 
@@ -2310,7 +2685,7 @@ describe('Specifying unique variant tests', function () {
 
         });
 
-        cy.wait(2000);  // wait for 1 second debounce
+        cy.wait(1500);  // wait for 1 second debounce
         cy.reload();
 
         cy.window().then(async (win) => {
@@ -2469,7 +2844,7 @@ describe('Specifying unique variant tests', function () {
 
         });
 
-        cy.wait(2000);  // wait for 1 second debounce
+        cy.wait(1500);  // wait for 1 second debounce
         cy.reload();
 
         cy.window().then(async (win) => {
@@ -2606,7 +2981,7 @@ describe('Specifying unique variant tests', function () {
 
         });
 
-        cy.wait(2000);  // wait for 1 second debounce
+        cy.wait(1500);  // wait for 1 second debounce
         cy.reload();
 
         cy.window().then(async (win) => {

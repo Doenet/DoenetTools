@@ -2,7 +2,8 @@ import { getUniqueIdentifierFromBase } from "./naming";
 import { applyMacros, applySugar, componentFromAttribute, processAssignNames, removeBlankStringChildren } from "./serializedStateProcessing";
 
 export function postProcessCopy({ serializedComponents, componentName,
-  addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
+  addShadowDependencies = true, markAsPrimaryShadow = false,
+  uniqueIdentifiersUsed = [], identifierPrefix = "",
   unlinkExternalCopies = false, copiesByTargetComponentName = {}, componentNamesFound = [], assignNamesFound = [], activeAliases = [],
   init = true
 }) {
@@ -63,6 +64,9 @@ export function postProcessCopy({ serializedComponents, componentName,
           if (init) {
             downDep[component.originalName][0].firstLevelReplacement = true;
           }
+          if(markAsPrimaryShadow) {
+            downDep[component.originalName][0].isPrimaryShadow = true;
+          }
           if (component.state) {
             let stateVariables = Object.keys(component.state);
             downDep[component.originalName].downstreamStateVariables = stateVariables;
@@ -121,7 +125,7 @@ export function postProcessCopy({ serializedComponents, componentName,
     postProcessCopy({
       serializedComponents: component.children,
       componentName,
-      addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+      addShadowDependencies, markAsPrimaryShadow, uniqueIdentifiersUsed, identifierPrefix,
       unlinkExternalCopies, copiesByTargetComponentName, componentNamesFound, assignNamesFound,
       activeAliases: [...activeAliases],  // don't add values from children
       init: false
@@ -134,7 +138,7 @@ export function postProcessCopy({ serializedComponents, componentName,
           postProcessCopy({
             serializedComponents: [attribute.component],
             componentName,
-            addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+            addShadowDependencies, markAsPrimaryShadow, uniqueIdentifiersUsed, identifierPrefix,
             unlinkExternalCopies, copiesByTargetComponentName, componentNamesFound, assignNamesFound,
             activeAliases: [...activeAliases],  // don't add values from children
             init: false,
@@ -146,7 +150,7 @@ export function postProcessCopy({ serializedComponents, componentName,
       postProcessCopy({
         serializedComponents: component.replacements,
         componentName,
-        addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+        addShadowDependencies, markAsPrimaryShadow, uniqueIdentifiersUsed, identifierPrefix,
         unlinkExternalCopies, copiesByTargetComponentName, componentNamesFound, assignNamesFound,
         activeAliases: [...activeAliases],  // don't add values from children
         init: false
@@ -262,7 +266,7 @@ export function convertAttributesForComponentType({
 export async function verifyReplacementsMatchSpecifiedType({ component,
   replacements, replacementChanges,
   assignNames,
-  workspace, componentInfoObjects, compositeAttributesObj, flags
+  workspace = {}, componentInfoObjects, compositeAttributesObj, flags
 }) {
 
   if (!component.attributes.createComponentOfType?.primitive
@@ -276,6 +280,14 @@ export async function verifyReplacementsMatchSpecifiedType({ component,
   let replacementTypes;
 
   if (!replacementChanges) {
+    // if have a template, filter out blank strings
+    if (componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: component.componentType,
+      baseComponentType: "template"
+    })) {
+      replacements = replacements.filter(x => x.componentType || x.trim().length > 0)
+    }
+
     replacementTypes = replacements.map(x => x.componentType);
 
     if (replacementTypes.length === 1 && replacementTypes[0] === "externalContent") {
@@ -284,7 +296,6 @@ export async function verifyReplacementsMatchSpecifiedType({ component,
         .filter(x => x.componentType || x.trim().length > 0)
         .map(x => x.componentType)
     }
-
   } else {
 
     replacementTypes = component.replacements.map(x => x.componentType);
@@ -369,7 +380,23 @@ export async function verifyReplacementsMatchSpecifiedType({ component,
   if (replacementTypes.length !== requiredLength ||
     !replacementTypes.every(x => x === requiredComponentType)) {
 
-    // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
+    // console.warn(`Replacements from ${component.componentType} ${component.componentName} do not match the specified createComponentOfType and nComponents`);
+
+
+    // if only replacement is a template
+    // then give the template the createComponentOfType and nComponentsSpecified
+    if (replacements.length === 1 && componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: replacements[0].componentType,
+      baseComponentType: "template"
+    })) {
+      if (!replacements[0].attributes) {
+        replacements[0].attributes = {};
+      }
+      replacements[0].attributes.createComponentOfType = { primitive: requiredComponentType }
+      replacements[0].attributes.nComponents = { primitive: requiredLength };
+      return { replacements, replacementChanges }
+
+    }
 
 
     // if the only discrepancy is the components are the wrong type,
@@ -378,7 +405,7 @@ export async function verifyReplacementsMatchSpecifiedType({ component,
     // i.e., add each current replacement as the child of a new component
 
     let wrapExistingReplacements = replacementTypes.length === requiredLength
-      && !(replacementsToWithhold > 0) && workspace.sourceNames.length === requiredLength;
+      && !(replacementsToWithhold > 0) && workspace.sourceNames?.length === requiredLength;
 
     // let uniqueIdentifiersUsed;
     let originalReplacements;
