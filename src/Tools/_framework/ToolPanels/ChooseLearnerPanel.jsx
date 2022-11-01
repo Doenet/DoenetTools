@@ -10,6 +10,7 @@ import SearchBar from '../../../_reactComponents/PanelHeaderComponents/SearchBar
 import { formatAMPM, UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 import styled from 'styled-components';
 import { useRef } from 'react';
+import { clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
 
 export const Styles = styled.div`
   padding: 1rem;
@@ -119,31 +120,35 @@ export const Styles = styled.div`
   }
 `;
 
-async function clearUsersInformationFromTheBrowserAndSetStage(){
-  localStorage.clear(); //Clear out the profile of the last exam taker
-  await axios.get('/api/signOut.php')
 
-  const promiseForDelete = new Promise((resolve,reject)=>{
-    const DBDeleteRequest = indexedDB.deleteDatabase('keyval-store'); //Clear out the profile of the last exam taker
-    DBDeleteRequest.onerror = (event) => {
-      resolve(false);
-      console.error("Error deleting database.");
-    };
-  
-    DBDeleteRequest.onsuccess = (event) => {
-      resolve(true);
-      console.log("Database deleted successfully");
-    };
-
-  });
-
-  
-  return promiseForDelete;
-}
 
 async function checkIfUserClearedOut(){
-  let userIsRemoved = true;
-  return userIsRemoved;
+  let messageJSX = [];
+
+  //Check for indexedDB
+  let indexedDBRemoved = !(await window.indexedDB.databases()).map(db => db.name).includes('keyval-store');
+  if (!indexedDBRemoved){
+    messageJSX.push(<p>IndexedDB not removed</p>);
+  }
+  //Check for local storage
+  //TODO: find something is stored in localStorage and test if this clears it
+  let localStorageRemoved = localStorage.length == 0;
+
+  if(!localStorageRemoved){
+    messageJSX.push(<p>local storage not removed</p>);
+  }
+
+  //Check for cookie
+  let cookieRemoved = document.cookie.indexOf('EJWT_JS') === -1; //Note only for exam
+  if(!cookieRemoved){
+    messageJSX.push(<p>cookie not removed</p>);
+  }
+
+  let userInformationIsCompletelyRemoved = false;
+  if (indexedDBRemoved && localStorageRemoved && cookieRemoved){
+    userInformationIsCompletelyRemoved = true;
+  }
+  return {userInformationIsCompletelyRemoved,messageJSX};
 }
 
 export default function ChooseLearnerPanel(props) {
@@ -160,7 +165,12 @@ export default function ChooseLearnerPanel(props) {
   let [message, setMessage] = useState('');
   let [selectedExamLabel, setSelectedExamLabel] = useState('');
   let clearingUserRef = useRef(false);
+  let [clearingMessageJSX,setClearningMessageJSX] = useState(null);
+  
 
+  // checkIfUserClearedOut().then((resp)=>{
+  //   console.log("Check",resp)
+  // })
 
   const addToast = useToast();
 
@@ -193,20 +203,23 @@ export default function ChooseLearnerPanel(props) {
     })
   });
 
-  console.log(`>>>>stage '${stage}'`)
+  // console.log(`>>>>stage '${stage}'`)
 
   async function clearOutUser(){
     
     while (clearingUserRef.current){
-      let thinksItClearedItOut = await clearUsersInformationFromTheBrowserAndSetStage();
-      console.log("thinksItClearedItOut",thinksItClearedItOut)
+      let thinksItClearedItOut = await clearUsersInformationFromTheBrowser();
+      // console.log("thinksItClearedItOut",thinksItClearedItOut)
       // thinksItClearedItOut = false;
       if (thinksItClearedItOut){
-        let clearedItOut = await checkIfUserClearedOut();
-        if (clearedItOut){
+        let { userInformationIsCompletelyRemoved, messageJSX } = await checkIfUserClearedOut();
+        setClearningMessageJSX(messageJSX);
+        if (userInformationIsCompletelyRemoved){
           setStage('choose exam');
           clearingUserRef.current = false;
           break;
+        }else{
+          //Show message
         }
       }
     }
@@ -293,6 +306,7 @@ export default function ChooseLearnerPanel(props) {
     
     return <>
     <h1>Clearing out past user...</h1>
+    {clearingMessageJSX}
     <Button value="Cancel" onClick={()=>{
       clearingUserRef.current = false;
       setStage('choose exam')
@@ -403,7 +417,6 @@ export default function ChooseLearnerPanel(props) {
           }
           timeZoneCorrectLastExamDate = <ButtonGroup>
             <Button value='Resume' onClick={() => {
-              clearUsersInformationFromTheBrowserAndSetStage();
               setChoosenLearner(learner);
               setStage('student final check');
               setResumeAttemptFlag(true)
@@ -427,7 +440,6 @@ export default function ChooseLearnerPanel(props) {
               width='menu'
               value='Start'
               onClick={() => {
-                clearUsersInformationFromTheBrowserAndSetStage();
                 setChoosenLearner(learner);
                 setStage('student final check');
                 setResumeAttemptFlag(false);
