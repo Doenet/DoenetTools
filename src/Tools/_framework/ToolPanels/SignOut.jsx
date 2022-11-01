@@ -3,29 +3,38 @@ import axios from 'axios';
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import { checkIfUserClearedOut, clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
 
 export default function SignOut() {
   const [signOutAttempted, setSignOutAttempted] = useState(false);
+  const [isSignedOut, setIsSignedOut] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
-  useEffect(() => {
-    localStorage.clear(); //Clear out the profile
-    indexedDB.deleteDatabase('keyval-store'); //Clear out the rest of the profile
-
-    axios
-      .get('/api/signOut.php', {params: {}})
-      .then((resp) => {
-      // console.log(">>>signout resp",resp)
+  useEffect( () => {
+    console.log("HERE!!!")
+    clearUsersInformationFromTheBrowser()
+    .then((signedOut) => {
+      console.log(">>>signout signedOut",signedOut)
       setSignOutAttempted(true);
       })
       .catch((error) => {
-        this.setState({ error: error });
+        setSignOutAttempted(true);
       });
   }, []);
 
-  const vanillaCookies = document.cookie.split(';');
+  useEffect( () => {
+    async function checkSignout(){
+      console.log("HERE 2!!!!")
+      let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
+      setIsSignedOut(userInformationIsCompletelyRemoved);
+      setErrorMessage(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
+    }
+    checkSignout();
+  }, [signOutAttempted]);
+  
 
-  if (vanillaCookies.length === 1 && vanillaCookies[0] === '') {
+  if (isSignedOut) {
     return (
       <div>
         <div
@@ -80,6 +89,7 @@ export default function SignOut() {
           />
           <div>
             <h2>FAILED SIGN OUT</h2>
+            <p>{errorMessage}</p>
             <p>Please manually remove your cookies.</p>
           </div>
         </div>

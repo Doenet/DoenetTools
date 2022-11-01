@@ -10,7 +10,7 @@ import SearchBar from '../../../_reactComponents/PanelHeaderComponents/SearchBar
 import { formatAMPM, UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 import styled from 'styled-components';
 import { useRef } from 'react';
-import { clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
+import { checkIfUserClearedOut, clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
 
 export const Styles = styled.div`
   padding: 1rem;
@@ -122,34 +122,7 @@ export const Styles = styled.div`
 
 
 
-async function checkIfUserClearedOut(){
-  let messageJSX = [];
 
-  //Check for indexedDB
-  let indexedDBRemoved = !(await window.indexedDB.databases()).map(db => db.name).includes('keyval-store');
-  if (!indexedDBRemoved){
-    messageJSX.push(<p>IndexedDB not removed</p>);
-  }
-  //Check for local storage
-  //TODO: find something is stored in localStorage and test if this clears it
-  let localStorageRemoved = localStorage.length == 0;
-
-  if(!localStorageRemoved){
-    messageJSX.push(<p>local storage not removed</p>);
-  }
-
-  //Check for cookie
-  let cookieRemoved = document.cookie.indexOf('EJWT_JS') === -1; //Note only for exam
-  if(!cookieRemoved){
-    messageJSX.push(<p>cookie not removed</p>);
-  }
-
-  let userInformationIsCompletelyRemoved = false;
-  if (indexedDBRemoved && localStorageRemoved && cookieRemoved){
-    userInformationIsCompletelyRemoved = true;
-  }
-  return {userInformationIsCompletelyRemoved,messageJSX};
-}
 
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -165,7 +138,7 @@ export default function ChooseLearnerPanel(props) {
   let [message, setMessage] = useState('');
   let [selectedExamLabel, setSelectedExamLabel] = useState('');
   let clearingUserRef = useRef(false);
-  let [clearingMessageJSX,setClearningMessageJSX] = useState(null);
+  let [clearingMessageJSX,setClearingMessageJSX] = useState(null);
   
 
   // checkIfUserClearedOut().then((resp)=>{
@@ -212,8 +185,8 @@ export default function ChooseLearnerPanel(props) {
       // console.log("thinksItClearedItOut",thinksItClearedItOut)
       // thinksItClearedItOut = false;
       if (thinksItClearedItOut){
-        let { userInformationIsCompletelyRemoved, messageJSX } = await checkIfUserClearedOut();
-        setClearningMessageJSX(messageJSX);
+        let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
+        setClearingMessageJSX(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
         if (userInformationIsCompletelyRemoved){
           setStage('choose exam');
           clearingUserRef.current = false;
