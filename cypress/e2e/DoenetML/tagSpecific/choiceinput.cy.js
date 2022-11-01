@@ -2246,4 +2246,97 @@ describe('ChoiceInput Tag Tests', function () {
 
   });
 
+  it('sorted choices', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput>
+      <sort sortByProp="text">
+        <choice>mouse</choice>
+        <choice>dog</choice>
+        <choice>cat</choice>
+        <choice>monkey</choice>
+      </sort>
+    </choiceinput>
+
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
+
+    <p name="pMouse">Selected mouse: $_choice1.selected</p>
+    <p name="pDog">Selected dog: $_choice2.selected</p>
+    <p name="pCat">Selected cat: $_choice3.selected</p>
+    <p name="pMonkey">Selected monkey: $_choice4.selected</p>
+    `,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    let originalChoices = ["mouse", "dog", "cat", "monkey", ];
+    cy.get('#\\/_p1').should('have.text', 'Selected value: ')
+    cy.get('#\\/_p2').should('have.text', 'Selected index: ')
+    cy.get('#\\/pMouse').should('have.text', 'Selected mouse: false')
+    cy.get('#\\/pDog').should('have.text', 'Selected dog: false')
+    cy.get('#\\/pCat').should('have.text', 'Selected cat: false')
+    cy.get('#\\/pMonkey').should('have.text', 'Selected monkey: false')
+
+    let choices, choiceOrder;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
+      choiceOrder = [3, 2, 4, 1]
+      expect(choices.length).eq(4);
+      expect(originalChoices.includes(choices[0])).eq(true);
+      expect(originalChoices.includes(choices[1])).eq(true);
+      expect(originalChoices.includes(choices[2])).eq(true);
+      expect(originalChoices.includes(choices[3])).eq(true);
+      expect(choices[1]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[0]);
+      expect(choices[3]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[2]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
+      expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice4'].stateValues.selected).eq(false);
+
+    });
+
+    cy.log('select options in order')
+
+    for (let i = 0; i < 4; i++) {
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
+
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
+        cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
+
+        cy.get('#\\/pMouse').should('have.text', `Selected mouse: ${choiceOrder[i] === 1}`)
+        cy.get('#\\/pDog').should('have.text', `Selected dog: ${choiceOrder[i] === 2}`)
+        cy.get('#\\/pCat').should('have.text', `Selected cat: ${choiceOrder[i] === 3}`)
+        cy.get('#\\/pMonkey').should('have.text', `Selected monkey: ${choiceOrder[i] === 4}`)
+      });
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+        expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+        expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(stateVariables['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(stateVariables['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(stateVariables['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+
+      });
+    }
+
+  });
+
 });
