@@ -6,7 +6,6 @@ import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
 import { scrollableContainerAtom } from '../PageViewer';
 import useDoenetRender from './useDoenetRenderer';
-import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import styled from 'styled-components';
 
 // const LinkStyling = styled.a`
@@ -17,6 +16,28 @@ import styled from 'styled-components';
 //     }
 //   `;
 
+const RefButton = styled.button `
+  position: relative;
+  height: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  padding: 2px;
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  cursor: pointer;
+  padding: 1px 6px 1px 6px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+
+  &:focus {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
+  }
+`;
 
 export default React.memo(function Ref(props) {
   let { name, id, SVs, children } = useDoenetRender(props);
@@ -106,11 +127,11 @@ export default React.memo(function Ref(props) {
   if (SVs.createButton) {
     if (externalUri) {
       return <span id={id}><a name={id} />
-        <button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
+        <RefButton id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</RefButton>
       </span>;
     } else {
       return <span id={id}><a name={id} />
-        <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
+        <RefButton id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</RefButton>
       </span>;
     }
     
