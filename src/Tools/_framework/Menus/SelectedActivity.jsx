@@ -234,7 +234,7 @@ export default function SelectedActivity() {
           });
         }}
       />
-      <AssignmentSettings doenetId={doenetId} courseId={courseId} />
+      {/* d */}
     </>
   );
 }

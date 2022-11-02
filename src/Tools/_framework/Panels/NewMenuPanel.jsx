@@ -305,6 +305,7 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
     TimerMenu:lazy(() => import('../Menus/TimerMenu')),
     CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
+    ActivityDates:lazy(() => import('../Menus/ActivityDates')),
     ClassTimes:lazy(() => import('../Menus/ClassTimes')),
     CurrentContent:lazy(() => import('../Menus/CurrentContent')),
     ManageUsersMenu:lazy(() => import('../Menus/ManageUsersMenu'))
