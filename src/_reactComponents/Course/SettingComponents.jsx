@@ -340,7 +340,7 @@ export function ManageUsers({ courseId, editable = false }) {
       },
       (err) => {
         // addToast(err, toastType.ERROR);
-        setSelectedUserPermissons(selectedUserData.permissons);
+        setSelectedUserPermissions(selectedUserData.permissions);
       },
     );
   };
