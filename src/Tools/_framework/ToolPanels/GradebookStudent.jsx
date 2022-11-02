@@ -12,7 +12,7 @@ import {
   Table,
   studentData,
   assignmentData,
-  overViewData,
+  overviewData,
   gradeSorting,
 } from './Gradebook';
 
@@ -23,7 +23,7 @@ export default function GradebookStudent() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let assignments = useRecoilValueLoadable(assignmentData);
   let students = useRecoilValueLoadable(studentData);
-  let overView = useRecoilValueLoadable(overViewData);
+  let overview = useRecoilValueLoadable(overviewData);
 
   let overviewTable = {};
 
@@ -45,7 +45,7 @@ export default function GradebookStudent() {
   if (
     assignments.state == 'hasValue' &&
     students.state === 'hasValue' &&
-    overView.state === 'hasValue' &&
+    overview.state === 'hasValue' &&
     userId !== null &&
     userId !== ''
   ) {
@@ -74,7 +74,6 @@ export default function GradebookStudent() {
       let scores = [];
       let allpossiblepoints = [];
       let allassignedpoints = [];
-      let earnedallassignedpoints = [];
       let categoryAssignedPointsAreAllDashes = true;
 
       for (let doenetId in assignments.contents) {
@@ -86,7 +85,10 @@ export default function GradebookStudent() {
         let assignedpoints = '-';
         let possiblepoints =
           assignments.contents[doenetId].totalPointsOrPercent * 1;
-        let credit = overView.contents[userId].assignments[doenetId];
+        let credit = overview.contents[userId].assignments[doenetId];
+        if(credit === null && assignments.contents[doenetId].isGloballyAssigned === "0") {
+          continue;
+        }
         let score = possiblepoints * credit;
         const assignedDate = assignments.contents[doenetId].assignedDate;
         allpossiblepoints.push(possiblepoints);
@@ -104,7 +106,6 @@ export default function GradebookStudent() {
         ){
           assignedpoints = possiblepoints;
           allassignedpoints.push(possiblepoints)
-          earnedallassignedpoints.push(score)
           categoryAssignedPointsAreAllDashes = false;
         }
 
@@ -163,6 +164,7 @@ export default function GradebookStudent() {
       totalPossiblePoints += categoryPossiblePoints;
       if (categoryAssignedPoints != '-'){
         totalAssignedPoints += categoryAssignedPoints;
+        categoryAssignedPoints = Math.round(categoryAssignedPoints * 100) / 100;
       }
 
       categoryScore = Math.round(categoryScore * 100) / 100;
@@ -202,6 +204,7 @@ export default function GradebookStudent() {
 
     totalScore = Math.round(totalScore * 100) / 100;
     totalPossiblePoints = Math.round(totalPossiblePoints * 100) / 100;
+    totalAssignedPoints = Math.round(totalAssignedPoints * 100) / 100;
 
     overviewTable.headers.push(
       {

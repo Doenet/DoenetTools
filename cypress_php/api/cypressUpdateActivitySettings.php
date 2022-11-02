@@ -53,6 +53,7 @@
 		paginate = $activitySettings->paginate,
 		showFinishButton = $activitySettings->showFinishButton,
 		proctorMakesAvailable = $activitySettings->proctorMakesAvailable,
+		autoSubmit = $activitySettings->autoSubmit,
 		pinnedUntilDate = '$activitySettings->pinnedUntilDate',
 		pinnedAfterDate = '$activitySettings->pinnedAfterDate'
 	";

@@ -75,7 +75,7 @@ if ($success) {
             $email = $mergeEmail[$i];
         }
         if (in_array('ExternalId', $mergeHeads, false)) {
-            $externalId = $mergeId[$i];
+            $externalId = $mergeExternalId[$i];
         }
         if (in_array('FirstName', $mergeHeads, false)) {
             $firstName = $mergeFirstName[$i];
@@ -104,23 +104,15 @@ if ($success) {
             $row = $result->fetch_assoc();
             $new_userId = $row['userId'];
 
-            if (
-                $row['firstName'] == '' &&
-                in_array('FirstName', $mergeHeads, false)
-            ) {
+            if ($row['firstName'] == '' && in_array('FirstName', $mergeHeads, false)) {
                 $result = $conn->query(
                     "UPDATE user
                     SET
                     firstName = '$firstName'
                     WHERE userId = '$new_userId'"
                 );
-                var_dump("UPDATE user
-                SET
-                firstName = '$firstName'
-                WHERE userId = '$new_userId'");
             }
-
-            if ($lastName == '' && in_array('LastName', $mergeHeads, false)) {
+            if ($row['lastName'] == '' && in_array('LastName', $mergeHeads, false)) {
                 $result = $conn->query(
                     "UPDATE user
                     SET
@@ -148,7 +140,7 @@ if ($success) {
 				screenName = '$screenName',
 				email = '$email',
 				lastName = '$lastName',
-				firstName = '$firstname',
+				firstName = '$firstName',
 				profilePicture = '$profilePicture',
 				trackingConsent = '1'"
             );

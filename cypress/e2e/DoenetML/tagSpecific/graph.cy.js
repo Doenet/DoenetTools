@@ -351,6 +351,44 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('change essential xlable and ylabel', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <graph name="g" />
+    <p><updateValue name="uvx" target="g.xlabel" type="text" newValue="s" ><label>Change x-label</label></updateValue></p>
+    <p><updateValue name="uvy" target="g.ylabel" type="text" newValue="t" ><label>Change y-label</label></updateValue></p>
+
+    <p name="pxlabel">x-label: $g.xlabel</p>
+    <p name="pylabel">y-label: $g.ylabel</p>
+    `}, "*");
+    });
+
+    cy.get('#\\/pxlabel').should('have.text', "x-label: ")
+    cy.get('#\\/pylabel').should('have.text', "y-label: ")
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g"].stateValues.xlabel).eq("");
+      expect(stateVariables["/g"].stateValues.ylabel).eq("");
+    })
+
+
+    cy.get('#\\/uvx').click();
+    cy.get('#\\/pxlabel').should('have.text', "x-label: s")
+    cy.get('#\\/uvy').click();
+    cy.get('#\\/pylabel').should('have.text', "y-label: t")
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g"].stateValues.xlabel).eq("s");
+      expect(stateVariables["/g"].stateValues.ylabel).eq("t");
+    })
+
+
+  });
+
   it('identical axis scales, with given aspect ratio', () => {
     cy.window().then(async (win) => {
       win.postMessage({

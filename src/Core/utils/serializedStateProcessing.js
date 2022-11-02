@@ -562,8 +562,6 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
 
   for (let component of serializedComponents) {
 
-    // for now, just do this substitution for copy component
-    // TODO: other components such as updateValue, animateFromSequence
     // Note: do not do this for collect, as this dot notation would be confusing for collect
 
     if (component.props &&
@@ -650,7 +648,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
               component.componentType = newComponent.componentType;
 
               if (propArray.length === 0 &&
-                !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
+                !(component.attributes.prop || component.attributes.propIndex)
               ) {
                 component.doenetAttributes.isPlainCopy = true;
               }
@@ -701,14 +699,18 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
 
             }
           } else {
-            console.warn(`invalid copy source: ${originalSource}`)
+            if(component.componentType === "copy") {
+              console.warn(`invalid copy source: ${originalSource}`)
+            } else {
+              console.warn(`invalid target: ${originalSource}`)
+            }
 
           }
 
         } else {
           // have copy with just a simple target prop that is a targetName
           if (component.componentType === "copy" &&
-            !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
+            !(component.attributes.prop || component.attributes.propIndex)
           ) {
             if (!component.doenetAttributes) {
               component.doenetAttributes = {};
@@ -878,7 +880,11 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
       createAttributesFromProps([newComponent], componentInfoObjects)
     }
 
-    return { component: newComponent };
+    let attr = { component: newComponent };
+    if(attrObj.ignoreFixed) {
+      attr.ignoreFixed = true;
+    }
+    return attr;
   } else if (attrObj && attrObj.createPrimitiveOfType) {
     let newPrimitive;
     if (attrObj.createPrimitiveOfType === "boolean") {
@@ -2461,6 +2467,9 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           }
 
           comp.doenetAttributes.isAttributeChild = true;
+          if(attribute.ignoreFixed) {
+            comp.doenetAttributes.ignoreParentFixed = true;
+          }
 
           createComponentNames({
             serializedComponents: [comp],

@@ -25,6 +25,7 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import 'cypress-wait-until';
+import 'cypress-file-upload';
 
 Cypress.Commands.add("signin", ({userId}) => {
   cy.request(`/cyapi/cypressAutoSignin.php?userId=${userId}`)
@@ -63,6 +64,13 @@ Cypress.Commands.add("clearAllOfAUsersCoursesAndItems", ({userId}) => {
 
 Cypress.Commands.add("clearAllOfAUsersActivities", ({userId}) => {
   cy.request(`/cyapi/clearAllOfAUsersActivities.php?userId=${userId}`)
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+});
+
+Cypress.Commands.add("clearCoursePeople", ({courseId}) => {
+  cy.request(`/cyapi/cypressClearCoursePeople.php?courseId=${courseId}`)
     // .then((resp)=>{
     //   cy.log(resp.body)
     // })

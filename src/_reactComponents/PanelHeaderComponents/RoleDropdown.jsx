@@ -3,7 +3,7 @@ import { atomFamily, selectorFamily, useRecoilValue } from 'recoil';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import {
   coursePermissionsAndSettingsByCourseId,
-  courseRolePermissonsByCourseIdRoleId,
+  courseRolePermissionsByCourseIdRoleId,
   courseRolesByCourseId,
 } from '../Course/CourseActions';
 import DropdownMenu from './DropdownMenu';
@@ -14,13 +14,13 @@ export const effectiveRoleIdByCourseId = atomFamily({
 });
 
 export const effectivePermissionsByCourseId = selectorFamily({
-  key: 'effectivePermissons',
+  key: 'effectivePermissions',
   get:
     (courseId) =>
     ({ get }) => {
       const roleId = get(effectiveRoleIdByCourseId(courseId));
       if (roleId !== null) {
-        return get(courseRolePermissonsByCourseIdRoleId({ courseId, roleId }));
+        return get(courseRolePermissionsByCourseIdRoleId({ courseId, roleId }));
       }
       return get(coursePermissionsAndSettingsByCourseId(courseId));
     },

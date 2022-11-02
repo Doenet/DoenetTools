@@ -169,6 +169,7 @@ it('Assign two-page activity',()=>{
   cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
 
   cy.get('#page1\\/a textarea').type("{enter}", {force: true})
+  cy.get('#page1\\/_p2 .mjx-mrow').should('contain.text', '\uff3f')
 
   cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
   cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
@@ -177,8 +178,10 @@ it('Assign two-page activity',()=>{
   cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
   cy.get('[data-test="Possible Points"]').should('have.text', '10')
 
+  // TODO: why does this frequently fail if don't wait here?
+  cy.wait(500)
   cy.get('#page1\\/a textarea').type("2{enter}", {force: true})
-  cy.get('#page1\\/_p2').should('contain.text', '2')
+  cy.get('#page1\\/_p2 .mjx-mrow').should('contain.text', '2')
   
   cy.get('[data-test="Final Score"]').should('have.text', '5')
   cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
@@ -202,7 +205,7 @@ it('Assign two-page activity',()=>{
 
 
   cy.get('#page2\\/a textarea').type("1{enter}", {force: true})
-  cy.get('#page2\\/_p2').should('contain.text', '1')
+  cy.get('#page2\\/_p2 .mjx-mrow').should('contain.text', '1')
 
   cy.get('[data-test="Final Score"]').should('have.text', '10')
   cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
@@ -228,7 +231,7 @@ it('Assign two-page activity',()=>{
   cy.log('State on previous page was saved')
   cy.get('[data-test=previous]').click();
   cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
-  cy.get('#page1\\/_p2').should('contain.text', '2')
+  cy.get('#page1\\/_p2 .mjx-mrow').should('contain.text', '2')
 
   cy.get('[data-test=next]').click();
   cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
@@ -247,7 +250,7 @@ it('Assign two-page activity',()=>{
   cy.get('[data-test=next]').click();
   cy.get('#page2\\/a textarea').type("1{enter}", {force: true})
 
-  cy.get('#page2\\/_p2').should('contain.text', '1')
+  cy.get('#page2\\/_p2 .mjx-mrow').should('contain.text', '1')
 
   cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
   cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
@@ -263,7 +266,7 @@ it('Assign two-page activity',()=>{
 
 
   cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
-  cy.get('#page2\\/_p2').should('contain.text', '1')
+  cy.get('#page2\\/_p2 .mjx-mrow').should('contain.text', '1')
 
   cy.get('[data-test="Final Score"]').should('have.text', '10')
   cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')

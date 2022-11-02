@@ -162,14 +162,17 @@ export default class Point extends GraphicalComponent {
 
       if (!result.success && matchedChildren.length === 1) {
         // if didn't succeed and just have a single string child,
-        // then just wrap string with a x
+        // then just wrap string with an xs
         return {
           success: true,
           newAttributes: {
-            x: {
+            xs: {
               component: {
-                componentType: "math",
-                children: matchedChildren
+                componentType: "mathList",
+                children: [{
+                  componentType: "math",
+                  children: matchedChildren
+                }]
               }
             }
           },
@@ -298,13 +301,13 @@ export default class Point extends GraphicalComponent {
 
           let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
           let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
-  
+
           if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
             // if both display digits and display decimals did not used default
             // we'll regard display digits as using default if it comes from a deeper shadow
             let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
             let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
-  
+
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
             }
@@ -407,12 +410,13 @@ export default class Point extends GraphicalComponent {
 
         // if have a component child, they will overwrite any other component values
         // so is a minimum for nDimensions
+        // Exception if only x is specified, least nDimensions at zero
+        // so that only specifying x still gives a 2D point
+        // (If want 1D point, specify via other means, such as coords or xs)
         if (dependencyValues.z !== null) {
           nDimensions = 3;
         } else if (dependencyValues.y !== null) {
           nDimensions = 2;
-        } else if (dependencyValues.x !== null) {
-          nDimensions = 1;
         } else {
           nDimensions = 0;
         }
