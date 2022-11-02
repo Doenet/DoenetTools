@@ -26,12 +26,11 @@ Doenet is open-source so that instructors and learners can customize it to best 
 
 3. To start your local version of Doenet, run `npm start` and view it in the browser at http://localhost:80.
 
-- If you are working with databases, we recommend installing [Sequel Ace](https://sequel-ace.com/) on MacOS.
-<!-- Any recs for Windows/Linux? -->
+- If you are working with databases, we recommend installing [Sequel Ace](https://sequel-ace.com/) on MacOS or [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) on Windows and Linux.
 
 ## Basic Scripts
 
-### `npm start` / `docker compose up `
+### - npm start / docker compose up
 
 Creates and starts the Docker container and runs the app in development mode.
 Open http://localhost:80 to view it in the browser.
@@ -39,37 +38,55 @@ Open http://localhost:80 to view it in the browser.
 The page will reload if you make edits.
 You will also see any lint errors in the console.
 
-### `docker compose down`
+### - docker compose down
 
 Stops and removes the Docker container created by `docker compose up`.
 
 While switching between branches, it is good practice to `docker compose down` and then `docker compose up` to view the correct version of the development site.
 
-### `npm run start:db`
+### - npm run start:db
 
 Starts the MySQL database.
 
-### `npm run reset:db`
+### - npm run reset:db
 
 Resets the MySQL database.
 Running this command often fixes minor database loading issues.
 
-### `npm run publish:db`
+### - npm run publish:db
 
-<!-- Get info from Kevin/Emilio -->
+Takes the current local database and replaces the default one in the project to propagate database changes for the local code developers.
 
-### `npm run build`
+### - npm run build
 
 Builds a static copy of your site to the `build/` folder.
 Your app is ready to be deployed!
 
 **For the best production performance:** Add a build bundler plugin like "@snowpack/plugin-webpack" to your `snowpack.config.js` config file.
 
-### `npm test`
+### - npm test
 
 Launches the application test runner.
 Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch mode.
 
-<!-- Common issues: Get from Emilio -->
-
 ## Troubleshooting Common Issues
+
+### - Can not find the doenet_local database
+
+Run `npm create:db` and then `npm reset:db`.
+
+### - Esbuild fails to install
+
+Move to a node version 17.4 or higher.
+
+### - Cypress does not run
+
+Remember to run `npm install` on your local machine.
+
+### - Dev container crashes due to cypress error
+
+Make sure all cypress related dependencies have been placed in the optional category with `--save-optional` tag.
+
+### - Course creation or other basic functions are not working after an update
+
+Run `npm reset:db`.
