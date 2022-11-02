@@ -2,11 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { clear as idb_clear } from 'idb-keyval';
 
 
 export default function SignInRedirector() {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
+  //TODO: Sign out then do shibToJWT.php
 
       axios.get(`/api/umn/shibToJWT.php`,{params:{doenetId}})
       .then(({data})=>{
@@ -14,15 +17,31 @@ export default function SignInRedirector() {
         if (data.success){
           if (!data.isEnrolled){
             //SEND ERROR!!!
+            console.log("ERROR!");
             return null;
           }
+
           if (data.needToClearOutPreviousUser){
-            localStorage.clear(); //Clear out the profile
-            indexedDB.deleteDatabase('keyval-store'); //Clear out the rest of the profile
-          }
-          //Redirect to exam
-          setPageToolView(
-             {
+            //Clear out just the local info not the new sign in
+            localStorage.clear(); 
+            idb_clear().then(()=>{
+                //Redirect to exam
+                setPageToolView(
+                  {
+                  page:"placementexam",
+                  tool: 'exam',
+                  view: '',
+                  params: {
+                    doenetId
+                    }
+                  }
+                );
+              });
+          
+          }else{
+            //Redirect to exam
+            setPageToolView(
+              {
               page:"placementexam",
               tool: 'exam',
               view: '',
@@ -30,7 +49,9 @@ export default function SignInRedirector() {
                 doenetId
               }
             }
-          );
+            );
+          }
+          
         }
             
 
