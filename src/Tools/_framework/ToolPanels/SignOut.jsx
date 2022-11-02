@@ -6,32 +6,28 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { checkIfUserClearedOut, clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
 
 export default function SignOut() {
-  const [signOutAttempted, setSignOutAttempted] = useState(false);
   const [isSignedOut, setIsSignedOut] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   useEffect( () => {
-    console.log("HERE!!!")
-    clearUsersInformationFromTheBrowser()
-    .then((signedOut) => {
-      console.log(">>>signout signedOut",signedOut)
-      setSignOutAttempted(true);
-      })
-      .catch((error) => {
-        setSignOutAttempted(true);
-      });
-  }, []);
-
-  useEffect( () => {
     async function checkSignout(){
-      console.log("HERE 2!!!!")
+      // console.log("checkSignout")
       let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
       setIsSignedOut(userInformationIsCompletelyRemoved);
       setErrorMessage(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
     }
-    checkSignout();
-  }, [signOutAttempted]);
+
+    clearUsersInformationFromTheBrowser()
+    .then(() => {
+      // console.log("clearUsersInformationFromTheBrowser completed")
+      checkSignout();
+    })
+    .catch((error) => {
+      // console.log("clearUsersInformationFromTheBrowser completed error")
+      checkSignout();
+    });
+  }, []);
   
 
   if (isSignedOut) {
@@ -65,7 +61,7 @@ export default function SignOut() {
     );
   }
 
-  if (signOutAttempted) {
+  if (errorMessage != "") {
     return (
       <div>
         <div

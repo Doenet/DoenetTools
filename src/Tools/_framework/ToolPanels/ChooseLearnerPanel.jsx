@@ -181,19 +181,14 @@ export default function ChooseLearnerPanel(props) {
   async function clearOutUser(){
     
     while (clearingUserRef.current){
-      let thinksItClearedItOut = await clearUsersInformationFromTheBrowser();
-      // console.log("thinksItClearedItOut",thinksItClearedItOut)
-      // thinksItClearedItOut = false;
-      if (thinksItClearedItOut){
-        let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
-        setClearingMessageJSX(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
-        if (userInformationIsCompletelyRemoved){
-          setStage('choose exam');
-          clearingUserRef.current = false;
-          break;
-        }else{
-          //Show message
-        }
+      await clearUsersInformationFromTheBrowser();
+
+      let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
+      setClearingMessageJSX(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
+      if (userInformationIsCompletelyRemoved){
+        setStage('choose exam');
+        clearingUserRef.current = false;
+        break;
       }
     }
   }
