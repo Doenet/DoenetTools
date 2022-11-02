@@ -9,7 +9,7 @@ import {
   faCloud,
 } from '@fortawesome/free-solid-svg-icons';
 import mathquill from 'react-mathquill';
-mathquill.addStyles(); //Styling for react-mathquill input field
+mathquill.addStyles(); // Styling for react-mathquill input field
 let EditableMathField = mathquill.EditableMathField;
 import {
   focusedMathField,
@@ -51,6 +51,7 @@ export default function MathInput(props) {
   MathInput.baseStateVariable = 'rawRendererValue';
 
   const [mathField, setMathField] = useState(null);
+  const textareaRef = useRef(null); // Ref to keep track of the mathInput's disabled state
 
   const setRendererState = useSetRecoilState(rendererState(rendererName));
 
@@ -212,10 +213,10 @@ export default function MathInput(props) {
     mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     mathInputStyle.pointerEvents = 'none';
     mathInputWrapper.cursor = 'not-allowed';
+  }
 
-    // Disable tab indexing on mathInput (currently not working)
-    mathInputWrapper.tabIndex = '-1';
-    mathInputStyle.tabIndex = '-1';
+  if(textareaRef.current && textareaRef.current.disabled !== SVs.disabled) { // Update the mathInput ref's disabled state
+    textareaRef.current.disabled = SVs.disabled;
   }
 
   //Assume we don't have a check work button
@@ -335,6 +336,11 @@ export default function MathInput(props) {
               handlers: {
                 enter: handlePressEnter,
               },
+              substituteTextarea: function () {
+                textareaRef.current = document.createElement('textarea');
+                textareaRef.current.disabled = SVs.disabled;
+                return textareaRef.current;
+              }
             }} //more commands go here
             onChange={(mField) => {
               onChangeHandler(mField.latex());
