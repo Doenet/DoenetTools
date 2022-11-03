@@ -37,11 +37,14 @@ export default function GradeSettings(){
           //   return;
           // }
     
-          console.log("resp",resp.data)
+          // console.log("resp",resp.data)
           let numberOfAttemptsAllowedAdjustment = Number(resp.data.numberOfAttemptsAllowedAdjustment)
           setAttemptsAllowedAdjustment(numberOfAttemptsAllowedAdjustment);
-          let numberOfBaseAttemptsAllowed = Number(resp.data.baseAttemptsAllowed)
-          setBaseAttemptsAllowed(numberOfBaseAttemptsAllowed)
+          let baseAttemptsAllowed = 'unlimited';
+          if (resp.data.baseAttemptsAllowed != 'unlimited'){
+            baseAttemptsAllowed = Number(resp.data.baseAttemptsAllowed)
+          }
+          setBaseAttemptsAllowed(baseAttemptsAllowed)
       }
 
       if (attemptsAllowedAdjustment == null){
@@ -164,24 +167,30 @@ export default function GradeSettings(){
 
 let resultAttemptsAllowed = baseAttemptsAllowed + attemptsAllowedAdjustment;
 
+let attemptsAdjusterJSX = <p>Unlimited Attempts</p>
+console.log("baseAttemptsAllowed",baseAttemptsAllowed)
+if (baseAttemptsAllowed != 'unlimited'){
+  attemptsAdjusterJSX = (<><div>Base Attempts Allowed: </div>
+  <div>{baseAttemptsAllowed}</div> 
+  <div>Attempts Allowed Adjustment: </div>
+  <Increment min={-baseAttemptsAllowed} value={attemptsAllowedAdjustment} onChange={(attemptsAdjustment)=>{
+    setAttemptsAllowedAdjustment(attemptsAdjustment);
+    //TODO: update the database
+    axios.get('/api/updateGradebookAdjustment.php', {
+      params: { doenetId, userId, courseId, attemptsAdjustment }}).then(({data})=>{
+        // console.log("data",data)
+      });
+    
+    }} />
+  <div>Resulting Attempts Allowed: </div>
+  <div>{resultAttemptsAllowed}</div></>)
+}
+
   return <div>
     <div>Due Date: </div>
     <div>{dueDate} </div>
     {dueDateJSX}
     <br />
-    <div>Base Attempts Allowed: </div>
-    <div>{baseAttemptsAllowed}</div> 
-    <div>Attempts Allowed Adjustment: </div>
-    <Increment min={-baseAttemptsAllowed} value={attemptsAllowedAdjustment} onChange={(attemptsAdjustment)=>{
-      setAttemptsAllowedAdjustment(attemptsAdjustment);
-      //TODO: update the database
-      axios.get('/api/updateGradebookAdjustment.php', {
-        params: { doenetId, userId, courseId, attemptsAdjustment }}).then(({data})=>{
-          console.log("data",data)
-        });
-      
-      }} />
-    <div>Resulting Attempts Allowed: </div>
-    <div>{resultAttemptsAllowed}</div>
+    {attemptsAdjusterJSX}
   </div>
 }

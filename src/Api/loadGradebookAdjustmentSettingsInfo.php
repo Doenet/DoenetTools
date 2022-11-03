@@ -53,7 +53,7 @@ if ($userId != ""){
 
 
 $numberOfAttemptsAllowedAdjustment = 0;
-$baseAttemptsAllowed = 0;
+$baseAttemptsAllowed = 'unlimited';
 
 if ($success) {
     $sql = "SELECT numberOfAttemptsAllowedAdjustment
