@@ -187,10 +187,15 @@ export default function MathInput(props) {
   // const inputKey = this.componentName + '_input';
 
   let mathInputStyle = { // Style the EditableMathField
-    border: "var(--mainBorder)",
+
+    // Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
+    // Currently does not work with border: "var(--mainBorder)"
+    borderColor: "black",
+    borderStyle: "solid",
+    borderWidth: "2px",
+
     marginRight: "4px", 
     marginBottom: "4px",
-    backgroundColor: "rgba(239, 239, 239, 0.3)"
   }
 
   let checkWorkStyle = {
@@ -211,6 +216,7 @@ export default function MathInput(props) {
 
     // Disable the mathInput
     mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    mathInputStyle.backgroundColor = 'rgba(239, 239, 239, 0.3)';
     mathInputStyle.pointerEvents = 'none';
     mathInputWrapper.cursor = 'not-allowed';
   }
