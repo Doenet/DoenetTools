@@ -583,6 +583,14 @@ export default function AssignmentViewer() {
   console.log("stage",stage)
   
   
+//new attempt so CHECK THE LOGIC HERE
+  if (!itemObj?.canViewAfterCompleted && itemObj.completed){
+    return <>
+    <p>Can&#39;t take again.</p>
+    {/* <p>Completed on {itemObj.completedDate}</p> */}
+    </>
+  }
+
 
   // console.log(`>>>>stage -${stage}-`)
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)

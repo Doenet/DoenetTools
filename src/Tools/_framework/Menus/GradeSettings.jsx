@@ -1,21 +1,54 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useRecoilValue } from 'recoil';
+import {  useRecoilValue } from 'recoil';
 import CalendarButton from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { useToast, toastType }  from '../Toast';
 import { UTCDateStringToDate, DateToDisplayDateString, DateToDateString, DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
+import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 
 export default function GradeSettings(){
   let courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
+    const [attemptsAllowedAdjustment,setAttemptsAllowedAdjustment] = useState(null);
+    const [baseAttemptsAllowed,setBaseAttemptsAllowed] = useState(null);
+    
     let [dueDateOverride,setDueDateOverride] = useState(null)
     let [dueDate,setDueDate] = useState(null);
     let [initialized,setInitialized] = useState(false);
     const addToast = useToast();
+
+   
+
+    useEffect(()=>{
+      async function loadAdjustmentInfo(doenetId,userId,courseId){
+        let resp = await axios.get('/api/loadGradebookAdjustmentSettingsInfo.php', {
+          params: { doenetId, userId, courseId }});
+          // if (!resp.data.success) {
+          //   setStage('Problem');
+          //   if (resp.data.message) {
+          //     setMessage(`Could not load assignment: ${resp.data.message}`);
+          //   } else {
+          //     setMessage(`Could not load assignment: ${resp.data}`);
+          //   }
+          //   return;
+          // }
+    
+          console.log("resp",resp.data)
+          let numberOfAttemptsAllowedAdjustment = Number(resp.data.numberOfAttemptsAllowedAdjustment)
+          setAttemptsAllowedAdjustment(numberOfAttemptsAllowedAdjustment);
+          let numberOfBaseAttemptsAllowed = Number(resp.data.baseAttemptsAllowed)
+          setBaseAttemptsAllowed(numberOfBaseAttemptsAllowed)
+      }
+
+      if (attemptsAllowedAdjustment == null){
+        loadAdjustmentInfo(doenetId,userId,courseId);
+      }
+
+    },[attemptsAllowedAdjustment,doenetId,userId,courseId])
 
       //get dueDate and dueDateOverride on init
     const loadDueDates = async (doenetId,userId)=>{
@@ -129,9 +162,26 @@ export default function GradeSettings(){
   </div>
   </>
 
+let resultAttemptsAllowed = baseAttemptsAllowed + attemptsAllowedAdjustment;
+
   return <div>
     <div>Due Date: </div>
     <div>{dueDate} </div>
     {dueDateJSX}
+    <br />
+    <div>Base Attempts Allowed: </div>
+    <div>{baseAttemptsAllowed}</div> 
+    <div>Attempts Allowed Adjustment: </div>
+    <Increment min={-baseAttemptsAllowed} value={attemptsAllowedAdjustment} onChange={(attemptsAdjustment)=>{
+      setAttemptsAllowedAdjustment(attemptsAdjustment);
+      //TODO: update the database
+      axios.get('/api/updateGradebookAdjustment.php', {
+        params: { doenetId, userId, courseId, attemptsAdjustment }}).then(({data})=>{
+          console.log("data",data)
+        });
+      
+      }} />
+    <div>Resulting Attempts Allowed: </div>
+    <div>{resultAttemptsAllowed}</div>
   </div>
 }
