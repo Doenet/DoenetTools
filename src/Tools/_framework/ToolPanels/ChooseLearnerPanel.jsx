@@ -9,6 +9,8 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import SearchBar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
 import { formatAMPM, UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 import styled from 'styled-components';
+import { useRef } from 'react';
+import { checkIfUserClearedOut, clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
 
 export const Styles = styled.div`
   padding: 1rem;
@@ -118,6 +120,10 @@ export const Styles = styled.div`
   }
 `;
 
+
+
+
+
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
@@ -131,7 +137,13 @@ export default function ChooseLearnerPanel(props) {
   let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
   let [message, setMessage] = useState('');
   let [selectedExamLabel, setSelectedExamLabel] = useState('');
+  let clearingUserRef = useRef(false);
+  let [clearingMessageJSX,setClearingMessageJSX] = useState(null);
+  
 
+  // checkIfUserClearedOut().then((resp)=>{
+  //   console.log("Check",resp)
+  // })
 
   const addToast = useToast();
 
@@ -166,6 +178,22 @@ export default function ChooseLearnerPanel(props) {
 
   // console.log(`>>>>stage '${stage}'`)
 
+  async function clearOutUser(){
+    
+    while (clearingUserRef.current){
+      await clearUsersInformationFromTheBrowser();
+
+      let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
+      setClearingMessageJSX(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
+      if (userInformationIsCompletelyRemoved){
+        setStage('choose exam');
+        clearingUserRef.current = false;
+        break;
+      }
+    }
+  }
+  
+  
   if (stage === 'request password' || stage === 'problem with code') {
     return <div
       style={{
@@ -221,7 +249,9 @@ export default function ChooseLearnerPanel(props) {
       let { data } = await axios.get('/api/checkPasscode.php', { params: { code, doenetId, courseId } })
       // console.log("data", data)
       if (data.success) {
-        setStage('choose exam');
+        clearingUserRef.current = true;
+        clearOutUser();
+        setStage('clearing past user');
         setLearners(data.learners);
         setExams(data.exams);
         let nextExamsById = {}
@@ -239,6 +269,21 @@ export default function ChooseLearnerPanel(props) {
     checkCode(code);
 
   }
+
+  if (stage === 'clearing past user'){
+    
+    return <>
+    <h1>Clearing out past user...</h1>
+    {clearingMessageJSX}
+    <Button value="Cancel" onClick={()=>{
+      clearingUserRef.current = false;
+      setStage('choose exam')
+    }
+    }/>
+    </>
+  }
+
+
 
   //https://localhost/#/exam?tool=chooseLearner&courseId=fjVHU0x9nhv3DMmS5ypqQ
   if (stage === 'choose exam') {
@@ -331,6 +376,8 @@ export default function ChooseLearnerPanel(props) {
           };
         }
 
+        
+
         if (allowResume) {
           if (!minutesRemainingPhrase) {
             let time = formatAMPM(lastExamDT)
@@ -338,9 +385,6 @@ export default function ChooseLearnerPanel(props) {
           }
           timeZoneCorrectLastExamDate = <ButtonGroup>
             <Button value='Resume' onClick={() => {
-              localStorage.clear(); //Clear out the profile of the last exam taker
-              indexedDB.deleteDatabase('keyval-store'); //Clear out the profile of the last exam taker
-              axios.get('/api/signOut.php');
               setChoosenLearner(learner);
               setStage('student final check');
               setResumeAttemptFlag(true)
@@ -364,9 +408,6 @@ export default function ChooseLearnerPanel(props) {
               width='menu'
               value='Start'
               onClick={() => {
-                localStorage.clear(); //Clear out the profile of the last exam taker
-                indexedDB.deleteDatabase('keyval-store'); //Clear out the profile of the last exam taker
-                axios.get('/api/signOut.php');
                 setChoosenLearner(learner);
                 setStage('student final check');
                 setResumeAttemptFlag(false);

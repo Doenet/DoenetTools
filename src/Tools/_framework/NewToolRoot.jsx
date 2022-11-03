@@ -466,6 +466,8 @@ let navigationObj = {
       menusInitOpen: [true],
       headerControls: [],
       displaySettings: false,
+      hasNoMenuPanel: true,
+      hasNoHeaderPanel: true,
       waitForMenuSuppression: true,
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
