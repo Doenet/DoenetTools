@@ -335,9 +335,10 @@ export default React.memo(function Point(props) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
       }
-      if (pointJXG.current.visProp.size !== SVs.selectedStyle.markerSize) {
-        pointJXG.current.visProp.size = SVs.selectedStyle.markerSize;
-        shadowPointJXG.current.visProp.size = SVs.selectedStyle.markerSize;
+      let newSize = normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle);
+      if (pointJXG.current.visProp.size !== newSize) {
+        pointJXG.current.setAttribute({ size: newSize });
+        shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
       if (fixed) {
@@ -444,8 +445,6 @@ function normalizeSize(size, style) {
     return size * 1.5;
   } else if (style === "diamond") {
     return size * 1.5;
-  } else if (style === "square" || style === "circle") {
-    return 5;
   } else return size;
 }
 
