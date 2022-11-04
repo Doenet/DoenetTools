@@ -128,8 +128,8 @@ module.exports = {
   devOptions: {
     output: 'stream',
     hmr: false,
-    port: 81,
-    hmrPort: 81,
+    port: 8081,
+    hmrPort: 8081,
     openUrl: '/exampleTool',
   },
   buildOptions: {
