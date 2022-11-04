@@ -32,7 +32,7 @@ services:
     restart: always
 
   php:
-    image: lyanthropos/doenet_test:php-dev
+    image: lyanthropos/doenet_php
     volumes:
       - ./src/Api:/usr/local/apache2/htdocs/api
       - ./src/Media:/usr/local/apache2/htdocs/media
