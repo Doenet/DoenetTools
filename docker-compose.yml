@@ -36,6 +36,7 @@ services:
     volumes:
       - ./src/Api:/usr/local/apache2/htdocs/api
       - ./src/Media:/usr/local/apache2/htdocs/media
+      - ./src/etc:/usr/local/apache2/htdocs/etc
       - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - vendor:/usr/local/apache2/htdocs/api/vendor
     networks:
