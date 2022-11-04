@@ -7,7 +7,7 @@ tasks:
     openMode: tab-after
 ports:
   - name: Live site
-    port: 80
+    port: 81
     onOpen: open-browser
   - name: Database
     port: 3306

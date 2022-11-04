@@ -46,8 +46,8 @@ module.exports = {
       src: '/api/.*',
       dest: (req, res) => {
         return proxy.web(req, res, {
-          hostname: 'apache',
-          port: 80,
+          hostname: 'localhost',
+          port: 8080,
         });
       },
     },
@@ -55,8 +55,8 @@ module.exports = {
       src: '/cyapi/.*',
       dest: (req, res) => {
         return proxy.web(req, res, {
-          hostname: 'apache',
-          port: 80,
+          hostname: 'localhost',
+          port: 8080,
         });
       },
     },
@@ -64,8 +64,8 @@ module.exports = {
       src: '/media/.*',
       dest: (req, res) => {
         return proxy.web(req, res, {
-          hostname: 'apache',
-          port: 80,
+          hostname: 'localhost',
+          port: 8080,
         });
       },
     },
@@ -73,8 +73,8 @@ module.exports = {
       src: '/media/byPageId/.*',
       dest: (req, res) => {
         return proxy.web(req, res, {
-          hostname: 'apache',
-          port: 80,
+          hostname: 'localhost',
+          port: 8080,
         });
       },
     },
@@ -128,8 +128,8 @@ module.exports = {
   devOptions: {
     output: 'stream',
     hmr: false,
-    port: 80,
-    hmrPort: 80,
+    port: 81,
+    hmrPort: 81,
     openUrl: '/exampleTool',
   },
   buildOptions: {
