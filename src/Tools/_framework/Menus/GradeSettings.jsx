@@ -166,10 +166,8 @@ export default function GradeSettings(){
   </>
 
 let resultAttemptsAllowed = baseAttemptsAllowed + attemptsAllowedAdjustment;
-
 let attemptsAdjusterJSX = <p>Unlimited Attempts</p>
-console.log("baseAttemptsAllowed",baseAttemptsAllowed)
-if (baseAttemptsAllowed != 'unlimited'){
+if (baseAttemptsAllowed != 'unlimited' && attemptsAllowedAdjustment != null ){
   attemptsAdjusterJSX = (<><div>Base Attempts Allowed: </div>
   <div>{baseAttemptsAllowed}</div> 
   <div>Attempts Allowed Adjustment: </div>
