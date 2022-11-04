@@ -582,14 +582,6 @@ export default function AssignmentViewer() {
 
   console.log("stage",stage)
   
-  
-//new attempt so CHECK THE LOGIC HERE
-  if (!itemObj?.canViewAfterCompleted && itemObj.completed){
-    return <>
-    <p>Can&#39;t take again.</p>
-    {/* <p>Completed on {itemObj.completedDate}</p> */}
-    </>
-  }
 
 
   // console.log(`>>>>stage -${stage}-`)
@@ -612,12 +604,11 @@ export default function AssignmentViewer() {
   if (!itemObj?.canViewAfterCompleted && itemObj.completed){
     
     const totalNumberOfAttemptsAllowed = Number(itemObj.numberOfAttemptsAllowed) + Number(numberOfAttemptsAllowedAdjustment);
-    console.log("totalNumberOfAttemptsAllowed",totalNumberOfAttemptsAllowed)
-    console.log("attemptNumber",attemptNumber)
-    console.log("recoilAttemptNumber",recoilAttemptNumber)
     if (totalNumberOfAttemptsAllowed > attemptNumber){
       return <>
-      <h1>Another attempt is available!</h1>
+      <div style={{margin:"15px"}}>
+      <h1>Assessment Complete</h1>
+      <p>You have completed this assessment.  Would you like to begin another attempt?</p>
       <p><Button value="Begin New Attempt" onClick={async ()=>{
         const { data } = await axios.get(`/api/saveCompleted.php`,{params:{doenetId}});
         if (data.success){
@@ -634,11 +625,15 @@ export default function AssignmentViewer() {
         }
 
       }}/></p>
+      </div>
       {/* <p>Completed on {itemObj.completedDate}</p> */}
       </>
     }else{
       return <>
-    <p>Can&#39;t take again.</p>
+      <div style={{margin:"15px"}}>
+      <h1>Assessment Complete</h1>
+    <p>You have already completed this assessment and no additional attempts are available.</p>
+    </div>
     {/* <p>Completed on {itemObj.completedDate}</p> */}
     </>
     }
