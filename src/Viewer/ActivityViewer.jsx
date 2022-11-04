@@ -1144,9 +1144,10 @@ export default function ActivityViewer(props) {
 
     //Clear out history of exam if canViewAfterCompleted setting set as false
     if (!activityInfo.canViewAfterCompleted){
-      console.log("CLEAR state from viewer and cache")
+      // console.log("CLEAR state from viewer and cache")
       //Simple answer for now - lose all state info
-      idb_clear();
+      //TODO: When should we clear this
+      //await idb_clear();
       
     }
       //Set assignment as completed for the user in the Data Base and Recoil
