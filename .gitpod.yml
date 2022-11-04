@@ -11,7 +11,7 @@ ports:
     onOpen: open-browser
   - name: Database
     port: 3306
-    onOpen: notify
+    onOpen: ignore
   - name: Static site
     port: 8080
     onOpen: ignore
