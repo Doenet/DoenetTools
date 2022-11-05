@@ -172,7 +172,7 @@ export function enumerateCombinations({
 
   // create new options where replace matched results with single one 
   // that has number of options set equal to the total number of inner options (n1*n2)
-  let outerOptions = numberOfOptionsByIndex;
+  let outerOptions = [...numberOfOptionsByIndex];
   outerOptions[matchInds[0]] = n0 * n1;  // replace first with total number of combinations
   outerOptions.splice(matchInds[1], 1); // delete second matched ind
 
@@ -213,7 +213,7 @@ export function enumeratePermutations({ values, maxNumber }) {
         let curr = arr.slice();
         let next = curr.splice(i, 1);
         permute(curr.slice(), m.concat(next))
-        if(result.length >= maxNumber) {
+        if (result.length >= maxNumber) {
           return;
         }
       }
