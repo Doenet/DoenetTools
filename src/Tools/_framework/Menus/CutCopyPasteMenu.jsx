@@ -80,7 +80,7 @@ disabled={!canPaste}
         // addToast("Items Pasted!", toastType.INFO);
       },
       failureCallback:(message)=>{
-        (message, toastType.INFO);
+        addToast(message, toastType.INFO);
       },
    })
   }}
