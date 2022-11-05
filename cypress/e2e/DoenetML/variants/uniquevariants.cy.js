@@ -3188,4 +3188,56 @@ describe('Specifying unique variant tests', function () {
 
   });
 
+  it('no variant control, problem with 3 selects', () => {
+    // Catch bug in enumerateCombinations
+    // where was indirectly overwriting numberOfVariantsByDescendant
+    let values = [135, 246, 145, 236, 136, 245, 146, 235]
+
+    cy.log("get each value exactly one")
+    let valuesFound = [];
+    for (let ind = 1; ind <= 8; ind++) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <problem>
+          <select type="number" assignNames="a">1 2</select>
+          <select type="number" assignNames="b">3 4</select>
+          <select type="number" assignNames="c">5 6</select>
+        </problem>
+      `,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let a = stateVariables['/a'].stateValues.value;
+        let b = stateVariables['/b'].stateValues.value;
+        let c = stateVariables['/c'].stateValues.value;
+
+        let val = a * 100 + b * 10 + c;
+        valuesFound.push(val);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants.length).eq(8)
+
+
+        cy.get('#\\/a').should('have.text', a.toString())
+        cy.get('#\\/b').should('have.text', b.toString())
+        cy.get('#\\/c').should('have.text', c.toString())
+
+      })
+
+    }
+    cy.window().then(win => {
+      expect([...valuesFound].sort((a, b) => a - b)).eqls([...values].sort((a, b) => a - b))
+
+    })
+
+
+  });
+
+
 });
