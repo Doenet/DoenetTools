@@ -75,7 +75,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 
   let assignButton = <ActionButton
     width="menu"
-    data-test="Assign Activity"
+    dataTest="Assign Activity"
     value={assignActivityText}
     onClick={async () => {
       if (pageId) {
@@ -93,7 +93,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
         doenetId,
         isAssigned: true,
         successCallback: () => {
-          addToast(assignActivityToast, toastType.INFO);
+          //addToast(assignActivityToast, toastType.INFO);
         },
       });
     }}
@@ -105,7 +105,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   if (isAssigned) {
     unAssignButton = <ActionButton
       width="menu"
-      data-test="Unassign Activity"
+      dataTest="Unassign Activity"
       value="Unassign Activity"
       alert
       onClick={() => {
@@ -113,7 +113,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
           doenetId,
           isAssigned: false,
           successCallback: () => {
-            addToast('Activity Unassigned', toastType.INFO);
+           // addToast('Activity Unassigned', toastType.INFO);
           },
         });
       }}
@@ -122,7 +122,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
     if (initializingWorker) {
       prerenderButton = <ActionButton
         width="menu"
-        data-test="Cancel prerendering"
+        dataTest="Cancel prerendering"
         value={`${initializeStatus} (Cancel)`}
         onClick={() => {
           initializingWorker.terminate();
@@ -165,7 +165,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 
       prerenderButton = <ActionButton
         width="menu"
-        data-test="Prerender activity"
+        dataTest="Prerender activity"
         value="Prerender activity"
         onClick={initializePrerender}
       />
@@ -638,7 +638,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
         vertical
         width="menu"
         value={textValue}
-        data-test="Item Weights"
+        dataTest="Item Weights"
         onChange={(e) => {
           setTextValue(e.target.value);
         }}

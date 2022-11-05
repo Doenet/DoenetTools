@@ -65,6 +65,7 @@ export default function CollapseSection(props) {
       <Section width={width}>
         <Label labelVisible={labelVisible} align={align}>{label}</Label>
           <SectionHeader
+              dataTest= {props.dataTest}
               aria-label={title}
               aria-labelledby={label} 
               aria-disabled={disabled}

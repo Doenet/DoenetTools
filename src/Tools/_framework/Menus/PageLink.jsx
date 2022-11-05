@@ -38,13 +38,13 @@ export default function PageLink() {
 
     copyToClipboard(linkText);
 
-    addToast('Link copied to clipboard!', toastType.SUCCESS)
+    //addToast('Link copied to clipboard!', toastType.SUCCESS)
   }
 
 
   return <ActionButton
     width="menu"
-    data-test="Copy Page Link"
+    dataTest="Copy Page Link"
     value="Copy Page Link"
     onClick={savePageDoenetMLAndCopyLink}
   />

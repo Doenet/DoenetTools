@@ -11,7 +11,7 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 import styled from 'styled-components';
 const VideoStyling = styled.div`
 &: focus {
-  outline: 2px solid var(--mainBlue);
+  outline: 2px solid var(--canvastext);
   outline-offset: 2px;
 }
 `;

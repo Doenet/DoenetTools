@@ -79,6 +79,7 @@ export default function Card(props) {
         <div style={container}>
             <p style={label}>{label.value}</p>
             <CardStyling 
+                dataTest={props.dataTest}
                 alert={props.alert}
                 disabled={props.disabled}
                 aria-labelledby={label} 

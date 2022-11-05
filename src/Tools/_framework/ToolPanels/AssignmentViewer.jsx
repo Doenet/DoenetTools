@@ -652,15 +652,15 @@ export default function AssignmentViewer() {
         (This will reset the activity{attemptNumberPhrase}.)
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
-            <Button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion" value="Yes"></Button>
-            <Button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion" value="No" alert></Button>
+            <Button onClick={incrementAttemptNumberAndAttemptsAllowed} dataTest="ConfirmNewVersion" value="Yes"></Button>
+            <Button onClick={() => setCidChangedMessageOpen(false)} dataTest="CancelNewVersion" value="No" alert></Button>
           </ButtonGroup>
         </div>
 
       </div>}></Banner>
     } else {
       cidChangedAlert = <Banner type="ACTION" value={<div style={{ marginLeft: "1px", marginRight: "5px" }}>
-        <ActionButton onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable" value="New version available!"></ActionButton>
+        <ActionButton onClick={() => setCidChangedMessageOpen(true)} dataTest="NewVersionAvailable" value="New version available!"></ActionButton>
       </div>}></Banner>
     }
   }

@@ -89,7 +89,7 @@ const CourseInfoPanel = function ({ courseId }) {
         <ActionButton
           width="menu"
           value="Enter Course"
-          data-test="Enter Course nav button"
+          dataTest="Enter Course nav button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
