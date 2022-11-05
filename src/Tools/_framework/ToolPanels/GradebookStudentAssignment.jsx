@@ -14,6 +14,7 @@ import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import PageViewer from "../../../Viewer/PageViewer";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import ActivityViewer from "../../../Viewer/ActivityViewer";
+import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -78,6 +79,12 @@ export default function GradebookStudentAssignmentView(){
 
         }
     },[canViewAndModifyGrades, setSuppressMenus])
+
+    let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+    if (course?.canViewCourse == '0'){
+      return <h1>No Access to view this page.</h1>
+    }
 
     //Wait for doenetId and userId and attemptsInfo
     if (!doenetId || !userId){
@@ -261,6 +268,7 @@ export default function GradebookStudentAssignmentView(){
         forceDisable={true}
         forceShowCorrectness={true}
         forceShowSolution={solutionDisplayMode !== "none"}
+        forceUnsuppressCheckwork={true}
         flags={{
           showCorrectness: true,
           readOnly: true,

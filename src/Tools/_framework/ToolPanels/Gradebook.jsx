@@ -27,6 +27,7 @@ import {
   suppressMenusAtom,
 } from '../NewToolRoot';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 
 // React Table Styling
 export const Styles = styled.div`
@@ -73,7 +74,6 @@ export const Styles = styled.div`
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-
     }
 
     th:first-child {
@@ -88,7 +88,7 @@ export const Styles = styled.div`
       height: 100%;
     } */
 
-    tr:first-child th > p{
+    tr:first-child th > p {
       margin: 0px 0px 4px 0px;
       padding: 0px;
     }
@@ -98,7 +98,6 @@ export const Styles = styled.div`
       text-align: left;
       transform: rotate(180deg);
       max-height: 160px;
-
     }
 
     thead tr:only-child th:not(:first-child) > p {
@@ -168,14 +167,12 @@ export const assignmentData = selector({
   get: ({ get }) => {
     let assignmentArray = {};
     let data = get(assignmentDataQuery);
-
     if (isIterable(data)) {
       for (let row of data) {
-        let [doenetId, assignmentName] = row;
-        assignmentArray[doenetId] = assignmentName;
+        let [doenetId, assignmentInfo] = row;
+        assignmentArray[doenetId] = assignmentInfo;
       }
     }
-
     return assignmentArray;
   },
 });
@@ -593,6 +590,13 @@ function GradebookOverview() {
   // console.log(">>>>assignments",assignments)
   // console.log(">>>>overview",overview)
 
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+  if (course?.canViewCourse == '0'){
+    return <h1>No Access to view this page.</h1>
+  }
+
+
   //Protect from values not being loaded
   if (
     assignments.state !== 'hasValue' ||
@@ -623,8 +627,10 @@ function GradebookOverview() {
     Footer: 'Possible Points',
   });
 
-  possiblePointRow['name'] = 'Possible Points';
+  let sortedAssignments = Object.entries(assignments.contents);
+  sortedAssignments.sort((a, b) => (a[1].sortOrder < b[1].sortOrder ? -1 : 1));
 
+  possiblePointRow['name'] = 'Possible Points';
   for (let {
     category,
     scaleFactor = 1,
@@ -633,7 +639,7 @@ function GradebookOverview() {
     let allpossiblepoints = [];
 
     let hasAssignments = false;
-    for (let doenetId in assignments.contents) {
+    for (let [doenetId] of sortedAssignments) {
       let inCategory = assignments.contents[doenetId].category;
       if (inCategory?.toLowerCase() !== category.toLowerCase()) {
         continue;
@@ -746,6 +752,7 @@ function GradebookOverview() {
     Footer: totalPossiblePoints,
     disableFilters: true,
   });
+
   // possiblePointRow['course total'] = totalPossiblePoints;
 
   // overviewTable.rows.push(possiblePointRow)
@@ -785,7 +792,7 @@ function GradebookOverview() {
     } of gradeCategories) {
       let scores = [];
 
-      for (let doenetId in assignments.contents) {
+      for (let [doenetId] of sortedAssignments) {
         let inCategory = assignments.contents[doenetId].category;
         if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;

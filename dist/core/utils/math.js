@@ -11,7 +11,7 @@ export var appliedFunctionSymbolsDefault = [
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
-  'count', 'mod', 're', 'im'
+  'count', 'mod', 're', 'im', 'det', 'trace',
 ];
 
 export var appliedFunctionSymbolsDefaultLatex = [
@@ -25,7 +25,7 @@ export var appliedFunctionSymbolsDefaultLatex = [
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
-  'count', 'mod', 'Re', 'Im'
+  'count', 'mod', 'Re', 'Im', 'det', 'trace',
 ];
 
 let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset']
@@ -38,9 +38,10 @@ export function getFromText({
   functionSymbols,
   appliedFunctionSymbols = appliedFunctionSymbolsDefault,
   splitSymbols = true,
+  parseScientificNotation = false,
 }) {
   return x => me.fromAst((new me.converters.textToAstObj({
-    appliedFunctionSymbols, functionSymbols, splitSymbols,
+    appliedFunctionSymbols, functionSymbols, splitSymbols, parseScientificNotation
   })).convert(x))
 }
 
@@ -53,17 +54,18 @@ export function getFromLatex({
   functionSymbols,
   appliedFunctionSymbols = appliedFunctionSymbolsDefaultLatex,
   splitSymbols = true,
+  parseScientificNotation = false,
 }) {
   if (splitSymbols) {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,
-      allowedLatexSymbols,
-    })).convert(wrapWordIncludingNumberWithVar(x)))
+      allowedLatexSymbols, parseScientificNotation
+    })).convert(wrapWordIncludingNumberWithVar(x, parseScientificNotation)))
   } else {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,
-      allowedLatexSymbols,
-    })).convert(wrapWordWithVar(x)))
+      allowedLatexSymbols, parseScientificNotation
+    })).convert(wrapWordWithVar(x, parseScientificNotation)))
   }
 
 }
@@ -535,7 +537,7 @@ export function mergeListsWithOtherContainers(tree) {
 
 }
 
-export function wrapWordWithVar(string) {
+export function wrapWordWithVar(string, parseScientificNotation) {
 
   // wrap words that aren't already in a \var with a \var
 
@@ -546,26 +548,44 @@ export function wrapWordWithVar(string) {
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length;
-    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
+    newString += wrapWordWithVarSub(string.substring(0, beginMatch), parseScientificNotation);
     newString += string.substring(beginMatch, endMatch);
     string = string.substring(endMatch);
     match = string.match(regex);
   }
-  newString += wrapWordWithVarSub(string);
+  newString += wrapWordWithVarSub(string, parseScientificNotation);
 
   return newString;
 
 }
 
-function wrapWordWithVarSub(string) {
+function wrapWordWithVarSub(string, parseScientificNotation) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+  const regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+
+  let regexSN;
+
+  if (parseScientificNotation) {
+    const sci_notat_exp_regex = '(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))';
+    regexSN = new RegExp('([0-9]+(\\.[0-9]*)?' + sci_notat_exp_regex + ')|(\\.[0-9]+' + sci_notat_exp_regex + ')');
+  }
+
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
+    if (parseScientificNotation) {
+      let matchSN = string.match(regexSN)
+      if (matchSN && matchSN.index < endMatch && matchSN.index + matchSN[0].length > beginMatch) {
+        // skip because is part of scientific notation
+        newString += string.substring(0, endMatch);
+        string = string.substring(endMatch);
+        match = string.match(regex);
+        continue;
+      }
+    }
     if (match[1] === "\\") {
       // start with backslash, so skip
       newString += string.substring(0, endMatch);
@@ -586,7 +606,7 @@ function wrapWordWithVarSub(string) {
 
 }
 
-export function wrapWordIncludingNumberWithVar(string) {
+export function wrapWordIncludingNumberWithVar(string, parseScientificNotation) {
 
   let newString = "";
 
@@ -595,28 +615,46 @@ export function wrapWordIncludingNumberWithVar(string) {
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length;
-    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
+    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch), parseScientificNotation);
     newString += string.substring(beginMatch, endMatch);
     string = string.substring(endMatch);
     match = string.match(regex);
   }
-  newString += wrapWordIncludingNumberWithVarSub(string);
+  newString += wrapWordIncludingNumberWithVarSub(string, parseScientificNotation);
 
   return newString;
 
 }
 
-function wrapWordIncludingNumberWithVarSub(string) {
+function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  const regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+
+  let regexSN;
+
+  if (parseScientificNotation) {
+    const sci_notat_exp_regex = '(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))';
+    regexSN = new RegExp('([0-9]+(\\.[0-9]*)?' + sci_notat_exp_regex + ')|(\\.[0-9]+' + sci_notat_exp_regex + ')');
+  }
+
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\" || match[1][0] === "^") {
-      // start with backslash or with a ^ and optional space
+    if (parseScientificNotation) {
+      let matchSN = string.match(regexSN)
+      if (matchSN && matchSN.index < endMatch && matchSN.index + matchSN[0].length > beginMatch) {
+        // skip because is part of scientific notation
+        newString += string.substring(0, endMatch);
+        string = string.substring(endMatch);
+        match = string.match(regex);
+        continue;
+      }
+    }
+    if (match[1] === "\\" || match[1][0] === "^" || match[1][0] === "_") {
+      // start with backslash or with a ^ or _ and optional space
       // so skip
       newString += string.substring(0, endMatch);
       string = string.substring(endMatch);
@@ -638,6 +676,129 @@ function wrapWordIncludingNumberWithVarSub(string) {
 
 export function stripLatex(latex) {
   return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
+}
+
+export function superSubscriptsToUnicode(text) {
+
+  let charToSubscriptUnicode = {
+    '0': '\u2080',
+    '1': '\u2081',
+    '2': '\u2082',
+    '3': '\u2083',
+    '4': '\u2084',
+    '5': '\u2085',
+    '6': '\u2086',
+    '7': '\u2087',
+    '8': '\u2088',
+    '9': '\u2089',
+    '+': '\u208A',
+    '-': '\u208B',
+    ' ': '',
+  }
+
+  let charToSuperscriptUnicode = {
+    '0': '\u2070',
+    '1': '\u00B9',
+    '2': '\u00B2',
+    '3': '\u00B3',
+    '4': '\u2074',
+    '5': '\u2075',
+    '6': '\u2076',
+    '7': '\u2077',
+    '8': '\u2078',
+    '9': '\u2079',
+    '+': '\u207A',
+    '-': '\u207B',
+    ' ': '',
+  }
+
+  function replaceSubscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += charToSubscriptUnicode[char];
+    }
+
+    return newVal;
+  }
+
+  function replaceSuperscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += charToSuperscriptUnicode[char];
+    }
+
+    return newVal;
+  }
+
+  text = text.replaceAll(/_(\d+)/g, replaceSubscripts)
+  text = text.replaceAll(/_\(([\d +-]+)\)/g, replaceSubscripts)
+  text = text.replaceAll(/\^(\d+)/g, replaceSuperscripts)
+  text = text.replaceAll(/\^\(([\d +-]+)\)/g, replaceSuperscripts)
+
+  return text;
+
+}
+
+export function unicodeToSuperSubscripts(text) {
+
+  let subscriptUnicodeToChar = {
+    '\u2080': '0',
+    '\u2081': '1',
+    '\u2082': '2',
+    '\u2083': '3',
+    '\u2084': '4',
+    '\u2085': '5',
+    '\u2086': '6',
+    '\u2087': '7',
+    '\u2088': '8',
+    '\u2089': '9',
+    '\u208A': '+',
+    '\u208B': '-',
+  }
+
+  let superscriptUnicodeToChar = {
+    '\u2070': '0',
+    '\u00B9': '1',
+    '\u00B2': '2',
+    '\u00B3': '3',
+    '\u2074': '4',
+    '\u2075': '5',
+    '\u2076': '6',
+    '\u2077': '7',
+    '\u2078': '8',
+    '\u2079': '9',
+    '\u207A': '+',
+    '\u207B': '-',
+  }
+
+  function replaceSubscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += subscriptUnicodeToChar[char];
+    }
+
+    return '_(' + newVal + ')';
+  }
+
+  function replaceSuperscripts(match, p1) {
+    let newVal = "";
+
+    for (let char of p1) {
+      newVal += superscriptUnicodeToChar[char];
+    }
+
+    return '^(' + newVal + ')';
+  }
+
+
+  text = text.replaceAll(/([\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089\u208A\u208B]+)/g, replaceSubscripts)
+  text = text.replaceAll(/([\u2070\u00B9\u00B2\u00B3\u2074\u2075\u2076\u2077\u2078\u2079\u207A\u207B]+)/g, replaceSuperscripts)
+
+  return text;
+
 }
 
 export const mathjaxConfig = {

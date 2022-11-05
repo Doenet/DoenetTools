@@ -127,6 +127,7 @@ export default function ChooseLearnerPanel(props) {
   let [filter, setFilter] = useState("");
   let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
   let [message, setMessage] = useState("");
+  let [selectedExamLabel, setSelectedExamLabel] = useState("");
   const addToast = useToast();
   const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId, resumeAttemptFlag2) => {
     if (!resumeAttemptFlag2) {
@@ -225,6 +226,7 @@ export default function ChooseLearnerPanel(props) {
             return;
           } else {
             setDoenetId(exam.doenetId, courseId);
+            setSelectedExamLabel(exam.label);
             setStage("choose learner");
           }
         }
@@ -278,6 +280,7 @@ export default function ChooseLearnerPanel(props) {
             value: "Resume",
             onClick: () => {
               localStorage.clear();
+              indexedDB.deleteDatabase("keyval-store");
               axios.get("/api/signOut.php");
               setChoosenLearner(learner);
               setStage("student final check");
@@ -304,6 +307,7 @@ export default function ChooseLearnerPanel(props) {
         value: "Start",
         onClick: () => {
           localStorage.clear();
+          indexedDB.deleteDatabase("keyval-store");
           axios.get("/api/signOut.php");
           setChoosenLearner(learner);
           setStage("student final check");
@@ -317,9 +321,12 @@ export default function ChooseLearnerPanel(props) {
         top: 0,
         position: "sticky",
         paddingLeft: "50px",
-        paddingBottom: "15px"
+        paddingBottom: "15px",
+        display: "flex"
       }
-    }, /* @__PURE__ */ React.createElement(SearchBar, {
+    }, /* @__PURE__ */ React.createElement("div", {
+      style: {marginRight: "15px", fontSize: "16pt"}
+    }, "Exam: ", selectedExamLabel), "  ", /* @__PURE__ */ React.createElement(SearchBar, {
       autoFocus: true,
       onChange: setFilter,
       width: "100%"
@@ -351,7 +358,9 @@ export default function ChooseLearnerPanel(props) {
         alignItems: "center",
         margin: "20"
       }
-    }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "Is this you?")), /* @__PURE__ */ React.createElement("div", null, "Name: ", choosenLearner.firstName, " ", choosenLearner.lastName), /* @__PURE__ */ React.createElement("div", null, "ID: ", choosenLearner.studentId)), /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
+      style: {marginRight: "15px", fontSize: "16pt"}
+    }, "Exam: ", selectedExamLabel), /* @__PURE__ */ React.createElement("div", null), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "Is this you?")), /* @__PURE__ */ React.createElement("div", null, "Name: ", choosenLearner.firstName, " ", choosenLearner.lastName), /* @__PURE__ */ React.createElement("div", null, "ID: ", choosenLearner.studentId)), /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
       alert: true,
       value: "No",
       onClick: () => {

@@ -23,7 +23,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
     attributes.allIterates = {
       createComponentOfType: "mathList",
-      createStateVariable: "allIterates",
+      createStateVariable: "allIteratesSub",
       defaultValue: [],
     }
 
@@ -88,6 +88,18 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         let styleDescriptionWithNoun = dependencyValues.styleDescription + " polyline";
 
         return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+    stateVariableDefinitions.allIterates = {
+      returnDependencies: () => ({
+        allIteratesSub: {
+          dependencyType: "stateVariable",
+          variableName: "allIteratesSub",
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { setValue: { allIterates: dependencyValues.allIteratesSub.filter(x => Number.isFinite(x.tree)) } }
       }
     }
 
@@ -352,15 +364,15 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
         let vals = [];
         let prPtx, prPty;
-        let nxPtx = numericalVertices[0][0];
-        let nxPty = numericalVertices[0][1];
+        let nxPtx = numericalVertices[0]?.[0];
+        let nxPty = numericalVertices[0]?.[1];
 
         for (let i = 1; i < nVertices; i++) {
           prPtx = nxPtx;
           prPty = nxPty;
 
-          nxPtx = numericalVertices[i][0];
-          nxPty = numericalVertices[i][1];
+          nxPtx = numericalVertices[i]?.[0];
+          nxPty = numericalVertices[i]?.[1];
 
           // only implement for constants
           if (!(Number.isFinite(prPtx) && Number.isFinite(prPty) &&
@@ -368,14 +380,13 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
             vals.push(null);
           } else {
 
-            let BA1 = (nxPtx - prPtx) / xscale;
-            let BA2 = (nxPty - prPty) / yscale;
-            let denom = (BA1 * BA1 + BA2 * BA2);
+            let BA1sub = (nxPtx - prPtx);
+            let BA2sub = (nxPty - prPty);
 
-            if (denom === 0) {
+            if (BA1sub === 0 && BA2sub === 0) {
               vals.push(null);
             } else {
-              vals.push([BA1, BA2, denom]);
+              vals.push([BA1sub, BA2sub]);
             }
           }
         }
@@ -415,7 +426,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
                   continue;
                 }
 
-                let [BA1, BA2, denom] = val;
+                let BA1 = val[0] / xscale;
+                let BA2 = val[1] / yscale;
+                let denom = (BA1 * BA1 + BA2 * BA2);
 
 
                 let t = ((x1 - prevPtx) / xscale * BA1 + (x2 - prevPty) / yscale * BA2) / denom;

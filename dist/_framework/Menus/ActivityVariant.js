@@ -1,8 +1,8 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilState, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
+import {activityVariantPanelAtom} from "../../_sharedRecoil/PageViewerRecoil.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
-import {activityVariantPanelAtom} from "../ToolHandlers/CourseToolHandler.js";
 export default function ActivityVariant(props) {
   const [variantPanel, setVariantPanel] = useRecoilState(activityVariantPanelAtom);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);

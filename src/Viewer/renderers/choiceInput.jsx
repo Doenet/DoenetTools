@@ -21,7 +21,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -124,18 +124,18 @@ export default React.memo(function ChoiceInput(props) {
   if (SVs.inline) {
 
     let checkWorkStyle = {
-      cursor: 'pointer'
+      cursor: 'pointer',
+      padding: "1px 6px 1px 6px",
+      width: "24px"
     }
 
     //Assume we don't have a check work button
     let checkWorkButton = null;
-    if (SVs.includeCheckWork) {
+    if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
 
       if (validationState === "unvalidated") {
         if (disabled) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-        } else {
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
         }
         checkWorkButton = <Button
           id={id + '_submit'}
@@ -154,7 +154,7 @@ export default React.memo(function ChoiceInput(props) {
             }
           }}
         >
-          <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+          <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         </Button>
       } else {
         if (SVs.showCorrectness) {
@@ -171,7 +171,7 @@ export default React.memo(function ChoiceInput(props) {
 
             let percent = Math.round(SVs.creditAchieved * 100);
             let partialCreditContents = `${percent} %`;
-            checkWorkStyle.width = "50px";
+            checkWorkStyle.width = '44px';
 
             checkWorkStyle.backgroundColor = "#efab34";
             checkWorkButton = <Button
@@ -190,6 +190,7 @@ export default React.memo(function ChoiceInput(props) {
         } else {
           // showCorrectness is false
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+          checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
           checkWorkButton = <Button
             id={id + '_saved'}
             style={checkWorkStyle}
@@ -263,15 +264,14 @@ export default React.memo(function ChoiceInput(props) {
     let checkWorkStyle = {
       height: "24px",
       display: "inline-block",
-      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
       padding: "1px 6px 1px 6px",
-      color: "white",
+      cursor: 'pointer',
       // fontWeight: "bold",
     }
 
     let checkworkComponent = null;
 
-    if (SVs.includeCheckWork) {
+    if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
 
       if (validationState === "unvalidated") {
 
@@ -298,7 +298,7 @@ export default React.memo(function ChoiceInput(props) {
               }
             }}
           >
-            <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+            <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
             &nbsp;
             {checkWorkText}
           </Button>);

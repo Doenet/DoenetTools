@@ -21623,10 +21623,12 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '\uff3f');
+
     cy.get('#\\/minp1 textarea').type("4E3{enter}", { force: true })
     cy.get("#\\/minp1_correct").should('be.visible');
     cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '4E3');
-  
+
     cy.get('#\\/minp2 textarea').type("4E3{enter}", { force: true })
     cy.get("#\\/minp2_correct").should('be.visible');
     cy.get('#\\/np2a .mjx-mrow').eq(0).should('have.text', '4E3');
@@ -21638,12 +21640,12 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/minp4 textarea').type("4E3{enter}", { force: true })
     cy.get("#\\/minp4_correct").should('be.visible');
     cy.get('#\\/np4a .mjx-mrow').eq(0).should('have.text', '4E3');
-  
+
 
     cy.get('#\\/mip1 textarea').type("4E3{enter}", { force: true })
     cy.get("#\\/mip1_correct").should('be.visible');
     cy.get('#\\/p1a .mjx-mrow').eq(0).should('have.text', '4000');
-  
+
     cy.get('#\\/mip2 textarea').type("4E3{enter}", { force: true })
     cy.get("#\\/mip2_correct").should('be.visible');
     cy.get('#\\/p2a .mjx-mrow').eq(0).should('have.text', '4000');
@@ -21655,13 +21657,13 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/mip4 textarea').type("4E3{enter}", { force: true })
     cy.get("#\\/mip4_correct").should('be.visible');
     cy.get('#\\/p4a .mjx-mrow').eq(0).should('have.text', '4000');
-  
+
 
 
     cy.get('#\\/minp1 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
     cy.get("#\\/minp1_incorrect").should('be.visible');
     cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '4000');
-  
+
     cy.get('#\\/minp2 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
     cy.get("#\\/minp2_incorrect").should('be.visible');
     cy.get('#\\/np2a .mjx-mrow').eq(0).should('have.text', '4000');
@@ -21673,12 +21675,12 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/minp4 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
     cy.get("#\\/minp4_incorrect").should('be.visible');
     cy.get('#\\/np4a .mjx-mrow').eq(0).should('have.text', '4000');
-  
+
 
     cy.get('#\\/mip1 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
     cy.get("#\\/mip1_correct").should('be.visible');
     cy.get('#\\/p1a .mjx-mrow').eq(0).should('have.text', '4000');
-  
+
     cy.get('#\\/mip2 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
     cy.get("#\\/mip2_correct").should('be.visible');
     cy.get('#\\/p2a .mjx-mrow').eq(0).should('have.text', '4000');
@@ -21690,7 +21692,70 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/mip4 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
     cy.get("#\\/mip4_correct").should('be.visible');
     cy.get('#\\/p4a .mjx-mrow').eq(0).should('have.text', '4000');
-  
+
+  });
+
+  it('submitted response from matrixInput', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="ans">
+    <matrixInput name="mi" numColumns="2" numRows="2" showSizeControls="false" />
+    <award><matrix><row>a b</row><row>c d</row></matrix></award>
+  </answer>
+
+  <p name="pCurrent">current response: $ans.currentResponses</p>
+  <p name="pSubmitted">submitted response: $ans</p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[＿＿＿＿]');
+    cy.get('#\\/pSubmitted .mjx-mrow').should('not.exist');
+
+
+    cy.get('#\\/mi_component_0_0 textarea').type("x{enter}", { force: true })
+
+    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[x＿＿＿]');
+    cy.get('#\\/pSubmitted .mjx-mrow').should('not.exist');
+
+
+    cy.get('#\\/mi_component_0_1 textarea').type("y{enter}", { force: true })
+    cy.get('#\\/mi_component_1_0 textarea').type("z{enter}", { force: true })
+    cy.get('#\\/mi_component_1_1 textarea').type("0{enter}", { force: true })
+
+    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+    cy.get('#\\/pSubmitted .mjx-mrow').should('not.exist');
+
+    cy.get("#\\/mi_submit").click();
+    cy.get('#\\/mi_incorrect').should('be.visible');
+
+    cy.get('#\\/pSubmitted .mjx-mrow').should('contain.text', '[xyz0]');
+    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+    cy.get('#\\/pSubmitted .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+
+
+    cy.get('#\\/mi_component_0_0 textarea').type("{end}{backspace}a{enter}", { force: true })
+    cy.get('#\\/mi_component_0_1 textarea').type("{end}{backspace}b{enter}", { force: true })
+    cy.get('#\\/mi_component_1_0 textarea').type("{end}{backspace}c{enter}", { force: true })
+    cy.get('#\\/mi_component_1_1 textarea').type("{end}{backspace}d{enter}", { force: true })
+
+    cy.get('#\\/pCurrent .mjx-mrow').should('contain.text', '[abcd]');
+    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[abcd]');
+    cy.get('#\\/pSubmitted .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+
+
+    cy.get("#\\/mi_submit").click();
+    cy.get('#\\/mi_correct').should('be.visible');
+
+    cy.get('#\\/pSubmitted .mjx-mrow').should('contain.text', '[abcd]');
+    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[abcd]');
+    cy.get('#\\/pSubmitted .mjx-mrow').eq(0).should('have.text', '[abcd]');
+
   });
 
 })

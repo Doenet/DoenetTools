@@ -36,7 +36,7 @@ const Button = styled.button `
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -58,8 +58,8 @@ export default function MathInput(props) {
 
   // Need to use ref for includeCheckWork
   // or handlePressEnter doesn't get the new value when the SV changes
-  let includeCheckWork = useRef(SVs.includeCheckWork);
-  includeCheckWork.current = SVs.includeCheckWork;
+  let includeCheckWork = useRef(SVs.includeCheckWork && !SVs.suppressCheckwork);
+  includeCheckWork.current = SVs.includeCheckWork && !SVs.suppressCheckwork;
 
   if (!ignoreUpdate) {
     rendererValue.current = SVs.rawRendererValue;
@@ -187,16 +187,22 @@ export default function MathInput(props) {
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
     let checkWorkStyle = {
       cursor: 'pointer',
+      padding: "1px 6px 1px 6px",
     }
 
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.color = 'black';
         checkWorkStyle.cursor = 'not-allowed';
-        ;
+        
+        let disabledStyle = {
+          backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
+          cursor: 'not-allowed'
+        }
       }
       checkWorkButton = (
         <Button
@@ -234,7 +240,7 @@ export default function MathInput(props) {
 
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = '50px';
+          checkWorkStyle.width = '44px';
 
           checkWorkStyle.backgroundColor = '#efab34';
           checkWorkButton = (
@@ -254,6 +260,7 @@ export default function MathInput(props) {
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = 'rgb(74, 3, 217)';
+        checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
         checkWorkButton = (
           <Button id={id + '_saved'} style={checkWorkStyle}>
             <FontAwesomeIcon icon={faCloud} />
@@ -290,10 +297,10 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={id} />
 
-      <span className="textInputSurroundingBox" id={id} style={{ marginBottom: "12px" }}>
+      <span className="textInputSurroundingBox" id={id} style={{ marginBottom: "4px" }}>
         <span>
           <EditableMathField
-            style={{border: "var(--mainBorder)", marginRight: "12px", marginBottom: "12px"}}
+            style={{border: "var(--mainBorder)", marginRight: "4px", marginBottom: "4px",}}
             latex={rendererValue.current}
             config={{
               autoCommands:

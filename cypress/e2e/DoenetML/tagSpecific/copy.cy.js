@@ -13889,6 +13889,10 @@ describe('Copy Tag Tests', function () {
 
     <p name="pcopy"><copy source="col" /></p>
 
+    <p name="pmacro2">$g</p>
+
+    <p name="pcopy2"><copy source="g" /></p>
+
     `}, "*");
     });
 
@@ -13901,11 +13905,20 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
     cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
+    cy.get(cesc('#/pmacro2') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pmacro2') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
+    cy.get(cesc('#/pcopy2') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pcopy2') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let [macromi1Name, macromi2Name] = stateVariables["/pmacro"].activeChildren.map(x => x.componentName);
       let [copymi1Name, copymi2Name] = stateVariables["/pcopy"].activeChildren.map(x => x.componentName);
+      let [macromi1Name2, macromi2Name2] = stateVariables["/pmacro2"].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+      let [copymi1Name2, copymi2Name2] = stateVariables["/pcopy2"].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
 
       expect(stateVariables[macromi1Name].componentType).eq('mathInput')
       expect(stateVariables[macromi2Name].componentType).eq('mathInput')
@@ -13915,6 +13928,100 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables[macromi2Name].stateValues.value).eq('y')
       expect(stateVariables[copymi1Name].stateValues.value).eq('x')
       expect(stateVariables[copymi2Name].stateValues.value).eq('y')
+      expect(stateVariables[macromi1Name2].componentType).eq('mathInput')
+      expect(stateVariables[macromi2Name2].componentType).eq('mathInput')
+      expect(stateVariables[copymi1Name2].componentType).eq('mathInput')
+      expect(stateVariables[copymi2Name2].componentType).eq('mathInput')
+      expect(stateVariables[macromi1Name2].stateValues.value).eq('x')
+      expect(stateVariables[macromi2Name2].stateValues.value).eq('y')
+      expect(stateVariables[copymi1Name2].stateValues.value).eq('x')
+      expect(stateVariables[copymi2Name2].stateValues.value).eq('y')
+
+    });
+
+
+  });
+
+  it('copies of composites with subnames do not ignore isPlainMacro and isPlainCopy', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <map name="map" assignNames="t1 t2">
+      <template newNamespace><mathinput name="mi" prefill="$v" /></template>
+      <sources alias="v"><math>x</math><math>y</math></sources>
+    </map>
+
+    <p name="pmacro">$map</p>
+    <p name="pcopy"><copy source="map" /></p>
+
+    <p name="pmacroInd">$map[1]$map[2]</p>
+    <p name="pcopyInd"><copy source="map[1]" /><copy source="map[2]" /></p>
+
+    <p name="pmacroSubname">$(map[1]/mi)$(map[2]/mi)</p>
+    <p name="pcopySubname"><copy source="map[1]/mi" /><copy source="map[2]/mi" /></p>
+
+
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
+    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
+    cy.get(cesc('#/pmacroInd') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pmacroInd') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
+    cy.get(cesc('#/pcopyInd') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pcopyInd') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
+    cy.get(cesc('#/pmacroSubname') + " .mjx-mrow").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pmacroSubname') + " .mjx-mrow").eq(1).should('have.text', 'y');
+
+    cy.get(cesc('#/pcopySubname') + " .mjx-mrow").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pcopySubname') + " .mjx-mrow").eq(1).should('have.text', 'y');
+
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let [macromi1Name, macromi2Name] = stateVariables["/pmacro"].activeChildren.map(x => x.componentName);
+      let [copymi1Name, copymi2Name] = stateVariables["/pcopy"].activeChildren.map(x => x.componentName);
+      let [macroIndmi1Name, macroIndmi2Name] = stateVariables["/pmacroInd"].activeChildren.map(x => x.componentName);
+      let [copyIndmi1Name, copyIndmi2Name] = stateVariables["/pmacroInd"].activeChildren.map(x => x.componentName);
+      let [macroSubnamem1Name, macroSubnamem2Name] = stateVariables["/pmacroSubname"].activeChildren.map(x => x.componentName);
+      let [copySubnamem1Name, copySubnamem2Name] = stateVariables["/pcopySubname"].activeChildren.map(x => x.componentName);
+
+      expect(stateVariables[macromi1Name].componentType).eq('mathInput')
+      expect(stateVariables[macromi2Name].componentType).eq('mathInput')
+      expect(stateVariables[copymi1Name].componentType).eq('mathInput')
+      expect(stateVariables[copymi2Name].componentType).eq('mathInput')
+      expect(stateVariables[macroIndmi1Name].componentType).eq('mathInput')
+      expect(stateVariables[macroIndmi2Name].componentType).eq('mathInput')
+      expect(stateVariables[copyIndmi1Name].componentType).eq('mathInput')
+      expect(stateVariables[copyIndmi2Name].componentType).eq('mathInput')
+      expect(stateVariables[macroSubnamem1Name].componentType).eq('math')
+      expect(stateVariables[macroSubnamem2Name].componentType).eq('math')
+      expect(stateVariables[copySubnamem1Name].componentType).eq('math')
+      expect(stateVariables[copySubnamem2Name].componentType).eq('math')
+      expect(stateVariables[macromi1Name].stateValues.value).eq('x')
+      expect(stateVariables[macromi2Name].stateValues.value).eq('y')
+      expect(stateVariables[copymi1Name].stateValues.value).eq('x')
+      expect(stateVariables[copymi2Name].stateValues.value).eq('y')
+      expect(stateVariables[macroIndmi1Name].stateValues.value).eq('x')
+      expect(stateVariables[macroIndmi2Name].stateValues.value).eq('y')
+      expect(stateVariables[copyIndmi1Name].stateValues.value).eq('x')
+      expect(stateVariables[copyIndmi2Name].stateValues.value).eq('y')
+      expect(stateVariables[macroSubnamem1Name].stateValues.value).eq('x')
+      expect(stateVariables[macroSubnamem2Name].stateValues.value).eq('y')
+      expect(stateVariables[copySubnamem1Name].stateValues.value).eq('x')
+      expect(stateVariables[copySubnamem2Name].stateValues.value).eq('y')
 
     });
 
@@ -14028,7 +14135,7 @@ describe('Copy Tag Tests', function () {
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'y')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'y')
 
-      
+
       cy.log('mathinputs change with immediate value')
       cy.get(mi3Anchor + ' textarea').type("{end}{backspace}z", { force: true })
 
@@ -14045,7 +14152,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'z')
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'z')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'z')
-      
+
 
     });
 

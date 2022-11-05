@@ -16,6 +16,7 @@ import {atom, useRecoilCallback, useRecoilState, useSetRecoilState} from "../_sn
 import Button from "../_reactComponents/PanelHeaderComponents/Button.js";
 import ActionButton from "../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import ButtonGroup from "../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import {pageToolViewAtom} from "../_framework/NewToolRoot.js";
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
   default: null
@@ -34,6 +35,7 @@ export const itemWeightsAtom = atom({
 });
 export default function ActivityViewer(props) {
   const toast = useToast();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const [errMsg, setErrMsg] = useState(null);
   const [
     {
@@ -743,7 +745,27 @@ export default function ActivityViewer(props) {
     }
     await Promise.all(terminatePromises);
     await saveState({overrideThrottle: true});
-    window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
+    if (!activityInfo.canViewAfterCompleted) {
+      console.log("CLEAR state from viewer and cache");
+    }
+    let resp = await axios.get("/api/saveCompleted.php", {
+      params: {doenetId: props.doenetId, isCompleted: true}
+    });
+    if (resp.data.success) {
+      props?.setActivityAsCompleted();
+      setPageToolView((prev) => {
+        return {
+          page: prev.page,
+          tool: "endExam",
+          view: "",
+          params: {
+            doenetId: props.doenetId,
+            attemptNumber,
+            itemWeights: itemWeights.join(",")
+          }
+        };
+      });
+    }
   }
   if (errMsg !== null) {
     let errorIcon = /* @__PURE__ */ React.createElement("span", {
@@ -864,6 +886,7 @@ export default function ActivityViewer(props) {
         forceDisable: props.forceDisable,
         forceShowCorrectness: props.forceShowCorrectness,
         forceShowSolution: props.forceShowSolution,
+        forceUnsuppressCheckwork: props.forceUnsuppressCheckwork,
         flags,
         activityVariantIndex: variantIndex,
         requestedVariantIndex: variantsByPage[ind],
@@ -933,7 +956,9 @@ export default function ActivityViewer(props) {
     if (finishAssessmentMessageOpen) {
       finishAssessmentPrompt = /* @__PURE__ */ React.createElement("div", {
         style: {border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}
-      }, "Are you sure you want to finish this assessment?", /* @__PURE__ */ React.createElement("div", {
+      }, /* @__PURE__ */ React.createElement("div", {
+        style: {display: "flex", justifyContent: "center", padding: "5px"}
+      }, "Are you sure you want to finish this assessment?"), /* @__PURE__ */ React.createElement("div", {
         style: {display: "flex", justifyContent: "center", padding: "5px"}
       }, /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
         onClick: submitAllAndFinishAssessment,

@@ -4,9 +4,9 @@ import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {toastType, useToast} from "../Toast.js";
-import {viewerDoenetMLAtom} from "../ToolPanels/EditorViewer.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {courseIdAtom} from "../../_reactComponents/Course/CourseActions.js";
+import {viewerDoenetMLAtom} from "../../_sharedRecoil/EditorViewerRecoil.js";
 export default function PageLink() {
   const addToast = useToast();
   const pageId = useRecoilValue(searchParamAtomFamily("pageId"));

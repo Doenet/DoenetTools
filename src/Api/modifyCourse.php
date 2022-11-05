@@ -13,7 +13,6 @@ $userId = $jwtArray['userId'];
 
 //required unless data is passed in application/x-www-form-urlencoded or multipart/form-data
 $_POST = json_decode(file_get_contents('php://input'), true);
-
 if (array_key_exists('courseId', $_POST)) {
     $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
 
@@ -29,7 +28,7 @@ if (array_key_exists('courseId', $_POST)) {
     }
 
     if ($allowed) {
-        $settings = ['image', 'color', 'label', 'defaultRoleId'];
+        $settings = ['image', 'color', 'label', 'defaultRoleId','canAutoEnroll'];
         $segments = [];
         foreach ($settings as $setting) {
             if (array_key_exists($setting, $_POST)) {

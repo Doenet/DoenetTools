@@ -683,10 +683,10 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <p><math>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-15)y</math></p>
-  <p><math displaysmallaszero>2x + (1E-13)y</math></p>
-  <p><math displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-15)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero>2x + (1E-13)y</math></p>
+  <p><math parseScientificNotation displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
   `}, "*");
     });
 
@@ -1133,20 +1133,20 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/dig5aText').should('have.text', '62.1')
     cy.get('#\\/dig5apadText').should('have.text', '62.100')
-    cy.get('#\\/dig5bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dig5bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dig5bpadText').should('have.text', '162.10 * 10⁻³')
     cy.get('#\\/dig5cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dig5cpadText').should('have.text', '1.3000 x + 4.0000 π')
     cy.get('#\\/dec5aText').should('have.text', '62.1')
     cy.get('#\\/dec5apadText').should('have.text', '62.10000')
-    cy.get('#\\/dec5bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dec5bpadText').should('have.text', '162.10000 * 10^(-3)')
+    cy.get('#\\/dec5bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dec5bpadText').should('have.text', '162.10000 * 10⁻³')
     cy.get('#\\/dec5cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dec5cpadText').should('have.text', '1.30000 x + 4.00000 π')
     cy.get('#\\/dig5dec1aText').should('have.text', '62.1')
     cy.get('#\\/dig5dec1apadText').should('have.text', '62.100')
-    cy.get('#\\/dig5dec1bText').should('have.text', '162.1 * 10^(-3)')
-    cy.get('#\\/dig5dec1bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5dec1bText').should('have.text', '162.1 * 10⁻³')
+    cy.get('#\\/dig5dec1bpadText').should('have.text', '162.10 * 10⁻³')
     cy.get('#\\/dig5dec1cText').should('have.text', '1.3 x + 4 π')
     cy.get('#\\/dig5dec1cpadText').should('have.text', '1.3000 x + 4.0000 π')
 
@@ -1919,6 +1919,7 @@ describe('Math Tag Tests', function () {
   <p><math format="latex" name="m8a">\\var{x2}_2x</math></p>
   <p><math format="latex" name="m9">2x_x2</math></p>
   <p><math format="latex" name="m9a">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m9b">2x_{x2}</math></p>
   <p><math format="latex" name="m10">xy uv x2y 2x x2</math></p>
   <p><math format="latex" name="m10a">xy uv \\var{x2y} 2x \\var{x2}</math></p>
   <p><math format="latex" name="m11" splitSymbols="false">xy_uv</math></p>
@@ -1979,9 +1980,12 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('x22x')
     })
     cy.get('#\\/m9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2xx2')
+      expect(text.trim()).equal('2xx⋅2')
     })
     cy.get('#\\/m9a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m9b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2xx2')
     })
     cy.get('#\\/m10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2043,8 +2047,9 @@ describe('Math Tag Tests', function () {
       expect(stateVariables['/m7'].stateValues.value).eqls(["*", "x", ["_", "y", "u"], "v"]);
       expect(stateVariables['/m8'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
       expect(stateVariables['/m8a'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x"], 2]);
       expect(stateVariables['/m9a'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m9b'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
       expect(stateVariables['/m10'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m10a'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m11'].stateValues.value).eqls(["_", "xy", "uv"]);
@@ -5068,6 +5073,185 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('subscripts and superscripts numbers to unicode text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">2x_1y_23+z_456-a_(7+8-90)</math></p>
+  <p><math name="m2">2x^1y^23+z^456-a^(7+8-90)</math></p>
+  <p><math name="m3">a^2 - b_2</math></p>
+  <p name="m1t">$m1.text</p>
+  <p name="m2t">$m2.text</p>
+  <p name="m3t">$m3.text</p>
+  <p><text name="t1">a₂-b²</text></p>
+  
+  <p><updateValue name="uv" type="text" target="m3.text" newValue="$t1.text" ><label>Update via text</label></updateValue></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get('#\\/m1t').should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀')
+    cy.get('#\\/m2t').should('have.text', '2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
+    cy.get('#\\/m3t').should('have.text', 'a² - b₂')
+
+    cy.get('#\\/uv').click();
+    cy.get('#\\/m3t').should('have.text', 'a₂ - b²')
+
+
+  });
+
+  it('math in graph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph >
+      <math anchor="$anchorCoords1" name="math1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1">$content1</math>
+      <math name="math2">e^(-x^2)</math>
+    </graph>
+
+    <p name="pAnchor1">Anchor 1 coordinates: $math1.anchor</p>
+    <p name="pAnchor2">Anchor 2 coordinates: $math2.anchor</p>
+    <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="(1,3)" /></p>
+    <p name="pChangeAnchor2">Change anchor 2 coordinates: <mathinput name="anchorCoords2" bindValueTo="$math2.anchor" /></p>
+    <p name="pPositionFromAnchor1">Position from anchor 1: $math1.positionFromAnchor</p>
+    <p name="pPositionFromAnchor2">Position from anchor 2: $math2.positionFromAnchor</p>
+    <p>Change position from anchor 1
+    <choiceinput inline preselectChoice="1" name="positionFromAnchor1">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p>Change position from anchor 2
+    <choiceinput inline name="positionFromAnchor2" bindValueTo="$math2.positionFromAnchor">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p name="pDraggable1">Draggable 1: $draggable1</p>
+    <p name="pDraggable2">Draggable 2: $draggable2</p>
+    <p>Change draggable 1 <booleanInput name="draggable1" prefill="true" /></p>
+    <p>Change draggable 2 <booleanInput name="draggable2" bindValueTo="$math2.draggable" /></p>
+    <p name="pContent1">Content 1: $math1</p>
+    <p name="pContent2">Content 2: $math2</p>
+    <p>Content 1 <mathinput name="content1" prefill="x^2/3" /></p>
+    <p>Content 2 <mathinput name="content2" bindValueTo="$math2" /></p>
+    <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
+
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
+    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
+    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
+    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
+    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
+    cy.get("#\\/pContent1 .mjx-mrow").eq(0).should('have.text', 'x23')
+    cy.get("#\\/pContent2 .mjx-mrow").eq(0).should('have.text', 'e−x2')
+
+
+    cy.log("move maths by dragging")
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveMath",
+        componentName: "/math1",
+        args: { x: -2, y: 3 }
+      })
+      win.callAction1({
+        actionName: "moveMath",
+        componentName: "/math2",
+        args: { x: 4, y: -5 }
+      })
+    })
+
+    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+
+
+    cy.log("move maths by entering coordinates")
+
+    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+
+    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+
+    cy.log('change position from anchor');
+    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
+    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+
+
+    cy.log('make not draggable')
+
+    cy.get('#\\/draggable1').click();
+    cy.get('#\\/draggable2').click();
+    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
+    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+
+
+    cy.log('cannot move maths by dragging')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveMath",
+        componentName: "/math1",
+        args: { x: -10, y: -9 }
+      })
+      win.callAction1({
+        actionName: "moveMath",
+        componentName: "/math2",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get("#\\/bi").click();
+    cy.get("#\\/b").should('have.text', 'true');
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+
+    cy.log("change content of math")
+    cy.get('#\\/content1 textarea').type("{end}+5{enter}", {force: true})
+    cy.get('#\\/content2 textarea').type("{end}-a{enter}", {force: true})
+
+    cy.get("#\\/pContent2 .mjx-mrow").should('contain.text', 'e−x2−a')
+
+    cy.get("#\\/pContent1 .mjx-mrow").eq(0).should('have.text', 'x23+5')
+    cy.get("#\\/pContent2 .mjx-mrow").eq(0).should('have.text', 'e−x2−a')
+
+  })
 
 })
 

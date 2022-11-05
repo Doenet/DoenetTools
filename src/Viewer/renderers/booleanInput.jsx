@@ -18,12 +18,12 @@ const Button = styled.button `
   background-color: var(--mainBlue);
   display: inline-block;
   /* text-align: center; */
-  /* padding: 2px; */
+  padding: 2px;
   /* z-index: 0; */
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -93,19 +93,18 @@ export default React.memo(function BooleanInput(props) {
 
   let checkWorkStyle = {
     cursor: 'pointer',
+    padding: "1px 6px 1px 6px",
   }
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
   let icon = props.icon;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
 
     if (validationState === "unvalidated") {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         checkWorkStyle.cursor = 'not-allowed';
-      } else {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
       checkWorkButton = 
         <Button
@@ -125,7 +124,7 @@ export default React.memo(function BooleanInput(props) {
             }
           }}
         >
-          <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+          <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         </Button>
     } else {
       if (SVs.showCorrectness) {
@@ -143,7 +142,7 @@ export default React.memo(function BooleanInput(props) {
 
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = "50px";
+          checkWorkStyle.width = '44px';
 
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = 
@@ -167,6 +166,7 @@ export default React.memo(function BooleanInput(props) {
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
         checkWorkButton = 
           <Button
             id={id + '_saved'}

@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {pageVariantInfoAtom, pageVariantPanelAtom} from "../ToolHandlers/CourseToolHandler.js";
+import {pageVariantInfoAtom, pageVariantPanelAtom} from "../../_sharedRecoil/PageViewerRecoil.js";
 export default function PageVariant(props) {
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const [variantPanel, setVariantPanel] = useRecoilState(pageVariantPanelAtom);

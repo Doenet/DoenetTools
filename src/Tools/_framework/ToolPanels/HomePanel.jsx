@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import './homepage.css';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
+import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
+import { useState } from 'react';
 
 
 const Headings = styled.h1`
@@ -110,12 +112,20 @@ const LinkStyling = styled.a`
 export default function HomePage(props) {
   // console.log(">>>===HomePage")
   let navigate = useNavigate();
+  const [signedIn,setSignedIn] = useState(null);
 
-  const jwt = Cookies.get();
-  let isSignedIn = false;
-  if (Object.keys(jwt).includes('JWT_JS')) {
-    isSignedIn = true;
+  checkIfUserClearedOut().then(({userInformationIsCompletelyRemoved})=>{
+    setSignedIn(!userInformationIsCompletelyRemoved);
+  })
+  
+  let signInButton = null;
+  if (signedIn == true){
+    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div>
   }
+  if (signedIn == false){
+    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>
+  }
+
 
   return <div style = {props.style}>
     <DoenetLogo>
@@ -127,7 +137,7 @@ export default function HomePage(props) {
         <h4 style={{ marginTop: '0px' }}>
           The free and open data-driven educational technology platform
         </h4>
-        {isSignedIn ? <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div> : <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>}
+        {signInButton}
         <Paragraph>
           The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages.
           Anonymized and aggregated data will be stored in an open distributed data warehouse
@@ -274,12 +284,12 @@ export default function HomePage(props) {
     <CloudColorSection>
       <SectionText>
         <Headings className="section-headline">Workshop on developing learning experiments in Doenet</Headings>
+        
         <Paragraph>
-          From May 23 - May 26, 2022, we hosted a <LinkStyling style={{color:"var(--whiteBlankLink)"}}href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop</LinkStyling> on developing content and learning experiments in Doenet.  Held at the University of Minnesota, the workshop for instructors of college STEM courses was a hands-on introduction to authoring and running experiments, led
-          by the developers of Doenet.
+          From May 22 - May 26, 2023, we will host the second <LinkStyling style={{color:"var(--whiteBlankLink)"}}href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2023">workshop</LinkStyling> on developing content and learning experiments in Doenet.  It will be held at the University of Minnesota, the workshop for instructors of college STEM courses will be a hands-on introduction to authoring and running experiments, led by the developers of Doenet.
         </Paragraph>
         <Paragraph>
-          For information about future workshops, please contact us at <LinkStyling style= {{color:"var(--whiteBlankLink)"}} href="mailto:info@doenet.org">info@doenet.org</LinkStyling>.
+        Applications to the workshop will open in January, 2023. For information, please contact us at <LinkStyling style= {{color:"var(--whiteBlankLink)"}} href="mailto:info@doenet.org">info@doenet.org</LinkStyling>.
         </Paragraph>
       </SectionText>
     </CloudColorSection>
@@ -301,8 +311,15 @@ export default function HomePage(props) {
           <SectionText>
           <div>
             <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
-            <div style={{ marginBottom: '40px' }}>
+            <div style={{ marginBottom: '10px' }}>
               <LinkStyling href="mailto:info@doenet.org">info@doenet.org</LinkStyling>
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+            <LinkStyling href="https://github.com/Doenet/">GitHub</LinkStyling>
+            </div>
+            <div style={{ marginBottom: '40px' }}>
+              
+              <LinkStyling href="https://discord.gg/PUduwtKJ5h">Discord Server</LinkStyling>
             </div>
             <p>
               <LinkStyling

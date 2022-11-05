@@ -15,6 +15,7 @@ module.exports = {
     'src/Tools/singlepage': '/',
     'src/Tools/cypressTest': '/cypressTest',
     'src/Tools/uiDocs': '/uiDocs',
+    'src/Tools/umn': '/umn',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
     'src/Media/byPageId': '/media/byPageId',
@@ -91,6 +92,11 @@ module.exports = {
       match: 'routes',
       src: '/uiDocs.*',
       dest: '/uiDocs/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/umn.*',
+      dest: '/umn/index.html',
     },
     {
       match: 'routes',

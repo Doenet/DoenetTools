@@ -16,6 +16,8 @@ import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'reco
 import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../_reactComponents/PanelHeaderComponents/ActionButton';
 import ButtonGroup from '../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
+import { clear as idb_clear } from 'idb-keyval';
 
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
@@ -40,6 +42,8 @@ export const itemWeightsAtom = atom({
 
 export default function ActivityViewer(props) {
   const toast = useToast();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
 
   const [errMsg, setErrMsg] = useState(null);
 
@@ -388,7 +392,6 @@ export default function ActivityViewer(props) {
 
   }
 
-
   function calculateCidDefinition() {
 
     if (activityDefinitionFromProps) {
@@ -464,7 +467,6 @@ export default function ActivityViewer(props) {
     }
 
   }
-
 
   async function loadState() {
 
@@ -736,7 +738,6 @@ export default function ActivityViewer(props) {
     return { localInfo, cid, attemptNumber };
 
   }
-
 
   async function saveState({ overrideThrottle = false, overrideStage = false } = {}) {
 
@@ -1139,10 +1140,46 @@ export default function ActivityViewer(props) {
 
     await saveState({ overrideThrottle: true })
 
-    // TODO: what should this do in general?
-    window.location.href = `/exam?tool=endExam&doenetId=${props.doenetId}&attemptNumber=${attemptNumber}&itemWeights=${itemWeights.join(",")}`;
+  // console.log("activityInfo here",activityInfo)
 
+    //Clear out history of exam if canViewAfterCompleted setting set as false
+    if (!activityInfo.canViewAfterCompleted){
+      // console.log("CLEAR state from viewer and cache")
+      //Simple answer for now - lose all state info
+      //TODO: When should we clear this
+      //await idb_clear();
+      
+    }
+      //Set assignment as completed for the user in the Data Base and Recoil
+      let resp = await axios.get('/api/saveCompleted.php', {
+        params: { doenetId:props.doenetId, isCompleted:true },
+      });
+      // console.log("resp",resp.data)
+      if (resp.data.success){
+
+        //Mark activity as completed in Recoil
+        props?.setActivityAsCompleted();
+
+        //Go to end exam for the specific page
+        setPageToolView((prev)=>{
+          return {
+            page:prev.page,
+            tool: 'endExam',
+            view: '',
+            params: {
+              doenetId:props.doenetId,
+              attemptNumber,
+              itemWeights:itemWeights.join(","),
+            }
+          }
+        });
+
+      }
+    
+
+   
   }
+
 
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
@@ -1315,6 +1352,7 @@ export default function ActivityViewer(props) {
         forceDisable={props.forceDisable}
         forceShowCorrectness={props.forceShowCorrectness}
         forceShowSolution={props.forceShowSolution}
+        forceUnsuppressCheckwork={props.forceUnsuppressCheckwork}
         flags={flags}
         activityVariantIndex={variantIndex}
         requestedVariantIndex={variantsByPage[ind]}
@@ -1370,8 +1408,10 @@ export default function ActivityViewer(props) {
 
   if (props.showFinishButton) {
     if (finishAssessmentMessageOpen) {
-      finishAssessmentPrompt = <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap" }}>
-        Are you sure you want to finish this assessment?
+      finishAssessmentPrompt = <div style={{marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px", border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", display: "flex", flexFlow: "column wrap" }}>
+       <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
+       Are you sure you want to finish this assessment?
+        </div> 
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
             <Button onClick={submitAllAndFinishAssessment} dataTest="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
@@ -1381,8 +1421,12 @@ export default function ActivityViewer(props) {
 
       </div>
     } else {
-      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "5px" }}>
-        <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} dataTest="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
+      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px" }}>
+        <div data-test="centerone" style={{display:"flex",justifyContent:"center"}}>
+          <div style={{width:"240px"}}>
+        <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
+          </div>
+        </div>
       </div>
     }
   }

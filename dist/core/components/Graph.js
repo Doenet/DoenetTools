@@ -193,7 +193,7 @@ export default class Graph extends BlockComponent {
 
     return [{
       group: "graphical",
-      componentTypes: ["_graphical"]
+      componentTypes: ["_graphical", "text", "image", "math", "m", "md", "label"]
     },
     {
       group: "xlabels",
@@ -328,7 +328,6 @@ export default class Graph extends BlockComponent {
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        console.log({ desiredStateVariableValues, dependencyValues })
         if (typeof desiredStateVariableValues.xlabel !== "string") {
           return { success: false }
         }
@@ -348,7 +347,7 @@ export default class Graph extends BlockComponent {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "xlabel",
+              setEssentialValue: "xlabel",
               value: desiredStateVariableValues.xlabel
             }]
           }
@@ -409,7 +408,6 @@ export default class Graph extends BlockComponent {
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        console.log({ desiredStateVariableValues, dependencyValues })
         if (typeof desiredStateVariableValues.ylabel !== "string") {
           return { success: false }
         }
@@ -429,7 +427,7 @@ export default class Graph extends BlockComponent {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "ylabel",
+              setEssentialValue: "ylabel",
               value: desiredStateVariableValues.ylabel
             }]
           }

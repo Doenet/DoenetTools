@@ -7,7 +7,7 @@ import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
 import { deepCompare, deepClone } from './utils/deepFunctions';
 import createStateProxyHandler from './StateProxyHandler';
-import { convertAttributesForComponentType, postProcessCopy } from './utils/copy';
+import { convertAttributesForComponentType, postProcessCopy, verifyReplacementsMatchSpecifiedType } from './utils/copy';
 import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
 import { preprocessMathInverseDefinition } from './utils/math';
@@ -1516,6 +1516,17 @@ export default class Core {
           }
           shadowedComponent.shadowedBy.push(newComponent);
 
+          if(dep.isPrimaryShadow) {
+            shadowedComponent.primaryShadow = newComponent.componentName;
+
+            if(this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
+              for(let dep of this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
+                await dep.recalculateDownstreamComponents();
+              }
+            }
+
+          }
+
           break;
         }
       }
@@ -2330,6 +2341,19 @@ export default class Core {
 
     }
 
+
+    let verificationResult = await verifyReplacementsMatchSpecifiedType({
+      component,
+      replacements: serializedReplacements,
+      assignNames: component.doenetAttributes.assignNames,
+      componentInfoObjects: this.componentInfoObjects, 
+      compositeAttributesObj: component.constructor.createAttributesObject(),
+      flags: this.flags
+    });
+
+
+    serializedReplacements = verificationResult.replacements;
+
     // console.log(`serialized replacements for ${component.componentName} who is shadowing ${shadowedComposite.componentName}`);
     // console.log(deepClone(serializedReplacements));
 
@@ -2828,12 +2852,19 @@ export default class Core {
                 }]
               };
             } else {
-              // no component or primitive, so value is essential and give it the desired value
+              // no component or primitive, so value is essential and give it the desired value, but validated
+
+              let attributeValue = validateAttributeValue({
+                value: desiredStateVariableValues[varName],
+                attributeSpecification,
+                attribute: attrName
+              })
+
               return {
                 success: true,
                 instructions: [{
                   setEssentialValue: varName,
-                  value: desiredStateVariableValues[varName]
+                  value: attributeValue
                 }]
               };
             }
@@ -3200,12 +3231,17 @@ export default class Core {
                 }]
               };
             } else {
-              // no component or primitive, so value is essential and give it the desired value
+              // no component or primitive, so value is essential and give it the desired value, but validated
+              let attributeValue = validateAttributeValue({
+                value: desiredStateVariableValues[varName],
+                attributeSpecification,
+                attribute: attrName
+              })
               return {
                 success: true,
                 instructions: [{
                   setEssentialValue: varName,
-                  value: desiredStateVariableValues[varName]
+                  value: attributeValue
                 }]
               };
             }
@@ -8198,6 +8234,7 @@ export default class Core {
         for (let aName in component.actions) {
           if (aName.toLowerCase() === actionNameLower) {
             action = component.actions[aName];
+            actionName = aName;
             break;
           }
         }
@@ -8273,6 +8310,9 @@ export default class Core {
     overrideReadOnly = false
   }) {
 
+    // Note: the transient flag is now ignored
+    // as the debounce is preventing too many updates from occurring
+
     if (this.flags.readOnly && !overrideReadOnly) {
 
       let sourceInformation = {};
@@ -8344,25 +8384,27 @@ export default class Core {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
-      let sourceInformation = {};
+      if (!canSkipUpdatingRenderer) {
+        let sourceInformation = {};
 
-      for (let instruction of updateInstructions) {
+        for (let instruction of updateInstructions) {
 
-        let componentSourceInformation = sourceInformation[instruction.componentName];
-        if (!componentSourceInformation) {
-          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+          let componentSourceInformation = sourceInformation[instruction.componentName];
+          if (!componentSourceInformation) {
+            componentSourceInformation = sourceInformation[instruction.componentName] = {};
+          }
+
+          if (instruction.sourceInformation) {
+            Object.assign(componentSourceInformation, instruction.sourceInformation);
+          }
         }
 
-        if (instruction.sourceInformation) {
-          Object.assign(componentSourceInformation, instruction.sourceInformation);
-        }
+        await this.updateRendererInstructions({
+          componentNamesToUpdate: updateInstructions.map(x => x.componentName),
+          sourceOfUpdate: { sourceInformation },
+          actionId,
+        });
       }
-
-      await this.updateRendererInstructions({
-        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
-        sourceOfUpdate: { sourceInformation },
-        actionId,
-      });
 
       return;
 
@@ -9993,7 +10035,7 @@ export default class Core {
 
     axios.post('/api/saveCreditForItem.php', payload)
       .then(resp => {
-        console.log('>>>>saveCreditForItem resp', resp.data);
+        // console.log('>>>>saveCreditForItem resp', resp.data);
 
         if (resp.status === null) {
           postMessage({
@@ -10319,6 +10361,11 @@ export default class Core {
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
 
+    if (this.submitAnswersTimeout) {
+      clearTimeout(this.submitAnswersTimeout);
+      await this.autoSubmitAnswers();
+    }
+
     this.stopProcessingRequests = true;
 
     if (this.processing) {
@@ -10401,9 +10448,8 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
 
   if (attributeSpecification.validValues) {
     if (!attributeSpecification.validValues.includes(value)) {
-      let firstValue = attributeSpecification.validValues[0]
-      console.warn(`Invalid value ${value} for attribute ${attribute}, using value ${firstValue}`);
-      value = firstValue;
+      console.warn(`Invalid value ${value} for attribute ${attribute}, using value ${attributeSpecification.defaultValue}`);
+      value = attributeSpecification.defaultValue;
     }
   } else if (attributeSpecification.clamp) {
     if (value < attributeSpecification.clamp[0]) {

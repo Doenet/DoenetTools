@@ -9,11 +9,11 @@ const Button = styled.button`
   display: inline-block;
   color: white;
   background-color: var(--mainBlue);
-  /* padding: 2px; */
+  padding: 2px;
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 12px 12px 0px;
+  margin: 0px 4px 4px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -39,7 +39,7 @@ export default React.memo(function Answer(props) {
     let inputChildNames = SVs.inputChildren.map((x) => x.componentName);
     inputChildrenToRender = children.filter((child) => typeof child !== "string" && inputChildNames.includes(child.props.componentInstructions.componentName));
   }
-  if (!SVs.delegateCheckWork) {
+  if (!SVs.delegateCheckWork && !SVs.suppressCheckwork) {
     let validationState = "unvalidated";
     if (SVs.justSubmitted || SVs.numberOfAttemptsLeft < 1) {
       if (SVs.creditAchieved === 1) {
@@ -51,7 +51,8 @@ export default React.memo(function Answer(props) {
       }
     }
     let checkWorkStyle = {
-      cursor: "pointer"
+      cursor: "pointer",
+      padding: "1px 6px 1px 6px"
     };
     if (disabled) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
@@ -72,7 +73,7 @@ export default React.memo(function Answer(props) {
         }
       }
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      style: {marginRight: "4px", paddingLeft: "2px"},
+      style: {},
       icon: faLevelDownAlt,
       transform: {rotate: 90}
     }), " ", checkWorkText);
@@ -121,14 +122,15 @@ export default React.memo(function Answer(props) {
       checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(", SVs.numberOfAttemptsLeft, " attempts remaining)"));
     }
     return /* @__PURE__ */ React.createElement("span", {
-      id
+      id,
+      style: {marginBottom: "4px"}
     }, /* @__PURE__ */ React.createElement("a", {
       name: id
     }), inputChildrenToRender, checkworkComponent);
   } else {
     return /* @__PURE__ */ React.createElement("span", {
       id,
-      style: {marginBottom: "12px"}
+      style: {marginBottom: "4px"}
     }, /* @__PURE__ */ React.createElement("a", {
       name: id
     }), inputChildrenToRender);

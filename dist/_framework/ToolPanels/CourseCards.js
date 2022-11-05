@@ -43,10 +43,11 @@ export default function CourseCards(props) {
   if (courses.length == 0) {
     return null;
   }
+  let filteredCourses = courses.filter((course) => course.canViewCourse != "0");
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
   }, /* @__PURE__ */ React.createElement(CourseCardWrapper, {
-    courses,
+    courses: filteredCourses,
     drivePathSyncKey: "main",
     types: ["course"],
     isOneDriveSelect: false

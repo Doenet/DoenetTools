@@ -3,6 +3,13 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const VideoStyling = styled.div`
+&: focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
+`;
 export default React.memo(function Video(props) {
   let {name, id, SVs, actions, callAction} = useDoenetRender(props);
   let player = useRef(null);
@@ -296,7 +303,8 @@ export default React.memo(function Video(props) {
   return /* @__PURE__ */ React.createElement(VisibilitySensor, {
     partialVisibility: true,
     onChange: onChangeVisibility
-  }, /* @__PURE__ */ React.createElement("div", {
+  }, /* @__PURE__ */ React.createElement(VideoStyling, {
+    tabIndex: "0",
     style: outerStyle,
     id: id + "_outer"
   }, /* @__PURE__ */ React.createElement("a", {

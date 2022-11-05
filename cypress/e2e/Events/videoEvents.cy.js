@@ -408,7 +408,7 @@ describe('video events test', function () {
 
         endingPoint = context.endingPoint;
         expect(endingPoint).gt(57);
-        expect(endingPoint).lt(59);
+        expect(endingPoint).lt(60);
 
         rates = context.rates;
         expect(rates.length).eq(1);

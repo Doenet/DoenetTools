@@ -100,6 +100,7 @@ export default function AssignmentViewer() {
       showFinishButton,
       showFeedback,
       showHints,
+      autoSubmit,
       cid,
       doenetId,
       solutionDisplayMode,
@@ -149,6 +150,7 @@ export default function AssignmentViewer() {
     showFinishButton: showFinishButton2,
     showFeedback: showFeedback2,
     showHints: showHints2,
+    autoSubmit: autoSubmit2,
     showSolution,
     proctorMakesAvailable,
     numberOfAttemptsAllowed: baseNumberOfAttemptsAllowed2
@@ -198,7 +200,6 @@ export default function AssignmentViewer() {
     } else {
       cid2 = resp.data.cid;
     }
-    console.log(`retrieved cid: ${cid2}`);
     setCidChanged(resp.data.cidChanged);
     resp = await axios.get("/api/loadTakenVariants.php", {
       params: {doenetId: doenetId2}
@@ -246,6 +247,7 @@ export default function AssignmentViewer() {
         showFinishButton: showFinishButton2,
         showFeedback: showFeedback2,
         showHints: showHints2,
+        autoSubmit: autoSubmit2,
         cid: cid2,
         doenetId: doenetId2,
         solutionDisplayMode: solutionDisplayMode2,
@@ -290,6 +292,7 @@ export default function AssignmentViewer() {
       showFinishButton: showFinishButton2,
       showFeedback: showFeedback2,
       showHints: showHints2,
+      autoSubmit: autoSubmit2,
       cid: cid2,
       doenetId: doenetId2,
       solutionDisplayMode: solutionDisplayMode2,
@@ -297,6 +300,14 @@ export default function AssignmentViewer() {
     });
     setStage("Ready");
   }, [setSuppressMenus, effectivePermissions]);
+  const setActivityAsCompleted = useRecoilCallback(({set}) => async () => {
+    set(itemByDoenetId(doenetId), (prev) => {
+      let next = {...prev};
+      next.completed = true;
+      next.completedDate = new Date();
+      return next;
+    });
+  }, [doenetId]);
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId2) {
     if (hash && hash !== "#page1") {
       navigate(search, {replace: true});
@@ -394,6 +405,9 @@ export default function AssignmentViewer() {
   if (recoilDoenetId === "") {
     return null;
   }
+  if (!itemObj?.canViewAfterCompleted && itemObj.completed) {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("p", null, "Can't take again."));
+  }
   if (courseId === "__not_found__") {
     return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
   } else if (stage === "Initializing") {
@@ -452,6 +466,7 @@ export default function AssignmentViewer() {
       solutionDisplayMode,
       showFeedback,
       showHints,
+      autoSubmit,
       allowLoadState: allowLoadAndSave,
       allowSaveState: allowLoadAndSave,
       allowLocalState: allowLoadAndSave,
@@ -465,7 +480,8 @@ export default function AssignmentViewer() {
     pageChangedCallback: pageChanged,
     paginate,
     showFinishButton,
-    cidChangedCallback: () => setCidChanged(true)
+    cidChangedCallback: () => setCidChanged(true),
+    setActivityAsCompleted
   }));
 }
 async function returnNumberOfActivityVariants(cid) {

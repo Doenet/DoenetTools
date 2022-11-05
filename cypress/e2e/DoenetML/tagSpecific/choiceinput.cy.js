@@ -16,7 +16,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.visit('/cypressTest')
   })
 
-  it('default is block format', () => {
+  it('default is block format, shuffleOrder', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -31,7 +31,14 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
     <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
-    `}, "*");
+
+    <p name="pCat">Selected cat: $_choice1.selected</p>
+    <p name="pDog">Selected dog: $_choice2.selected</p>
+    <p name="pMonkey">Selected monkey: $_choice3.selected</p>
+    <p name="pMouse">Selected mouse: $_choice4.selected</p>
+    `,
+        requestedVariantIndex: 8,
+      }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
@@ -39,6 +46,11 @@ describe('ChoiceInput Tag Tests', function () {
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
     cy.get('#\\/_p2').should('have.text', 'Selected index: ')
+
+    cy.get('#\\/pCat').should('have.text', 'Selected cat: false')
+    cy.get('#\\/pDog').should('have.text', 'Selected dog: false')
+    cy.get('#\\/pMonkey').should('have.text', 'Selected monkey: false')
+    cy.get('#\\/pMouse').should('have.text', 'Selected mouse: false')
 
     let choices, choiceOrder;
     cy.window().then(async (win) => {
@@ -58,7 +70,6 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[2]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
-      // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
       expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
@@ -76,6 +87,11 @@ describe('ChoiceInput Tag Tests', function () {
         // make this asynchronous so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
         cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
+
+        cy.get('#\\/pCat').should('have.text', `Selected cat: ${choiceOrder[i] === 1}`)
+        cy.get('#\\/pDog').should('have.text', `Selected dog: ${choiceOrder[i] === 2}`)
+        cy.get('#\\/pMonkey').should('have.text', `Selected monkey: ${choiceOrder[i] === 3}`)
+        cy.get('#\\/pMouse').should('have.text', `Selected mouse: ${choiceOrder[i] === 4}`)
       });
 
       cy.window().then(async (win) => {
@@ -83,7 +99,6 @@ describe('ChoiceInput Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-        // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
         expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
         expect(stateVariables['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
         expect(stateVariables['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
@@ -94,7 +109,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   });
 
-  it('inline choiceinput', () => {
+  it('inline choiceinput, shuffleOrder', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -109,7 +124,14 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
     <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
-    `}, "*");
+
+    <p name="pCat">Selected cat: $_choice1.selected</p>
+    <p name="pDog">Selected dog: $_choice2.selected</p>
+    <p name="pMonkey">Selected monkey: $_choice3.selected</p>
+    <p name="pMouse">Selected mouse: $_choice4.selected</p>
+    `,
+        requestedVariantIndex: 8,
+      }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
@@ -117,6 +139,11 @@ describe('ChoiceInput Tag Tests', function () {
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
     cy.get('#\\/_p2').should('have.text', 'Selected index: ')
+
+    cy.get('#\\/pCat').should('have.text', 'Selected cat: false')
+    cy.get('#\\/pDog').should('have.text', 'Selected dog: false')
+    cy.get('#\\/pMonkey').should('have.text', 'Selected monkey: false')
+    cy.get('#\\/pMouse').should('have.text', 'Selected mouse: false')
 
     cy.get("#\\/_choiceinput1").should('have.value', '')
 
@@ -138,7 +165,6 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[2]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
-      // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(true);
       expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
@@ -157,13 +183,17 @@ describe('ChoiceInput Tag Tests', function () {
         // make this asynchronous  so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
         cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
+
+        cy.get('#\\/pCat').should('have.text', `Selected cat: ${choiceOrder[i] === 1}`)
+        cy.get('#\\/pDog').should('have.text', `Selected dog: ${choiceOrder[i] === 2}`)
+        cy.get('#\\/pMonkey').should('have.text', `Selected monkey: ${choiceOrder[i] === 3}`)
+        cy.get('#\\/pMouse').should('have.text', `Selected mouse: ${choiceOrder[i] === 4}`)
       })
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-        // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
         expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
         expect(stateVariables['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
         expect(stateVariables['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
@@ -469,7 +499,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let originalChoices = [
       "The function is f(ξ) = sin(ξ).",
-      "The sum of λ^2 and 2 λ^2 is 3 λ^2.",
+      "The sum of λ² and 2 λ² is 3 λ².",
       "The sequence is 1, 2, 3, 4, 5.",
       "Can't convert this latex: \\int_a^b q(t) \\, dt."
     ];
@@ -966,7 +996,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
-    let textOrder = ["(x^2)/2", "y", "∂f/∂x", "3", "1/(e^x)"];
+    let textOrder = ["(x²)/2", "y", "∂f/∂x", "3", "1/(e^x)"];
 
     let checkChoices = function (selectedIndex, inputText, inputMath) {
 
@@ -1023,7 +1053,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.log('select x^2/2 from first input');
     let selectedIndex = 1;
     let inputText = "x22";
-    cy.get(`#\\/ci1_choice${selectedIndex}_input`).should('not.be.visible').click({force:true}); // input is invisible (covered by text), but click it anyway
+    cy.get(`#\\/ci1_choice${selectedIndex}_input`).should('not.be.visible').click({ force: true }); // input is invisible (covered by text), but click it anyway
     checkChoices(selectedIndex, inputText, ["/", ["^", "x", 2], 2])
 
     cy.log('Type 3')
@@ -1864,5 +1894,449 @@ describe('ChoiceInput Tag Tests', function () {
     })
   })
 
+  it('math choices', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput>
+      <choice><math>x + x</math></choice>
+      <choice><m>y+y</m></choice>
+      <choice><me>z+z</me></choice>
+      <choice><men>u+u</men></choice>
+    </choiceinput>
+
+    <p>Selected value: <copy prop='selectedvalue' source="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' source="_choiceinput1" /></p>
+    <p>Selected value: $_choiceinput1</p>
+    <p>Selected value simplified: $_choiceinput1{simplify}</p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/_p1').should('have.text', 'Selected value: ')
+    cy.get('#\\/_p2').should('have.text', 'Selected index: ')
+    cy.get('#\\/_p3').should('have.text', 'Selected value: ')
+    cy.get('#\\/_p4').should('have.text', 'Selected value simplified: ')
+
+
+    cy.get(`#\\/_choiceinput1_choice1_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'x+x');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'x+x');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 1')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'x+x');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2x');
+
+
+    cy.get(`#\\/_choiceinput1_choice2_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'y+y');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'y+y');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 2')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'y+y');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2y');
+
+
+    cy.get(`#\\/_choiceinput1_choice3_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'z+z');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'z+z');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 3')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'z+z');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2z');
+
+    cy.get(`#\\/_choiceinput1_choice4_input`).click({ force: true });
+
+    cy.get('#\\/_p1 .mjx-mrow').should('contain.text', 'u+u');
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'u+u');
+    cy.get('#\\/_p2').should('have.text', 'Selected index: 4')
+    cy.get('#\\/_p3 .mjx-mrow').eq(0).should('have.text', 'u+u');
+    cy.get('#\\/_p4 .mjx-mrow').eq(0).should('have.text', '2u');
+
+  });
+
+  it('consistent order for n elements for given variant', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p>m: <mathinput prefill="1" name="m" /> <number name="m2" copySource="m" /></p>
+  <p>n: <mathinput prefill="6" name="n" /> <number name="n2" copySource="n" /></p>
+  <choiceinput name="ci" shuffleOrder>
+    <map>
+      <template>
+        <choice>$v</choice>
+      </template>
+      <sources alias="v">
+        <sequence from="$m" to="$n" />
+      </sources>
+    </map>
+  </choiceinput>
+  `,
+        requestedVariantIndex: 1,
+      }, "*");
+    });
+
+    cy.get('#\\/n2').should('have.text', '6');
+
+    let orders = {};
+
+
+    cy.window().then(async (win) => {
+      let m = 1, n = 6;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect([...choiceOrder].sort((a, b) => a - b)).eqls([...Array(n - m + 1).keys()].map(x => x + m))
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+
+    cy.log('switch n to 8')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/n2').should('have.text', '8');
+
+    cy.window().then(async (win) => {
+      let m = 1, n = 8;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect([...choiceOrder].sort((a, b) => a - b)).eqls([...Array(n - m + 1).keys()].map(x => x + m))
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+
+    cy.log('get another list of length 6 by setting m to 3')
+
+    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/m2').should('have.text', '3');
+
+    cy.window().then(async (win) => {
+      let m = 3, n = 8;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect(choiceOrder).eqls(orders[[1, 6]])
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+
+    cy.log('get another list of length 8 by setting n to 10')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true });
+    cy.get('#\\/n2').should('have.text', '10');
+
+    cy.window().then(async (win) => {
+      let m = 3, n = 10;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect(choiceOrder).eqls(orders[[1, 8]])
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+    cy.log('values change with another variant')
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p>m: <mathinput prefill="1" name="m" /> <number name="m2" copySource="m" /></p>
+  <p>n: <mathinput prefill="6" name="n" /> <number name="n2" copySource="n" /></p>
+  <choiceinput name="ci" shuffleOrder>
+    <map>
+      <template>
+        <choice>$v</choice>
+      </template>
+      <sources alias="v">
+        <sequence from="$m" to="$n" />
+      </sources>
+    </map>
+  </choiceinput>
+  `,
+        requestedVariantIndex: 2,
+      }, "*");
+    });
+
+
+    cy.get('#\\/m2').should('have.text', '1');
+    cy.get('#\\/n2').should('have.text', '6');
+
+    cy.window().then(async (win) => {
+      let m = 1, n = 6;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect(choiceOrder).not.eqls(orders[[m, n]])
+
+      expect([...choiceOrder].sort((a, b) => a - b)).eqls([...Array(n - m + 1).keys()].map(x => x + m))
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+
+
+    cy.log('switch n to 8')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/n2').should('have.text', '8');
+
+    cy.window().then(async (win) => {
+      let m = 1, n = 8;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect(choiceOrder).not.eqls(orders[[m, n]])
+
+      expect([...choiceOrder].sort((a, b) => a - b)).eqls([...Array(n - m + 1).keys()].map(x => x + m))
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+
+    cy.log('get another list of length 6 by setting m to 3')
+
+    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/m2').should('have.text', '3');
+
+    cy.window().then(async (win) => {
+      let m = 3, n = 8;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect(choiceOrder).eqls(orders[[1, 6]])
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+
+    cy.log('get another list of length 8 by setting n to 10')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true });
+    cy.get('#\\/n2').should('have.text', '10');
+
+    cy.window().then(async (win) => {
+      let m = 3, n = 10;
+
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables["/ci"].stateValues.choiceOrder;
+
+      expect(choiceOrder).eqls(orders[[1, 8]])
+
+      orders[[m, n]] = choiceOrder;
+
+    })
+
+
+  })
+
+  it('shuffle all but last choice', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput>
+      <shuffle>
+        <choice>cat</choice>
+        <choice>dog</choice>
+        <choice>monkey</choice>
+      </shuffle>
+      <choice>none of the above</choice>
+    </choiceinput>
+
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
+
+    <p name="pCat">Selected cat: $_choice1.selected</p>
+    <p name="pDog">Selected dog: $_choice2.selected</p>
+    <p name="pMonkey">Selected monkey: $_choice3.selected</p>
+    <p name="pNone">Selected none of the above: $_choice4.selected</p>
+    `,
+        requestedVariantIndex: 4,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    let originalChoices = ["cat", "dog", "monkey", "none of the above"];
+    cy.get('#\\/_p1').should('have.text', 'Selected value: ')
+    cy.get('#\\/_p2').should('have.text', 'Selected index: ')
+    cy.get('#\\/pCat').should('have.text', 'Selected cat: false')
+    cy.get('#\\/pDog').should('have.text', 'Selected dog: false')
+    cy.get('#\\/pMonkey').should('have.text', 'Selected monkey: false')
+    cy.get('#\\/pNone').should('have.text', 'Selected none of the above: false')
+
+    let choices, choiceOrder;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
+      choiceOrder = [...stateVariables["/_shuffle1"].stateValues.componentOrder, 4]
+      expect(choices.length).eq(4);
+      expect(originalChoices.includes(choices[0])).eq(true);
+      expect(originalChoices.includes(choices[1])).eq(true);
+      expect(originalChoices.includes(choices[2])).eq(true);
+      expect(originalChoices.includes(choices[3])).eq(true);
+      expect(originalChoices[3]).eq(choices[3])
+      expect(choices[1]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[0]);
+      expect(choices[3]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[2]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
+      expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice4'].stateValues.selected).eq(false);
+
+    });
+
+    cy.log('select options in order')
+
+    for (let i = 0; i < 4; i++) {
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
+
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
+        cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
+
+        cy.get('#\\/pCat').should('have.text', `Selected cat: ${choiceOrder[i] === 1}`)
+        cy.get('#\\/pDog').should('have.text', `Selected dog: ${choiceOrder[i] === 2}`)
+        cy.get('#\\/pMonkey').should('have.text', `Selected monkey: ${choiceOrder[i] === 3}`)
+        cy.get('#\\/pNone').should('have.text', `Selected none of the above: ${choiceOrder[i] === 4}`)
+      });
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+        expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+        expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(stateVariables['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(stateVariables['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(stateVariables['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+
+      });
+    }
+
+  });
+
+  it('sorted choices', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput>
+      <sort sortByProp="text">
+        <choice>mouse</choice>
+        <choice>dog</choice>
+        <choice>cat</choice>
+        <choice>monkey</choice>
+      </sort>
+    </choiceinput>
+
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
+
+    <p name="pMouse">Selected mouse: $_choice1.selected</p>
+    <p name="pDog">Selected dog: $_choice2.selected</p>
+    <p name="pCat">Selected cat: $_choice3.selected</p>
+    <p name="pMonkey">Selected monkey: $_choice4.selected</p>
+    `,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    let originalChoices = ["mouse", "dog", "cat", "monkey", ];
+    cy.get('#\\/_p1').should('have.text', 'Selected value: ')
+    cy.get('#\\/_p2').should('have.text', 'Selected index: ')
+    cy.get('#\\/pMouse').should('have.text', 'Selected mouse: false')
+    cy.get('#\\/pDog').should('have.text', 'Selected dog: false')
+    cy.get('#\\/pCat').should('have.text', 'Selected cat: false')
+    cy.get('#\\/pMonkey').should('have.text', 'Selected monkey: false')
+
+    let choices, choiceOrder;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
+      choiceOrder = [3, 2, 4, 1]
+      expect(choices.length).eq(4);
+      expect(originalChoices.includes(choices[0])).eq(true);
+      expect(originalChoices.includes(choices[1])).eq(true);
+      expect(originalChoices.includes(choices[2])).eq(true);
+      expect(originalChoices.includes(choices[3])).eq(true);
+      expect(choices[1]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[0]);
+      expect(choices[3]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[2]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
+      expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
+      expect(stateVariables['/_choice4'].stateValues.selected).eq(false);
+
+    });
+
+    cy.log('select options in order')
+
+    for (let i = 0; i < 4; i++) {
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
+
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
+        cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
+
+        cy.get('#\\/pMouse').should('have.text', `Selected mouse: ${choiceOrder[i] === 1}`)
+        cy.get('#\\/pDog').should('have.text', `Selected dog: ${choiceOrder[i] === 2}`)
+        cy.get('#\\/pCat').should('have.text', `Selected cat: ${choiceOrder[i] === 3}`)
+        cy.get('#\\/pMonkey').should('have.text', `Selected monkey: ${choiceOrder[i] === 4}`)
+      });
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+        expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+        expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(stateVariables['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(stateVariables['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(stateVariables['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+
+      });
+    }
+
+  });
 
 });

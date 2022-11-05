@@ -5277,6 +5277,181 @@ describe('Math Operator Tag Tests', function () {
     })
   })
 
+  it('min can be invertible', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <min name="numbers00"><number>3</number><number>6</number></min>
+      <min name="numbers01"><number>3</number><number fixed>6</number></min>
+      <min name="numbers10"><number fixed>3</number><number>6</number></min>
+      <min name="numbers11"><number fixed>3</number><number fixed>6</number></min>
+
+      <min name="maths00"><math>3</math><math>6</math></min>
+      <min name="maths01"><math>3</math><math fixed>6</math></min>
+      <min name="maths10"><math fixed>3</math><math>6</math></min>
+      <min name="maths11"><math fixed>3</math><math fixed>6</math></min>
+
+      <mathinput name="minumbers00" bindValueTo="$numbers00" />
+      <mathinput name="minumbers01" bindValueTo="$numbers01" />
+      <mathinput name="minumbers10" bindValueTo="$numbers10" />
+      <mathinput name="minumbers11" bindValueTo="$numbers11" />
+
+      <mathinput name="mimaths00" bindValueTo="$maths00" />
+      <mathinput name="mimaths01" bindValueTo="$maths01" />
+      <mathinput name="mimaths10" bindValueTo="$maths10" />
+      <mathinput name="mimaths11" bindValueTo="$maths11" />
+
+
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}1{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}1{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '1')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '3')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}8{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}8{enter}", { force: true });
+
+    cy.get('#\\/maths01 .mjx-mrow').should('contain.text', '6')
+    
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}x{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}x{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'min(3,x)')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'min(x,6)')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'min(3,x)')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}y{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'min(3,y)')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'min(y,6)')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'min(3,y)')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}2{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '2')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+
+  })
+
   it('max', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -5755,6 +5930,181 @@ describe('Math Operator Tag Tests', function () {
 
       })
     })
+  })
+
+  it('max can be invertible', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <max name="numbers00"><number>3</number><number>6</number></max>
+      <max name="numbers01"><number>3</number><number fixed>6</number></max>
+      <max name="numbers10"><number fixed>3</number><number>6</number></max>
+      <max name="numbers11"><number fixed>3</number><number fixed>6</number></max>
+
+      <max name="maths00"><math>3</math><math>6</math></max>
+      <max name="maths01"><math>3</math><math fixed>6</math></max>
+      <max name="maths10"><math fixed>3</math><math>6</math></max>
+      <max name="maths11"><math fixed>3</math><math fixed>6</math></max>
+
+      <mathinput name="minumbers00" bindValueTo="$numbers00" />
+      <mathinput name="minumbers01" bindValueTo="$numbers01" />
+      <mathinput name="minumbers10" bindValueTo="$numbers10" />
+      <mathinput name="minumbers11" bindValueTo="$numbers11" />
+
+      <mathinput name="mimaths00" bindValueTo="$maths00" />
+      <mathinput name="mimaths01" bindValueTo="$maths01" />
+      <mathinput name="mimaths10" bindValueTo="$maths10" />
+      <mathinput name="mimaths11" bindValueTo="$maths11" />
+
+
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}9{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}9{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '9')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}2{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}2{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '3')
+    
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}x{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}x{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'max(3,x)')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'max(x,6)')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'max(3,x)')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}y{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'max(3,y)')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'max(y,6)')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'max(3,y)')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}7{enter}", { force: true });
+
+    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
+    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
+
+    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '7')
+
+    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+
+    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+
   })
 
   it('mod', () => {
@@ -6357,7 +6707,7 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/min02"].stateValues.value).eq(0);
-      expect(stateVariables["/abs"].stateValues.value).eqls([ 'apply', 'abs', [ '*', 8, '＿', 0 ] ]);
+      expect(stateVariables["/abs"].stateValues.value).eqls(['apply', 'abs', ['*', 8, '＿', 0]]);
     })
   })
 
