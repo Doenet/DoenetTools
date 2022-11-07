@@ -28,15 +28,27 @@ export async function checkIfUserClearedOut(){
   }
 
   //Check for cookie
+  //Ask the server without hitting the database
+  const { data }  = await axios.get('/api/getQuickCheckSignedIn.php')
+  const secureCookieRemoved = !data?.signedIn;
+
   const vanillaCookies = document.cookie.split(';');
-  let cookieRemoved = vanillaCookies.length === 1 && vanillaCookies[0] === ''
-  if(!cookieRemoved){
+  const vanillaCookieRemoved = vanillaCookies.length === 1 && vanillaCookies[0] === '';
+
+  let cookieRemoved =  vanillaCookieRemoved && secureCookieRemoved
+
+  if(!vanillaCookieRemoved){
     messageArray.push("cookie not removed");
+  }
+
+  if(!secureCookieRemoved){
+    messageArray.push("secure cookie not removed");
   }
 
   let userInformationIsCompletelyRemoved = false;
   if (indexedDBRemoved && localStorageRemoved && cookieRemoved){
     userInformationIsCompletelyRemoved = true;
   }
-  return {userInformationIsCompletelyRemoved,messageArray};
+  return {userInformationIsCompletelyRemoved,messageArray,cookieRemoved};
 }
+

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import styled from 'styled-components';
@@ -113,10 +113,15 @@ export default function HomePage(props) {
   // console.log(">>>===HomePage")
   let navigate = useNavigate();
   const [signedIn,setSignedIn] = useState(null);
+  let checkingCookie = useRef(false);
 
-  checkIfUserClearedOut().then(({userInformationIsCompletelyRemoved})=>{
-    setSignedIn(!userInformationIsCompletelyRemoved);
-  })
+  //Only ask once
+  if (!checkingCookie.current){
+    checkingCookie.current = true;
+    checkIfUserClearedOut().then(({cookieRemoved})=>{
+      setSignedIn(!cookieRemoved);
+    })
+  }
   
   let signInButton = null;
   if (signedIn == true){
