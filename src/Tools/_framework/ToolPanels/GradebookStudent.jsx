@@ -28,7 +28,7 @@ export default function GradebookStudent() {
   let overview = useRecoilValueLoadable(overviewData);
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0'){
+  if (course?.canViewCourse == '0') {
     return <h1>No Access to view this page.</h1>
   }
 
@@ -146,8 +146,13 @@ export default function GradebookStudent() {
 
       let numberScores = scores.length;
 
-      //Sort by points value and retain the maximumNumber
+      //Sort scores by points value and retain the maximumNumber
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
+
+      //Sort assigned points by points value and retain the maximumNumber
+      allassignedpoints = allassignedpoints
+        .sort((a, b) => b - a)
+        .slice(0, maximumNumber);
 
       //Scale by scareFactor
       let scaledScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
