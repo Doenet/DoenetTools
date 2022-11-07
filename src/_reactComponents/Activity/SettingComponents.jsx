@@ -75,7 +75,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 
   let assignButton = <ActionButton
     width="menu"
-    data-test="Assign Activity"
+    dataTest="Assign Activity"
     value={assignActivityText}
     onClick={async () => {
       if (pageId) {
@@ -93,7 +93,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
         doenetId,
         isAssigned: true,
         successCallback: () => {
-          addToast(assignActivityToast, toastType.INFO);
+          //addToast(assignActivityToast, toastType.INFO);
         },
       });
     }}
@@ -105,7 +105,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   if (isAssigned) {
     unAssignButton = <ActionButton
       width="menu"
-      data-test="Unassign Activity"
+      dataTest="Unassign Activity"
       value="Unassign Activity"
       alert
       onClick={() => {
@@ -113,7 +113,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
           doenetId,
           isAssigned: false,
           successCallback: () => {
-            addToast('Activity Unassigned', toastType.INFO);
+           // addToast('Activity Unassigned', toastType.INFO);
           },
         });
       }}
@@ -122,7 +122,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
     if (initializingWorker) {
       prerenderButton = <ActionButton
         width="menu"
-        data-test="Cancel prerendering"
+        dataTest="Cancel prerendering"
         value={`${initializeStatus} (Cancel)`}
         onClick={() => {
           initializingWorker.terminate();
@@ -165,7 +165,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 
       prerenderButton = <ActionButton
         width="menu"
-        data-test="Prerender activity"
+        dataTest="Prerender activity"
         value="Prerender activity"
         onClick={initializePrerender}
       />
@@ -368,11 +368,10 @@ export const TimeLimit = ({ courseId, doenetId }) => {
     value: { timeLimit: recoilValue },
     updateAssignmentSettings,
   } = useActivity(courseId, doenetId);
-  const [timeLimit, setTimeLimit] = useState();
+  
+  const [timeLimit, setTimeLimit] = useState(recoilValue);
+  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false)
 
-  useEffect(() => {
-    setTimeLimit(recoilValue);
-  }, [recoilValue]);
   return (
     <InputWrapper>
       <LabelText>Time Limit in Minutes</LabelText>
@@ -380,49 +379,42 @@ export const TimeLimit = ({ courseId, doenetId }) => {
         <Checkbox
           style={{ marginRight: '5px' }}
           dataTest="Time Limit Checkbox"
-          checked={timeLimit !== null}
+          checked={isEnabled}
           onClick={() => {
-            let valueDescription = 'Not Limited';
+            let valueDescription = 'Not Limited' ;
             let value = null;
-            if (timeLimit === null) {
-              valueDescription = '60 Minutes';
+            let enable = false;
+            if (!isEnabled) {
+              valueDescription = 60 + ' Minutes';
               value = 60;
+              enable = true;
             }
             setTimeLimit(value);
+            setIsEnabled(enable)
             updateAssignmentSettings({
               keyToUpdate: 'timeLimit',
               value,
               description: 'Time Limit ',
-              valueDescription,
+              valueDescription
             });
           }}
         />
         <Increment
-          disabled={timeLimit === null}
+          disabled={!isEnabled}
           value={timeLimit}
           dataTest="Time Limit"
-          min={0}
-          onBlur={() => {
-            if (recoilValue !== timeLimit) {
-              let timelimitlocal = null;
-              if (timeLimit < 0 || timeLimit === '' || isNaN(timeLimit)) {
-                setTimeLimit(0);
-                timelimitlocal = 0;
-              } else {
-                timelimitlocal = parseInt(timeLimit);
-                setTimeLimit(parseInt(timeLimit));
-              }
-              let valueDescription = `${timelimitlocal} Minutes`;
-
-              updateAssignmentSettings({
-                keyToUpdate: 'timeLimit',
-                value: timelimitlocal,
-                description: 'Time Limit',
-                valueDescription,
-              });
-            }
+          min={1}
+          onBlur={limit => {
+            if (isNaN(limit) || limit < 1) limit = 1
+            setTimeLimit(parseInt(limit))
+            updateAssignmentSettings({
+              keyToUpdate: 'timeLimit',
+              value: parseInt(limit),
+              description: 'Time Limit',
+              valueDescription: `${limit} Minutes`
+            });
           }}
-          onChange={(newValue) => setTimeLimit(newValue)}
+          onChange={limit => setTimeLimit(parseInt(limit))}
         />
       </InputControl>
     </InputWrapper>
@@ -435,12 +427,8 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
     updateAssignmentSettings,
   } = useActivity(courseId, doenetId);
 
-  const [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] =
-    useState(recoilValue);
-
-  useEffect(() => {
-    setNumberOfAttemptsAllowed(recoilValue);
-  }, [recoilValue]);
+  const [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(recoilValue);
+  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false)
 
   return (
     <InputWrapper>
@@ -449,15 +437,18 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
         <Checkbox
           style={{ marginRight: '5px' }}
           dataTest="Attempt Limit Checkbox"
-          checked={numberOfAttemptsAllowed !== null}
+          checked={isEnabled}
           onClick={() => {
             let valueDescription = 'Not Limited';
             let value = null;
-            if (numberOfAttemptsAllowed === null) {
+            let enable = false;
+            if (!isEnabled) {
               valueDescription = '1';
               value = 1;
+              enable = true;
             }
             setNumberOfAttemptsAllowed(value);
+            setIsEnabled(enable)
             updateAssignmentSettings({
               keyToUpdate: 'numberOfAttemptsAllowed',
               value,
@@ -467,34 +458,20 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
           }}
         />
         <Increment
-          disabled={numberOfAttemptsAllowed === null}
+          disabled={!isEnabled}
           value={numberOfAttemptsAllowed}
           dataTest="Attempt Limit"
-          min={0}
-          onBlur={() => {
-            if (recoilValue !== numberOfAttemptsAllowed) {
-              let numberOfAttemptsAllowedLocal = 1;
-              if (
-                numberOfAttemptsAllowed <= 0 ||
-                numberOfAttemptsAllowed === '' ||
-                isNaN(numberOfAttemptsAllowed)
-              ) {
-                setNumberOfAttemptsAllowed(numberOfAttemptsAllowedLocal);
-              } else {
-                numberOfAttemptsAllowedLocal = parseInt(
-                  numberOfAttemptsAllowed,
-                );
-                setNumberOfAttemptsAllowed(numberOfAttemptsAllowedLocal);
-              }
-
-              updateAssignmentSettings({
-                keyToUpdate: 'numberOfAttemptsAllowed',
-                value: numberOfAttemptsAllowedLocal,
-                description: 'Attempts Allowed',
-              });
-            }
+          min={1}
+          onBlur={attempts => {
+            if (isNaN(attempts) || attempts < 1) attempts = 1
+            setNumberOfAttemptsAllowed(parseInt(attempts))
+            updateAssignmentSettings({
+              keyToUpdate: 'numberOfAttemptsAllowed',
+              value: parseInt(attempts),
+              description: 'Attempts Allowed',
+            });
           }}
-          onChange={(newValue) => setNumberOfAttemptsAllowed(newValue)}
+          onChange={attempts => setNumberOfAttemptsAllowed(parseInt(attempts))}
         />
       </InputControl>
     </InputWrapper>
@@ -558,7 +535,7 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
       <LabelText>Total Points Or Percent</LabelText>
       <InputControl>
         <Increment
-          value={totalPointsOrPercent}
+          value={totalPointsOrPercent || 0}
           dataTest='Total Points Or Percent'
           min={0}
           onBlur={() => {
@@ -661,7 +638,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
         vertical
         width="menu"
         value={textValue}
-        data-test="Item Weights"
+        dataTest="Item Weights"
         onChange={(e) => {
           setTextValue(e.target.value);
         }}

@@ -736,8 +736,8 @@ export default function attempt() {
         },
         {
           name: 'Min',
-          propPreview: '<Increment min={0}/>',
-          propCode: { min: 0 },
+          propPreview: '<Increment min={-1} />',
+          propCode: { min: -1 },
           description:
             'Restricts the menu to have values greater or equal to min',
         },
@@ -769,16 +769,6 @@ export default function attempt() {
           },
           description:
             'Restricts the values to the ones in the menu. If all the values numeric and value entered not in the given values, the value is set to the closest one.',
-        },
-        {
-          name: 'Max Height',
-          propPreview:
-            '<Increment values = {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]} maxHeight = "80px" />',
-          propCode: {
-            values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-            maxHeight: '80px',
-          },
-          description: 'Sets the maxHeight for the dropdown menu.',
         },
         {
           name: 'Label',
@@ -821,13 +811,6 @@ export default function attempt() {
           propPreview: '<Increment placeholder = "Type a number" />',
           propCode: { placeholder: 'Type a number' },
           description: 'Add a placeholder for the field',
-        },
-        {
-          name: 'Deactivate Dropdown',
-          propPreview: '<Increment deactivateDropdown />',
-          propCode: { deactivateDropdown: true },
-          description:
-            'Deactivates the default dropdown when the increment menu is clicked.',
         },
         {
           name: 'Disabled',

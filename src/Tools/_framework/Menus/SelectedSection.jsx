@@ -45,7 +45,7 @@ export default function SelectedSection() {
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast('Every item must have a label.');
+      //addToast('Every item must have a label.');
     }
     //Only update the server when it changes
     if (recoilLabel !== effectiveItemLabel) {
@@ -84,7 +84,7 @@ export default function SelectedSection() {
         <Textfield
           label="Label"
           vertical
-          data-test="Label Section"
+          dataTest="Label Section"
           width="menu"
           value={itemTextFieldLabel}
           onChange={(e) => setItemTextFieldLabel(e.target.value)}

@@ -139,7 +139,7 @@ export default function ActionButton(props) {
           aria-label={actionButton.value}
           aria-disabled={props.disabled}
           id={props.id}
-          data-test={props['data-test']}
+          dataTest={props.dataTest}
           style={actionButton}
           alert={alert}
           disabled={props.disabled}

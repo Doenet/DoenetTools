@@ -5108,7 +5108,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph >
-      <math anchor="$anchorCoords1" name="math1" anchorPosition="$anchorPosition1" draggable="$draggable1">$content1</math>
+      <math anchor="$anchorCoords1" name="math1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1">$content1</math>
       <math name="math2">e^(-x^2)</math>
     </graph>
 
@@ -5116,10 +5116,10 @@ describe('Math Tag Tests', function () {
     <p name="pAnchor2">Anchor 2 coordinates: $math2.anchor</p>
     <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="(1,3)" /></p>
     <p name="pChangeAnchor2">Change anchor 2 coordinates: <mathinput name="anchorCoords2" bindValueTo="$math2.anchor" /></p>
-    <p name="pAnchorPosition1">Anchor position 1: $math1.anchorPosition</p>
-    <p name="pAnchorPosition2">Anchor position 2: $math2.anchorPosition</p>
-    <p>Change anchor position 1
-    <choiceinput inline preselectChoice="1" name="anchorPosition1">
+    <p name="pPositionFromAnchor1">Position from anchor 1: $math1.positionFromAnchor</p>
+    <p name="pPositionFromAnchor2">Position from anchor 2: $math2.positionFromAnchor</p>
+    <p>Change position from anchor 1
+    <choiceinput inline preselectChoice="1" name="positionFromAnchor1">
       <choice>upperRight</choice>
       <choice>upperLeft</choice>
       <choice>lowerRight</choice>
@@ -5131,8 +5131,8 @@ describe('Math Tag Tests', function () {
       <choice>center</choice>
     </choiceinput>
     </p>
-    <p>Change anchor position 2
-    <choiceinput inline name="anchorPosition2" bindValueTo="$math2.anchorPosition">
+    <p>Change position from anchor 2
+    <choiceinput inline name="positionFromAnchor2" bindValueTo="$math2.positionFromAnchor">
       <choice>upperRight</choice>
       <choice>upperLeft</choice>
       <choice>lowerRight</choice>
@@ -5162,10 +5162,10 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
     cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pAnchorPosition1").should('have.text', 'Anchor position 1: upperright')
-    cy.get("#\\/pAnchorPosition2").should('have.text', 'Anchor position 2: upperleft')
-    cy.get("#\\/anchorPosition1").should('have.value', '1')
-    cy.get("#\\/anchorPosition2").should('have.value', '2')
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
+    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
+    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
     cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
     cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
     cy.get("#\\/pContent1 .mjx-mrow").eq(0).should('have.text', 'x23')
@@ -5204,12 +5204,12 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
-    cy.log('change anchor position');
-    cy.get('#\\/anchorPosition1').select("lowerLeft")
-    cy.get('#\\/anchorPosition2').select("lowerRight")
+    cy.log('change position from anchor');
+    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
+    cy.get('#\\/positionFromAnchor2').select("lowerRight")
 
-    cy.get("#\\/pAnchorPosition1").should('have.text', 'Anchor position 1: lowerleft')
-    cy.get("#\\/pAnchorPosition2").should('have.text', 'Anchor position 2: lowerright')
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')

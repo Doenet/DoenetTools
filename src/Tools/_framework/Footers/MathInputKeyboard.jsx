@@ -16,9 +16,9 @@ import {
   focusedMathFieldReturn,
 } from './MathInputSelector';
 
-import { panelOpen } from '../Panels/Panel';
+// import { panelOpen } from '../Panels/Panel';
 
-import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/theme';
+// import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/theme';
 
 import { useRef } from 'react';
 
@@ -159,9 +159,9 @@ const LetterButton = styled.button`
 `;
 
 export default function VirtualKeyboard() {
-  const [toggleKeyboard, setToggleKeyboard] = useRecoilState(
-    panelOpen('keyboard'),
-  );
+  // const [toggleKeyboard, setToggleKeyboard] = useRecoilState(
+  //   panelOpen('keyboard'),
+  // );
   const [toggleLetters, setToggleLetters] = useState(false);
   const [toggleCase, setToggleCase] = useState(false);
   const [toggleGreek, setToggleGreek] = useState(0);

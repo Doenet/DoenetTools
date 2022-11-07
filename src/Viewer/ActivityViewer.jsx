@@ -17,6 +17,7 @@ import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../_reactComponents/PanelHeaderComponents/ActionButton';
 import ButtonGroup from '../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
+import { clear as idb_clear } from 'idb-keyval';
 
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
@@ -1143,20 +1144,11 @@ export default function ActivityViewer(props) {
 
     //Clear out history of exam if canViewAfterCompleted setting set as false
     if (!activityInfo.canViewAfterCompleted){
-      console.log("CLEAR state from viewer and cache")
+      // console.log("CLEAR state from viewer and cache")
       //Simple answer for now - lose all state info
-      //idb_set ???
+      //TODO: When should we clear this
+      //await idb_clear();
       
-      // var req = indexedDB.deleteDatabase('keyval-store') 
-      //   req.onsuccess = function () {
-      //     console.log("Deleted database successfully");
-      //   };
-      //   req.onerror = function () {
-      //     console.log("Couldn't delete database");
-      //   };
-      //   req.onblocked = function () {
-      //       console.log("Couldn't delete database due to the operation being blocked");
-      //   };
     }
       //Set assignment as completed for the user in the Data Base and Recoil
       let resp = await axios.get('/api/saveCompleted.php', {
@@ -1397,16 +1389,16 @@ export default function ActivityViewer(props) {
   let pageControlsBottom = null;
   if (props.paginate && nPages > 1) {
     pageControlsTop = <div style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}>
-      <Button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+      <Button dataTest={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
       <p style={{ margin: '5px' }}>{ } Page {currentPage} of {nPages} { }</p>
-      <Button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+      <Button dataTest={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
     </div>
 
     if (renderedPages[currentPage - 1]) {
       pageControlsBottom = <div style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}>
-        <Button data-test={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+        <Button dataTest={"previous-bottom"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
         <p style={{ margin: '5px' }}>{ } Page {currentPage} of {nPages} { }</p>
-        <Button data-test={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+        <Button dataTest={"next-bottom"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
       </div>
     }
 
@@ -1416,21 +1408,25 @@ export default function ActivityViewer(props) {
 
   if (props.showFinishButton) {
     if (finishAssessmentMessageOpen) {
-      finishAssessmentPrompt = <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap" }}>
+      finishAssessmentPrompt = <div style={{marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px", border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", display: "flex", flexFlow: "column wrap" }}>
        <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
        Are you sure you want to finish this assessment?
         </div> 
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
-            <Button onClick={submitAllAndFinishAssessment} data-test="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
-            <Button onClick={() => setFinishAssessmentMessageOpen(false)} data-test="CancelFinishAssessment" value="No" alert disabled={processingSubmitAll}></Button>
+            <Button onClick={submitAllAndFinishAssessment} dataTest="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
+            <Button onClick={() => setFinishAssessmentMessageOpen(false)} dataTest="CancelFinishAssessment" value="No" alert disabled={processingSubmitAll}></Button>
           </ButtonGroup>
         </div>
 
       </div>
     } else {
-      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "5px" }}>
+      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px" }}>
+        <div data-test="centerone" style={{display:"flex",justifyContent:"center"}}>
+          <div style={{width:"240px"}}>
         <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
+          </div>
+        </div>
       </div>
     }
   }
