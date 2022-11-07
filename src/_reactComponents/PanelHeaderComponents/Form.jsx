@@ -13,7 +13,7 @@ const FormInput = styled.input `
   padding: 0px 30px 0px 5px;
   color: var(--canvastext);
   overflow: hidden;
-  width: 175px;
+  /* width: 175px; */
   resize: none;
   align-items: center;
   white-space: nowrap;
@@ -76,7 +76,7 @@ const Label = styled.p `
 
 const Container = styled.div `
   display: ${props => props.align};
-  width: 235px;
+  width: ${props => props.width};
   align-items: center;
 `;
 
@@ -103,7 +103,7 @@ export default function Form(props) {
         if(formRef && props.submitButton)  {
           let button = document.querySelector('#submitButton');
           let buttonWidth = button.clientWidth;
-         setTimeout(function() { setFormWidth((235 - buttonWidth) + 'px'); }, 1000);
+         setTimeout(function() { setFormWidth('var(--menuWidth)') }, 1000);
          console.log(buttonWidth);
         //  console.log((240 - buttonWidth) + 'px');
 
@@ -121,10 +121,11 @@ export default function Form(props) {
       disable = "disabled";
   };
 
-  var inputWidth = '175px';
+  var inputWidth = '';
+  var containerWidth = 'auto';
   if (props.width) {
     if (props.width === "menu") {
-      inputWidth = '100px';
+      containerWidth = 'var(--menuWidth)';
       if (props.submitButton) {
         inputWidth = 'auto';
       }
@@ -194,7 +195,7 @@ export default function Form(props) {
   };
 
   return (
-    <Container align={align}>
+    <Container align={align} width={containerWidth}>
       <Label id="form-label" labelVisible={labelVisible} align={align}>{label}</Label>
       <div>
         <FormInput

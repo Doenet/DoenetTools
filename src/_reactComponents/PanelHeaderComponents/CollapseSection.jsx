@@ -7,7 +7,7 @@ const Section = Styled.div `
   transition: height .25s;
   border-radius: .5em;
   margin: 0px 4px 0px 4px;
-  width: ${props => props.width === "menu" ? "235px" : ""}; // Menu prop
+  width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : ''}; // Menu prop
 `;
 
 const SectionHeader = Styled.div `
