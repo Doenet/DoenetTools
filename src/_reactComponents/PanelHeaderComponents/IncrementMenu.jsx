@@ -19,7 +19,7 @@ const IncrementBox = styled.div`
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
   background-color: var(--canvas);
-  `
+`;
 
 const IncrementContainer = styled.div`
   position: relative;
@@ -37,6 +37,7 @@ const IncreaseButton = styled.button`
   display: flex;
   justify-content:center;
   align-items: center;
+  user-select: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     color: black;
@@ -99,6 +100,9 @@ const Label = styled.span`
 export default function Increment(props) {
   let increaseIcon = '+';
   let decreaseIcon = '-';
+  // a transparent image Element to set as a placeholder when dragging to increment/decrement
+  let dragIcon = document.createElement('img')
+  dragIcon.src = '/media/transparent.png';
   
   if (props.values || props.font) {
     decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
@@ -108,11 +112,12 @@ export default function Increment(props) {
   const values = props.values || (props.font && FONT_SIZES) || []
   const [value, setValue] = useState(props.value || 0);
   const [index, setIndex] = useState(0);
+  const [xCoord, setXCoord] = useState(0);
   const incrementRef = useRef(null);
   const textFieldRef = useRef(null);
   const decrementRef = useRef(null);
   const containerRef = useRef(null);
-
+  
   useEffect(() => {
     // to handle placeholder issue
     if (props.placeholder && value === "") {
@@ -145,12 +150,7 @@ export default function Increment(props) {
     if (props.value && props.values) 
       setIndex(props.values.indexOf(props.value))
 
-  }, [props.value]) //need to put this two as dependency because we might wanna change value manually from the parent component
-
-  // useEffect(() => {
-  //   console.log("value prop changed");
-  //   setValue(props.value)
-  // }, [props.value])
+  }, [props.value]) //need to put this as dependency because we might wanna change value manually from the parent component
 
   const incrementOnClick = () => {
     if (textFieldRef.current) {
@@ -181,9 +181,7 @@ export default function Increment(props) {
   };
 
   const findClosestIndex = (arr, value) => {  
-    if (arr === null) {
-      return -1;
-    }
+    if (arr === null) return -1;
     //deals with closest string/number
     let closestIndex = 0;
     let minDist = !isNaN(value) ? Math.abs(arr[0] - parseInt(value)) : Math.abs(arr[0].charCodeAt(0) - value.charCodeAt(0));
@@ -195,7 +193,6 @@ export default function Increment(props) {
         closestIndex = i;
       }
     }
-  
     return closestIndex;
   };
 
@@ -244,6 +241,21 @@ export default function Increment(props) {
     };
   };
 
+  const handleDragStart = e => {
+    if (textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+    e.dataTransfer.setDragImage(dragIcon, -100, -100);
+  }
+
+  const handleDrag = e => {
+    const currentXCoord = e.clientX - e.target.offsetLeft;
+    if (currentXCoord == 0) return;
+    if (currentXCoord > xCoord) incrementOnClick();
+    else if (currentXCoord < xCoord) decrementOnClick();
+    setXCoord(currentXCoord);
+  };
+
   return (
     <Container label={props.label} vertical={props.vertical}>
       {props.label && <Label id="increment-label">{props.label}</Label> }
@@ -253,6 +265,9 @@ export default function Increment(props) {
           ref={containerRef}
           onBlur={containerOnBlur}
           alert={props.alert}
+          draggable={!props.disabled}
+          onDragStart={handleDragStart}
+          onDrag={handleDrag}
         >
           <DecreaseButton
             aria-label="Decrease"
@@ -294,6 +309,7 @@ export default function Increment(props) {
           </IncreaseButton>
         </IncrementBox>
       </IncrementContainer>
+      <div className='empty'></div>
     </Container>
   );
 };
