@@ -43,11 +43,19 @@ it('basic test of update button',()=>{
 })
 
 
-it('ctrl+s updates viewer',()=>{
+it.only('ctrl+s updates viewer',()=>{
   const doenetMLString = 'abcdefg'
   cy.get('.cm-content').type(doenetMLString)
   cy.get('#\\/_document1').should('not.contain', 'a');
-  cy.get('.cm-content').type('{ctrl+s}')
+  cy.get('.cm-content').type('{control}{s}')
+  cy.get('#\\/_document1').contains(doenetMLString)
+})
+
+it.only('command+s updates viewer',()=>{
+  const doenetMLString = 'abcdefg'
+  cy.get('.cm-content').type(doenetMLString)
+  cy.get('#\\/_document1').should('not.contain', 'a');
+  cy.get('.cm-content').type('{command}{s}')
   cy.get('#\\/_document1').contains(doenetMLString)
 })
 
