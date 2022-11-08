@@ -117,8 +117,14 @@ export default function Increment(props) {
   const textFieldRef = useRef(null);
   const decrementRef = useRef(null);
   const containerRef = useRef(null);
+  const initialRender = useRef(true);
   
   useEffect(() => {
+    // to prevent props.onChange from firing on mounted
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    } 
     // to handle placeholder issue
     if (props.placeholder && value === "") {
       setValue("")
