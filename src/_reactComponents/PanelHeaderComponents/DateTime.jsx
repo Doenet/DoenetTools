@@ -112,6 +112,12 @@ export default function DateTime(props) {
 
   if (props.disabled) {
     return (
+      <div style={{width: containerWidth}}>
+        {props.label ? (
+          <Label id="checkbox-label" vertical={props.vertical}>
+            {props.label}
+          </Label>
+        ) : null}
       <input
         ref={inputRef}
         onClick={props.disabledOnClick}
@@ -131,6 +137,7 @@ export default function DateTime(props) {
           ...props.style,
         }}
       />
+      </div>
     );
   }
   // console.log('value:', value);

@@ -46,6 +46,7 @@ const InputControl = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: calc(var(--menuWidth) - 10px);
 `;
 
 const initializingWorkersAtom = atomFamily({
@@ -404,6 +405,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
           value={timeLimit}
           dataTest="Time Limit"
           min={1}
+          width='180px'
           onBlur={limit => {
             if (isNaN(limit) || limit < 1) limit = 1
             setTimeLimit(parseInt(limit))
@@ -461,6 +463,7 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
           disabled={!isEnabled}
           value={numberOfAttemptsAllowed}
           dataTest="Attempt Limit"
+          width='180px'
           min={1}
           onBlur={attempts => {
             if (isNaN(attempts) || attempts < 1) attempts = 1

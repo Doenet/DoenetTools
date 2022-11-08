@@ -77,10 +77,10 @@ export default function Textfield(props) {
   var inputWidth = ""
   if (props.width) {
     if (props.width === "menu") {
-      container.width = 'var(--menuWidth)';
-      inputWidth = 'var(--menuWidth)';
-      if (props.label) {
-        container.width = 'var(--menuWidth)';
+      container.width = 'calc(var(--menuWidth) - 10px)';
+      inputWidth = 'calc(var(--menuWidth) - 14px)';
+      if (props.label && !props.vertical) {
+        container.width = 'calc(var(--menuWidth) - 4px)';
         inputWidth = '100%';
       }
     } 
