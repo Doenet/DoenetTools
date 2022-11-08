@@ -121,7 +121,7 @@ function Crumb({setRef,i,label=null,onClick}){
   }
 
 
-  return (<BreadcrumbItem ref={crumbRef} dataTest={`Crumb ${i}`}>
+  return (<BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`}>
   <BreadcrumbSpan 
     aria-label={label}
     tabIndex="0" 
@@ -299,7 +299,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
 
   if (numHidden > 0){crumbsJSX[1] = <BreadcrumbItem ref={elipseItemRef} key={`breadcrumbitem1`}>
   <BreadcrumbSpan 
-    dataTest="Crumb Menu" 
+    data-test="Crumb Menu" 
     aria-label="..."
     tabIndex="0" 
     onClick={()=>{setMenuVisible((was)=>!was)}}
@@ -319,7 +319,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
         tabIndex="0"
         key={`breadcrumbitem${i}`} 
         id={`breadcrumbitem${i}`} 
-        dataTest={`Crumb Menu Item ${i}`}
+        data-test={`Crumb Menu Item ${i}`}
         radius={'0px'}
         onClick={onClick}
         onKeyDown={(e) => {if(e.key === "Enter"){onClick();}}}

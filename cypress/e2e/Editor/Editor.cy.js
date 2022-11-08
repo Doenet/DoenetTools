@@ -85,8 +85,7 @@ it('Assign activity and navigate directly to URL',()=>{
 
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
-  cy.get('[data-test="toast"]').contains('Activity Assigned');
-  cy.get('[data-test="toast cancel button"]').click();
+  cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
   cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
   cy.get('#\\/problem1_title').contains('Problem 1')
@@ -101,8 +100,7 @@ it('Assign activity and navigate using Breadcrumbs',()=>{
   // cy.get('[data-test="Viewer Update Button"]').click(); //Shouldn't need to click the update button
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
-  cy.get('[data-test="toast"]').contains('Activity Assigned');
-  cy.get('[data-test="toast cancel button"]').click();
+  cy.get('[data-test="Unassign Activity"]').should('be.visible');
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
   cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
@@ -130,8 +128,7 @@ it('Assign two-page activity',()=>{
 
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
-  cy.get('[data-test="toast"]').contains('Activity Assigned');
-  cy.get('[data-test="toast cancel button"]').click();
+  cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
@@ -151,8 +148,7 @@ it('Assign two-page activity',()=>{
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
 
-  cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-  cy.get('[data-test="toast cancel button"]').click();
+  cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
