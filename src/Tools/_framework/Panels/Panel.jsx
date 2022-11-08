@@ -76,7 +76,7 @@ const DragHandle = styled.div`
   color: white;
   font-size: ${(props) => (props.id === 'keyboard' ? 16 : 12)};
   padding: 0;
-  cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'ns-resize')};
+  cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'pointer')}; 
   background-color: var(--mainBlue);
   height: ${({ $vertical }) => ($vertical ? '23%' : '')};
   width: ${({ $vertical }) => ($vertical ? '' : '25%')};

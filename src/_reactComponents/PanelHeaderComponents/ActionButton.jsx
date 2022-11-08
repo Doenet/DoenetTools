@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
-  width: 100%;
+  width: ${props => props.width};
   border: ${(props) => props.theme.border};
   color: white;
   background-color: ${(props) =>
@@ -47,7 +47,7 @@ const Label = styled.p`
 
 const Container = styled.div`
   display: ${(props) => props.align};
-  width: 100%;
+  /* width: 100%; */
   min-width: 0;
   align-items: center;
 `;
@@ -66,9 +66,9 @@ export default function ActionButton(props) {
     if (props.width === 'menu') {
       // Makes the action button group the correct width in the menu panel
       // Does not work when 235px due to the LabelContainer div in ActionButtonGroup
-      actionButton.width = '216px';
+      actionButton.width = 'var(--menuWidth)';
       if (props.label) {
-        container.width = '235px';
+        container.width = 'var(--menuWidth)';
         actionButton.width = '100%';
       }
     }
@@ -139,7 +139,7 @@ export default function ActionButton(props) {
           aria-label={actionButton.value}
           aria-disabled={props.disabled}
           id={props.id}
-          data-test={props['data-test']}
+          dataTest={props.dataTest}
           style={actionButton}
           alert={alert}
           disabled={props.disabled}

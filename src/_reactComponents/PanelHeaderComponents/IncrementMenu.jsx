@@ -23,7 +23,7 @@ const IncrementBox = styled.div`
 
 const IncrementContainer = styled.div`
   position: relative;
-  max-width: 210px;
+  width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : props.width};
 `;
 
 const IncreaseButton = styled.button`
@@ -37,7 +37,6 @@ const IncreaseButton = styled.button`
   display: flex;
   justify-content:center;
   align-items: center;
-  user-select: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     color: black;
@@ -262,11 +261,17 @@ export default function Increment(props) {
     setXCoord(currentXCoord);
   };
 
+  ////////
+  // let containerWidth = '210px';
+  // if (props.width){
+  //   containerWidth = ;
+  // }
+//////////
   return (
     <Container label={props.label} vertical={props.vertical}>
       {props.label && <Label id="increment-label">{props.label}</Label> }
       {props.label && props.vertical && <br /> }
-      <IncrementContainer >
+      <IncrementContainer width={props.width || '210px'}>
         <IncrementBox 
           ref={containerRef}
           onBlur={containerOnBlur}
@@ -315,7 +320,6 @@ export default function Increment(props) {
           </IncreaseButton>
         </IncrementBox>
       </IncrementContainer>
-      <div className='empty'></div>
     </Container>
   );
 };

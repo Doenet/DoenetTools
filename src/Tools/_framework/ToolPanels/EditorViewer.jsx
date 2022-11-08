@@ -134,7 +134,7 @@ export default function EditorViewer() {
   }, [effectivePageId, pageInitiated]);
 
   useEventListener("keydown", e => {
-    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+    if ((e.keyCode === 83 && e.metaKey) || (e.keyCode === 83 && e.ctrlKey)) {
       e.preventDefault();
       updateViewer();
     }

@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const Textarea = styled.textarea`
-  margin: 0px 4px 0px 0px;
+  /* margin: 0px 4px 0px 0px; */
   height: 24px;
+  width: ${props => props.width};
   border: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};
   border-radius: var(--mainBorderRadius);
   font-family: Arial;
   font-size: 14px;
   color: var(--canvastext);
   cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
-  width: ${props => props.inputWidth};
   &:focus {
     outline: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};
     outline-offset: 2px;
@@ -61,9 +61,10 @@ export default function TextArea(props) {
   var inputWidth = "";
   if (props.width) {
     if (props.width === "menu") {
-      inputWidth = '235px';
+      container.width = 'var(--menuWidth)';
+      inputWidth = 'var(--menuWidth)';
       if (props.label) {
-        container.width = '235px';
+        container.width = 'var(--menuWidth)';
         inputWidth = '100%';
       }
     } 

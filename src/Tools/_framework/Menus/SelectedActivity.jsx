@@ -74,7 +74,7 @@ export default function SelectedActivity() {
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast('Every item must have a label.');
+      //addToast('Every item must have a label.');
     }
     //Only update the server when it changes
     if (recoilLabel !== effectiveItemLabel) {
@@ -104,7 +104,7 @@ export default function SelectedActivity() {
           <ActionButton
             width="menu"
             value="Edit Activity"
-            data-test="Edit Activity"
+            dataTest="Edit Activity"
             onClick={() => {
               if (firstPageDoenetId == null) {
                 addToast(`ERROR: No page found in activity`, toastType.INFO);
@@ -126,7 +126,7 @@ export default function SelectedActivity() {
           <ActionButton
             width="menu"
             value="View Draft Activity"
-            data-test="View Draft Activity"
+            dataTest="View Draft Activity"
             onClick={() => {
               compileActivity({
                 activityDoenetId: doenetId,
@@ -148,7 +148,7 @@ export default function SelectedActivity() {
           <ActionButton
             width="menu"
             value="View Assigned Activity"
-            data-test="View Assigned Activity"
+            dataTest="View Assigned Activity"
             onClick={() => {
               setPageToolView({
                 page: 'course',
@@ -167,7 +167,7 @@ export default function SelectedActivity() {
 
         <Textfield
           label="Label"
-          data-test="Label Activity"
+          dataTest="Label Activity"
           vertical
           width="menu"
           value={itemTextFieldLabel}
@@ -183,20 +183,20 @@ export default function SelectedActivity() {
             width="menu"
             onClick={() => create({ itemType: 'page' })}
             value="Add Page"
-            data-test="Add Page"
+            dataTest="Add Page"
           />
           <Button
             width="menu"
             onClick={() => create({ itemType: 'order' })}
             value="Add Order"
-            data-test="Add Order"
+            dataTest="Add Order"
           />
           <Button
           width="menu"
           onClick={() =>
             create({itemType:"collectionLink"})
           }
-          data-test="Add Collection Link"
+          dataTest="Add Collection Link"
           value="Add Collection Link"
         />
         </ButtonGroup>
@@ -206,7 +206,7 @@ export default function SelectedActivity() {
         <Button
           width="menu"
           value="Delete Activity"
-          data-test="Delete Activity"
+          dataTest="Delete Activity"
           alert
           onClick={(e) => {
             e.preventDefault();
@@ -224,7 +224,7 @@ export default function SelectedActivity() {
       {heading}
       <ActionButton
         width="menu"
-        data-test="View Activity"
+        dataTest="View Activity"
         value="View Activity"
         onClick={() => {
           setPageToolView({
@@ -237,7 +237,7 @@ export default function SelectedActivity() {
           });
         }}
       />
-      <AssignmentSettings doenetId={doenetId} courseId={courseId} />
+      {/* d */}
     </>
   );
 }

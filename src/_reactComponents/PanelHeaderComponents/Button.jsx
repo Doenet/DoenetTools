@@ -5,6 +5,7 @@ import { MathJax } from "better-react-mathjax";
 const ButtonStyling = styled.button`
   margin: ${props => props.theme.margin};
   height: 24px;
+  width: ${props => props.width};
   border-style: hidden;
   // border-color: var(--canvastext);
   // border-width: 2px;
@@ -70,15 +71,15 @@ export default function Button(props) {
   //     };
   if (props.width) {
     if (props.width === "menu") {
-      button.width = '100%';
+      button.width = 'var(--menuWidth)';
       if (props.label) {
-        container.width = 'menu';
+        container.width = 'var(--menuWidth)';
         button.width = '100%';
       }
     } 
   };
 
-  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+  const labelVisible = props.label ? 'static' : 'none';
   var label = '';
   if (props.label) {
     label = props.label;
@@ -127,7 +128,7 @@ export default function Button(props) {
         <>
             <Container style={container} align={align}>
               <Label labelVisible={labelVisible} align={align}>{label}</Label>
-              <ButtonStyling disabled={props.disabled} aria-disabled={props.disabled} aria-labelledby={label} aria-label={button.value} style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
+              <ButtonStyling disabled={props.disabled} aria-disabled={props.disabled} aria-labelledby={label} aria-label={button.value} data-test={props.dataTest} style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>
         </>
     )

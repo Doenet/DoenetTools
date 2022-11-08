@@ -7,7 +7,7 @@ const Section = Styled.div `
   transition: height .25s;
   border-radius: .5em;
   margin: 0px 4px 0px 4px;
-  width: ${props => props.width === "menu" ? "235px" : ""}; // Menu prop
+  width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : ''}; // Menu prop
 `;
 
 const SectionHeader = Styled.div `
@@ -65,6 +65,7 @@ export default function CollapseSection(props) {
       <Section width={width}>
         <Label labelVisible={labelVisible} align={align}>{label}</Label>
           <SectionHeader
+              dataTest= {props.dataTest}
               aria-label={title}
               aria-labelledby={label} 
               aria-disabled={disabled}

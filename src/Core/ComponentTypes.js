@@ -142,6 +142,7 @@ import Footnote from './components/Footnote';
 import Caption from './components/Caption';
 import Endpoint from './components/Endpoint';
 import Sort from './components/Sort';
+import Shuffle from './components/Shuffle';
 import SolveEquations from './components/SolveEquations';
 import SolutionContainer from './components/SolutionContainer';
 import SubsetOfRealsInput from './components/SubsetOfRealsInput';
@@ -302,6 +303,7 @@ const componentTypeArray = [
   Caption,
   Endpoint,
   Sort,
+  Shuffle,
   SolveEquations,
   SolutionContainer,
   SubsetOfRealsInput,

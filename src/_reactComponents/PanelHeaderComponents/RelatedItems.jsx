@@ -9,7 +9,7 @@ const Container = styled.div `
 `;
 
 const Select = styled.select `
-    width: ${props => props.width === "menu" ? "230px" : props.width};
+    width: ${props => props.width === "menu" ? "var(--menuWidth)" : props.width};
     /* background-color: var(--lightBlue); */
     border: ${props => props.alert ? "2px solid var(--mainRed)" : props.disabled ? "2px solid var(--mainGray)" : "var(--mainBorder)"};
     border-radius: var(--mainBorderRadius);

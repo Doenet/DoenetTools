@@ -38,6 +38,6 @@ export default function AssignmentNewAttempt() {
   }
 
   return (
-    <Button value="New Attempt" data-test="New Attempt" disabled={!buttonEnabled} onClick={newAttempt} />
+    <Button value="New Attempt" dataTest="New Attempt" disabled={!buttonEnabled} onClick={newAttempt} />
   );
 }

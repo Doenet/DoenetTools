@@ -193,7 +193,7 @@ export default function attempt() {
           name: 'Vertical Label',
           propPreview: '<ActionButtonGroup label="What: " verticalLabel/>',
           propCode: { label: 'What: ', verticalLabel },
-          description: 'Adds label to componenet on top',
+          description: 'Adds label to component on top',
         },
       ],
     },
@@ -452,8 +452,8 @@ export default function attempt() {
       props: [
         {
           name: 'Width',
-          propPreview: '<DateTime width="300px" />',
-          propCode: { width: '300px' },
+          propPreview: '<DateTime width="menu" />',
+          propCode: { width: 'menu' },
           description: 'Sets width to fill menu panel width',
         },
         {
@@ -723,6 +723,12 @@ export default function attempt() {
       use: 'Text input with increment and decrement buttons.',
       props: [
         {
+          name: 'Width',
+          propPreview: '<Increment width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
           name: 'Font',
           propPreview: '<Increment font/>',
           propCode: { font },
@@ -840,7 +846,7 @@ export default function attempt() {
           propPreview: '<ProgressBar width=400 />',
           propCode: { width: 400, progress: 0.4 },
           description:
-            'Changes the width of the component in px; pass in the number without any units',
+            'Changes the width of the component in px; pass in the number without any units; default width is var(--menuWidth)=200px which must be updated manually',
         },
         {
           name: 'Progress Label',
@@ -1190,7 +1196,7 @@ export default function attempt() {
         {
           name: 'Submit Button Text',
           propPreview: '<Form submitButton="add Text" />',
-          propCode: { submitButton: 'add Text' },
+          propCode: { submitButton: 'Add Text Here' },
           description: 'Changes the button text',
         },
         {

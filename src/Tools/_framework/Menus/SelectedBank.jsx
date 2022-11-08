@@ -38,7 +38,7 @@ export default function SelectedBank() {
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast('Every item must have a label.');
+      //addToast('Every item must have a label.');
     }
     //Only update the server when it changes
     if (recoilLabel !== effectiveItemLabel) {
@@ -74,14 +74,14 @@ export default function SelectedBank() {
             width="menu"
             onClick={() => create({ itemType: 'page' })}
             value="Add Page"
-            data-test="Add Page"
+            dataTest="Add Page"
           />
         </ButtonGroup>
         <br />
         <Button
           width="menu"
           value="Delete Collection"
-          data-test="Delete Collection"
+          dataTest="Delete Collection"
           alert
           onClick={(e) => {
             e.preventDefault();

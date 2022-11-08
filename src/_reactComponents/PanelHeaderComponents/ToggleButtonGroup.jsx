@@ -3,8 +3,11 @@ import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
   display: ${(props) => (props.vertical ? 'static' : 'flex')};
+  width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
   // height: 'fit-content';
   // margin: 2px 0px 2px 0px ;
+  /* flex-wrap: wrap; */
+  overflow: clip;
 `;
 
 const toggleGroup = {
@@ -58,7 +61,7 @@ const ToggleButtonGroup = (props) => {
   });
 
   return (
-    <Container style={{ height: 'fit-content' }} vertical={props.vertical} role="group">
+    <Container style={{ height: 'fit-content' }} vertical={props.vertical} width={props.width} role="group">
       <ThemeProvider theme={props.vertical ? verticalToggleGroup : toggleGroup}>
         {modElem}
       </ThemeProvider>

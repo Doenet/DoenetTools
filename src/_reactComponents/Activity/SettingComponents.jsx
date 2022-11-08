@@ -46,6 +46,7 @@ const InputControl = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: calc(var(--menuWidth) - 10px);
 `;
 
 const initializingWorkersAtom = atomFamily({
@@ -75,7 +76,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 
   let assignButton = <ActionButton
     width="menu"
-    data-test="Assign Activity"
+    dataTest="Assign Activity"
     value={assignActivityText}
     onClick={async () => {
       if (pageId) {
@@ -93,7 +94,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
         doenetId,
         isAssigned: true,
         successCallback: () => {
-          addToast(assignActivityToast, toastType.INFO);
+          //addToast(assignActivityToast, toastType.INFO);
         },
       });
     }}
@@ -105,7 +106,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   if (isAssigned) {
     unAssignButton = <ActionButton
       width="menu"
-      data-test="Unassign Activity"
+      dataTest="Unassign Activity"
       value="Unassign Activity"
       alert
       onClick={() => {
@@ -113,7 +114,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
           doenetId,
           isAssigned: false,
           successCallback: () => {
-            addToast('Activity Unassigned', toastType.INFO);
+           // addToast('Activity Unassigned', toastType.INFO);
           },
         });
       }}
@@ -122,7 +123,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
     if (initializingWorker) {
       prerenderButton = <ActionButton
         width="menu"
-        data-test="Cancel prerendering"
+        dataTest="Cancel prerendering"
         value={`${initializeStatus} (Cancel)`}
         onClick={() => {
           initializingWorker.terminate();
@@ -165,7 +166,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 
       prerenderButton = <ActionButton
         width="menu"
-        data-test="Prerender activity"
+        dataTest="Prerender activity"
         value="Prerender activity"
         onClick={initializePrerender}
       />
@@ -404,6 +405,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
           value={timeLimit}
           dataTest="Time Limit"
           min={1}
+          width='180px'
           onBlur={limit => {
             if (isNaN(limit) || limit < 1) limit = 1
             setTimeLimit(parseInt(limit))
@@ -462,6 +464,7 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
           value={numberOfAttemptsAllowed}
           dataTest="Attempt Limit"
           min={1}
+          width='180px'
           onBlur={attempts => {
             if (isNaN(attempts) || attempts < 1) attempts = 1
             setNumberOfAttemptsAllowed(parseInt(attempts))
@@ -638,7 +641,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
         vertical
         width="menu"
         value={textValue}
-        data-test="Item Weights"
+        dataTest="Item Weights"
         onChange={(e) => {
           setTextValue(e.target.value);
         }}
