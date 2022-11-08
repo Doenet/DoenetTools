@@ -720,7 +720,7 @@ export default function attempt() {
       codePreview: '<Increment/>',
       req_props: null,
       req_children: null,
-      use: 'Text input with increment and decrement buttons. Also has dropdown menu to select given values',
+      use: 'Text input with increment and decrement buttons.',
       props: [
         {
           name: 'Font',
