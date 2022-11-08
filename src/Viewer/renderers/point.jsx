@@ -441,10 +441,8 @@ export default React.memo(function Point(props) {
 })
 
 function normalizeSize(size, style) {
-  if (style.substring(0,8) === "triangle") {
+  if (style.substring(0,8) === "triangle" || style === "diamond") {
     return size * 1.4;
-  } else if (style === "diamond") {
-    return size * 1.5;
   } else return size;
 }
 
