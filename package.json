@@ -119,12 +119,11 @@
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "optionalDependencies": {
-    "cypress": "^10.10.0",
+    "cypress": "^10.11.0",
     "cypress-file-upload": "^5.0.8",
     "cypress-plugin-tab": "^1.0.5",
     "cypress-wait-until": "^1.7.2",
-    "eslint-plugin-cypress": "^2.12.1",
-    "cypress-file-upload": "^5.0.8"
+    "eslint-plugin-cypress": "^2.12.1"
   },
   "eslintConfig": {
     "extends": [

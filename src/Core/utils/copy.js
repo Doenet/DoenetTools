@@ -385,7 +385,7 @@ export async function verifyReplacementsMatchSpecifiedType({ component,
 
     // if only replacement is a template
     // then give the template the createComponentOfType and nComponentsSpecified
-    if (replacements.length === 1 && componentInfoObjects.isInheritedComponentType({
+    if (replacements?.length === 1 && componentInfoObjects.isInheritedComponentType({
       inheritedComponentType: replacements[0].componentType,
       baseComponentType: "template"
     })) {
