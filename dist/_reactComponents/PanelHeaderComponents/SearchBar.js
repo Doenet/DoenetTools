@@ -11,7 +11,7 @@ const SearchBar = styled.input`
     padding: 0px 70px 0px 30px;
     color: var(--canvastext);
     overflow: hidden;
-    width: ${(props) => props.width === "menu" ? "130px" : "220px"};
+    width: ${(props) => props.width === "menu" ? props.noSearchButton ? "180px" : "130px" : "220px"};
     font-size: 14px;
     cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
     &:focus {
@@ -67,7 +67,7 @@ const Label = styled.p`
 `;
 const Container = styled.div`
     display: ${(props) => props.align};
-    /* width: 235px; */
+    width: ${(props) => props.width === "menu" ? "var(--menuWidth)" : "220px"};
     align-items: center;
 `;
 export default function Searchbar(props) {
@@ -166,7 +166,8 @@ export default function Searchbar(props) {
   }
   ;
   return /* @__PURE__ */ React.createElement(Container, {
-    align
+    align,
+    width
   }, /* @__PURE__ */ React.createElement(Label, {
     id: "search-label",
     labelVisible,
@@ -190,6 +191,7 @@ export default function Searchbar(props) {
     id: "searchbar",
     type: "text",
     width,
+    noSearchButton: props.noSearchButton,
     placeholder,
     onChange,
     onBlur: (e) => {

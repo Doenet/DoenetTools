@@ -12,8 +12,6 @@ import {
   palletRef,
   focusedMathFieldReturn
 } from "./MathInputSelector.js";
-import {panelOpen} from "../Panels/Panel.js";
-import {doenetMainBlue} from "../../_reactComponents/PanelHeaderComponents/theme.js";
 import {useRef} from "../../_snowpack/pkg/react.js";
 const Panel = styled.div`
   height: 240px;
@@ -138,7 +136,6 @@ const LetterButton = styled.button`
   border-radius: 5px;
 `;
 export default function VirtualKeyboard() {
-  const [toggleKeyboard, setToggleKeyboard] = useRecoilState(panelOpen("keyboard"));
   const [toggleLetters, setToggleLetters] = useState(false);
   const [toggleCase, setToggleCase] = useState(false);
   const [toggleGreek, setToggleGreek] = useState(0);

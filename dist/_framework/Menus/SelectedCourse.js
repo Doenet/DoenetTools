@@ -69,7 +69,7 @@ const CourseInfoPanel = function({courseId}) {
   }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Enter Course",
-    "data-test": "Enter Course nav button",
+    dataTest: "Enter Course nav button",
     onClick: (e) => {
       e.preventDefault();
       e.stopPropagation();

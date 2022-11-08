@@ -124,7 +124,6 @@ export default function NavigationPanel() {
       if (canEditContent2 == "1") {
         let pageDoenetId = findFirstPageOfActivity(clickedItem.content);
         if (pageDoenetId == null) {
-          addToast(`ERROR: No page found in activity`, toastType.INFO);
         } else {
           set(pageToolViewAtom, (prev) => {
             return {

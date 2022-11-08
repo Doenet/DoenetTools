@@ -224,7 +224,7 @@ if ($success) {
                     } else {
                         // something strange happened (another process changed the database in between queries?)
                         $success = false;
-                        $message = "Database error 2";
+                        $message = "Database error 3";
                     }
                 }
             }

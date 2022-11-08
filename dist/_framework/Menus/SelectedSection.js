@@ -36,7 +36,6 @@ export default function SelectedSection() {
         effectiveItemLabel = "Untitled";
       }
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast("Every item must have a label.");
     }
     if (recoilLabel !== effectiveItemLabel) {
       renameItem(doenetId, effectiveItemLabel);
@@ -69,7 +68,7 @@ export default function SelectedSection() {
     }), /* @__PURE__ */ React.createElement(Textfield, {
       label: "Label",
       vertical: true,
-      "data-test": "Label Section",
+      dataTest: "Label Section",
       width: "menu",
       value: itemTextFieldLabel,
       onChange: (e) => setItemTextFieldLabel(e.target.value),

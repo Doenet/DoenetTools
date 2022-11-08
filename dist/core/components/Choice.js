@@ -128,31 +128,29 @@ export default class Choice extends InlineComponent {
         },
         childIndicesSelected: {
           dependencyType: "parentStateVariable",
+          parentComponentType: "choiceInput",
           variableName: "childIndicesSelected"
+        },
+        primaryShadow: {
+          dependencyType: "primaryShadow",
+          variableNames: ["selected"]
         }
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
         let selected
         if (dependencyValues.childIndicesSelected) {
           selected = dependencyValues.childIndicesSelected.includes(
             dependencyValues.countAmongSiblings
           );
+        } else if(dependencyValues.primaryShadow) {
+          selected = dependencyValues.primaryShadow.stateValues.selected;
         } else {
           selected = false;
         }
 
         return { setValue: { selected } }
 
-      },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setEssentialValue: "selected",
-            value: desiredStateVariableValues.selected
-          }]
-        };
       }
     }
 

@@ -241,6 +241,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),
     TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
     CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
+    ActivityDates: lazy(() => import("../Menus/ActivityDates.js")),
     ClassTimes: lazy(() => import("../Menus/ClassTimes.js")),
     CurrentContent: lazy(() => import("../Menus/CurrentContent.js")),
     ManageUsersMenu: lazy(() => import("../Menus/ManageUsersMenu.js"))

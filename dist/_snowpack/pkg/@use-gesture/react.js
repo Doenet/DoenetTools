@@ -1,4 +1,4 @@
-import { r as react } from '../common/index-56a88a1e.js';
+import { r as react } from '../common/index-61623f21.js';
 import '../common/_commonjsHelpers-f5d70792.js';
 
 function clamp(v, min, max) {
@@ -853,7 +853,7 @@ class DragEngine extends CoordinatesEngine {
   }
 
   pointerClick(event) {
-    if (!this.state.tap) {
+    if (!this.state.tap && event.detail > 0) {
       event.preventDefault();
       event.stopPropagation();
     }
@@ -1713,8 +1713,8 @@ function resolveWith(config = {}, resolvers) {
 
   return result;
 }
-function parse(config, gestureKey) {
-  const _ref = config,
+function parse(newConfig, gestureKey, _config = {}) {
+  const _ref = newConfig,
         {
     target,
     eventOptions,
@@ -1724,15 +1724,13 @@ function parse(config, gestureKey) {
   } = _ref,
         rest = _objectWithoutProperties(_ref, _excluded);
 
-  const _config = {
-    shared: resolveWith({
-      target,
-      eventOptions,
-      window,
-      enabled,
-      transform
-    }, sharedConfigResolver)
-  };
+  _config.shared = resolveWith({
+    target,
+    eventOptions,
+    window,
+    enabled,
+    transform
+  }, sharedConfigResolver);
 
   if (gestureKey) {
     const resolver = ConfigResolverMap.get(gestureKey);
@@ -1860,7 +1858,7 @@ class Controller {
   }
 
   applyConfig(config, gestureKey) {
-    this.config = parse(config, gestureKey);
+    this.config = parse(config, gestureKey, this.config);
   }
 
   clean() {

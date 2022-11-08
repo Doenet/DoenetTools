@@ -1,7 +1,8 @@
 import { T as Tree, N as NodeProp, a as TreeFragment, P as Parser, b as NodeType } from './index-3d578c67.js';
 import { F as Facet, S as StateField, j as EditorState, b as StateEffect, i as countColumn } from './index-04f03c08.js';
-import { V as ViewPlugin, l as logException } from './index-18bfe0dd.js';
+import { V as ViewPlugin, l as logException } from './index-b1d6eef7.js';
 
+var _a;
 /**
 Node prop stored in a grammar's top syntax node to provide the
 facet that stores language data for that language.
@@ -253,7 +254,7 @@ class ParseContext {
     /**
     @internal
     */
-    work(time, upto) {
+    work(until, upto) {
         if (upto != null && upto >= this.state.doc.length)
             upto = undefined;
         if (this.tree != Tree.empty && this.isDone(upto !== null && upto !== void 0 ? upto : this.state.doc.length)) {
@@ -262,7 +263,10 @@ class ParseContext {
         }
         return this.withContext(() => {
             var _a;
-            let endTime = Date.now() + time;
+            if (typeof until == "number") {
+                let endTime = Date.now() + until;
+                until = () => Date.now() > endTime;
+            }
             if (!this.parse)
                 this.parse = this.startParse();
             if (upto != null && (this.parse.stoppedAt == null || this.parse.stoppedAt > upto) &&
@@ -280,7 +284,7 @@ class ParseContext {
                     else
                         return true;
                 }
-                if (Date.now() > endTime)
+                if (until())
                     return false;
             }
         });
@@ -435,7 +439,7 @@ class LanguageState {
         this.tree = context.tree;
     }
     apply(tr) {
-        if (!tr.docChanged)
+        if (!tr.docChanged && this.tree == this.context.tree)
             return this;
         let newCx = this.context.changes(tr.changes, tr.state);
         // If the previous parse wasn't done, go forward only up to its
@@ -477,6 +481,8 @@ if (typeof requestIdleCallback != "undefined")
         }, 100 /* MinPause */);
         return () => idle < 0 ? clearTimeout(timeout) : cancelIdleCallback(idle);
     };
+const isInputPending = typeof navigator != "undefined" && ((_a = navigator.scheduling) === null || _a === void 0 ? void 0 : _a.isInputPending)
+    ? () => navigator.scheduling.isInputPending() : null;
 const parseWorker = /*@__PURE__*/ViewPlugin.fromClass(class ParseWorker {
     constructor(view) {
         this.view = view;
@@ -519,9 +525,11 @@ const parseWorker = /*@__PURE__*/ViewPlugin.fromClass(class ParseWorker {
         let { state, viewport: { to: vpTo } } = this.view, field = state.field(Language.state);
         if (field.tree == field.context.tree && field.context.isDone(vpTo + 100000 /* MaxParseAhead */))
             return;
-        let time = Math.min(this.chunkBudget, 100 /* Slice */, deadline ? Math.max(25 /* MinSlice */, deadline.timeRemaining() - 5) : 1e9);
+        let endTime = Date.now() + Math.min(this.chunkBudget, 100 /* Slice */, deadline && !isInputPending ? Math.max(25 /* MinSlice */, deadline.timeRemaining() - 5) : 1e9);
         let viewportFirst = field.context.treeLen < vpTo && state.doc.length > vpTo + 1000;
-        let done = field.context.work(time, vpTo + (viewportFirst ? 0 : 100000 /* MaxParseAhead */));
+        let done = field.context.work(() => {
+            return isInputPending && isInputPending() || Date.now() > endTime;
+        }, vpTo + (viewportFirst ? 0 : 100000 /* MaxParseAhead */));
         this.chunkBudget -= Date.now() - now;
         if (done || this.chunkBudget <= 0) {
             field.context.takeTree();
@@ -546,7 +554,7 @@ const parseWorker = /*@__PURE__*/ViewPlugin.fromClass(class ParseWorker {
             this.working();
     }
     isWorking() {
-        return this.working || this.workScheduled > 0;
+        return !!(this.working || this.workScheduled > 0);
     }
 }, {
     eventHandlers: { focus() { this.scheduleWork(); } }
@@ -686,9 +694,11 @@ class IndentContext {
     */
     lineAt(pos, bias = 1) {
         let line = this.state.doc.lineAt(pos);
-        let { simulateBreak } = this.options;
+        let { simulateBreak, simulateDoubleBreak } = this.options;
         if (simulateBreak != null && simulateBreak >= line.from && simulateBreak <= line.to) {
-            if (bias < 0 ? simulateBreak < pos : simulateBreak <= pos)
+            if (simulateDoubleBreak && simulateBreak == pos)
+                return { text: "", from: pos };
+            else if (bias < 0 ? simulateBreak < pos : simulateBreak <= pos)
                 return { text: line.text.slice(simulateBreak - line.from), from: simulateBreak };
             else
                 return { text: line.text.slice(0, simulateBreak - line.from), from: line.from };
@@ -888,7 +898,7 @@ added at the start of a line.
 */
 function indentOnInput() {
     return EditorState.transactionFilter.of(tr => {
-        if (!tr.docChanged || !tr.isUserEvent("input.type"))
+        if (!tr.docChanged || !tr.isUserEvent("input.type") && !tr.isUserEvent("input.complete"))
             return tr;
         let rules = tr.startState.languageDataAt("indentOnInput", tr.startState.selection.main.head);
         if (!rules.length)
@@ -943,13 +953,17 @@ function syntaxFolding(state, start, end) {
         if (found && cur.from < start)
             break;
         let prop = cur.type.prop(foldNodeProp);
-        if (prop) {
+        if (prop && (cur.to < tree.length - 50 || tree.length == state.doc.length || !isUnfinished(cur))) {
             let value = prop(cur, state);
             if (value && value.from <= end && value.from >= start && value.to > end)
                 found = value;
         }
     }
     return found;
+}
+function isUnfinished(node) {
+    let ch = node.lastChild;
+    return ch && ch.to == node.to && ch.type.isError;
 }
 /**
 Check whether the given line is foldable. First asks any fold

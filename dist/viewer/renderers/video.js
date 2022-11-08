@@ -6,7 +6,7 @@ import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js"
 import styled from "../../_snowpack/pkg/styled-components.js";
 const VideoStyling = styled.div`
 &: focus {
-  outline: 2px solid var(--mainBlue);
+  outline: 2px solid var(--canvastext);
   outline-offset: 2px;
 }
 `;

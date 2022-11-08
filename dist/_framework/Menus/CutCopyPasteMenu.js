@@ -29,7 +29,6 @@ export default function CutCopyPasteMenu() {
     onClick: () => {
       copyItems({
         successCallback: () => {
-          addToast("Items Copied!", toastType.INFO);
         },
         failureCallback: (message) => {
           addToast(message, toastType.INFO);
@@ -44,7 +43,6 @@ export default function CutCopyPasteMenu() {
     onClick: () => {
       cutItems({
         successCallback: () => {
-          addToast("Items Cut!", toastType.INFO);
         },
         failureCallback: (message) => {
           addToast(message, toastType.INFO);
@@ -59,7 +57,6 @@ export default function CutCopyPasteMenu() {
     onClick: () => {
       pasteItems({
         successCallback: () => {
-          addToast("Items Pasted!", toastType.INFO);
         },
         failureCallback: (message) => {
           addToast(message, toastType.INFO);

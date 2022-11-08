@@ -13,21 +13,21 @@ export default function AddDriveItems() {
     vertical: true
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-test": "Add Activity Button",
+    dataTest: "Add Activity Button",
     onClick: () => create({itemType: "activity"}, () => {
       addToast("Activity Created!");
     }),
     value: "Add Activity"
   }, "Add Activity"), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-test": "Add Collection Button",
+    dataTest: "Add Collection Button",
     onClick: () => create({itemType: "bank"}, () => {
       addToast("Collection Created!");
     }),
     value: "Add Collection"
   }), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-test": "Add Section Button",
+    dataTest: "Add Section Button",
     onClick: () => create({itemType: "section"}, () => {
       addToast("Section Created!");
     }),

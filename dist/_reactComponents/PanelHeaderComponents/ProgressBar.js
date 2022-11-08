@@ -6,7 +6,7 @@ const Container = styled.div`
   align-items: ${(props) => props.alignItems};
 `;
 const Svg = styled.svg``;
-const Rect = styled.rect`;
+const Rect = styled.rect`
   x: 0px;
   y: 0px;
   rx: ${(props) => props.radius}; // Depends on if we have the donutIcon prop
@@ -35,7 +35,7 @@ const Progress = styled.p`
 export default function ProgressBar(props) {
   const [fillWidth, setFillWidth] = useState("0px");
   const [donutPosition, setDonutPosition] = useState("12.5px");
-  const [barWidth, setBarWidth] = useState(props.width ? props.width : 235);
+  const [barWidth, setBarWidth] = useState(props.width ? props.width : 200);
   const height = props.donutIcon ? "25px" : "10px";
   const radius = props.donutIcon ? "12.5px" : "5px";
   const ariaLabel = props.ariaLabel ? props.ariaLabel : null;

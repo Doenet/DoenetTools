@@ -13,7 +13,8 @@ import {
   studentData,
   assignmentData,
   overviewData,
-  gradeSorting
+  gradeSorting,
+  gradeCategories
 } from "./Gradebook.js";
 export default function GradebookStudent() {
   let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
@@ -40,19 +41,14 @@ export default function GradebookStudent() {
   let totalAssignedPoints = 0;
   let totalScore = 0;
   if (assignments.state == "hasValue" && students.state === "hasValue" && overview.state === "hasValue" && userId !== null && userId !== "") {
-    let gradeCategories = [
-      {category: "Gateway", scaleFactor: 0},
-      {category: "Exams"},
-      {category: "Quizzes", maximumNumber: 10},
-      {category: "Problem sets", maximumNumber: 30},
-      {category: "Projects"},
-      {category: "Participation"}
-    ];
     let totalPossiblePoints = 0;
+    let sortedAssignments = Object.entries(assignments.contents);
+    sortedAssignments.sort((a, b) => a[1].sortOrder < b[1].sortOrder ? -1 : 1);
     for (let {
       category,
       scaleFactor = 1,
-      maximumNumber = Infinity
+      maximumNumber = Infinity,
+      maximumValue = Infinity
     } of gradeCategories) {
       overviewTable.rows.push({
         assignment: category
@@ -61,7 +57,7 @@ export default function GradebookStudent() {
       let allpossiblepoints = [];
       let allassignedpoints = [];
       let categoryAssignedPointsAreAllDashes = true;
-      for (let doenetId in assignments.contents) {
+      for (let [doenetId] of sortedAssignments) {
         let inCategory = assignments.contents[doenetId].category;
         if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
@@ -110,13 +106,17 @@ export default function GradebookStudent() {
       }
       let numberScores = scores.length;
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
-      let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
-      let categoryAssignedPoints = allassignedpoints.reduce((a, c) => a + c, 0) * scaleFactor;
+      allassignedpoints = allassignedpoints.sort((a, b) => b - a).slice(0, maximumNumber);
+      let scaledScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      let scaledAssignedPoints = allassignedpoints.reduce((a, c) => a + c, 0) * scaleFactor;
+      let categoryScore = Math.min(scaledScore, maximumValue);
+      let categoryAssignedPoints = Math.min(scaledAssignedPoints, maximumValue);
       if (categoryAssignedPointsAreAllDashes) {
         categoryAssignedPoints = "-";
       }
       allpossiblepoints = allpossiblepoints.sort((a, b) => b - a).slice(0, maximumNumber);
-      let categoryPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+      let scaledPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+      let categoryPossiblePoints = Math.min(scaledPossiblePoints, maximumValue);
       let categoryPercentage = "0%";
       if (categoryPossiblePoints !== 0) {
         categoryPercentage = Math.round(categoryScore / categoryPossiblePoints * 1e3) / 10 + "%";
@@ -129,19 +129,20 @@ export default function GradebookStudent() {
       }
       categoryScore = Math.round(categoryScore * 100) / 100;
       categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
-      let description = "";
+      let description = [];
       if (numberScores > maximumNumber) {
-        description = /* @__PURE__ */ React.createElement("div", {
-          style: {fontSize: ".8em"}
-        }, "(Based on top ", maximumNumber, " scores)");
+        description.push(`top ${maximumNumber} scores`);
       }
       if (scaleFactor !== 1) {
-        description = /* @__PURE__ */ React.createElement("div", {
-          style: {fontSize: ".8em"}
-        }, "(Based on rescaling by ", scaleFactor * 100, "%)");
+        description.push(`rescaling by ${scaleFactor * 100}%`);
+      }
+      if (scaledPossiblePoints > maximumValue) {
+        description.push(`a cap of ${maximumValue} points`);
       }
       overviewTable.rows.push({
-        assignment: /* @__PURE__ */ React.createElement("b", null, `Subtotal for ${category}`, description),
+        assignment: /* @__PURE__ */ React.createElement("b", null, `Subtotal for ${category}`, description.length > 0 && /* @__PURE__ */ React.createElement("div", {
+          style: {fontSize: ".7em"}
+        }, "Based on ", description.join(","))),
         score: categoryScore,
         possiblepoints: categoryPossiblePoints,
         assignedpoints: categoryAssignedPoints,

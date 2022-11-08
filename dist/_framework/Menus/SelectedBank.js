@@ -32,7 +32,6 @@ export default function SelectedBank() {
         effectiveItemLabel = "Untitled";
       }
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast("Every item must have a label.");
     }
     if (recoilLabel !== effectiveItemLabel) {
       renameItem(doenetId, effectiveItemLabel);
@@ -63,11 +62,11 @@ export default function SelectedBank() {
       width: "menu",
       onClick: () => create({itemType: "page"}),
       value: "Add Page",
-      "data-test": "Add Page"
+      dataTest: "Add Page"
     })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       value: "Delete Collection",
-      "data-test": "Delete Collection",
+      dataTest: "Delete Collection",
       alert: true,
       onClick: (e) => {
         e.preventDefault();

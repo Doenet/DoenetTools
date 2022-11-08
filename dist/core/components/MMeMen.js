@@ -35,10 +35,10 @@ export class M extends InlineComponent {
       createComponentOfType: "point",
     }
 
-    attributes.anchorPosition = {
+    attributes.positionFromAnchor = {
       createComponentOfType: "text",
-      createStateVariable: "anchorPosition",
-      defaultValue: "upperleft",
+      createStateVariable: "positionFromAnchor",
+      defaultValue: "center",
       public: true,
       forRenderer: true,
       toLowerCase: true,
