@@ -1,5 +1,6 @@
 tasks:
   - name: Docker 
+    init: chmod 777 src/Media
     command: docker compose up
   - name: Dev server
     init: npm install
