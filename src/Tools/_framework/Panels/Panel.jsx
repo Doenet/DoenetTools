@@ -111,7 +111,7 @@ export default function DragPanel({
   useEffect(() => {
     setOpen(isInitOpen);
     setHandleRef({ ...handle });
-  }, [isInitOpen, setOpen]);
+  }, [isInitOpen, setHandleRef, setOpen]);
 
   // Set the drag hook and define component movement based on gesture data
   const bindX = useGesture(
