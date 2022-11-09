@@ -84,6 +84,8 @@ export default React.memo(function Ref(props) {
         url = `tool=editor&${url}`;
       }
       url = `/public?${url}`
+    } else if(pageToolView.page === "placementexam") {
+      url = `?tool=exam&${url}`
     } else {
       url = `?tool=assignment&${url}`
     }
