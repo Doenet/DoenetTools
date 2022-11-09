@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import {
+  useRecoilValueLoadable,
     useSetRecoilState,
   } from "recoil";
-import { pageToolViewAtom } from '../NewToolRoot';
+import { pageToolViewAtom, profileAtom } from '../NewToolRoot';
 import "../doenet.css";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
@@ -11,6 +12,15 @@ export default function DoenetProfile(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const [signedIn,setSignedIn] = useState(null);
   let checkingCookie = useRef(false);
+  const profile = useRecoilValueLoadable(profileAtom);
+
+  if (profile.state === "loading"){ return null;}
+  if (profile.state === "hasError"){ 
+    console.error(profile.contents)
+    return null;}
+
+  let email = profile?.contents?.email;
+console.log("profile",profile)
 
   //Only ask once
   if (!checkingCookie.current){
@@ -19,7 +29,6 @@ export default function DoenetProfile(props) {
       setSignedIn(cookieRemoved);
     })
   }
-console.log("signedIn",signedIn)
   if (signedIn == null){
     return null;
   }
@@ -37,6 +46,7 @@ console.log("signedIn",signedIn)
     }else{
       messageJSX = <>
                   <h2>You are signed in</h2>
+                  <p>Email: {email}</p>
                   <Button value="Sign out" onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
                   </>
     }
