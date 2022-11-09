@@ -71,6 +71,17 @@ Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch 
 
 ## Troubleshooting Common Issues
 
+- Can not find the `doenet_local` database
+  - run `npm create:db` and then `npm reset:db`
+- esbuild fails to install
+  - move to a node version `17.4` or higher
+- cypress does not run
+  - run `npm install` on your local machine first
+- dev container crashes due to cypress error
+  - make sure you have placed all cypress related dependencies in the optional category with `--save-optional`
+- course creation or other basic functions are not working after an update
+  - run `npm reset:db` 
+
 ### - Can not find the doenet_local database
 
 Run `npm create:db` and then `npm reset:db`.
