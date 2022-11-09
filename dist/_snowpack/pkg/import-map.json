@@ -43,6 +43,7 @@
     "lorem-ipsum": "./lorem-ipsum.js",
     "math-expressions": "./math-expressions.js",
     "nanoid": "./nanoid.js",
+    "plotly.js-dist-min": "./plotly.js-dist-min.js",
     "react": "./react.js",
     "react-copy-to-clipboard": "./react-copy-to-clipboard.js",
     "react-datetime": "./react-datetime.js",

@@ -444,18 +444,18 @@ export const TotalPointsOrPercent = ({courseId, doenetId}) => {
     setTotalPointsOrPercent(recoilValue);
   }, [recoilValue]);
   return /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(LabelText, null, "Total Points Or Percent"), /* @__PURE__ */ React.createElement(InputControl, null, /* @__PURE__ */ React.createElement(Increment, {
-    value: totalPointsOrPercent || 0,
+    value: totalPointsOrPercent,
     dataTest: "Total Points Or Percent",
     min: 0,
-    onBlur: () => {
-      if (recoilValue !== totalPointsOrPercent) {
+    onBlur: (newValue) => {
+      if (newValue !== recoilValue) {
         let totalPointsOrPercentLocal = null;
-        if (totalPointsOrPercent < 0 || totalPointsOrPercent === "" || isNaN(totalPointsOrPercent)) {
+        if (newValue < 0 || newValue === "" || isNaN(newValue)) {
           setTotalPointsOrPercent(0);
           totalPointsOrPercentLocal = 0;
         } else {
-          totalPointsOrPercentLocal = parseFloat(totalPointsOrPercent);
-          setTotalPointsOrPercent(parseFloat(totalPointsOrPercent));
+          totalPointsOrPercentLocal = parseFloat(newValue);
+          setTotalPointsOrPercent(parseFloat(newValue));
         }
         updateAssignmentSettings(doenetId, {
           keyToUpdate: "totalPointsOrPercent",

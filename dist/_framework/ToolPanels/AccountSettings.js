@@ -1,8 +1,9 @@
 import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
 import {
+  useRecoilValueLoadable,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
-import {pageToolViewAtom} from "../NewToolRoot.js";
+import {pageToolViewAtom, profileAtom} from "../NewToolRoot.js";
 import "../doenet.css.proxy.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {checkIfUserClearedOut} from "../../_utils/applicationUtils.js";
@@ -10,13 +11,22 @@ export default function DoenetProfile(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const [signedIn, setSignedIn] = useState(null);
   let checkingCookie = useRef(false);
+  const profile = useRecoilValueLoadable(profileAtom);
+  if (profile.state === "loading") {
+    return null;
+  }
+  if (profile.state === "hasError") {
+    console.error(profile.contents);
+    return null;
+  }
+  let email = profile?.contents?.email;
+  console.log("profile", profile);
   if (!checkingCookie.current) {
     checkingCookie.current = true;
     checkIfUserClearedOut().then(({cookieRemoved}) => {
       setSignedIn(cookieRemoved);
     });
   }
-  console.log("signedIn", signedIn);
   if (signedIn == null) {
     return null;
   }
@@ -30,7 +40,7 @@ export default function DoenetProfile(props) {
       }
     }));
   } else {
-    messageJSX = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, "You are signed in"), /* @__PURE__ */ React.createElement(Button, {
+    messageJSX = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, "You are signed in"), /* @__PURE__ */ React.createElement("p", null, "Email: ", email), /* @__PURE__ */ React.createElement(Button, {
       value: "Sign out",
       onClick: () => {
         setPageToolView({page: "signout", tool: "", view: ""});
