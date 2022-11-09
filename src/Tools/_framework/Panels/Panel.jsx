@@ -1,15 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
-import { useGesture } from '@use-gesture/react';
+import { createUseGesture, dragAction } from '@use-gesture/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGripLinesVertical,
   faGripLines,
   faKeyboard,
 } from '@fortawesome/free-solid-svg-icons';
-import { useRecoilState, atomFamily, useSetRecoilState } from 'recoil';
-import { handleRef } from '../Footers/MathInputSelector';
 
 export const handleDirection = {
   LEFT: {
@@ -84,11 +82,6 @@ const DragHandle = styled.div`
   touch-action: none;
 `;
 
-export const panelOpen = atomFamily({
-  key: 'panelOpenAtom',
-  default: false,
-});
-
 export default function DragPanel({
   children,
   direction,
@@ -98,9 +91,7 @@ export default function DragPanel({
   panelSize = 240,
   isInitOpen = false,
 }) {
-  const setHandleRef = useSetRecoilState(handleRef);
-  const handle = useRef(null);
-  const [open, setOpen] = useRecoilState(panelOpen(id));
+  const [open, setOpen] = useState(isInitOpen);
   const [{ dir }, api] = useSpring(
     () => ({
       dir: open ? handleSize + panelSize : handleSize,
@@ -108,48 +99,47 @@ export default function DragPanel({
     [open],
   );
 
-  useEffect(() => {
-    setOpen(isInitOpen);
-    setHandleRef({ ...handle });
-  }, [isInitOpen, setOpen]);
-
   // Set the drag hook and define component movement based on gesture data
-  const bindX = useGesture(
+  const useGesture = createUseGesture([dragAction]);
+  const bind = useGesture(
     {
-      onDrag: ({ tap, movement: [mx, my] }) => {
-        let movDir = (direction.drag[0] === 'x' ? mx : my) * direction.drag[1];
-
-        if (tap) {
-          // console.log(movDir === handleSize ? panelSize : handleSize, mx);
-          api.start({
-            dir: movDir === handleSize ? panelSize + handleSize : handleSize,
-          });
-          setOpen(movDir === handleSize);
-        } else {
-          // console.log(movDir);
-          api.start({ dir: movDir });
-        }
+      onClick: () => {
+        setOpen(!open)
       },
-      onDragEnd: ({ direction: [dirx, diry], movement: [mx, my] }) => {
-        let dragDir =
-          (direction.drag[0] === 'x' ? dirx : diry) * direction.drag[1];
-        let movDir = (direction.drag[0] === 'x' ? mx : my) * direction.drag[1];
-        api.start({
-          dir:
-            dragDir === 1 ||
-            (movDir >= (panelSize + handleSize) / 2 && dragDir !== -1)
-              ? panelSize + handleSize
-              : handleSize,
-        });
-        setOpen(
-          dragDir === 1 ||
-            (movDir >= (panelSize + handleSize) / 2 && dragDir !== -1),
-        );
-      },
+      // onDrag: ({ tap, movement: [mx, my] }) => {
+      //   let movDir = (direction.drag[0] === 'x' ? mx : my) * direction.drag[1];
+      //   console.log('darg')
+      //   if (tap) {
+      //     // console.log(movDir === handleSize ? panelSize : handleSize, mx);
+      //     api.start({
+      //       dir: movDir === handleSize ? panelSize + handleSize : handleSize,
+      //     });
+      //     // setOpen(movDir === handleSize);
+      //   } else {
+      //     // console.log(movDir);
+      //     api.start({ dir: movDir });
+      //   }
+      // },
+      // onDragEnd: ({ direction: [dirx, diry], movement: [mx, my] }) => {
+      //   let dragDir =
+      //     (direction.drag[0] === 'x' ? dirx : diry) * direction.drag[1];
+      //   let movDir = (direction.drag[0] === 'x' ? mx : my) * direction.drag[1];
+      //   api.start({
+      //     dir:
+      //       dragDir === 1 ||
+      //       (movDir >= (panelSize + handleSize) / 2 && dragDir !== -1)
+      //         ? panelSize + handleSize
+      //         : handleSize,
+      //   });
+      //   setOpen(
+      //     dragDir === 1 ||
+      //       (movDir >= (panelSize + handleSize) / 2 && dragDir !== -1),
+      //   );
+      // },
     },
     {
       drag: {
-        filterTaps: true,
+        // filterTaps: true,
         bounds: () => ({
           left:
             (direction === handleDirection.RIGHT ? handleSize : panelSize) *
@@ -183,15 +173,15 @@ export default function DragPanel({
       <Background $vertical={direction.vertical}>{children}</Background>
       <DragHandle
         tabIndex="0"
-        ref={handle}
+        // ref={handle}
         data-test="panelDragHandle"
         $vertical={direction.vertical}
         $rounding={direction.rounding}
         $handleSize={handleSize}
-        {...bindX()}
-        onClick={() => {
-          setOpen(!open)
-        }}
+        {...bind()}
+        // onClick={() => {
+        //   setOpen(!open)
+        // }}
         >
         <FontAwesomeIcon
           icon={
