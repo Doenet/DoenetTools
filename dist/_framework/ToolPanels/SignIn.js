@@ -185,7 +185,7 @@ export default function SignIn(props) {
       label: "Code (9 digit code):",
       ref: codeRef,
       value: nineCode,
-      "data-test": "signinCodeInput",
+      dataTest: "signinCodeInput",
       alert: signInAlert,
       onKeyDown: (e) => {
         if (e.key === "Enter" && validCode) {
@@ -209,7 +209,7 @@ export default function SignIn(props) {
           setSignInStage("check code");
         }
       },
-      "data-test": "signInButton",
+      dataTest: "signInButton",
       value: "Sign In"
     })));
   }
@@ -242,7 +242,7 @@ export default function SignIn(props) {
       ref: emailRef,
       value: email,
       alert: sendEmailAlert,
-      "data-test": "signinEmailInput",
+      dataTest: "signinEmailInput",
       onKeyDown: (e) => {
         validateEmail(email);
         if (e.key === "Enter" && validEmail) {
@@ -278,7 +278,7 @@ export default function SignIn(props) {
           setSignInStage("enter code");
         }
       },
-      "data-test": "sendEmailButton",
+      dataTest: "sendEmailButton",
       value: "Send Email"
     }))));
   }

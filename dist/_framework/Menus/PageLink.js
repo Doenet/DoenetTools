@@ -29,11 +29,10 @@ export default function PageLink() {
     let pageCid = data.cid;
     let linkText = `<copy uri="doenet:doenetId=${doenetId}&pageId=${pageId}&cid=${pageCid}" />`;
     copyToClipboard(linkText);
-    addToast("Link copied to clipboard!", toastType.SUCCESS);
   }
   return /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
-    "data-test": "Copy Page Link",
+    dataTest: "Copy Page Link",
     value: "Copy Page Link",
     onClick: savePageDoenetMLAndCopyLink
   });

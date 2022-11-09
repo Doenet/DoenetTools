@@ -1,21 +1,21 @@
 import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const TextfieldStyling = styled.input`
-  margin: 0px 4px 0px 0px;
+  /* margin: 0px 4px 0px 0px; */
   height: 24px;
+  width: ${(props) => props.width}; // Menu prop
   border: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
   font-family: Arial;
   border-radius: var(--mainBorderRadius);
   color: var(--canvastext);
   resize: none;
   white-space: nowrap;
-  padding: 0px 5px 0px 5px;
+  /* padding: 0px 5px 0px 5px; */
   line-height: 24px;
   font-size: 14px;
   background-color: var(--canvas);
   cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
   pointer-events: ${(props) => props.disabled ? "none" : "auto"};
-  width: ${(props) => props.inputWidth};
   &:focus {
     outline: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
     outline-offset: 2px;
@@ -68,9 +68,11 @@ export default function Textfield(props) {
   var inputWidth = "";
   if (props.width) {
     if (props.width === "menu") {
-      inputWidth = "200px";
-      if (props.label) {
-        container.width = "200px";
+      container.width = "calc(var(--menuWidth) - 10px)";
+      inputWidth = "calc(var(--menuWidth) - 14px)";
+      if (props.label && !props.vertical) {
+        container.width = "calc(var(--menuWidth) - 4px)";
+        inputWidth = "100%";
       }
     }
   }
@@ -101,7 +103,7 @@ export default function Textfield(props) {
     "aria-disabled": props.disabled ? true : false,
     "aria-labelledby": "textfield-label",
     type: "text",
-    inputWidth,
+    width: inputWidth,
     readOnly: read_only,
     alert: props.alert,
     disabled: props.disabled,

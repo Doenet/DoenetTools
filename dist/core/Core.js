@@ -7,7 +7,7 @@ import { createUniqueName, getNamespaceFromName } from './utils/naming.js';
 import * as serializeFunctions from './utils/serializedStateProcessing.js';
 import { deepCompare, deepClone } from './utils/deepFunctions.js';
 import createStateProxyHandler from './StateProxyHandler.js';
-import { convertAttributesForComponentType, postProcessCopy } from './utils/copy.js';
+import { convertAttributesForComponentType, postProcessCopy, verifyReplacementsMatchSpecifiedType } from './utils/copy.js';
 import { flattenDeep, mapDeep } from './utils/array.js';
 import { DependencyHandler } from './Dependencies.js';
 import { preprocessMathInverseDefinition } from './utils/math.js';
@@ -1187,10 +1187,10 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
-    if (componentClass.descendantCompositesMustHaveAReplacement) {
+    if (componentClass.descendantCompositesMustHaveAReplacement && !shadow) {
       sharedParameters.compositesMustHaveAReplacement = true;
       sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
-    } else if (componentClass.descendantCompositesMustHaveAReplacement === false) {
+    } else if (componentClass.descendantCompositesMustHaveAReplacement === false || shadow) {
       sharedParameters.compositesMustHaveAReplacement = false;
     }
 
@@ -1515,6 +1515,17 @@ export default class Core {
             shadowedComponent.shadowedBy = [];
           }
           shadowedComponent.shadowedBy.push(newComponent);
+
+          if(dep.isPrimaryShadow) {
+            shadowedComponent.primaryShadow = newComponent.componentName;
+
+            if(this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
+              for(let dep of this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
+                await dep.recalculateDownstreamComponents();
+              }
+            }
+
+          }
 
           break;
         }
@@ -2329,6 +2340,19 @@ export default class Core {
       serializedReplacements = processResult.serializedComponents;
 
     }
+
+
+    let verificationResult = await verifyReplacementsMatchSpecifiedType({
+      component,
+      replacements: serializedReplacements,
+      assignNames: component.doenetAttributes.assignNames,
+      componentInfoObjects: this.componentInfoObjects, 
+      compositeAttributesObj: component.constructor.createAttributesObject(),
+      flags: this.flags
+    });
+
+
+    serializedReplacements = verificationResult.replacements;
 
     // console.log(`serialized replacements for ${component.componentName} who is shadowing ${shadowedComposite.componentName}`);
     // console.log(deepClone(serializedReplacements));

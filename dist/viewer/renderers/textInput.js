@@ -28,7 +28,8 @@ const TextArea = styled.textarea`
   width: ${(props) => props.textAreaWidth};
   height: ${(props) => props.textAreaHeight}; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${(props) => props.surroundingBorder}; // Turns blue on focus
+  border: ${(props) => props.disabled ? "2px solid var(--mainGray)" : "var(--mainBorder)"};
+  cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
 
   &:focus {
     outline: var(--mainBorder);
@@ -39,7 +40,8 @@ const Input = styled.input`
   width: ${(props) => props.inputWidth}px;
   height: 20px; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${(props) => props.surroundingBorder}; // Turns blue on focus
+  border: ${(props) => props.disabled ? "2px solid var(--mainGray)" : "var(--mainBorder)"};
+  cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
 
   &:focus {
     outline: var(--mainBorder);
@@ -139,17 +141,18 @@ export default function TextInput(props) {
   }
   let disabled = SVs.disabled;
   const inputKey = id + "_input";
-  let surroundingBorder = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
+  let checkWorkStyle = {
+    cursor: "pointer",
+    padding: "1px 6px 1px 6px"
+  };
+  if (disabled) {
+    checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    checkWorkStyle.cursor = "not-allowed";
+    checkWorkStyle.color = "black";
+  }
   let checkWorkButton = null;
   if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-    let checkWorkStyle = {
-      cursor: "pointer",
-      padding: "1px 6px 1px 6px"
-    };
     if (validationState === "unvalidated") {
-      if (disabled) {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-      }
       checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
         id: id + "_submit",
         tabIndex: "0",
@@ -231,7 +234,6 @@ export default function TextInput(props) {
       onFocus: handleFocus,
       textAreaWidth,
       textAreaHeight,
-      surroundingBorder,
       style: {margin: "0px 4px 4px 0px"}
     });
   } else {
@@ -246,7 +248,6 @@ export default function TextInput(props) {
       onBlur: handleBlur,
       onFocus: handleFocus,
       inputWidth,
-      surroundingBorder,
       style: {margin: "0px 4px 4px 0px"}
     });
   }

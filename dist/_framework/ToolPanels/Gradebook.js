@@ -68,7 +68,6 @@ export const Styles = styled.div`
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-
     }
 
     th:first-child {
@@ -83,7 +82,7 @@ export const Styles = styled.div`
       height: 100%;
     } */
 
-    tr:first-child th > p{
+    tr:first-child th > p {
       margin: 0px 0px 4px 0px;
       padding: 0px;
     }
@@ -93,7 +92,6 @@ export const Styles = styled.div`
       text-align: left;
       transform: rotate(180deg);
       max-height: 160px;
-
     }
 
     thead tr:only-child th:not(:first-child) > p {
@@ -161,8 +159,8 @@ export const assignmentData = selector({
     let data = get(assignmentDataQuery);
     if (isIterable(data)) {
       for (let row of data) {
-        let [doenetId, assignmentName] = row;
-        assignmentArray[doenetId] = assignmentName;
+        let [doenetId, assignmentInfo] = row;
+        assignmentArray[doenetId] = assignmentInfo;
       }
     }
     return assignmentArray;
@@ -390,11 +388,7 @@ export function Table({columns, data}) {
     headerGroups,
     footerGroups,
     rows,
-    prepareRow,
-    state,
-    visibleColumns,
-    preGlobalFilteredRows,
-    setGlobalFilter
+    prepareRow
   } = useTable({
     columns,
     data,
@@ -456,6 +450,14 @@ function DefaultColumnFilter({
     style: {border: "2px solid var(--canvastext)", borderRadius: "5px"}
   });
 }
+export const gradeCategories = [
+  {category: "Gateway", scaleFactor: 0},
+  {category: "Exams"},
+  {category: "Quizzes", maximumNumber: 10},
+  {category: "Problem sets", maximumNumber: 30},
+  {category: "Projects"},
+  {category: "Participation", maximumValue: 50}
+];
 function GradebookOverview() {
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -474,14 +476,6 @@ function GradebookOverview() {
   if (assignments.state !== "hasValue" || students.state !== "hasValue" || overview.state !== "hasValue") {
     return null;
   }
-  let gradeCategories = [
-    {category: "Gateway", scaleFactor: 0},
-    {category: "Exams"},
-    {category: "Quizzes", maximumNumber: 10},
-    {category: "Problem sets", maximumNumber: 30},
-    {category: "Projects"},
-    {category: "Participation"}
-  ];
   let overviewTable = {};
   overviewTable.headers = [];
   overviewTable.rows = [];
@@ -492,15 +486,18 @@ function GradebookOverview() {
     accessor: "name",
     Footer: "Possible Points"
   });
+  let sortedAssignments = Object.entries(assignments.contents);
+  sortedAssignments.sort((a, b) => a[1].sortOrder < b[1].sortOrder ? -1 : 1);
   possiblePointRow["name"] = "Possible Points";
   for (let {
     category,
     scaleFactor = 1,
-    maximumNumber = Infinity
+    maximumNumber = Infinity,
+    maximumValue = Infinity
   } of gradeCategories) {
     let allpossiblepoints = [];
     let hasAssignments = false;
-    for (let doenetId in assignments.contents) {
+    for (let [doenetId] of sortedAssignments) {
       let inCategory = assignments.contents[doenetId].category;
       if (inCategory?.toLowerCase() !== category.toLowerCase()) {
         continue;
@@ -539,26 +536,28 @@ function GradebookOverview() {
     }
     let numberScores = allpossiblepoints.length;
     allpossiblepoints = allpossiblepoints.sort((a, b) => b - a).slice(0, maximumNumber);
-    let categoryPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+    let scaledPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+    let categoryPossiblePoints = Math.min(scaledPossiblePoints, maximumValue);
     totalPossiblePoints += categoryPossiblePoints;
     categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
-    let description = "";
+    let description = [];
     if (numberScores > maximumNumber) {
-      description = /* @__PURE__ */ React.createElement("div", {
-        style: {fontSize: ".7em"}
-      }, "(Based on top ", maximumNumber, " scores)");
+      description.push(`top ${maximumNumber} scores`);
     }
     if (scaleFactor !== 1) {
-      description = /* @__PURE__ */ React.createElement("div", {
-        style: {fontSize: ".7em"}
-      }, "(Based on rescaling by ", scaleFactor * 100, "%)");
+      description.push(`rescaling by ${scaleFactor * 100}%`);
+    }
+    if (scaledPossiblePoints > maximumValue) {
+      description.push(`a cap of ${maximumValue} points`);
     }
     if (hasAssignments) {
       overviewTable.headers.push({
         Header: category,
         columns: [
           {
-            Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
+            Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description.length > 0 && /* @__PURE__ */ React.createElement("div", {
+              style: {fontSize: ".7em"}
+            }, "Based on ", description.join(","))),
             accessor: category,
             Footer: categoryPossiblePoints,
             disableFilters: true
@@ -567,7 +566,7 @@ function GradebookOverview() {
       });
     } else {
       overviewTable.headers.push({
-        Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
+        Header: /* @__PURE__ */ React.createElement("div", null),
         accessor: category,
         Footer: categoryPossiblePoints,
         disableFilters: true
@@ -600,10 +599,11 @@ function GradebookOverview() {
     for (let {
       category,
       scaleFactor = 1,
-      maximumNumber = Infinity
+      maximumNumber = Infinity,
+      maximumValue = Infinity
     } of gradeCategories) {
       let scores = [];
-      for (let doenetId in assignments.contents) {
+      for (let [doenetId] of sortedAssignments) {
         let inCategory = assignments.contents[doenetId].category;
         if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
@@ -626,11 +626,13 @@ function GradebookOverview() {
                 previousCrumb: "student"
               }
             });
-          }
+          },
+          role: "button"
         }, score);
       }
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
-      let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      let scaledScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      let categoryScore = Math.min(scaledScore, maximumValue);
       totalScore += categoryScore;
       categoryScore = Math.round(categoryScore * 100) / 100;
       row[category] = categoryScore;

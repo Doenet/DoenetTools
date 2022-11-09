@@ -1,10 +1,12 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useRef} from "../../_snowpack/pkg/react.js";
 import {useNavigate} from "../../_snowpack/pkg/react-router-dom.js";
 import Cookies from "../../_snowpack/pkg/js-cookie.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import "./homepage.css.proxy.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import DoenetDriveCard from "../../_reactComponents/Drive/DoenetDriveCard.js";
+import {checkIfUserClearedOut} from "../../_utils/applicationUtils.js";
+import {useState} from "../../_snowpack/pkg/react.js";
 const Headings = styled.h1`
   line-height: 1.1em;
 `;
@@ -88,10 +90,32 @@ const LinkStyling = styled.a`
 `;
 export default function HomePage(props) {
   let navigate = useNavigate();
-  const jwt = Cookies.get();
-  let isSignedIn = false;
-  if (Object.keys(jwt).includes("JWT_JS")) {
-    isSignedIn = true;
+  const [signedIn, setSignedIn] = useState(null);
+  let checkingCookie = useRef(false);
+  if (!checkingCookie.current) {
+    checkingCookie.current = true;
+    checkIfUserClearedOut().then(({cookieRemoved}) => {
+      setSignedIn(!cookieRemoved);
+    });
+  }
+  let signInButton = null;
+  if (signedIn == true) {
+    signInButton = /* @__PURE__ */ React.createElement("div", {
+      style: {display: "flex", justifyContent: "center"}
+    }, /* @__PURE__ */ React.createElement(Button, {
+      size: "medium",
+      onClick: () => navigate("/course"),
+      value: "Go to Course"
+    }));
+  }
+  if (signedIn == false) {
+    signInButton = /* @__PURE__ */ React.createElement("div", {
+      style: {display: "flex", justifyContent: "center"}
+    }, /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => navigate("/SignIn"),
+      size: "medium",
+      value: "Sign In"
+    }));
   }
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
@@ -100,19 +124,7 @@ export default function HomePage(props) {
     src: "/media/Doenet_Logo_Frontpage.png"
   })), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, null, "The Distributed Open Education Network"), /* @__PURE__ */ React.createElement("h4", {
     style: {marginTop: "0px"}
-  }, "The free and open data-driven educational technology platform"), isSignedIn ? /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", justifyContent: "center"}
-  }, /* @__PURE__ */ React.createElement(Button, {
-    size: "medium",
-    onClick: () => navigate("/course"),
-    value: "Go to Course"
-  })) : /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", justifyContent: "center"}
-  }, /* @__PURE__ */ React.createElement(Button, {
-    onClick: () => navigate("/SignIn"),
-    size: "medium",
-    value: "Sign In"
-  })), /* @__PURE__ */ React.createElement(Paragraph, null, "The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages. Anonymized and aggregated data will be stored in an open distributed data warehouse to facilitate studies on content effectiveness. The Doenet platform includes tools for authoring interactive educational content and conducting educational research using the content.  Our ultimate goal is to provide research-based tools to help instructors and learners discover the most effective content."), /* @__PURE__ */ React.createElement(Paragraph, null, "Although we are still in the early stages, we are excited to introduce Doenet and illustrate the richly interactive activities that one can author with it."), /* @__PURE__ */ React.createElement(Paragraph, {
+  }, "The free and open data-driven educational technology platform"), signInButton, /* @__PURE__ */ React.createElement(Paragraph, null, "The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages. Anonymized and aggregated data will be stored in an open distributed data warehouse to facilitate studies on content effectiveness. The Doenet platform includes tools for authoring interactive educational content and conducting educational research using the content.  Our ultimate goal is to provide research-based tools to help instructors and learners discover the most effective content."), /* @__PURE__ */ React.createElement(Paragraph, null, "Although we are still in the early stages, we are excited to introduce Doenet and illustrate the richly interactive activities that one can author with it."), /* @__PURE__ */ React.createElement(Paragraph, {
     id: "MMA-DUE-Point-article-heading"
   }, "For more background and information on the Doenet project, see", " ", /* @__PURE__ */ React.createElement(LinkStyling, {
     id: "MMA-DUE-Point-article",

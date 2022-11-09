@@ -12,7 +12,7 @@ const FormInput = styled.input`
   padding: 0px 30px 0px 5px;
   color: var(--canvastext);
   overflow: hidden;
-  width: 175px;
+  /* width: 175px; */
   resize: none;
   align-items: center;
   white-space: nowrap;
@@ -71,7 +71,7 @@ const Label = styled.p`
 `;
 const Container = styled.div`
   display: ${(props) => props.align};
-  width: 235px;
+  width: ${(props) => props.width};
   align-items: center;
 `;
 export default function Form(props) {
@@ -91,7 +91,7 @@ export default function Form(props) {
       let button = document.querySelector("#submitButton");
       let buttonWidth = button.clientWidth;
       setTimeout(function() {
-        setFormWidth(235 - buttonWidth + "px");
+        setFormWidth("var(--menuWidth)");
       }, 1e3);
       console.log(buttonWidth);
     }
@@ -105,10 +105,11 @@ export default function Form(props) {
     disable = "disabled";
   }
   ;
-  var inputWidth = "175px";
+  var inputWidth = "";
+  var containerWidth = "auto";
   if (props.width) {
     if (props.width === "menu") {
-      inputWidth = "100px";
+      containerWidth = "var(--menuWidth)";
       if (props.submitButton) {
         inputWidth = "auto";
       }
@@ -181,7 +182,8 @@ export default function Form(props) {
   }
   ;
   return /* @__PURE__ */ React.createElement(Container, {
-    align
+    align,
+    width: containerWidth
   }, /* @__PURE__ */ React.createElement(Label, {
     id: "form-label",
     labelVisible,

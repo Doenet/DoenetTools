@@ -44,6 +44,7 @@ export default function MathInput(props) {
   let {name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   MathInput.baseStateVariable = "rawRendererValue";
   const [mathField, setMathField] = useState(null);
+  const textareaRef = useRef(null);
   const setRendererState = useSetRecoilState(rendererState(rendererName));
   let rendererValue = useRef(SVs.rawRendererValue);
   let includeCheckWork = useRef(SVs.includeCheckWork && !SVs.suppressCheckwork);
@@ -148,22 +149,36 @@ export default function MathInput(props) {
     return null;
   }
   updateValidationState();
+  let mathInputStyle = {
+    borderColor: "black",
+    borderStyle: "solid",
+    borderWidth: "2px",
+    marginRight: "4px",
+    marginBottom: "4px"
+  };
+  let checkWorkStyle = {
+    cursor: "pointer",
+    padding: "1px 6px 1px 6px"
+  };
+  let mathInputWrapper = {
+    cursor: "pointer",
+    marginBottom: "4px"
+  };
+  if (SVs.disabled) {
+    checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    checkWorkStyle.color = "black";
+    checkWorkStyle.cursor = "not-allowed";
+    mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    mathInputStyle.backgroundColor = "rgba(239, 239, 239, 0.3)";
+    mathInputStyle.pointerEvents = "none";
+    mathInputWrapper.cursor = "not-allowed";
+  }
+  if (textareaRef.current && textareaRef.current.disabled !== SVs.disabled) {
+    textareaRef.current.disabled = SVs.disabled;
+  }
   let checkWorkButton = null;
   if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-    let checkWorkStyle = {
-      cursor: "pointer",
-      padding: "1px 6px 1px 6px"
-    };
     if (validationState.current === "unvalidated") {
-      if (SVs.disabled) {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-        checkWorkStyle.color = "black";
-        checkWorkStyle.cursor = "not-allowed";
-        let disabledStyle = {
-          backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-          cursor: "not-allowed"
-        };
-      }
       checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
         id: id + "_submit",
         tabIndex: "0",
@@ -235,15 +250,20 @@ export default function MathInput(props) {
   }), /* @__PURE__ */ React.createElement("span", {
     className: "textInputSurroundingBox",
     id,
-    style: {marginBottom: "4px"}
+    style: mathInputWrapper
   }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(EditableMathField, {
-    style: {border: "var(--mainBorder)", marginRight: "4px", marginBottom: "4px"},
+    style: mathInputStyle,
     latex: rendererValue.current,
     config: {
       autoCommands: "alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity",
       autoOperatorNames: "arg deg det dim exp gcd hom ker lg lim ln log max min Pr sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth sin cos tan sec cosec csc cotan cot ctg arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg sinh cosh tanh sech cosech csch cotanh coth ctgh arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh",
       handlers: {
         enter: handlePressEnter
+      },
+      substituteTextarea: function() {
+        textareaRef.current = document.createElement("textarea");
+        textareaRef.current.disabled = SVs.disabled;
+        return textareaRef.current;
       }
     },
     onChange: (mField) => {

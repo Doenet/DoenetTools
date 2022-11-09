@@ -17,7 +17,7 @@ export default React.memo(function Image(props) {
   let calculatedX = useRef(null);
   let calculatedY = useRef(null);
   let lastPositionFromCore = useRef(null);
-  let previousAnchorPosition = useRef(null);
+  let previousPositionFromAnchor = useRef(null);
   let currentSize = useRef(null);
   let currentOffset = useRef(null);
   const urlOrSource = (SVs.cid ? url : SVs.source) || "";
@@ -79,24 +79,24 @@ export default React.memo(function Image(props) {
       height = 0;
     }
     let offset;
-    if (SVs.anchorPosition === "upperright") {
-      offset = [-width, -height];
-    } else if (SVs.anchorPosition === "upperleft") {
-      offset = [0, -height];
-    } else if (SVs.anchorPosition === "lowerright") {
-      offset = [-width, 0];
-    } else if (SVs.anchorPosition === "lowerleft") {
-      offset = [0, 0];
-    } else if (SVs.anchorPosition === "top") {
-      offset = [-width / 2, -height];
-    } else if (SVs.anchorPosition === "bottom") {
-      offset = [-width / 2, 0];
-    } else if (SVs.anchorPosition === "left") {
-      offset = [0, -height / 2];
-    } else if (SVs.anchorPosition === "right") {
-      offset = [-width, -height / 2];
-    } else {
+    if (SVs.positionFromAnchor === "center") {
       offset = [-width / 2, -height / 2];
+    } else if (SVs.positionFromAnchor === "lowerleft") {
+      offset = [-width, -height];
+    } else if (SVs.positionFromAnchor === "lowerright") {
+      offset = [0, -height];
+    } else if (SVs.positionFromAnchor === "upperleft") {
+      offset = [-width, 0];
+    } else if (SVs.positionFromAnchor === "upperright") {
+      offset = [0, 0];
+    } else if (SVs.positionFromAnchor === "bottom") {
+      offset = [-width / 2, -height];
+    } else if (SVs.positionFromAnchor === "top") {
+      offset = [-width / 2, 0];
+    } else if (SVs.positionFromAnchor === "right") {
+      offset = [0, -height / 2];
+    } else {
+      offset = [-width, -height / 2];
     }
     currentOffset.current = offset;
     let newImageJXG = board.create("image", [urlOrSource, offset, [width, height]], jsxImageAttributes);
@@ -145,7 +145,7 @@ export default React.memo(function Image(props) {
     });
     imageJXG.current = newImageJXG;
     anchorPointJXG.current = newAnchorPointJXG;
-    previousAnchorPosition.current = SVs.anchorPosition;
+    previousPositionFromAnchor.current = SVs.positionFromAnchor;
     currentSize.current = [width, height];
   }
   if (board) {
@@ -199,29 +199,29 @@ export default React.memo(function Image(props) {
         imageJXG.current.setSize(width, height);
         currentSize.current = [width, height];
       }
-      if (SVs.anchorPosition !== previousAnchorPosition.current || sizeChanged) {
+      if (SVs.positionFromAnchor !== previousPositionFromAnchor.current || sizeChanged) {
         let offset;
-        if (SVs.anchorPosition === "upperright") {
-          offset = [-width, -height];
-        } else if (SVs.anchorPosition === "upperleft") {
-          offset = [0, -height];
-        } else if (SVs.anchorPosition === "lowerright") {
-          offset = [-width, 0];
-        } else if (SVs.anchorPosition === "lowerleft") {
-          offset = [0, 0];
-        } else if (SVs.anchorPosition === "top") {
-          offset = [-width / 2, -height];
-        } else if (SVs.anchorPosition === "bottom") {
-          offset = [-width / 2, 0];
-        } else if (SVs.anchorPosition === "left") {
-          offset = [0, -height / 2];
-        } else if (SVs.anchorPosition === "right") {
-          offset = [-width, -height / 2];
-        } else {
+        if (SVs.positionFromAnchor === "center") {
           offset = [-width / 2, -height / 2];
+        } else if (SVs.positionFromAnchor === "lowerleft") {
+          offset = [-width, -height];
+        } else if (SVs.positionFromAnchor === "lowerright") {
+          offset = [0, -height];
+        } else if (SVs.positionFromAnchor === "upperleft") {
+          offset = [-width, 0];
+        } else if (SVs.positionFromAnchor === "upperright") {
+          offset = [0, 0];
+        } else if (SVs.positionFromAnchor === "bottom") {
+          offset = [-width / 2, -height];
+        } else if (SVs.positionFromAnchor === "top") {
+          offset = [-width / 2, 0];
+        } else if (SVs.positionFromAnchor === "right") {
+          offset = [0, -height / 2];
+        } else {
+          offset = [-width, -height / 2];
         }
         imageJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, offset);
-        previousAnchorPosition.current = SVs.anchorPosition;
+        previousPositionFromAnchor.current = SVs.positionFromAnchor;
         currentOffset.current = offset;
         imageJXG.current.fullUpdate();
       } else {

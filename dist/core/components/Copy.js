@@ -1023,6 +1023,8 @@ export default class Copy extends CompositeComponent {
     // console.log(await component.stateValues.effectivePropNameBySource);
     // console.log(await component.stateValues.replacementSources)
 
+    // evaluate nComponentsSpecified so get error if specify nComponents without createComponentOfType
+    await component.stateValues.nComponentsSpecified;
 
     workspace.numReplacementsBySource = [];
     workspace.numNonStringReplacementsBySource = [];

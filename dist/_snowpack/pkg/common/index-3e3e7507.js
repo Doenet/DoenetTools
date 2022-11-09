@@ -1,4 +1,4 @@
-import { V as ViewPlugin, R as RangeSet, B as BlockType, P as PluginField, c as Direction, E as EditorView, b as RangeValue } from './index-18bfe0dd.js';
+import { V as ViewPlugin, R as RangeSet, B as BlockType, P as PluginField, c as Direction, E as EditorView, b as RangeValue } from './index-b1d6eef7.js';
 import { M as MapMode, F as Facet, c as combineConfig } from './index-04f03c08.js';
 
 /**

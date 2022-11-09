@@ -290,6 +290,8 @@ let navigationObj = {
       menusInitOpen: [true],
       headerControls: [],
       displaySettings: false,
+      hasNoMenuPanel: true,
+      hasNoHeaderPanel: true,
       waitForMenuSuppression: true,
       footer: {height: 250, open: false, component: "MathInputKeyboard"}
     },
@@ -347,9 +349,9 @@ let navigationObj = {
       pageName: "Assignment",
       menuPanelCap: "AssignmentInfoCap",
       currentMainPanel: "AssignmentViewer",
-      currentMenus: ["CreditAchieved", "TimerMenu"],
-      menusTitles: ["Credit Achieved", "Time Remaining"],
-      menusInitOpen: [true, true],
+      currentMenus: ["CreditAchieved", "TimerMenu", "ActivityDates"],
+      menusTitles: ["Credit Achieved", "Time Remaining", "Details"],
+      menusInitOpen: [false, false, false],
       headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
       waitForMenuSuppression: true,
       footer: {height: 250, open: false, component: "MathInputKeyboard"}

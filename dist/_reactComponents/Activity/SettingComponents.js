@@ -42,6 +42,7 @@ const InputControl = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: calc(var(--menuWidth) - 10px);
 `;
 const initializingWorkersAtom = atomFamily({
   key: "initializingWorkersAtom",
@@ -64,7 +65,7 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
   let [initializingWorker, setInitializingWorker] = useRecoilState(initializingWorkersAtom(doenetId));
   let assignButton = /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
-    "data-test": "Assign Activity",
+    dataTest: "Assign Activity",
     value: assignActivityText,
     onClick: async () => {
       if (pageId) {
@@ -79,7 +80,6 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
         doenetId,
         isAssigned: true,
         successCallback: () => {
-          addToast(assignActivityToast, toastType.INFO);
         }
       });
     }
@@ -89,7 +89,7 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
   if (isAssigned) {
     unAssignButton = /* @__PURE__ */ React.createElement(ActionButton, {
       width: "menu",
-      "data-test": "Unassign Activity",
+      dataTest: "Unassign Activity",
       value: "Unassign Activity",
       alert: true,
       onClick: () => {
@@ -97,7 +97,6 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
           doenetId,
           isAssigned: false,
           successCallback: () => {
-            addToast("Activity Unassigned", toastType.INFO);
           }
         });
       }
@@ -105,7 +104,7 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
     if (initializingWorker) {
       prerenderButton = /* @__PURE__ */ React.createElement(ActionButton, {
         width: "menu",
-        "data-test": "Cancel prerendering",
+        dataTest: "Cancel prerendering",
         value: `${initializeStatus} (Cancel)`,
         onClick: () => {
           initializingWorker.terminate();
@@ -143,7 +142,7 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
       };
       prerenderButton = /* @__PURE__ */ React.createElement(ActionButton, {
         width: "menu",
-        "data-test": "Prerender activity",
+        dataTest: "Prerender activity",
         value: "Prerender activity",
         onClick: initializePrerender
       });
@@ -307,24 +306,25 @@ export const TimeLimit = ({courseId, doenetId}) => {
     value: {timeLimit: recoilValue},
     updateAssignmentSettings
   } = useActivity(courseId, doenetId);
-  const [timeLimit, setTimeLimit] = useState();
-  useEffect(() => {
-    setTimeLimit(recoilValue);
-  }, [recoilValue]);
+  const [timeLimit, setTimeLimit] = useState(recoilValue);
+  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false);
   return /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(LabelText, null, "Time Limit in Minutes"), /* @__PURE__ */ React.createElement(InputControl, {
     onClick: (e) => e.preventDefault()
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
     dataTest: "Time Limit Checkbox",
-    checked: timeLimit !== null,
+    checked: isEnabled,
     onClick: () => {
       let valueDescription = "Not Limited";
       let value = null;
-      if (timeLimit === null) {
-        valueDescription = "60 Minutes";
+      let enable = false;
+      if (!isEnabled) {
+        valueDescription = 60 + " Minutes";
         value = 60;
+        enable = true;
       }
       setTimeLimit(value);
+      setIsEnabled(enable);
       updateAssignmentSettings({
         keyToUpdate: "timeLimit",
         value,
@@ -333,30 +333,23 @@ export const TimeLimit = ({courseId, doenetId}) => {
       });
     }
   }), /* @__PURE__ */ React.createElement(Increment, {
-    disabled: timeLimit === null,
+    disabled: !isEnabled,
     value: timeLimit,
     dataTest: "Time Limit",
-    min: 0,
-    onBlur: () => {
-      if (recoilValue !== timeLimit) {
-        let timelimitlocal = null;
-        if (timeLimit < 0 || timeLimit === "" || isNaN(timeLimit)) {
-          setTimeLimit(0);
-          timelimitlocal = 0;
-        } else {
-          timelimitlocal = parseInt(timeLimit);
-          setTimeLimit(parseInt(timeLimit));
-        }
-        let valueDescription = `${timelimitlocal} Minutes`;
-        updateAssignmentSettings({
-          keyToUpdate: "timeLimit",
-          value: timelimitlocal,
-          description: "Time Limit",
-          valueDescription
-        });
-      }
+    min: 1,
+    width: "180px",
+    onBlur: (limit) => {
+      if (isNaN(limit) || limit < 1)
+        limit = 1;
+      setTimeLimit(parseInt(limit));
+      updateAssignmentSettings({
+        keyToUpdate: "timeLimit",
+        value: parseInt(limit),
+        description: "Time Limit",
+        valueDescription: `${limit} Minutes`
+      });
     },
-    onChange: (newValue) => setTimeLimit(newValue)
+    onChange: (limit) => setTimeLimit(parseInt(limit))
   })));
 };
 export const AttemptLimit = ({courseId, doenetId}) => {
@@ -365,23 +358,24 @@ export const AttemptLimit = ({courseId, doenetId}) => {
     updateAssignmentSettings
   } = useActivity(courseId, doenetId);
   const [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(recoilValue);
-  useEffect(() => {
-    setNumberOfAttemptsAllowed(recoilValue);
-  }, [recoilValue]);
+  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false);
   return /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(LabelText, null, "Attempts"), /* @__PURE__ */ React.createElement(InputControl, {
     onClick: (e) => e.preventDefault()
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
     dataTest: "Attempt Limit Checkbox",
-    checked: numberOfAttemptsAllowed !== null,
+    checked: isEnabled,
     onClick: () => {
       let valueDescription = "Not Limited";
       let value = null;
-      if (numberOfAttemptsAllowed === null) {
+      let enable = false;
+      if (!isEnabled) {
         valueDescription = "1";
         value = 1;
+        enable = true;
       }
       setNumberOfAttemptsAllowed(value);
+      setIsEnabled(enable);
       updateAssignmentSettings({
         keyToUpdate: "numberOfAttemptsAllowed",
         value,
@@ -390,27 +384,22 @@ export const AttemptLimit = ({courseId, doenetId}) => {
       });
     }
   }), /* @__PURE__ */ React.createElement(Increment, {
-    disabled: numberOfAttemptsAllowed === null,
+    disabled: !isEnabled,
     value: numberOfAttemptsAllowed,
     dataTest: "Attempt Limit",
-    min: 0,
-    onBlur: () => {
-      if (recoilValue !== numberOfAttemptsAllowed) {
-        let numberOfAttemptsAllowedLocal = 1;
-        if (numberOfAttemptsAllowed <= 0 || numberOfAttemptsAllowed === "" || isNaN(numberOfAttemptsAllowed)) {
-          setNumberOfAttemptsAllowed(numberOfAttemptsAllowedLocal);
-        } else {
-          numberOfAttemptsAllowedLocal = parseInt(numberOfAttemptsAllowed);
-          setNumberOfAttemptsAllowed(numberOfAttemptsAllowedLocal);
-        }
-        updateAssignmentSettings({
-          keyToUpdate: "numberOfAttemptsAllowed",
-          value: numberOfAttemptsAllowedLocal,
-          description: "Attempts Allowed"
-        });
-      }
+    width: "180px",
+    min: 1,
+    onBlur: (attempts) => {
+      if (isNaN(attempts) || attempts < 1)
+        attempts = 1;
+      setNumberOfAttemptsAllowed(parseInt(attempts));
+      updateAssignmentSettings({
+        keyToUpdate: "numberOfAttemptsAllowed",
+        value: parseInt(attempts),
+        description: "Attempts Allowed"
+      });
     },
-    onChange: (newValue) => setNumberOfAttemptsAllowed(newValue)
+    onChange: (attempts) => setNumberOfAttemptsAllowed(parseInt(attempts))
   })));
 };
 export const AttemptAggregation = ({courseId, doenetId}) => {
@@ -458,15 +447,15 @@ export const TotalPointsOrPercent = ({courseId, doenetId}) => {
     value: totalPointsOrPercent,
     dataTest: "Total Points Or Percent",
     min: 0,
-    onBlur: () => {
-      if (recoilValue !== totalPointsOrPercent) {
+    onBlur: (newValue) => {
+      if (newValue !== recoilValue) {
         let totalPointsOrPercentLocal = null;
-        if (totalPointsOrPercent < 0 || totalPointsOrPercent === "" || isNaN(totalPointsOrPercent)) {
+        if (newValue < 0 || newValue === "" || isNaN(newValue)) {
           setTotalPointsOrPercent(0);
           totalPointsOrPercentLocal = 0;
         } else {
-          totalPointsOrPercentLocal = parseFloat(totalPointsOrPercent);
-          setTotalPointsOrPercent(parseFloat(totalPointsOrPercent));
+          totalPointsOrPercentLocal = parseFloat(newValue);
+          setTotalPointsOrPercent(parseFloat(newValue));
         }
         updateAssignmentSettings(doenetId, {
           keyToUpdate: "totalPointsOrPercent",
@@ -533,7 +522,7 @@ export const ItemWeights = ({courseId, doenetId}) => {
     vertical: true,
     width: "menu",
     value: textValue,
-    "data-test": "Item Weights",
+    dataTest: "Item Weights",
     onChange: (e) => {
       setTextValue(e.target.value);
     },

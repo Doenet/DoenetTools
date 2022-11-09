@@ -1,7 +1,7 @@
 import { N as NodeProp, b as NodeType } from './index-3d578c67.js';
-import { E as EditorView, S as StyleModule, V as ViewPlugin, D as Decoration, a as RangeSetBuilder } from './index-18bfe0dd.js';
+import { E as EditorView, S as StyleModule, V as ViewPlugin, D as Decoration, a as RangeSetBuilder } from './index-b1d6eef7.js';
 import { F as Facet, P as Prec } from './index-04f03c08.js';
-import { s as syntaxTree } from './index-52d8c3f4.js';
+import { s as syntaxTree } from './index-a6d35803.js';
 
 let nextTagID = 0;
 /**
@@ -269,7 +269,10 @@ class HighlightStyle {
         let ext = [treeHighlighter];
         if (this.module)
             ext.push(EditorView.styleModule.of(this.module));
-        this.extension = ext.concat(highlightStyle.of(this));
+        this.extension = ext.concat(options.themeType == null ? highlightStyle.of(this) :
+            highlightStyle.computeN([EditorView.darkTheme], state => {
+                return state.facet(EditorView.darkTheme) == (options.themeType == "dark") ? [this] : [];
+            }));
         this.fallback = ext.concat(fallbackHighlightStyle.of(this));
     }
     /**
