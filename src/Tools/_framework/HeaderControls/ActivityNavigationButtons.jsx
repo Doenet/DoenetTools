@@ -94,31 +94,29 @@ export default function ActivityNavigationbuttons(props) {
   }, [activityOrder, doenetId, getFirstPageFromIndex]);
 
   return (
-    <div style={props.style}>
-      <ButtonGroup>
-        <Button
-          data-test="Previous Activity Button"
-          value="Previous"
-          onClick={() => {
-            navigate((prev) => ({
-              ...prev,
-              params: { ...prev.params, ...neighborParams.previous },
-            }));
-          }}
-          disabled={neighborParams.previous === null}
-        />
-        <Button
-          data-test="Next Activity Button"
-          value="Next"
-          onClick={() => {
-            navigate((prev) => ({
-              ...prev,
-              params: { ...prev.params, ...neighborParams.next },
-            }));
-          }}
-          disabled={neighborParams.next === null}
-        />
-      </ButtonGroup>
-    </div>
+    <ButtonGroup>
+      <Button
+        data-test="Previous Activity Button"
+        value="Previous"
+        onClick={() => {
+          navigate((prev) => ({
+            ...prev,
+            params: { ...prev.params, ...neighborParams.previous },
+          }));
+        }}
+        disabled={neighborParams.previous === null}
+      />
+      <Button
+        data-test="Next Activity Button"
+        value="Next"
+        onClick={() => {
+          navigate((prev) => ({
+            ...prev,
+            params: { ...prev.params, ...neighborParams.next },
+          }));
+        }}
+        disabled={neighborParams.next === null}
+      />
+    </ButtonGroup>
   );
 }
