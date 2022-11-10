@@ -98,13 +98,13 @@ export default function attempt() {
         {
           name: 'Width - Menu Panel',
           propPreview: '<ActionButton width="menu" />',
-          propCode: { width: 'menu' },
+          propCode: { width: 'menu', dataTest:"ActionButton width example"},
           description: 'Sets width to fill menu panel width',
         },
         {
           name: 'Value',
           propPreview: '<ActionButton value="Edit"/>',
-          propCode: { value: 'Edit' },
+          propCode: { value: 'Edit', dataTest:"ActionButton Edit Value example" },
           description: 'Changes the text',
         },
         {
@@ -1791,7 +1791,7 @@ export default function attempt() {
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
-              <li key={id}>
+              <li key={id} data-test={`componentLink${id}`}>
                 <Link to={`component/${id}`} style={{ color: 'black' }}>
                   {name}
                 </Link>
