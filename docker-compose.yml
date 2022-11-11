@@ -1,18 +1,18 @@
 version: '3.9'
 
 services:
-  # dev:
-  #   image: lyanthropos/doenet_test:snowpack-dev
-  #   ports:
-  #     - 80:80
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - ./:/home/node/workspace
-  #     - node_modules:/home/node/workspace/node_modules
-  #   networks:
-  #     - dev_net
-  #   environment:
-  #     - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
+  dev:
+    image: lyanthropos/doenet_test:snowpack-dev
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/home/node/workspace
+      - node_modules:/home/node/workspace/node_modules
+    networks:
+      - dev_net
+    environment:
+      - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
 
   apache:
     image: lyanthropos/doenet_test:apache-dev
@@ -53,6 +53,7 @@ services:
     networks:
       - dev_net
     restart: always
+
   # for realtime testing
   # rtnode:
   #   image: node:lts-alpine3.13
