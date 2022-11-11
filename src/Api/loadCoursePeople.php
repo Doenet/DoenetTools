@@ -50,7 +50,7 @@ if ($success) {
 		FROM course_user AS cu, user AS u
 		WHERE cu.userId = u.userId 
         AND cu.courseId = '$courseId'
-		ORDER BY firstName
+		ORDER BY lastName
 		";
     $result = $conn->query($sql);
     if ($result) {
