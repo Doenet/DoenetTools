@@ -1524,7 +1524,15 @@ export const useCourse = (courseId) => {
         ...options,
       });
       if(success) {
-        set(peopleAtomByCourseId(courseId), (prev) => ([...prev, {...serverUserData}]));
+        set(peopleAtomByCourseId(courseId), (prev) => {
+          const next = [...prev];
+          next.splice(
+            prev.findIndex(({lastName}) => (serverUserData.lastName < lastName)), 
+            0,
+            {...serverUserData}
+          )
+          return next;
+        });
         successCallback(message);
       } else {
         throw new Error(message);
