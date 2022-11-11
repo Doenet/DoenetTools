@@ -7,8 +7,8 @@ services:
       - 80:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./:/home/node/workspace
-      - node_modules:/home/node/workspace/node_modules
+      # - ./:/home/node/workspace
+      # - node_modules:/home/node/workspace/node_modules
     networks:
       - dev_net
     environment:
