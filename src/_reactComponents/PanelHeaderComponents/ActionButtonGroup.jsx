@@ -2,14 +2,16 @@ import React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
-  margin-left: 3px;
+  /* margin-left: 3px; */
   display: ${(props) => (props.vertical ? 'static' : 'flex')};
   overflow: auto;
   min-width: 0;
+  /* flex-wrap: wrap; */
 `;
 
 const LabelContainer = styled.div`
   display: ${(props) => props.align};
+  width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
   align-items: ${(props) => props.alignItems};
 `;
 
@@ -21,7 +23,7 @@ const Label = styled.p`
 `;
 
 const actionGroup = {
-  margin: '0px -2px 0px -2px',
+  // margin: '0px -2px 0px -2px',
   borderRadius: '0',
   padding: '0px 12px 0px 10px',
   border: '1px solid var(--mainGray)', // Adds a light border around each button in the group
@@ -37,11 +39,6 @@ const verticalActionGroup = {
 };
 
 const ActionButtonGroup = (props) => {
-  var container = {};
-  container.width = props.width;
-  if (props.width === 'menu') {
-    container.width = '100%';
-  }
   let first_prop = props.vertical ? 'first_vert' : 'first';
   let last_prop = props.vertical ? 'last_vert' : 'last';
   let overflow_prop = props.width ? 'no_overflow' : 'overflow';
@@ -77,11 +74,11 @@ const ActionButtonGroup = (props) => {
 
   return (
     <>
-      <LabelContainer align={align} alignItems={alignItems}>
+      <LabelContainer align={align} alignItems={alignItems} width={props.width}>
         <Label labelVisible={labelVisible} align={align}>
           {label}
         </Label>
-        <Container style={container} vertical={props.vertical}>
+        <Container vertical={props.vertical}>
           <ThemeProvider
             theme={props.vertical ? verticalActionGroup : actionGroup}
           >

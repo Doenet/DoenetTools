@@ -65,7 +65,7 @@ export default React.memo(function Point(props) {
       fillOpacity: SVs.selectedStyle.lineOpacity,
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
-      size: SVs.selectedStyle.markerSize,
+      size: normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle),
       face: normalizeStyle(SVs.selectedStyle.markerStyle),
       highlight: !fixed
     };
@@ -335,9 +335,10 @@ export default React.memo(function Point(props) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
       }
-      if (pointJXG.current.visProp.size !== SVs.selectedStyle.markerSize) {
-        pointJXG.current.visProp.size = SVs.selectedStyle.markerSize
-        shadowPointJXG.current.visProp.size = SVs.selectedStyle.markerSize
+      let newSize = normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle);
+      if (pointJXG.current.visProp.size !== newSize) {
+        pointJXG.current.setAttribute({ size: newSize });
+        shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
       if (fixed) {
@@ -438,6 +439,12 @@ export default React.memo(function Point(props) {
 
 
 })
+
+function normalizeSize(size, style) {
+  if (style.substring(0,8) === "triangle" || style === "diamond") {
+    return size * 1.4;
+  } else return size;
+}
 
 function normalizeStyle(style) {
   if (style === "triangle") {

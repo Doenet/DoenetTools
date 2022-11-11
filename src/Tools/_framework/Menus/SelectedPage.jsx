@@ -39,7 +39,7 @@ export default function SelectedPage() {
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast('Every item must have a label.');
+      //addToast('Every item must have a label.');
     }
     //Only update the server when it changes
     if (pageObj.label !== effectiveItemLabel){
@@ -58,7 +58,7 @@ export default function SelectedPage() {
   <ActionButton
           width="menu"
           value="Edit Page"
-          data-test="Edit Page" 
+          dataTest="Edit Page" 
           onClick={() => {
             setPageToolView({
               page: 'course',
@@ -74,7 +74,7 @@ export default function SelectedPage() {
   </ActionButtonGroup>
   <Textfield
       label="Label"
-      data-test="Label Page"
+      dataTest="Label Page"
       vertical
       width="menu"
       value={itemTextFieldLabel}
@@ -92,7 +92,7 @@ export default function SelectedPage() {
           create({itemType:"page"})
         }
         value="Add Page"
-        data-test="Add Page"
+        dataTest="Add Page"
       />
     {containingObj.type == 'activity' ? 
      <Button
@@ -101,7 +101,7 @@ export default function SelectedPage() {
        create({itemType:"order"})
      }
      value="Add Order"
-     data-test="Add Order"
+     dataTest="Add Order"
    /> : null
     }
      
@@ -110,7 +110,7 @@ export default function SelectedPage() {
     <Button
       width="menu"
       value="Delete Page"
-      data-test="Delete Page"
+      dataTest="Delete Page"
       alert
       onClick={(e) => {
         e.preventDefault();

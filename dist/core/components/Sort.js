@@ -137,16 +137,22 @@ export default class Sort extends CompositeComponent {
       },
       definition({ dependencyValues, componentInfoObjects }) {
         let allValues = [];
+        let allAreNumeric = true;
         for (let depName in dependencyValues) {
           if (depName.substring(0, 9) !== "component") {
             continue;
           }
           let component = dependencyValues[depName];
-          if(dependencyValues.propName) {
+          if (dependencyValues.propName) {
+            let value = Object.values(component.stateValues)[0];
             allValues.push({
               componentName: component.componentName,
-              numericalValue: Object.values(component.stateValues)[0],
+              numericalValue: Number(value),
+              textValue: String(value)
             })
+            if (!Number.isFinite(value)) {
+              allAreNumeric = false;
+            }
           } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: component.componentType,
             baseComponentType: "number"
@@ -154,7 +160,20 @@ export default class Sort extends CompositeComponent {
             allValues.push({
               componentName: component.componentName,
               numericalValue: component.stateValues.value,
+              textValue: String(component.stateValues.value),
             })
+          } else if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: component.componentType,
+            baseComponentType: "text"
+          })) {
+            let numericalValue = NaN;
+            let textValue = component.stateValues.value;
+            allValues.push({
+              componentName: component.componentName,
+              numericalValue,
+              textValue
+            })
+            allAreNumeric = false;
           } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: component.componentType,
             baseComponentType: "math"
@@ -162,10 +181,12 @@ export default class Sort extends CompositeComponent {
             let numericalValue = component.stateValues.value.evaluate_to_constant();
             if (numericalValue === null) {
               numericalValue = NaN;
+              allAreNumeric = false;
             }
             allValues.push({
               componentName: component.componentName,
               numericalValue,
+              textValue: component.stateValues.value.toString()
             })
           } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: component.componentType,
@@ -173,15 +194,19 @@ export default class Sort extends CompositeComponent {
           })) {
             let compValue = component.stateValues[`x${dependencyValues.sortByComponent}`];
             let numericalValue = NaN;
+            let textValue = "";
             if (compValue) {
               numericalValue = compValue.evaluate_to_constant();
               if (numericalValue === null) {
                 numericalValue = NaN;
+                allAreNumeric = false;
               }
+              textValue = compValue.toString();
             }
             allValues.push({
               componentName: component.componentName,
               numericalValue,
+              textValue
             })
 
           } else if (componentInfoObjects.isInheritedComponentType({
@@ -189,6 +214,7 @@ export default class Sort extends CompositeComponent {
             baseComponentType: "vector"
           })) {
             let numericalValue = NaN;
+            let textValue = "";
             let compValue = component.stateValues[`x${dependencyValues.sortByComponent}`];
             if (dependencyValues.sortVectorsBy === "displacement") {
               compValue = component.stateValues[`x${dependencyValues.sortByComponent}`];
@@ -199,16 +225,23 @@ export default class Sort extends CompositeComponent {
               numericalValue = compValue.evaluate_to_constant();
               if (numericalValue === null) {
                 numericalValue = NaN;
+                allAreNumeric = false;
               }
+              textValue = compValue.toString();
             }
             allValues.push({
               componentName: component.componentName,
               numericalValue,
+              textValue
             })
           }
         }
 
-        allValues.sort((a, b) => a.numericalValue - b.numericalValue)
+        if (allAreNumeric) {
+          allValues.sort((a, b) => a.numericalValue - b.numericalValue)
+        } else {
+          allValues.sort((a, b) => (a.textValue > b.textValue) ? 1 : (a.textValue < b.textValue) ? -1 : 0)
+        }
 
         return {
           setValue: {
@@ -268,6 +301,8 @@ export default class Sort extends CompositeComponent {
       serializedComponents: replacements,
       componentName: component.componentName,
       uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed,
+      addShadowDependencies: true,
+      markAsPrimaryShadow: true,
     })
 
     let processResult = processAssignNames({

@@ -127,7 +127,7 @@ export default function GroupSettings() {
             groups: JSON.stringify(shuffledGroups),
             entries: JSON.stringify(shuffledEntries),
           });
-          addToast('Collection has been assigned', toastType.SUCCESS);
+          //addToast('Collection has been assigned', toastType.SUCCESS);
           dispach({ type: 'isReleased', payload: { isReleased: '1' } });
         } else {
           addToast(

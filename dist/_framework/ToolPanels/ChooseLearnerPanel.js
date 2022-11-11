@@ -8,6 +8,8 @@ import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGrou
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js";
 import {formatAMPM, UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+import {useRef} from "../../_snowpack/pkg/react.js";
+import {checkIfUserClearedOut, clearUsersInformationFromTheBrowser} from "../../_utils/applicationUtils.js";
 export const Styles = styled.div`
   padding: 1rem;
   table {
@@ -128,6 +130,8 @@ export default function ChooseLearnerPanel(props) {
   let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
   let [message, setMessage] = useState("");
   let [selectedExamLabel, setSelectedExamLabel] = useState("");
+  let clearingUserRef = useRef(false);
+  let [clearingMessageJSX, setClearingMessageJSX] = useState(null);
   const addToast = useToast();
   const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId, resumeAttemptFlag2) => {
     if (!resumeAttemptFlag2) {
@@ -148,6 +152,20 @@ export default function ChooseLearnerPanel(props) {
       return newObj;
     });
   });
+  async function clearOutUser() {
+    while (clearingUserRef.current) {
+      await clearUsersInformationFromTheBrowser();
+      let {userInformationIsCompletelyRemoved, messageArray} = await checkIfUserClearedOut();
+      setClearingMessageJSX(messageArray.map((text, i) => /* @__PURE__ */ React.createElement("p", {
+        key: `error ${i}`
+      }, text)));
+      if (userInformationIsCompletelyRemoved) {
+        setStage("choose exam");
+        clearingUserRef.current = false;
+        break;
+      }
+    }
+  }
   if (stage === "request password" || stage === "problem with code") {
     return /* @__PURE__ */ React.createElement("div", {
       style: {
@@ -190,7 +208,9 @@ export default function ChooseLearnerPanel(props) {
     const checkCode = async (code2) => {
       let {data} = await axios.get("/api/checkPasscode.php", {params: {code: code2, doenetId, courseId}});
       if (data.success) {
-        setStage("choose exam");
+        clearingUserRef.current = true;
+        clearOutUser();
+        setStage("clearing past user");
         setLearners(data.learners);
         setExams(data.exams);
         let nextExamsById = {};
@@ -204,6 +224,15 @@ export default function ChooseLearnerPanel(props) {
       }
     };
     checkCode(code);
+  }
+  if (stage === "clearing past user") {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h1", null, "Clearing out past user..."), clearingMessageJSX, /* @__PURE__ */ React.createElement(Button, {
+      value: "Cancel",
+      onClick: () => {
+        clearingUserRef.current = false;
+        setStage("choose exam");
+      }
+    }));
   }
   if (stage === "choose exam") {
     if (exams.length < 1) {
@@ -279,9 +308,6 @@ export default function ChooseLearnerPanel(props) {
           timeZoneCorrectLastExamDate = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
             value: "Resume",
             onClick: () => {
-              localStorage.clear();
-              indexedDB.deleteDatabase("keyval-store");
-              axios.get("/api/signOut.php");
               setChoosenLearner(learner);
               setStage("student final check");
               setResumeAttemptFlag(true);
@@ -306,9 +332,6 @@ export default function ChooseLearnerPanel(props) {
         width: "menu",
         value: "Start",
         onClick: () => {
-          localStorage.clear();
-          indexedDB.deleteDatabase("keyval-store");
-          axios.get("/api/signOut.php");
           setChoosenLearner(learner);
           setStage("student final check");
           setResumeAttemptFlag(false);

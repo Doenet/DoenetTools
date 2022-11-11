@@ -23,7 +23,7 @@ export default function EndPlacementExamPanel() {
         <h1>Exam is finished</h1>
     </div>
     <div style={{alignItems: 'center', maxWidth: '400px'}}>
-        <p>You have completed both parts of the placement exam. Wait 24 hours and return to ... to see placement results.</p>
+        <p>You have completed the MathPlacementExam. It may take 24 hours for your results to show on the New Student Orientation Checklist. Further information about the math placement process can be found on the New Student Orientation Checklist.</p>
     </div>
   </div>
 }

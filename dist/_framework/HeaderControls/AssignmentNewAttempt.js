@@ -31,7 +31,7 @@ export default function AssignmentNewAttempt() {
   };
   return /* @__PURE__ */ React.createElement(Button, {
     value: "New Attempt",
-    "data-test": "New Attempt",
+    dataTest: "New Attempt",
     disabled: !buttonEnabled,
     onClick: newAttempt
   });

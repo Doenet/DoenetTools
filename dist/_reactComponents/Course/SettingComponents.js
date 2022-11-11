@@ -53,7 +53,6 @@ const useSyncedTextfeildState = (syncCB, remoteValue = "") => {
         effectiveLabel = "Untitled Course";
       }
       setLocalValue(effectiveLabel);
-      addToast("A Course must have a label.");
     }
     if (remoteValue !== effectiveLabel) {
       syncCB(effectiveLabel);
@@ -272,7 +271,6 @@ export function ManageUsers({courseId, editable = false}) {
   const [selectedUserPermissions, setSelectedUserPermissions] = useState(null);
   const handleRoleChange = async () => {
     modifyUserRole(selectedUserData?.email, selectedUserPermissions?.roleId, () => {
-      addToast(`${selectedUserData.screenName} is now a ${selectedUserPermissions.roleLabel}`);
       setSelectedUserData((prev) => ({
         ...prev,
         roleId: selectedUserPermissions.roleId,
@@ -280,7 +278,6 @@ export function ManageUsers({courseId, editable = false}) {
         permissions: selectedUserPermissions
       }));
     }, (err) => {
-      addToast(err, toastType.ERROR);
       setSelectedUserPermissions(selectedUserData.permissions);
     });
   };
@@ -397,16 +394,13 @@ export function MangeRoles({courseId}) {
   const handleSave = () => {
     modifyRolePermissions(selectedRolePermissions.roleId, permissionEdits, () => {
       setEdited(false);
-      addToast(`Permissions for ${permissionEdits?.roleLabel ?? selectedRolePermissions.roleLabel} updated successfully`);
-      setPermissionEdits({});
+      setPermissonEdits({});
     }, (error) => {
-      setSelectedRolePermissions(selectedRolePermissions);
-      addToast(error, toastType.ERROR);
+      setSelectedRolePermissons(selectedRolePermissons);
     });
   };
   const handleDelete = () => {
     modifyRolePermissions(selectedRolePermissions.roleId, {isDeleted: "1"}, () => {
-      addToast(`${selectedRolePermissions.roleLabel} successfully deleted`);
       setEdited(false);
       setPermissionEdits({});
     }, (error) => {
@@ -571,7 +565,6 @@ export function AddRole({courseId}) {
   const {modifyRolePermissions} = useCourse(courseId);
   const handleSave = () => {
     modifyRolePermissions("", {roleLabel: `Role ${roles.length}`}, () => {
-      addToast(`Create a new role: Role ${roles.length}`);
     });
   };
   return /* @__PURE__ */ React.createElement(Button, {
@@ -592,7 +585,6 @@ export function DeleteCourse({courseId}) {
   const handelDelete = () => {
     deleteCourse(() => {
       setCourseCardsSelection([]);
-      addToast(`${label} deleted`, toastType.SUCCESS);
     });
   };
   return /* @__PURE__ */ React.createElement(ButtonGroup, {

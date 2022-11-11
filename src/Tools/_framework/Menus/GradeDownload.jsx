@@ -3,7 +3,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useRecoilCallback } from 'recoil';
 import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { assignmentData, overviewData, studentData } from '../ToolPanels/Gradebook';
+import { assignmentData, gradeCategories, overviewData, studentData } from '../ToolPanels/Gradebook';
 import axios from 'axios';
 
 
@@ -24,17 +24,6 @@ export default function GradeDownload(){
 
     let filename = `${driveLabel}.csv`
     let csvText;
-    let gradeCategories = [
-      {category:'Gateway',
-      scaleFactor:0},
-      {category:'Exams'},
-      {category:'Quizzes',
-      maximumNumber:10},
-      {category:'Problem sets',
-      maximumNumber:30},
-      {category:'Projects'},
-      {category:'Participation'}
-  ];
     let assignments = await snapshot.getPromise(assignmentData);
     let students = await snapshot.getPromise(studentData); //Need more id data
     let overview = await snapshot.getPromise(overviewData);

@@ -135,7 +135,7 @@ export default function AssignmentViewer() {
     setLoad,
   ] = useState({});
 
-  const setNumberOfAttemptsAllowedAdjustment = useSetRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
+  const [numberOfAttemptsAllowedAdjustment,setNumberOfAttemptsAllowedAdjustment] = useRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
 
   const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
 
@@ -152,7 +152,7 @@ export default function AssignmentViewer() {
 
   const effectivePermissions = useRecoilValue(effectivePermissionsByCourseId(courseId));
 
-  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
+  let [itemObj,setItemObj] = useRecoilState(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
 
   let { search, hash } = useLocation();
@@ -580,12 +580,9 @@ export default function AssignmentViewer() {
     return null;
   }
 
-  if (!itemObj?.canViewAfterCompleted && itemObj.completed){
-    return <>
-    <p>Can&#39;t take again.</p>
-    {/* <p>Completed on {itemObj.completedDate}</p> */}
-    </>
-  }
+  console.log("stage",stage)
+  
+
 
   // console.log(`>>>>stage -${stage}-`)
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
@@ -603,6 +600,45 @@ export default function AssignmentViewer() {
     return <h1>{message}</h1>;
   }
 
+
+  if (!itemObj?.canViewAfterCompleted && itemObj.completed){
+    
+    const totalNumberOfAttemptsAllowed = Number(itemObj.numberOfAttemptsAllowed) + Number(numberOfAttemptsAllowedAdjustment);
+    if (totalNumberOfAttemptsAllowed > attemptNumber){
+      return <>
+      <div style={{margin:"15px"}}>
+      <h1>Assessment Complete</h1>
+      <p>You have completed this assessment.  Would you like to begin another attempt?</p>
+      <p><Button value="Begin New Attempt" onClick={async ()=>{
+        const { data } = await axios.get(`/api/saveCompleted.php`,{params:{doenetId}});
+        if (data.success){
+          setRecoilAttemptNumber(was=>was+1);
+          //recoil update completed
+          setItemObj((prev)=>{
+            let next = {...prev}
+            next.completed = false;
+            return next;
+          })
+        }else{
+          setStage('Problem');
+          setMessage('Internal Error');
+        }
+
+      }}/></p>
+      </div>
+      {/* <p>Completed on {itemObj.completedDate}</p> */}
+      </>
+    }else{
+      return <>
+      <div style={{margin:"15px"}}>
+      <h1>Assessment Complete</h1>
+    <p>You have already completed this assessment and no additional attempts are available.</p>
+    </div>
+    {/* <p>Completed on {itemObj.completedDate}</p> */}
+    </>
+    }
+  }
+
   let cidChangedAlert = null;
   if (cidChanged) {
     if (cidChangedMessageOpen) {
@@ -616,15 +652,15 @@ export default function AssignmentViewer() {
         (This will reset the activity{attemptNumberPhrase}.)
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
-            <Button onClick={incrementAttemptNumberAndAttemptsAllowed} data-test="ConfirmNewVersion" value="Yes"></Button>
-            <Button onClick={() => setCidChangedMessageOpen(false)} data-test="CancelNewVersion" value="No" alert></Button>
+            <Button onClick={incrementAttemptNumberAndAttemptsAllowed} dataTest="ConfirmNewVersion" value="Yes"></Button>
+            <Button onClick={() => setCidChangedMessageOpen(false)} dataTest="CancelNewVersion" value="No" alert></Button>
           </ButtonGroup>
         </div>
 
       </div>}></Banner>
     } else {
       cidChangedAlert = <Banner type="ACTION" value={<div style={{ marginLeft: "1px", marginRight: "5px" }}>
-        <ActionButton onClick={() => setCidChangedMessageOpen(true)} data-test="NewVersionAvailable" value="New version available!"></ActionButton>
+        <ActionButton onClick={() => setCidChangedMessageOpen(true)} dataTest="NewVersionAvailable" value="New version available!"></ActionButton>
       </div>}></Banner>
     }
   }

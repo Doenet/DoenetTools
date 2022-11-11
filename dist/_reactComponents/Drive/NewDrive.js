@@ -2007,7 +2007,7 @@ function useUpdateBreadcrumb(props) {
         }
       }
     }, /* @__PURE__ */ React.createElement(Link, {
-      "data-test": "breadcrumbDriveColumn",
+      dataTest: "breadcrumbDriveColumn",
       style: breadcrumbItemStyle,
       to: driveDestinationLink
     }, props.driveLabel));

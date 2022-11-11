@@ -9,7 +9,7 @@ import {
   faCloud,
 } from '@fortawesome/free-solid-svg-icons';
 import mathquill from 'react-mathquill';
-mathquill.addStyles(); //Styling for react-mathquill input field
+mathquill.addStyles(); // Styling for react-mathquill input field
 let EditableMathField = mathquill.EditableMathField;
 import {
   focusedMathField,
@@ -51,6 +51,7 @@ export default function MathInput(props) {
   MathInput.baseStateVariable = 'rawRendererValue';
 
   const [mathField, setMathField] = useState(null);
+  const textareaRef = useRef(null); // Ref to keep track of the mathInput's disabled state
 
   const setRendererState = useSetRecoilState(rendererState(rendererName));
 
@@ -185,25 +186,49 @@ export default function MathInput(props) {
 
   // const inputKey = this.componentName + '_input';
 
+  let mathInputStyle = { // Style the EditableMathField
+
+    // Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
+    // Currently does not work with border: "var(--mainBorder)"
+    borderColor: "black",
+    borderStyle: "solid",
+    borderWidth: "2px",
+
+    marginRight: "4px", 
+    marginBottom: "4px",
+  }
+
+  let checkWorkStyle = {
+    cursor: "pointer",
+    padding: "1px 6px 1px 6px",
+  }
+
+  let mathInputWrapper = { // Style the EditableMathField Wrapper
+    cursor: "pointer",
+    marginBottom: "4px",
+  }
+
+  if (SVs.disabled) {
+    // Disable the checkWorkButton
+    checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    checkWorkStyle.color = 'black';
+    checkWorkStyle.cursor = 'not-allowed';
+
+    // Disable the mathInput
+    mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    mathInputStyle.backgroundColor = 'rgba(239, 239, 239, 0.3)';
+    mathInputStyle.pointerEvents = 'none';
+    mathInputWrapper.cursor = 'not-allowed';
+  }
+
+  if(textareaRef.current && textareaRef.current.disabled !== SVs.disabled) { // Update the mathInput ref's disabled state
+    textareaRef.current.disabled = SVs.disabled;
+  }
+
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-    let checkWorkStyle = {
-      cursor: 'pointer',
-      padding: "1px 6px 1px 6px",
-    }
-
     if (validationState.current === 'unvalidated') {
-      if (SVs.disabled) {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-        checkWorkStyle.color = 'black';
-        checkWorkStyle.cursor = 'not-allowed';
-        
-        let disabledStyle = {
-          backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-          cursor: 'not-allowed'
-        }
-      }
       checkWorkButton = (
         <Button
           id={id + '_submit'}
@@ -297,10 +322,10 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={id} />
 
-      <span className="textInputSurroundingBox" id={id} style={{ marginBottom: "4px" }}>
+      <span className="textInputSurroundingBox" id={id} style={mathInputWrapper}>
         <span>
           <EditableMathField
-            style={{border: "var(--mainBorder)", marginRight: "4px", marginBottom: "4px",}}
+            style={mathInputStyle}
             latex={rendererValue.current}
             config={{
               autoCommands:
@@ -317,6 +342,11 @@ export default function MathInput(props) {
               handlers: {
                 enter: handlePressEnter,
               },
+              substituteTextarea: function () {
+                textareaRef.current = document.createElement('textarea');
+                textareaRef.current.disabled = SVs.disabled;
+                return textareaRef.current;
+              }
             }} //more commands go here
             onChange={(mField) => {
               onChangeHandler(mField.latex());

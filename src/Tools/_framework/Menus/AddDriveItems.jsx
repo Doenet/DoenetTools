@@ -17,7 +17,7 @@ export default function AddDriveItems() {
     <ButtonGroup vertical>
       <Button
         width="menu"
-        data-test="Add Activity Button"
+        dataTest="Add Activity Button"
         onClick={() => create({ itemType: 'activity' },()=>{
           addToast('Activity Created!');
         })}
@@ -27,7 +27,7 @@ export default function AddDriveItems() {
       </Button>
       <Button
         width="menu"
-        data-test="Add Collection Button"
+        dataTest="Add Collection Button"
         onClick={() => create({ itemType: 'bank' },()=>{
           addToast('Collection Created!');
         })}
@@ -35,7 +35,7 @@ export default function AddDriveItems() {
       />
       <Button
         width="menu"
-        data-test="Add Section Button"
+        dataTest="Add Section Button"
         onClick={() => create({ itemType: 'section' },()=>{
           addToast('Section Created!');
         })}

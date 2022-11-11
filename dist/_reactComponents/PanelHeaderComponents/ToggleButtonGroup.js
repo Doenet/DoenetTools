@@ -2,8 +2,11 @@ import React, {useState} from "../../_snowpack/pkg/react.js";
 import styled, {ThemeProvider} from "../../_snowpack/pkg/styled-components.js";
 const Container = styled.div`
   display: ${(props) => props.vertical ? "static" : "flex"};
+  width: ${(props) => props.width == "menu" ? "var(--menuWidth)" : ""};
   // height: 'fit-content';
   // margin: 2px 0px 2px 0px ;
+  /* flex-wrap: wrap; */
+  overflow: clip;
 `;
 const toggleGroup = {
   margin: "0px -2px 0px -2px",
@@ -43,6 +46,7 @@ const ToggleButtonGroup = (props) => {
   return /* @__PURE__ */ React.createElement(Container, {
     style: {height: "fit-content"},
     vertical: props.vertical,
+    width: props.width,
     role: "group"
   }, /* @__PURE__ */ React.createElement(ThemeProvider, {
     theme: props.vertical ? verticalToggleGroup : toggleGroup

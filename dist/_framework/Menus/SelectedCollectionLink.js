@@ -65,7 +65,6 @@ export default function SelectedCollectionLink() {
         effectiveItemLabel = "Untitled Collection Link";
       }
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast("Every item must have a label.");
     }
     if (itemObj.label !== effectiveItemLabel) {
       console.log("Rename", doenetId, effectiveItemLabel);
@@ -123,7 +122,7 @@ export default function SelectedCollectionLink() {
     label: "Label",
     vertical: true,
     width: "menu",
-    "data-test": "Label Collection",
+    dataTest: "Label Collection",
     value: itemTextFieldLabel,
     onChange: (e) => setItemTextFieldLabel(e.target.value),
     onKeyDown: (e) => {

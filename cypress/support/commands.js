@@ -26,6 +26,8 @@
 
 import 'cypress-wait-until';
 import 'cypress-file-upload';
+import { clear as idb_clear} from 'idb-keyval';
+
 
 Cypress.Commands.add("createUserRole", ({courseId,roleId,label="no label"}) => {
   cy.task('queryDb', `
@@ -148,13 +150,6 @@ Cypress.Commands.add("createMultipageActivity", ({courseId,doenetId,parentDoenet
 });
 
 Cypress.Commands.add("clearIndexedDB", () => {
-  return new Promise((resolve, reject) => {
-    const request = window.indexedDB.deleteDatabase("keyval-store");
-
-    request.addEventListener('success', resolve);
-    request.addEventListener('blocked', resolve);
-    request.addEventListener('error', reject);
-
-  })
+  return idb_clear();
 });
 

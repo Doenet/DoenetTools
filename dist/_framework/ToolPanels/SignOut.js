@@ -3,20 +3,26 @@ import axios from "../../_snowpack/pkg/axios.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import {checkIfUserClearedOut, clearUsersInformationFromTheBrowser} from "../../_utils/applicationUtils.js";
 export default function SignOut() {
-  const [signOutAttempted, setSignOutAttempted] = useState(false);
+  const [isSignedOut, setIsSignedOut] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   useEffect(() => {
-    localStorage.clear();
-    indexedDB.deleteDatabase("keyval-store");
-    axios.get("/api/signOut.php", {params: {}}).then((resp) => {
-      setSignOutAttempted(true);
+    async function checkSignout() {
+      let {userInformationIsCompletelyRemoved, messageArray} = await checkIfUserClearedOut();
+      setIsSignedOut(userInformationIsCompletelyRemoved);
+      setErrorMessage(messageArray.map((text, i) => /* @__PURE__ */ React.createElement("p", {
+        key: `error ${i}`
+      }, text)));
+    }
+    clearUsersInformationFromTheBrowser().then(() => {
+      checkSignout();
     }).catch((error) => {
-      this.setState({error});
+      checkSignout();
     });
   }, []);
-  const vanillaCookies = document.cookie.split(";");
-  if (vanillaCookies.length === 1 && vanillaCookies[0] === "") {
+  if (isSignedOut) {
     return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
       style: {
         position: "absolute",
@@ -41,7 +47,7 @@ export default function SignOut() {
       }
     }))));
   }
-  if (signOutAttempted) {
+  if (errorMessage != "") {
     return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
       style: {
         position: "absolute",
@@ -57,7 +63,7 @@ export default function SignOut() {
       style: {width: "250px", height: "250px"},
       src: "/media/Doenet_Logo_Frontpage.png",
       alt: "Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background"
-    }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", null, "FAILED SIGN OUT"), /* @__PURE__ */ React.createElement("p", null, "Please manually remove your cookies."))));
+    }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", null, "FAILED SIGN OUT"), /* @__PURE__ */ React.createElement("p", null, errorMessage), /* @__PURE__ */ React.createElement("p", null, "Please manually remove your cookies."))));
   }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
     style: {

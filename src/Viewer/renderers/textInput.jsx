@@ -31,7 +31,8 @@ const TextArea = styled.textarea `
   width: ${props => props.textAreaWidth};
   height: ${props => props.textAreaHeight}; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${props => props.surroundingBorder}; // Turns blue on focus
+  border: ${props => props.disabled ? '2px solid var(--mainGray)' : 'var(--mainBorder)'};
+  cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
 
   &:focus {
     outline: var(--mainBorder);
@@ -43,7 +44,8 @@ const Input = styled.input `
   width: ${props => props.inputWidth}px;
   height: 20px; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${props => props.surroundingBorder}; // Turns blue on focus
+  border: ${props => props.disabled ? '2px solid var(--mainGray)' : 'var(--mainBorder)'};
+  cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
 
   &:focus {
     outline: var(--mainBorder);
@@ -178,22 +180,21 @@ export default function TextInput(props) {
 
   const inputKey = id + '_input';
 
-  // textInput turns blue when focused, otherwise maintains the main border
-  let surroundingBorder = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
+  let checkWorkStyle = {
+    cursor: 'pointer',
+    padding: '1px 6px 1px 6px',
+  }
+
+  if (disabled) {
+    checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    checkWorkStyle.cursor = 'not-allowed';
+    checkWorkStyle.color = 'black';
+  }
 
   // Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-
-    let checkWorkStyle = {
-      cursor: 'pointer',
-      padding: '1px 6px 1px 6px',
-    }
-
     if (validationState === "unvalidated") {
-      if (disabled) {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-      }
       checkWorkButton = 
       <Button
         id={id + '_submit'}
@@ -301,7 +302,6 @@ export default function TextInput(props) {
       onFocus={handleFocus}
       textAreaWidth={textAreaWidth}
       textAreaHeight={textAreaHeight}
-      surroundingBorder={surroundingBorder}
       style={{margin: "0px 4px 4px 0px"}}
 
     />
@@ -317,7 +317,6 @@ export default function TextInput(props) {
       onBlur={handleBlur}
       onFocus={handleFocus}
       inputWidth={inputWidth}
-      surroundingBorder={surroundingBorder}
       style={{margin: "0px 4px 4px 0px"}}
     />
   }

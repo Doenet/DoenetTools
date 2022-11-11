@@ -981,7 +981,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', 'hello\nbye\n')
     cy.get('#\\/_p1').should('have.text', 'hello\nbye\n')
 
-    cy.get('#\\/ti_input').type("{ctrl+home}new{enter}old{enter}")
+    cy.get('#\\/ti_input').type("{moveToStart}new{enter}old{enter}")
     cy.get('#\\/ti_input').should('have.value', 'new\nold\nhello\nbye\n')
     cy.get('#\\/_p2').should('have.text', 'new\nold\nhello\nbye\n')
     cy.get('#\\/_p1').should('have.text', 'new\noldhello\nbye\n')

@@ -40,7 +40,7 @@ if ($success){
           $row = $result->fetch_assoc();
           $prevcompleted = $row['completed'];
           
-          if ($prevcompleted == '0' || $isCompleted){
+          if ($prevcompleted != '1' || $isCompleted){
           $sql = "UPDATE user_assignment 
                 SET completed=1,completedDate=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
                 WHERE userId = '$userId'

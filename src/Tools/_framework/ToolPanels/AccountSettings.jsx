@@ -1,155 +1,83 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
-    useRecoilCallback,
-    useRecoilValueLoadable,
+  useRecoilValueLoadable,
     useSetRecoilState,
   } from "recoil";
-import styled from "styled-components";
 import { pageToolViewAtom, profileAtom } from '../NewToolRoot';
-import { a } from '@react-spring/web'
-// import InfiniteSlider from '../temp/InfiniteSlider'
 import "../doenet.css";
-import Switch from "../Switch";
-import axios from "axios";
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-
-let SectionHeader = styled.h2`
-  margin-top: 2em;
-  margin-bottom: 2em;
-`
-
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-`
-
-const Image = styled(a.div)`
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center center;
-`
-
-
-const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle', 'anonymous'];
-// const picture_items = PROFILE_PICTURES.map(picture => {
-//   let path = `/media/profile_pictures/${picture}.jpg`
-//   let url = `url("${path}")`
-//   return {css: url}
-// })
-
-
-
-const boolToString = (bool) => {
-  if(bool){
-    return "1"
-  }else{
-    return "0"
-  }
-}
-
-const translateArray = (arr, k) => arr.concat(arr).slice(k, k+arr.length)
+import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 
 export default function DoenetProfile(props) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [signedIn,setSignedIn] = useState(null);
+  let checkingCookie = useRef(false);
+  const profile = useRecoilValueLoadable(profileAtom);
 
-    const setProfile = useRecoilCallback(({set}) => (newProfile) => {
-        const data = { ...newProfile }
-        localStorage.setItem('Profile', JSON.stringify(data));
-        set(profileAtom,  data)
-        axios.post('/api/saveProfile.php', data)
-         // .then((resp)=>{console.log(">>>save profile resp.data",resp.data)})
-      }
-    )
-    const loadProfile = useRecoilValueLoadable(profileAtom);
-    let profile = loadProfile.contents;
+  if (profile.state === "loading"){ return null;}
+  if (profile.state === "hasError"){ 
+    console.error(profile.contents)
+    return null;}
 
-    // const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
-    const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  let email = profile?.contents?.email;
+console.log("profile",profile)
 
+  //Only ask once
+  if (!checkingCookie.current){
+    checkingCookie.current = true;
+    checkIfUserClearedOut().then(({cookieRemoved})=>{
+      setSignedIn(cookieRemoved);
+    })
+  }
+  if (signedIn == null){
+    return null;
+  }
+    let messageJSX = null;
 
-    // let [editMode, setEditMode] = useState(false);
-    // let [pic, setPic] = useState(0);
+    if (signedIn) {
+      messageJSX = <>
+                  <h2>You are NOT signed in</h2>
+                  <Button value="Sign in" onClick={() =>{
+                    setPageToolView({page: 'signout', tool: '', view: ''})
+                    window.location.href = '/signin';
+                    }}/>
 
-    if (profile.state === "loading"){ return null;}
-    if (profile.state === "hasError"){ 
-      console.error(profile)
-      return null;}
-
-    //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
-
-    // const translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
-
-    // if(initPhoto){
-    //   translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
-    // }
-
-    // const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
-
-    if (profile.signedIn === '0') {
-      return (<div style = {props.style}>
-              <div
-                style={{
-                  ...props.style,
-                  border: '1px solid var(--mainGray)',
-                  borderRadius: '20px',
-                  margin: 'auto',
-                  marginTop: '10%',
-                  padding: '10px',
-                  width: '50%',
-                }}
-              >
-                <div
-                  style={{
-                    textAlign: 'center',
-                    alignItems: 'center',
-                    marginBottom: '20px',
-                  }}
-                >
-                  <h2>You are not signed in</h2>
-                  <h2>Account Settings currently requires sign in for use</h2>
-                  <button style={{ background: 'var(--mainBlue)', borderRadius: '5px' }}>
-                    <a
-                      href="/#/signin"
-                      style={{ color: 'var(--canvas)', textDecoration: 'none' }}
-                    >
-                      Sign in with this link
-                    </a>
-                  </button>
-                </div>
-              </div>
-              </div>
-      );
+                  </>
+    }else{
+      messageJSX = <>
+                  <h2>You are signed in</h2>
+                  <p>Email: {email}</p>
+                  <Button value="Sign out" onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
+                  </>
     }
 
-    return (<div style = {props.style}>
-       <p>Email Address: {profile.email}</p>
+  return (<div style = {props.style}>
+          <div
+            style={{
+              ...props.style,
+              border: '1px solid var(--mainGray)',
+              borderRadius: '20px',
+              margin: 'auto',
+              marginTop: '10%',
+              padding: '10px',
+              width: '50%',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                textAlign: 'center',
+                alignItems: 'center',
+                marginBottom: '20px',
+              }}
+            >
+              {messageJSX}
+            </div>
+          </div>
+          </div>
+  );
 
-<Button value={"Sign out"} onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
-<br/>
-{/* <Switch
-  id="trackingConsent"
-  onChange={e => {
-    let data = {...profile}
-    data.trackingConsent = boolToString(e.target.checked)
-    setProfile(data)
-  }}
-  checked={profile.trackingConsent}
->
-</Switch>
 
-<p>
-  "I consent to the tracking of my progress and my activity on
-  educational websites which participate in Doenet; my data will be
-  used to provide my instructor with my grades on course assignments,
-  and anonymous data may be provided to content authors to improve the
-  educational effectiveness."
-  <br />
-  <br />
-  <em>
-    Revoking your consent may impact your ability to recieve credit
-    for coursework.
-  </em>
-</p> */}
-</div>)
+
 }

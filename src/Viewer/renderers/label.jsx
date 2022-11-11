@@ -11,6 +11,7 @@ export default React.memo(function Label(props) {
 
   let labelJXG = useRef(null);
   let anchorPointJXG = useRef(null);
+  let anchorRel = useRef(null);
 
   const board = useContext(BoardContext);
 
@@ -22,7 +23,7 @@ export default React.memo(function Label(props) {
   let calculatedY = useRef(null);
 
   let lastPositionFromCore = useRef(null);
-  let previousAnchorPosition = useRef(null);
+  let previousPositionFromAnchor = useRef(null);
 
 
   function createLabelJXG() {
@@ -69,39 +70,40 @@ export default React.memo(function Label(props) {
     jsxLabelAttributes.anchor = newAnchorPointJXG;
 
     let anchorx, anchory;
-    if (SVs.anchorPosition === "upperright") {
-      anchorx = "right";
-      anchory = "top";
-    } else if (SVs.anchorPosition === "upperleft") {
-      anchorx = "left";
-      anchory = "top";
-    } else if (SVs.anchorPosition === "lowerright") {
-      anchorx = "right";
-      anchory = "bottom";
-    } else if (SVs.anchorPosition === "lowerleft") {
-      anchorx = "left";
-      anchory = "bottom";
-    } else if (SVs.anchorPosition === "top") {
+    if (SVs.positionFromAnchor === "center") {
       anchorx = "middle";
-      anchory = "top";
-    } else if (SVs.anchorPosition === "bottom") {
-      anchorx = "middle";
-      anchory = "bottom";
-    } else if (SVs.anchorPosition === "left") {
-      anchorx = "left";
       anchory = "middle";
-    } else if (SVs.anchorPosition === "right") {
+    } else if (SVs.positionFromAnchor === "lowerleft") {
       anchorx = "right";
+      anchory = "top";
+    } else if (SVs.positionFromAnchor === "lowerright") {
+      anchorx = "left";
+      anchory = "top";
+    } else if (SVs.positionFromAnchor === "upperleft") {
+      anchorx = "right";
+      anchory = "bottom";
+    } else if (SVs.positionFromAnchor === "upperright") {
+      anchorx = "left";
+      anchory = "bottom";
+    } else if (SVs.positionFromAnchor === "bottom") {
+      anchorx = "middle";
+      anchory = "top";
+    } else if (SVs.positionFromAnchor === "top") {
+      anchorx = "middle";
+      anchory = "bottom";
+    } else if (SVs.positionFromAnchor === "right") {
+      anchorx = "left";
       anchory = "middle";
     } else {
-      // anchorPosition === center
-      anchorx = "middle";
+      // positionFromAnchor === left
+      anchorx = "right";
       anchory = "middle";
     }
     jsxLabelAttributes.anchorx = anchorx;
     jsxLabelAttributes.anchory = anchory;
+    anchorRel.current = [anchorx, anchory];
 
-  
+
     let newLabelJXG = board.create('text', [0, 0, SVs.value], jsxLabelAttributes);
 
     newLabelJXG.on('down', function (e) {
@@ -137,16 +139,40 @@ export default React.memo(function Label(props) {
       // TODO: find an example where need this this additional complexity
       var o = board.origin.scrCoords;
 
+
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+      let width = newLabelJXG.size[0] / board.unitX;
+      let height = newLabelJXG.size[1] / board.unitY;
+
+      let anchorx = anchorRel.current[0];
+      let anchory = anchorRel.current[1];
+
+      let offsetx = 0;
+      if (anchorx === "middle") {
+        offsetx = -width / 2
+      } else if (anchorx === "right") {
+        offsetx = -width;
+      }
+      let offsety = 0;
+      if (anchory === "middle") {
+        offsety = -height / 2
+      } else if (anchory === "top") {
+        offsety = -height;
+      }
+
+      let xminAdjusted = xmin + 0.04 * (xmax - xmin) - offsetx - width;
+      let xmaxAdjusted = xmax - 0.04 * (xmax - xmin) - offsetx;
+      let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
+      let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
       calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
         - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
 
       calculatedY.current = (o[2] -
         (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
         / board.unitY;
-      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
+      calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
         action: actions.moveLabel,
@@ -158,7 +184,7 @@ export default React.memo(function Label(props) {
         }
       });
 
-      newLabelJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0,0]);
+      newLabelJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
       //Protect against very small unintended drags
@@ -172,9 +198,21 @@ export default React.memo(function Label(props) {
 
     labelJXG.current = newLabelJXG;
     anchorPointJXG.current = newAnchorPointJXG;
-    previousAnchorPosition.current = SVs.anchorPosition;
+    previousPositionFromAnchor.current = SVs.positionFromAnchor;
 
+    // Note: no idea why one has to update the label after waiting
+    // But, if we don't do that, the label isn't positioned correctly if any anchors are "middle"
+    // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
+    if (SVs.hasLatex) {
+      setTimeout(() => {
 
+        labelJXG.current.needsUpdate = true;
+        labelJXG.current.setText(SVs.value)
+        labelJXG.current.update();
+        board.updateRenderer();
+
+      }, 1000)
+    }
   }
 
   if (board) {
@@ -230,43 +268,44 @@ export default React.memo(function Label(props) {
 
       labelJXG.current.visProp.highlight = !fixed;
       labelJXG.current.visProp.fixed = fixed;
-      
+
       labelJXG.current.needsUpdate = true;
 
-      if (SVs.anchorPosition !== previousAnchorPosition.current) {
+      if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
         let anchorx, anchory;
-        if (SVs.anchorPosition === "upperright") {
-          anchorx = "right";
-          anchory = "top";
-        } else if (SVs.anchorPosition === "upperleft") {
-          anchorx = "left";
-          anchory = "top";
-        } else if (SVs.anchorPosition === "lowerright") {
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (SVs.anchorPosition === "lowerleft") {
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (SVs.anchorPosition === "top") {
+        if (SVs.positionFromAnchor === "center") {
           anchorx = "middle";
-          anchory = "top";
-        } else if (SVs.anchorPosition === "bottom") {
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (SVs.anchorPosition === "left") {
-          anchorx = "left";
           anchory = "middle";
-        } else if (SVs.anchorPosition === "right") {
+        } else if (SVs.positionFromAnchor === "lowerleft") {
           anchorx = "right";
+          anchory = "top";
+        } else if (SVs.positionFromAnchor === "lowerright") {
+          anchorx = "left";
+          anchory = "top";
+        } else if (SVs.positionFromAnchor === "upperleft") {
+          anchorx = "right";
+          anchory = "bottom";
+        } else if (SVs.positionFromAnchor === "upperright") {
+          anchorx = "left";
+          anchory = "bottom";
+        } else if (SVs.positionFromAnchor === "bottom") {
+          anchorx = "middle";
+          anchory = "top";
+        } else if (SVs.positionFromAnchor === "top") {
+          anchorx = "middle";
+          anchory = "bottom";
+        } else if (SVs.positionFromAnchor === "right") {
+          anchorx = "left";
           anchory = "middle";
         } else {
-          // anchorPosition === center
-          anchorx = "middle";
+          // positionFromAnchor === left
+          anchorx = "right";
           anchory = "middle";
         }
         labelJXG.current.visProp.anchorx = anchorx;
         labelJXG.current.visProp.anchory = anchory;
-        previousAnchorPosition.current = SVs.anchorPosition;
+        anchorRel.current = [anchorx, anchory];
+        previousPositionFromAnchor.current = SVs.positionFromAnchor;
         labelJXG.current.fullUpdate();
       } else {
         labelJXG.current.update();
@@ -287,14 +326,14 @@ export default React.memo(function Label(props) {
     return null;
   }
 
-  if(children.length > 0) {
-    return <span id={id} style={{marginRight: "12px"}}><a name={id}/>{children}</span>;
+  if (children.length > 0) {
+    return <span id={id} style={{ marginRight: "12px" }}><a name={id} />{children}</span>;
   } else {
     let label = SVs.value;
 
-    if(SVs.hasLatex) {
-      label =  <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
-    } 
+    if (SVs.hasLatex) {
+      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    }
     return <span id={id}><a name={id} />{label}</span>;
 
   }

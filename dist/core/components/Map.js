@@ -306,7 +306,7 @@ export default class Map extends CompositeComponent {
 
       let attributesFromComposite = convertAttributesForComponentType({
         attributes: { isResponse: component.attributes.isResponse },
-        componentType: repl.componentType,
+        componentType: replacements[0].componentType,
         componentInfoObjects,
         compositeCreatesNewNamespace: newNamespace,
         flags

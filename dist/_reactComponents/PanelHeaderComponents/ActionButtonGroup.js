@@ -1,13 +1,15 @@
 import React from "../../_snowpack/pkg/react.js";
 import styled, {ThemeProvider} from "../../_snowpack/pkg/styled-components.js";
 const Container = styled.div`
-  margin-left: 3px;
+  /* margin-left: 3px; */
   display: ${(props) => props.vertical ? "static" : "flex"};
   overflow: auto;
   min-width: 0;
+  /* flex-wrap: wrap; */
 `;
 const LabelContainer = styled.div`
   display: ${(props) => props.align};
+  width: ${(props) => props.width == "menu" ? "var(--menuWidth)" : ""};
   align-items: ${(props) => props.alignItems};
 `;
 const Label = styled.p`
@@ -17,7 +19,6 @@ const Label = styled.p`
   margin-bottom: ${(props) => props.align == "flex" ? "none" : "2px"};
 `;
 const actionGroup = {
-  margin: "0px -2px 0px -2px",
   borderRadius: "0",
   padding: "0px 12px 0px 10px",
   border: "1px solid var(--mainGray)",
@@ -31,11 +32,6 @@ const verticalActionGroup = {
   outlineOffset: "-6px"
 };
 const ActionButtonGroup = (props) => {
-  var container = {};
-  container.width = props.width;
-  if (props.width === "menu") {
-    container.width = "100%";
-  }
   let first_prop = props.vertical ? "first_vert" : "first";
   let last_prop = props.vertical ? "last_vert" : "last";
   let overflow_prop = props.width ? "no_overflow" : "overflow";
@@ -60,12 +56,12 @@ const ActionButtonGroup = (props) => {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LabelContainer, {
     align,
-    alignItems
+    alignItems,
+    width: props.width
   }, /* @__PURE__ */ React.createElement(Label, {
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(Container, {
-    style: container,
     vertical: props.vertical
   }, /* @__PURE__ */ React.createElement(ThemeProvider, {
     theme: props.vertical ? verticalActionGroup : actionGroup

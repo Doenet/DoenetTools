@@ -738,7 +738,8 @@ class LayerCursor {
         this.next();
     }
     compare(other) {
-        return this.from - other.from || this.startSide - other.startSide || this.to - other.to || this.endSide - other.endSide;
+        return this.from - other.from || this.startSide - other.startSide || this.rank - other.rank ||
+            this.to - other.to || this.endSide - other.endSide;
     }
 }
 class HeapCursor {
@@ -905,8 +906,7 @@ class SpanCursor {
                     if (this.cursor.from < from)
                         trackExtra = 1;
                     this.cursor.next();
-                    if (this.to > from)
-                        this.forward(this.to, this.endSide);
+                    this.forward(this.to, this.endSide);
                     break;
                 }
             }
@@ -1043,8 +1043,7 @@ var base = {
   219: "[",
   220: "\\",
   221: "]",
-  222: "'",
-  229: "q"
+  222: "'"
 };
 
 var shift = {
@@ -1071,16 +1070,14 @@ var shift = {
   219: "{",
   220: "|",
   221: "}",
-  222: "\"",
-  229: "Q"
+  222: "\""
 };
 
 var chrome = typeof navigator != "undefined" && /Chrome\/(\d+)/.exec(navigator.userAgent);
-var safari = typeof navigator != "undefined" && /Apple Computer/.test(navigator.vendor);
 var gecko = typeof navigator != "undefined" && /Gecko\/\d+/.test(navigator.userAgent);
 var mac = typeof navigator != "undefined" && /Mac/.test(navigator.platform);
 var ie = typeof navigator != "undefined" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
-var brokenModifierNames = chrome && (mac || +chrome[1] < 57) || gecko && mac;
+var brokenModifierNames = mac || chrome && +chrome[1] < 57;
 
 // Fill in the digit keys
 for (var i = 0; i < 10; i++) base[48 + i] = base[96 + i] = String(i);
@@ -1098,10 +1095,9 @@ for (var i = 65; i <= 90; i++) {
 for (var code in base) if (!shift.hasOwnProperty(code)) shift[code] = base[code];
 
 function keyName(event) {
-  // Don't trust event.key in Chrome when there are modifiers until
-  // they fix https://bugs.chromium.org/p/chromium/issues/detail?id=633838
   var ignoreKey = brokenModifierNames && (event.ctrlKey || event.altKey || event.metaKey) ||
-    (safari || ie) && event.shiftKey && event.key && event.key.length == 1;
+    ie && event.shiftKey && event.key && event.key.length == 1 ||
+    event.key == "Unidentified";
   var name = (!ignoreKey && event.key) ||
     (event.shiftKey ? shift : base)[event.keyCode] ||
     event.key || "Unidentified";
@@ -1130,7 +1126,7 @@ function getSelection(root) {
     return target.getSelection();
 }
 function contains(dom, node) {
-    return node ? dom.contains(node.nodeType != 1 ? node.parentNode : node) : false;
+    return node ? dom == node || dom.contains(node.nodeType != 1 ? node.parentNode : node) : false;
 }
 function deepActiveElement() {
     let elt = document.activeElement;
@@ -1426,32 +1422,34 @@ class ContentView {
     sync(track) {
         if (this.dirty & 2 /* Node */) {
             let parent = this.dom;
-            let pos = parent.firstChild;
+            let prev = null, next;
             for (let child of this.children) {
                 if (child.dirty) {
-                    if (!child.dom && pos) {
-                        let contentView = ContentView.get(pos);
+                    if (!child.dom && (next = prev ? prev.nextSibling : parent.firstChild)) {
+                        let contentView = ContentView.get(next);
                         if (!contentView || !contentView.parent && contentView.constructor == child.constructor)
-                            child.reuseDOM(pos);
+                            child.reuseDOM(next);
                     }
                     child.sync(track);
                     child.dirty = 0 /* Not */;
                 }
-                if (track && !track.written && track.node == parent && pos != child.dom)
+                next = prev ? prev.nextSibling : parent.firstChild;
+                if (track && !track.written && track.node == parent && next != child.dom)
                     track.written = true;
                 if (child.dom.parentNode == parent) {
-                    while (pos && pos != child.dom)
-                        pos = rm(pos);
-                    pos = child.dom.nextSibling;
+                    while (next && next != child.dom)
+                        next = rm(next);
                 }
                 else {
-                    parent.insertBefore(child.dom, pos);
+                    parent.insertBefore(child.dom, next);
                 }
+                prev = child.dom;
             }
-            if (pos && track && track.node == parent)
+            next = prev ? prev.nextSibling : parent.firstChild;
+            if (next && track && track.node == parent)
                 track.written = true;
-            while (pos)
-                pos = rm(pos);
+            while (next)
+                next = rm(next);
         }
         else if (this.dirty & 1 /* Child */) {
             for (let child of this.children)
@@ -1719,8 +1717,8 @@ const ie$1 = !!(ie_upto10 || ie_11up || ie_edge);
 const gecko$1 = !ie$1 && /*@__PURE__*//gecko\/(\d+)/i.test(nav.userAgent);
 const chrome$1 = !ie$1 && /*@__PURE__*//Chrome\/(\d+)/.exec(nav.userAgent);
 const webkit = "webkitFontSmoothing" in doc.documentElement.style;
-const safari$1 = !ie$1 && /*@__PURE__*//Apple Computer/.test(nav.vendor);
-const ios = safari$1 && (/*@__PURE__*//Mobile\/\w+/.test(nav.userAgent) || nav.maxTouchPoints > 2);
+const safari = !ie$1 && /*@__PURE__*//Apple Computer/.test(nav.vendor);
+const ios = safari && (/*@__PURE__*//Mobile\/\w+/.test(nav.userAgent) || nav.maxTouchPoints > 2);
 var browser = {
     mac: ios || /*@__PURE__*//Mac/.test(nav.platform),
     windows: /*@__PURE__*//Win/.test(nav.platform),
@@ -1734,7 +1732,7 @@ var browser = {
     ios,
     android: /*@__PURE__*//Android\b/.test(nav.userAgent),
     webkit,
-    safari: safari$1,
+    safari,
     webkit_version: webkit ? +(/*@__PURE__*//\bAppleWebKit\/(\d+)/.exec(navigator.userAgent) || [0, 0])[1] : 0,
     tabSize: doc.documentElement.style.tabSize != null ? "tab-size" : "-moz-tab-size"
 };
@@ -1964,18 +1962,26 @@ class WidgetView extends ContentView {
 }
 class CompositionView extends WidgetView {
     domAtPos(pos) {
-        let { topView } = this.widget;
+        let { topView, text } = this.widget;
         if (!topView)
-            return new DOMPos(this.widget.text, Math.min(pos, this.widget.text.nodeValue.length));
-        return posInCompositionTree(pos, topView, this.widget.text);
+            return new DOMPos(text, Math.min(pos, text.nodeValue.length));
+        return scanCompositionTree(pos, 0, topView, text, (v, p) => v.domAtPos(p), p => new DOMPos(text, Math.min(p, text.nodeValue.length)));
     }
     sync() { this.setDOM(this.widget.toDOM()); }
     localPosFromDOM(node, offset) {
-        return !offset ? 0 : node.nodeType == 3 ? Math.min(offset, this.length) : this.length;
+        let { topView, text } = this.widget;
+        if (!topView)
+            return Math.min(offset, this.length);
+        return posFromDOMInCompositionTree(node, offset, topView, text);
     }
     ignoreMutation() { return false; }
     get overrideDOMText() { return null; }
-    coordsAt(pos, side) { return textCoords(this.widget.text, pos, side); }
+    coordsAt(pos, side) {
+        let { topView, text } = this.widget;
+        if (!topView)
+            return textCoords(text, pos, side);
+        return scanCompositionTree(pos, side, topView, text, (v, pos, side) => v.coordsAt(pos, side), (pos, side) => textCoords(text, pos, side));
+    }
     destroy() {
         var _a;
         super.destroy();
@@ -1986,23 +1992,37 @@ class CompositionView extends WidgetView {
 // Uses the old structure of a chunk of content view frozen for
 // composition to try and find a reasonable DOM location for the given
 // offset.
-function posInCompositionTree(pos, view, text) {
+function scanCompositionTree(pos, side, view, text, enterView, fromText) {
     if (view instanceof MarkView) {
         for (let child of view.children) {
-            let hasComp = child.dom == text || child.dom.contains(text.parentNode);
+            let hasComp = contains(child.dom, text);
             let len = hasComp ? text.nodeValue.length : child.length;
             if (pos < len || pos == len && child.getSide() <= 0)
-                return hasComp ? posInCompositionTree(pos, child, text) : child.domAtPos(pos);
+                return hasComp ? scanCompositionTree(pos, side, child, text, enterView, fromText) : enterView(child, pos, side);
             pos -= len;
         }
-        return view.domAtPos(view.length);
+        return enterView(view, view.length, -1);
     }
     else if (view.dom == text) {
-        return new DOMPos(text, Math.min(pos, text.nodeValue.length));
+        return fromText(pos, side);
     }
     else {
-        return view.domAtPos(pos);
+        return enterView(view, pos, side);
     }
+}
+function posFromDOMInCompositionTree(node, offset, view, text) {
+    if (view instanceof MarkView) {
+        for (let child of view.children) {
+            let pos = 0, hasComp = contains(child.dom, text);
+            if (contains(child.dom, node))
+                return pos + (hasComp ? posFromDOMInCompositionTree(node, offset, child, text) : child.localPosFromDOM(node, offset));
+            pos += hasComp ? text.nodeValue.length : child.length;
+        }
+    }
+    else if (view.dom == text) {
+        return Math.min(offset, text.nodeValue.length);
+    }
+    return view.localPosFromDOM(node, offset);
 }
 // These are drawn around uneditable widgets to avoid a number of
 // browser bugs that show up when the cursor is directly next to
@@ -2022,6 +2042,7 @@ class WidgetBufferView extends ContentView {
         if (!this.dom) {
             let dom = document.createElement("img");
             dom.className = "cm-widgetBuffer";
+            dom.setAttribute("aria-hidden", "true");
             this.setDOM(dom);
         }
     }
@@ -2030,13 +2051,43 @@ class WidgetBufferView extends ContentView {
     localPosFromDOM() { return 0; }
     domBoundsAround() { return null; }
     coordsAt(pos) {
-        return this.dom.getBoundingClientRect();
+        let imgRect = this.dom.getBoundingClientRect();
+        // Since the <img> height doesn't correspond to text height, try
+        // to borrow the height from some sibling node.
+        let siblingRect = inlineSiblingRect(this, this.side > 0 ? -1 : 1);
+        return siblingRect && siblingRect.top < imgRect.bottom && siblingRect.bottom > imgRect.top
+            ? { left: imgRect.left, right: imgRect.right, top: siblingRect.top, bottom: siblingRect.bottom } : imgRect;
     }
     get overrideDOMText() {
         return Text.empty;
     }
 }
 TextView.prototype.children = WidgetView.prototype.children = WidgetBufferView.prototype.children = noChildren;
+function inlineSiblingRect(view, side) {
+    let parent = view.parent, index = parent ? parent.children.indexOf(view) : -1;
+    while (parent && index >= 0) {
+        if (side < 0 ? index > 0 : index < parent.children.length) {
+            let next = parent.children[index + side];
+            if (next instanceof TextView) {
+                let nextRect = next.coordsAt(side < 0 ? next.length : 0, side);
+                if (nextRect)
+                    return nextRect;
+            }
+            index += side;
+        }
+        else if (parent instanceof MarkView && parent.parent) {
+            index = parent.parent.children.indexOf(parent) + (side < 0 ? 0 : 1);
+            parent = parent.parent;
+        }
+        else {
+            let last = parent.dom.lastChild;
+            if (last && last.nodeName == "BR")
+                return last.getClientRects()[0];
+            break;
+        }
+    }
+    return undefined;
+}
 function inlineDOMAtPos(dom, children, pos) {
     let i = 0;
     for (let off = 0; i < children.length; i++) {
@@ -2269,10 +2320,16 @@ class Decoration extends RangeValue {
     a widget, or simply hides it.
     */
     static replace(spec) {
-        let block = !!spec.block;
-        let { start, end } = getInclusive(spec, block);
-        let startSide = (start ? (block ? -300000000 /* BlockIncStart */ : -1 /* InlineIncStart */) : 400000000 /* NonIncStart */) - 1;
-        let endSide = (end ? (block ? 200000000 /* BlockIncEnd */ : 1 /* InlineIncEnd */) : -500000000 /* NonIncEnd */) + 1;
+        let block = !!spec.block, startSide, endSide;
+        if (spec.isBlockGap) {
+            startSide = -500000000 /* GapStart */;
+            endSide = 400000000 /* GapEnd */;
+        }
+        else {
+            let { start, end } = getInclusive(spec, block);
+            startSide = (start ? (block ? -300000000 /* BlockIncStart */ : -1 /* InlineIncStart */) : 500000000 /* NonIncStart */) - 1;
+            endSide = (end ? (block ? 200000000 /* BlockIncEnd */ : 1 /* InlineIncEnd */) : -600000000 /* NonIncEnd */) + 1;
+        }
         return new PointDecoration(spec, startSide, endSide, block, spec.widget || null, true);
     }
     /**
@@ -2302,7 +2359,7 @@ Decoration.none = RangeSet.empty;
 class MarkDecoration extends Decoration {
     constructor(spec) {
         let { start, end } = getInclusive(spec);
-        super(start ? -1 /* InlineIncStart */ : 400000000 /* NonIncStart */, end ? 1 /* InlineIncEnd */ : -500000000 /* NonIncEnd */, null, spec);
+        super(start ? -1 /* InlineIncStart */ : 500000000 /* NonIncStart */, end ? 1 /* InlineIncEnd */ : -600000000 /* NonIncEnd */, null, spec);
         this.tagName = spec.tagName || "span";
         this.class = spec.class || "";
         this.attrs = spec.attributes || null;
@@ -2483,7 +2540,7 @@ class LineView extends ContentView {
         let last = this.dom.lastChild;
         while (last && ContentView.get(last) instanceof MarkView)
             last = last.lastChild;
-        if (!last ||
+        if (!last || !this.length ||
             last.nodeName != "BR" && ((_a = ContentView.get(last)) === null || _a === void 0 ? void 0 : _a.isEditable) == false &&
                 (!browser.ios || !this.children.some(ch => ch instanceof TextView))) {
             let hack = document.createElement("BR");
@@ -3880,7 +3937,12 @@ class DocView extends ContentView {
             let end = next ? next.from - 1 : this.length;
             if (end > pos) {
                 let height = vs.lineBlockAt(end).bottom - vs.lineBlockAt(pos).top;
-                deco.push(Decoration.replace({ widget: new BlockGapWidget(height), block: true, inclusive: true }).range(pos, end));
+                deco.push(Decoration.replace({
+                    widget: new BlockGapWidget(height),
+                    block: true,
+                    inclusive: true,
+                    isBlockGap: true,
+                }).range(pos, end));
             }
             if (!next)
                 break;
@@ -4415,9 +4477,9 @@ class InputState {
         for (let type in handlers) {
             let handler = handlers[type];
             view.contentDOM.addEventListener(type, (event) => {
-                if (type == "keydown" && this.keydown(view, event))
-                    return;
                 if (!eventBelongsToEditor(view, event) || this.ignoreDuringComposition(event))
+                    return;
+                if (type == "keydown" && this.keydown(view, event))
                     return;
                 if (this.mustFlushObserver(event))
                     view.observer.forceFlush();
@@ -4486,7 +4548,7 @@ class InputState {
         // Must always run, even if a custom handler handled the event
         this.lastKeyCode = event.keyCode;
         this.lastKeyTime = Date.now();
-        if (this.screenKeyEvent(view, event))
+        if (event.keyCode == 9 && Date.now() < this.lastEscPress + 2000)
             return true;
         // Chrome for Android usually doesn't fire proper key events, but
         // occasionally does, usually surrounded by a bunch of complicated
@@ -4535,14 +4597,6 @@ class InputState {
             return true;
         }
         return false;
-    }
-    screenKeyEvent(view, event) {
-        let protectedTab = event.keyCode == 9 && Date.now() < this.lastEscPress + 2000;
-        if (event.keyCode == 27)
-            this.lastEscPress = Date.now();
-        else if (modifierCodes.indexOf(event.keyCode) < 0)
-            this.lastEscPress = 0;
-        return protectedTab;
     }
     mustFlushObserver(event) {
         return (event.type == "keydown" && event.keyCode != 229) ||
@@ -4717,6 +4771,10 @@ function doPaste(view, input) {
 }
 handlers.keydown = (view, event) => {
     view.inputState.setSelectionOrigin("select");
+    if (event.keyCode == 27)
+        view.inputState.lastEscPress = Date.now();
+    else if (modifierCodes.indexOf(event.keyCode) < 0)
+        view.inputState.lastEscPress = 0;
 };
 let lastTouch = 0;
 handlers.touchstart = (view, e) => {
@@ -4973,14 +5031,6 @@ handlers.focus = handlers.blur = view => {
         if (view.hasFocus != view.inputState.notifiedFocused)
             view.update([]);
     }, 10);
-};
-handlers.beforeprint = view => {
-    view.viewState.printing = true;
-    view.requestMeasure();
-    setTimeout(() => {
-        view.viewState.printing = false;
-        view.requestMeasure();
-    }, 2000);
 };
 function forceClearComposition(view, rapid) {
     if (view.docView.compositionDeco.size) {
@@ -5736,6 +5786,11 @@ function visiblePixelRange(dom, paddingTop) {
     return { left: left - rect.left, right: Math.max(left, right) - rect.left,
         top: top - (rect.top + paddingTop), bottom: Math.max(top, bottom) - (rect.top + paddingTop) };
 }
+function fullPixelRange(dom, paddingTop) {
+    let rect = dom.getBoundingClientRect();
+    return { left: 0, right: rect.right - rect.left,
+        top: paddingTop, bottom: rect.bottom - (rect.top + paddingTop) };
+}
 // Line gaps are placeholder widgets used to hide pieces of overlong
 // lines within the viewport, as a kludge to keep the editor
 // responsive when a ridiculously long line is loaded into it.
@@ -5892,8 +5947,7 @@ class ViewState {
             }
         }
         // Pixel viewport
-        let pixelViewport = this.printing ? { top: -1e8, bottom: 1e8, left: -1e8, right: 1e8 }
-            : visiblePixelRange(dom, this.paddingTop);
+        let pixelViewport = (this.printing ? fullPixelRange : visiblePixelRange)(dom, this.paddingTop);
         let dTop = pixelViewport.top - this.pixelViewport.top, dBottom = pixelViewport.bottom - this.pixelViewport.bottom;
         this.pixelViewport = pixelViewport;
         let inView = this.pixelViewport.bottom > this.pixelViewport.top && this.pixelViewport.right > this.pixelViewport.left;
@@ -6470,6 +6524,7 @@ class DOMObserver {
             });
             this.resize.observe(view.scrollDOM);
         }
+        window.addEventListener("beforeprint", this.onPrint = this.onPrint.bind(this));
         this.start();
         window.addEventListener("scroll", this.onScroll = this.onScroll.bind(this));
         if (typeof IntersectionObserver == "function") {
@@ -6503,6 +6558,14 @@ class DOMObserver {
                 this.resizeTimeout = -1;
                 this.view.requestMeasure();
             }, 50);
+    }
+    onPrint() {
+        this.view.viewState.printing = true;
+        this.view.measure();
+        setTimeout(() => {
+            this.view.viewState.printing = false;
+            this.view.requestMeasure();
+        }, 500);
     }
     updateGaps(gaps) {
         if (this.gapIntersection && (gaps.length != this.gaps.length || this.gaps.some((g, i) => g != gaps[i]))) {
@@ -6721,6 +6784,7 @@ class DOMObserver {
             dom.removeEventListener("scroll", this.onScroll);
         window.removeEventListener("scroll", this.onScroll);
         window.removeEventListener("resize", this.onResize);
+        window.removeEventListener("beforeprint", this.onPrint);
         this.dom.ownerDocument.removeEventListener("selectionchange", this.onSelectionChange);
         clearTimeout(this.parentCheck);
         clearTimeout(this.resizeTimeout);

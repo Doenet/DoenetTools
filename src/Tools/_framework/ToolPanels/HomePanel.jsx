@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import styled from 'styled-components';
 import './homepage.css';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
+import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
+import { useState } from 'react';
 
 
 const Headings = styled.h1`
@@ -110,12 +112,25 @@ const LinkStyling = styled.a`
 export default function HomePage(props) {
   // console.log(">>>===HomePage")
   let navigate = useNavigate();
+  const [signedIn,setSignedIn] = useState(null);
+  let checkingCookie = useRef(false);
 
-  const jwt = Cookies.get();
-  let isSignedIn = false;
-  if (Object.keys(jwt).includes('JWT_JS')) {
-    isSignedIn = true;
+  //Only ask once
+  if (!checkingCookie.current){
+    checkingCookie.current = true;
+    checkIfUserClearedOut().then(({cookieRemoved})=>{
+      setSignedIn(!cookieRemoved);
+    })
   }
+  
+  let signInButton = null;
+  if (signedIn == true){
+    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div>
+  }
+  if (signedIn == false){
+    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>
+  }
+
 
   return <div style = {props.style}>
     <DoenetLogo>
@@ -127,7 +142,7 @@ export default function HomePage(props) {
         <h4 style={{ marginTop: '0px' }}>
           The free and open data-driven educational technology platform
         </h4>
-        {isSignedIn ? <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div> : <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>}
+        {signInButton}
         <Paragraph>
           The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages.
           Anonymized and aggregated data will be stored in an open distributed data warehouse
