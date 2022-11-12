@@ -15,7 +15,12 @@ const Label = styled.p `
 `;
 
 const DropdownMenu = (props) => {
-  // console.log('right ', props.right);
+  let effectiveWidth = props.width;
+  if (props.width == 'menu' || !props.width){
+    effectiveWidth = 'var(--menuWidth)';
+  }
+  // console.log('props.width ', props.width, "effectiveWidth",effectiveWidth);
+
   const customStyles = {
     option: (provided, state) => {
       return {
@@ -27,7 +32,7 @@ const DropdownMenu = (props) => {
     },
     menu: (provided, state) => ({
       ...provided,
-      width: state.selectProps.width,
+      width: effectiveWidth,
       maxHeigh: state.selectProps.maxMenuHeight,
       overflow: 'scroll',
       color: 'var(--canvastext)',
@@ -86,7 +91,8 @@ const DropdownMenu = (props) => {
         label: 'control',
         minHeight: '20px',
         height: '20px',
-        width: state.selectProps.width,
+        width: effectiveWidth,
+        // width: state.selectProps.width,
         border: state.isDisabled ? '2px solid var(--mainGray)' : 'var(--mainBorder)',
         borderRadius: 'var(--mainBorderRadius)',
         position: 'relative',
@@ -107,7 +113,6 @@ const DropdownMenu = (props) => {
 
   const labelVisible = props.label ? 'static' : 'none';
 
-  var width = '210px';
 
   var align = 'flex';
   var label = '';
@@ -118,7 +123,6 @@ const DropdownMenu = (props) => {
       }
   };
 
-  //   console.log(options, props.def);
   return (
     <Container align={align} data-test={props.dataTest}>
             <Label labelVisible={labelVisible} align={align}>{label}</Label>
@@ -127,7 +131,7 @@ const DropdownMenu = (props) => {
       value={options[props.valueIndex - 1]}
       defaultValue={options[props.defaultIndex - 1]}
       styles={customStyles}
-      width={width}
+      width={effectiveWidth}
       maxMenuHeight={props.maxMenuHeight}
       isSearchable={false}
       autoFocus={false}
