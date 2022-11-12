@@ -135,6 +135,7 @@ export default function ClassTimes() {
         <tr>
           <td style={{ width: '190px' }}>
             <DropdownMenu
+              dataTest={`DOTW Dropdown ${index}`}
               width="180px"
               items={dotwItems}
               valueIndex={dropDownDOTWIndex}
@@ -146,6 +147,7 @@ export default function ClassTimes() {
             />
           </td>
           <Button
+            dataTest={`Classtime Delete Button ${index}`}
             icon={<FontAwesomeIcon icon={faTimes} />}
             alert
             onClick={() => {
@@ -156,6 +158,7 @@ export default function ClassTimes() {
         <tr style={{ width: '190px', display: 'flex', alignItems: 'center' }}>
           <td>
             <DateTime
+              dataTest={`Classtime start time ${index}`}
               datePicker={false}
               width="74px"
               value={startTimeWholeDate}
@@ -179,6 +182,7 @@ export default function ClassTimes() {
           <td style={{ marginLeft: '6px', marginRight: '6px' }}>-</td>
           <td style={{ ['--menuPanelMargin']: '-62px' }}>
             <DateTime
+              dataTest={`Classtime end time ${index}`}
               datePicker={false}
               width="74px"
               value={endTimeWholeDate}
@@ -214,6 +218,7 @@ export default function ClassTimes() {
     <>
       {classTimesTable}
       <Button
+        dataTest="Add Classtime"
         icon={<FontAwesomeIcon icon={faPlus} />}
         style={{ margin: 'auto' }}
         onClick={() => addClassTime(courseId)}
