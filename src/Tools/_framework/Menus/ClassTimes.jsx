@@ -12,76 +12,7 @@ import axios from 'axios';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
-// import { recoilAddToast } from '../Toast';
-import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
-// const TimeEntry = ({ parentValue, valueCallback = () => {} }) => {
-//   let [time, setTime] = useState(parentValue);
-//   let [previousTime, setPreviousTime] = useState(parentValue); //Prevent valueCallback calls if value didn't change
-
-//   //This causes extra calls, but updates time when prop changes
-//   if (parentValue != previousTime) {
-//     setTime(parentValue);
-//     setPreviousTime(parentValue);
-//   }
-
-//   return (
-//     <input
-//       type="text"
-//       value={time}
-//       style={{ width: '40px' }}
-//       onChange={(e) => {
-//         setTime(e.target.value);
-//       }}
-//       onBlur={() => {
-//         if (previousTime !== time) {
-//           valueCallback(time);
-//           setPreviousTime(time);
-//         }
-//       }}
-//       onKeyDown={(e) => {
-//         if (e.key === 'Enter') {
-//           if (previousTime !== time) {
-//             valueCallback(time);
-//             setPreviousTime(time);
-//           }
-//         }
-//       }}
-//     />
-//   );
-// };
-
-function sortClassTimes(classTimesArray) {
-  return classTimesArray.sort((first, second) => {
-    //Sunday at the end
-    let mondayFirstDotw = first.dotwIndex;
-    if (mondayFirstDotw === 0) {
-      mondayFirstDotw = 7;
-    }
-    let mondaySecondDotw = second.dotwIndex;
-    if (mondaySecondDotw === 0) {
-      mondaySecondDotw = 7;
-    }
-    if (mondayFirstDotw > mondaySecondDotw) {
-      return 1;
-    } else if (mondayFirstDotw < mondaySecondDotw) {
-      return -1;
-    } else {
-      //They are equal so go by start time
-      let firstStartDate = new Date();
-      const [firstHour, firstMinute] = first.startTime.split(':');
-      firstStartDate.setHours(firstHour, firstMinute, 0, 0);
-      let secondStartDate = new Date();
-      const [secondHour, secondMinute] = second.startTime.split(':');
-      secondStartDate.setHours(secondHour, secondMinute, 0, 0);
-      if (firstStartDate > secondStartDate) {
-        return 1;
-      } else {
-        return -1;
-      }
-    }
-  });
-}
 
 export default function ClassTimes() {
   const timesObj = useRecoilValue(classTimesAtom);
@@ -96,7 +27,6 @@ export default function ClassTimes() {
       startTime: '09:00',
       endTime: '10:00',
     }); 
-    nextArr = sortClassTimes(nextArr); 
     set(classTimesAtom, nextArr); 
 
     let dotwIndexes = []; // create arrays
@@ -117,8 +47,6 @@ export default function ClassTimes() {
       endTimes,
     });
     let { data } = resp;
-    console.log('resp: ', resp);
-    console.log('>>>>data', data);
   });
 
   const updateClassTime = useRecoilCallback(
@@ -126,9 +54,8 @@ export default function ClassTimes() {
       async ({ index, nextClassTime, courseId }) => {
         let was = await snapshot.getPromise(classTimesAtom);
         let nextArr = [...was];
-        nextArr[index] = { ...nextClassTime }; // specific
-        nextArr = sortClassTimes(nextArr);
-        console.log('update');
+        nextArr[index] = { ...nextClassTime }; 
+
         set(classTimesAtom, nextArr);
 
         let dotwIndexes = [];
@@ -147,8 +74,6 @@ export default function ClassTimes() {
           endTimes,
         });
 
-        let { data } = resp;
-        console.log('>>>>data', data);
       },
   );
 
@@ -158,7 +83,6 @@ export default function ClassTimes() {
         let was = await snapshot.getPromise(classTimesAtom);
         let nextArr = [...was];
         nextArr.splice(index, 1); // remove classTime at index
-        nextArr = sortClassTimes(nextArr);
         set(classTimesAtom, nextArr);
 
         let dotwIndexes = [];
@@ -177,9 +101,14 @@ export default function ClassTimes() {
           endTimes,
         });
         let { data } = resp;
-        console.log('>>>>data', data);
       },
   );
+
+
+
+
+  //TODO!!!!: FIX DAYS OF THE WEEK!!! WASN'T SHOWING SUNDAY
+
 
   const dotwItems = [
     [1, 'Monday'],
@@ -193,17 +122,23 @@ export default function ClassTimes() {
 
   let timesJSX = [];
   for (let [index, timeObj] of Object.entries(timesObj)) {
-    console.log('timeObj ', timeObj);
-    console.log('timeObj.startTime', timeObj.startTime);
-
+    const startTimeWholeDate = new Date();
+    startTimeWholeDate.setHours(timeObj.startTime.split(":")[0]);
+    startTimeWholeDate.setMinutes(timeObj.startTime.split(":")[1]);
+    const endTimeWholeDate = new Date();
+    endTimeWholeDate.setHours(timeObj.endTime.split(":")[0]);
+    endTimeWholeDate.setMinutes(timeObj.endTime.split(":")[1]);
+    let dropDownDOTWIndex = timeObj.dotwIndex;
+    if (timeObj.dotwIndex == 0){dropDownDOTWIndex = 7 }
     timesJSX.push(
       <>
         <tr>
           <td style={{ width: '190px' }}>
             <DropdownMenu
+              dataTest={`DOTW Dropdown ${index}`}
               width="180px"
               items={dotwItems}
-              valueIndex={timeObj.dotwIndex}
+              valueIndex={dropDownDOTWIndex}
               onChange={({ value }) => {
                 let nextClassTime = { ...timeObj };
                 nextClassTime.dotwIndex = value;
@@ -212,6 +147,7 @@ export default function ClassTimes() {
             />
           </td>
           <Button
+            dataTest={`Classtime Delete Button ${index}`}
             icon={<FontAwesomeIcon icon={faTimes} />}
             alert
             onClick={() => {
@@ -222,16 +158,21 @@ export default function ClassTimes() {
         <tr style={{ width: '190px', display: 'flex', alignItems: 'center' }}>
           <td>
             <DateTime
+              dataTest={`Classtime start time ${index}`}
               datePicker={false}
               width="74px"
-              value={new Date(timeObj.startTime)}
+              value={startTimeWholeDate}
               onBlur={(value, valid) => {
                 // if (valid) {
-                let nextClassTime = { ...timeObj };
-                nextClassTime.startTime = DateToUTCDateString(
-                  new Date(value.value._d),
-                );
+                  let nextClassTime = { ...timeObj };
+                  nextClassTime.startTime = new Date(value.value._d)
+                  .toLocaleString('en-US', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit' })
+
                 updateClassTime({courseId, index, nextClassTime });
+                // updateClassTime({courseId, index, nextClassTime:new Date(value.value._d) });
                 // } else {
                 // console.log('not valid'); // TODO toast
                 // }
@@ -241,15 +182,18 @@ export default function ClassTimes() {
           <td style={{ marginLeft: '6px', marginRight: '6px' }}>-</td>
           <td style={{ ['--menuPanelMargin']: '-62px' }}>
             <DateTime
+              dataTest={`Classtime end time ${index}`}
               datePicker={false}
               width="74px"
-              value={new Date(timeObj.endTime)}
+              value={endTimeWholeDate}
               onBlur={(value, valid) => {
                 // if (valid) {
                 let nextClassTime = { ...timeObj };
-                nextClassTime.endTime = DateToUTCDateString(
-                  new Date(value.value._d),
-                );
+                nextClassTime.endTime = new Date(value.value._d)
+                .toLocaleString('en-US', { 
+                  hour12: false, 
+                  hour: '2-digit', 
+                  minute: '2-digit' })
                 updateClassTime({courseId, index, nextClassTime });
                 // } else {
                 // console.log('not valid'); // TODO toast
@@ -274,6 +218,7 @@ export default function ClassTimes() {
     <>
       {classTimesTable}
       <Button
+        dataTest="Add Classtime"
         icon={<FontAwesomeIcon icon={faPlus} />}
         style={{ margin: 'auto' }}
         onClick={() => addClassTime(courseId)}
