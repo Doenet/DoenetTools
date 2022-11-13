@@ -570,7 +570,7 @@ function Row({courseId,doenetId,itemType,numberOfVisibleColumns,columnsJSX=[],ic
         </ToggleCloseIconStyling>
       ) : (
         <ToggleCloseIconStyling 
-          dataTest="folderToggleOpenIcon" 
+          data-test="folderToggleOpenIcon" 
           aria-expanded="false"
           style={{backgroundColor: bgcolor}}
           onClick={ ()=>{

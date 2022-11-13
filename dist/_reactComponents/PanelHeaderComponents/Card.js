@@ -59,6 +59,7 @@ export default function Card(props) {
   }, /* @__PURE__ */ React.createElement("p", {
     style: label
   }, label.value), /* @__PURE__ */ React.createElement(CardStyling, {
+    "data-test": props.dataTest,
     alert: props.alert,
     disabled: props.disabled,
     "aria-labelledby": label,

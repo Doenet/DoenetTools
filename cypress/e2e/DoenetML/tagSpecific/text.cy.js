@@ -167,9 +167,9 @@ describe('Text Tag Tests', function () {
     cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
     cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: upperleft')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
     cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '2')
+    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
     cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
     cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
     cy.get("#\\/pContent1").should('have.text', 'Content 1: hello')

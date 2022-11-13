@@ -21,16 +21,19 @@ const RefButton = styled.button `
   height: 24px;
   display: inline-block;
   color: white;
-  background-color: var(--mainBlue);
+  color: ${(props) => (props.disabled ? 'var(--canvastext)' : 'var(--canvas)')};
+  background-color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)')};
+
   padding: 2px;
   border: none;
   border-radius: var(--mainBorderRadius);
   cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   padding: 1px 6px 1px 6px;
 
   &:hover {
-    background-color: var(--lightBlue);
-    color: black;
+    background-color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)')};
+    color: ${(props) => (props.disabled ? 'var(--canvastext)' : 'var(--canvas)')};
   };
 
   &:focus {

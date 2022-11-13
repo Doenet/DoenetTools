@@ -1,16 +1,17 @@
-import { r as react } from './common/index-56a88a1e.js';
-import { r as reactDom } from './common/index-c4ac9922.js';
+import { p as process } from './common/process-e9e98960.js';
+import { r as react } from './common/index-61623f21.js';
+import { r as reactDom } from './common/index-eaf9e997.js';
 import './common/_commonjsHelpers-f5d70792.js';
 
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function err(message) {
@@ -41,9 +42,9 @@ var Recoil_err = err_1;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 // Split declaration and implementation to allow this function to pretend to
@@ -367,9 +368,9 @@ var Recoil_Loadable$1 = /*#__PURE__*/Object.freeze({
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 const gks = new Map().set('recoil_hamt_2020', true).set('recoil_sync_external_store', true).set('recoil_suppress_rerender_in_callback', true).set('recoil_memory_managament_2020', true);
@@ -394,7 +395,34 @@ Recoil_gkx_OSS.clear = () => {
 
 var Recoil_gkx = Recoil_gkx_OSS; // @oss-only
 
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ * @format
+ * @oncall recoil
+ */
+
+function recoverableViolation(message, _projectName, {
+  error
+} = {}) {
+
+  return null;
+}
+
+var recoverableViolation_1 = recoverableViolation;
+
+// @oss-only
+
+
+var Recoil_recoverableViolation = recoverableViolation_1;
+
 var _createMutableSource, _useMutableSource, _useSyncExternalStore;
+
+
 
 
 
@@ -408,6 +436,26 @@ const useMutableSource = // flowlint-next-line unclear-type:off
 const useSyncExternalStore = // flowlint-next-line unclear-type:off
 (_useSyncExternalStore = react.useSyncExternalStore) !== null && _useSyncExternalStore !== void 0 ? _useSyncExternalStore : // flowlint-next-line unclear-type:off
 react.unstable_useSyncExternalStore;
+// Since React goes through a proxy dispatcher and the current renderer can
+// change we can't simply check if `React.useSyncExternalStore()` is defined.
+
+function currentRendererSupportsUseSyncExternalStore() {
+  var _ReactCurrentDispatch;
+
+  // $FlowFixMe[incompatible-use]
+  const {
+    ReactCurrentDispatcher,
+    ReactCurrentOwner
+  } =
+  /* $FlowFixMe[prop-missing] This workaround was approved as a safer mechanism
+   * to detect if the current renderer supports useSyncExternalStore()
+   * https://fb.workplace.com/groups/reactjs/posts/9558682330846963/ */
+  react.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+  const dispatcher = (_ReactCurrentDispatch = ReactCurrentDispatcher === null || ReactCurrentDispatcher === void 0 ? void 0 : ReactCurrentDispatcher.current) !== null && _ReactCurrentDispatch !== void 0 ? _ReactCurrentDispatch : ReactCurrentOwner.currentDispatcher;
+  const isUseSyncExternalStoreSupported = dispatcher.useSyncExternalStore != null;
+
+  return isUseSyncExternalStoreSupported;
+}
 
 /**
  * mode: The React API and approach to use for syncing state with React
@@ -470,9 +518,51 @@ var Recoil_ReactMode = {
   createMutableSource,
   useMutableSource,
   useSyncExternalStore,
+  currentRendererSupportsUseSyncExternalStore,
   reactMode,
   isFastRefreshEnabled
 };
+
+const env = {
+  RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED: true
+};
+/**
+ * Allow NodeJS/NextJS/etc to set the initial state through process.env variable
+ * Note:  we don't assume 'process' is available in all runtime environments
+ *
+ * @see https://github.com/facebookexperimental/Recoil/issues/733
+ */
+
+function applyProcessEnvFlagOverrides() {
+  var _process, _process$env$RECOIL_D, _process$env$RECOIL_D2;
+
+  // note: this check is needed in addition to the check below, runtime error will occur without it!
+  // eslint-disable-next-line fb-www/typeof-undefined
+  if (typeof process === 'undefined') {
+    return;
+  }
+
+  if (((_process = process) === null || _process === void 0 ? void 0 : _process.env) == null) {
+    return;
+  }
+
+  const sanitizedValue = (_process$env$RECOIL_D = process.env.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED) === null || _process$env$RECOIL_D === void 0 ? void 0 : (_process$env$RECOIL_D2 = _process$env$RECOIL_D.toLowerCase()) === null || _process$env$RECOIL_D2 === void 0 ? void 0 : _process$env$RECOIL_D2.trim();
+
+  if (sanitizedValue == null || sanitizedValue === '') {
+    return;
+  }
+
+  const allowedValues = ['true', 'false'];
+
+  if (!allowedValues.includes(sanitizedValue)) {
+    throw Recoil_err(`process.env.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED value must be 'true', 'false', or empty: ${sanitizedValue}`);
+  }
+
+  env.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = sanitizedValue === 'true';
+}
+
+applyProcessEnvFlagOverrides();
+var Recoil_RecoilEnv = env;
 
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -480,9 +570,9 @@ var Recoil_ReactMode = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 // eslint-disable-next-line no-unused-vars
@@ -535,9 +625,9 @@ var Recoil_RecoilValue$1 = /*#__PURE__*/Object.freeze({
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Creates a new iterable whose output is generated by passing the input
@@ -557,30 +647,7 @@ function mapIterable(iterable, callback) {
 
 var Recoil_mapIterable = mapIterable;
 
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @emails oncall+recoil
- * 
- * @format
- */
 
-function recoverableViolation(message, _projectName, {
-  error
-} = {}) {
-
-  return null;
-}
-
-var recoverableViolation_1 = recoverableViolation;
-
-// @oss-only
-
-
-var Recoil_recoverableViolation = recoverableViolation_1;
 
 
 
@@ -607,9 +674,9 @@ function recoilValuesForKeys(keys) {
   return Recoil_mapIterable(keys, key => Recoil_nullthrows(recoilValues.get(key)));
 }
 
-function registerNode(node) {
-  if (nodes.has(node.key)) {
-    const message = `Duplicate atom key "${node.key}". This is a FATAL ERROR in
+function checkForDuplicateAtomKey(key) {
+  if (nodes.has(key)) {
+    const message = `Duplicate atom key "${key}". This is a FATAL ERROR in
       production. But it is safe to ignore this warning if it occurred because of
       hot module replacement.`;
 
@@ -617,6 +684,12 @@ function registerNode(node) {
       // @fb-only: recoverableViolation(message, 'recoil');
       console.warn(message); // @oss-only
     }
+  }
+}
+
+function registerNode(node) {
+  if (Recoil_RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED) {
+    checkForDuplicateAtomKey(node.key);
   }
 
   nodes.set(node.key, node);
@@ -702,9 +775,9 @@ var Recoil_Node = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function enqueueExecution(s, f) {
@@ -1932,9 +2005,9 @@ var Recoil_PersistentMap$1 = /*#__PURE__*/Object.freeze({
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Returns a set containing all of the values from the first set that are not
@@ -1968,9 +2041,9 @@ var Recoil_differenceSets = differenceSets;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Returns a new Map object with the same keys as the original, but with the
@@ -2091,9 +2164,9 @@ var Recoil_Graph = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 let nextTreeStateVersion = 0;
@@ -2174,9 +2247,9 @@ var Recoil_State = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 class RetentionZone {}
@@ -2198,9 +2271,9 @@ var Recoil_RetentionZone = {
  *
  * Utilities for working with built-in Maps and Sets without mutating them.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function setByAddingToSet(set, v) {
@@ -2254,9 +2327,9 @@ var Recoil_CopyOnWrite = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Creates a new iterable whose output is generated by passing the input
@@ -2282,9 +2355,9 @@ var Recoil_filterIterable = filterIterable;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Return a proxy object based on the provided base and factories objects.
@@ -2544,9 +2617,9 @@ var Recoil_FunctionalCore = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 let _invalidateMemoizedSnapshot = null;
@@ -2901,9 +2974,9 @@ var Recoil_RecoilValueInterface = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * The someSet() method tests whether some elements in the given Set pass the
@@ -3221,17 +3294,17 @@ var Recoil_Retention = {
 };
 
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
- * 
- * @format
- *
  * This is to export esstiential functions from react-dom
  * for our web build
+ *
+ * 
+ * @format
+ * @oncall recoil
  */
 const {
   unstable_batchedUpdates
@@ -3247,12 +3320,12 @@ var ReactBatchedUpdates = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
- * 
- * @format
- *
  * This is to export esstiential functions from react-dom
  * for our web build
+ *
+ * 
+ * @format
+ * @oncall recoil
  */
 // @fb-only: const {unstable_batchedUpdates} = require('ReactDOMComet');
 // prettier-ignore
@@ -3271,9 +3344,9 @@ var Recoil_ReactBatchedUpdates = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 const {
   batchStart: batchStart$1
@@ -3331,9 +3404,9 @@ var Recoil_Batching = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Combines multiple Iterables into a single Iterable.
@@ -3363,9 +3436,9 @@ var Recoil_concatIterables = concatIterables;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /* eslint-disable fb-www/typeof-undefined */
 
@@ -3390,9 +3463,9 @@ var Recoil_Environment = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Caches a function's results based on the key returned by the passed
@@ -3666,7 +3739,8 @@ class Snapshot {
 
   autoRelease_INTERNAL() {
     if (!isSSR$1) {
-      window.setTimeout(() => this._release(), 0);
+      // Use timeout of 10 to workaround Firefox issue: https://github.com/facebookexperimental/Recoil/issues/1936
+      window.setTimeout(() => this._release(), 10);
     }
   }
 
@@ -3711,7 +3785,10 @@ class Snapshot {
     this.checkRefCount_INTERNAL();
     return this._store.storeID;
   } // We want to allow the methods to be destructured and used as accessors
-  // eslint-disable-next-line fb-www/extra-arrow-initializer
+
+  /* eslint-disable fb-www/extra-arrow-initializer */
+
+  /* eslint-enable fb-www/extra-arrow-initializer */
 
 
 }
@@ -3834,9 +3911,7 @@ class MutableSnapshot extends Snapshot {
     });
 
     this._batch = batch;
-  } // We want to allow the methods to be destructured and used as accessors
-  // eslint-disable-next-line fb-www/extra-arrow-initializer
-
+  }
 
 }
 
@@ -3866,9 +3941,9 @@ var Recoil_Snapshot$1 = /*#__PURE__*/Object.freeze({
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function unionSets(...sets) {
@@ -4422,9 +4497,9 @@ var Recoil_RecoilRoot = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function shallowArrayEqual(a, b) {
@@ -4576,9 +4651,9 @@ var Recoil_useRetain = useRetain;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * THIS CODE HAS BEEN COMMENTED OUT INTENTIONALLY
@@ -4635,6 +4710,7 @@ const {
 } = Recoil_Node;
 
 const {
+  currentRendererSupportsUseSyncExternalStore: currentRendererSupportsUseSyncExternalStore$1,
   reactMode: reactMode$3,
   useMutableSource: useMutableSource$1,
   useSyncExternalStore: useSyncExternalStore$1
@@ -4705,7 +4781,8 @@ function handleLoadable(loadable, recoilValue, storeRef) {
  * */
 function useRecoilInterface_DEPRECATED() {
   const componentName = Recoil_useComponentName();
-  const storeRef = useStoreRef$2();
+  const storeRef = useStoreRef$2(); // eslint-disable-next-line fb-www/react-no-unused-state-hook
+
   const [, forceUpdate] = useState$1([]);
   const recoilValuesUsed = useRef$4(new Set());
   recoilValuesUsed.current = new Set(); // Track the RecoilValues used just during this render
@@ -4976,7 +5053,8 @@ function useRecoilValueLoadable_TRANSITION_SUPPORT(recoilValue) {
 }
 
 function useRecoilValueLoadable_LEGACY(recoilValue) {
-  const storeRef = useStoreRef$2();
+  const storeRef = useStoreRef$2(); // eslint-disable-next-line fb-www/react-no-unused-state-hook
+
   const [, forceUpdate] = useState$1([]);
   const componentName = Recoil_useComponentName();
   const getLoadable = useCallback$1(() => {
@@ -5067,7 +5145,14 @@ function useRecoilValueLoadable(recoilValue) {
 
   return {
     TRANSITION_SUPPORT: useRecoilValueLoadable_TRANSITION_SUPPORT,
-    SYNC_EXTERNAL_STORE: useRecoilValueLoadable_SYNC_EXTERNAL_STORE,
+    // Recoil will attemp to detect if `useSyncExternalStore()` is supported with
+    // `reactMode()` before calling it.  However, sometimes the host React
+    // environment supports it but uses additional React renderers (such as with
+    // `react-three-fiber`) which do not.  While this is technically a user issue
+    // by using a renderer with React 18+ that doesn't fully support React 18 we
+    // don't want to break users if it can be avoided. As the current renderer can
+    // change at runtime, we need to dynamically check and fallback if necessary.
+    SYNC_EXTERNAL_STORE: currentRendererSupportsUseSyncExternalStore$1() ? useRecoilValueLoadable_SYNC_EXTERNAL_STORE : useRecoilValueLoadable_TRANSITION_SUPPORT,
     MUTABLE_SOURCE: useRecoilValueLoadable_MUTABLE_SOURCE,
     LEGACY: useRecoilValueLoadable_LEGACY
   }[reactMode$3().mode](recoilValue);
@@ -5193,9 +5278,9 @@ var Recoil_Hooks = {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Returns a map containing all of the keys + values from the original map where
@@ -5222,9 +5307,9 @@ var Recoil_filterMap = filterMap;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 /**
  * Returns a set containing all of the values from the original set where
@@ -5251,9 +5336,9 @@ var Recoil_filterSet = filterSet;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function mergeMaps(...maps) {
@@ -5437,7 +5522,14 @@ function useRecoilSnapshot() {
       releaseRef.current = null;
     }
 
-    return release;
+    return () => {
+      // Defer the release.  If "Fast Refresh"" is used then the component may
+      // re-render with the same state.  The previous cleanup will then run and
+      // then the new effect will run. We don't want the snapshot to be released
+      // by that cleanup before the new effect has a chance to retain it again.
+      // Use timeout of 10 to workaround Firefox issue: https://github.com/facebookexperimental/Recoil/issues/1936
+      window.setTimeout(release, 10);
+    };
   }, [snapshot]); // Retain snapshot until above effect is run.
   // Release after a threshold in case component is suspended.
 
@@ -5687,14 +5779,14 @@ var Recoil_AtomicUpdates$1 = /*#__PURE__*/Object.freeze({
 });
 
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function invariant(condition, message) {
@@ -5802,8 +5894,7 @@ function recoilCallback(store, fn, args, extraInterface) {
     var _releaseSnapshot2;
 
     (_releaseSnapshot2 = releaseSnapshot) === null || _releaseSnapshot2 === void 0 ? void 0 : _releaseSnapshot2();
-  } // $FlowFixMe[incompatible-cast]
-
+  }
 
   return ret;
 }
@@ -5875,9 +5966,9 @@ var Recoil_useRecoilTransaction = useRecoilTransaction;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 class WrappedValue {
@@ -6515,11 +6606,11 @@ var Recoil_treeCacheFromPolicy = treeCacheFromPolicy;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
+ * This is a stub for some integration into FB internal stuff
+ *
  * 
  * @format
- *
- * This is a stub for some integration into FB internal stuff
+ * @oncall recoil
  */
 function startPerfBlock(_id) {
   return () => null;
@@ -7471,6 +7562,7 @@ function selector(options) {
 }
 /* eslint-enable no-redeclare */
 // $FlowIssue[incompatible-use]
+// $FlowFixMe[missing-local-annot]
 
 
 selector.value = value => new WrappedValue$1(value);
@@ -7876,8 +7968,7 @@ function atom(options) {
   const { // @fb-only: scopeRules_APPEND_ONLY_READ_THE_DOCS,
     ...restOptions
   } = options;
-  const optionsDefault = 'default' in options ? // $FlowIssue[prop-missing] No way to refine in Flow that property is not defined
-  // $FlowIssue[incompatible-type] No way to refine in Flow that property is not defined
+  const optionsDefault = 'default' in options ? // $FlowIssue[incompatible-type] No way to refine in Flow that property is not defined
   options.default : new Promise(() => {});
 
   if (isRecoilValue$4(optionsDefault) // Continue to use atomWithFallback for promise defaults for scoped atoms
@@ -7937,7 +8028,8 @@ function atomWithFallback(options) {
   });
   setConfigDeletionHandler$1(sel.key, getConfigDeletionHandler$2(options.key));
   return sel;
-}
+} // $FlowFixMe[missing-local-annot]
+
 
 atom.value = value => new WrappedValue$2(value);
 
@@ -7949,9 +8041,9 @@ var Recoil_atom = atom;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 class MapCache {
@@ -8131,8 +8223,7 @@ function atomFamily(options) {
       cachePolicyForParams_UNSTABLE,
       ...atomOptions
     } = options;
-    const optionsDefault = 'default' in options ? // $FlowIssue[prop-missing] No way to refine in Flow that property is not defined
-    // $FlowIssue[incompatible-type] No way to refine in Flow that property is not defined
+    const optionsDefault = 'default' in options ? // $FlowIssue[incompatible-type] No way to refine in Flow that property is not defined
     options.default : new Promise(() => {});
     const newAtom = Recoil_atom({ ...atomOptions,
       key: `${options.key}__${(_stableStringify = Recoil_stableStringify(params)) !== null && _stableStringify !== void 0 ? _stableStringify : 'void'}`,
@@ -8308,9 +8399,9 @@ var Recoil_errorSelector = errorSelector;
  *
  * Wraps another recoil value and prevents writing to it.
  *
- * @emails oncall+recoil
  * 
  * @format
+ * @oncall recoil
  */
 
 function readOnlySelector(atom) {
@@ -8531,6 +8622,8 @@ const {
   DefaultValue: DefaultValue$3
 } = Recoil_Node;
 
+
+
 const {
   RecoilRoot: RecoilRoot$2,
   useRecoilStoreID: useRecoilStoreID$1
@@ -8607,6 +8700,8 @@ var Recoil_index = {
   DefaultValue: DefaultValue$3,
   isRecoilValue: isRecoilValue$5,
   RecoilLoadable,
+  // Global Recoil environment settiongs
+  RecoilEnv: Recoil_RecoilEnv,
   // Recoil Root
   RecoilRoot: RecoilRoot$2,
   useRecoilStoreID: useRecoilStoreID$1,
@@ -8650,17 +8745,17 @@ var Recoil_index = {
   useRetain: Recoil_useRetain,
   retentionZone: retentionZone$1
 };
-var Recoil_index_4 = Recoil_index.RecoilRoot;
-var Recoil_index_7 = Recoil_index.atom;
-var Recoil_index_8 = Recoil_index.selector;
-var Recoil_index_9 = Recoil_index.atomFamily;
-var Recoil_index_10 = Recoil_index.selectorFamily;
-var Recoil_index_19 = Recoil_index.useRecoilValue;
-var Recoil_index_20 = Recoil_index.useRecoilValueLoadable;
-var Recoil_index_21 = Recoil_index.useRecoilState;
-var Recoil_index_22 = Recoil_index.useRecoilStateLoadable;
-var Recoil_index_23 = Recoil_index.useSetRecoilState;
-var Recoil_index_24 = Recoil_index.useResetRecoilState;
-var Recoil_index_30 = Recoil_index.useRecoilCallback;
+var Recoil_index_5 = Recoil_index.RecoilRoot;
+var Recoil_index_8 = Recoil_index.atom;
+var Recoil_index_9 = Recoil_index.selector;
+var Recoil_index_10 = Recoil_index.atomFamily;
+var Recoil_index_11 = Recoil_index.selectorFamily;
+var Recoil_index_20 = Recoil_index.useRecoilValue;
+var Recoil_index_21 = Recoil_index.useRecoilValueLoadable;
+var Recoil_index_22 = Recoil_index.useRecoilState;
+var Recoil_index_23 = Recoil_index.useRecoilStateLoadable;
+var Recoil_index_24 = Recoil_index.useSetRecoilState;
+var Recoil_index_25 = Recoil_index.useResetRecoilState;
+var Recoil_index_31 = Recoil_index.useRecoilCallback;
 
-export { Recoil_index_4 as RecoilRoot, Recoil_index_7 as atom, Recoil_index_9 as atomFamily, Recoil_index_8 as selector, Recoil_index_10 as selectorFamily, Recoil_index_30 as useRecoilCallback, Recoil_index_21 as useRecoilState, Recoil_index_22 as useRecoilStateLoadable, Recoil_index_19 as useRecoilValue, Recoil_index_20 as useRecoilValueLoadable, Recoil_index_24 as useResetRecoilState, Recoil_index_23 as useSetRecoilState };
+export { Recoil_index_5 as RecoilRoot, Recoil_index_8 as atom, Recoil_index_10 as atomFamily, Recoil_index_9 as selector, Recoil_index_11 as selectorFamily, Recoil_index_31 as useRecoilCallback, Recoil_index_22 as useRecoilState, Recoil_index_23 as useRecoilStateLoadable, Recoil_index_20 as useRecoilValue, Recoil_index_21 as useRecoilValueLoadable, Recoil_index_25 as useResetRecoilState, Recoil_index_24 as useSetRecoilState };

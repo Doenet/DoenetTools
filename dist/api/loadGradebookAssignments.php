@@ -46,7 +46,8 @@ if ($success) {
                 a.gradeCategory,
                 a.totalPointsOrPercent,
                 a.assignedDate,
-                cc.isGloballyAssigned
+                cc.isGloballyAssigned,
+                cc.sortOrder
             FROM assignment AS a
             INNER JOIN course_content as cc
                 ON a.doenetId = cc.doenetId
@@ -62,7 +63,8 @@ if ($success) {
                 a.assignedDate,
                 a.gradeCategory,
                 a.totalPointsOrPercent,
-                cc.isGloballyAssigned
+                cc.isGloballyAssigned,
+                cc.sortOrder
             FROM assignment AS a
             INNER JOIN course_content as cc
                 ON a.doenetId = cc.doenetId
@@ -88,6 +90,7 @@ if ($success) {
                 'assignedDate' => $row['assignedDate'],
                 'totalPointsOrPercent' => $row['totalPointsOrPercent'],
                 'isGloballyAssigned' => $row['isGloballyAssigned'],
+                'sortOrder' => $row['sortOrder'],
             ];
             array_push($response_arr, [$doenetId, $arr]);
         }

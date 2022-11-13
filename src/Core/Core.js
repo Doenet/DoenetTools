@@ -1187,10 +1187,10 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
-    if (componentClass.descendantCompositesMustHaveAReplacement) {
+    if (componentClass.descendantCompositesMustHaveAReplacement && !shadow) {
       sharedParameters.compositesMustHaveAReplacement = true;
       sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
-    } else if (componentClass.descendantCompositesMustHaveAReplacement === false) {
+    } else if (componentClass.descendantCompositesMustHaveAReplacement === false || shadow) {
       sharedParameters.compositesMustHaveAReplacement = false;
     }
 

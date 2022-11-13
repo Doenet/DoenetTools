@@ -34,6 +34,7 @@ import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBa
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
 import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
 import Tooltip from '../../_reactComponents/PanelHeaderComponents/Tooltip.jsx';
+import { useState } from 'react';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -73,7 +74,9 @@ const List = styled.ul`
   color: var(--canvastext);
 `;
 
-export default function attempt() {
+export default function Attempt() {
+  const [actionResult,setActionResult] = useState("");
+
   const font = () => {};
   const vertical = () => {};
   const verticalLabel = () => {};
@@ -98,13 +101,13 @@ export default function attempt() {
         {
           name: 'Width - Menu Panel',
           propPreview: '<ActionButton width="menu" />',
-          propCode: { width: 'menu' },
+          propCode: { width: 'menu', dataTest:"ActionButton width example"},
           description: 'Sets width to fill menu panel width',
         },
         {
           name: 'Value',
           propPreview: '<ActionButton value="Edit"/>',
-          propCode: { value: 'Edit' },
+          propCode: { value: 'Edit', dataTest:"ActionButton Edit Value example" },
           description: 'Changes the text',
         },
         {
@@ -143,8 +146,8 @@ export default function attempt() {
         {
           name: 'onClick',
           propPreview:
-            '<ActionButton onClick={() => console.log("clicked")} />',
-          propCode: { onClick: () => console.log('clicked') },
+            '<ActionButton onClick={() => setActionResult("ActionButton clicked")} />',
+          propCode: { dataTest:"ActionButton click example", onClick: () => setActionResult("ActionButton clicked") },
           description: 'Function called when button is clicked',
         },
         {
@@ -1782,6 +1785,10 @@ export default function attempt() {
         <NavBar>
           <div style={{ marginLeft: '10px' }}>
             <h1>Components</h1>
+            {actionResult == "" ? null : <>
+            <p data-test="action result">{actionResult}</p>
+            <button onClick={()=>setActionResult("")} data-test="clear action result">Clear actionResult</button>
+            </>}
             {/* <SearchBar width='110px'/> */}
           </div>
           <h3>
@@ -1791,7 +1798,7 @@ export default function attempt() {
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
-              <li key={id}>
+              <li key={id} data-test={`componentLink${id}`}>
                 <Link to={`component/${id}`} style={{ color: 'black' }}>
                   {name}
                 </Link>

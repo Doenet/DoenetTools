@@ -537,23 +537,24 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
       <LabelText>Total Points Or Percent</LabelText>
       <InputControl>
         <Increment
-          value={totalPointsOrPercent || 0}
+          value={totalPointsOrPercent}
+          // value={totalPointsOrPercent || 0}
           dataTest='Total Points Or Percent'
           min={0}
           width='100%'
-          onBlur={() => {
-            if (recoilValue !== totalPointsOrPercent) {
+          onBlur={(newValue) => {
+            if (newValue !== recoilValue) {
               let totalPointsOrPercentLocal = null;
               if (
-                totalPointsOrPercent < 0 ||
-                totalPointsOrPercent === '' ||
-                isNaN(totalPointsOrPercent)
+                newValue < 0 ||
+                newValue === '' ||
+                isNaN(newValue)
               ) {
                 setTotalPointsOrPercent(0);
                 totalPointsOrPercentLocal = 0;
               } else {
-                totalPointsOrPercentLocal = parseFloat(totalPointsOrPercent);
-                setTotalPointsOrPercent(parseFloat(totalPointsOrPercent));
+                totalPointsOrPercentLocal = parseFloat(newValue);
+                setTotalPointsOrPercent(parseFloat(newValue));
               }
 
               updateAssignmentSettings(doenetId, {

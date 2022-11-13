@@ -34,7 +34,6 @@ export default function SelectedPage() {
         effectiveItemLabel = "Untitled";
       }
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast("Every item must have a label.");
     }
     if (pageObj.label !== effectiveItemLabel) {
       renameItem(pageId, effectiveItemLabel);
@@ -51,7 +50,7 @@ export default function SelectedPage() {
   }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Edit Page",
-    "data-test": "Edit Page",
+    dataTest: "Edit Page",
     onClick: () => {
       setPageToolView({
         page: "course",
@@ -65,7 +64,7 @@ export default function SelectedPage() {
     }
   })), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Label",
-    "data-test": "Label Page",
+    dataTest: "Label Page",
     vertical: true,
     width: "menu",
     value: itemTextFieldLabel,
@@ -81,16 +80,16 @@ export default function SelectedPage() {
     width: "menu",
     onClick: () => create({itemType: "page"}),
     value: "Add Page",
-    "data-test": "Add Page"
+    dataTest: "Add Page"
   }), containingObj.type == "activity" ? /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     onClick: () => create({itemType: "order"}),
     value: "Add Order",
-    "data-test": "Add Order"
+    dataTest: "Add Order"
   }) : null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Delete Page",
-    "data-test": "Delete Page",
+    dataTest: "Delete Page",
     alert: true,
     onClick: (e) => {
       e.preventDefault();

@@ -18,24 +18,25 @@ export default function DateTime(props) {
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
 
+  let effectiveWidth = props.width;
+  if (props.width == 'menu' || !props.width){
+    effectiveWidth = 'var(--menuWidth)';
+  }
+  // console.log('props.width ', props.width, "effectiveWidth",effectiveWidth);
+
+
   let borderColor = props.alert
     ? '2px solid var(--mainRed)'
     : 'var(--mainBorder)';
   borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
 
-  var containerWidth = "170px";
-  var inputWidth = "170px";
-  if (props.width) {
-    if (props.width === "menu") {
-      containerWidth = 'var(--menuWidth)';
-      inputWidth = 'var(--menuWidth)';
-      if (props.label) {
-        containerWidth = 'var(--menuWidth)';
-        inputWidth = '100%';
-      }
-    } 
-  };
+  var containerWidth = effectiveWidth;
+  var inputWidth = effectiveWidth;
+  if (props.label) {
+    inputWidth = '100%';
+  }
+
   useEffect(() => {
     //todo try lastValid update
     setLastValid(props.value);

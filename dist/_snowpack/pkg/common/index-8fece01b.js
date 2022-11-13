@@ -1,6 +1,6 @@
 import { F as Facet, c as combineConfig, S as StateField, E as EditorSelection, l as Text, i as countColumn, k as findClusterBreak } from './index-04f03c08.js';
-import { E as EditorView, D as Decoration, c as Direction, P as PluginField } from './index-18bfe0dd.js';
-import { s as syntaxTree, I as IndentContext, g as getIndentation, a as indentString, b as indentUnit, c as getIndentUnit } from './index-52d8c3f4.js';
+import { E as EditorView, D as Decoration, c as Direction, P as PluginField } from './index-b1d6eef7.js';
+import { s as syntaxTree, I as IndentContext, g as getIndentation, a as indentString, b as indentUnit, c as getIndentUnit } from './index-a6d35803.js';
 import { N as NodeProp } from './index-3d578c67.js';
 
 const baseTheme = /*@__PURE__*/EditorView.baseTheme({

@@ -47,9 +47,7 @@ export const useActivity = (courseId, doenetId) => {
         keyToUpdate
       } of valuesWithDescriptionsToUpdateByKey) {
         if (valueDescription) {
-          addToast(`Updated ${description} to ${valueDescription}`);
         } else if (description) {
-          addToast(`Updated ${description} to ${dateFormatKeys.includes(keyToUpdate) ? new Date(value).toLocaleString() : value}`);
         }
       }
     }
@@ -76,9 +74,7 @@ export const useActivity = (courseId, doenetId) => {
         keyToUpdate
       } of valuesWithDescriptionsToUpdateByKey) {
         if (valueDescription) {
-          addToast(`Updated ${description} to ${valueDescription}`);
         } else if (description) {
-          addToast(`Updated ${description} to ${dateFormatKeys.includes(keyToUpdate) ? new Date(value).toLocaleString() : value}`);
         }
       }
     }

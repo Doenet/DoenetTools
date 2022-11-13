@@ -17,6 +17,7 @@ import Button from "../_reactComponents/PanelHeaderComponents/Button.js";
 import ActionButton from "../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import ButtonGroup from "../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import {pageToolViewAtom} from "../_framework/NewToolRoot.js";
+import {clear as idb_clear} from "../_snowpack/pkg/idb-keyval.js";
 export const saveStateToDBTimerIdAtom = atom({
   key: "saveStateToDBTimerIdAtom",
   default: null
@@ -746,7 +747,6 @@ export default function ActivityViewer(props) {
     await Promise.all(terminatePromises);
     await saveState({overrideThrottle: true});
     if (!activityInfo.canViewAfterCompleted) {
-      console.log("CLEAR state from viewer and cache");
     }
     let resp = await axios.get("/api/saveCompleted.php", {
       params: {doenetId: props.doenetId, isCompleted: true}
@@ -921,14 +921,14 @@ export default function ActivityViewer(props) {
     pageControlsTop = /* @__PURE__ */ React.createElement("div", {
       style: {display: "flex", alignItems: "center", marginLeft: "5px"}
     }, /* @__PURE__ */ React.createElement(Button, {
-      "data-test": "previous",
+      dataTest: "previous",
       disabled: currentPage === 1,
       onClick: clickPrevious,
       value: "Previous page"
     }), /* @__PURE__ */ React.createElement("p", {
       style: {margin: "5px"}
     }, " Page ", currentPage, " of ", nPages, " "), /* @__PURE__ */ React.createElement(Button, {
-      "data-test": "next",
+      dataTest: "next",
       disabled: currentPage === nPages,
       onClick: clickNext,
       value: "Next page"
@@ -937,14 +937,14 @@ export default function ActivityViewer(props) {
       pageControlsBottom = /* @__PURE__ */ React.createElement("div", {
         style: {display: "flex", alignItems: "center", marginLeft: "5px"}
       }, /* @__PURE__ */ React.createElement(Button, {
-        "data-test": "previous-bottom",
+        dataTest: "previous-bottom",
         disabled: currentPage === 1,
         onClick: clickPrevious,
         value: "Previous page"
       }), /* @__PURE__ */ React.createElement("p", {
         style: {margin: "5px"}
       }, " Page ", currentPage, " of ", nPages, " "), /* @__PURE__ */ React.createElement(Button, {
-        "data-test": "next-bottom",
+        dataTest: "next-bottom",
         disabled: currentPage === nPages,
         onClick: clickNext,
         value: "Next page"
@@ -955,31 +955,36 @@ export default function ActivityViewer(props) {
   if (props.showFinishButton) {
     if (finishAssessmentMessageOpen) {
       finishAssessmentPrompt = /* @__PURE__ */ React.createElement("div", {
-        style: {border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", margin: "5px", display: "flex", flexFlow: "column wrap"}
+        style: {marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px", border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", display: "flex", flexFlow: "column wrap"}
       }, /* @__PURE__ */ React.createElement("div", {
         style: {display: "flex", justifyContent: "center", padding: "5px"}
       }, "Are you sure you want to finish this assessment?"), /* @__PURE__ */ React.createElement("div", {
         style: {display: "flex", justifyContent: "center", padding: "5px"}
       }, /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
         onClick: submitAllAndFinishAssessment,
-        "data-test": "ConfirmFinishAssessment",
+        dataTest: "ConfirmFinishAssessment",
         value: "Yes",
         disabled: processingSubmitAll
       }), /* @__PURE__ */ React.createElement(Button, {
         onClick: () => setFinishAssessmentMessageOpen(false),
-        "data-test": "CancelFinishAssessment",
+        dataTest: "CancelFinishAssessment",
         value: "No",
         alert: true,
         disabled: processingSubmitAll
       }))));
     } else {
       finishAssessmentPrompt = /* @__PURE__ */ React.createElement("div", {
-        style: {marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "5px"}
+        style: {marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px"}
+      }, /* @__PURE__ */ React.createElement("div", {
+        "data-test": "centerone",
+        style: {display: "flex", justifyContent: "center"}
+      }, /* @__PURE__ */ React.createElement("div", {
+        style: {width: "240px"}
       }, /* @__PURE__ */ React.createElement(ActionButton, {
         onClick: () => setFinishAssessmentMessageOpen(true),
         "data-test": "FinishAssessmentPrompt",
         value: "Finish assessment"
-      }));
+      }))));
     }
   }
   return /* @__PURE__ */ React.createElement("div", {

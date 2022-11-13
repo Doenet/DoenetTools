@@ -1,19 +1,39 @@
 import axios from "../../_snowpack/pkg/axios.js";
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import CalendarButton from "../../_reactComponents/PanelHeaderComponents/CalendarToggle.js";
 import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {useToast, toastType} from "../Toast.js";
 import {UTCDateStringToDate, DateToDisplayDateString, DateToDateString, DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
+import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
 export default function GradeSettings() {
   let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   let userId = useRecoilValue(searchParamAtomFamily("userId"));
+  const [attemptsAllowedAdjustment, setAttemptsAllowedAdjustment] = useState(null);
+  const [baseAttemptsAllowed, setBaseAttemptsAllowed] = useState(null);
   let [dueDateOverride, setDueDateOverride] = useState(null);
   let [dueDate, setDueDate] = useState(null);
   let [initialized, setInitialized] = useState(false);
   const addToast = useToast();
+  useEffect(() => {
+    async function loadAdjustmentInfo(doenetId2, userId2, courseId2) {
+      let resp = await axios.get("/api/loadGradebookAdjustmentSettingsInfo.php", {
+        params: {doenetId: doenetId2, userId: userId2, courseId: courseId2}
+      });
+      let numberOfAttemptsAllowedAdjustment = Number(resp.data.numberOfAttemptsAllowedAdjustment);
+      setAttemptsAllowedAdjustment(numberOfAttemptsAllowedAdjustment);
+      let baseAttemptsAllowed2 = "unlimited";
+      if (resp.data.baseAttemptsAllowed != "unlimited") {
+        baseAttemptsAllowed2 = Number(resp.data.baseAttemptsAllowed);
+      }
+      setBaseAttemptsAllowed(baseAttemptsAllowed2);
+    }
+    if (attemptsAllowedAdjustment == null) {
+      loadAdjustmentInfo(doenetId, userId, courseId);
+    }
+  }, [attemptsAllowedAdjustment, doenetId, userId, courseId]);
   const loadDueDates = async (doenetId2, userId2) => {
     try {
       let {data} = await axios.get(`/api/loadDueDateInfo.php`, {params: {courseId, doenetId: doenetId2, userId: userId2}});
@@ -100,5 +120,20 @@ export default function GradeSettings() {
       }
     }
   })));
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Due Date: "), /* @__PURE__ */ React.createElement("div", null, dueDate, " "), dueDateJSX);
+  let resultAttemptsAllowed = baseAttemptsAllowed + attemptsAllowedAdjustment;
+  let attemptsAdjusterJSX = /* @__PURE__ */ React.createElement("p", null, "Unlimited Attempts");
+  if (baseAttemptsAllowed != "unlimited" && attemptsAllowedAdjustment != null) {
+    attemptsAdjusterJSX = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, "Base Attempts Allowed: "), /* @__PURE__ */ React.createElement("div", null, baseAttemptsAllowed), /* @__PURE__ */ React.createElement("div", null, "Attempts Allowed Adjustment: "), /* @__PURE__ */ React.createElement(Increment, {
+      min: -baseAttemptsAllowed,
+      value: attemptsAllowedAdjustment,
+      onChange: (attemptsAdjustment) => {
+        setAttemptsAllowedAdjustment(attemptsAdjustment);
+        axios.get("/api/updateGradebookAdjustment.php", {
+          params: {doenetId, userId, courseId, attemptsAdjustment}
+        }).then(({data}) => {
+        });
+      }
+    }), /* @__PURE__ */ React.createElement("div", null, "Resulting Attempts Allowed: "), /* @__PURE__ */ React.createElement("div", null, resultAttemptsAllowed));
+  }
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, "Due Date: "), /* @__PURE__ */ React.createElement("div", null, dueDate, " "), dueDateJSX, /* @__PURE__ */ React.createElement("br", null), attemptsAdjusterJSX);
 }

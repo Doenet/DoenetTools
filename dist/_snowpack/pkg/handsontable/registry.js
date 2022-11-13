@@ -1,10 +1,7 @@
-import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as TextEditor, S as SHORTCUTS_GROUP_NAVIGATION, l as stopImmediatePropagation, n as isDefined, o as addClass, p as getScrollbarWidth, q as outerWidth, t as textRenderer, u as stringify, v as getCaretPosition, w as getSelectionEndPosition, x as pivot, y as getTrimmingContainer, z as offset, A as outerHeight, D as arrayMap, E as stripTags, K as KEY_CODES, F as isPrintableChar, G as hasClass, B as BaseEditor, I as EventManager, J as isFunctionKey, L as deepExtend, H as Hooks, M as empty, N as removeClass, O as objectEach, P as fastInnerHTML, Q as EDITOR_STATE, R as _register, U as baseRenderer, V as isEmpty, W as SHORTCUTS_GROUP_EDITOR, X as isNumeric, Y as rangeEach, Z as _getEditorInstance, $ as _register$2, _ as _register$3, T as TextCellType, a0 as defineGetter, a1 as getPluginsNames, a2 as arrayEach, a3 as hasPlugin, a4 as hasItem, a5 as hasItem$1, a6 as hasItem$3, a7 as isObject, a8 as PhysicalIndexToValueMap, a9 as hasOwnProperty, aa as isPercentValue, ab as valueAccordingPercent, ac as ViewportColumnsCalculator, ad as arrayReduce, ae as arrayFilter, af as cancelAnimationFrame, ag as requestAnimationFrame, ah as isVisible, ai as getIncreasedIndexes, aj as getDecreasedIndexes, ak as IndexMap, al as warn, am as arrayUnique, an as fastInnerText, ao as LinkedPhysicalIndexToValueMap, ap as isRightClick, aq as IndexesSequence, ar as isUndefined, as as isFunction, at as toSingleLine, au as mixin, av as localHooks, aw as debounce, ax as closest, ay as deepClone, az as isChildOf, aA as CONTEXTMENU_ITEMS_EDIT_COMMENT, aB as CONTEXTMENU_ITEMS_ADD_COMMENT, aC as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aD as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aE as CONTEXTMENU_ITEMS_ALIGNMENT, aF as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aG as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aH as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aI as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aJ as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aK as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aL as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aM as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aN as CONTEXTMENU_ITEMS_INSERT_LEFT, aO as CONTEXTMENU_ITEMS_INSERT_RIGHT, aP as CONTEXTMENU_ITEMS_READ_ONLY, aQ as CONTEXTMENU_ITEMS_REDO, aR as CONTEXTMENU_ITEMS_REMOVE_COLUMN, aS as transformSelectionToColumnDistance, aT as CONTEXTMENU_ITEMS_REMOVE_ROW, aU as transformSelectionToRowDistance, aV as CONTEXTMENU_ITEMS_ROW_ABOVE, aW as CONTEXTMENU_ITEMS_ROW_BELOW, aX as CONTEXTMENU_ITEMS_NO_ITEMS, aY as CONTEXTMENU_ITEMS_UNDO, aZ as getWindowScrollTop, a_ as getWindowScrollLeft, a$ as getParentWindow, b0 as isWindowsOS, b1 as isMobileBrowser, b2 as isIpadOS, C as Core, b3 as isInput, b4 as CONTEXTMENU_ITEMS_COPY, b5 as CONTEXTMENU_ITEMS_CUT, b6 as selectElementIfAllowed, b7 as stringify$1, b8 as _dataToHTML, b9 as sanitize, ba as htmlToGridSettings, bb as parse, bc as getSelectionText, bd as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, be as CONTEXTMENU_ITEMS_BORDERS_LEFT, bf as CONTEXTMENU_ITEMS_REMOVE_BORDERS, bg as CONTEXTMENU_ITEMS_BORDERS_RIGHT, bh as CONTEXTMENU_ITEMS_BORDERS_TOP, bi as detectSelectionType, bj as normalizeSelectionFactory, bk as CONTEXTMENU_ITEMS_BORDERS, bl as clone, bm as substitute, bn as FILTERS_CONDITIONS_NONE, bo as FILTERS_CONDITIONS_EMPTY, bp as FILTERS_CONDITIONS_NOT_EMPTY, bq as FILTERS_CONDITIONS_EQUAL, br as FILTERS_CONDITIONS_NOT_EQUAL, bs as FILTERS_CONDITIONS_GREATER_THAN, bt as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bu as FILTERS_CONDITIONS_LESS_THAN, bv as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bw as FILTERS_CONDITIONS_AFTER, bx as FILTERS_CONDITIONS_BEFORE, by as FILTERS_CONDITIONS_BETWEEN, bz as FILTERS_CONDITIONS_NOT_BETWEEN, bA as FILTERS_CONDITIONS_BEGINS_WITH, bB as FILTERS_CONDITIONS_ENDS_WITH, bC as FILTERS_CONDITIONS_CONTAINS, bD as FILTERS_CONDITIONS_NOT_CONTAIN, bE as FILTERS_CONDITIONS_TOMORROW, bF as FILTERS_CONDITIONS_TODAY, bG as FILTERS_CONDITIONS_YESTERDAY, bH as getComparisonFunction, bI as FILTERS_LABELS_CONJUNCTION, bJ as FILTERS_LABELS_DISJUNCTION, bK as FILTERS_NAMESPACE, bL as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bM as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bN as FILTERS_CONDITIONS_NAMESPACE, bO as isKey, bP as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, bQ as FILTERS_BUTTONS_SELECT_ALL, bR as FILTERS_BUTTONS_CLEAR, bS as partial, bT as dataRowToChangesArray, bU as FILTERS_VALUES_BLANK_CELLS, bV as FILTERS_BUTTONS_OK, bW as FILTERS_BUTTONS_CANCEL, bX as curry, bY as TrimmingMap, bZ as FILTERS_DIVS_FILTER_BY_CONDITION, b_ as FILTERS_DIVS_FILTER_BY_VALUE, b$ as isArrayOfArrays, c0 as error, c1 as toUpperCaseFirst, c2 as CONTEXTMENU_ITEMS_HIDE_COLUMN, c3 as CONTEXTMENU_ITEMS_SHOW_COLUMN, c4 as HidingMap, c5 as CONTEXTMENU_ITEMS_HIDE_ROW, c6 as CONTEXTMENU_ITEMS_SHOW_ROW, c7 as CONTEXTMENU_ITEMS_FREEZE_COLUMN, c8 as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, c9 as isDetached, ca as ViewportRowsCalculator, cb as rangeEachReverse, cc as CONTEXTMENU_ITEMS_UNMERGE_CELLS, cd as CONTEXTMENU_ITEMS_MERGE_CELLS, ce as HEADER_TYPE, cf as ACTIVE_HEADER_TYPE, cg as isLeftClick, ch as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, ci as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cj as isArrayOfObjects, ck as isTouchSupported, cl as inherit, cm as registerPlugin } from '../common/textType-efb3269b.js';
-import { r as requireObjectCoercible, l as getMethod, m as functionCall, t as toString_1, n as anObject, ad as collection, f as functionUncurryThis, h as fails, _ as _export } from '../common/es.function.name-c5ad53e4.js';
-import { f as fixRegexpWellKnownSymbolLogic, r as regexpExecAbstract, c as collectionWeak } from '../common/es.string.starts-with-24653f71.js';
+import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as TextEditor, S as SHORTCUTS_GROUP_NAVIGATION, l as stopImmediatePropagation, n as isDefined, o as addClass, p as getScrollbarWidth, q as outerWidth, t as textRenderer, u as stringify, v as getCaretPosition, w as getSelectionEndPosition, x as pivot, y as getTrimmingContainer, z as offset, A as outerHeight, D as arrayMap, E as stripTags, K as KEY_CODES, F as isPrintableChar, G as hasClass, B as BaseEditor, I as EventManager, J as isFunctionKey, L as deepExtend, H as Hooks, M as empty, N as removeClass, O as objectEach, P as fastInnerHTML, Q as EDITOR_STATE, R as _register, U as baseRenderer, V as isEmpty, W as SHORTCUTS_GROUP_EDITOR$1, X as isNumeric, Y as rangeEach, Z as fixRegexpWellKnownSymbolLogic, $ as regexpExecAbstract, a0 as _getEditorInstance, a1 as _register$2, _ as _register$3, T as TextCellType, a2 as collectionWeak, a3 as defineGetter, a4 as getPluginsNames, a5 as arrayEach, a6 as hasPlugin, a7 as hasItem, a8 as hasItem$1, a9 as hasItem$3, aa as isObject, ab as PhysicalIndexToValueMap, ac as hasOwnProperty, ad as isPercentValue, ae as valueAccordingPercent, af as ViewportColumnsCalculator, ag as arrayReduce, ah as arrayFilter, ai as cancelAnimationFrame, aj as requestAnimationFrame, ak as isVisible, al as getIncreasedIndexes, am as getDecreasedIndexes, an as IndexMap, ao as warn, ap as arrayUnique, aq as fastInnerText, ar as LinkedPhysicalIndexToValueMap, as as isRightClick, at as IndexesSequence, au as isUndefined, av as isFunction, aw as stringRepeat, ax as thisNumberValue, ay as toSingleLine, az as mixin, aA as localHooks, aB as debounce, aC as closest, aD as deepClone, aE as isChildOf, aF as CONTEXTMENU_ITEMS_EDIT_COMMENT, aG as CONTEXTMENU_ITEMS_ADD_COMMENT, aH as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aI as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aJ as CONTEXTMENU_ITEMS_ALIGNMENT, aK as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aL as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aM as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aN as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aO as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aP as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aQ as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aR as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aS as CONTEXTMENU_ITEMS_INSERT_LEFT, aT as CONTEXTMENU_ITEMS_INSERT_RIGHT, aU as CONTEXTMENU_ITEMS_READ_ONLY, aV as CONTEXTMENU_ITEMS_REDO, aW as CONTEXTMENU_ITEMS_REMOVE_COLUMN, aX as transformSelectionToColumnDistance, aY as CONTEXTMENU_ITEMS_REMOVE_ROW, aZ as transformSelectionToRowDistance, a_ as CONTEXTMENU_ITEMS_ROW_ABOVE, a$ as CONTEXTMENU_ITEMS_ROW_BELOW, b0 as CONTEXTMENU_ITEMS_NO_ITEMS, b1 as CONTEXTMENU_ITEMS_UNDO, b2 as getWindowScrollTop, b3 as getWindowScrollLeft, b4 as getParentWindow, b5 as isWindowsOS, b6 as isMobileBrowser, b7 as isIpadOS, C as Core, b8 as isInput, b9 as CONTEXTMENU_ITEMS_COPY, ba as CONTEXTMENU_ITEMS_CUT, bb as selectElementIfAllowed, bc as stringify$1, bd as _dataToHTML, be as sanitize, bf as htmlToGridSettings, bg as parse, bh as getSelectionText, bi as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, bj as CONTEXTMENU_ITEMS_BORDERS_LEFT, bk as CONTEXTMENU_ITEMS_REMOVE_BORDERS, bl as CONTEXTMENU_ITEMS_BORDERS_RIGHT, bm as CONTEXTMENU_ITEMS_BORDERS_TOP, bn as detectSelectionType, bo as normalizeSelectionFactory, bp as CONTEXTMENU_ITEMS_BORDERS, bq as clone, br as substitute, bs as FILTERS_CONDITIONS_NONE, bt as FILTERS_CONDITIONS_EMPTY, bu as FILTERS_CONDITIONS_NOT_EMPTY, bv as FILTERS_CONDITIONS_EQUAL, bw as FILTERS_CONDITIONS_NOT_EQUAL, bx as FILTERS_CONDITIONS_GREATER_THAN, by as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bz as FILTERS_CONDITIONS_LESS_THAN, bA as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bB as FILTERS_CONDITIONS_AFTER, bC as FILTERS_CONDITIONS_BEFORE, bD as FILTERS_CONDITIONS_BETWEEN, bE as FILTERS_CONDITIONS_NOT_BETWEEN, bF as FILTERS_CONDITIONS_BEGINS_WITH, bG as correctIsRegexpLogic, bH as notARegexp, bI as FILTERS_CONDITIONS_ENDS_WITH, bJ as FILTERS_CONDITIONS_CONTAINS, bK as FILTERS_CONDITIONS_NOT_CONTAIN, bL as FILTERS_CONDITIONS_TOMORROW, bM as FILTERS_CONDITIONS_TODAY, bN as FILTERS_CONDITIONS_YESTERDAY, bO as getComparisonFunction, bP as FILTERS_LABELS_CONJUNCTION, bQ as FILTERS_LABELS_DISJUNCTION, bR as FILTERS_NAMESPACE, bS as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bT as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bU as FILTERS_CONDITIONS_NAMESPACE, bV as isKey, bW as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, bX as FILTERS_BUTTONS_SELECT_ALL, bY as FILTERS_BUTTONS_CLEAR, bZ as partial, b_ as dataRowToChangesArray, b$ as FILTERS_VALUES_BLANK_CELLS, c0 as FILTERS_BUTTONS_OK, c1 as FILTERS_BUTTONS_CANCEL, c2 as curry, c3 as TrimmingMap, c4 as FILTERS_DIVS_FILTER_BY_CONDITION, c5 as FILTERS_DIVS_FILTER_BY_VALUE, c6 as isArrayOfArrays, c7 as error, c8 as toUpperCaseFirst, c9 as CONTEXTMENU_ITEMS_HIDE_COLUMN, ca as CONTEXTMENU_ITEMS_SHOW_COLUMN, cb as HidingMap, cc as CONTEXTMENU_ITEMS_HIDE_ROW, cd as CONTEXTMENU_ITEMS_SHOW_ROW, ce as CONTEXTMENU_ITEMS_FREEZE_COLUMN, cf as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, cg as isDetached, ch as ViewportRowsCalculator, ci as rangeEachReverse, cj as CONTEXTMENU_ITEMS_UNMERGE_CELLS, ck as CONTEXTMENU_ITEMS_MERGE_CELLS, cl as HEADER_TYPE, cm as ACTIVE_HEADER_TYPE, cn as isLeftClick, co as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, cp as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cq as isArrayOfObjects, cr as isTouchSupported, cs as inherit, ct as registerPlugin } from '../common/textType-c38d04a5.js';
+import { aq as _register$1, u as requireObjectCoercible, P as isNullOrUndefined, Q as getMethod, M as functionCall, j as toString_1, N as anObject, a9 as collection, au as hasItem$2, aj as staticRegister, d as functionUncurryThis, f as fails, _ as _export, r as toIntegerOrInfinity, A as objectGetOwnPropertyDescriptor, R as toLength } from '../common/registry-1c413641.js';
 import { h as hooks } from '../common/moment-82250e2c.js';
 import { c as createCommonjsModule, a as commonjsGlobal, d as commonjsRequire } from '../common/_commonjsHelpers-f5d70792.js';
-import { _ as _register$1, h as hasItem$2, s as staticRegister } from '../common/registry-1eaf3f7e.js';
-import '../common/es.string.ends-with-18505327.js';
 
 var alterStrategies = new Map([["indexesSequence", {
   getListWithInsertedItems: getListWithInsertedItems$2,
@@ -2404,6 +2401,7 @@ function _getPrototypeOf$3(o) {
   return _getPrototypeOf$3(o);
 }
 var EDITOR_TYPE$3 = "date";
+var SHORTCUTS_GROUP_EDITOR = "dateEditor";
 var DateEditor = /* @__PURE__ */ function(_TextEditor) {
   _inherits$3(DateEditor2, _TextEditor);
   var _super = _createSuper$3(DateEditor2);
@@ -2471,8 +2469,17 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
     key: "open",
     value: function open() {
       var event = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
+      var shortcutManager = this.hot.getShortcutManager();
+      var editorContext = shortcutManager.getContext("editor");
       _get$2(_getPrototypeOf$3(DateEditor2.prototype), "open", this).call(this);
       this.showDatepicker(event);
+      editorContext.addShortcut({
+        keys: [["Enter"]],
+        callback: function callback(keyboardEvent) {
+          keyboardEvent.stopPropagation();
+        },
+        group: SHORTCUTS_GROUP_EDITOR
+      });
     }
   }, {
     key: "close",
@@ -2485,6 +2492,9 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       this.instance._registerTimeout(function() {
         _this3.instance._refreshBorders();
       });
+      var shortcutManager = this.hot.getShortcutManager();
+      var editorContext = shortcutManager.getContext("editor");
+      editorContext.removeShortcutsByGroup(SHORTCUTS_GROUP_EDITOR);
       _get$2(_getPrototypeOf$3(DateEditor2.prototype), "close", this).call(this);
     }
   }, {
@@ -3620,7 +3630,7 @@ function checkboxRenderer(instance, TD, row, col, prop, value, cellProperties) {
         changeSelectedCheckboxesState(true);
         return !areSelectedCheckboxCells();
       },
-      relativeToGroup: SHORTCUTS_GROUP_EDITOR,
+      relativeToGroup: SHORTCUTS_GROUP_EDITOR$1,
       position: "before"
     }], config);
   }
@@ -3882,7 +3892,7 @@ function process(value, callback) {
 
 // `SameValue` abstract operation
 // https://tc39.es/ecma262/#sec-samevalue
-// eslint-disable-next-line es-x/no-object-is -- safe
+// eslint-disable-next-line es/no-object-is -- safe
 var sameValue = Object.is || function is(x, y) {
   // eslint-disable-next-line no-self-compare -- NaN check
   return x === y ? x !== 0 || 1 / x === 1 / y : x != x && y != y;
@@ -3895,7 +3905,7 @@ fixRegexpWellKnownSymbolLogic('search', function (SEARCH, nativeSearch, maybeCal
     // https://tc39.es/ecma262/#sec-string.prototype.search
     function search(regexp) {
       var O = requireObjectCoercible(this);
-      var searcher = regexp == undefined ? undefined : getMethod(regexp, SEARCH);
+      var searcher = isNullOrUndefined(regexp) ? undefined : getMethod(regexp, SEARCH);
       return searcher ? functionCall(searcher, regexp, O) : new RegExp(regexp)[SEARCH](toString_1(O));
     },
     // `RegExp.prototype[@@search]` method
@@ -8318,249 +8328,6 @@ registerCompareFunctionFactory(COLUMN_DATA_TYPE$2, compareFunctionFactory$2);
 registerCompareFunctionFactory(COLUMN_DATA_TYPE$3, compareFunctionFactory$3);
 registerCompareFunctionFactory(COLUMN_DATA_TYPE, compareFunctionFactory);
 
-function _defineProperties$k(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$k(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$k(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$k(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _classCallCheck$k(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-var NodeStructure = /* @__PURE__ */ _createClass$k(function NodeStructure2(data) {
-  _classCallCheck$k(this, NodeStructure2);
-  this.data = data;
-  this.next = null;
-  this.prev = null;
-});
-var LinkedList = /* @__PURE__ */ function() {
-  function LinkedList2() {
-    _classCallCheck$k(this, LinkedList2);
-    this.first = null;
-    this.last = null;
-  }
-  _createClass$k(LinkedList2, [{
-    key: "push",
-    value: function push(data) {
-      var node = new NodeStructure(data);
-      if (this.first === null) {
-        this.first = node;
-        this.last = node;
-      } else {
-        var temp = this.last;
-        this.last = node;
-        node.prev = temp;
-        temp.next = node;
-      }
-    }
-  }, {
-    key: "unshift",
-    value: function unshift(data) {
-      var node = new NodeStructure(data);
-      if (this.first === null) {
-        this.first = node;
-        this.last = node;
-      } else {
-        var temp = this.first;
-        this.first = node;
-        node.next = temp;
-        temp.prev = node;
-      }
-    }
-  }, {
-    key: "inorder",
-    value: function inorder(callback) {
-      var temp = this.first;
-      while (temp) {
-        callback(temp);
-        temp = temp.next;
-      }
-    }
-  }, {
-    key: "remove",
-    value: function remove(data) {
-      if (this.first === null) {
-        return false;
-      }
-      var temp = this.first;
-      var next;
-      var prev;
-      while (temp) {
-        if (temp.data === data) {
-          next = temp.next;
-          prev = temp.prev;
-          if (next) {
-            next.prev = prev;
-          }
-          if (prev) {
-            prev.next = next;
-          }
-          if (temp === this.first) {
-            this.first = next;
-          }
-          if (temp === this.last) {
-            this.last = prev;
-          }
-          return true;
-        }
-        temp = temp.next;
-      }
-      return false;
-    }
-  }, {
-    key: "hasCycle",
-    value: function hasCycle() {
-      var fast = this.first;
-      var slow = this.first;
-      while (true) {
-        if (fast === null) {
-          return false;
-        }
-        fast = fast.next;
-        if (fast === null) {
-          return false;
-        }
-        fast = fast.next;
-        slow = slow.next;
-        if (fast === slow) {
-          return true;
-        }
-      }
-    }
-  }, {
-    key: "pop",
-    value: function pop() {
-      if (this.last === null) {
-        return null;
-      }
-      var temp = this.last;
-      this.last = this.last.prev;
-      return temp;
-    }
-  }, {
-    key: "shift",
-    value: function shift() {
-      if (this.first === null) {
-        return null;
-      }
-      var temp = this.first;
-      this.first = this.first.next;
-      return temp;
-    }
-  }, {
-    key: "recursiveReverse",
-    value: function recursiveReverse() {
-      function inverse(current, next) {
-        if (!next) {
-          return;
-        }
-        inverse(next, next.next);
-        next.next = current;
-      }
-      if (!this.first) {
-        return;
-      }
-      inverse(this.first, this.first.next);
-      this.first.next = null;
-      var temp = this.first;
-      this.first = this.last;
-      this.last = temp;
-    }
-  }, {
-    key: "reverse",
-    value: function reverse() {
-      if (!this.first || !this.first.next) {
-        return;
-      }
-      var current = this.first.next;
-      var prev = this.first;
-      var temp;
-      while (current) {
-        temp = current.next;
-        current.next = prev;
-        prev.prev = current;
-        prev = current;
-        current = temp;
-      }
-      this.first.next = null;
-      this.last.prev = null;
-      temp = this.first;
-      this.first = prev;
-      this.last = temp;
-    }
-  }]);
-  return LinkedList2;
-}();
-
-var defaultCompareFunction = function defaultCompareFunction2(a, b) {
-  var firstValue = a.toString();
-  var secondValue = b.toString();
-  if (firstValue === secondValue) {
-    return 0;
-  } else if (firstValue < secondValue) {
-    return -1;
-  }
-  return 1;
-};
-function mergeSort(array) {
-  var compareFunction = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : defaultCompareFunction;
-  var startIndex = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 0;
-  var endIndex = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : array.length;
-  if (Math.abs(endIndex - startIndex) <= 1) {
-    return [];
-  }
-  var middleIndex = Math.ceil((startIndex + endIndex) / 2);
-  mergeSort(array, compareFunction, startIndex, middleIndex);
-  mergeSort(array, compareFunction, middleIndex, endIndex);
-  return merge(array, compareFunction, startIndex, middleIndex, endIndex);
-}
-function merge(array, compareFunction, startIndex, middleIndex, endIndex) {
-  var leftElements = new LinkedList();
-  var rightElements = new LinkedList();
-  var leftSize = middleIndex - startIndex;
-  var rightSize = endIndex - middleIndex;
-  var maxSize = Math.max(leftSize, rightSize);
-  var size = endIndex - startIndex;
-  for (var _i = 0; _i < maxSize; _i += 1) {
-    if (_i < leftSize) {
-      leftElements.push(array[startIndex + _i]);
-    }
-    if (_i < rightSize) {
-      rightElements.push(array[middleIndex + _i]);
-    }
-  }
-  var i = 0;
-  while (i < size) {
-    if (leftElements.first && rightElements.first) {
-      if (compareFunction(leftElements.first.data, rightElements.first.data) > 0) {
-        array[startIndex + i] = rightElements.shift().data;
-      } else {
-        array[startIndex + i] = leftElements.shift().data;
-      }
-    } else if (leftElements.first) {
-      array[startIndex + i] = leftElements.shift().data;
-    } else {
-      array[startIndex + i] = rightElements.shift().data;
-    }
-    i += 1;
-  }
-  return array;
-}
-
 var DO_NOT_SWAP = 0;
 var FIRST_BEFORE_SECOND = -1;
 var FIRST_AFTER_SECOND = 1;
@@ -8569,7 +8336,7 @@ function sort(indexesWithData, rootComparatorId) {
   for (var _len = arguments.length, argsForRootComparator = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
     argsForRootComparator[_key - 2] = arguments[_key];
   }
-  mergeSort(indexesWithData, rootComparator.apply(void 0, argsForRootComparator));
+  indexesWithData.sort(rootComparator.apply(void 0, argsForRootComparator));
 }
 
 function _toArray(arr) {
@@ -8729,12 +8496,12 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   }
   return target;
 }
-function _classCallCheck$l(instance, Constructor) {
+function _classCallCheck$k(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$l(target, props) {
+function _defineProperties$k(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -8744,11 +8511,11 @@ function _defineProperties$l(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$l(Constructor, protoProps, staticProps) {
+function _createClass$k(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$l(Constructor.prototype, protoProps);
+    _defineProperties$k(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$l(Constructor, staticProps);
+    _defineProperties$k(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -8853,7 +8620,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$g(ColumnSorting2);
   function ColumnSorting2(hotInstance) {
     var _this;
-    _classCallCheck$l(this, ColumnSorting2);
+    _classCallCheck$k(this, ColumnSorting2);
     _this = _super.call(this, hotInstance);
     _this.columnStatesManager = null;
     _this.columnMetaCache = null;
@@ -8861,7 +8628,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
     _this.indexesSequenceCache = null;
     return _this;
   }
-  _createClass$l(ColumnSorting2, [{
+  _createClass$k(ColumnSorting2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[this.pluginKey];
@@ -9280,12 +9047,136 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
   return ColumnSorting2;
 }(BasePlugin);
 
-function _classCallCheck$m(instance, Constructor) {
+var $RangeError = RangeError;
+var $String = String;
+var floor = Math.floor;
+var repeat = functionUncurryThis(stringRepeat);
+var stringSlice = functionUncurryThis(''.slice);
+var nativeToFixed = functionUncurryThis(1.0.toFixed);
+
+var pow = function (x, n, acc) {
+  return n === 0 ? acc : n % 2 === 1 ? pow(x, n - 1, acc * x) : pow(x * x, n / 2, acc);
+};
+
+var log = function (x) {
+  var n = 0;
+  var x2 = x;
+  while (x2 >= 4096) {
+    n += 12;
+    x2 /= 4096;
+  }
+  while (x2 >= 2) {
+    n += 1;
+    x2 /= 2;
+  } return n;
+};
+
+var multiply = function (data, n, c) {
+  var index = -1;
+  var c2 = c;
+  while (++index < 6) {
+    c2 += n * data[index];
+    data[index] = c2 % 1e7;
+    c2 = floor(c2 / 1e7);
+  }
+};
+
+var divide = function (data, n) {
+  var index = 6;
+  var c = 0;
+  while (--index >= 0) {
+    c += data[index];
+    data[index] = floor(c / n);
+    c = (c % n) * 1e7;
+  }
+};
+
+var dataToString = function (data) {
+  var index = 6;
+  var s = '';
+  while (--index >= 0) {
+    if (s !== '' || index === 0 || data[index] !== 0) {
+      var t = $String(data[index]);
+      s = s === '' ? t : s + repeat('0', 7 - t.length) + t;
+    }
+  } return s;
+};
+
+var FORCED = fails(function () {
+  return nativeToFixed(0.00008, 3) !== '0.000' ||
+    nativeToFixed(0.9, 0) !== '1' ||
+    nativeToFixed(1.255, 2) !== '1.25' ||
+    nativeToFixed(1000000000000000128.0, 0) !== '1000000000000000128';
+}) || !fails(function () {
+  // V8 ~ Android 4.3-
+  nativeToFixed({});
+});
+
+// `Number.prototype.toFixed` method
+// https://tc39.es/ecma262/#sec-number.prototype.tofixed
+_export({ target: 'Number', proto: true, forced: FORCED }, {
+  toFixed: function toFixed(fractionDigits) {
+    var number = thisNumberValue(this);
+    var fractDigits = toIntegerOrInfinity(fractionDigits);
+    var data = [0, 0, 0, 0, 0, 0];
+    var sign = '';
+    var result = '0';
+    var e, z, j, k;
+
+    // TODO: ES2018 increased the maximum number of fraction digits to 100, need to improve the implementation
+    if (fractDigits < 0 || fractDigits > 20) throw $RangeError('Incorrect fraction digits');
+    // eslint-disable-next-line no-self-compare -- NaN check
+    if (number != number) return 'NaN';
+    if (number <= -1e21 || number >= 1e21) return $String(number);
+    if (number < 0) {
+      sign = '-';
+      number = -number;
+    }
+    if (number > 1e-21) {
+      e = log(number * pow(2, 69, 1)) - 69;
+      z = e < 0 ? number * pow(2, -e, 1) : number / pow(2, e, 1);
+      z *= 0x10000000000000;
+      e = 52 - e;
+      if (e > 0) {
+        multiply(data, 0, z);
+        j = fractDigits;
+        while (j >= 7) {
+          multiply(data, 1e7, 0);
+          j -= 7;
+        }
+        multiply(data, pow(10, j, 1), 0);
+        j = e - 1;
+        while (j >= 23) {
+          divide(data, 1 << 23);
+          j -= 23;
+        }
+        divide(data, 1 << j);
+        multiply(data, 1, 1);
+        divide(data, 2);
+        result = dataToString(data);
+      } else {
+        multiply(data, 0, z);
+        multiply(data, 1 << -e, 0);
+        result = dataToString(data) + repeat('0', fractDigits);
+      }
+    }
+    if (fractDigits > 0) {
+      k = result.length;
+      result = sign + (k <= fractDigits
+        ? '0.' + repeat('0', fractDigits - k) + result
+        : stringSlice(result, 0, k - fractDigits) + '.' + stringSlice(result, k - fractDigits));
+    } else {
+      result = sign + result;
+    } return result;
+  }
+});
+
+function _classCallCheck$l(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$m(target, props) {
+function _defineProperties$l(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -9295,17 +9186,17 @@ function _defineProperties$m(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$m(Constructor, protoProps, staticProps) {
+function _createClass$l(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$m(Constructor.prototype, protoProps);
+    _defineProperties$l(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$m(Constructor, staticProps);
+    _defineProperties$l(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var Endpoints = /* @__PURE__ */ function() {
   function Endpoints2(plugin, settings) {
-    _classCallCheck$m(this, Endpoints2);
+    _classCallCheck$l(this, Endpoints2);
     this.plugin = plugin;
     this.hot = this.plugin.hot;
     this.endpoints = [];
@@ -9314,7 +9205,7 @@ var Endpoints = /* @__PURE__ */ function() {
     this.currentEndpoint = null;
     this.cellsToSetCache = [];
   }
-  _createClass$m(Endpoints2, [{
+  _createClass$l(Endpoints2, [{
     key: "getEndpoint",
     value: function getEndpoint(index) {
       if (this.settingsType === "function") {
@@ -9658,6 +9549,10 @@ var Endpoints = /* @__PURE__ */ function() {
   return Endpoints2;
 }();
 
+function isNullishOrNaN(value) {
+  return value === null || value === void 0 || isNaN(value);
+}
+
 function _typeof$h(obj) {
   "@babel/helpers - typeof";
   return _typeof$h = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
@@ -9673,12 +9568,12 @@ function _taggedTemplateLiteral(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$n(instance, Constructor) {
+function _classCallCheck$m(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$n(target, props) {
+function _defineProperties$m(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -9688,11 +9583,11 @@ function _defineProperties$n(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$n(Constructor, protoProps, staticProps) {
+function _createClass$m(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$n(Constructor.prototype, protoProps);
+    _defineProperties$m(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$n(Constructor, staticProps);
+    _defineProperties$m(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -9792,12 +9687,12 @@ var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$h(ColumnSummary2);
   function ColumnSummary2(hotInstance) {
     var _this;
-    _classCallCheck$n(this, ColumnSummary2);
+    _classCallCheck$m(this, ColumnSummary2);
     _this = _super.call(this, hotInstance);
     _this.endpoints = null;
     return _this;
   }
-  _createClass$n(ColumnSummary2, [{
+  _createClass$m(ColumnSummary2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$7];
@@ -9911,10 +9806,13 @@ var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
       var cellValue = null;
       var biggestDecimalPlacesCount = 0;
       do {
-        cellValue = this.getCellValue(i, col) || 0;
-        var decimalPlaces = ("".concat(cellValue).split(".")[1] || []).length || 1;
-        if (decimalPlaces > biggestDecimalPlacesCount) {
-          biggestDecimalPlacesCount = decimalPlaces;
+        cellValue = this.getCellValue(i, col);
+        cellValue = isNullishOrNaN(cellValue) ? null : cellValue;
+        if (cellValue !== null) {
+          var decimalPlaces = ("".concat(cellValue).split(".")[1] || []).length || 1;
+          if (decimalPlaces > biggestDecimalPlacesCount) {
+            biggestDecimalPlacesCount = decimalPlaces;
+          }
         }
         sum += cellValue || 0;
         i -= 1;
@@ -9951,7 +9849,8 @@ var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
       var i = rowRange[1] || rowRange[0];
       var cellValue;
       do {
-        cellValue = this.getCellValue(i, col) || null;
+        cellValue = this.getCellValue(i, col);
+        cellValue = isNullishOrNaN(cellValue) ? null : cellValue;
         if (result === null) {
           result = cellValue;
         } else if (cellValue !== null) {
@@ -9976,7 +9875,8 @@ var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
       var i = rowRange[1] || rowRange[0];
       do {
         cellValue = this.getCellValue(i, col);
-        if (!cellValue) {
+        cellValue = isNullishOrNaN(cellValue) ? null : cellValue;
+        if (cellValue === null) {
           counter += 1;
         }
         i -= 1;
@@ -10063,12 +9963,12 @@ var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
   return ColumnSummary2;
 }(BasePlugin);
 
-function _classCallCheck$o(instance, Constructor) {
+function _classCallCheck$n(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$o(target, props) {
+function _defineProperties$n(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -10078,17 +9978,17 @@ function _defineProperties$o(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$o(Constructor, protoProps, staticProps) {
+function _createClass$n(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$o(Constructor.prototype, protoProps);
+    _defineProperties$n(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$o(Constructor, staticProps);
+    _defineProperties$n(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var CommentEditor = /* @__PURE__ */ function() {
   function CommentEditor2(rootDocument, isRtl) {
-    _classCallCheck$o(this, CommentEditor2);
+    _classCallCheck$n(this, CommentEditor2);
     this.rootDocument = rootDocument;
     this.isRtl = isRtl;
     this.container = null;
@@ -10097,7 +9997,7 @@ var CommentEditor = /* @__PURE__ */ function() {
     this.hidden = true;
     this.hide();
   }
-  _createClass$o(CommentEditor2, [{
+  _createClass$n(CommentEditor2, [{
     key: "setPosition",
     value: function setPosition(x, y) {
       this.editorStyle.left = "".concat(x, "px");
@@ -10377,12 +10277,12 @@ function filterSeparators(items) {
   return result;
 }
 
-function _classCallCheck$p(instance, Constructor) {
+function _classCallCheck$o(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$p(target, props) {
+function _defineProperties$o(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -10392,11 +10292,11 @@ function _defineProperties$p(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$p(Constructor, protoProps, staticProps) {
+function _createClass$o(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$p(Constructor.prototype, protoProps);
+    _defineProperties$o(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$p(Constructor, staticProps);
+    _defineProperties$o(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -10404,13 +10304,13 @@ var DEFAULT_DISPLAY_DELAY = 250;
 var DEFAULT_HIDE_DELAY = 250;
 var DisplaySwitch = /* @__PURE__ */ function() {
   function DisplaySwitch2(displayDelay) {
-    _classCallCheck$p(this, DisplaySwitch2);
+    _classCallCheck$o(this, DisplaySwitch2);
     this.wasLastActionShow = true;
     this.showDebounced = null;
     this.hidingTimer = null;
     this.updateDelay(displayDelay);
   }
-  _createClass$p(DisplaySwitch2, [{
+  _createClass$o(DisplaySwitch2, [{
     key: "hide",
     value: function hide() {
       var _this = this;
@@ -10471,12 +10371,12 @@ function _defineProperty$5(obj, key, value) {
   }
   return obj;
 }
-function _classCallCheck$q(instance, Constructor) {
+function _classCallCheck$p(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$q(target, props) {
+function _defineProperties$p(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -10486,11 +10386,11 @@ function _defineProperties$q(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$q(Constructor, protoProps, staticProps) {
+function _createClass$p(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$q(Constructor.prototype, protoProps);
+    _defineProperties$p(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$q(Constructor, staticProps);
+    _defineProperties$p(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -10595,7 +10495,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$i(Comments2);
   function Comments2(hotInstance) {
     var _this;
-    _classCallCheck$q(this, Comments2);
+    _classCallCheck$p(this, Comments2);
     _this = _super.call(this, hotInstance);
     _this.editor = null;
     _this.displaySwitch = null;
@@ -10608,7 +10508,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$q(Comments2, [{
+  _createClass$p(Comments2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$8];
@@ -11107,12 +11007,12 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
   return Comments2;
 }(BasePlugin);
 
-function _classCallCheck$r(instance, Constructor) {
+function _classCallCheck$q(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$r(target, props) {
+function _defineProperties$q(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -11122,22 +11022,22 @@ function _defineProperties$r(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$r(Constructor, protoProps, staticProps) {
+function _createClass$q(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$r(Constructor.prototype, protoProps);
+    _defineProperties$q(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$r(Constructor, staticProps);
+    _defineProperties$q(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var CommandExecutor = /* @__PURE__ */ function() {
   function CommandExecutor2(hotInstance) {
-    _classCallCheck$r(this, CommandExecutor2);
+    _classCallCheck$q(this, CommandExecutor2);
     this.hot = hotInstance;
     this.commands = {};
     this.commonCallback = null;
   }
-  _createClass$r(CommandExecutor2, [{
+  _createClass$q(CommandExecutor2, [{
     key: "registerCommand",
     value: function registerCommand(name, commandDescriptor) {
       this.commands[name] = commandDescriptor;
@@ -11949,12 +11849,12 @@ function predefinedItems() {
   return items;
 }
 
-function _classCallCheck$s(instance, Constructor) {
+function _classCallCheck$r(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$s(target, props) {
+function _defineProperties$r(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -11964,23 +11864,23 @@ function _defineProperties$s(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$s(Constructor, protoProps, staticProps) {
+function _createClass$r(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$s(Constructor.prototype, protoProps);
+    _defineProperties$r(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$s(Constructor, staticProps);
+    _defineProperties$r(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var ItemsFactory = /* @__PURE__ */ function() {
   function ItemsFactory2(hotInstance) {
     var orderPattern = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
-    _classCallCheck$s(this, ItemsFactory2);
+    _classCallCheck$r(this, ItemsFactory2);
     this.hot = hotInstance;
     this.predefinedItems = predefinedItems();
     this.defaultOrderPattern = orderPattern;
   }
-  _createClass$s(ItemsFactory2, [{
+  _createClass$r(ItemsFactory2, [{
     key: "setPredefinedItems",
     value: function setPredefinedItems(predefinedItemsCollection) {
       var _this = this;
@@ -12065,12 +11965,12 @@ function _getItems() {
   return result;
 }
 
-function _classCallCheck$t(instance, Constructor) {
+function _classCallCheck$s(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$t(target, props) {
+function _defineProperties$s(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -12080,17 +11980,17 @@ function _defineProperties$t(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$t(Constructor, protoProps, staticProps) {
+function _createClass$s(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$t(Constructor.prototype, protoProps);
+    _defineProperties$s(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$t(Constructor, staticProps);
+    _defineProperties$s(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var Cursor = /* @__PURE__ */ function() {
   function Cursor2(object, rootWindow) {
-    _classCallCheck$t(this, Cursor2);
+    _classCallCheck$s(this, Cursor2);
     var windowScrollTop = getWindowScrollTop(rootWindow);
     var windowScrollLeft = getWindowScrollLeft(rootWindow);
     var top;
@@ -12127,7 +12027,7 @@ var Cursor = /* @__PURE__ */ function() {
     this.cellHeight = cellHeight;
     this.cellWidth = cellWidth;
   }
-  _createClass$t(Cursor2, [{
+  _createClass$s(Cursor2, [{
     key: "getSourceType",
     value: function getSourceType(object) {
       var type = "literal";
@@ -12191,12 +12091,12 @@ function _defineProperty$7(obj, key, value) {
   }
   return obj;
 }
-function _classCallCheck$u(instance, Constructor) {
+function _classCallCheck$t(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$u(target, props) {
+function _defineProperties$t(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -12206,11 +12106,11 @@ function _defineProperties$u(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$u(Constructor, protoProps, staticProps) {
+function _createClass$t(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$u(Constructor.prototype, protoProps);
+    _defineProperties$t(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$u(Constructor, staticProps);
+    _defineProperties$t(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -12219,7 +12119,7 @@ var SHORTCUTS_CONTEXT = "menu";
 var SHORTCUTS_GROUP$3 = SHORTCUTS_CONTEXT;
 var Menu = /* @__PURE__ */ function() {
   function Menu2(hotInstance, options) {
-    _classCallCheck$u(this, Menu2);
+    _classCallCheck$t(this, Menu2);
     this.hot = hotInstance;
     this.options = options || {
       parent: null,
@@ -12247,7 +12147,7 @@ var Menu = /* @__PURE__ */ function() {
     this._afterScrollCallback = null;
     this.registerEvents();
   }
-  _createClass$u(Menu2, [{
+  _createClass$t(Menu2, [{
     key: "registerEvents",
     value: function registerEvents() {
       var _this = this;
@@ -12910,12 +12810,12 @@ function _typeof$j(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$j(obj);
 }
-function _classCallCheck$v(instance, Constructor) {
+function _classCallCheck$u(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$v(target, props) {
+function _defineProperties$u(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -12925,11 +12825,11 @@ function _defineProperties$v(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$v(Constructor, protoProps, staticProps) {
+function _createClass$u(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$v(Constructor.prototype, protoProps);
+    _defineProperties$u(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$v(Constructor, staticProps);
+    _defineProperties$u(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -13034,7 +12934,7 @@ var ContextMenu = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$j(ContextMenu2);
   function ContextMenu2(hotInstance) {
     var _this;
-    _classCallCheck$v(this, ContextMenu2);
+    _classCallCheck$u(this, ContextMenu2);
     _this = _super.call(this, hotInstance);
     _this.eventManager = new EventManager(_assertThisInitialized$j(_this));
     _this.commandExecutor = new CommandExecutor(_this.hot);
@@ -13042,7 +12942,7 @@ var ContextMenu = /* @__PURE__ */ function(_BasePlugin) {
     _this.menu = null;
     return _this;
   }
-  _createClass$v(ContextMenu2, [{
+  _createClass$u(ContextMenu2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$9];
@@ -13288,11 +13188,48 @@ function cutItem(copyPastePlugin) {
   };
 }
 
-function _classCallCheck$w(instance, Constructor) {
+function _classCallCheck$v(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
+function _defineProperties$v(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$v(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$v(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$v(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+var ClipboardData = /* @__PURE__ */ function() {
+  function ClipboardData2() {
+    _classCallCheck$v(this, ClipboardData2);
+    this.data = {};
+  }
+  _createClass$v(ClipboardData2, [{
+    key: "setData",
+    value: function setData(type, value) {
+      this.data[type] = value;
+    }
+  }, {
+    key: "getData",
+    value: function getData(type) {
+      return this.data[type] || void 0;
+    }
+  }]);
+  return ClipboardData2;
+}();
+
 function _defineProperties$w(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -13311,25 +13248,21 @@ function _createClass$w(Constructor, protoProps, staticProps) {
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-var ClipboardData = /* @__PURE__ */ function() {
-  function ClipboardData2() {
-    _classCallCheck$w(this, ClipboardData2);
-    this.data = {};
+function _classCallCheck$w(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
   }
-  _createClass$w(ClipboardData2, [{
-    key: "setData",
-    value: function setData(type, value) {
-      this.data[type] = value;
-    }
-  }, {
-    key: "getData",
-    value: function getData(type) {
-      return this.data[type] || void 0;
-    }
-  }]);
-  return ClipboardData2;
-}();
+}
+var PasteEvent = /* @__PURE__ */ _createClass$w(function PasteEvent2() {
+  _classCallCheck$w(this, PasteEvent2);
+  this.clipboardData = new ClipboardData();
+});
 
+function _classCallCheck$x(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 function _defineProperties$x(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -13348,49 +13281,16 @@ function _createClass$x(Constructor, protoProps, staticProps) {
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _classCallCheck$x(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-var PasteEvent = /* @__PURE__ */ _createClass$x(function PasteEvent2() {
-  _classCallCheck$x(this, PasteEvent2);
-  this.clipboardData = new ClipboardData();
-});
-
-function _classCallCheck$y(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$y(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$y(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$y(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$y(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
 var FocusableWrapper = /* @__PURE__ */ function() {
   function FocusableWrapper2(container) {
-    _classCallCheck$y(this, FocusableWrapper2);
+    _classCallCheck$x(this, FocusableWrapper2);
     this.rootDocument = container.defaultView ? container : container.ownerDocument;
     this.mainElement = null;
     this.eventManager = new EventManager(this);
     this.listenersCount = new WeakSet();
     this.container = container;
   }
-  _createClass$y(FocusableWrapper2, [{
+  _createClass$x(FocusableWrapper2, [{
     key: "useSecondaryElement",
     value: function useSecondaryElement() {
       var el = createOrGetSecondaryElement(this.container);
@@ -13557,12 +13457,12 @@ function _typeof$k(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$k(obj);
 }
-function _classCallCheck$z(instance, Constructor) {
+function _classCallCheck$y(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$z(target, props) {
+function _defineProperties$y(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -13572,11 +13472,11 @@ function _defineProperties$z(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$z(Constructor, protoProps, staticProps) {
+function _createClass$y(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$z(Constructor.prototype, protoProps);
+    _defineProperties$y(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$z(Constructor, staticProps);
+    _defineProperties$y(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -13689,7 +13589,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$k(CopyPaste2);
   function CopyPaste2(hotInstance) {
     var _this;
-    _classCallCheck$z(this, CopyPaste2);
+    _classCallCheck$y(this, CopyPaste2);
     _this = _super.call(this, hotInstance);
     _this.columnsLimit = COLUMNS_LIMIT;
     _this.copyableRanges = [];
@@ -13705,7 +13605,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$z(CopyPaste2, [{
+  _createClass$y(CopyPaste2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$a];
@@ -14403,12 +14303,12 @@ function _arrayWithHoles$a(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$A(instance, Constructor) {
+function _classCallCheck$z(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$A(target, props) {
+function _defineProperties$z(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -14418,11 +14318,11 @@ function _defineProperties$A(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$A(Constructor, protoProps, staticProps) {
+function _createClass$z(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$A(Constructor.prototype, protoProps);
+    _defineProperties$z(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$A(Constructor, staticProps);
+    _defineProperties$z(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -14530,7 +14430,7 @@ var CustomBorders = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$l(CustomBorders2);
   function CustomBorders2() {
     var _this;
-    _classCallCheck$A(this, CustomBorders2);
+    _classCallCheck$z(this, CustomBorders2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
@@ -14538,7 +14438,7 @@ var CustomBorders = /* @__PURE__ */ function(_BasePlugin) {
     _defineProperty$8(_assertThisInitialized$l(_this), "savedBorders", []);
     return _this;
   }
-  _createClass$A(CustomBorders2, [{
+  _createClass$z(CustomBorders2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$b];
@@ -15022,12 +14922,12 @@ function _typeof$m(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$m(obj);
 }
-function _classCallCheck$B(instance, Constructor) {
+function _classCallCheck$A(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$B(target, props) {
+function _defineProperties$A(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15037,11 +14937,11 @@ function _defineProperties$B(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$B(Constructor, protoProps, staticProps) {
+function _createClass$A(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$B(Constructor.prototype, protoProps);
+    _defineProperties$A(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$B(Constructor, staticProps);
+    _defineProperties$A(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -15141,7 +15041,7 @@ var DragToScroll = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$m(DragToScroll2);
   function DragToScroll2(hotInstance) {
     var _this;
-    _classCallCheck$B(this, DragToScroll2);
+    _classCallCheck$A(this, DragToScroll2);
     _this = _super.call(this, hotInstance);
     _this.eventManager = new EventManager(_assertThisInitialized$m(_this));
     _this.boundaries = null;
@@ -15149,7 +15049,7 @@ var DragToScroll = /* @__PURE__ */ function(_BasePlugin) {
     _this.listening = false;
     return _this;
   }
-  _createClass$B(DragToScroll2, [{
+  _createClass$A(DragToScroll2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$c];
@@ -15309,12 +15209,12 @@ function _typeof$n(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$n(obj);
 }
-function _classCallCheck$C(instance, Constructor) {
+function _classCallCheck$B(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$C(target, props) {
+function _defineProperties$B(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15324,11 +15224,11 @@ function _defineProperties$C(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$C(Constructor, protoProps, staticProps) {
+function _createClass$B(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$C(Constructor.prototype, protoProps);
+    _defineProperties$B(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$C(Constructor, staticProps);
+    _defineProperties$B(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -15434,7 +15334,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$n(DropdownMenu2);
   function DropdownMenu2(hotInstance) {
     var _this;
-    _classCallCheck$C(this, DropdownMenu2);
+    _classCallCheck$B(this, DropdownMenu2);
     _this = _super.call(this, hotInstance);
     _this.eventManager = new EventManager(_assertThisInitialized$n(_this));
     _this.commandExecutor = new CommandExecutor(_this.hot);
@@ -15445,7 +15345,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$C(DropdownMenu2, [{
+  _createClass$B(DropdownMenu2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$d];
@@ -15730,12 +15630,12 @@ function _arrayWithHoles$b(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$D(instance, Constructor) {
+function _classCallCheck$C(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$D(target, props) {
+function _defineProperties$C(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15745,21 +15645,21 @@ function _defineProperties$D(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$D(Constructor, protoProps, staticProps) {
+function _createClass$C(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$D(Constructor.prototype, protoProps);
+    _defineProperties$C(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$D(Constructor, staticProps);
+    _defineProperties$C(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var DataProvider = /* @__PURE__ */ function() {
   function DataProvider2(hotInstance) {
-    _classCallCheck$D(this, DataProvider2);
+    _classCallCheck$C(this, DataProvider2);
     this.hot = hotInstance;
     this.options = {};
   }
-  _createClass$D(DataProvider2, [{
+  _createClass$C(DataProvider2, [{
     key: "setOptions",
     value: function setOptions(options) {
       this.options = options;
@@ -15851,12 +15751,12 @@ var DataProvider = /* @__PURE__ */ function() {
   return DataProvider2;
 }();
 
-function _classCallCheck$E(instance, Constructor) {
+function _classCallCheck$D(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$E(target, props) {
+function _defineProperties$D(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15866,22 +15766,22 @@ function _defineProperties$E(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$E(Constructor, protoProps, staticProps) {
+function _createClass$D(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$E(Constructor.prototype, protoProps);
+    _defineProperties$D(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$E(Constructor, staticProps);
+    _defineProperties$D(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var BaseType = /* @__PURE__ */ function() {
   function BaseType2(dataProvider, options) {
-    _classCallCheck$E(this, BaseType2);
+    _classCallCheck$D(this, BaseType2);
     this.dataProvider = dataProvider;
     this.options = this._mergeOptions(options);
     this.dataProvider.setOptions(this.options);
   }
-  _createClass$E(BaseType2, [{
+  _createClass$D(BaseType2, [{
     key: "_mergeOptions",
     value: function _mergeOptions(options) {
       var _options = clone(this.constructor.DEFAULT_OPTIONS);
@@ -15923,12 +15823,12 @@ function _typeof$o(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$o(obj);
 }
-function _classCallCheck$F(instance, Constructor) {
+function _classCallCheck$E(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$F(target, props) {
+function _defineProperties$E(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15938,11 +15838,11 @@ function _defineProperties$F(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$F(Constructor, protoProps, staticProps) {
+function _createClass$E(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$F(Constructor.prototype, protoProps);
+    _defineProperties$E(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$F(Constructor, staticProps);
+    _defineProperties$E(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -16017,10 +15917,10 @@ var Csv = /* @__PURE__ */ function(_BaseType) {
   _inherits$o(Csv2, _BaseType);
   var _super = _createSuper$o(Csv2);
   function Csv2() {
-    _classCallCheck$F(this, Csv2);
+    _classCallCheck$E(this, Csv2);
     return _super.apply(this, arguments);
   }
-  _createClass$F(Csv2, [{
+  _createClass$E(Csv2, [{
     key: "export",
     value: function _export() {
       var _this = this;
@@ -16105,12 +16005,12 @@ function _typeof$p(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$p(obj);
 }
-function _classCallCheck$G(instance, Constructor) {
+function _classCallCheck$F(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$G(target, props) {
+function _defineProperties$F(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -16120,11 +16020,11 @@ function _defineProperties$G(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$G(Constructor, protoProps, staticProps) {
+function _createClass$F(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$G(Constructor.prototype, protoProps);
+    _defineProperties$F(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$G(Constructor, staticProps);
+    _defineProperties$F(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -16198,10 +16098,10 @@ var ExportFile = /* @__PURE__ */ function(_BasePlugin) {
   _inherits$p(ExportFile2, _BasePlugin);
   var _super = _createSuper$p(ExportFile2);
   function ExportFile2() {
-    _classCallCheck$G(this, ExportFile2);
+    _classCallCheck$F(this, ExportFile2);
     return _super.apply(this, arguments);
   }
-  _createClass$G(ExportFile2, [{
+  _createClass$F(ExportFile2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return true;
@@ -16277,12 +16177,12 @@ var ExportFile = /* @__PURE__ */ function(_BasePlugin) {
   return ExportFile2;
 }(BasePlugin);
 
-function _classCallCheck$H(instance, Constructor) {
+function _classCallCheck$G(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$H(target, props) {
+function _defineProperties$G(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -16292,18 +16192,18 @@ function _defineProperties$H(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$H(Constructor, protoProps, staticProps) {
+function _createClass$G(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$H(Constructor.prototype, protoProps);
+    _defineProperties$G(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$H(Constructor, staticProps);
+    _defineProperties$G(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var BaseComponent = /* @__PURE__ */ function() {
   function BaseComponent2(hotInstance, _ref) {
     var id = _ref.id, _ref$stateless = _ref.stateless, stateless = _ref$stateless === void 0 ? true : _ref$stateless;
-    _classCallCheck$H(this, BaseComponent2);
+    _classCallCheck$G(this, BaseComponent2);
     this.hot = hotInstance;
     this.id = id;
     this.elements = [];
@@ -16311,7 +16211,7 @@ var BaseComponent = /* @__PURE__ */ function() {
     this.stateId = "Filters.component.".concat(this.id);
     this.state = stateless ? null : this.hot.columnIndexMapper.registerMap(this.stateId, new LinkedPhysicalIndexToValueMap());
   }
-  _createClass$H(BaseComponent2, [{
+  _createClass$G(BaseComponent2, [{
     key: "reset",
     value: function reset() {
       arrayEach(this.elements, function(ui) {
@@ -17120,6 +17020,42 @@ registerCondition(CONDITION_NAME$d, condition$d, {
   showOperators: true
 });
 
+var getOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
+
+
+
+
+
+
+
+// eslint-disable-next-line es/no-string-prototype-endswith -- safe
+var nativeEndsWith = functionUncurryThis(''.endsWith);
+var slice = functionUncurryThis(''.slice);
+var min = Math.min;
+
+var CORRECT_IS_REGEXP_LOGIC = correctIsRegexpLogic('endsWith');
+// https://github.com/zloirock/core-js/pull/702
+var MDN_POLYFILL_BUG =  !CORRECT_IS_REGEXP_LOGIC && !!function () {
+  var descriptor = getOwnPropertyDescriptor(String.prototype, 'endsWith');
+  return descriptor && !descriptor.writable;
+}();
+
+// `String.prototype.endsWith` method
+// https://tc39.es/ecma262/#sec-string.prototype.endswith
+_export({ target: 'String', proto: true, forced: !MDN_POLYFILL_BUG && !CORRECT_IS_REGEXP_LOGIC }, {
+  endsWith: function endsWith(searchString /* , endPosition = @length */) {
+    var that = toString_1(requireObjectCoercible(this));
+    notARegexp(searchString);
+    var endPosition = arguments.length > 1 ? arguments[1] : undefined;
+    var len = that.length;
+    var end = endPosition === undefined ? len : min(toLength(endPosition), len);
+    var search = toString_1(searchString);
+    return nativeEndsWith
+      ? nativeEndsWith(that, search, end)
+      : slice(that, end - search.length, end) === search;
+  }
+});
+
 function _slicedToArray$k(arr, i) {
   return _arrayWithHoles$l(arr) || _iterableToArrayLimit$k(arr, i) || _unsupportedIterableToArray$o(arr, i) || _nonIterableRest$l();
 }
@@ -17537,12 +17473,12 @@ function getOptionsList(type) {
   return items;
 }
 
-function _classCallCheck$I(instance, Constructor) {
+function _classCallCheck$H(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$I(target, props) {
+function _defineProperties$H(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -17552,11 +17488,11 @@ function _defineProperties$I(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$I(Constructor, protoProps, staticProps) {
+function _createClass$H(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$I(Constructor.prototype, protoProps);
+    _defineProperties$H(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$I(Constructor, staticProps);
+    _defineProperties$H(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -17565,14 +17501,14 @@ var STATE_BUILDING = "building";
 var EVENTS_TO_REGISTER = ["click", "input", "keydown", "keypress", "keyup", "focus", "blur", "change"];
 var BaseUI = /* @__PURE__ */ function() {
   function BaseUI2(hotInstance, options) {
-    _classCallCheck$I(this, BaseUI2);
+    _classCallCheck$H(this, BaseUI2);
     this.hot = hotInstance;
     this.eventManager = new EventManager(this);
     this.options = extend(BaseUI2.DEFAULTS, options);
     this._element = this.hot.rootDocument.createElement(this.options.wrapIt ? "div" : this.options.tagName);
     this.buildState = null;
   }
-  _createClass$I(BaseUI2, [{
+  _createClass$H(BaseUI2, [{
     key: "setValue",
     value: function setValue(value) {
       this.options.value = value;
@@ -17706,12 +17642,12 @@ function _typeof$q(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$q(obj);
 }
-function _classCallCheck$J(instance, Constructor) {
+function _classCallCheck$I(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$J(target, props) {
+function _defineProperties$I(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -17721,11 +17657,11 @@ function _defineProperties$J(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$J(Constructor, protoProps, staticProps) {
+function _createClass$I(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$J(Constructor.prototype, protoProps);
+    _defineProperties$I(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$J(Constructor, staticProps);
+    _defineProperties$I(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -17824,13 +17760,13 @@ var InputUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$q(InputUI2);
   function InputUI2(hotInstance, options) {
     var _this;
-    _classCallCheck$J(this, InputUI2);
+    _classCallCheck$I(this, InputUI2);
     _this = _super.call(this, hotInstance, extend(InputUI2.DEFAULTS, options));
     privatePool$5.set(_assertThisInitialized$q(_this), {});
     _this.registerHooks();
     return _this;
   }
-  _createClass$J(InputUI2, [{
+  _createClass$I(InputUI2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -17901,12 +17837,12 @@ function _typeof$r(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$r(obj);
 }
-function _classCallCheck$K(instance, Constructor) {
+function _classCallCheck$J(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$K(target, props) {
+function _defineProperties$J(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -17916,11 +17852,11 @@ function _defineProperties$K(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$K(Constructor, protoProps, staticProps) {
+function _createClass$J(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$K(Constructor.prototype, protoProps);
+    _defineProperties$J(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$K(Constructor, staticProps);
+    _defineProperties$J(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -18019,7 +17955,7 @@ var SelectUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$r(SelectUI2);
   function SelectUI2(hotInstance, options) {
     var _this;
-    _classCallCheck$K(this, SelectUI2);
+    _classCallCheck$J(this, SelectUI2);
     _this = _super.call(this, hotInstance, extend(SelectUI2.DEFAULTS, options));
     privatePool$6.set(_assertThisInitialized$r(_this), {});
     _this.menu = null;
@@ -18027,7 +17963,7 @@ var SelectUI = /* @__PURE__ */ function(_BaseUI) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$K(SelectUI2, [{
+  _createClass$J(SelectUI2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -18176,47 +18112,12 @@ function _typeof$s(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$s(obj);
 }
-function _toConsumableArray$4(arr) {
-  return _arrayWithoutHoles$4(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$r(arr) || _nonIterableSpread$4();
-}
-function _nonIterableSpread$4() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$r(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$r(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$r(o, minLen);
-}
-function _iterableToArray$5(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$4(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$r(arr);
-}
-function _arrayLikeToArray$r(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
-function _classCallCheck$L(instance, Constructor) {
+function _classCallCheck$K(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$L(target, props) {
+function _defineProperties$K(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -18226,11 +18127,11 @@ function _defineProperties$L(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$L(Constructor, protoProps, staticProps) {
+function _createClass$K(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$L(Constructor.prototype, protoProps);
+    _defineProperties$K(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$L(Constructor, staticProps);
+    _defineProperties$K(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -18328,7 +18229,7 @@ var ConditionComponent = /* @__PURE__ */ function(_BaseComponent) {
   var _super = _createSuper$s(ConditionComponent2);
   function ConditionComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$L(this, ConditionComponent2);
+    _classCallCheck$K(this, ConditionComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: false
@@ -18347,7 +18248,7 @@ var ConditionComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$L(ConditionComponent2, [{
+  _createClass$K(ConditionComponent2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -18472,11 +18373,12 @@ var ConditionComponent = /* @__PURE__ */ function(_BaseComponent) {
   }, {
     key: "reset",
     value: function reset() {
-      var _this$hot;
-      var lastSelectedColumn = this.hot.getPlugin("filters").getSelectedColumn();
-      var visualIndex = lastSelectedColumn && lastSelectedColumn.visualIndex;
-      var columnType = (_this$hot = this.hot).getDataType.apply(_this$hot, _toConsumableArray$4(this.hot.getSelectedLast() || [0, visualIndex]));
-      var items = getOptionsList(columnType);
+      var selectedColumn = this.hot.getPlugin("filters").getSelectedColumn();
+      var items = [getConditionDescriptor(CONDITION_NAME)];
+      if (selectedColumn !== null) {
+        var visualIndex = selectedColumn.visualIndex;
+        items = getOptionsList(this.hot.getDataType(0, visualIndex, this.hot.countRows(), visualIndex));
+      }
       arrayEach(this.getInputElements(), function(element) {
         return element.hide();
       });
@@ -18525,12 +18427,12 @@ function _typeof$t(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$t(obj);
 }
-function _classCallCheck$M(instance, Constructor) {
+function _classCallCheck$L(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$M(target, props) {
+function _defineProperties$L(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -18540,11 +18442,11 @@ function _defineProperties$M(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$M(Constructor, protoProps, staticProps) {
+function _createClass$L(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$M(Constructor.prototype, protoProps);
+    _defineProperties$L(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$M(Constructor, staticProps);
+    _defineProperties$L(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -18643,12 +18545,12 @@ var RadioInputUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$t(RadioInputUI2);
   function RadioInputUI2(hotInstance, options) {
     var _this;
-    _classCallCheck$M(this, RadioInputUI2);
+    _classCallCheck$L(this, RadioInputUI2);
     _this = _super.call(this, hotInstance, extend(RadioInputUI2.DEFAULTS, options));
     privatePool$7.set(_assertThisInitialized$t(_this), {});
     return _this;
   }
-  _createClass$M(RadioInputUI2, [{
+  _createClass$L(RadioInputUI2, [{
     key: "build",
     value: function build() {
       _get$p(_getPrototypeOf$t(RadioInputUI2.prototype), "build", this).call(this);
@@ -18719,12 +18621,12 @@ function _taggedTemplateLiteral$1(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$N(instance, Constructor) {
+function _classCallCheck$M(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$N(target, props) {
+function _defineProperties$M(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -18734,11 +18636,11 @@ function _defineProperties$N(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$N(Constructor, protoProps, staticProps) {
+function _createClass$M(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$N(Constructor.prototype, protoProps);
+    _defineProperties$M(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$N(Constructor, staticProps);
+    _defineProperties$M(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -18812,7 +18714,7 @@ var OperatorsComponent = /* @__PURE__ */ function(_BaseComponent) {
   var _super = _createSuper$u(OperatorsComponent2);
   function OperatorsComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$N(this, OperatorsComponent2);
+    _classCallCheck$M(this, OperatorsComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: false
@@ -18821,7 +18723,7 @@ var OperatorsComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.buildOperatorsElement();
     return _this;
   }
-  _createClass$N(OperatorsComponent2, [{
+  _createClass$M(OperatorsComponent2, [{
     key: "getMenuItemDescriptor",
     value: function getMenuItemDescriptor() {
       var _this2 = this;
@@ -18964,12 +18866,12 @@ function _typeof$v(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$v(obj);
 }
-function _classCallCheck$O(instance, Constructor) {
+function _classCallCheck$N(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$O(target, props) {
+function _defineProperties$N(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -18979,11 +18881,11 @@ function _defineProperties$O(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$O(Constructor, protoProps, staticProps) {
+function _createClass$N(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$O(Constructor.prototype, protoProps);
+    _defineProperties$N(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$O(Constructor, staticProps);
+    _defineProperties$N(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -19082,12 +18984,12 @@ var LinkUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$v(LinkUI2);
   function LinkUI2(hotInstance, options) {
     var _this;
-    _classCallCheck$O(this, LinkUI2);
+    _classCallCheck$N(this, LinkUI2);
     _this = _super.call(this, hotInstance, extend(LinkUI2.DEFAULTS, options));
     privatePool$8.set(_assertThisInitialized$v(_this), {});
     return _this;
   }
-  _createClass$O(LinkUI2, [{
+  _createClass$N(LinkUI2, [{
     key: "build",
     value: function build() {
       _get$q(_getPrototypeOf$v(LinkUI2.prototype), "build", this).call(this);
@@ -19122,34 +19024,34 @@ function _typeof$w(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$w(obj);
 }
-function _toConsumableArray$5(arr) {
-  return _arrayWithoutHoles$5(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$s(arr) || _nonIterableSpread$5();
+function _toConsumableArray$4(arr) {
+  return _arrayWithoutHoles$4(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$r(arr) || _nonIterableSpread$4();
 }
-function _nonIterableSpread$5() {
+function _nonIterableSpread$4() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$s(o, minLen) {
+function _unsupportedIterableToArray$r(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$s(o, minLen);
+    return _arrayLikeToArray$r(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$s(o, minLen);
+    return _arrayLikeToArray$r(o, minLen);
 }
-function _iterableToArray$6(iter) {
+function _iterableToArray$5(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$5(arr) {
+function _arrayWithoutHoles$4(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$s(arr);
+    return _arrayLikeToArray$r(arr);
 }
-function _arrayLikeToArray$s(arr, len) {
+function _arrayLikeToArray$r(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19157,12 +19059,12 @@ function _arrayLikeToArray$s(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$P(instance, Constructor) {
+function _classCallCheck$O(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$P(target, props) {
+function _defineProperties$O(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -19172,11 +19074,11 @@ function _defineProperties$P(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$P(Constructor, protoProps, staticProps) {
+function _createClass$O(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$P(Constructor.prototype, protoProps);
+    _defineProperties$O(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$P(Constructor, staticProps);
+    _defineProperties$O(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -19276,7 +19178,7 @@ var MultipleSelectUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$w(MultipleSelectUI2);
   function MultipleSelectUI2(hotInstance, options) {
     var _this;
-    _classCallCheck$P(this, MultipleSelectUI2);
+    _classCallCheck$O(this, MultipleSelectUI2);
     _this = _super.call(this, hotInstance, extend(MultipleSelectUI2.DEFAULTS, options));
     privatePool$9.set(_assertThisInitialized$w(_this), {});
     _this.searchInput = new InputUI(_this.hot, {
@@ -19296,7 +19198,7 @@ var MultipleSelectUI = /* @__PURE__ */ function(_BaseUI) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$P(MultipleSelectUI2, [{
+  _createClass$O(MultipleSelectUI2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -19334,7 +19236,7 @@ var MultipleSelectUI = /* @__PURE__ */ function(_BaseUI) {
   }, {
     key: "getItems",
     value: function getItems() {
-      return _toConsumableArray$5(this.items);
+      return _toConsumableArray$4(this.items);
     }
   }, {
     key: "getValue",
@@ -19452,7 +19354,7 @@ var MultipleSelectUI = /* @__PURE__ */ function(_BaseUI) {
       var value = event.target.value.toLocaleLowerCase(this.getLocale());
       var filteredItems;
       if (value === "") {
-        filteredItems = _toConsumableArray$5(this.items);
+        filteredItems = _toConsumableArray$4(this.items);
       } else {
         filteredItems = arrayFilter(this.items, function(item) {
           return "".concat(item.value).toLocaleLowerCase(_this4.getLocale()).indexOf(value) >= 0;
@@ -19530,25 +19432,25 @@ function _typeof$x(obj) {
   }, _typeof$x(obj);
 }
 function _slicedToArray$n(arr, i) {
-  return _arrayWithHoles$o(arr) || _iterableToArrayLimit$n(arr, i) || _unsupportedIterableToArray$t(arr, i) || _nonIterableRest$o();
+  return _arrayWithHoles$o(arr) || _iterableToArrayLimit$n(arr, i) || _unsupportedIterableToArray$s(arr, i) || _nonIterableRest$o();
 }
 function _nonIterableRest$o() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$t(o, minLen) {
+function _unsupportedIterableToArray$s(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$t(o, minLen);
+    return _arrayLikeToArray$s(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$t(o, minLen);
+    return _arrayLikeToArray$s(o, minLen);
 }
-function _arrayLikeToArray$t(arr, len) {
+function _arrayLikeToArray$s(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19588,12 +19490,12 @@ function _arrayWithHoles$o(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$Q(instance, Constructor) {
+function _classCallCheck$P(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$Q(target, props) {
+function _defineProperties$P(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -19603,11 +19505,11 @@ function _defineProperties$Q(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$Q(Constructor, protoProps, staticProps) {
+function _createClass$P(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$Q(Constructor.prototype, protoProps);
+    _defineProperties$P(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$Q(Constructor, staticProps);
+    _defineProperties$P(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -19705,7 +19607,7 @@ var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
   var _super = _createSuper$x(ValueComponent2);
   function ValueComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$Q(this, ValueComponent2);
+    _classCallCheck$P(this, ValueComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: false
@@ -19715,7 +19617,7 @@ var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$Q(ValueComponent2, [{
+  _createClass$P(ValueComponent2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -19829,8 +19731,10 @@ var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
       this.getMultipleSelectElement().setItems(items);
       _get$s(_getPrototypeOf$x(ValueComponent2.prototype), "reset", this).call(this);
       this.getMultipleSelectElement().setValue(values);
-      var lastSelectedColumn = this.hot.getPlugin("filters").getSelectedColumn().visualIndex;
-      this.getMultipleSelectElement().setLocale(this.hot.getCellMeta(0, lastSelectedColumn).locale);
+      var selectedColumn = this.hot.getPlugin("filters").getSelectedColumn();
+      if (selectedColumn !== null) {
+        this.getMultipleSelectElement().setLocale(this.hot.getCellMeta(0, selectedColumn.visualIndex).locale);
+      }
     }
   }, {
     key: "onInputKeyDown",
@@ -19843,9 +19747,11 @@ var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
   }, {
     key: "_getColumnVisibleValues",
     value: function _getColumnVisibleValues() {
-      var lastSelectedColumn = this.hot.getPlugin("filters").getSelectedColumn();
-      var visualIndex = lastSelectedColumn && lastSelectedColumn.visualIndex;
-      return arrayMap(this.hot.getDataAtCol(visualIndex), function(v) {
+      var selectedColumn = this.hot.getPlugin("filters").getSelectedColumn();
+      if (selectedColumn === null) {
+        return [];
+      }
+      return arrayMap(this.hot.getDataAtCol(selectedColumn.visualIndex), function(v) {
         return toEmptyString(v);
       });
     }
@@ -19861,12 +19767,12 @@ function _typeof$y(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$y(obj);
 }
-function _classCallCheck$R(instance, Constructor) {
+function _classCallCheck$Q(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$R(target, props) {
+function _defineProperties$Q(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -19876,11 +19782,11 @@ function _defineProperties$R(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$R(Constructor, protoProps, staticProps) {
+function _createClass$Q(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$R(Constructor.prototype, protoProps);
+    _defineProperties$Q(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$R(Constructor, staticProps);
+    _defineProperties$Q(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -19953,7 +19859,7 @@ var ActionBarComponent = /* @__PURE__ */ function(_BaseComponent) {
   var _super = _createSuper$y(ActionBarComponent2);
   function ActionBarComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$R(this, ActionBarComponent2);
+    _classCallCheck$Q(this, ActionBarComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: true
@@ -19974,7 +19880,7 @@ var ActionBarComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$R(ActionBarComponent2, [{
+  _createClass$Q(ActionBarComponent2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -20042,25 +19948,25 @@ var ActionBarComponent = /* @__PURE__ */ function(_BaseComponent) {
 
 var _templateObject$2, _templateObject2;
 function _slicedToArray$o(arr, i) {
-  return _arrayWithHoles$p(arr) || _iterableToArrayLimit$o(arr, i) || _unsupportedIterableToArray$u(arr, i) || _nonIterableRest$p();
+  return _arrayWithHoles$p(arr) || _iterableToArrayLimit$o(arr, i) || _unsupportedIterableToArray$t(arr, i) || _nonIterableRest$p();
 }
 function _nonIterableRest$p() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$u(o, minLen) {
+function _unsupportedIterableToArray$t(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$u(o, minLen);
+    return _arrayLikeToArray$t(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$u(o, minLen);
+    return _arrayLikeToArray$t(o, minLen);
 }
-function _arrayLikeToArray$u(arr, len) {
+function _arrayLikeToArray$t(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -20106,12 +20012,12 @@ function _taggedTemplateLiteral$2(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$S(instance, Constructor) {
+function _classCallCheck$R(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$S(target, props) {
+function _defineProperties$R(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -20121,11 +20027,11 @@ function _defineProperties$S(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$S(Constructor, protoProps, staticProps) {
+function _createClass$R(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$S(Constructor.prototype, protoProps);
+    _defineProperties$R(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$S(Constructor, staticProps);
+    _defineProperties$R(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -20133,7 +20039,7 @@ var MAP_NAME = "ConditionCollection.filteringStates";
 var ConditionCollection = /* @__PURE__ */ function() {
   function ConditionCollection2(hot) {
     var isMapRegistrable = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : true;
-    _classCallCheck$S(this, ConditionCollection2);
+    _classCallCheck$R(this, ConditionCollection2);
     this.hot = hot;
     this.isMapRegistrable = isMapRegistrable;
     this.filteringStates = new LinkedPhysicalIndexToValueMap();
@@ -20143,7 +20049,7 @@ var ConditionCollection = /* @__PURE__ */ function() {
       this.filteringStates.init(this.hot.columnIndexMapper.getNumberOfIndexes());
     }
   }
-  _createClass$S(ConditionCollection2, [{
+  _createClass$R(ConditionCollection2, [{
     key: "isEmpty",
     value: function isEmpty() {
       return this.getFilteredColumns().length === 0;
@@ -20298,12 +20204,12 @@ var ConditionCollection = /* @__PURE__ */ function() {
 }();
 mixin(ConditionCollection, localHooks);
 
-function _classCallCheck$T(instance, Constructor) {
+function _classCallCheck$S(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$T(target, props) {
+function _defineProperties$S(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -20313,11 +20219,11 @@ function _defineProperties$T(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$T(Constructor, protoProps, staticProps) {
+function _createClass$S(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$T(Constructor.prototype, protoProps);
+    _defineProperties$S(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$T(Constructor, staticProps);
+    _defineProperties$S(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -20326,11 +20232,11 @@ var DataFilter = /* @__PURE__ */ function() {
     var columnDataFactory = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : function() {
       return [];
     };
-    _classCallCheck$T(this, DataFilter2);
+    _classCallCheck$S(this, DataFilter2);
     this.conditionCollection = conditionCollection;
     this.columnDataFactory = columnDataFactory;
   }
-  _createClass$T(DataFilter2, [{
+  _createClass$S(DataFilter2, [{
     key: "filter",
     value: function filter() {
       var _this = this;
@@ -20373,12 +20279,12 @@ var DataFilter = /* @__PURE__ */ function() {
   return DataFilter2;
 }();
 
-function _classCallCheck$U(instance, Constructor) {
+function _classCallCheck$T(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$U(target, props) {
+function _defineProperties$T(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -20388,11 +20294,11 @@ function _defineProperties$U(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$U(Constructor, protoProps, staticProps) {
+function _createClass$T(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$U(Constructor.prototype, protoProps);
+    _defineProperties$T(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$U(Constructor, staticProps);
+    _defineProperties$T(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -20402,7 +20308,7 @@ var ConditionUpdateObserver = /* @__PURE__ */ function() {
     var columnDataFactory = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : function() {
       return [];
     };
-    _classCallCheck$U(this, ConditionUpdateObserver2);
+    _classCallCheck$T(this, ConditionUpdateObserver2);
     this.hot = hot;
     this.conditionCollection = conditionCollection;
     this.columnDataFactory = columnDataFactory;
@@ -20426,7 +20332,7 @@ var ConditionUpdateObserver = /* @__PURE__ */ function() {
       return _this._onConditionAfterClean();
     });
   }
-  _createClass$U(ConditionUpdateObserver2, [{
+  _createClass$T(ConditionUpdateObserver2, [{
     key: "groupChanges",
     value: function groupChanges() {
       this.grouping = true;
@@ -20543,25 +20449,25 @@ function _taggedTemplateLiteral$3(strings, raw) {
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
 function _slicedToArray$p(arr, i) {
-  return _arrayWithHoles$q(arr) || _iterableToArrayLimit$p(arr, i) || _unsupportedIterableToArray$v(arr, i) || _nonIterableRest$q();
+  return _arrayWithHoles$q(arr) || _iterableToArrayLimit$p(arr, i) || _unsupportedIterableToArray$u(arr, i) || _nonIterableRest$q();
 }
 function _nonIterableRest$q() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$v(o, minLen) {
+function _unsupportedIterableToArray$u(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$v(o, minLen);
+    return _arrayLikeToArray$u(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$v(o, minLen);
+    return _arrayLikeToArray$u(o, minLen);
 }
-function _arrayLikeToArray$v(arr, len) {
+function _arrayLikeToArray$u(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -20601,12 +20507,12 @@ function _arrayWithHoles$q(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$V(instance, Constructor) {
+function _classCallCheck$U(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$V(target, props) {
+function _defineProperties$U(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -20616,11 +20522,11 @@ function _defineProperties$V(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$V(Constructor, protoProps, staticProps) {
+function _createClass$U(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$V(Constructor.prototype, protoProps);
+    _defineProperties$U(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$V(Constructor, staticProps);
+    _defineProperties$U(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -20720,7 +20626,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$z(Filters2);
   function Filters2(hotInstance) {
     var _this;
-    _classCallCheck$V(this, Filters2);
+    _classCallCheck$U(this, Filters2);
     _this = _super.call(this, hotInstance);
     _this.eventManager = new EventManager(_assertThisInitialized$z(_this));
     _this.dropdownMenuPlugin = null;
@@ -20734,7 +20640,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$V(Filters2, [{
+  _createClass$U(Filters2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$f] ? true : false;
@@ -20824,7 +20730,6 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
       this.components.forEach(function(component) {
         return component.show();
       });
-      this.registerEvents();
       this.addHook("beforeDropdownMenuSetItems", function(items) {
         return _this2.onBeforeDropdownMenuSetItems(items);
       });
@@ -20847,17 +20752,9 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
       _get$t(_getPrototypeOf$z(Filters2.prototype), "enablePlugin", this).call(this);
     }
   }, {
-    key: "registerEvents",
-    value: function registerEvents() {
-      var _this3 = this;
-      this.eventManager.addEventListener(this.hot.rootElement, "click", function(event) {
-        return _this3.onTableClick(event);
-      });
-    }
-  }, {
     key: "disablePlugin",
     value: function disablePlugin() {
-      var _this4 = this;
+      var _this3 = this;
       if (this.enabled) {
         var _this$dropdownMenuPlu;
         if ((_this$dropdownMenuPlu = this.dropdownMenuPlugin) !== null && _this$dropdownMenuPlu !== void 0 && _this$dropdownMenuPlu.enabled) {
@@ -20865,7 +20762,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
         }
         this.components.forEach(function(component, key) {
           component.destroy();
-          _this4.components.set(key, null);
+          _this3.components.set(key, null);
         });
         this.conditionCollection.destroy();
         this.conditionCollection = null;
@@ -20904,7 +20801,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "filter",
     value: function filter() {
-      var _this5 = this;
+      var _this4 = this;
       var dataFilter = this._createDataFilter();
       var needToFilter = !this.conditionCollection.isEmpty();
       var visibleVisualRows = [];
@@ -20914,18 +20811,18 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
         if (needToFilter) {
           var trimmedRows = [];
           this.hot.batchExecution(function() {
-            _this5.filtersRowsMap.clear();
+            _this4.filtersRowsMap.clear();
             visibleVisualRows = arrayMap(dataFilter.filter(), function(rowData) {
               return rowData.meta.visualRow;
             });
             var visibleVisualRowsAssertion = createArrayAssertion(visibleVisualRows);
-            rangeEach(_this5.hot.countSourceRows() - 1, function(row) {
+            rangeEach(_this4.hot.countSourceRows() - 1, function(row) {
               if (!visibleVisualRowsAssertion(row)) {
                 trimmedRows.push(row);
               }
             });
             arrayEach(trimmedRows, function(physicalRow) {
-              _this5.filtersRowsMap.setValueAtIndex(physicalRow, true);
+              _this4.filtersRowsMap.setValueAtIndex(physicalRow, true);
             });
           }, true);
           if (!visibleVisualRows.length) {
@@ -20943,27 +20840,34 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "getSelectedColumn",
     value: function getSelectedColumn() {
-      return this.lastSelectedColumn;
+      var _this$hot$getSelected;
+      var highlight = (_this$hot$getSelected = this.hot.getSelectedRangeLast()) === null || _this$hot$getSelected === void 0 ? void 0 : _this$hot$getSelected.highlight;
+      if (!highlight) {
+        return null;
+      }
+      return {
+        visualIndex: highlight.col,
+        physicalIndex: this.hot.toPhysicalColumn(highlight.col)
+      };
     }
   }, {
     key: "clearColumnSelection",
     value: function clearColumnSelection() {
-      var _this$hot$getSelected;
-      var coords = (_this$hot$getSelected = this.hot.getSelectedRangeLast()) === null || _this$hot$getSelected === void 0 ? void 0 : _this$hot$getSelected.getTopStartCorner();
-      if (coords !== void 0) {
-        this.hot.selectCell(coords.row, coords.col);
+      var selectedColumn = this.getSelectedColumn();
+      if (selectedColumn !== null) {
+        this.hot.selectCell(0, selectedColumn.visualIndex);
       }
     }
   }, {
     key: "getDataMapAtColumn",
     value: function getDataMapAtColumn(column) {
-      var _this6 = this;
+      var _this5 = this;
       var visualColumn = this.hot.toVisualColumn(column);
       var data = [];
       arrayEach(this.hot.getSourceDataAtCol(visualColumn), function(value, rowIndex) {
-        var _this6$hot$getDataAtC;
-        var _this6$hot$getCellMet = _this6.hot.getCellMeta(rowIndex, visualColumn), row = _this6$hot$getCellMet.row, col = _this6$hot$getCellMet.col, visualCol = _this6$hot$getCellMet.visualCol, visualRow = _this6$hot$getCellMet.visualRow, type = _this6$hot$getCellMet.type, instance = _this6$hot$getCellMet.instance, dateFormat = _this6$hot$getCellMet.dateFormat, locale = _this6$hot$getCellMet.locale;
-        var dataValue = (_this6$hot$getDataAtC = _this6.hot.getDataAtCell(_this6.hot.toVisualRow(rowIndex), visualColumn)) !== null && _this6$hot$getDataAtC !== void 0 ? _this6$hot$getDataAtC : value;
+        var _this5$hot$getDataAtC;
+        var _this5$hot$getCellMet = _this5.hot.getCellMeta(rowIndex, visualColumn), row = _this5$hot$getCellMet.row, col = _this5$hot$getCellMet.col, visualCol = _this5$hot$getCellMet.visualCol, visualRow = _this5$hot$getCellMet.visualRow, type = _this5$hot$getCellMet.type, instance = _this5$hot$getCellMet.instance, dateFormat = _this5$hot$getCellMet.dateFormat, locale = _this5$hot$getCellMet.locale;
+        var dataValue = (_this5$hot$getDataAtC = _this5.hot.getDataAtCell(_this5.hot.toVisualRow(rowIndex), visualColumn)) !== null && _this5$hot$getDataAtC !== void 0 ? _this5$hot$getDataAtC : value;
         data.push({
           meta: {
             row,
@@ -20983,13 +20887,13 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onAfterChange",
     value: function onAfterChange(changes) {
-      var _this7 = this;
+      var _this6 = this;
       if (changes) {
         arrayEach(changes, function(change) {
           var _change = _slicedToArray$p(change, 2), prop = _change[1];
-          var columnIndex = _this7.hot.propToCol(prop);
-          if (_this7.conditionCollection.hasConditions(columnIndex)) {
-            _this7.updateValueComponentCondition(columnIndex);
+          var columnIndex = _this6.hot.propToCol(prop);
+          if (_this6.conditionCollection.hasConditions(columnIndex)) {
+            _this6.updateValueComponentCondition(columnIndex);
           }
         });
       }
@@ -21028,10 +20932,10 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onBeforeDropdownMenuSetItems",
     value: function onBeforeDropdownMenuSetItems() {
-      var _this8 = this;
+      var _this7 = this;
       if (this.dropdownMenuPlugin) {
         this.dropdownMenuPlugin.menu.addLocalHook("afterOpen", function() {
-          _this8.dropdownMenuPlugin.menu.hotMenu.updateSettings({
+          _this7.dropdownMenuPlugin.menu.hotMenu.updateSettings({
             hiddenRows: true
           });
         });
@@ -21063,9 +20967,15 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onActionBarSubmit",
     value: function onActionBarSubmit(submitType) {
+      var _this$dropdownMenuPlu3;
       if (submitType === "accept") {
-        var _this$getSelectedColu2;
-        var physicalIndex = (_this$getSelectedColu2 = this.getSelectedColumn()) === null || _this$getSelectedColu2 === void 0 ? void 0 : _this$getSelectedColu2.physicalIndex;
+        var selectedColumn = this.getSelectedColumn();
+        if (selectedColumn === null) {
+          var _this$dropdownMenuPlu2;
+          (_this$dropdownMenuPlu2 = this.dropdownMenuPlugin) === null || _this$dropdownMenuPlu2 === void 0 ? void 0 : _this$dropdownMenuPlu2.close();
+          return;
+        }
+        var physicalIndex = selectedColumn.physicalIndex;
         var byConditionState1 = this.components.get("filter_by_condition").getState();
         var byConditionState2 = this.components.get("filter_by_condition2").getState();
         var byValueState = this.components.get("filter_by_value").getState();
@@ -21092,9 +21002,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
         this.filtersRowsMap.clear();
         this.filter();
       }
-      if (this.dropdownMenuPlugin) {
-        this.dropdownMenuPlugin.close();
-      }
+      (_this$dropdownMenuPlu3 = this.dropdownMenuPlugin) === null || _this$dropdownMenuPlu3 === void 0 ? void 0 : _this$dropdownMenuPlu3.close();
     }
   }, {
     key: "onComponentChange",
@@ -21139,32 +21047,19 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
       }
     }
   }, {
-    key: "onTableClick",
-    value: function onTableClick(event) {
-      var th = closest(event.target, "TH");
-      if (th) {
-        var visualIndex = this.hot.getCoords(th).col;
-        var physicalIndex = this.hot.toPhysicalColumn(visualIndex);
-        this.lastSelectedColumn = {
-          visualIndex,
-          physicalIndex
-        };
-      }
-    }
-  }, {
     key: "_createDataFilter",
     value: function _createDataFilter() {
-      var _this9 = this;
+      var _this8 = this;
       var conditionCollection = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : this.conditionCollection;
       return new DataFilter(conditionCollection, function(physicalColumn) {
-        return _this9.getDataMapAtColumn(physicalColumn);
+        return _this8.getDataMapAtColumn(physicalColumn);
       });
     }
   }, {
     key: "updateComponents",
     value: function updateComponents(conditionsState) {
-      var _this$dropdownMenuPlu2;
-      if (!((_this$dropdownMenuPlu2 = this.dropdownMenuPlugin) !== null && _this$dropdownMenuPlu2 !== void 0 && _this$dropdownMenuPlu2.enabled)) {
+      var _this$dropdownMenuPlu4;
+      if (!((_this$dropdownMenuPlu4 = this.dropdownMenuPlugin) !== null && _this$dropdownMenuPlu4 !== void 0 && _this$dropdownMenuPlu4.enabled)) {
         return;
       }
       var _conditionsState$edit = conditionsState.editedConditionStack, conditions = _conditionsState$edit.conditions, column = _conditionsState$edit.column;
@@ -21244,12 +21139,12 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "destroy",
     value: function destroy() {
-      var _this10 = this;
+      var _this9 = this;
       if (this.enabled) {
         this.components.forEach(function(component, key) {
           if (component !== null) {
             component.destroy();
-            _this10.components.set(key, null);
+            _this9.components.set(key, null);
           }
         });
         this.conditionCollection.destroy();
@@ -21518,19 +21413,19 @@ function unescapeFormulaExpression(expression) {
   return isEscapedFormulaExpression(expression) ? expression.substr(1) : expression;
 }
 
-function _toConsumableArray$6(arr) {
-  return _arrayWithoutHoles$6(arr) || _iterableToArray$7(arr) || _unsupportedIterableToArray$w(arr) || _nonIterableSpread$6();
+function _toConsumableArray$5(arr) {
+  return _arrayWithoutHoles$5(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$v(arr) || _nonIterableSpread$5();
 }
-function _nonIterableSpread$6() {
+function _nonIterableSpread$5() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$7(iter) {
+function _iterableToArray$6(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$6(arr) {
+function _arrayWithoutHoles$5(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$w(arr);
+    return _arrayLikeToArray$v(arr);
 }
 function ownKeys$4(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -21562,25 +21457,25 @@ function _typeof$B(obj) {
   }, _typeof$B(obj);
 }
 function _slicedToArray$q(arr, i) {
-  return _arrayWithHoles$r(arr) || _iterableToArrayLimit$q(arr, i) || _unsupportedIterableToArray$w(arr, i) || _nonIterableRest$r();
+  return _arrayWithHoles$r(arr) || _iterableToArrayLimit$q(arr, i) || _unsupportedIterableToArray$v(arr, i) || _nonIterableRest$r();
 }
 function _nonIterableRest$r() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$w(o, minLen) {
+function _unsupportedIterableToArray$v(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$w(o, minLen);
+    return _arrayLikeToArray$v(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$w(o, minLen);
+    return _arrayLikeToArray$v(o, minLen);
 }
-function _arrayLikeToArray$w(arr, len) {
+function _arrayLikeToArray$v(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -21620,12 +21515,12 @@ function _arrayWithHoles$r(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$W(instance, Constructor) {
+function _classCallCheck$V(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$W(target, props) {
+function _defineProperties$V(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -21635,11 +21530,11 @@ function _defineProperties$W(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$W(Constructor, protoProps, staticProps) {
+function _createClass$V(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$W(Constructor.prototype, protoProps);
+    _defineProperties$V(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$W(Constructor, staticProps);
+    _defineProperties$V(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -21800,7 +21695,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$A(Formulas2);
   function Formulas2() {
     var _this;
-    _classCallCheck$W(this, Formulas2);
+    _classCallCheck$V(this, Formulas2);
     for (var _len = arguments.length, _args = new Array(_len), _key = 0; _key < _len; _key++) {
       _args[_key] = arguments[_key];
     }
@@ -21840,7 +21735,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
     _defineProperty$c(_assertThisInitialized$A(_this), "sheetName", null);
     return _this;
   }
-  _createClass$W(Formulas2, [{
+  _createClass$V(Formulas2, [{
     key: "sheetId",
     get: function get() {
       return this.sheetName === null ? null : this.engine.getSheetId(this.sheetName);
@@ -22331,7 +22226,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
         changedCells.push({
           address
         });
-        dependentCells.push.apply(dependentCells, _toConsumableArray$6(_this15.engine.setCellContents(address, newValue)));
+        dependentCells.push.apply(dependentCells, _toConsumableArray$5(_this15.engine.setCellContents(address, newValue)));
       });
       this.renderDependentSheets(dependentCells);
       this.validateDependentCells(dependentCells, changedCells);
@@ -22478,25 +22373,25 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
 }(BasePlugin);
 
 function _slicedToArray$r(arr, i) {
-  return _arrayWithHoles$s(arr) || _iterableToArrayLimit$r(arr, i) || _unsupportedIterableToArray$x(arr, i) || _nonIterableRest$s();
+  return _arrayWithHoles$s(arr) || _iterableToArrayLimit$r(arr, i) || _unsupportedIterableToArray$w(arr, i) || _nonIterableRest$s();
 }
 function _nonIterableRest$s() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$x(o, minLen) {
+function _unsupportedIterableToArray$w(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$x(o, minLen);
+    return _arrayLikeToArray$w(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$x(o, minLen);
+    return _arrayLikeToArray$w(o, minLen);
 }
-function _arrayLikeToArray$x(arr, len) {
+function _arrayLikeToArray$w(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -22576,34 +22471,34 @@ function hideColumnItem(hiddenColumnsPlugin) {
   };
 }
 
-function _toConsumableArray$7(arr) {
-  return _arrayWithoutHoles$7(arr) || _iterableToArray$8(arr) || _unsupportedIterableToArray$y(arr) || _nonIterableSpread$7();
+function _toConsumableArray$6(arr) {
+  return _arrayWithoutHoles$6(arr) || _iterableToArray$7(arr) || _unsupportedIterableToArray$x(arr) || _nonIterableSpread$6();
 }
-function _nonIterableSpread$7() {
+function _nonIterableSpread$6() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$y(o, minLen) {
+function _unsupportedIterableToArray$x(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$y(o, minLen);
+    return _arrayLikeToArray$x(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$y(o, minLen);
+    return _arrayLikeToArray$x(o, minLen);
 }
-function _iterableToArray$8(iter) {
+function _iterableToArray$7(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$7(arr) {
+function _arrayWithoutHoles$6(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$y(arr);
+    return _arrayLikeToArray$x(arr);
 }
-function _arrayLikeToArray$y(arr, len) {
+function _arrayLikeToArray$x(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -22659,19 +22554,19 @@ function showColumnItem(hiddenColumnsPlugin) {
         var renderedColumnsInRange = renderableEndColumn - renderableStartColumn + 1;
         if (visualColumnsInRange > renderedColumnsInRange) {
           var physicalIndexesInRange = notTrimmedColumnIndexes.slice(visualStartColumn, visualEndColumn + 1);
-          physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$7(physicalIndexesInRange.filter(function(physicalIndex) {
+          physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$6(physicalIndexesInRange.filter(function(physicalIndex) {
             return hiddenPhysicalColumns.includes(physicalIndex);
           })));
         }
       } else if (renderableStartColumn === 0 && renderableStartColumn < visualStartColumn) {
-        physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$7(notTrimmedColumnIndexes.slice(0, visualStartColumn)));
+        physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$6(notTrimmedColumnIndexes.slice(0, visualStartColumn)));
       } else if (renderableStartColumn === null) {
-        physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$7(notTrimmedColumnIndexes.slice(0, this.countCols())));
+        physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$6(notTrimmedColumnIndexes.slice(0, this.countCols())));
       } else {
         var lastVisualIndex = this.countCols() - 1;
         var lastRenderableIndex = columnIndexMapper.getRenderableFromVisualIndex(columnIndexMapper.getNearestNotHiddenIndex(lastVisualIndex, -1));
         if (renderableEndColumn === lastRenderableIndex && lastVisualIndex > visualEndColumn) {
-          physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$7(notTrimmedColumnIndexes.slice(visualEndColumn + 1)));
+          physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$6(notTrimmedColumnIndexes.slice(visualEndColumn + 1)));
         }
       }
       arrayEach(physicalColumnIndexes, function(physicalColumnIndex) {
@@ -22690,12 +22585,12 @@ function _typeof$C(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$C(obj);
 }
-function _classCallCheck$X(instance, Constructor) {
+function _classCallCheck$W(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$X(target, props) {
+function _defineProperties$W(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -22705,11 +22600,11 @@ function _defineProperties$X(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$X(Constructor, protoProps, staticProps) {
+function _createClass$W(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$X(Constructor.prototype, protoProps);
+    _defineProperties$W(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$X(Constructor, staticProps);
+    _defineProperties$W(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -22855,7 +22750,7 @@ var HiddenColumns = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$B(HiddenColumns2);
   function HiddenColumns2() {
     var _this;
-    _classCallCheck$X(this, HiddenColumns2);
+    _classCallCheck$W(this, HiddenColumns2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
@@ -22870,7 +22765,7 @@ var HiddenColumns = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$X(HiddenColumns2, [{
+  _createClass$W(HiddenColumns2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$h];
@@ -23154,25 +23049,25 @@ var HiddenColumns = /* @__PURE__ */ function(_BasePlugin) {
 }(BasePlugin);
 
 function _slicedToArray$s(arr, i) {
-  return _arrayWithHoles$t(arr) || _iterableToArrayLimit$s(arr, i) || _unsupportedIterableToArray$z(arr, i) || _nonIterableRest$t();
+  return _arrayWithHoles$t(arr) || _iterableToArrayLimit$s(arr, i) || _unsupportedIterableToArray$y(arr, i) || _nonIterableRest$t();
 }
 function _nonIterableRest$t() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$z(o, minLen) {
+function _unsupportedIterableToArray$y(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$z(o, minLen);
+    return _arrayLikeToArray$y(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$z(o, minLen);
+    return _arrayLikeToArray$y(o, minLen);
 }
-function _arrayLikeToArray$z(arr, len) {
+function _arrayLikeToArray$y(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -23252,34 +23147,34 @@ function hideRowItem(hiddenRowsPlugin) {
   };
 }
 
-function _toConsumableArray$8(arr) {
-  return _arrayWithoutHoles$8(arr) || _iterableToArray$9(arr) || _unsupportedIterableToArray$A(arr) || _nonIterableSpread$8();
+function _toConsumableArray$7(arr) {
+  return _arrayWithoutHoles$7(arr) || _iterableToArray$8(arr) || _unsupportedIterableToArray$z(arr) || _nonIterableSpread$7();
 }
-function _nonIterableSpread$8() {
+function _nonIterableSpread$7() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$A(o, minLen) {
+function _unsupportedIterableToArray$z(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$A(o, minLen);
+    return _arrayLikeToArray$z(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$A(o, minLen);
+    return _arrayLikeToArray$z(o, minLen);
 }
-function _iterableToArray$9(iter) {
+function _iterableToArray$8(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$8(arr) {
+function _arrayWithoutHoles$7(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$A(arr);
+    return _arrayLikeToArray$z(arr);
 }
-function _arrayLikeToArray$A(arr, len) {
+function _arrayLikeToArray$z(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -23335,19 +23230,19 @@ function showRowItem(hiddenRowsPlugin) {
         var renderedRowsInRange = renderableEndRow - renderableStartRow + 1;
         if (visualRowsInRange > renderedRowsInRange) {
           var physicalIndexesInRange = notTrimmedRowIndexes.slice(visualStartRow, visualEndRow + 1);
-          physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$8(physicalIndexesInRange.filter(function(physicalIndex) {
+          physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$7(physicalIndexesInRange.filter(function(physicalIndex) {
             return hiddenPhysicalRows.includes(physicalIndex);
           })));
         }
       } else if (renderableStartRow === 0 && renderableStartRow < visualStartRow) {
-        physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$8(notTrimmedRowIndexes.slice(0, visualStartRow)));
+        physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$7(notTrimmedRowIndexes.slice(0, visualStartRow)));
       } else if (renderableStartRow === null) {
-        physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$8(notTrimmedRowIndexes.slice(0, this.countRows())));
+        physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$7(notTrimmedRowIndexes.slice(0, this.countRows())));
       } else {
         var lastVisualIndex = this.countRows() - 1;
         var lastRenderableIndex = rowIndexMapper.getRenderableFromVisualIndex(rowIndexMapper.getNearestNotHiddenIndex(lastVisualIndex, -1));
         if (renderableEndRow === lastRenderableIndex && lastVisualIndex > visualEndRow) {
-          physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$8(notTrimmedRowIndexes.slice(visualEndRow + 1)));
+          physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$7(notTrimmedRowIndexes.slice(visualEndRow + 1)));
         }
       }
       arrayEach(physicalRowIndexes, function(physicalRowIndex) {
@@ -23366,12 +23261,12 @@ function _typeof$D(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$D(obj);
 }
-function _classCallCheck$Y(instance, Constructor) {
+function _classCallCheck$X(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$Y(target, props) {
+function _defineProperties$X(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -23381,11 +23276,11 @@ function _defineProperties$Y(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$Y(Constructor, protoProps, staticProps) {
+function _createClass$X(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$Y(Constructor.prototype, protoProps);
+    _defineProperties$X(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$Y(Constructor, staticProps);
+    _defineProperties$X(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -23531,7 +23426,7 @@ var HiddenRows = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$C(HiddenRows2);
   function HiddenRows2() {
     var _this;
-    _classCallCheck$Y(this, HiddenRows2);
+    _classCallCheck$X(this, HiddenRows2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
@@ -23546,7 +23441,7 @@ var HiddenRows = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$Y(HiddenRows2, [{
+  _createClass$X(HiddenRows2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$i];
@@ -23825,25 +23720,25 @@ var HiddenRows = /* @__PURE__ */ function(_BasePlugin) {
 }(BasePlugin);
 
 function _slicedToArray$t(arr, i) {
-  return _arrayWithHoles$u(arr) || _iterableToArrayLimit$t(arr, i) || _unsupportedIterableToArray$B(arr, i) || _nonIterableRest$u();
+  return _arrayWithHoles$u(arr) || _iterableToArrayLimit$t(arr, i) || _unsupportedIterableToArray$A(arr, i) || _nonIterableRest$u();
 }
 function _nonIterableRest$u() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$B(o, minLen) {
+function _unsupportedIterableToArray$A(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$B(o, minLen);
+    return _arrayLikeToArray$A(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$B(o, minLen);
+    return _arrayLikeToArray$A(o, minLen);
 }
-function _arrayLikeToArray$B(arr, len) {
+function _arrayLikeToArray$A(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -23911,25 +23806,25 @@ function freezeColumnItem(manualColumnFreezePlugin) {
 }
 
 function _slicedToArray$u(arr, i) {
-  return _arrayWithHoles$v(arr) || _iterableToArrayLimit$u(arr, i) || _unsupportedIterableToArray$C(arr, i) || _nonIterableRest$v();
+  return _arrayWithHoles$v(arr) || _iterableToArrayLimit$u(arr, i) || _unsupportedIterableToArray$B(arr, i) || _nonIterableRest$v();
 }
 function _nonIterableRest$v() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$C(o, minLen) {
+function _unsupportedIterableToArray$B(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$C(o, minLen);
+    return _arrayLikeToArray$B(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$C(o, minLen);
+    return _arrayLikeToArray$B(o, minLen);
 }
-function _arrayLikeToArray$C(arr, len) {
+function _arrayLikeToArray$B(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -24004,12 +23899,12 @@ function _typeof$E(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$E(obj);
 }
-function _classCallCheck$Z(instance, Constructor) {
+function _classCallCheck$Y(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$Z(target, props) {
+function _defineProperties$Y(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -24019,11 +23914,11 @@ function _defineProperties$Z(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$Z(Constructor, protoProps, staticProps) {
+function _createClass$Y(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$Z(Constructor.prototype, protoProps);
+    _defineProperties$Y(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$Z(Constructor, staticProps);
+    _defineProperties$Y(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -24128,14 +24023,14 @@ var ManualColumnFreeze = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$D(ManualColumnFreeze2);
   function ManualColumnFreeze2(hotInstance) {
     var _this;
-    _classCallCheck$Z(this, ManualColumnFreeze2);
+    _classCallCheck$Y(this, ManualColumnFreeze2);
     _this = _super.call(this, hotInstance);
     privatePool$a.set(_assertThisInitialized$D(_this), {
       afterFirstUse: false
     });
     return _this;
   }
-  _createClass$Z(ManualColumnFreeze2, [{
+  _createClass$Y(ManualColumnFreeze2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$j];
@@ -24244,12 +24139,12 @@ var ManualColumnFreeze = /* @__PURE__ */ function(_BasePlugin) {
   return ManualColumnFreeze2;
 }(BasePlugin);
 
-function _classCallCheck$_(instance, Constructor) {
+function _classCallCheck$Z(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$_(target, props) {
+function _defineProperties$Z(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -24259,11 +24154,11 @@ function _defineProperties$_(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$_(Constructor, protoProps, staticProps) {
+function _createClass$Z(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$_(Constructor.prototype, protoProps);
+    _defineProperties$Z(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$_(Constructor, staticProps);
+    _defineProperties$Z(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -24273,13 +24168,13 @@ var STATE_APPENDED = 2;
 var UNIT = "px";
 var BaseUI$1 = /* @__PURE__ */ function() {
   function BaseUI2(hotInstance) {
-    _classCallCheck$_(this, BaseUI2);
+    _classCallCheck$Z(this, BaseUI2);
     this.hot = hotInstance;
     this._element = null;
     this.state = STATE_INITIALIZED;
     this.inlineProperty = hotInstance.isRtl() ? "right" : "left";
   }
-  _createClass$_(BaseUI2, [{
+  _createClass$Z(BaseUI2, [{
     key: "appendTo",
     value: function appendTo(wrapper) {
       wrapper.appendChild(this._element);
@@ -24382,12 +24277,12 @@ function _typeof$F(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$F(obj);
 }
-function _classCallCheck$$(instance, Constructor) {
+function _classCallCheck$_(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$$(target, props) {
+function _defineProperties$_(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -24397,11 +24292,11 @@ function _defineProperties$$(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$$(Constructor, protoProps, staticProps) {
+function _createClass$_(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$$(Constructor.prototype, protoProps);
+    _defineProperties$_(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$$(Constructor, staticProps);
+    _defineProperties$_(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -24499,10 +24394,10 @@ var BacklightUI = /* @__PURE__ */ function(_BaseUI) {
   _inherits$E(BacklightUI2, _BaseUI);
   var _super = _createSuper$E(BacklightUI2);
   function BacklightUI2() {
-    _classCallCheck$$(this, BacklightUI2);
+    _classCallCheck$_(this, BacklightUI2);
     return _super.apply(this, arguments);
   }
-  _createClass$$(BacklightUI2, [{
+  _createClass$_(BacklightUI2, [{
     key: "build",
     value: function build() {
       _get$y(_getPrototypeOf$E(BacklightUI2.prototype), "build", this).call(this);
@@ -24520,12 +24415,12 @@ function _typeof$G(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$G(obj);
 }
-function _classCallCheck$10(instance, Constructor) {
+function _classCallCheck$$(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$10(target, props) {
+function _defineProperties$$(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -24535,11 +24430,11 @@ function _defineProperties$10(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$10(Constructor, protoProps, staticProps) {
+function _createClass$$(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$10(Constructor.prototype, protoProps);
+    _defineProperties$$(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$10(Constructor, staticProps);
+    _defineProperties$$(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -24637,10 +24532,10 @@ var GuidelineUI = /* @__PURE__ */ function(_BaseUI) {
   _inherits$F(GuidelineUI2, _BaseUI);
   var _super = _createSuper$F(GuidelineUI2);
   function GuidelineUI2() {
-    _classCallCheck$10(this, GuidelineUI2);
+    _classCallCheck$$(this, GuidelineUI2);
     return _super.apply(this, arguments);
   }
-  _createClass$10(GuidelineUI2, [{
+  _createClass$$(GuidelineUI2, [{
     key: "build",
     value: function build() {
       _get$z(_getPrototypeOf$F(GuidelineUI2.prototype), "build", this).call(this);
@@ -24658,12 +24553,12 @@ function _typeof$H(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$H(obj);
 }
-function _classCallCheck$11(instance, Constructor) {
+function _classCallCheck$10(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$11(target, props) {
+function _defineProperties$10(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -24673,11 +24568,11 @@ function _defineProperties$11(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$11(Constructor, protoProps, staticProps) {
+function _createClass$10(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$11(Constructor.prototype, protoProps);
+    _defineProperties$10(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$11(Constructor, staticProps);
+    _defineProperties$10(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -24784,7 +24679,7 @@ var ManualColumnMove = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$G(ManualColumnMove2);
   function ManualColumnMove2(hotInstance) {
     var _this;
-    _classCallCheck$11(this, ManualColumnMove2);
+    _classCallCheck$10(this, ManualColumnMove2);
     _this = _super.call(this, hotInstance);
     privatePool$b.set(_assertThisInitialized$G(_this), {
       columnsToMove: [],
@@ -24804,7 +24699,7 @@ var ManualColumnMove = /* @__PURE__ */ function(_BasePlugin) {
     _this.guideline = new GuidelineUI(hotInstance);
     return _this;
   }
-  _createClass$11(ManualColumnMove2, [{
+  _createClass$10(ManualColumnMove2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$k];
@@ -25223,12 +25118,12 @@ function _typeof$I(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$I(obj);
 }
-function _classCallCheck$12(instance, Constructor) {
+function _classCallCheck$11(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$12(target, props) {
+function _defineProperties$11(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -25238,11 +25133,11 @@ function _defineProperties$12(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$12(Constructor, protoProps, staticProps) {
+function _createClass$11(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$12(Constructor.prototype, protoProps);
+    _defineProperties$11(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$12(Constructor, staticProps);
+    _defineProperties$11(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -25344,7 +25239,7 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$H(ManualColumnResize2);
   function ManualColumnResize2(hotInstance) {
     var _this;
-    _classCallCheck$12(this, ManualColumnResize2);
+    _classCallCheck$11(this, ManualColumnResize2);
     _this = _super.call(this, hotInstance);
     var rootDocument = _this.hot.rootDocument;
     _this.currentTH = null;
@@ -25369,7 +25264,7 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
     addClass(_this.guide, "manualColumnResizerGuide");
     return _this;
   }
-  _createClass$12(ManualColumnResize2, [{
+  _createClass$11(ManualColumnResize2, [{
     key: "inlineDir",
     get: function get() {
       return this.hot.isRtl() ? "right" : "left";
@@ -25759,12 +25654,12 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
   return ManualColumnResize2;
 }(BasePlugin);
 
-function _classCallCheck$13(instance, Constructor) {
+function _classCallCheck$12(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$13(target, props) {
+function _defineProperties$12(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -25774,11 +25669,11 @@ function _defineProperties$13(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$13(Constructor, protoProps, staticProps) {
+function _createClass$12(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$13(Constructor.prototype, protoProps);
+    _defineProperties$12(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$13(Constructor, staticProps);
+    _defineProperties$12(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -25788,12 +25683,12 @@ var STATE_APPENDED$1 = 2;
 var UNIT$1 = "px";
 var BaseUI$2 = /* @__PURE__ */ function() {
   function BaseUI2(hotInstance) {
-    _classCallCheck$13(this, BaseUI2);
+    _classCallCheck$12(this, BaseUI2);
     this.hot = hotInstance;
     this._element = null;
     this.state = STATE_INITIALIZED$1;
   }
-  _createClass$13(BaseUI2, [{
+  _createClass$12(BaseUI2, [{
     key: "appendTo",
     value: function appendTo(wrapper) {
       wrapper.appendChild(this._element);
@@ -25893,12 +25788,12 @@ function _typeof$J(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$J(obj);
 }
-function _classCallCheck$14(instance, Constructor) {
+function _classCallCheck$13(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$14(target, props) {
+function _defineProperties$13(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -25908,11 +25803,11 @@ function _defineProperties$14(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$14(Constructor, protoProps, staticProps) {
+function _createClass$13(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$14(Constructor.prototype, protoProps);
+    _defineProperties$13(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$14(Constructor, staticProps);
+    _defineProperties$13(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -26010,10 +25905,10 @@ var BacklightUI$1 = /* @__PURE__ */ function(_BaseUI) {
   _inherits$I(BacklightUI2, _BaseUI);
   var _super = _createSuper$I(BacklightUI2);
   function BacklightUI2() {
-    _classCallCheck$14(this, BacklightUI2);
+    _classCallCheck$13(this, BacklightUI2);
     return _super.apply(this, arguments);
   }
-  _createClass$14(BacklightUI2, [{
+  _createClass$13(BacklightUI2, [{
     key: "build",
     value: function build() {
       _get$C(_getPrototypeOf$I(BacklightUI2.prototype), "build", this).call(this);
@@ -26031,12 +25926,12 @@ function _typeof$K(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$K(obj);
 }
-function _classCallCheck$15(instance, Constructor) {
+function _classCallCheck$14(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$15(target, props) {
+function _defineProperties$14(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -26046,11 +25941,11 @@ function _defineProperties$15(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$15(Constructor, protoProps, staticProps) {
+function _createClass$14(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$15(Constructor.prototype, protoProps);
+    _defineProperties$14(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$15(Constructor, staticProps);
+    _defineProperties$14(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -26148,10 +26043,10 @@ var GuidelineUI$1 = /* @__PURE__ */ function(_BaseUI) {
   _inherits$J(GuidelineUI2, _BaseUI);
   var _super = _createSuper$J(GuidelineUI2);
   function GuidelineUI2() {
-    _classCallCheck$15(this, GuidelineUI2);
+    _classCallCheck$14(this, GuidelineUI2);
     return _super.apply(this, arguments);
   }
-  _createClass$15(GuidelineUI2, [{
+  _createClass$14(GuidelineUI2, [{
     key: "build",
     value: function build() {
       _get$D(_getPrototypeOf$J(GuidelineUI2.prototype), "build", this).call(this);
@@ -26169,12 +26064,12 @@ function _typeof$L(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$L(obj);
 }
-function _classCallCheck$16(instance, Constructor) {
+function _classCallCheck$15(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$16(target, props) {
+function _defineProperties$15(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -26184,11 +26079,11 @@ function _defineProperties$16(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$16(Constructor, protoProps, staticProps) {
+function _createClass$15(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$16(Constructor.prototype, protoProps);
+    _defineProperties$15(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$16(Constructor, staticProps);
+    _defineProperties$15(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -26295,7 +26190,7 @@ var ManualRowMove = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$K(ManualRowMove2);
   function ManualRowMove2(hotInstance) {
     var _this;
-    _classCallCheck$16(this, ManualRowMove2);
+    _classCallCheck$15(this, ManualRowMove2);
     _this = _super.call(this, hotInstance);
     privatePool$d.set(_assertThisInitialized$K(_this), {
       rowsToMove: [],
@@ -26313,7 +26208,7 @@ var ManualRowMove = /* @__PURE__ */ function(_BasePlugin) {
     _this.guideline = new GuidelineUI$1(hotInstance);
     return _this;
   }
-  _createClass$16(ManualRowMove2, [{
+  _createClass$15(ManualRowMove2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$m];
@@ -26713,12 +26608,12 @@ function _typeof$M(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$M(obj);
 }
-function _classCallCheck$17(instance, Constructor) {
+function _classCallCheck$16(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$17(target, props) {
+function _defineProperties$16(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -26728,11 +26623,11 @@ function _defineProperties$17(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$17(Constructor, protoProps, staticProps) {
+function _createClass$16(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$17(Constructor.prototype, protoProps);
+    _defineProperties$16(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$17(Constructor, staticProps);
+    _defineProperties$16(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -26834,7 +26729,7 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$L(ManualRowResize2);
   function ManualRowResize2(hotInstance) {
     var _this;
-    _classCallCheck$17(this, ManualRowResize2);
+    _classCallCheck$16(this, ManualRowResize2);
     _this = _super.call(this, hotInstance);
     var rootDocument = _this.hot.rootDocument;
     _this.currentTH = null;
@@ -26859,7 +26754,7 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
     addClass(_this.guide, "manualRowResizerGuide");
     return _this;
   }
-  _createClass$17(ManualRowResize2, [{
+  _createClass$16(ManualRowResize2, [{
     key: "inlineDir",
     get: function get() {
       return this.hot.isRtl() ? "right" : "left";
@@ -27228,12 +27123,12 @@ function _taggedTemplateLiteral$4(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$18(instance, Constructor) {
+function _classCallCheck$17(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$18(target, props) {
+function _defineProperties$17(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -27243,17 +27138,17 @@ function _defineProperties$18(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$18(Constructor, protoProps, staticProps) {
+function _createClass$17(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$18(Constructor.prototype, protoProps);
+    _defineProperties$17(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$18(Constructor, staticProps);
+    _defineProperties$17(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var MergedCellCoords = /* @__PURE__ */ function() {
   function MergedCellCoords2(row, column, rowspan, colspan, cellCoordsFactory, cellRangeFactory) {
-    _classCallCheck$18(this, MergedCellCoords2);
+    _classCallCheck$17(this, MergedCellCoords2);
     this.row = row;
     this.col = column;
     this.rowspan = rowspan;
@@ -27262,7 +27157,7 @@ var MergedCellCoords = /* @__PURE__ */ function() {
     this.cellCoordsFactory = cellCoordsFactory;
     this.cellRangeFactory = cellRangeFactory;
   }
-  _createClass$18(MergedCellCoords2, [{
+  _createClass$17(MergedCellCoords2, [{
     key: "normalize",
     value: function normalize(hotInstance) {
       var totalRows = hotInstance.countRows();
@@ -27435,34 +27330,34 @@ function _taggedTemplateLiteral$5(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _toConsumableArray$9(arr) {
-  return _arrayWithoutHoles$9(arr) || _iterableToArray$a(arr) || _unsupportedIterableToArray$D(arr) || _nonIterableSpread$9();
+function _toConsumableArray$8(arr) {
+  return _arrayWithoutHoles$8(arr) || _iterableToArray$9(arr) || _unsupportedIterableToArray$C(arr) || _nonIterableSpread$8();
 }
-function _nonIterableSpread$9() {
+function _nonIterableSpread$8() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$D(o, minLen) {
+function _unsupportedIterableToArray$C(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$D(o, minLen);
+    return _arrayLikeToArray$C(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$D(o, minLen);
+    return _arrayLikeToArray$C(o, minLen);
 }
-function _iterableToArray$a(iter) {
+function _iterableToArray$9(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$9(arr) {
+function _arrayWithoutHoles$8(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$D(arr);
+    return _arrayLikeToArray$C(arr);
 }
-function _arrayLikeToArray$D(arr, len) {
+function _arrayLikeToArray$C(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -27470,12 +27365,12 @@ function _arrayLikeToArray$D(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$19(instance, Constructor) {
+function _classCallCheck$18(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$19(target, props) {
+function _defineProperties$18(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -27485,22 +27380,22 @@ function _defineProperties$19(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$19(Constructor, protoProps, staticProps) {
+function _createClass$18(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$19(Constructor.prototype, protoProps);
+    _defineProperties$18(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$19(Constructor, staticProps);
+    _defineProperties$18(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var MergedCellsCollection = /* @__PURE__ */ function() {
   function MergedCellsCollection2(plugin) {
-    _classCallCheck$19(this, MergedCellsCollection2);
+    _classCallCheck$18(this, MergedCellsCollection2);
     this.plugin = plugin;
     this.mergedCells = [];
     this.hot = plugin.hot;
   }
-  _createClass$19(MergedCellsCollection2, [{
+  _createClass$18(MergedCellsCollection2, [{
     key: "get",
     value: function get(row, column) {
       var mergedCells = this.mergedCells;
@@ -27616,10 +27511,10 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
         mergedCellParentsToClear[i][1] = null;
       });
       arrayEach(mergedCellParentsToClear, function(mergedCellParents) {
-        applySpanProperties.apply(void 0, _toConsumableArray$9(mergedCellParents));
+        applySpanProperties.apply(void 0, _toConsumableArray$8(mergedCellParents));
       });
       arrayEach(hiddenCollectionElements, function(hiddenCollectionElement) {
-        applySpanProperties.apply(void 0, _toConsumableArray$9(hiddenCollectionElement));
+        applySpanProperties.apply(void 0, _toConsumableArray$8(hiddenCollectionElement));
       });
     }
   }, {
@@ -27694,25 +27589,25 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
 }();
 
 function _slicedToArray$v(arr, i) {
-  return _arrayWithHoles$w(arr) || _iterableToArrayLimit$v(arr, i) || _unsupportedIterableToArray$E(arr, i) || _nonIterableRest$w();
+  return _arrayWithHoles$w(arr) || _iterableToArrayLimit$v(arr, i) || _unsupportedIterableToArray$D(arr, i) || _nonIterableRest$w();
 }
 function _nonIterableRest$w() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$E(o, minLen) {
+function _unsupportedIterableToArray$D(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$E(o, minLen);
+    return _arrayLikeToArray$D(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$E(o, minLen);
+    return _arrayLikeToArray$D(o, minLen);
 }
-function _arrayLikeToArray$E(arr, len) {
+function _arrayLikeToArray$D(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -27752,12 +27647,12 @@ function _arrayWithHoles$w(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$1a(instance, Constructor) {
+function _classCallCheck$19(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1a(target, props) {
+function _defineProperties$19(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -27767,22 +27662,22 @@ function _defineProperties$1a(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1a(Constructor, protoProps, staticProps) {
+function _createClass$19(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1a(Constructor.prototype, protoProps);
+    _defineProperties$19(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1a(Constructor, staticProps);
+    _defineProperties$19(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var AutofillCalculations = /* @__PURE__ */ function() {
   function AutofillCalculations2(plugin) {
-    _classCallCheck$1a(this, AutofillCalculations2);
+    _classCallCheck$19(this, AutofillCalculations2);
     this.plugin = plugin;
     this.mergedCellsCollection = this.plugin.mergedCellsCollection;
     this.currentFillData = null;
   }
-  _createClass$1a(AutofillCalculations2, [{
+  _createClass$19(AutofillCalculations2, [{
     key: "correctSelectionAreaSize",
     value: function correctSelectionAreaSize(selectionArea) {
       if (selectionArea[0] === selectionArea[2] && selectionArea[1] === selectionArea[3]) {
@@ -28074,12 +27969,12 @@ var AutofillCalculations = /* @__PURE__ */ function() {
   return AutofillCalculations2;
 }();
 
-function _classCallCheck$1b(instance, Constructor) {
+function _classCallCheck$1a(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1b(target, props) {
+function _defineProperties$1a(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -28089,22 +27984,22 @@ function _defineProperties$1b(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1b(Constructor, protoProps, staticProps) {
+function _createClass$1a(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1b(Constructor.prototype, protoProps);
+    _defineProperties$1a(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1b(Constructor, staticProps);
+    _defineProperties$1a(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var SelectionCalculations = /* @__PURE__ */ function() {
   function SelectionCalculations2(plugin) {
-    _classCallCheck$1b(this, SelectionCalculations2);
+    _classCallCheck$1a(this, SelectionCalculations2);
     this.plugin = plugin;
     this.hot = plugin.hot;
     this.fullySelectedMergedCellClassName = "fullySelectedMergedCell";
   }
-  _createClass$1b(SelectionCalculations2, [{
+  _createClass$1a(SelectionCalculations2, [{
     key: "snapDelta",
     value: function snapDelta(delta, selectionRange, mergedCell) {
       var cellCoords = selectionRange.to;
@@ -28258,7 +28153,7 @@ function _typeof$N(obj) {
   }, _typeof$N(obj);
 }
 function _slicedToArray$w(arr, i) {
-  return _arrayWithHoles$x(arr) || _iterableToArrayLimit$w(arr, i) || _unsupportedIterableToArray$F(arr, i) || _nonIterableRest$x();
+  return _arrayWithHoles$x(arr) || _iterableToArrayLimit$w(arr, i) || _unsupportedIterableToArray$E(arr, i) || _nonIterableRest$x();
 }
 function _nonIterableRest$x() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -28295,34 +28190,34 @@ function _arrayWithHoles$x(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _toConsumableArray$a(arr) {
-  return _arrayWithoutHoles$a(arr) || _iterableToArray$b(arr) || _unsupportedIterableToArray$F(arr) || _nonIterableSpread$a();
+function _toConsumableArray$9(arr) {
+  return _arrayWithoutHoles$9(arr) || _iterableToArray$a(arr) || _unsupportedIterableToArray$E(arr) || _nonIterableSpread$9();
 }
-function _nonIterableSpread$a() {
+function _nonIterableSpread$9() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$F(o, minLen) {
+function _unsupportedIterableToArray$E(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$F(o, minLen);
+    return _arrayLikeToArray$E(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$F(o, minLen);
+    return _arrayLikeToArray$E(o, minLen);
 }
-function _iterableToArray$b(iter) {
+function _iterableToArray$a(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$a(arr) {
+function _arrayWithoutHoles$9(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$F(arr);
+    return _arrayLikeToArray$E(arr);
 }
-function _arrayLikeToArray$F(arr, len) {
+function _arrayLikeToArray$E(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -28330,12 +28225,12 @@ function _arrayLikeToArray$F(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$1c(instance, Constructor) {
+function _classCallCheck$1b(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1c(target, props) {
+function _defineProperties$1b(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -28345,11 +28240,11 @@ function _defineProperties$1c(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1c(Constructor, protoProps, staticProps) {
+function _createClass$1b(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1c(Constructor.prototype, protoProps);
+    _defineProperties$1b(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1c(Constructor, staticProps);
+    _defineProperties$1b(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -28455,7 +28350,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$M(MergeCells2);
   function MergeCells2(hotInstance) {
     var _this;
-    _classCallCheck$1c(this, MergeCells2);
+    _classCallCheck$1b(this, MergeCells2);
     _this = _super.call(this, hotInstance);
     privatePool$f.set(_assertThisInitialized$M(_this), {
       lastDesiredCoords: null
@@ -28465,7 +28360,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
     _this.selectionCalculations = null;
     return _this;
   }
-  _createClass$1c(MergeCells2, [{
+  _createClass$1b(MergeCells2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$o];
@@ -28616,7 +28511,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
           return value !== true;
         });
         var bulkPopulationData = this.getBulkCollectionData(populationArgumentsList);
-        (_this$hot = this.hot).populateFromArray.apply(_this$hot, _toConsumableArray$a(bulkPopulationData));
+        (_this$hot = this.hot).populateFromArray.apply(_this$hot, _toConsumableArray$9(bulkPopulationData));
       }
     }
   }, {
@@ -28624,7 +28519,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
     value: function getBulkCollectionData(populationArgumentsList) {
       var _this$hot2;
       var populationDataRange = this.getBulkCollectionDataRange(populationArgumentsList);
-      var dataAtRange = (_this$hot2 = this.hot).getData.apply(_this$hot2, _toConsumableArray$a(populationDataRange));
+      var dataAtRange = (_this$hot2 = this.hot).getData.apply(_this$hot2, _toConsumableArray$9(populationDataRange));
       var newDataAtRange = dataAtRange.splice(0);
       arrayEach(populationArgumentsList, function(mergedCellArguments) {
         var _mergedCellArguments = _slicedToArray$w(mergedCellArguments, 3), mergedCellRowIndex = _mergedCellArguments[0], mergedCellColumnIndex = _mergedCellArguments[1], mergedCellData = _mergedCellArguments[2];
@@ -29229,25 +29124,25 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
 }(BasePlugin);
 
 function _toArray$1(arr) {
-  return _arrayWithHoles$y(arr) || _iterableToArray$c(arr) || _unsupportedIterableToArray$G(arr) || _nonIterableRest$y();
+  return _arrayWithHoles$y(arr) || _iterableToArray$b(arr) || _unsupportedIterableToArray$F(arr) || _nonIterableRest$y();
 }
 function _nonIterableRest$y() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$G(o, minLen) {
+function _unsupportedIterableToArray$F(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$G(o, minLen);
+    return _arrayLikeToArray$F(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$G(o, minLen);
+    return _arrayLikeToArray$F(o, minLen);
 }
-function _arrayLikeToArray$G(arr, len) {
+function _arrayLikeToArray$F(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -29255,7 +29150,7 @@ function _arrayLikeToArray$G(arr, len) {
   }
   return arr2;
 }
-function _iterableToArray$c(iter) {
+function _iterableToArray$b(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
@@ -29324,12 +29219,12 @@ function _typeof$O(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$O(obj);
 }
-function _classCallCheck$1d(instance, Constructor) {
+function _classCallCheck$1c(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1d(target, props) {
+function _defineProperties$1c(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -29339,11 +29234,11 @@ function _defineProperties$1d(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1d(Constructor, protoProps, staticProps) {
+function _createClass$1c(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1d(Constructor.prototype, protoProps);
+    _defineProperties$1c(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1d(Constructor, staticProps);
+    _defineProperties$1c(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -29446,12 +29341,12 @@ var MultiColumnSorting = /* @__PURE__ */ function(_ColumnSorting) {
   var _super = _createSuper$N(MultiColumnSorting2);
   function MultiColumnSorting2(hotInstance) {
     var _this;
-    _classCallCheck$1d(this, MultiColumnSorting2);
+    _classCallCheck$1c(this, MultiColumnSorting2);
     _this = _super.call(this, hotInstance);
     _this.pluginKey = PLUGIN_KEY$p;
     return _this;
   }
-  _createClass$1d(MultiColumnSorting2, [{
+  _createClass$1c(MultiColumnSorting2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "isEnabled", this).call(this);
@@ -29562,12 +29457,12 @@ function _typeof$P(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$P(obj);
 }
-function _classCallCheck$1e(instance, Constructor) {
+function _classCallCheck$1d(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1e(target, props) {
+function _defineProperties$1d(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -29577,11 +29472,11 @@ function _defineProperties$1e(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1e(Constructor, protoProps, staticProps) {
+function _createClass$1d(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1e(Constructor.prototype, protoProps);
+    _defineProperties$1d(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1e(Constructor, staticProps);
+    _defineProperties$1d(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -29681,14 +29576,14 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$O(MultipleSelectionHandles2);
   function MultipleSelectionHandles2(hotInstance) {
     var _this2;
-    _classCallCheck$1e(this, MultipleSelectionHandles2);
+    _classCallCheck$1d(this, MultipleSelectionHandles2);
     _this2 = _super.call(this, hotInstance);
     _this2.dragged = [];
     _this2.eventManager = null;
     _this2.lastSetCell = null;
     return _this2;
   }
-  _createClass$1e(MultipleSelectionHandles2, [{
+  _createClass$1d(MultipleSelectionHandles2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return isMobileBrowser();
@@ -29988,34 +29883,34 @@ function createPlaceholderHeaderSettings() {
   };
 }
 
-function _toConsumableArray$b(arr) {
-  return _arrayWithoutHoles$b(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$H(arr) || _nonIterableSpread$b();
+function _toConsumableArray$a(arr) {
+  return _arrayWithoutHoles$a(arr) || _iterableToArray$c(arr) || _unsupportedIterableToArray$G(arr) || _nonIterableSpread$a();
 }
-function _nonIterableSpread$b() {
+function _nonIterableSpread$a() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$H(o, minLen) {
+function _unsupportedIterableToArray$G(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$H(o, minLen);
+    return _arrayLikeToArray$G(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$H(o, minLen);
+    return _arrayLikeToArray$G(o, minLen);
 }
-function _iterableToArray$d(iter) {
+function _iterableToArray$c(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$b(arr) {
+function _arrayWithoutHoles$a(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$H(arr);
+    return _arrayLikeToArray$G(arr);
 }
-function _arrayLikeToArray$H(arr, len) {
+function _arrayLikeToArray$G(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -30061,7 +29956,7 @@ function normalizeSettings(sourceSettings) {
       return !cancelProcessing;
     });
   });
-  var columnsLength = Math.max.apply(Math, _toConsumableArray$b(arrayMap(normalizedSettings, function(headersSettings) {
+  var columnsLength = Math.max.apply(Math, _toConsumableArray$a(arrayMap(normalizedSettings, function(headersSettings) {
     return headersSettings.length;
   })));
   arrayEach(normalizedSettings, function(headersSettings) {
@@ -30069,7 +29964,7 @@ function normalizeSettings(sourceSettings) {
       var defaultSettings = arrayMap(new Array(columnsLength - headersSettings.length), function() {
         return createDefaultHeaderSettings();
       });
-      headersSettings.splice.apply(headersSettings, [headersSettings.length, 0].concat(_toConsumableArray$b(defaultSettings)));
+      headersSettings.splice.apply(headersSettings, [headersSettings.length, 0].concat(_toConsumableArray$a(defaultSettings)));
     }
   });
   return normalizedSettings;
@@ -30137,12 +30032,12 @@ function _objectWithoutPropertiesLoose$1(source, excluded) {
   }
   return target;
 }
-function _classCallCheck$1f(instance, Constructor) {
+function _classCallCheck$1e(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1f(target, props) {
+function _defineProperties$1e(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -30152,11 +30047,11 @@ function _defineProperties$1f(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1f(Constructor, protoProps, staticProps) {
+function _createClass$1e(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1f(Constructor.prototype, protoProps);
+    _defineProperties$1e(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1f(Constructor, staticProps);
+    _defineProperties$1e(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -30206,7 +30101,7 @@ var _dataLength = /* @__PURE__ */ new WeakMap();
 var _columnsLimit = /* @__PURE__ */ new WeakMap();
 var SourceSettings = /* @__PURE__ */ function() {
   function SourceSettings2() {
-    _classCallCheck$1f(this, SourceSettings2);
+    _classCallCheck$1e(this, SourceSettings2);
     _classPrivateFieldInitSpec$4(this, _data, {
       writable: true,
       value: []
@@ -30220,7 +30115,7 @@ var SourceSettings = /* @__PURE__ */ function() {
       value: Infinity
     });
   }
-  _createClass$1f(SourceSettings2, [{
+  _createClass$1e(SourceSettings2, [{
     key: "setColumnsLimit",
     value: function setColumnsLimit(columnsCount) {
       _classPrivateFieldSet$4(this, _columnsLimit, columnsCount);
@@ -30344,12 +30239,12 @@ function _objectSpread$6(target) {
   }
   return target;
 }
-function _classCallCheck$1g(instance, Constructor) {
+function _classCallCheck$1f(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1g(target, props) {
+function _defineProperties$1f(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -30359,11 +30254,11 @@ function _defineProperties$1g(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1g(Constructor, protoProps, staticProps) {
+function _createClass$1f(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1g(Constructor.prototype, protoProps);
+    _defineProperties$1f(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1g(Constructor, staticProps);
+    _defineProperties$1f(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -30375,34 +30270,34 @@ function _defineProperty$e(obj, key, value) {
   }
   return obj;
 }
-function _toConsumableArray$c(arr) {
-  return _arrayWithoutHoles$c(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$I(arr) || _nonIterableSpread$c();
+function _toConsumableArray$b(arr) {
+  return _arrayWithoutHoles$b(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$H(arr) || _nonIterableSpread$b();
 }
-function _nonIterableSpread$c() {
+function _nonIterableSpread$b() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$I(o, minLen) {
+function _unsupportedIterableToArray$H(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$I(o, minLen);
+    return _arrayLikeToArray$H(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$I(o, minLen);
+    return _arrayLikeToArray$H(o, minLen);
 }
-function _iterableToArray$e(iter) {
+function _iterableToArray$d(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$c(arr) {
+function _arrayWithoutHoles$b(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$I(arr);
+    return _arrayLikeToArray$H(arr);
 }
-function _arrayLikeToArray$I(arr, len) {
+function _arrayLikeToArray$H(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -30439,7 +30334,7 @@ function breadthFirst(callback, context) {
       return;
     }
     var node = queue.shift();
-    queue.push.apply(queue, _toConsumableArray$c(node.childs));
+    queue.push.apply(queue, _toConsumableArray$b(node.childs));
     if (callback.call(context, node) !== false) {
       process();
     }
@@ -30450,13 +30345,13 @@ var DEFAULT_TRAVERSAL_STRATEGY = TRAVERSAL_BF;
 var TRAVERSAL_STRATEGIES = new Map([[TRAVERSAL_DF_PRE, depthFirstPreOrder], [TRAVERSAL_DF_POST, depthFirstPostOrder], [TRAVERSAL_BF, breadthFirst]]);
 var TreeNode = /* @__PURE__ */ function() {
   function TreeNode2(data) {
-    _classCallCheck$1g(this, TreeNode2);
+    _classCallCheck$1f(this, TreeNode2);
     _defineProperty$e(this, "data", {});
     _defineProperty$e(this, "parent", null);
     _defineProperty$e(this, "childs", []);
     this.data = data;
   }
-  _createClass$1g(TreeNode2, [{
+  _createClass$1f(TreeNode2, [{
     key: "addChild",
     value: function addChild(node) {
       node.parent = this;
@@ -30536,25 +30431,25 @@ function _defineProperty$f(obj, key, value) {
   return obj;
 }
 function _slicedToArray$x(arr, i) {
-  return _arrayWithHoles$z(arr) || _iterableToArrayLimit$x(arr, i) || _unsupportedIterableToArray$J(arr, i) || _nonIterableRest$z();
+  return _arrayWithHoles$z(arr) || _iterableToArrayLimit$x(arr, i) || _unsupportedIterableToArray$I(arr, i) || _nonIterableRest$z();
 }
 function _nonIterableRest$z() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$J(o, minLen) {
+function _unsupportedIterableToArray$I(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$J(o, minLen);
+    return _arrayLikeToArray$I(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$J(o, minLen);
+    return _arrayLikeToArray$I(o, minLen);
 }
-function _arrayLikeToArray$J(arr, len) {
+function _arrayLikeToArray$I(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -30594,12 +30489,12 @@ function _arrayWithHoles$z(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$1h(instance, Constructor) {
+function _classCallCheck$1g(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1h(target, props) {
+function _defineProperties$1g(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -30609,11 +30504,11 @@ function _defineProperties$1h(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1h(Constructor, protoProps, staticProps) {
+function _createClass$1g(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1h(Constructor.prototype, protoProps);
+    _defineProperties$1g(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1h(Constructor, staticProps);
+    _defineProperties$1g(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -30662,7 +30557,7 @@ var _rootsIndex = /* @__PURE__ */ new WeakMap();
 var _sourceSettings = /* @__PURE__ */ new WeakMap();
 var HeadersTree = /* @__PURE__ */ function() {
   function HeadersTree2(sourceSettings) {
-    _classCallCheck$1h(this, HeadersTree2);
+    _classCallCheck$1g(this, HeadersTree2);
     _classPrivateFieldInitSpec$5(this, _rootNodes, {
       writable: true,
       value: new Map()
@@ -30677,7 +30572,7 @@ var HeadersTree = /* @__PURE__ */ function() {
     });
     _classPrivateFieldSet$5(this, _sourceSettings, sourceSettings);
   }
-  _createClass$1h(HeadersTree2, [{
+  _createClass$1g(HeadersTree2, [{
     key: "getRoots",
     value: function getRoots() {
       return Array.from(_classPrivateFieldGet$5(this, _rootNodes).values());
@@ -31132,12 +31027,12 @@ function _objectWithoutPropertiesLoose$3(source, excluded) {
   }
   return target;
 }
-function _classCallCheck$1i(instance, Constructor) {
+function _classCallCheck$1h(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1i(target, props) {
+function _defineProperties$1h(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -31147,11 +31042,11 @@ function _defineProperties$1i(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1i(Constructor, protoProps, staticProps) {
+function _createClass$1h(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1i(Constructor.prototype, protoProps);
+    _defineProperties$1h(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1i(Constructor, staticProps);
+    _defineProperties$1h(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -31200,7 +31095,7 @@ var _headersTree = /* @__PURE__ */ new WeakMap();
 var _stateMatrix = /* @__PURE__ */ new WeakMap();
 var StateManager = /* @__PURE__ */ function() {
   function StateManager2() {
-    _classCallCheck$1i(this, StateManager2);
+    _classCallCheck$1h(this, StateManager2);
     _classPrivateFieldInitSpec$6(this, _sourceSettings$1, {
       writable: true,
       value: new SourceSettings()
@@ -31214,7 +31109,7 @@ var StateManager = /* @__PURE__ */ function() {
       value: [[]]
     });
   }
-  _createClass$1i(StateManager2, [{
+  _createClass$1h(StateManager2, [{
     key: "setState",
     value: function setState(nestedHeadersSettings) {
       _classPrivateFieldGet$6(this, _sourceSettings$1).setData(nestedHeadersSettings);
@@ -31371,12 +31266,12 @@ var StateManager = /* @__PURE__ */ function() {
   return StateManager2;
 }();
 
-function _classCallCheck$1j(instance, Constructor) {
+function _classCallCheck$1i(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1j(target, props) {
+function _defineProperties$1i(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -31386,11 +31281,11 @@ function _defineProperties$1j(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1j(Constructor, protoProps, staticProps) {
+function _createClass$1i(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1j(Constructor.prototype, protoProps);
+    _defineProperties$1i(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1j(Constructor, staticProps);
+    _defineProperties$1i(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -31404,7 +31299,7 @@ function _defineProperty$h(obj, key, value) {
 }
 var GhostTable$1 = /* @__PURE__ */ function() {
   function GhostTable2(hot, nestedHeaderSettingsGetter) {
-    _classCallCheck$1j(this, GhostTable2);
+    _classCallCheck$1i(this, GhostTable2);
     _defineProperty$h(this, "hot", void 0);
     _defineProperty$h(this, "nestedHeaderSettingsGetter", void 0);
     _defineProperty$h(this, "layersCount", 0);
@@ -31414,7 +31309,7 @@ var GhostTable$1 = /* @__PURE__ */ function() {
     this.nestedHeaderSettingsGetter = nestedHeaderSettingsGetter;
     this.widthsMap = this.hot.columnIndexMapper.createAndRegisterIndexMap("nestedHeaders.widthsMap", "physicalIndexToValue");
   }
-  _createClass$1j(GhostTable2, [{
+  _createClass$1i(GhostTable2, [{
     key: "setLayersCount",
     value: function setLayersCount(layersCount) {
       this.layersCount = layersCount;
@@ -31500,12 +31395,12 @@ function _taggedTemplateLiteral$9(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$1k(instance, Constructor) {
+function _classCallCheck$1j(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1k(target, props) {
+function _defineProperties$1j(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -31515,11 +31410,11 @@ function _defineProperties$1k(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1k(Constructor, protoProps, staticProps) {
+function _createClass$1j(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1k(Constructor.prototype, protoProps);
+    _defineProperties$1j(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1k(Constructor, staticProps);
+    _defineProperties$1j(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -31669,7 +31564,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$P(NestedHeaders2);
   function NestedHeaders2() {
     var _this;
-    _classCallCheck$1k(this, NestedHeaders2);
+    _classCallCheck$1j(this, NestedHeaders2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
@@ -31688,7 +31583,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
     _defineProperty$i(_assertThisInitialized$P(_this), "detectedOverlappedHeaders", false);
     return _this;
   }
-  _createClass$1k(NestedHeaders2, [{
+  _createClass$1j(NestedHeaders2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$r];
@@ -32027,34 +31922,34 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
   return NestedHeaders2;
 }(BasePlugin);
 
-function _toConsumableArray$d(arr) {
-  return _arrayWithoutHoles$d(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$K(arr) || _nonIterableSpread$d();
+function _toConsumableArray$c(arr) {
+  return _arrayWithoutHoles$c(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$J(arr) || _nonIterableSpread$c();
 }
-function _nonIterableSpread$d() {
+function _nonIterableSpread$c() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$K(o, minLen) {
+function _unsupportedIterableToArray$J(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$K(o, minLen);
+    return _arrayLikeToArray$J(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$K(o, minLen);
+    return _arrayLikeToArray$J(o, minLen);
 }
-function _iterableToArray$f(iter) {
+function _iterableToArray$e(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$d(arr) {
+function _arrayWithoutHoles$c(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$K(arr);
+    return _arrayLikeToArray$J(arr);
 }
-function _arrayLikeToArray$K(arr, len) {
+function _arrayLikeToArray$J(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -32070,12 +31965,12 @@ function _typeof$R(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$R(obj);
 }
-function _classCallCheck$1l(instance, Constructor) {
+function _classCallCheck$1k(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1l(target, props) {
+function _defineProperties$1k(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -32085,17 +31980,17 @@ function _defineProperties$1l(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1l(Constructor, protoProps, staticProps) {
+function _createClass$1k(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1l(Constructor.prototype, protoProps);
+    _defineProperties$1k(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1l(Constructor, staticProps);
+    _defineProperties$1k(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var DataManager = /* @__PURE__ */ function() {
   function DataManager2(nestedRowsPlugin, hotInstance) {
-    _classCallCheck$1l(this, DataManager2);
+    _classCallCheck$1k(this, DataManager2);
     this.hot = hotInstance;
     this.data = null;
     this.plugin = nestedRowsPlugin;
@@ -32107,7 +32002,7 @@ var DataManager = /* @__PURE__ */ function() {
       nodeInfo: new WeakMap()
     };
   }
-  _createClass$1l(DataManager2, [{
+  _createClass$1k(DataManager2, [{
     key: "setData",
     value: function setData(data) {
       this.data = data;
@@ -32507,13 +32402,13 @@ var DataManager = /* @__PURE__ */ function() {
       if (newRowParent) {
         if (elements) {
           var _newRowParent$__child;
-          (_newRowParent$__child = newRowParent.__children).splice.apply(_newRowParent$__child, [indexWithinParent, amount].concat(_toConsumableArray$d(elements)));
+          (_newRowParent$__child = newRowParent.__children).splice.apply(_newRowParent$__child, [indexWithinParent, amount].concat(_toConsumableArray$c(elements)));
         } else {
           newRowParent.__children.splice(indexWithinParent, amount);
         }
       } else if (elements) {
         var _this$data;
-        (_this$data = this.data).splice.apply(_this$data, [indexWithinParent, amount].concat(_toConsumableArray$d(elements)));
+        (_this$data = this.data).splice.apply(_this$data, [indexWithinParent, amount].concat(_toConsumableArray$c(elements)));
       } else {
         this.data.splice(indexWithinParent, amount);
       }
@@ -32584,6 +32479,48 @@ var DataManager = /* @__PURE__ */ function() {
   return DataManager2;
 }();
 
+function _defineProperties$1l(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$1l(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$1l(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$1l(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _classCallCheck$1l(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+var BaseUI$3 = /* @__PURE__ */ _createClass$1l(function BaseUI2(pluginInstance, hotInstance) {
+  _classCallCheck$1l(this, BaseUI2);
+  this.hot = hotInstance;
+  this.plugin = pluginInstance;
+});
+
+function _typeof$S(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$S = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$S(obj);
+}
+function _classCallCheck$1m(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 function _defineProperties$1m(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -32599,48 +32536,6 @@ function _createClass$1m(Constructor, protoProps, staticProps) {
     _defineProperties$1m(Constructor.prototype, protoProps);
   if (staticProps)
     _defineProperties$1m(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _classCallCheck$1m(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-var BaseUI$3 = /* @__PURE__ */ _createClass$1m(function BaseUI2(pluginInstance, hotInstance) {
-  _classCallCheck$1m(this, BaseUI2);
-  this.hot = hotInstance;
-  this.plugin = pluginInstance;
-});
-
-function _typeof$S(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$S = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$S(obj);
-}
-function _classCallCheck$1n(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$1n(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$1n(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$1n(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$1n(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -32713,14 +32608,14 @@ var HeadersUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$Q(HeadersUI2);
   function HeadersUI2(nestedRowsPlugin, hotInstance) {
     var _this;
-    _classCallCheck$1n(this, HeadersUI2);
+    _classCallCheck$1m(this, HeadersUI2);
     _this = _super.call(this, nestedRowsPlugin, hotInstance);
     _this.dataManager = _this.plugin.dataManager;
     _this.collapsingUI = _this.plugin.collapsingUI;
     _this.rowHeaderWidthCache = null;
     return _this;
   }
-  _createClass$1n(HeadersUI2, [{
+  _createClass$1m(HeadersUI2, [{
     key: "appendLevelIndicators",
     value: function appendLevelIndicators(row, TH) {
       var rowIndex = this.hot.toPhysicalRow(row);
@@ -32792,34 +32687,34 @@ function _typeof$T(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$T(obj);
 }
-function _toConsumableArray$e(arr) {
-  return _arrayWithoutHoles$e(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$L(arr) || _nonIterableSpread$e();
+function _toConsumableArray$d(arr) {
+  return _arrayWithoutHoles$d(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$K(arr) || _nonIterableSpread$d();
 }
-function _nonIterableSpread$e() {
+function _nonIterableSpread$d() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$L(o, minLen) {
+function _unsupportedIterableToArray$K(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$L(o, minLen);
+    return _arrayLikeToArray$K(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$L(o, minLen);
+    return _arrayLikeToArray$K(o, minLen);
 }
-function _iterableToArray$g(iter) {
+function _iterableToArray$f(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$e(arr) {
+function _arrayWithoutHoles$d(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$L(arr);
+    return _arrayLikeToArray$K(arr);
 }
-function _arrayLikeToArray$L(arr, len) {
+function _arrayLikeToArray$K(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -32827,12 +32722,12 @@ function _arrayLikeToArray$L(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$1o(instance, Constructor) {
+function _classCallCheck$1n(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1o(target, props) {
+function _defineProperties$1n(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -32842,11 +32737,11 @@ function _defineProperties$1o(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1o(Constructor, protoProps, staticProps) {
+function _createClass$1n(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1o(Constructor.prototype, protoProps);
+    _defineProperties$1n(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1o(Constructor, staticProps);
+    _defineProperties$1n(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -32919,7 +32814,7 @@ var CollapsingUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$R(CollapsingUI2);
   function CollapsingUI2(nestedRowsPlugin, hotInstance) {
     var _this;
-    _classCallCheck$1o(this, CollapsingUI2);
+    _classCallCheck$1n(this, CollapsingUI2);
     _this = _super.call(this, nestedRowsPlugin, hotInstance);
     _this.dataManager = _this.plugin.dataManager;
     _this.collapsedRows = [];
@@ -32956,7 +32851,7 @@ var CollapsingUI = /* @__PURE__ */ function(_BaseUI) {
     };
     return _this;
   }
-  _createClass$1o(CollapsingUI2, [{
+  _createClass$1n(CollapsingUI2, [{
     key: "collapseChildren",
     value: function collapseChildren(row) {
       var _this2 = this;
@@ -32998,7 +32893,7 @@ var CollapsingUI = /* @__PURE__ */ function(_BaseUI) {
       var doTrimming = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : true;
       var rowsToTrim = [];
       arrayEach(rows, function(elem) {
-        rowsToTrim.push.apply(rowsToTrim, _toConsumableArray$e(_this3.collapseChildren(elem, false, false)));
+        rowsToTrim.push.apply(rowsToTrim, _toConsumableArray$d(_this3.collapseChildren(elem, false, false)));
       });
       if (doTrimming) {
         this.trimRows(rowsToTrim);
@@ -33134,7 +33029,7 @@ var CollapsingUI = /* @__PURE__ */ function(_BaseUI) {
       var doTrimming = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : true;
       var rowsToUntrim = [];
       arrayEach(rows, function(elem) {
-        rowsToUntrim.push.apply(rowsToUntrim, _toConsumableArray$e(_this9.expandChildren(elem, false, false)));
+        rowsToUntrim.push.apply(rowsToUntrim, _toConsumableArray$d(_this9.expandChildren(elem, false, false)));
       });
       if (doTrimming) {
         this.untrimRows(rowsToUntrim);
@@ -33270,12 +33165,12 @@ function _typeof$U(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$U(obj);
 }
-function _classCallCheck$1p(instance, Constructor) {
+function _classCallCheck$1o(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1p(target, props) {
+function _defineProperties$1o(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -33285,11 +33180,11 @@ function _defineProperties$1p(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1p(Constructor, protoProps, staticProps) {
+function _createClass$1o(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1p(Constructor.prototype, protoProps);
+    _defineProperties$1o(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1p(Constructor, staticProps);
+    _defineProperties$1o(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -33363,7 +33258,7 @@ var ContextMenuUI = /* @__PURE__ */ function(_BaseUI) {
   var _super = _createSuper$S(ContextMenuUI2);
   function ContextMenuUI2(nestedRowsPlugin, hotInstance) {
     var _this;
-    _classCallCheck$1p(this, ContextMenuUI2);
+    _classCallCheck$1o(this, ContextMenuUI2);
     _this = _super.call(this, nestedRowsPlugin, hotInstance);
     privatePool$g.set(_assertThisInitialized$S(_this), {
       row_above: function row_above(key, selection) {
@@ -33378,7 +33273,7 @@ var ContextMenuUI = /* @__PURE__ */ function(_BaseUI) {
     _this.dataManager = _this.plugin.dataManager;
     return _this;
   }
-  _createClass$1p(ContextMenuUI2, [{
+  _createClass$1o(ContextMenuUI2, [{
     key: "appendOptions",
     value: function appendOptions(defaultOptions) {
       var _this2 = this;
@@ -33440,34 +33335,34 @@ var ContextMenuUI = /* @__PURE__ */ function(_BaseUI) {
 }(BaseUI$3);
 
 var _templateObject$a;
-function _toConsumableArray$f(arr) {
-  return _arrayWithoutHoles$f(arr) || _iterableToArray$h(arr) || _unsupportedIterableToArray$M(arr) || _nonIterableSpread$f();
+function _toConsumableArray$e(arr) {
+  return _arrayWithoutHoles$e(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$L(arr) || _nonIterableSpread$e();
 }
-function _nonIterableSpread$f() {
+function _nonIterableSpread$e() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$M(o, minLen) {
+function _unsupportedIterableToArray$L(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$M(o, minLen);
+    return _arrayLikeToArray$L(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$M(o, minLen);
+    return _arrayLikeToArray$L(o, minLen);
 }
-function _iterableToArray$h(iter) {
+function _iterableToArray$g(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$f(arr) {
+function _arrayWithoutHoles$e(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$M(arr);
+    return _arrayLikeToArray$L(arr);
 }
-function _arrayLikeToArray$M(arr, len) {
+function _arrayLikeToArray$L(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -33481,12 +33376,12 @@ function _taggedTemplateLiteral$a(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$1q(instance, Constructor) {
+function _classCallCheck$1p(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1q(target, props) {
+function _defineProperties$1p(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -33496,23 +33391,23 @@ function _defineProperties$1q(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1q(Constructor, protoProps, staticProps) {
+function _createClass$1p(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1q(Constructor.prototype, protoProps);
+    _defineProperties$1p(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1q(Constructor, staticProps);
+    _defineProperties$1p(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var RowMoveController = /* @__PURE__ */ function() {
   function RowMoveController2(plugin) {
-    _classCallCheck$1q(this, RowMoveController2);
+    _classCallCheck$1p(this, RowMoveController2);
     this.plugin = plugin;
     this.hot = plugin.hot;
     this.dataManager = plugin.dataManager;
     this.collapsingUI = plugin.collapsingUI;
   }
-  _createClass$1q(RowMoveController2, [{
+  _createClass$1p(RowMoveController2, [{
     key: "onBeforeRowMove",
     value: function onBeforeRowMove(rows, finalIndex, dropIndex, movePossible) {
       var _this = this;
@@ -33591,7 +33486,7 @@ var RowMoveController = /* @__PURE__ */ function() {
     key: "shiftCollapsibleParentsLocations",
     value: function shiftCollapsibleParentsLocations(physicalStartIndexes, physicalDropIndex, sameParent) {
       if (!sameParent) {
-        if (Math.max.apply(Math, _toConsumableArray$f(physicalStartIndexes)) <= physicalDropIndex) {
+        if (Math.max.apply(Math, _toConsumableArray$e(physicalStartIndexes)) <= physicalDropIndex) {
           this.collapsingUI.collapsedRowsStash.shiftStash(physicalStartIndexes[0], physicalDropIndex, -1 * physicalStartIndexes.length);
         } else {
           this.collapsingUI.collapsedRowsStash.shiftStash(physicalDropIndex, physicalStartIndexes[0], physicalStartIndexes.length);
@@ -33614,7 +33509,7 @@ var RowMoveController = /* @__PURE__ */ function() {
     value: function moveCellsMeta(baseIndexes, targetIndex) {
       var _this3 = this, _this$hot;
       var rowsOfMeta = [];
-      var movingDown = Math.max.apply(Math, _toConsumableArray$f(baseIndexes)) < targetIndex;
+      var movingDown = Math.max.apply(Math, _toConsumableArray$e(baseIndexes)) < targetIndex;
       baseIndexes.forEach(function(baseIndex) {
         rowsOfMeta.push(_this3.hot.getCellMetaAtRow(baseIndex));
       });
@@ -33671,34 +33566,34 @@ function _typeof$V(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$V(obj);
 }
-function _toConsumableArray$g(arr) {
-  return _arrayWithoutHoles$g(arr) || _iterableToArray$i(arr) || _unsupportedIterableToArray$N(arr) || _nonIterableSpread$g();
+function _toConsumableArray$f(arr) {
+  return _arrayWithoutHoles$f(arr) || _iterableToArray$h(arr) || _unsupportedIterableToArray$M(arr) || _nonIterableSpread$f();
 }
-function _nonIterableSpread$g() {
+function _nonIterableSpread$f() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$N(o, minLen) {
+function _unsupportedIterableToArray$M(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$N(o, minLen);
+    return _arrayLikeToArray$M(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$N(o, minLen);
+    return _arrayLikeToArray$M(o, minLen);
 }
-function _iterableToArray$i(iter) {
+function _iterableToArray$h(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$g(arr) {
+function _arrayWithoutHoles$f(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$N(arr);
+    return _arrayLikeToArray$M(arr);
 }
-function _arrayLikeToArray$N(arr, len) {
+function _arrayLikeToArray$M(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -33706,12 +33601,12 @@ function _arrayLikeToArray$N(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$1r(instance, Constructor) {
+function _classCallCheck$1q(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1r(target, props) {
+function _defineProperties$1q(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -33721,11 +33616,11 @@ function _defineProperties$1r(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1r(Constructor, protoProps, staticProps) {
+function _createClass$1q(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1r(Constructor.prototype, protoProps);
+    _defineProperties$1q(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1r(Constructor, staticProps);
+    _defineProperties$1q(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -33827,7 +33722,7 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$T(NestedRows2);
   function NestedRows2(hotInstance) {
     var _this;
-    _classCallCheck$1r(this, NestedRows2);
+    _classCallCheck$1q(this, NestedRows2);
     _this = _super.call(this, hotInstance);
     _this.dataManager = null;
     _this.headersUI = null;
@@ -33839,7 +33734,7 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$1r(NestedRows2, [{
+  _createClass$1q(NestedRows2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$s];
@@ -34039,7 +33934,7 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
         return removedRows.add(physicalIndex);
       }, new Set()));
       physicalRows.length = 0;
-      physicalRows.push.apply(physicalRows, _toConsumableArray$g(modifiedPhysicalRows));
+      physicalRows.push.apply(physicalRows, modifiedPhysicalRows);
     }
   }, {
     key: "onBeforeAddChild",
@@ -34073,7 +33968,7 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onAfterInit",
     value: function onAfterInit() {
-      var deepestLevel = Math.max.apply(Math, _toConsumableArray$g(this.dataManager.cache.levels));
+      var deepestLevel = Math.max.apply(Math, _toConsumableArray$f(this.dataManager.cache.levels));
       if (deepestLevel > 0) {
         this.headersUI.updateRowHeaderWidth(deepestLevel);
       }
@@ -34117,12 +34012,12 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
   return NestedRows2;
 }(BasePlugin);
 
-function _classCallCheck$1s(instance, Constructor) {
+function _classCallCheck$1r(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1s(target, props) {
+function _defineProperties$1r(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -34132,24 +34027,24 @@ function _defineProperties$1s(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1s(Constructor, protoProps, staticProps) {
+function _createClass$1r(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1s(Constructor.prototype, protoProps);
+    _defineProperties$1r(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1s(Constructor, staticProps);
+    _defineProperties$1r(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var Storage = /* @__PURE__ */ function() {
   function Storage2(prefix) {
     var rootWindow = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : window;
-    _classCallCheck$1s(this, Storage2);
+    _classCallCheck$1r(this, Storage2);
     this.rootWindow = rootWindow;
     this.prefix = prefix;
     this.savedKeys = [];
     this.loadSavedKeys();
   }
-  _createClass$1s(Storage2, [{
+  _createClass$1r(Storage2, [{
     key: "saveValue",
     value: function saveValue(key, value) {
       this.rootWindow.localStorage.setItem("".concat(this.prefix, "_").concat(key), JSON.stringify(value));
@@ -34209,12 +34104,12 @@ function _typeof$W(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$W(obj);
 }
-function _classCallCheck$1t(instance, Constructor) {
+function _classCallCheck$1s(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1t(target, props) {
+function _defineProperties$1s(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -34224,11 +34119,11 @@ function _defineProperties$1t(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1t(Constructor, protoProps, staticProps) {
+function _createClass$1s(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1t(Constructor.prototype, protoProps);
+    _defineProperties$1s(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1t(Constructor, staticProps);
+    _defineProperties$1s(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -34331,12 +34226,12 @@ var PersistentState = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$U(PersistentState2);
   function PersistentState2(hotInstance) {
     var _this;
-    _classCallCheck$1t(this, PersistentState2);
+    _classCallCheck$1s(this, PersistentState2);
     _this = _super.call(this, hotInstance);
     _this.storage = void 0;
     return _this;
   }
-  _createClass$1t(PersistentState2, [{
+  _createClass$1s(PersistentState2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$t];
@@ -34421,34 +34316,34 @@ function _typeof$X(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$X(obj);
 }
-function _toConsumableArray$h(arr) {
-  return _arrayWithoutHoles$h(arr) || _iterableToArray$j(arr) || _unsupportedIterableToArray$O(arr) || _nonIterableSpread$h();
+function _toConsumableArray$g(arr) {
+  return _arrayWithoutHoles$g(arr) || _iterableToArray$i(arr) || _unsupportedIterableToArray$N(arr) || _nonIterableSpread$g();
 }
-function _nonIterableSpread$h() {
+function _nonIterableSpread$g() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$O(o, minLen) {
+function _unsupportedIterableToArray$N(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$O(o, minLen);
+    return _arrayLikeToArray$N(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$O(o, minLen);
+    return _arrayLikeToArray$N(o, minLen);
 }
-function _iterableToArray$j(iter) {
+function _iterableToArray$i(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$h(arr) {
+function _arrayWithoutHoles$g(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$O(arr);
+    return _arrayLikeToArray$N(arr);
 }
-function _arrayLikeToArray$O(arr, len) {
+function _arrayLikeToArray$N(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -34456,12 +34351,12 @@ function _arrayLikeToArray$O(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$1u(instance, Constructor) {
+function _classCallCheck$1t(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1u(target, props) {
+function _defineProperties$1t(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -34471,11 +34366,11 @@ function _defineProperties$1u(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1u(Constructor, protoProps, staticProps) {
+function _createClass$1t(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1u(Constructor.prototype, protoProps);
+    _defineProperties$1t(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1u(Constructor, staticProps);
+    _defineProperties$1t(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -34588,14 +34483,14 @@ var Search = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$V(Search2);
   function Search2(hotInstance) {
     var _this;
-    _classCallCheck$1u(this, Search2);
+    _classCallCheck$1t(this, Search2);
     _this = _super.call(this, hotInstance);
     _this.callback = DEFAULT_CALLBACK;
     _this.queryMethod = DEFAULT_QUERY_METHOD;
     _this.searchResultClass = DEFAULT_SEARCH_RESULT_CLASS;
     return _this;
   }
-  _createClass$1u(Search2, [{
+  _createClass$1t(Search2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$u];
@@ -34720,7 +34615,7 @@ var Search = /* @__PURE__ */ function(_BasePlugin) {
         classArray = className.split(" ");
       } else {
         var _classArray;
-        (_classArray = classArray).push.apply(_classArray, _toConsumableArray$h(className));
+        (_classArray = classArray).push.apply(_classArray, _toConsumableArray$g(className));
       }
       if (this.isEnabled() && cellProperties.isSearchResult) {
         if (!classArray.includes(this.searchResultClass)) {
@@ -34758,12 +34653,12 @@ function _typeof$Y(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$Y(obj);
 }
-function _classCallCheck$1v(instance, Constructor) {
+function _classCallCheck$1u(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1v(target, props) {
+function _defineProperties$1u(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -34773,11 +34668,11 @@ function _defineProperties$1v(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1v(Constructor, protoProps, staticProps) {
+function _createClass$1u(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1v(Constructor.prototype, protoProps);
+    _defineProperties$1u(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1v(Constructor, staticProps);
+    _defineProperties$1u(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -34877,7 +34772,7 @@ var TouchScroll = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$W(TouchScroll2);
   function TouchScroll2(hotInstance) {
     var _this;
-    _classCallCheck$1v(this, TouchScroll2);
+    _classCallCheck$1u(this, TouchScroll2);
     _this = _super.call(this, hotInstance);
     _this.scrollbars = [];
     _this.clones = [];
@@ -34885,7 +34780,7 @@ var TouchScroll = /* @__PURE__ */ function(_BasePlugin) {
     _this.freezeOverlays = false;
     return _this;
   }
-  _createClass$1v(TouchScroll2, [{
+  _createClass$1u(TouchScroll2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return isTouchSupported();
@@ -35017,12 +34912,12 @@ function _typeof$Z(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$Z(obj);
 }
-function _classCallCheck$1w(instance, Constructor) {
+function _classCallCheck$1v(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1w(target, props) {
+function _defineProperties$1v(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -35032,11 +34927,11 @@ function _defineProperties$1w(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1w(Constructor, protoProps, staticProps) {
+function _createClass$1v(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1w(Constructor.prototype, protoProps);
+    _defineProperties$1v(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1w(Constructor, staticProps);
+    _defineProperties$1v(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -35136,12 +35031,12 @@ var TrimRows = /* @__PURE__ */ function(_BasePlugin) {
   var _super = _createSuper$X(TrimRows2);
   function TrimRows2(hotInstance) {
     var _this;
-    _classCallCheck$1w(this, TrimRows2);
+    _classCallCheck$1v(this, TrimRows2);
     _this = _super.call(this, hotInstance);
     _this.trimmedRowsMap = null;
     return _this;
   }
-  _createClass$1w(TrimRows2, [{
+  _createClass$1v(TrimRows2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$w];
@@ -35310,12 +35205,12 @@ function _typeof$_(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$_(obj);
 }
-function _classCallCheck$1x(instance, Constructor) {
+function _classCallCheck$1w(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1x(target, props) {
+function _defineProperties$1w(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -35325,11 +35220,11 @@ function _defineProperties$1x(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1x(Constructor, protoProps, staticProps) {
+function _createClass$1w(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1x(Constructor.prototype, protoProps);
+    _defineProperties$1w(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1x(Constructor, staticProps);
+    _defineProperties$1w(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -35397,40 +35292,40 @@ function _getPrototypeOf$Y(o) {
   };
   return _getPrototypeOf$Y(o);
 }
-function _toConsumableArray$i(arr) {
-  return _arrayWithoutHoles$i(arr) || _iterableToArray$k(arr) || _unsupportedIterableToArray$P(arr) || _nonIterableSpread$i();
+function _toConsumableArray$h(arr) {
+  return _arrayWithoutHoles$h(arr) || _iterableToArray$j(arr) || _unsupportedIterableToArray$O(arr) || _nonIterableSpread$h();
 }
-function _nonIterableSpread$i() {
+function _nonIterableSpread$h() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$k(iter) {
+function _iterableToArray$j(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$i(arr) {
+function _arrayWithoutHoles$h(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$P(arr);
+    return _arrayLikeToArray$O(arr);
 }
 function _slicedToArray$y(arr, i) {
-  return _arrayWithHoles$A(arr) || _iterableToArrayLimit$y(arr, i) || _unsupportedIterableToArray$P(arr, i) || _nonIterableRest$A();
+  return _arrayWithHoles$A(arr) || _iterableToArrayLimit$y(arr, i) || _unsupportedIterableToArray$O(arr, i) || _nonIterableRest$A();
 }
 function _nonIterableRest$A() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$P(o, minLen) {
+function _unsupportedIterableToArray$O(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$P(o, minLen);
+    return _arrayLikeToArray$O(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$P(o, minLen);
+    return _arrayLikeToArray$O(o, minLen);
 }
-function _arrayLikeToArray$P(arr, len) {
+function _arrayLikeToArray$O(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -35494,7 +35389,7 @@ function UndoRedo(instance) {
     }
     var wrappedAction = function wrappedAction2() {
       var clonedChanges = changes.reduce(function(arr, change) {
-        arr.push(_toConsumableArray$i(change));
+        arr.push(_toConsumableArray$h(change));
         return arr;
       }, []);
       arrayEach(clonedChanges, function(change) {
@@ -35897,7 +35792,7 @@ var MergeCellsAction = /* @__PURE__ */ function(_UndoRedo$Action) {
   var _super = _createSuper$Y(MergeCellsAction2);
   function MergeCellsAction2(instance, cellRange) {
     var _this4;
-    _classCallCheck$1x(this, MergeCellsAction2);
+    _classCallCheck$1w(this, MergeCellsAction2);
     _this4 = _super.call(this);
     _this4.cellRange = cellRange;
     var topStartCorner = _this4.cellRange.getTopStartCorner();
@@ -35905,7 +35800,7 @@ var MergeCellsAction = /* @__PURE__ */ function(_UndoRedo$Action) {
     _this4.rangeData = instance.getData(topStartCorner.row, topStartCorner.col, bottomEndCorner.row, bottomEndCorner.col);
     return _this4;
   }
-  _createClass$1x(MergeCellsAction2, [{
+  _createClass$1w(MergeCellsAction2, [{
     key: "undo",
     value: function undo(instance, undoneCallback) {
       var mergeCellsPlugin = instance.getPlugin("mergeCells");
@@ -35930,12 +35825,12 @@ var UnmergeCellsAction = /* @__PURE__ */ function(_UndoRedo$Action2) {
   var _super2 = _createSuper$Y(UnmergeCellsAction2);
   function UnmergeCellsAction2(instance, cellRange) {
     var _this5;
-    _classCallCheck$1x(this, UnmergeCellsAction2);
+    _classCallCheck$1w(this, UnmergeCellsAction2);
     _this5 = _super2.call(this);
     _this5.cellRange = cellRange;
     return _this5;
   }
-  _createClass$1x(UnmergeCellsAction2, [{
+  _createClass$1w(UnmergeCellsAction2, [{
     key: "undo",
     value: function undo(instance, undoneCallback) {
       var mergeCellsPlugin = instance.getPlugin("mergeCells");

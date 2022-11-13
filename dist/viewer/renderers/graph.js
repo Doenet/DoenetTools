@@ -314,7 +314,8 @@ export default React.memo(function Graph(props) {
         position,
         offset,
         anchorx,
-        strokeColor: "var(--canvastext)"
+        strokeColor: "var(--canvastext)",
+        highlight: false
       };
       if (SVs.ylabelHasLatex) {
         yaxisOptions.label.useMathJax = true;
@@ -430,7 +431,8 @@ export default React.memo(function Graph(props) {
         position,
         offset,
         anchorx,
-        strokeColor: "var(--canvastext)"
+        strokeColor: "var(--canvastext)",
+        highlight: false
       };
       if (SVs.xlabelHasLatex) {
         xaxisOptions.label.useMathJax = true;
