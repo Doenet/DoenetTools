@@ -9,6 +9,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./:/home/node/workspace
       - node_modules:/home/node/workspace/node_modules
+      - ~/.ssh:/home/node/.ssh
     networks:
       - dev_net
     environment:
