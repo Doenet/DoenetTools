@@ -194,8 +194,7 @@ export default function MathInput(props) {
     borderStyle: "solid",
     borderWidth: "2px",
 
-    marginRight: "4px", 
-    marginBottom: "4px",
+    margin: "0px 4px 4px 4px"
   }
 
   let checkWorkStyle = {
