@@ -41,7 +41,10 @@
         "esbenp.prettier-vscode",
         "styled-components.vscode-styled-components",
         "meganrogge.template-string-converter"
-      ]
+      ],
+      "settings": {
+        "editor.formatOnSave": true
+      }
     }
   }
 }
