@@ -3,7 +3,7 @@ describe('ActionButton Tests', function () {
 
 before(() => {
   cy.visit("http://localhost/uiDocs");
-  cy.get('[data-test="componentLinkactionbutton"] > a').click();
+  cy.get('[data-test="componentLink actionbutton"]').click();
 })
 
 

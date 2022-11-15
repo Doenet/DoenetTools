@@ -273,6 +273,7 @@ export default function Increment(props) {
           draggable={!props.disabled}
           onDragStart={handleDragStart}
           onDrag={handleDrag}
+          data-test={`${props.dataTest}`}
         >
           <DecreaseButton
             aria-label="Decrease"
@@ -292,7 +293,7 @@ export default function Increment(props) {
             aria-disabled={props.disabled ? true : false}
             placeholder={props.placeholder}
             value={value}
-            data-test={props.dataTest}
+            data-test={`${props.dataTest} Textfield`}
             ref={textFieldRef}
             alert={props.alert}
             disabled={props.disabled ? true : false}
