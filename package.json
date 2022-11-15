@@ -20,6 +20,7 @@
     "buildx:mysql": "docker buildx build --platform linux/amd64 -f doenet_docker/mysql/Dockerfile -t lyanthropos/doenet_test:mysql-dev .",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
+    "test:app": "cypress run -b 'electron' --config video=false --headless --spec 'cypress/e2e/ActivityViewer/*,cypress/e2e/AsStudent/*,cypress/e2e/Events/*,cypress/e2e/Navigation/*,cypress/e2e/Public/*,cypress/e2e/AssignedActivity/*,cypress/e2e/course/*,cypress/e2e/Editor/*,cypress/e2e/Gradebook/*,cypress/e2e/People/*'",
     "publish:db": "docker compose exec -T -w /var/lib/mysql mysql mysqldump -u root -phelloworld --databases --add-drop-database --add-drop-table doenet_local > ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:db": "docker compose exec -T mysql mysql -u root -phelloworld doenet_local < ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:volumes": "docker volume rm doenet_node_modules doenet_vendor",
