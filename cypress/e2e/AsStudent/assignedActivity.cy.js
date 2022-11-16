@@ -92,7 +92,7 @@ describe('Assigned Activity Tests', function () {
     cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
     cy.get('[data-test="Assigned Date Checkbox"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1000); // Wait for activity to be saved and assigned
+    cy.get('[data-test="Unassign Activity"]').should('be.visible'); //Wait for activity to be saved
 
     // Sign in as a student
     cy.signin({ userId: studentUserId });
@@ -106,7 +106,7 @@ describe('Assigned Activity Tests', function () {
   })
 
 
-  it('Activity contains assigned date and due date in Content By Week page', () => {
+  it.only('Activity contains assigned date and due date in Content By Week page', () => {
 
     const assignedDate = new Date();
     let dueDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000); // One week from now
@@ -118,7 +118,8 @@ describe('Assigned Activity Tests', function () {
     cy.get('[data-test="Due Date Checkbox"]').click();
     cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1000); // Wait for activity to be saved and assigned
+    cy.get('[data-test="Unassign Activity"]').should('be.visible'); //Wait for activity to be saved
+
 
     // Sign in as a student
     // Check if the Content By Week page contains the correct activity with the assigned date and due date
