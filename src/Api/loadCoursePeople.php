@@ -72,12 +72,12 @@ if ($success) {
 }
 
 $response_arr = [
-    'success' => $allowed,
+    'success' => $success,
     'message' => $message,
     'peopleArray' => $peopleArray,
 ];
 
-http_response_code(200);
+http_response_code($response_arr['success'] ? 200 : 400);
 
 // make it json format
 echo json_encode($response_arr);
