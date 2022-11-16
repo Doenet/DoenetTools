@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
@@ -21,6 +21,7 @@ import {
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
+import './mathInput.css';
 
 // Moved most of checkWorkStyle styling into Button
 const Button = styled.button `
@@ -186,25 +187,9 @@ export default function MathInput(props) {
 
   // const inputKey = this.componentName + '_input';
 
-  let mathInputStyle = { // Style the EditableMathField
-
-    // Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
-    // Currently does not work with border: "var(--mainBorder)"
-    borderColor: "black",
-    borderStyle: "solid",
-    borderWidth: "2px",
-
-    margin: "0px 4px 4px 4px"
-  }
-
   let checkWorkStyle = {
     cursor: "pointer",
     padding: "1px 6px 1px 6px",
-  }
-
-  let mathInputWrapper = { // Style the EditableMathField Wrapper
-    cursor: "pointer",
-    marginBottom: "4px",
   }
 
   if (SVs.disabled) {
@@ -321,10 +306,10 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={id} />
 
-      <span className="textInputSurroundingBox" id={id} style={mathInputWrapper}>
+      <span id={id} className="mathInputWrapper">
         <span>
           <EditableMathField
-            style={mathInputStyle}
+            className="mathInputStyle"
             latex={rendererValue.current}
             config={{
               autoCommands:
