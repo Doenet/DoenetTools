@@ -52,6 +52,7 @@ export default function MathInput(props) {
   MathInput.baseStateVariable = 'rawRendererValue';
 
   const [mathField, setMathField] = useState(null);
+  const [focused, setFocused] = useState(null);
   const textareaRef = useRef(null); // Ref to keep track of the mathInput's disabled state
 
   const setRendererState = useSetRecoilState(rendererState(rendererName));
@@ -133,7 +134,9 @@ export default function MathInput(props) {
   const handleFocus = (e) => {
     setFocusedField(() => handleVirtualKeyboardClick);
     setFocusedFieldReturn(() => handlePressEnter);
-    setFocusedFieldID(mathField.id);
+    // setFocusedFieldID(mathField.id);
+    setFocused(true);
+    EditableMathField.getElement().removeClass('cke_reset_all');
   };
 
   const handleBlur = (e) => {
@@ -153,8 +156,9 @@ export default function MathInput(props) {
       // console.log(">>>", e.relatedTarget.id, checkWorkButton.props.id);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
-      setFocusedFieldID(null);
+      // setFocusedFieldID(null);
     }
+    setFocused(false);
   };
 
   const onChangeHandler = (text) => {
@@ -190,6 +194,25 @@ export default function MathInput(props) {
   let checkWorkStyle = {
     cursor: "pointer",
     padding: "1px 6px 1px 6px",
+  }
+
+  let mathInputStyle = {
+    /* Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
+    Currently does not work with border: "var(--mainBorder)" */
+    borderColor: "black",
+    borderStyle: "solid",
+    borderWidth: "2px",
+    margin: "0px 4px 4px 4px",
+  }
+
+  let mathInputWrapper = { /* Style the EditableMathField Wrapper */
+    cursor: "pointer",
+    marginBottom: "4px",
+  }
+
+  if (focused) {
+    mathInputStyle.outline = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
+    mathInputStyle.outlineOffset = "2px";
   }
 
   if (SVs.disabled) {
@@ -306,10 +329,10 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={id} />
 
-      <span id={id} className="mathInputWrapper">
+      <span id={id} style={mathInputWrapper}>
         <span>
           <EditableMathField
-            className="mathInputStyle"
+            style={mathInputStyle}
             latex={rendererValue.current}
             config={{
               autoCommands:

@@ -1,4 +1,4 @@
-.mathInputStyle { /* Style the EditableMathField */
+.math-input-style { /* Style the EditableMathField */
 
     /* Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
     Currently does not work with border: "var(--mainBorder)" */
@@ -8,12 +8,12 @@
     margin: "0px 4px 4px 4px";
 }
 
-.mathInputStyle:focus {
+.math-input-style:focus {
     outline: var(--mainBorder);
     outline-offset: 2px;
 }
 
-.mathInputWrapper { /* Style the EditableMathField Wrapper */
+.math-input-wrapper { /* Style the EditableMathField Wrapper */
     cursor: "pointer";
     margin-bottom: "4px";
 }
