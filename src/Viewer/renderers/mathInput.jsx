@@ -136,7 +136,6 @@ export default function MathInput(props) {
     setFocusedFieldReturn(() => handlePressEnter);
     // setFocusedFieldID(mathField.id);
     setFocused(true);
-    EditableMathField.getElement().removeClass('cke_reset_all');
   };
 
   const handleBlur = (e) => {
