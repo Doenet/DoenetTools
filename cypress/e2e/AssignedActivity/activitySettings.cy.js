@@ -38,9 +38,11 @@ describe('Activity Settings Test', function () {
     cy.get('[data-value="0"]').click()
     cy.get('[data-value="15"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})    
-
+    cy.wait(100) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT assignedDate FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
-      expect(result[0].assignedDate).to.contain("2024-01-15")
+      let utcDateTime = new Date(result[0].assignedDate)
+      let localDateTime = utcDateTime.toLocaleDateString();
+      expect(localDateTime).contains("1/15/2024");
     })
   })
   
@@ -57,9 +59,11 @@ describe('Activity Settings Test', function () {
     cy.get('[data-value="2"]').click()
     cy.get('[data-value="18"]').click() 
     cy.get('[data-test="Menu Panel"]').click({force: true})
-
+    cy.wait(100)//TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT dueDate FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
-      expect(result[0].dueDate).to.contain("2025-03-18")
+      let utcDateTime = new Date(result[0].dueDate)
+      let localDateTime = utcDateTime.toLocaleDateString();
+      expect(localDateTime).contains("3/18/2025");
     })
   })
   
@@ -260,7 +264,7 @@ describe('Activity Settings Test', function () {
     cy.get('.rdtMonths > :nth-child(1) > thead > tr > .rdtSwitch').click()
     cy.get('[data-value="2024"]').click()
     cy.get('[data-value="0"]').click()
-    cy.get(':nth-child(1) > [data-value="3"]').click()
+    cy.get('.rdtOpen > .rdtPicker > .rdtDays > table > tbody > :nth-child(1) > [data-value="3"]').click();
     cy.get('[data-test="Menu Panel"]').click({force: true})
 
     // set pin until date to 07/20/2025
@@ -273,10 +277,16 @@ describe('Activity Settings Test', function () {
     cy.get(':nth-child(2) > [data-value="6"]').click()
     cy.get(':nth-child(4) > [data-value="20"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
-
+    cy.wait(100) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT pinnedAfterDate, pinnedUntilDate FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
-      expect(result[0].pinnedAfterDate).to.contain("2024-01-03")
-      expect(result[0].pinnedUntilDate).to.contain("2025-07-20")
+      let pinnedAfterUtcDateTime = new Date(result[0].pinnedAfterDate)
+      let pinnedAfterLocalDateTime = pinnedAfterUtcDateTime.toLocaleDateString();
+      cy.log(pinnedAfterLocalDateTime)
+      expect(pinnedAfterLocalDateTime).contains("1/3/2024");
+      let pinnedUntilUtcDateTime = new Date(result[0].pinnedUntilDate)
+      let pinnedUntilLocalDateTime = pinnedUntilUtcDateTime.toLocaleDateString();
+      cy.log(pinnedUntilLocalDateTime)
+      expect(pinnedUntilLocalDateTime).contains("7/20/2025");
     })
   })
 
