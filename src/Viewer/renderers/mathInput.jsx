@@ -53,6 +53,7 @@ export default function MathInput(props) {
 
   const [mathField, setMathField] = useState(null);
   const [focused, setFocused] = useState(null);
+  console.log(focused);
   const textareaRef = useRef(null); // Ref to keep track of the mathInput's disabled state
 
   const setRendererState = useSetRecoilState(rendererState(rendererName));
