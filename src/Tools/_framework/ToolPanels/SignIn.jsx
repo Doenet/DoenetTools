@@ -21,7 +21,7 @@ export default function SignIn(props) {
   let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
   let [signInDisabled, setSignInDisabled] = useState(true);
 
-  console.log(signInStage);
+  // console.log("sign in stage",signInStage);
 
   const jwt = Cookies.get();
 
@@ -69,6 +69,7 @@ export default function SignIn(props) {
     axios
       .get('/api/loadProfile.php', { params: {} })
       .then((resp) => {
+
         if (resp.data.success === '1') {
           localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
           location.href = '/#/course';
@@ -106,18 +107,18 @@ export default function SignIn(props) {
   // ** *** *** *** *** **
 
   // Handle automatically sign in when running Cypress tests
-  if (window.Cypress) {
-    let emailaddress = 'devuser@example.com';
-    let deviceName = 'Cacao tree';
-    let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
-    Cookies.set('Device', deviceName, cookieSettingsObj);
-    Cookies.set('Stay', 1, cookieSettingsObj);
-    location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
-      emailaddress,
-    )}&nineCode=${encodeURIComponent(
-      '123456789',
-    )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
-  }
+  // if (window.Cypress) {
+  //   let emailaddress = 'devuser@example.com';
+  //   let deviceName = 'Cacao tree';
+  //   let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
+  //   Cookies.set('Device', deviceName, cookieSettingsObj);
+  //   Cookies.set('Stay', 1, cookieSettingsObj);
+  //   location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+  //     emailaddress,
+  //   )}&nineCode=${encodeURIComponent(
+  //     '123456789',
+  //   )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
+  // }
 
   if (signInStage === 'check code') {
     //Ask Server for data which matches email address
@@ -337,12 +338,12 @@ export default function SignIn(props) {
           <div>
             <p style={{ marginLeft: '2px' }}>
               <Textfield
+                dataTest='email input'
                 label="Email Address:"
                 // type="text"
                 ref={emailRef}
                 value={email}
                 alert={sendEmailAlert}
-                dataTest="signinEmailInput"
                 onKeyDown={(e) => {
                   validateEmail(email);
                   if (e.key === 'Enter' && validEmail) {

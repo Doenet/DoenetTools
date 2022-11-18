@@ -277,7 +277,7 @@ export default function Increment(props) {
             aria-disabled={props.disabled ? true : false}
             placeholder={props.placeholder}
             value={value}
-            data-test={props.dataTest}
+            dataTest={props.dataTest}
             ref={textFieldRef}
             alert={props.alert}
             disabled={props.disabled ? true : false}
