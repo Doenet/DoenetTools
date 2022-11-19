@@ -20,7 +20,7 @@ export default function DoenetProfile(props) {
     return null;}
 
   let email = profile?.contents?.email;
-console.log("profile",profile)
+// console.log("profile",profile)
 
   //Only ask once
   if (!checkingCookie.current){
@@ -47,7 +47,7 @@ console.log("profile",profile)
       messageJSX = <>
                   <h2>You are signed in</h2>
                   <p>Email: {email}</p>
-                  <Button value="Sign out" onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
+                  <Button dataTest='sign out button' value="Sign out" onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
                   </>
     }
 
