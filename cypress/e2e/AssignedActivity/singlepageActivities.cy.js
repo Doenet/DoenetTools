@@ -59,9 +59,8 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
     cy.get('[data-test="View Assigned Activity"]').click();
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
@@ -144,9 +143,8 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
     cy.get('[data-test="View Assigned Activity"]').click();
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
@@ -231,14 +229,14 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
 
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
 
 
     cy.signin({ userId: studentUserId })
@@ -350,9 +348,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
-
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.log('go to url')
     cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
@@ -402,8 +398,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.signin({ userId: studentUserId })
 
@@ -447,8 +442,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -505,8 +499,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -545,8 +538,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -584,8 +576,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -637,8 +628,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -675,12 +665,9 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Attempt Limit Checkbox"]').click();
-    cy.get('[data-test="toast"]').contains('Updated Attempts Allowed to 1');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -705,8 +692,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -754,8 +740,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -794,8 +779,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -827,8 +811,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -877,16 +860,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Attempt Limit Checkbox"]').click();
-    cy.get('[data-test="toast"]').contains('Updated Attempts Allowed to 1');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Attempt Limit"]').type("{end}{backspace}2{enter}")
-    cy.get('[data-test="toast"]').contains('Updated Attempts Allowed to 2');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -929,8 +907,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -987,8 +964,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1024,8 +1000,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1069,8 +1044,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1151,8 +1125,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -1203,8 +1176,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1241,8 +1213,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -1264,8 +1235,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1298,8 +1268,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1337,16 +1306,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Auto Submit"]').click();
-    cy.get('[data-test="toast"]').contains('Updated Auto Submit to True');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Attempt Aggregation"] > div:nth-child(2)').click().type("{downArrow}{enter}")
-    cy.get('[data-test="toast"]').contains('Updated Attempt Aggregation to Last Attempt');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
