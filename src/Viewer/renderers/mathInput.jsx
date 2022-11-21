@@ -14,7 +14,6 @@ let EditableMathField = mathquill.EditableMathField;
 import {
   focusedMathField,
   focusedMathFieldReturn,
-  focusedMathFieldID,
   palletRef,
   handleRef,
 } from '../../Tools/_framework/Footers/MathInputSelector';
@@ -74,8 +73,6 @@ export default function MathInput(props) {
   let validationState = useRef(null);
 
   const setFocusedField = useSetRecoilState(focusedMathField);
-  const setFocusedFieldID = useSetRecoilState(focusedMathFieldID);
-  const focusedFieldID = useRecoilValue(focusedMathFieldID);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
   const containerRef = useRecoilValue(palletRef);
   const dragHandleRef = useRecoilValue(handleRef);
@@ -135,7 +132,6 @@ export default function MathInput(props) {
   const handleFocus = (e) => {
     setFocusedField(() => handleVirtualKeyboardClick);
     setFocusedFieldReturn(() => handlePressEnter);
-    // setFocusedFieldID(mathField.id);
     setFocused(true);
   };
 
@@ -156,7 +152,6 @@ export default function MathInput(props) {
       // console.log(">>>", e.relatedTarget.id, checkWorkButton.props.id);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
-      // setFocusedFieldID(null);
     }
     setFocused(false);
   };
@@ -203,6 +198,7 @@ export default function MathInput(props) {
     borderStyle: "solid",
     borderWidth: "2px",
     margin: "0px 4px 4px 4px",
+    boxShadow: 'none'
   }
 
   let mathInputWrapper = { /* Style the EditableMathField Wrapper */

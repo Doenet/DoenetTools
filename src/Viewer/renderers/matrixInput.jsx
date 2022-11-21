@@ -210,7 +210,7 @@ export default React.memo(function MatrixInput(props) {
 
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(
-        <td style={{ margin: "4px"}} key={colInd} id={id + "_component_" + rowInd + "_" + colInd}>
+        <td key={colInd} id={id + "_component_" + rowInd + "_" + colInd}>
           {children[rowInd * SVs.numColumns + colInd]}
         </td>
       )
