@@ -47,7 +47,7 @@ export default React.memo(function Point(props) {
 
   function createPointJXG() {
     let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-    let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
+    let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "blue"; // TEST
 
     let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
@@ -313,7 +313,7 @@ export default React.memo(function Point(props) {
       let fixed = !SVs.draggable || SVs.fixed;
 
       let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
+      let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "blue"; // TEST
 
       pointJXG.current.visProp.highlight = !fixed;
       shadowPointJXG.current.visProp.highlight = !fixed;
