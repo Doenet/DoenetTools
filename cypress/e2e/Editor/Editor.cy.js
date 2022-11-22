@@ -42,7 +42,6 @@ it('basic test of update button',()=>{
   cy.get('#\\/_document1').contains(doenetMLString)
 })
 
-
 it('ctrl+s updates viewer',()=>{
   const doenetMLString = 'abcdefg'
   cy.get('.cm-content').type(doenetMLString)
@@ -58,7 +57,6 @@ it('command+s updates viewer',()=>{
   cy.get('.cm-content').type('{command}{s}')
   cy.get('#\\/_document1').contains(doenetMLString)
 })
-
 
 it('Page Variant Menu Test',()=>{
   const componentName = 'sequenceContainer'
@@ -77,7 +75,7 @@ it('Page Variant Menu Test',()=>{
 
 })
 
-it('Assign activity and navigate directly to URL',()=>{
+it.only('Assign activity and navigate directly to URL',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
 
   cy.get('.cm-content').type(doenetMLString)
@@ -88,10 +86,9 @@ it('Assign activity and navigate directly to URL',()=>{
   cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
   cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
-  cy.get('#\\/problem1_title').contains('Problem 1')
+  cy.get('#\\/problem1_title').contains('Problem 1') //fail
 
 })
-
 
 it('Assign activity and navigate using Breadcrumbs',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
@@ -165,7 +162,7 @@ it('Assign two-page activity',()=>{
 
   cy.get('[data-test="View Activity"]').click();
 
-  cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
+  cy.get('#page1\\/_section1_title').should('have.text', 'Section 1') //Fail
 
   cy.get('[data-test="Possible Points"]').should('have.text', '10')
   cy.get('[data-test="Final Score"]').should('have.text', '0')
@@ -282,7 +279,6 @@ it('Assign two-page activity',()=>{
 
 })
 
-
 it('animation stopped when click update button',()=>{
   const doenetMLString = `
 <number name="n">1</number>
@@ -339,8 +335,7 @@ it('animation stopped when click update button',()=>{
   cy.wait(200)
   cy.get('#\\/n').contains(/3|4/)
   
-})
-  
+}) 
 
 it('Repeatedly select same internal link', () => {
   const doenetMLString = `
@@ -411,7 +406,6 @@ it('Repeatedly select same internal link', () => {
 
 })
 
-
 it('Navigating back remembers position where clicked internal link', () => {
   const doenetMLString = `
 <section>
@@ -479,7 +473,7 @@ it('Navigating back remembers position where clicked internal link', () => {
 
   cy.get('#\\/toAside').then(el => {
     let rect = el[0].getBoundingClientRect();
-    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1) //fail
   })
 
 

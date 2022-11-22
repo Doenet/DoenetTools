@@ -385,7 +385,7 @@ describe('Single page activity tests', function () {
   it('Update to new version, infinite attempts allowed, separate student signin', () => {
     const doenetML = `
   <problem name="prob">
-    <p>What is <m>1+1</m>? <answer><mathInput name="ans"></mathInput>2</answer></p>
+    <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
   </problem >`
@@ -408,7 +408,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="View Activity"]').click();
-    cy.wait(1000)
+    cy.wait(2000)
 
     cy.get('#\\/ans textarea').type("2{enter}", { force: true });
     cy.get('#\\/credit').should('have.text', '1')
@@ -423,12 +423,10 @@ describe('Single page activity tests', function () {
     cy.get('#\\/ans textarea').type("{end}{backspace}1{enter}", { force: true });
 
     cy.log('At least for now, hitting enter before core is intialized does not submit response')
-    cy.get('#\\/credit > span').should("contain.text", '1')
-    // cy.get('#\\/cr').should("contain.text", '1')
+    cy.get('#\\/cr').should("contain.text", '1')
     cy.get('#\\/ans textarea').type("{enter}", { force: true });
 
-    // cy.get('#\\/credit > span').should('have.text', '0')
-    cy.get('[data-test="CreditAchieved Menu"]').click();
+    cy.get('#\\/credit').should('have.text', '0')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -456,7 +454,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="View Activity"]').click();
-    cy.get('#\\/credit > span').should('contain.text', '1');
+    cy.get('#\\/cr').should('contain.text', '1');
     cy.get('#\\/ans2').should('not.exist');
 
     
@@ -472,8 +470,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
     cy.get('[data-test=ConfirmNewVersion]').click();
   
-    // cy.get('#\\/credit > span').should('contain.text', '\uff3f');
-    cy.get('[data-test="CreditAchieved Menu"]').click()
+    cy.get('#\\/cr').should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -483,7 +480,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="New Attempt"]').click();
 
-    // cy.get('#\\/credit > span').should('contain.text', '\uff3f');
+    cy.get('#\\/cr').should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -518,9 +515,8 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true }); //This doesn't work
+    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true }); 
 
-    cy.get('[data-test="CreditAchieved Menu"]').click();
     cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
   })
