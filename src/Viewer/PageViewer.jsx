@@ -371,6 +371,7 @@ export default function PageViewer(props) {
   function initializeRenderers(args) {
 
     if (args.rendererState) {
+      delete args.rendererState.__componentNeedingUpdateValue;
       if (props.forceDisable || props.forceShowCorrectness || props.forceShowSolution || props.forceUnsuppressCheckwork) {
         forceRendererState({ rendererState: args.rendererState, ...props })
       }
@@ -601,6 +602,14 @@ export default function PageViewer(props) {
 
         }
 
+        if (localInfo.rendererState.__componentNeedingUpdateValue) {
+          callAction({
+            action: {
+              actionName: "updateValue",
+              componentName: localInfo.rendererState.__componentNeedingUpdateValue
+            }
+          })
+        }
 
         initializeRenderers({
           rendererState: localInfo.rendererState,
@@ -663,8 +672,19 @@ export default function PageViewer(props) {
 
           let coreInfo = JSON.parse(resp.data.coreInfo, serializedComponentsReviver);
 
+          let rendererState = JSON.parse(resp.data.rendererState, serializedComponentsReviver);
+
+          if (rendererState.__componentNeedingUpdateValue) {
+            callAction({
+              action: {
+                actionName: "updateValue",
+                componentName: rendererState.__componentNeedingUpdateValue
+              }
+            })
+          }
+
           initializeRenderers({
-            rendererState: JSON.parse(resp.data.rendererState, serializedComponentsReviver),
+            rendererState,
             coreInfo,
           });
 
