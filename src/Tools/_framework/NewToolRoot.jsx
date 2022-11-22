@@ -527,7 +527,7 @@ let navigationObj = {
       currentMainPanel: 'AssignmentViewer',
       currentMenus: ['CreditAchieved', 'TimerMenu', 'ActivityDates'],
       menusTitles: ['Credit Achieved', 'Time Remaining', 'Details'],
-      menusInitOpen: [true, false, false],
+      menusInitOpen: [true, true, false],
       headerControls: ['AssignmentBreadCrumb', 'AssignmentNewAttempt'],
       waitForMenuSuppression: true,
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
