@@ -20,7 +20,6 @@ import {
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
-import './mathInput.css';
 
 // Moved most of checkWorkStyle styling into Button
 const Button = styled.button `
@@ -197,13 +196,14 @@ export default function MathInput(props) {
     borderColor: "black",
     borderStyle: "solid",
     borderWidth: "2px",
-    margin: "0px 4px 4px 4px",
+    margin: "0px",
     boxShadow: 'none'
   }
 
   let mathInputWrapper = { /* Style the EditableMathField Wrapper */
     cursor: "pointer",
-    marginBottom: "4px",
+    margin: "0px 4px 4px 4px",
+    display: "inline"
   }
 
   if (focused) {
@@ -325,8 +325,8 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={id} />
 
-      <span id={id} style={mathInputWrapper}>
-        <span>
+      <span id={id}>
+        <div style={mathInputWrapper}>
           <EditableMathField
             style={mathInputStyle}
             latex={rendererValue.current}
@@ -361,7 +361,7 @@ export default function MathInput(props) {
               setMathField(mf);
             }}
           />
-        </span>
+        </div>
         {checkWorkButton}
       </span>
     </React.Fragment>
