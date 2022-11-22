@@ -75,7 +75,7 @@ it('Page Variant Menu Test',()=>{
 
 })
 
-it.only('Assign activity and navigate directly to URL',()=>{
+it('Assign activity and navigate directly to URL',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
 
   cy.get('.cm-content').type(doenetMLString)
@@ -86,7 +86,7 @@ it.only('Assign activity and navigate directly to URL',()=>{
   cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
   cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
-  cy.get('#\\/problem1_title').contains('Problem 1') //fail
+  cy.get('#\\/problem1_title').contains('Problem 1')
 
 })
 
@@ -162,7 +162,7 @@ it('Assign two-page activity',()=>{
 
   cy.get('[data-test="View Activity"]').click();
 
-  cy.get('#page1\\/_section1_title').should('have.text', 'Section 1') //Fail
+  cy.get('#page1\\/_section1_title').should('have.text', 'Section 1') 
 
   cy.get('[data-test="Possible Points"]').should('have.text', '10')
   cy.get('[data-test="Final Score"]').should('have.text', '0')
@@ -473,7 +473,7 @@ it('Navigating back remembers position where clicked internal link', () => {
 
   cy.get('#\\/toAside').then(el => {
     let rect = el[0].getBoundingClientRect();
-    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1) //fail
+    expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
   })
 
 

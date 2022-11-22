@@ -184,7 +184,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/top').should('contain.text', 'top 1')
-    cy.get('#page2\\/top').should('contain.text', 'top 2') //Fail
+    cy.get('#page2\\/top').should('contain.text', 'top 2') 
 
     cy.url().should('match', /#page1$/)
 
@@ -2175,7 +2175,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
     cy.wait(1500)
 
-    cy.get('#\\/prob_title').should('have.text', 'Problem 1') //Fail
+    cy.get('#\\/prob_title').should('have.text', 'Problem 1')
 
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')

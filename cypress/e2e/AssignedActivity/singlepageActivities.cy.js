@@ -496,7 +496,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer><mathinput name='ans3' />4</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
