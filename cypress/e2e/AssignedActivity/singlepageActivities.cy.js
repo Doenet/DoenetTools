@@ -1369,4 +1369,93 @@ describe('Single page activity tests', function () {
 
   })
 
+  it('reload text answer without blurring or hitting enter', () => {
+    const doenetML = `
+    <p>Enter 1: <answer>
+      <textinput name="ti" />
+      <award><when>$ti=hello</when></award>
+    </answer>
+    </p>
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
+    // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+
+    cy.signin({ userId: studentUserId })
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get('#\\/ti_input').type("hello", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.reload();
+
+    cy.get('#\\/ti_submit').click();
+    cy.get('#\\/ti_correct').should('be.visible');
+
+
+  })
+
+  it('reload text answer without blurring or hitting enter, clear IndexedDB', () => {
+    const doenetML = `
+    <p>Enter 1: <answer>
+      <textinput name="ti" />
+      <award><when>$ti=hello</when></award>
+    </answer>
+    </p>
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
+    // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+
+    cy.signin({ userId: studentUserId })
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get('#\\/ti_input').type("hello", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.clearIndexedDB();
+    cy.reload();
+
+    cy.get('#\\/ti_submit').click();
+    cy.get('#\\/ti_correct').should('be.visible');
+
+
+  })
+
 })
