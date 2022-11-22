@@ -21758,4 +21758,86 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('reload math answer without blurring or hitting enter', () => {
+    let doenetML = `
+    <p>Enter 1: <answer>
+      <mathinput name="n" />
+      <award><when>$n=1</when></award>
+    </answer>
+    </p>
+    `
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/n textarea').type("1", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/n_submit').click();
+    cy.get('#\\/n_correct').should('be.visible');
+
+
+  });
+
+  it('reload text answer without blurring or hitting enter', () => {
+    let doenetML = `
+    <p>Enter 1: <answer>
+      <textinput name="ti" />
+      <award><when>$ti=hello</when></award>
+    </answer>
+    </p>
+    `
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/ti_input').type("hello", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/ti_submit').click();
+    cy.get('#\\/ti_correct').should('be.visible');
+
+
+  });
+
 })

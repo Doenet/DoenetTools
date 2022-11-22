@@ -200,7 +200,9 @@ export default class Core {
     this.saveStateToDBTimerId = null;
 
     // rendererState the current state of each renderer, keyed by componentName
-    this.rendererState = {};
+    this.rendererState = {
+      __componentNeedingUpdateValue: null
+    };
 
     // rendererVariablesByComponentType is a description 
     // of the which variables are sent to the renderers,
@@ -1516,11 +1518,11 @@ export default class Core {
           }
           shadowedComponent.shadowedBy.push(newComponent);
 
-          if(dep.isPrimaryShadow) {
+          if (dep.isPrimaryShadow) {
             shadowedComponent.primaryShadow = newComponent.componentName;
 
-            if(this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
-              for(let dep of this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
+            if (this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
+              for (let dep of this.dependencies.updateTriggers.primaryShadowDependencies[name]) {
                 await dep.recalculateDownstreamComponents();
               }
             }
@@ -2346,7 +2348,7 @@ export default class Core {
       component,
       replacements: serializedReplacements,
       assignNames: component.doenetAttributes.assignNames,
-      componentInfoObjects: this.componentInfoObjects, 
+      componentInfoObjects: this.componentInfoObjects,
       compositeAttributesObj: component.constructor.createAttributesObject(),
       flags: this.flags
     });
@@ -8471,6 +8473,10 @@ export default class Core {
 
       } else if (instruction.updateType === "recordItemSubmission") {
         recordItemSubmissions.push(instruction)
+      } else if (instruction.updateType === "setComponentNeedingUpdateValue") {
+        this.rendererState.__componentNeedingUpdateValue = instruction.componentName;
+      } else if (instruction.updateType === "unsetComponentNeedingUpdateValue") {
+        this.rendererState.__componentNeedingUpdateValue = null;
       }
 
     }

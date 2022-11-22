@@ -320,6 +320,9 @@ export default class CodeEditor extends BlockComponent {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
+        }, {
+          updateType: "setComponentNeedingUpdateValue",
+          componentName: this.componentName,
         }],
         actionId
       })
@@ -352,6 +355,8 @@ export default class CodeEditor extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "immediateValue",
         valueOfStateVariable: "value",
+      }, {
+        updateType: "unsetComponentNeedingUpdateValue",
       }];
 
       let event = {
