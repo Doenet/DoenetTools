@@ -27,6 +27,8 @@ export default React.memo(function Point(props) {
 
   lastPositionFromCore.current = SVs.numericalXs;
 
+  const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle);
+
 
   useEffect(() => {
     //On unmount
@@ -47,7 +49,7 @@ export default React.memo(function Point(props) {
 
   function createPointJXG() {
     let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-    let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "blue"; // TEST
+    let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
 
     let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
@@ -155,7 +157,7 @@ export default React.memo(function Point(props) {
     shadowPointAttributes.layer--;
     shadowPointAttributes.fixed = fixed;
     shadowPointAttributes.showInfoBox = false;
-    shadowPointAttributes.withLabel = false;
+    shadowPointAttributes.withlabel = false;
     shadowPointAttributes.fillOpacity = 0;
     shadowPointAttributes.strokeOpacity = 0;
 
@@ -313,7 +315,7 @@ export default React.memo(function Point(props) {
       let fixed = !SVs.draggable || SVs.fixed;
 
       let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "blue"; // TEST
+      let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
 
       pointJXG.current.visProp.highlight = !fixed;
       shadowPointJXG.current.visProp.highlight = !fixed;
