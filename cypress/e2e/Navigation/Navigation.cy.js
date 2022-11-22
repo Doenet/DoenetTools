@@ -57,12 +57,14 @@ it('Test Add Section',()=>{
 
 it('Test Add a Activity, Collection and Section',()=>{
   cy.get('[data-test="Add Activity Button"]').click();
+  cy.get('.navigationRow').should('have.length',1); //Need this to wait for the 1st one to appear
 
   cy.get('[data-test="Add Collection Button"]').click();
+  cy.get('.navigationRow').should('have.length',1); //Need this to wait for the 2nd one to appear
 
   cy.get('[data-test="Add Section Button"]').click();
-
   cy.get('.navigationRow').should('have.length',3); //Need this to wait for the 3rd one to appear
+
   cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Activity');
   cy.get('.navigationRow').eq(1).get('.navigationColumn1').contains('Untitled Collection');
   cy.get('.navigationRow').eq(2).get('.navigationColumn1').contains('Untitled Section');

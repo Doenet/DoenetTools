@@ -184,7 +184,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/top').should('contain.text', 'top 1')
-    cy.get('#page2\\/top').should('contain.text', 'top 2')
+    cy.get('#page2\\/top').should('contain.text', 'top 2') 
 
     cy.url().should('match', /#page1$/)
 
@@ -1730,7 +1730,7 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -1793,7 +1793,7 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -1856,7 +1856,7 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Page"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 2+3? <answer name='ans2'>5</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 2+3? <answer name='ans2'>5</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -1928,7 +1928,7 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Page"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 2+4? <answer name='ans3'>6</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 2+4? <answer name='ans3'>6</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -2016,7 +2016,7 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra1'>Extra content 1</p>{enter}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='extra1'>Extra content 1</p>{enter}")
 
     cy.go("back")
 
@@ -2025,14 +2025,14 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Page"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra2'>Extra content 2</p>{enter}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='extra2'>Extra content 2</p>{enter}")
 
     cy.go("back")
 
     cy.get('.navigationRow').eq(3).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Page"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra3'>Extra content 3</p>{enter}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='extra3'>Extra content 3</p>{enter}")
 
 
 
@@ -2173,7 +2173,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
     cy.get('[data-test="View Activity"]').click();
-
+    cy.wait(1500)
 
     cy.get('#\\/prob_title').should('have.text', 'Problem 1')
 
