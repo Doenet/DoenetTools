@@ -20,6 +20,7 @@ import {
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
+import './mathInput.css';
 
 // Moved most of checkWorkStyle styling into Button
 const Button = styled.button `
@@ -197,13 +198,7 @@ export default function MathInput(props) {
     borderStyle: "solid",
     borderWidth: "2px",
     margin: "0px",
-    boxShadow: 'none'
-  }
-
-  let mathInputWrapper = { /* Style the EditableMathField Wrapper */
-    cursor: "pointer",
-    margin: "0px 4px 4px 4px",
-    display: "inline"
+    boxShadow: "none",
   }
 
   if (focused) {
@@ -211,6 +206,7 @@ export default function MathInput(props) {
     mathInputStyle.outlineOffset = "2px";
   }
 
+  let mathInputWrapperCursor = 'allowed';
   if (SVs.disabled) {
     // Disable the checkWorkButton
     checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
@@ -221,7 +217,7 @@ export default function MathInput(props) {
     mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     mathInputStyle.backgroundColor = 'rgba(239, 239, 239, 0.3)';
     mathInputStyle.pointerEvents = 'none';
-    mathInputWrapper.cursor = 'not-allowed';
+    mathInputWrapperCursor = 'not-allowed';
   }
 
   if(textareaRef.current && textareaRef.current.disabled !== SVs.disabled) { // Update the mathInput ref's disabled state
@@ -326,7 +322,7 @@ export default function MathInput(props) {
       <a name={id} />
 
       <span id={id}>
-        <div style={mathInputWrapper}>
+        <div className="mathInputWrapper" style={{cursor: mathInputWrapperCursor}}>
           <EditableMathField
             style={mathInputStyle}
             latex={rendererValue.current}

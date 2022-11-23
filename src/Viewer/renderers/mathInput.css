@@ -1,0 +1,9 @@
+.mathInputWrapper { /* Style the EditableMathField Wrapper */
+    cursor: pointer;
+    margin: 0px 4px 4px 4px;
+    display: inline;
+}
+
+td.matrixCell span div.mathInputWrapper {
+    margin: 0px;
+}
