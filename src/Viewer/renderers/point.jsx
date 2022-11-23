@@ -27,7 +27,7 @@ export default React.memo(function Point(props) {
 
   lastPositionFromCore.current = SVs.numericalXs;
 
-  const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle);
+  const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
 
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default React.memo(function Point(props) {
   }, [])
 
   function createPointJXG() {
-    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+    let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
     let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
 
     let fixed = !SVs.draggable || SVs.fixed;
@@ -260,9 +260,11 @@ export default React.memo(function Point(props) {
       createPointJXG();
     } else {
       //if values update
-      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      if (pointJXG.current.visProp.fillcolor !== newFillColor) {
-        pointJXG.current.visProp.fillcolor = newFillColor;
+      let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+      let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
+      
+      if (pointJXG.current.visProp.fillcolor !== fillColor) {
+        pointJXG.current.visProp.fillcolor = fillColor;
       }
 
       //Note label update in jsxGraph maybe slow (so check previous value)
@@ -313,9 +315,6 @@ export default React.memo(function Point(props) {
       }
 
       let fixed = !SVs.draggable || SVs.fixed;
-
-      let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
 
       pointJXG.current.visProp.highlight = !fixed;
       shadowPointJXG.current.visProp.highlight = !fixed;
