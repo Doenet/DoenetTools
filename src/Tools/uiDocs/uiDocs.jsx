@@ -34,6 +34,7 @@ import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBa
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
 import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
 import Tooltip from '../../_reactComponents/PanelHeaderComponents/Tooltip.jsx';
+import DueDateBar from '../../_reactComponents/PanelHeaderComponents/DueDateBar.jsx';
 import { useState } from 'react';
 
 // === HOW TO ADD TO UI DOCS ===
@@ -713,6 +714,39 @@ export default function Attempt() {
             disabled,
           },
           description: 'Makes disabled',
+        },
+      ],
+    },
+    {
+      name: 'Due Date Bar',
+      id: 'duedatebar',
+      code: DueDateBar,
+      codePreview: '<DueDateBar startDate={new Date("2022-01-01 00:00:00")} dueDate={new Date("2025-12-31 23:59:59")} />',
+      req_props: {
+        startDate: new Date("2022-01-01 00:00:00"),
+        endDate: new Date("2025-12-31 23:59:59")
+      },
+      req_children: null,
+      use: 'To track if the assignment is completed, in progress, or overdue. Required props are startDate and endDate.',
+      props: [
+        {
+          name: 'Case: Overdue',
+          propPreview: '<DueDateBar startDate={new Date("2022-01-01 00:00:00")} dueDate={new Date("2022-11-01 23:59:59")} />',
+          propCode: { 
+            startDate: new Date("2022-01-01 00:00:00"),
+            endDate: new Date("2022-11-01 23:59:59")
+          },
+          description: 'Set the due date bar to overdue state.',
+        },
+        {
+          name: 'isCompleted',
+          propPreview: '<DueDateBar isCompleted startDate={new Date("2022-01-01 00:00:00")} dueDate={new Date("2025-12-31 23:59:59")} />',
+          propCode: { 
+            isCompleted: true,
+            startDate: new Date("2022-01-01 00:00:00"),
+            endDate: new Date("2025-12-31 23:59:59")
+          },
+          description: 'Set the due date bar to completed state.',
         },
       ],
     },
