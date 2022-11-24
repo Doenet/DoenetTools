@@ -7,18 +7,23 @@ const Container = styled.div`
   align-items: ${props => props.alignItems};
 `;
 
+const BarWrapper = styled.div`
+  transform:  ${props => props.rotated ? "scaleX(-1)" : ""};
+`;
+
 const Svg = styled.svg``;
 
 const Rect = styled.rect`
   x: 0px;
   y: 0px;
   rx: ${props => props.radius}; // Depends on if we have the donutIcon prop
+  fill: ${props => props.color};
   stroke: none;
   stroke-width: 0;
   height: ${props => props.height};
   // width prop is passed in as a number without "px"
   // Usage: <ProgressBar width=400/> to set the width of the progress bar to 400px
-  width: ${props => (props.width).toString() + "px"};
+  max-width: ${props => (props.width).toString() + "px"};
 `;
 
 const DonutG = styled.g``;
@@ -44,8 +49,8 @@ export default function ProgressBar(props) {
   const [fillWidth, setFillWidth] = useState("0px");
   const [donutPosition, setDonutPosition] = useState("12.5px");
   const [barWidth, setBarWidth] = useState(props.width ? props.width : 200); // Default to the width of the navigation panel
-  const height = props.donutIcon ? "25px" : "10px";
-  const radius = props.donutIcon ? "12.5px" : "5px";
+  const height = props.donutIcon ? "25px" : props.height || "10px";
+  const radius = props.donutIcon ? "12.5px" : props.radius || "5px";
   const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
   const labelVisible = props.label ? 'static' : 'none';
 
@@ -111,11 +116,13 @@ export default function ProgressBar(props) {
   return (
     <Container align={align} alignItems={alignItems} aria-labelledby="progress-bar-label" aria-label={"progress bar" + percent}>
       <Label id="progress-bar-label" labelVisible={labelVisible} align={align}>{label}</Label>
-      <Svg width={barWidth} height={height}>
-        <Rect id="main" fill="var(--mainGray)" width={barWidth} height={height} radius={radius} aria-label={ariaLabel}/>
-        <Rect id="moving" fill="var(--mainBlue)" width={fillWidth} height={height} radius={radius}/>
-        {props.donutIcon ? donut : ''}
-      </Svg>
+      <BarWrapper rotated={props.rotated}>
+        <Svg width={barWidth} height={height} >
+          <Rect id="main" color="var(--mainGray)" width={barWidth} height={height} radius={radius} aria-label={ariaLabel}/>
+          <Rect id="moving" color={props.color || "var(--mainBlue)"} width={fillWidth} height={height} radius={radius}/>
+          {props.donutIcon ? donut : ''}
+        </Svg>
+      </BarWrapper>
       {props.showProgress ? <Progress>{percent}</Progress> : ''}
     </Container>
   );
