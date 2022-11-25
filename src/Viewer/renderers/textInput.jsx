@@ -302,7 +302,7 @@ export default function TextInput(props) {
       onFocus={handleFocus}
       textAreaWidth={textAreaWidth}
       textAreaHeight={textAreaHeight}
-      style={{margin: "0px 4px 4px 0px"}}
+      style={{margin: "0px 4px 4px 4px"}}
 
     />
   } else {
@@ -317,7 +317,7 @@ export default function TextInput(props) {
       onBlur={handleBlur}
       onFocus={handleFocus}
       inputWidth={inputWidth}
-      style={{margin: "0px 4px 4px 0px"}}
+      style={{margin: "0px 4px 4px 4px"}}
     />
   }
 
