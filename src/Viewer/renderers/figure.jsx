@@ -5,6 +5,8 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 export default React.memo(function Figure(props) {
   let {name, id, SVs, children, actions, callAction} = useDoenetRender(props);
 
+  let displayMode = "grid";
+
   let onChangeVisibility = isVisible => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -57,7 +59,7 @@ export default React.memo(function Figure(props) {
 
     return (
       <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <figure id={id} style={{ margin: "12px 0" }}>
+      <figure id={id} style={{ margin: "12px 0", display: displayMode }}>
         <a name={id} />
         {childrenToRender}
         <figcaption id={ id + "_caption" }>{caption}</figcaption>
