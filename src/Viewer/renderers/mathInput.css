@@ -4,6 +4,6 @@
     display: inline;
 }
 
-td.matrixCell span div.mathInputWrapper {
-    margin: 0px;
+td.matrixCell div.mathInputWrapper {
+    margin: 1px;
 }
