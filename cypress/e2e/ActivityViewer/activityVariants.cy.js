@@ -142,9 +142,9 @@ describe('Activity variants tests', function () {
           <text>a</text>
           Enter 
           <select assignNames="color" >
-            <option selectForVariantNames="red">red</option>
-            <option selectForVariantNames="blue">blue</option>
-            <option selectForVariantNames="green">green</option>
+            <option selectForVariants="red">red</option>
+            <option selectForVariants="blue">blue</option>
+            <option selectForVariants="green">green</option>
           </select>
           :
           <answer type="text">$color</answer>
@@ -979,24 +979,24 @@ describe('Activity variants tests', function () {
           <text>a</text>
           <variantControl nVariants="5" variantIndicesToIgnore="1 3 4" />
           <select assignNames="(n)">
-            <option selectForVariantNames="a"><number>1</number></option>
-            <option selectForVariantNames="b"><number>2</number></option>
-            <option selectForVariantNames="c"><number>3</number></option>
-            <option selectForVariantNames="d"><number>4</number></option>
-            <option selectForVariantNames="e"><number>5</number></option>
+            <option selectForVariants="a"><number>1</number></option>
+            <option selectForVariants="b"><number>2</number></option>
+            <option selectForVariants="c"><number>3</number></option>
+            <option selectForVariants="d"><number>4</number></option>
+            <option selectForVariants="e"><number>5</number></option>
           </select>
         </page>
         <page>
           <text>b</text>
           <variantControl nVariants="7" variantIndicesToIgnore="2 3 4 6" />
           <select assignNames="(l)">
-            <option selectForVariantNames="a"><text>a</text></option>
-            <option selectForVariantNames="b"><text>b</text></option>
-            <option selectForVariantNames="c"><text>c</text></option>
-            <option selectForVariantNames="d"><text>d</text></option>
-            <option selectForVariantNames="e"><text>e</text></option>
-            <option selectForVariantNames="f"><text>f</text></option>
-            <option selectForVariantNames="g"><text>g</text></option>
+            <option selectForVariants="a"><text>a</text></option>
+            <option selectForVariants="b"><text>b</text></option>
+            <option selectForVariants="c"><text>c</text></option>
+            <option selectForVariants="d"><text>d</text></option>
+            <option selectForVariants="e"><text>e</text></option>
+            <option selectForVariants="f"><text>f</text></option>
+            <option selectForVariants="g"><text>g</text></option>
           </select>
         </page>
       </order>
@@ -1069,11 +1069,11 @@ describe('Activity variants tests', function () {
             <text>a</text>
             <variantControl nVariants="5" variantIndicesToIgnore="1 3 4" />
             <select assignNames="(n)">
-              <option selectForVariantNames="a"><number>1</number></option>
-              <option selectForVariantNames="b"><number>2</number></option>
-              <option selectForVariantNames="c"><number>3</number></option>
-              <option selectForVariantNames="d"><number>4</number></option>
-              <option selectForVariantNames="e"><number>5</number></option>
+              <option selectForVariants="a"><number>1</number></option>
+              <option selectForVariants="b"><number>2</number></option>
+              <option selectForVariants="c"><number>3</number></option>
+              <option selectForVariants="d"><number>4</number></option>
+              <option selectForVariants="e"><number>5</number></option>
             </select>
           </problem>
         </page>
@@ -1155,11 +1155,11 @@ describe('Activity variants tests', function () {
             <text>a</text>
             <variantControl nVariants="5" variantIndicesToIgnore="1 3 4" />
             <select assignNames="(n)">
-              <option selectForVariantNames="a"><number>1</number></option>
-              <option selectForVariantNames="b"><number>2</number></option>
-              <option selectForVariantNames="c"><number>3</number></option>
-              <option selectForVariantNames="d"><number>4</number></option>
-              <option selectForVariantNames="e"><number>5</number></option>
+              <option selectForVariants="a"><number>1</number></option>
+              <option selectForVariants="b"><number>2</number></option>
+              <option selectForVariants="c"><number>3</number></option>
+              <option selectForVariants="d"><number>4</number></option>
+              <option selectForVariants="e"><number>5</number></option>
             </select>
           </problem>
         </page>
@@ -1242,11 +1242,11 @@ describe('Activity variants tests', function () {
             <text>a</text>
             <variantControl nVariants="5" variantIndicesToIgnore="1 4" />
             <select assignNames="(n)">
-              <option selectForVariantNames="a"><number>1</number></option>
-              <option selectForVariantNames="b"><number>2</number></option>
-              <option selectForVariantNames="c"><number>3</number></option>
-              <option selectForVariantNames="d"><number>4</number></option>
-              <option selectForVariantNames="e"><number>5</number></option>
+              <option selectForVariants="a"><number>1</number></option>
+              <option selectForVariants="b"><number>2</number></option>
+              <option selectForVariants="c"><number>3</number></option>
+              <option selectForVariants="d"><number>4</number></option>
+              <option selectForVariants="e"><number>5</number></option>
             </select>
           </problem>
         </page>

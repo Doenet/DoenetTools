@@ -170,7 +170,7 @@ export default class Select extends CompositeComponent {
         optionChildren: {
           dependencyType: "child",
           childGroups: ["options"],
-          variableNames: ["selectForVariantNames", "selectWeight"]
+          variableNames: ["selectForVariants", "selectWeight"]
         },
       }),
       definition({ dependencyValues }) {
@@ -203,7 +203,7 @@ export default class Select extends CompositeComponent {
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
-          for (let variantName of optionChild.stateValues.selectForVariantNames) {
+          for (let variantName of optionChild.stateValues.selectForVariants) {
             let variantLower = variantName.toLowerCase();
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];
@@ -628,9 +628,9 @@ export default class Select extends CompositeComponent {
     }
 
     for (let child of serializedComponent.children) {
-      if (child.attributes?.selectWeight || child.attributes?.selectForVariantNames) {
-        // uniqueVariants disabled if have a child with selectWeight or selectForVariantNames specified
-        console.log(`Unique variants for select disabled if have an option with selectWeight or selectForVariantNames specified`)
+      if (child.attributes?.selectWeight || child.attributes?.selectForVariants) {
+        // uniqueVariants disabled if have a child with selectWeight or selectForVariants specified
+        console.log(`Unique variants for select disabled if have an option with selectWeight or selectForVariants specified`)
         return { success: false }
       }
     }

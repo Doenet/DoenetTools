@@ -266,6 +266,7 @@ function substituteDeprecations(serializedComponents) {
     targetsareresponses: "sourcesAreResponses",
     updatewithtarget: "updateWith",
     targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
+    selectforvariantnames: "selectForVariants",
   }
 
   // Note: use lower case for keys

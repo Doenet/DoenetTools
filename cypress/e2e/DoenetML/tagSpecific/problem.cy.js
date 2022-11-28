@@ -2102,11 +2102,11 @@ describe('Problem Tag Tests', function () {
     <problem name="problem1" newNamespace>
       <variantControl nVariants="2" variantNames="apple banana" />
       <select assignNames="fruit" hide>
-        <option selectForVariantNames="apple" newNamespace>
+        <option selectForVariants="apple" newNamespace>
           <text name="name">apple</text>
           <text name="color">red</text>
         </option>
-        <option selectForVariantNames="banana" newNamespace>
+        <option selectForVariants="banana" newNamespace>
           <text name="name">banana</text>
           <text name="color">yellow</text>
           </option>
