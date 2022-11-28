@@ -2205,7 +2205,8 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(1500);  // wait for update
+
 
     cy.go("back")
 
@@ -2233,7 +2234,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test=NewVersionAvailable]').should('not.exist')
 
-    cy.wait(1500);  // wait for debounce
+    cy.wait(2000);  // wait for debounce
 
     cy.go("back")
 
@@ -2243,9 +2244,11 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Delete Page"]').click();
 
+    cy.get('[data-test="Main Panel"]').click() //Deselect selection
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(1500);  // wait for update
+
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -2282,7 +2285,8 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(1500);  // wait for update
+
 
     cy.go("back")
 
@@ -2332,9 +2336,11 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(2).find('.navigationColumn1').click();
     cy.get('[data-test="Delete Page"]').click();
 
+    cy.get('[data-test="Main Panel"]').click() //Deselect selection
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(1500);  // wait for update
+    
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
