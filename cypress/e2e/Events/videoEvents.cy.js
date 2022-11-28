@@ -51,8 +51,8 @@ describe('video events test', function () {
     cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible');
+
 
     cy.get('[data-test="Crumb Menu"]').click({force:true});
     cy.get('[data-test="Crumb Menu Item 2"]').click();
