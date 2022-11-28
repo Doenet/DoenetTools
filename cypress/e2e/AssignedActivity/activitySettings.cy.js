@@ -38,7 +38,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-value="0"]').click()
     cy.get('[data-value="15"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})    
-    cy.wait(100) //TODO: need the UI to let us know this was successful
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT assignedDate FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       let utcDateTime = new Date(result[0].assignedDate)
       let localDateTime = utcDateTime.toLocaleDateString();
@@ -59,7 +59,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-value="2"]').click()
     cy.get('[data-value="18"]').click() 
     cy.get('[data-test="Menu Panel"]').click({force: true})
-    cy.wait(100)//TODO: need the UI to let us know this was successful
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT dueDate FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       let utcDateTime = new Date(result[0].dueDate)
       let localDateTime = utcDateTime.toLocaleDateString();
@@ -75,6 +75,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="Increment Time Limit"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
   
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT timeLimit FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].timeLimit).to.equals(61)
     })
@@ -82,7 +83,7 @@ describe('Activity Settings Test', function () {
     //check decrement time limit to 60
     cy.get('[data-test="Decrement Time Limit"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT timeLimit FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].timeLimit).to.equals(60)
     })
@@ -96,6 +97,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="Increment Attempt Limit"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
  
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT numberOfAttemptsAllowed FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].numberOfAttemptsAllowed).to.equals(2)
     })
@@ -104,6 +106,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="Decrement Attempt Limit"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
 
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT numberOfAttemptsAllowed FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].numberOfAttemptsAllowed).to.equals(1)
     })
@@ -123,6 +126,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="Increment Total Points Or Percent"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
 
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT totalPointsOrPercent FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].totalPointsOrPercent).to.equals(1)
     })
@@ -131,6 +135,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="Decrement Total Points Or Percent"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
 
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT totalPointsOrPercent FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].totalPointsOrPercent).to.equals(0)
     })
@@ -149,6 +154,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="Item Weights"]').type(itemWeights, {force: true})
     cy.get('[data-test="Menu Panel"]').click({force: true})
 
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT jsonDefinition FROM course_content WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].jsonDefinition).to.contains(`"itemWeights": [${itemWeights}]`)
     })
@@ -156,7 +162,7 @@ describe('Activity Settings Test', function () {
 
   it('Individualize',()=>{
     cy.get('[data-test="Individualize"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT individualize FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].individualize).to.equal(1)
     })
@@ -164,7 +170,7 @@ describe('Activity Settings Test', function () {
 
   it('Show Solution',()=>{
     cy.get('[data-test="Show Solution"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT showSolution FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].showSolution).to.equal(0)
     })
@@ -172,7 +178,7 @@ describe('Activity Settings Test', function () {
   
   it('Show Solution In Gradebook',()=>{
     cy.get('[data-test="Show Solution In Gradebook"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT showSolutionInGradebook FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].showSolutionInGradebook).to.equal(0)
     })
@@ -180,7 +186,7 @@ describe('Activity Settings Test', function () {
 
   it('Show Feedback',()=>{
     cy.get('[data-test="Show Feedback"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT showFeedback FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].showFeedback).to.equal(0)
     })
@@ -188,7 +194,7 @@ describe('Activity Settings Test', function () {
   
   it('Show Hints',()=>{
     cy.get('[data-test="Show Hints"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT showHints FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].showHints).to.equal(0)
     })
@@ -196,7 +202,7 @@ describe('Activity Settings Test', function () {
 
   it('Show Correctness',()=>{
     cy.get('[data-test="Show Correctness"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT showCorrectness FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].showCorrectness).to.equal(0)
     })
@@ -204,7 +210,7 @@ describe('Activity Settings Test', function () {
 
   it('Show Credit Achieved Menu',()=>{
     cy.get('[data-test="Show Credit Achieved Menu"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT showCreditAchievedMenu FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].showCreditAchievedMenu).to.equal(0)
     })
@@ -212,7 +218,7 @@ describe('Activity Settings Test', function () {
 
   it('Paginate',()=>{
     cy.get('[data-test="Paginate"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT paginate FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].paginate).to.equal(0)
     })
@@ -220,7 +226,7 @@ describe('Activity Settings Test', function () {
 
   it('Show Finish Button',()=>{
     cy.get('[data-test="Show Finish Button"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT showFinishButton FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].showFinishButton).to.equal(1)
     })
@@ -228,7 +234,7 @@ describe('Activity Settings Test', function () {
 
   it('Proctor Makes Available',()=>{
     cy.get('[data-test="Proctor Makes Available"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT proctorMakesAvailable FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].proctorMakesAvailable).to.equal(1)
     })
@@ -236,7 +242,7 @@ describe('Activity Settings Test', function () {
 
   it('Auto Submit',()=>{
     cy.get('[data-test="Auto Submit"]').click()
-
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT autoSubmit FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       expect(result[0].autoSubmit).to.equal(1)
     })
@@ -277,7 +283,7 @@ describe('Activity Settings Test', function () {
     cy.get(':nth-child(2) > [data-value="6"]').click()
     cy.get(':nth-child(4) > [data-value="20"]').click()
     cy.get('[data-test="Menu Panel"]').click({force: true})
-    cy.wait(100) //TODO: need the UI to let us know this was successful
+    cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT pinnedAfterDate, pinnedUntilDate FROM assignment WHERE doenetId="${doenetId}"`).then((result) => {
       let pinnedAfterUtcDateTime = new Date(result[0].pinnedAfterDate)
       let pinnedAfterLocalDateTime = pinnedAfterUtcDateTime.toLocaleDateString();
