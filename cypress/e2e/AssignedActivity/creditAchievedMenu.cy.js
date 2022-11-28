@@ -398,7 +398,6 @@ const doenetML3 = `
 
     cy.url().should('match', /#page1$/)
 
-    cy.get('[data-test="CreditAchieved Menu"]').click();
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
@@ -504,7 +503,7 @@ const doenetML3 = `
 
     cy.url().should('match', /#page1$/)
 
-    cy.get('[data-test="CreditAchieved Menu"]').click();
+    // cy.get('[data-test="CreditAchieved Menu"]').click();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
