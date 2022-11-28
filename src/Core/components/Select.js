@@ -1,10 +1,9 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
 import { deepClone } from '../utils/deepFunctions';
-import { gatherVariantComponents, markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
-import me from 'math-expressions';
-import { textToAst } from '../utils/math';
+import { markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
 import { returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import { gatherVariantComponents } from '../utils/variants';
 
 export default class Select extends CompositeComponent {
   static componentType = "select";
