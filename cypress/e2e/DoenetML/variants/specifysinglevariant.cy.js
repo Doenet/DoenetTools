@@ -866,11 +866,11 @@ describe('Specifying single variant document tests', function () {
     <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -920,11 +920,11 @@ describe('Specifying single variant document tests', function () {
     <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -975,11 +975,11 @@ describe('Specifying single variant document tests', function () {
     // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     // <p>Selected variable:
     // <select assignnames="(x)">
-    //   <option selectForVariantNames="Dill"><math>d</math></option>
-    //   <option selectForVariantNames="carrot"><math>c</math></option>
-    //   <option selectForVariantNames="eggplant"><math>e</math></option>
-    //   <option selectForVariantNames="avocado"><math>a</math></option>
-    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    //   <option selectForVariants="Dill"><math>d</math></option>
+    //   <option selectForVariants="carrot"><math>c</math></option>
+    //   <option selectForVariants="eggplant"><math>e</math></option>
+    //   <option selectForVariants="avocado"><math>a</math></option>
+    //   <option selectForVariants="broccoli"><math>b</math></option>
     // </select>
     // </p>
     // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -1030,11 +1030,11 @@ describe('Specifying single variant document tests', function () {
     // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     // <p>Selected variable:
     // <select assignnames="(x)">
-    //   <option selectForVariantNames="Dill"><math>d</math></option>
-    //   <option selectForVariantNames="carrot"><math>c</math></option>
-    //   <option selectForVariantNames="eggplant"><math>e</math></option>
-    //   <option selectForVariantNames="avocado"><math>a</math></option>
-    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    //   <option selectForVariants="Dill"><math>d</math></option>
+    //   <option selectForVariants="carrot"><math>c</math></option>
+    //   <option selectForVariants="eggplant"><math>e</math></option>
+    //   <option selectForVariants="avocado"><math>a</math></option>
+    //   <option selectForVariants="broccoli"><math>b</math></option>
     // </select>
     // </p>
     // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -1083,11 +1083,11 @@ describe('Specifying single variant document tests', function () {
     // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     // <p>Selected variable:
     // <select assignnames="(x)">
-    //   <option selectForVariantNames="Dill"><math>d</math></option>
-    //   <option selectForVariantNames="carrot"><math>c</math></option>
-    //   <option selectForVariantNames="eggplant"><math>e</math></option>
-    //   <option selectForVariantNames="avocado"><math>a</math></option>
-    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    //   <option selectForVariants="Dill"><math>d</math></option>
+    //   <option selectForVariants="carrot"><math>c</math></option>
+    //   <option selectForVariants="eggplant"><math>e</math></option>
+    //   <option selectForVariants="avocado"><math>a</math></option>
+    //   <option selectForVariants="broccoli"><math>b</math></option>
     // </select>
     // </p>
     // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -1137,11 +1137,11 @@ describe('Specifying single variant document tests', function () {
     <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -1191,11 +1191,11 @@ describe('Specifying single variant document tests', function () {
     <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -1245,11 +1245,11 @@ describe('Specifying single variant document tests', function () {
     <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -1299,11 +1299,11 @@ describe('Specifying single variant document tests', function () {
     // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     // <p>Selected variable:
     // <select assignnames="(x)">
-    //   <option selectForVariantNames="Dill"><math>d</math></option>
-    //   <option selectForVariantNames="carrot"><math>c</math></option>
-    //   <option selectForVariantNames="eggplant"><math>e</math></option>
-    //   <option selectForVariantNames="avocado"><math>a</math></option>
-    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    //   <option selectForVariants="Dill"><math>d</math></option>
+    //   <option selectForVariants="carrot"><math>c</math></option>
+    //   <option selectForVariants="eggplant"><math>e</math></option>
+    //   <option selectForVariants="avocado"><math>a</math></option>
+    //   <option selectForVariants="broccoli"><math>b</math></option>
     // </select>
     // </p>
     // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -1353,11 +1353,11 @@ describe('Specifying single variant document tests', function () {
     <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
@@ -2749,11 +2749,11 @@ describe('Specifying single variant document tests', function () {
             <variantControl nvariants="5" variantNames="a b c d e" />
             <p>Word:
               <select>
-                <option selectForVariantNames="b"><text>bad</text></option>
-                <option selectForVariantNames="a"><text>angry</text></option>
-                <option selectForVariantNames="d"><text>drab</text></option>
-                <option selectForVariantNames="e"><text>excoriated</text></option>
-                <option selectForVariantNames="c"><text>churlish</text></option>
+                <option selectForVariants="b"><text>bad</text></option>
+                <option selectForVariants="a"><text>angry</text></option>
+                <option selectForVariants="d"><text>drab</text></option>
+                <option selectForVariants="e"><text>excoriated</text></option>
+                <option selectForVariants="c"><text>churlish</text></option>
               </select>
             </p>
           </problem></option>
@@ -2893,11 +2893,11 @@ describe('Specifying single variant document tests', function () {
     //     <variantControl nvariants="5" variantNames="a b c d e" />
     //     <p>Word:
     //       <select>
-    //         <option selectForVariantNames="b"><text>bad</text></option>
-    //         <option selectForVariantNames="a"><text>angry</text></option>
-    //         <option selectForVariantNames="d"><text>drab</text></option>
-    //         <option selectForVariantNames="e"><text>excoriated</text></option>
-    //         <option selectForVariantNames="c"><text>churlish</text></option>
+    //         <option selectForVariants="b"><text>bad</text></option>
+    //         <option selectForVariants="a"><text>angry</text></option>
+    //         <option selectForVariants="d"><text>drab</text></option>
+    //         <option selectForVariants="e"><text>excoriated</text></option>
+    //         <option selectForVariants="c"><text>churlish</text></option>
     //       </select>
     //     </p>
     //   </problem></option>
@@ -3066,9 +3066,9 @@ describe('Specifying single variant document tests', function () {
             <variantControl nvariants="3" variantNames="a b c" />
             <p>Word:
               <select>
-                <option selectForVariantNames="b"><text>bad</text></option>
-                <option selectForVariantNames="a"><text>angry</text></option>
-                <option selectForVariantNames="c"><text>churlish</text></option>
+                <option selectForVariants="b"><text>bad</text></option>
+                <option selectForVariants="a"><text>angry</text></option>
+                <option selectForVariants="c"><text>churlish</text></option>
               </select>
             </p>
           </problem></option>
@@ -3227,11 +3227,11 @@ describe('Specifying single variant document tests', function () {
     //     <variantControl nvariants="5" variantNames="a b c d e" />
     //     <p>Word:
     //       <select>
-    //         <option selectForVariantNames="b"><text>bad</text></option>
-    //         <option selectForVariantNames="a"><text>angry</text></option>
-    //         <option selectForVariantNames="d"><text>drab</text></option>
-    //         <option selectForVariantNames="e"><text>excoriated</text></option>
-    //         <option selectForVariantNames="c"><text>churlish</text></option>
+    //         <option selectForVariants="b"><text>bad</text></option>
+    //         <option selectForVariants="a"><text>angry</text></option>
+    //         <option selectForVariants="d"><text>drab</text></option>
+    //         <option selectForVariants="e"><text>excoriated</text></option>
+    //         <option selectForVariants="c"><text>churlish</text></option>
     //       </select>
     //     </p>
     //   </problem></option>
@@ -3412,11 +3412,11 @@ describe('Specifying single variant document tests', function () {
             <variantControl nvariants="5" variantNames="a b c d e" />
             <p>Word:
               <select>
-                <option selectForVariantNames="b"><text>bad</text></option>
-                <option selectForVariantNames="a"><text>angry</text></option>
-                <option selectForVariantNames="d"><text>drab</text></option>
-                <option selectForVariantNames="e"><text>excoriated</text></option>
-                <option selectForVariantNames="c"><text>churlish</text></option>
+                <option selectForVariants="b"><text>bad</text></option>
+                <option selectForVariants="a"><text>angry</text></option>
+                <option selectForVariants="d"><text>drab</text></option>
+                <option selectForVariants="e"><text>excoriated</text></option>
+                <option selectForVariants="c"><text>churlish</text></option>
               </select>
             </p>
           </problem></option>
@@ -3556,11 +3556,11 @@ describe('Specifying single variant document tests', function () {
     //     <variantControl nvariants="5" variantNames="a b c d e" />
     //     <p>Word:
     //       <select>
-    //         <option selectForVariantNames="b"><text>bad</text></option>
-    //         <option selectForVariantNames="a"><text>angry</text></option>
-    //         <option selectForVariantNames="d"><text>drab</text></option>
-    //         <option selectForVariantNames="e"><text>excoriated</text></option>
-    //         <option selectForVariantNames="c"><text>churlish</text></option>
+    //         <option selectForVariants="b"><text>bad</text></option>
+    //         <option selectForVariants="a"><text>angry</text></option>
+    //         <option selectForVariants="d"><text>drab</text></option>
+    //         <option selectForVariants="e"><text>excoriated</text></option>
+    //         <option selectForVariants="c"><text>churlish</text></option>
     //       </select>
     //     </p>
     //   </problem></option>
@@ -4464,8 +4464,8 @@ describe('Specifying single variant document tests', function () {
         <text>${ind}</text>
         <setup>
           <select assignNames="(fruit)">
-            <option selectForVariantNames="apple"><text>apple</text></option>
-            <option selectForVariantNames="orange"><text>orange</text></option>
+            <option selectForVariants="apple"><text>apple</text></option>
+            <option selectForVariants="orange"><text>orange</text></option>
           </select>
         </setup>
         <p>Enter $fruit:

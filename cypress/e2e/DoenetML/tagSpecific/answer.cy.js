@@ -17076,16 +17076,16 @@ describe('Answer Tag Tests', function () {
         <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal)" hide>
-          <option selectForVariantNames="cat">
+          <option selectForVariants="cat">
             <text>cat</text>
           </option>
-          <option selectForVariantNames="dog">
+          <option selectForVariants="dog">
             <text>dog</text>
           </option>
-          <option selectForVariantNames="mouse">
+          <option selectForVariants="mouse">
             <text>mouse</text>
           </option>
-          <option selectForVariantNames="fish">
+          <option selectForVariants="fish">
             <text>fish</text>
           </option>
         </select>
@@ -17138,16 +17138,16 @@ describe('Answer Tag Tests', function () {
         <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal sound)" hide>
-          <option selectForVariantNames="cat">
+          <option selectForVariants="cat">
             <text>cat</text><text>meow</text>
           </option>
-          <option selectForVariantNames="dog">
+          <option selectForVariants="dog">
             <text>dog</text><text>woof</text>
           </option>
-          <option selectForVariantNames="mouse">
+          <option selectForVariants="mouse">
             <text>mouse</text><text>squeak</text>
           </option>
-          <option selectForVariantNames="fish">
+          <option selectForVariants="fish">
             <text>fish</text><text>blub</text>
           </option>
         </select>
