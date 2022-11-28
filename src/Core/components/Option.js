@@ -8,7 +8,7 @@ export default class Option extends Group {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.selectForVariantNames = {
-      createComponentOfType: "variantNames",
+      createComponentOfType: "textListFromString",
       createStateVariable: "selectForVariantNames",
       defaultValue: [],
       public: true,

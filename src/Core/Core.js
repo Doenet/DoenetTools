@@ -19,6 +19,7 @@ import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { toastType } from '../Tools/_framework/ToastTypes';
 import axios from 'axios';
+import { gatherVariantComponents, getNumberOfVariants } from './utils/variants';
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -237,10 +238,10 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    let numVariants = serializeFunctions.getNumberOfVariants({
+    let numVariants = getNumberOfVariants({
       serializedComponent: serializedComponents[0],
       componentInfoObjects: this.componentInfoObjects
-    }).numberOfVariantsPreIgnore;
+    }).numberOfVariants;
 
 
     if (!this.requestedVariant) {
@@ -320,7 +321,6 @@ export default class Core {
     this.coreInfo = {
       generatedVariantString: this.canonicalGeneratedVariantString,
       allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
-      variantIndicesToIgnore: deepClone(await this.document.sharedParameters.variantIndicesToIgnore),
       rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
       documentToRender: this.documentRendererInstructions,
     };
@@ -1240,144 +1240,21 @@ export default class Core {
 
       if (componentClass.setUpVariant) {
 
-        let variantControlInd;
-        let variantControlChild;
-
-        // look for variantControl child
-        for (let [ind, child] of serializedChildren.entries()) {
-          if (child.componentType === "variantControl" || (
-            child.createdComponent && this._components[child.componentName].componentType === "variantControl"
-          )) {
-            variantControlInd = ind;
-            variantControlChild = child;
-            break;
-          }
-        }
-
-        let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
+        let descendantVariantComponents = gatherVariantComponents({
           serializedComponents: serializedChildren,
           componentInfoObjects: this.componentInfoObjects,
         });
 
-        if (variantControlInd !== undefined) {
-          // if have desired variant name or index
-          // add that information to variantControl child
 
-          if (serializedComponent.variants) {
-            let desiredVariant = serializedComponent.variants.desiredVariant;
-            if (desiredVariant !== undefined) {
-              if (desiredVariant.index !== undefined) {
-                variantControlChild.variants = {
-                  desiredVariantIndex: desiredVariant.index
-                }
-              } else if (desiredVariant.name !== undefined) {
-                variantControlChild.variants = {
-                  desiredVariantName: desiredVariant.name
-                }
-              }
-            }
-
-            if (serializedComponent.variants.numberOfVariants === undefined) {
-              serializeFunctions.getNumberOfVariants({
-                serializedComponent,
-                componentInfoObjects: this.componentInfoObjects
-              });
-            }
-
-            if (serializedComponent.variants.uniqueVariants) {
-              sharedParameters.numberOfVariantsPreIgnore = serializedComponent.variants.numberOfVariantsPreIgnore;
-            }
-          }
-
-          // create variant control child
-          let childrenResult = await this.createIsolatedComponentsSub({
-            serializedComponents: [variantControlChild],
-            ancestors: ancestorsForChildren,
-            shadow,
-            createNameContext: "variantControl",
-            namespaceForUnamed,
-          });
-
-          definingChildren[variantControlInd] = childrenResult.components[0];
-
-
-          if (serializedComponent.variants.uniqueVariants && !serializedComponent.variants.selectedUniqueVariant) {
-
-            let result = componentClass.getUniqueVariant({
-              serializedComponent,
-              variantIndex: await childrenResult.components[0].stateValues.selectedVariantIndex,
-              componentInfoObjects: this.componentInfoObjects
-            })
-
-            if (result.success) {
-              serializedComponent.variants.desiredVariant = result.desiredVariant;
-            }
-
-          }
-
-        }
-
-        await componentClass.setUpVariant({
+        componentClass.setUpVariant({
           serializedComponent,
           sharedParameters,
-          definingChildrenSoFar: definingChildren,
           descendantVariantComponents
         });
 
-        if (componentClass.keepChildrenSerialized && variantControlInd === undefined) {
-          let childrenAddressed = new Set([]);
-
-          let keepSerializedInds = componentClass.keepChildrenSerialized({
-            serializedComponent,
-            componentInfoObjects: this.componentInfoObjects,
-          });
-
-          for (let ind of keepSerializedInds) {
-            if (childrenAddressed.has(Number(ind))) {
-              throw Error("Invalid instructions to keep children serialized from " + componentClass.componentType
-                + ": child repeated");
-            }
-            childrenAddressed.add(Number(ind));
-            childrenToRemainSerialized.push(serializedChildren[ind]);
-          }
-
-          // create any remaining children
-          let childrenToCreate = [];
-          for (let [ind, child] of serializedChildren.entries()) {
-            if (!(childrenAddressed.has(ind))) {
-              childrenToCreate.push(child)
-            }
-          }
-
-          if (childrenToCreate.length > 0) {
-            let childrenResult = await this.createIsolatedComponentsSub({
-              serializedComponents: childrenToCreate,
-              ancestors: ancestorsForChildren,
-              shadow,
-              namespaceForUnamed,
-            });
-
-            definingChildren = childrenResult.components;
-          }
-
-        } else {
-
-          let indicesToCreate = [...serializedChildren.keys()].filter(v => v !== variantControlInd);
-          let childrenToCreate = serializedChildren.filter((v, i) => i !== variantControlInd);
-
-          let childrenResult = await this.createIsolatedComponentsSub({
-            serializedComponents: childrenToCreate,
-            ancestors: ancestorsForChildren,
-            shadow,
-            namespaceForUnamed,
-          });
-
-          for (let [createInd, locationInd] of indicesToCreate.entries()) {
-            definingChildren[locationInd] = childrenResult.components[createInd];
-          }
-        }
-
-      } else if (componentClass.keepChildrenSerialized) {
+      }
+      
+      if (componentClass.keepChildrenSerialized) {
         let childrenAddressed = new Set([]);
 
         let keepSerializedInds = componentClass.keepChildrenSerialized({

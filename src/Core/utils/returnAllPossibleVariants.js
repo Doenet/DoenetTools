@@ -3,6 +3,7 @@ import * as serializeFunctions from './serializedStateProcessing.js';
 import createComponentInfoObjects from './componentInfoObjects.js';
 import { retrieveTextFileForCid } from './retrieveTextFile.js';
 import { cidFromText } from './cid.js';
+import { getNumberOfVariants } from './variants.js';
 
 export async function returnAllPossibleVariants({
   cid, doenetML
@@ -28,7 +29,7 @@ export async function returnAllPossibleVariants({
 
   let document = serializedComponents[0];
 
-  let results = serializeFunctions.getNumberOfVariants({
+  let results = getNumberOfVariants({
     serializedComponent: document,
     componentInfoObjects
   })
@@ -69,9 +70,7 @@ export async function returnAllPossibleVariants({
 
   }
 
-  let variantIndicesToIgnore = results.indicesToIgnore;
-
-  return { allPossibleVariants, variantIndicesToIgnore, doenetML, cid };
+  return { allPossibleVariants, doenetML, cid };
 }
 
 
