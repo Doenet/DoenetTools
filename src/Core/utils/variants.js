@@ -204,6 +204,7 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
         serializedComponent.variants.uniqueVariants = true;
         serializedComponent.variants.numberOfVariants = sectionChild.variants.numberOfVariants;
         serializedComponent.variants.allPossibleVariants = sectionChild.variants.allPossibleVariants;
+        serializedComponent.variants.allVariantNames = sectionChild.variants.allVariantNames;
         serializedComponent.variants.allPossibleVariantUniqueIndices = [...sectionChild.variants.allPossibleVariants.keys()].map(x => x + 1);
         serializedComponent.variants.allPossibleVariantSeeds = [...sectionChild.variants.allPossibleVariants.keys()].map(x => (x + 1).toString());
 
@@ -426,6 +427,7 @@ export function determineVariantsForSection({
   serializedComponent.variants.uniqueVariants = uniqueVariants;
   serializedComponent.variants.numberOfVariants = numberOfVariants;
   serializedComponent.variants.allPossibleVariants = allPossibleVariants;
+  serializedComponent.variants.allVariantNames = variantNames;
   serializedComponent.variants.allPossibleVariantUniqueIndices = allPossibleVariantUniqueIndices;
   serializedComponent.variants.allPossibleVariantSeeds = allPossibleVariantSeeds;
 

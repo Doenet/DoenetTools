@@ -1476,11 +1476,7 @@ describe('Paginator Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariantIndex: 10
-          // for now, at least, variant 10 gives mouse....
-          // subvariants: [{}, {
-          //   name: "mouse"
-          // }]
+        requestedVariantIndex: 3
       }, "*");
     });
 

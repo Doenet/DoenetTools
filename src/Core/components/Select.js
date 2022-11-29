@@ -152,15 +152,15 @@ export default class Select extends CompositeComponent {
       })
     }
 
-    stateVariableDefinitions.allPossibleVariants = {
+    stateVariableDefinitions.allVariantNames = {
       returnDependencies: ({ sharedParameters }) => ({
-        allPossibleVariants: {
+        allVariantNames: {
           dependencyType: "value",
-          value: sharedParameters.allPossibleVariants,
+          value: sharedParameters.allVariantNames,
         }
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { allPossibleVariants: dependencyValues.allPossibleVariants }
+        setValue: { allVariantNames: dependencyValues.allVariantNames }
       })
     }
 
@@ -194,9 +194,9 @@ export default class Select extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "numberToSelect"
         },
-        allPossibleVariants: {
+        allVariantNames: {
           dependencyType: "stateVariable",
-          variableName: "allPossibleVariants"
+          variableName: "allVariantNames"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -223,13 +223,13 @@ export default class Select extends CompositeComponent {
         if (Object.keys(availableVariants).length > 0) {
           // if have at least one variant specified,
           // then require that all possible variants have a variant specified
-          for (let variantName of dependencyValues.allPossibleVariants) {
+          for (let variantName of dependencyValues.allVariantNames) {
             if (!(variantName in availableVariants)) {
               throw Error("Some variants are specified for select but no options are specified for possible variant name: " + variantName)
             }
           }
           for (let variantName in availableVariants) {
-            if (!(dependencyValues.allPossibleVariants.includes(variantName))) {
+            if (!(dependencyValues.allVariantNames.includes(variantName))) {
               throw Error("Variant name " + variantName + " that is specified for select is not a possible variant name.");
             }
           }
