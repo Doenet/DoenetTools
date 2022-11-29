@@ -27,6 +27,8 @@ export default React.memo(function Point(props) {
 
   lastPositionFromCore.current = SVs.numericalXs;
 
+  const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
+
 
   useEffect(() => {
     //On unmount
@@ -46,8 +48,8 @@ export default React.memo(function Point(props) {
   }, [])
 
   function createPointJXG() {
-    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-    let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
+    let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+    let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
 
     let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
@@ -65,7 +67,7 @@ export default React.memo(function Point(props) {
       fillOpacity: SVs.selectedStyle.lineOpacity,
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
-      size: SVs.selectedStyle.markerSize,
+      size: normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle),
       face: normalizeStyle(SVs.selectedStyle.markerStyle),
       highlight: !fixed
     };
@@ -155,7 +157,7 @@ export default React.memo(function Point(props) {
     shadowPointAttributes.layer--;
     shadowPointAttributes.fixed = fixed;
     shadowPointAttributes.showInfoBox = false;
-    shadowPointAttributes.withLabel = false;
+    shadowPointAttributes.withlabel = false;
     shadowPointAttributes.fillOpacity = 0;
     shadowPointAttributes.strokeOpacity = 0;
 
@@ -258,9 +260,11 @@ export default React.memo(function Point(props) {
       createPointJXG();
     } else {
       //if values update
-      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      if (pointJXG.current.visProp.fillcolor !== newFillColor) {
-        pointJXG.current.visProp.fillcolor = newFillColor;
+      let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+      let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
+      
+      if (pointJXG.current.visProp.fillcolor !== fillColor) {
+        pointJXG.current.visProp.fillcolor = fillColor;
       }
 
       //Note label update in jsxGraph maybe slow (so check previous value)
@@ -312,9 +316,6 @@ export default React.memo(function Point(props) {
 
       let fixed = !SVs.draggable || SVs.fixed;
 
-      let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
-
       pointJXG.current.visProp.highlight = !fixed;
       shadowPointJXG.current.visProp.highlight = !fixed;
       shadowPointJXG.current.visProp.fixed = fixed;
@@ -335,9 +336,10 @@ export default React.memo(function Point(props) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
       }
-      if (pointJXG.current.visProp.size !== SVs.selectedStyle.markerSize) {
-        pointJXG.current.visProp.size = SVs.selectedStyle.markerSize
-        shadowPointJXG.current.visProp.size = SVs.selectedStyle.markerSize
+      let newSize = normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle);
+      if (pointJXG.current.visProp.size !== newSize) {
+        pointJXG.current.setAttribute({ size: newSize });
+        shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
       if (fixed) {
@@ -439,6 +441,17 @@ export default React.memo(function Point(props) {
 
 })
 
+function normalizeSize(size, style) {
+  if (style === "diamond") {
+    return size * 1.4;
+  } else if (style === "plus") {
+    return size * 1.2;
+  } else if (style === "square") {
+      return size * 1.1;
+  } else if (style.substring(0,8) === "triangle") {
+    return size * 1.5;
+  } else return size;
+}
 function normalizeStyle(style) {
   if (style === "triangle") {
     return "triangleup";

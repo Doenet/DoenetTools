@@ -117,10 +117,11 @@ async function returnAllStateVariables(core) {
         compObj.replacementsToWithhold = component.replacementsToWithhold;
       }
     }
+    compObj.sharedParameters = removeFunctionsMathExpressionClass(component.sharedParameters);
+
   }
 
 
-  componentsObj[core.documentName].sharedParameters = removeFunctionsMathExpressionClass(core.components[core.documentName].sharedParameters);
   return componentsObj;
 }
 

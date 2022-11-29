@@ -309,7 +309,7 @@ describe('Function curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.get('#\\/a2').should("contain.text", "1")
+    cy.get('#\\/a2 .mjx-mrow').should("contain.text", "1")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -321,7 +321,7 @@ describe('Function curve Tag Tests', function () {
     })
 
     cy.get("#\\/a textarea").type("{end}{backspace}-2{enter}", { force: true, delay: 100 });
-    cy.get('#\\/a2').should("contain.text", "−2")
+    cy.get('#\\/a2 .mjx-mrow').should("contain.text", "−2")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.curveType).eq("function");

@@ -100,6 +100,7 @@ export default function AssignmentViewer() {
       showFinishButton,
       showFeedback,
       showHints,
+      autoSubmit,
       cid,
       doenetId,
       solutionDisplayMode,
@@ -107,7 +108,7 @@ export default function AssignmentViewer() {
     },
     setLoad
   ] = useState({});
-  const setNumberOfAttemptsAllowedAdjustment = useSetRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
+  const [numberOfAttemptsAllowedAdjustment, setNumberOfAttemptsAllowedAdjustment] = useRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
   const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
@@ -118,7 +119,7 @@ export default function AssignmentViewer() {
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
   const effectivePermissions = useRecoilValue(effectivePermissionsByCourseId(courseId));
-  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
+  let [itemObj, setItemObj] = useRecoilState(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
   let {search, hash} = useLocation();
   let navigate = useNavigate();
@@ -149,6 +150,7 @@ export default function AssignmentViewer() {
     showFinishButton: showFinishButton2,
     showFeedback: showFeedback2,
     showHints: showHints2,
+    autoSubmit: autoSubmit2,
     showSolution,
     proctorMakesAvailable,
     numberOfAttemptsAllowed: baseNumberOfAttemptsAllowed2
@@ -198,7 +200,6 @@ export default function AssignmentViewer() {
     } else {
       cid2 = resp.data.cid;
     }
-    console.log(`retrieved cid: ${cid2}`);
     setCidChanged(resp.data.cidChanged);
     resp = await axios.get("/api/loadTakenVariants.php", {
       params: {doenetId: doenetId2}
@@ -234,8 +235,8 @@ export default function AssignmentViewer() {
       }
       return;
     }
-    let numberOfAttemptsAllowedAdjustment = Number(resp.data.numberOfAttemptsAllowedAdjustment);
-    set(numberOfAttemptsAllowedAdjustmentAtom, numberOfAttemptsAllowedAdjustment);
+    let numberOfAttemptsAllowedAdjustment2 = Number(resp.data.numberOfAttemptsAllowedAdjustment);
+    set(numberOfAttemptsAllowedAdjustmentAtom, numberOfAttemptsAllowedAdjustment2);
     let result = await returnNumberOfActivityVariants(cid2);
     if (!result.success) {
       setLoad({
@@ -246,6 +247,7 @@ export default function AssignmentViewer() {
         showFinishButton: showFinishButton2,
         showFeedback: showFeedback2,
         showHints: showHints2,
+        autoSubmit: autoSubmit2,
         cid: cid2,
         doenetId: doenetId2,
         solutionDisplayMode: solutionDisplayMode2,
@@ -290,6 +292,7 @@ export default function AssignmentViewer() {
       showFinishButton: showFinishButton2,
       showFeedback: showFeedback2,
       showHints: showHints2,
+      autoSubmit: autoSubmit2,
       cid: cid2,
       doenetId: doenetId2,
       solutionDisplayMode: solutionDisplayMode2,
@@ -297,6 +300,14 @@ export default function AssignmentViewer() {
     });
     setStage("Ready");
   }, [setSuppressMenus, effectivePermissions]);
+  const setActivityAsCompleted = useRecoilCallback(({set}) => async () => {
+    set(itemByDoenetId(doenetId), (prev) => {
+      let next = {...prev};
+      next.completed = true;
+      next.completedDate = new Date();
+      return next;
+    });
+  }, [doenetId]);
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId2) {
     if (hash && hash !== "#page1") {
       navigate(search, {replace: true});
@@ -394,6 +405,7 @@ export default function AssignmentViewer() {
   if (recoilDoenetId === "") {
     return null;
   }
+  console.log("stage", stage);
   if (courseId === "__not_found__") {
     return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
   } else if (stage === "Initializing") {
@@ -403,6 +415,34 @@ export default function AssignmentViewer() {
     return null;
   } else if (stage === "Problem") {
     return /* @__PURE__ */ React.createElement("h1", null, message);
+  }
+  if (!itemObj?.canViewAfterCompleted && itemObj.completed) {
+    const totalNumberOfAttemptsAllowed = Number(itemObj.numberOfAttemptsAllowed) + Number(numberOfAttemptsAllowedAdjustment);
+    if (totalNumberOfAttemptsAllowed > attemptNumber) {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+        style: {margin: "15px"}
+      }, /* @__PURE__ */ React.createElement("h1", null, "Assessment Complete"), /* @__PURE__ */ React.createElement("p", null, "You have completed this assessment.  Would you like to begin another attempt?"), /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement(Button, {
+        value: "Begin New Attempt",
+        onClick: async () => {
+          const {data} = await axios.get(`/api/saveCompleted.php`, {params: {doenetId}});
+          if (data.success) {
+            setRecoilAttemptNumber((was) => was + 1);
+            setItemObj((prev) => {
+              let next = {...prev};
+              next.completed = false;
+              return next;
+            });
+          } else {
+            setStage("Problem");
+            setMessage("Internal Error");
+          }
+        }
+      }))));
+    } else {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+        style: {margin: "15px"}
+      }, /* @__PURE__ */ React.createElement("h1", null, "Assessment Complete"), /* @__PURE__ */ React.createElement("p", null, "You have already completed this assessment and no additional attempts are available.")));
+    }
   }
   let cidChangedAlert = null;
   if (cidChanged) {
@@ -419,11 +459,11 @@ export default function AssignmentViewer() {
           style: {display: "flex", justifyContent: "center", padding: "5px"}
         }, /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
           onClick: incrementAttemptNumberAndAttemptsAllowed,
-          "data-test": "ConfirmNewVersion",
+          dataTest: "ConfirmNewVersion",
           value: "Yes"
         }), /* @__PURE__ */ React.createElement(Button, {
           onClick: () => setCidChangedMessageOpen(false),
-          "data-test": "CancelNewVersion",
+          dataTest: "CancelNewVersion",
           value: "No",
           alert: true
         }))))
@@ -435,7 +475,7 @@ export default function AssignmentViewer() {
           style: {marginLeft: "1px", marginRight: "5px"}
         }, /* @__PURE__ */ React.createElement(ActionButton, {
           onClick: () => setCidChangedMessageOpen(true),
-          "data-test": "NewVersionAvailable",
+          dataTest: "NewVersionAvailable",
           value: "New version available!"
         }))
       });
@@ -452,6 +492,7 @@ export default function AssignmentViewer() {
       solutionDisplayMode,
       showFeedback,
       showHints,
+      autoSubmit,
       allowLoadState: allowLoadAndSave,
       allowSaveState: allowLoadAndSave,
       allowLocalState: allowLoadAndSave,
@@ -465,7 +506,8 @@ export default function AssignmentViewer() {
     pageChangedCallback: pageChanged,
     paginate,
     showFinishButton,
-    cidChangedCallback: () => setCidChanged(true)
+    cidChangedCallback: () => setCidChanged(true),
+    setActivityAsCompleted
   }));
 }
 async function returnNumberOfActivityVariants(cid) {

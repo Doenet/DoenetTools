@@ -105,7 +105,10 @@ export default function ToolRoot() {
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
     People: lazy(() => import("./ToolPanels/People.js")),
     ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js")),
+    SignInRedirector: lazy(() => import("./ToolPanels/SignInRedirector.js")),
     EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js")),
+    EndPlacementExamPanel: lazy(() => import("./ToolPanels/EndPlacementExamPanel.js")),
+    WelcomePlacementExam: lazy(() => import("./ToolPanels/WelcomePlacementExam.js")),
     GuestDoenetMLEditor: lazy(() => import("./ToolPanels/GuestDoenetMLEditor.js")),
     GuestEditorViewer: lazy(() => import("./ToolPanels/GuestEditorViewer.js")),
     RolesEditor: lazy(() => import("./ToolPanels/RoleEditor.js"))
@@ -129,7 +132,9 @@ export default function ToolRoot() {
   let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
   mainPanel = /* @__PURE__ */ React.createElement(Suspense, {
     key: MainPanelKey,
-    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG1, null, /* @__PURE__ */ React.createElement(Circle, {
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, /* @__PURE__ */ React.createElement(Svg, {
+      viewBox: "0 0 130 140"
+    }, /* @__PURE__ */ React.createElement(DonutG1, null, /* @__PURE__ */ React.createElement(Circle, {
       id: "donut",
       fill: "var(--donutBody)",
       r: "60"
@@ -141,7 +146,9 @@ export default function ToolRoot() {
       id: "donut-hole",
       fill: "var(--canvas)",
       r: "19"
-    }))), /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG2, null, /* @__PURE__ */ React.createElement(Circle, {
+    }))), /* @__PURE__ */ React.createElement(Svg, {
+      viewBox: "0 0 130 140"
+    }, /* @__PURE__ */ React.createElement(DonutG2, null, /* @__PURE__ */ React.createElement(Circle, {
       id: "donut",
       fill: "var(--donutBody)",
       r: "60"
@@ -153,7 +160,9 @@ export default function ToolRoot() {
       id: "donut-hole",
       fill: "var(--canvas)",
       r: "19"
-    }))), /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG3, null, /* @__PURE__ */ React.createElement(Circle, {
+    }))), /* @__PURE__ */ React.createElement(Svg, {
+      viewBox: "0 0 130 140"
+    }, /* @__PURE__ */ React.createElement(DonutG3, null, /* @__PURE__ */ React.createElement(Circle, {
       id: "donut",
       fill: "var(--donutBody)",
       r: "60"
@@ -269,6 +278,41 @@ export default function ToolRoot() {
   }));
 }
 let navigationObj = {
+  placementexam: {
+    default: {
+      defaultTool: "exam"
+    },
+    exam: {
+      pageName: "exam",
+      currentMainPanel: "AssignmentViewer",
+      currentMenus: ["TimerMenu"],
+      menusTitles: ["Time Remaining"],
+      menusInitOpen: [true],
+      headerControls: [],
+      displaySettings: false,
+      hasNoMenuPanel: true,
+      hasNoHeaderPanel: true,
+      waitForMenuSuppression: true,
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
+    },
+    endExam: {
+      pageName: "endExam",
+      currentMainPanel: "EndPlacementExamPanel",
+      displaySettings: false,
+      hasNoMenuPanel: true
+    }
+  },
+  umn: {
+    default: {
+      defaultTool: "signIn"
+    },
+    signIn: {
+      pageName: "signIn",
+      currentMainPanel: "SignInRedirector",
+      displaySettings: false,
+      hasNoMenuPanel: true
+    }
+  },
   exam: {
     default: {
       defaultTool: "chooseLearner"
@@ -305,9 +349,9 @@ let navigationObj = {
       pageName: "Assignment",
       menuPanelCap: "AssignmentInfoCap",
       currentMainPanel: "AssignmentViewer",
-      currentMenus: ["CreditAchieved", "TimerMenu"],
-      menusTitles: ["Credit Achieved", "Time Remaining"],
-      menusInitOpen: [true, true],
+      currentMenus: ["CreditAchieved", "TimerMenu", "ActivityDates"],
+      menusTitles: ["Credit Achieved", "Time Remaining", "Details"],
+      menusInitOpen: [false, false, false],
       headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
       waitForMenuSuppression: true,
       footer: {height: 250, open: false, component: "MathInputKeyboard"}
@@ -342,6 +386,15 @@ let navigationObj = {
       menusInitOpen: [],
       headerControls: ["AssignmentBreadCrumb"],
       footer: {height: 250, open: false, component: "MathInputKeyboard"}
+    },
+    endExam: {
+      pageName: "endExam",
+      currentMainPanel: "EndExamPanel",
+      menuPanelCap: "AssignmentInfoCap",
+      currentMenus: ["CreditAchieved"],
+      menusTitles: ["Credit Achieved"],
+      menusInitOpen: [true],
+      headerControls: ["AssignmentBreadCrumb"]
     },
     gradebook: {
       pageName: "Gradebook",

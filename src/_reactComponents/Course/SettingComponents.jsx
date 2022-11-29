@@ -57,7 +57,7 @@ const useSyncedTextfeildState = (syncCB, remoteValue = '') => {
         effectiveLabel = 'Untitled Course';
       }
       setLocalValue(effectiveLabel);
-      addToast('A Course must have a label.');
+      // addToast('A Course must have a label.');
     }
 
     if (remoteValue !== effectiveLabel) {
@@ -237,7 +237,7 @@ export function AddUserWithOptions({ courseId }) {
     <UserWithOptionsContainer>
       <Textfield
         label="First"
-        data-test="First"
+        dataTest="First"
         width="250px"
         value={userData.firstName}
         onChange={(e) => {
@@ -247,7 +247,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="Last"
-        data-test="Last"
+        dataTest="Last"
         width="250px"
         value={userData.lastName}
         onChange={(e) => {
@@ -267,7 +267,7 @@ export function AddUserWithOptions({ courseId }) {
       </ButtonFlexContainer>
       <Textfield
         label="Email"
-        data-test="Email"
+        dataTest="Email"
         width="250px"
         value={emailInput}
         onChange={(e) => {
@@ -281,7 +281,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="Section"
-        data-test="Section"
+        dataTest="Section"
         width="250px"
         value={userData.section}
         onChange={(e) => {
@@ -291,7 +291,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="External Id"
-        data-test="External Id"
+        dataTest="External Id"
         width="250px"
         value={userData.externalId}
         onChange={(e) => {
@@ -334,9 +334,9 @@ export function ManageUsers({ courseId, editable = false }) {
       selectedUserData?.email,
       selectedUserPermissions?.roleId,
       () => {
-        addToast(
-          `${selectedUserData.screenName} is now a ${selectedUserPermissions.roleLabel}`,
-        );
+        // addToast(
+        //   `${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`,
+        // );
         //TODO set call for courseUsers
         setSelectedUserData((prev) => ({
           ...prev,
@@ -346,7 +346,7 @@ export function ManageUsers({ courseId, editable = false }) {
         }));
       },
       (err) => {
-        addToast(err, toastType.ERROR);
+        // addToast(err, toastType.ERROR);
         setSelectedUserPermissions(selectedUserData.permissions);
       },
     );
@@ -542,16 +542,16 @@ export function MangeRoles({ courseId }) {
       permissionEdits,
       () => {
         setEdited(false);
-        addToast(
-          `Permissions for ${
-            permissionEdits?.roleLabel ?? selectedRolePermissions.roleLabel
-          } updated successfully`,
-        );
-        setPermissionEdits({});
+        // addToast(
+        //   `Permissions for ${
+        //     permissonEdits?.roleLabel ?? selectedRolePermissons.roleLabel
+        //   } updated successfully`,
+        // );
+        setPermissonEdits({});
       },
       (error) => {
-        setSelectedRolePermissions(selectedRolePermissions);
-        addToast(error, toastType.ERROR);
+        setSelectedRolePermissons(selectedRolePermissons);
+        // addToast(error, toastType.ERROR);
       },
     );
   };
@@ -561,7 +561,7 @@ export function MangeRoles({ courseId }) {
       selectedRolePermissions.roleId,
       { isDeleted: '1' },
       () => {
-        addToast(`${selectedRolePermissions.roleLabel} successfully deleted`);
+        // addToast(`${selectedRolePermissons.roleLabel} successfully deleted`);
         setEdited(false);
         setPermissionEdits({});
       },
@@ -672,6 +672,12 @@ export function MangeRoles({ courseId }) {
         onClick={handleCheckboxClick}
         permissionKey={'canModifyCourseSettings'}
       />
+      <RolePermissionCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissions.roleId}
+        onClick={handleCheckboxClick}
+        permissionKey={'canViewCourse'}
+      />
       <DropdownMenu
         label="Data Access Level"
         title=""
@@ -768,7 +774,7 @@ export function AddRole({ courseId }) {
 
   const handleSave = () => {
     modifyRolePermissions('', { roleLabel: `Role ${roles.length}` }, () => {
-      addToast(`Create a new role: Role ${roles.length}`);
+      // addToast(`Create a new role: Role ${roles.length}`);
     });
   };
 
@@ -794,7 +800,7 @@ export function DeleteCourse({ courseId }) {
   const handelDelete = () => {
     deleteCourse(() => {
       setCourseCardsSelection([]);
-      addToast(`${label} deleted`, toastType.SUCCESS);
+      // addToast(`${label} deleted`, toastType.SUCCESS);
     });
   };
 

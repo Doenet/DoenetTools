@@ -9,7 +9,8 @@ import CourseNavigator from "../../_reactComponents/Course/CourseNavigator.js";
 import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {
   itemByDoenetId,
-  findFirstPageOfActivity
+  findFirstPageOfActivity,
+  coursePermissionsAndSettingsByCourseId
 } from "../../_reactComponents/Course/CourseActions.js";
 const movingGradient = keyframes`
   0% { background-position: -250px 0; }
@@ -123,7 +124,6 @@ export default function NavigationPanel() {
       if (canEditContent2 == "1") {
         let pageDoenetId = findFirstPageOfActivity(clickedItem.content);
         if (pageDoenetId == null) {
-          addToast(`ERROR: No page found in activity`, toastType.INFO);
         } else {
           set(pageToolViewAtom, (prev) => {
             return {
@@ -155,6 +155,10 @@ export default function NavigationPanel() {
       });
     }
   });
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  if (course?.canViewCourse == "0") {
+    return /* @__PURE__ */ React.createElement("h1", null, "No Access to view this page.");
+  }
   return /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement(Table, null, /* @__PURE__ */ React.createElement(TBody, null, /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
       className: "Td2"

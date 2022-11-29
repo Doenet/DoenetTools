@@ -981,7 +981,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', 'hello\nbye\n')
     cy.get('#\\/_p1').should('have.text', 'hello\nbye\n')
 
-    cy.get('#\\/ti_input').type("{ctrl+home}new{enter}old{enter}")
+    cy.get('#\\/ti_input').type("{moveToStart}new{enter}old{enter}")
     cy.get('#\\/ti_input').should('have.value', 'new\nold\nhello\nbye\n')
     cy.get('#\\/_p2').should('have.text', 'new\nold\nhello\nbye\n')
     cy.get('#\\/_p1').should('have.text', 'new\noldhello\nbye\n')
@@ -993,5 +993,49 @@ describe('TextInput Tag Tests', function () {
 
 
   })
+
+  it('set value from immediateValue on reload', () => {
+    let doenetML = `
+    <p><textinput name="ti" /></p>
+
+    <p name="pv">value: $ti</p>
+    <p name="piv">immediate value: $ti.immediateValue</p>
+    `
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/ti_input').type("hello", { force: true });
+
+    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
+    cy.get('#\\/pv').should('have.text', 'value: ')
+
+    cy.wait(1500);  // wait for debounce
+
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+
+    cy.get('#\\/pv').should('have.text', 'value: hello')
+    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
+
+  });
 
 });

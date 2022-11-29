@@ -106,8 +106,7 @@ import CellBlock from './components/CellBlock';
 import Tabular from './components/Tabular';
 import Table from './components/Table';
 import Figure from './components/Figure';
-import VariantNames from './components/VariantNames';
-import Seeds from './components/Seeds';
+import TextListFromString from './components/TextListFromString';
 import VariantControl from './components/VariantControl';
 import SelectFromSequence from './components/SelectFromSequence';
 import Select from './components/Select';
@@ -142,6 +141,7 @@ import Footnote from './components/Footnote';
 import Caption from './components/Caption';
 import Endpoint from './components/Endpoint';
 import Sort from './components/Sort';
+import Shuffle from './components/Shuffle';
 import SolveEquations from './components/SolveEquations';
 import SolutionContainer from './components/SolutionContainer';
 import SubsetOfRealsInput from './components/SubsetOfRealsInput';
@@ -162,6 +162,7 @@ import Label from './components/Label';
 import MatchesPattern from './components/MatchesPattern';
 import Matrix from './components/Matrix';
 import EigenDecomposition from './components/linearAlgebra/EigenDecomposition';
+import Latex from './components/Latex';
 
 
 //Extended
@@ -269,7 +270,8 @@ const componentTypeArray = [
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
-  Seeds, VariantNames, VariantControl,
+  VariantControl,
+  TextListFromString,
   SelectFromSequence, Select,
   Group,
   AnimateFromSequence,
@@ -301,6 +303,7 @@ const componentTypeArray = [
   Caption,
   Endpoint,
   Sort,
+  Shuffle,
   SolveEquations,
   SolutionContainer,
   SubsetOfRealsInput,
@@ -321,6 +324,7 @@ const componentTypeArray = [
   MatchesPattern,
   Matrix,
   EigenDecomposition,
+  Latex,
 
   BaseComponent,
   InlineComponent,

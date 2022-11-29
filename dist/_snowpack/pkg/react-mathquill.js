@@ -1,5 +1,5 @@
 import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-f5d70792.js';
-import { r as react } from './common/index-56a88a1e.js';
+import { r as react } from './common/index-61623f21.js';
 
 var reactMathquill_min = createCommonjsModule(function (module, exports) {
 /*! For license information please see react-mathquill.min.js.LICENSE.txt */

@@ -164,7 +164,7 @@ describe('Video progress tests', function () {
     });
 
 
-    cy.wait(100); // for some reason seems to occasionally miss clicking play
+    cy.wait(200); // for some reason seems to occasionally miss clicking play
     cy.get('#\\/play').click();
 
     cy.get('#\\/time').contains("162");
@@ -177,7 +177,7 @@ describe('Video progress tests', function () {
 
     cy.get('#\\/credit').invoke('text').then(text => {
       credit = Number(text);
-      expect(credit).gte(0.048).lte(0.052);
+      expect(credit).gte(0.046).lte(0.052);
     });
 
     cy.get('#\\/progress').invoke('text').then(text => {

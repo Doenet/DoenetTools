@@ -1,10 +1,8 @@
-import { r as react } from '../common/index-56a88a1e.js';
-import { r as reactDom } from '../common/index-c4ac9922.js';
-import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-efb3269b.js';
+import { r as react } from '../common/index-61623f21.js';
+import { r as reactDom } from '../common/index-eaf9e997.js';
+import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-c38d04a5.js';
 import '../common/_commonjsHelpers-f5d70792.js';
-import '../common/es.string.starts-with-24653f71.js';
-import '../common/es.function.name-c5ad53e4.js';
-import '../common/registry-1eaf3f7e.js';
+import '../common/registry-1c413641.js';
 import '../common/moment-82250e2c.js';
 
 _register(TextCellType);
@@ -23,8 +21,8 @@ Handsontable.Core = function(rootElement) {
 Handsontable.DefaultSettings = metaSchemaFactory();
 Handsontable.hooks = Hooks.getSingleton();
 Handsontable.packageName = "handsontable";
-Handsontable.buildDate = "08/07/2022 15:24:08";
-Handsontable.version = "12.1.2";
+Handsontable.buildDate = "22/09/2022 09:54:36";
+Handsontable.version = "12.1.3";
 Handsontable.languages = {
   dictionaryKeys,
   getLanguageDictionary,
@@ -700,7 +698,7 @@ var PortalManager = /*#__PURE__*/function (_React$Component) {
   return PortalManager;
 }(react.Component);
 
-var version="12.1.2";
+var version="12.1.3";
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;

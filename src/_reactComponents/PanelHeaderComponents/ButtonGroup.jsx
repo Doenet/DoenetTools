@@ -3,12 +3,15 @@ import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
   display: ${(props) => props.vertical ? 'static' : 'flex'};
+  width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
+  /* flex-wrap: wrap; */
   // margin: 2px 0px 2px 0px
+  overflow: clip;
 `;
 
 export default function ButtonGroup(props) {
     const buttonGroup = {
-        margin: '0px 2px 0px 2px',
+        margin: '0px 2px 4px 2px',
         borderRadius: '0',
         padding: '0px 12px 0px 10px'
     }; 
@@ -19,13 +22,6 @@ export default function ButtonGroup(props) {
       padding: '0px 10px 0px 10px'
     }; 
 
-    // if (props.width) {
-    //   if (props.width === "menu") {
-    //     actionGroup.width = '235px'
-    //   } else {
-    //     actionGroup.width = props.width
-    //   }
-    // }
     let elem = React.Children.toArray(props.children);
     // if (elem.length > 1) {
     //   elem = [React.cloneElement(elem[0], {num: 'first'})]
@@ -33,7 +29,7 @@ export default function ButtonGroup(props) {
     //     .concat(React.cloneElement(elem[elem.length - 1], {num: 'last'}));
     // }
     return (
-      <Container vertical={props.vertical}>
+      <Container vertical={props.vertical} width={props.width}>
         <ThemeProvider theme={props.vertical ? verticalButtonGroup : buttonGroup}>{elem}</ThemeProvider>
       </Container>
       

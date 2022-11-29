@@ -3,29 +3,34 @@ import axios from 'axios';
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import { checkIfUserClearedOut, clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
 
 export default function SignOut() {
-  const [signOutAttempted, setSignOutAttempted] = useState(false);
+  const [isSignedOut, setIsSignedOut] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
-  useEffect(() => {
-    localStorage.clear(); //Clear out the profile
-    indexedDB.deleteDatabase('keyval-store'); //Clear out the rest of the profile
+  useEffect( () => {
+    async function checkSignout(){
+      // console.log("checkSignout")
+      let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
+      setIsSignedOut(userInformationIsCompletelyRemoved);
+      setErrorMessage(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
+    }
 
-    axios
-      .get('/api/signOut.php', {params: {}})
-      .then((resp) => {
-      // console.log(">>>signout resp",resp)
-      setSignOutAttempted(true);
-      })
-      .catch((error) => {
-        this.setState({ error: error });
-      });
+    clearUsersInformationFromTheBrowser()
+    .then(() => {
+      // console.log("clearUsersInformationFromTheBrowser completed")
+      checkSignout();
+    })
+    .catch((error) => {
+      // console.log("clearUsersInformationFromTheBrowser completed error")
+      checkSignout();
+    });
   }, []);
+  
 
-  const vanillaCookies = document.cookie.split(';');
-
-  if (vanillaCookies.length === 1 && vanillaCookies[0] === '') {
+  if (isSignedOut) {
     return (
       <div>
         <div
@@ -49,14 +54,14 @@ export default function SignOut() {
           />
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <h2>You are Signed Out!</h2>
-            <Button value="Homepage" onClick={() => {setPageToolView({page: 'home', tool: '', view: ''})}}/>
+            <Button dataTest='homepage button' value="Homepage" onClick={() => {setPageToolView({page: 'home', tool: '', view: ''})}}/>
           </div>
         </div>
       </div>
     );
   }
 
-  if (signOutAttempted) {
+  if (errorMessage != "") {
     return (
       <div>
         <div
@@ -80,6 +85,7 @@ export default function SignOut() {
           />
           <div>
             <h2>FAILED SIGN OUT</h2>
+            <p>{errorMessage}</p>
             <p>Please manually remove your cookies.</p>
           </div>
         </div>

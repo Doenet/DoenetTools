@@ -47,6 +47,7 @@ $assignment = array();
   a.paginate AS paginate,
   a.showFinishButton AS showFinishButton,
   a.proctorMakesAvailable AS proctorMakesAvailable,
+  a.autoSubmit AS autoSubmit,
   a.doenetId AS doenetId
   FROM assignment AS a
   WHERE a.doenetId = '$doenetId' 
@@ -76,6 +77,7 @@ $assignment = array();
           "paginate" => $row['paginate'] == '1' ? true : false,
           "showFinishButton" => $row['showFinishButton'] == '1' ? true : false,
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
+          "autoSubmit" => $row['autoSubmit'] == '1' ? true : false,
           "doenetId" => $row['doenetId']
     );
   }

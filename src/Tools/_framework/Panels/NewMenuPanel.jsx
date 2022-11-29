@@ -274,6 +274,8 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
     EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
     AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
     DraftActivityCap:lazy(() => import('../MenuPanelCaps/DraftActivityCap')),
+    ContentInfoCap:lazy(() => import('../MenuPanelCaps/ContentInfoCap')),
+    
   }).current;
 
   const LazyMenuObj = useRef({
@@ -307,6 +309,7 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
     TimerMenu:lazy(() => import('../Menus/TimerMenu')),
     CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
+    ActivityDates:lazy(() => import('../Menus/ActivityDates')),
     ClassTimes:lazy(() => import('../Menus/ClassTimes')),
     CurrentContent:lazy(() => import('../Menus/CurrentContent')),
     ManageUsersMenu:lazy(() => import('../Menus/ManageUsersMenu'))

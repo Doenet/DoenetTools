@@ -3,44 +3,16 @@ import PageViewer, {scrollableContainerAtom} from "../../viewer/PageViewer.js";
 import useEventListener from "../../_utils/hooks/useEventListener.js";
 import {
   useRecoilValue,
-  atom,
   useRecoilCallback,
   useRecoilState,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
 import {profileAtom, searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
-import {
-  fileByPageId,
-  pageVariantInfoAtom,
-  pageVariantPanelAtom
-} from "../ToolHandlers/CourseToolHandler.js";
 import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
+import {editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom} from "../../_sharedRecoil/EditorViewerRecoil.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {useLocation} from "../../_snowpack/pkg/react-router.js";
-export const viewerDoenetMLAtom = atom({
-  key: "viewerDoenetMLAtom",
-  default: ""
-});
-export const textEditorDoenetMLAtom = atom({
-  key: "textEditorDoenetMLAtom",
-  default: ""
-});
-export const updateTextEditorDoenetMLAtom = atom({
-  key: "updateTextEditorDoenetMLAtom",
-  default: ""
-});
-export const editorPageIdInitAtom = atom({
-  key: "editorPageIdInitAtom",
-  default: ""
-});
-export const refreshNumberAtom = atom({
-  key: "refreshNumberAtom",
-  default: 0
-});
-export const editorViewerErrorStateAtom = atom({
-  key: "editorViewerErrorStateAtom",
-  default: false
-});
+import {pageVariantInfoAtom, pageVariantPanelAtom} from "../../_sharedRecoil/PageViewerRecoil.js";
 export const useUpdateViewer = () => {
   const updateViewer = useRecoilCallback(({snapshot, set}) => async () => {
     const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
@@ -131,7 +103,7 @@ export default function EditorViewer() {
     };
   }, [effectivePageId, pageInitiated]);
   useEventListener("keydown", (e) => {
-    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+    if (e.keyCode === 83 && e.metaKey || e.keyCode === 83 && e.ctrlKey) {
       e.preventDefault();
       updateViewer();
     }
@@ -182,6 +154,7 @@ export default function EditorViewer() {
       solutionDisplayMode,
       showFeedback: true,
       showHints: true,
+      autoSubmit: false,
       allowLoadState: false,
       allowSaveState: false,
       allowLocalState: false,

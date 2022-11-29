@@ -23,6 +23,7 @@ import {
   suppressMenusAtom
 } from "../NewToolRoot.js";
 import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {coursePermissionsAndSettingsByCourseId} from "../../_reactComponents/Course/CourseActions.js";
 export const Styles = styled.div`
   padding: 1rem;
   table {
@@ -67,7 +68,6 @@ export const Styles = styled.div`
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-
     }
 
     th:first-child {
@@ -82,7 +82,7 @@ export const Styles = styled.div`
       height: 100%;
     } */
 
-    tr:first-child th > p{
+    tr:first-child th > p {
       margin: 0px 0px 4px 0px;
       padding: 0px;
     }
@@ -92,7 +92,6 @@ export const Styles = styled.div`
       text-align: left;
       transform: rotate(180deg);
       max-height: 160px;
-
     }
 
     thead tr:only-child th:not(:first-child) > p {
@@ -124,16 +123,16 @@ export const Styles = styled.div`
     }
   }
 `;
-const assignmentDataQuerry = atom({
-  key: "assignmentDataQuerry",
+const assignmentDataQuery = atom({
+  key: "assignmentDataQuery",
   default: selector({
-    key: "assignmentDataQuerry/Default",
+    key: "assignmentDataQuery/Default",
     get: async ({get}) => {
       const courseId = get(searchParamAtomFamily("courseId"));
       try {
         const {
           data: {success, message, assignments}
-        } = await axios.get("/api/loadAssignments.php", {
+        } = await axios.get("/api/loadGradebookAssignments.php", {
           params: {courseId}
         });
         if (success) {
@@ -157,20 +156,20 @@ export const assignmentData = selector({
   key: "assignmentData",
   get: ({get}) => {
     let assignmentArray = {};
-    let data = get(assignmentDataQuerry);
+    let data = get(assignmentDataQuery);
     if (isIterable(data)) {
       for (let row of data) {
-        let [doenetId, assignmentName] = row;
-        assignmentArray[doenetId] = assignmentName;
+        let [doenetId, assignmentInfo] = row;
+        assignmentArray[doenetId] = assignmentInfo;
       }
     }
     return assignmentArray;
   }
 });
-export const studentDataQuerry = atom({
-  key: "studentDataQuerry",
+export const studentDataQuery = atom({
+  key: "studentDataQuery",
   default: selector({
-    key: "studentDataQuerry/Default",
+    key: "studentDataQuery/Default",
     get: async ({get}) => {
       const courseId = get(searchParamAtomFamily("courseId"));
       try {
@@ -193,7 +192,7 @@ export const studentDataQuerry = atom({
 export const studentData = selector({
   key: "studentData",
   get: ({get}) => {
-    let data = get(studentDataQuerry);
+    let data = get(studentDataQuery);
     let students = {};
     for (let row of data) {
       let [
@@ -215,20 +214,20 @@ export const studentData = selector({
     return students;
   }
 });
-export const overViewDataQuerry = atom({
-  key: "overViewDataQuerry",
+export const overviewDataQuery = atom({
+  key: "overviewDataQuery",
   default: selector({
-    key: "overViewDataQuerry/Default",
+    key: "overviewDataQuery/Default",
     get: async ({get}) => {
       const courseId = get(searchParamAtomFamily("courseId"));
       try {
         let {
-          data: {success, message, overviewData}
+          data: {success, message, overview}
         } = await axios.get("/api/loadGradebookOverview.php", {
           params: {courseId}
         });
         if (success) {
-          return overviewData;
+          return overview;
         }
         throw new Error(message);
       } catch (error) {
@@ -238,35 +237,35 @@ export const overViewDataQuerry = atom({
     }
   })
 });
-export const overViewData = selector({
-  key: "overViewData",
+export const overviewData = selector({
+  key: "overviewData",
   get: ({get}) => {
     const students = get(studentData);
     const assignments = get(assignmentData);
-    let overView = {};
+    let overview = {};
     for (let userId in students) {
-      overView[userId] = {
+      overview[userId] = {
         grade: students[userId].courseGrade,
         assignments: {}
       };
       for (let doenetId in assignments) {
-        overView[userId].assignments[doenetId] = null;
+        overview[userId].assignments[doenetId] = null;
       }
     }
-    let data = get(overViewDataQuerry);
-    for (let userAssignment in data) {
-      let [doenetId, credit, userId] = data[userAssignment];
-      if (overView[userId]) {
-        overView[userId].assignments[doenetId] = credit;
+    let data = get(overviewDataQuery);
+    for (let userAssignment of data) {
+      let [doenetId, credit, userId] = userAssignment;
+      if (overview[userId]) {
+        overview[userId].assignments[doenetId] = credit;
       }
     }
-    return overView;
+    return overview;
   }
 });
-export const attemptDataQuerry = atomFamily({
-  key: "attemptDataQuerry",
+export const attemptDataQuery = atomFamily({
+  key: "attemptDataQuery",
   default: selectorFamily({
-    key: "attemptDataQuerry/Default",
+    key: "attemptDataQuery/Default",
     get: (doenetId) => async ({get}) => {
       const courseId = get(searchParamAtomFamily("courseId"));
       try {
@@ -298,7 +297,7 @@ export const attemptData = selectorFamily({
         attempts: {}
       };
     }
-    let data = get(attemptDataQuerry(doenetId));
+    let data = get(attemptDataQuery(doenetId));
     for (let row of data) {
       let [
         userId,
@@ -316,10 +315,10 @@ export const attemptData = selectorFamily({
     return attempts;
   }
 });
-const specificAttemptDataQuerry = atomFamily({
-  key: "specificAttemptDataQuerry",
+const specificAttemptDataQuery = atomFamily({
+  key: "specificAttemptDataQuery",
   default: selectorFamily({
-    key: "specificAttemptDataQuerry/Default",
+    key: "specificAttemptDataQuery/Default",
     get: (params) => async () => {
       try {
         let {
@@ -340,8 +339,8 @@ const specificAttemptDataQuerry = atomFamily({
 export const specificAttemptData = selectorFamily({
   key: "specificAttemptData",
   get: (params) => ({get}) => {
-    let data = get(specificAttemptDataQuerry(params));
-    let doenetML = get(doenetMLQuerry(data.contentId));
+    let data = get(specificAttemptDataQuery(params));
+    let doenetML = get(doenetMLQuery(data.contentId));
     let specificAttempt = {
       assignmentAttempted: data.assignmentAttempted,
       stateVariables: data.stateVariables,
@@ -357,10 +356,10 @@ export const specificAttemptData = selectorFamily({
     return specificAttempt;
   }
 });
-const doenetMLQuerry = atomFamily({
-  key: "doenetMLQuerry",
+const doenetMLQuery = atomFamily({
+  key: "doenetMLQuery",
   default: selectorFamily({
-    key: "doenetMLQuerry/Default",
+    key: "doenetMLQuery/Default",
     get: (contentId) => async () => {
       try {
         const server = await axios.get(`/media/${contentId}.doenet`);
@@ -389,11 +388,7 @@ export function Table({columns, data}) {
     headerGroups,
     footerGroups,
     rows,
-    prepareRow,
-    state,
-    visibleColumns,
-    preGlobalFilteredRows,
-    setGlobalFilter
+    prepareRow
   } = useTable({
     columns,
     data,
@@ -455,28 +450,32 @@ function DefaultColumnFilter({
     style: {border: "2px solid var(--canvastext)", borderRadius: "5px"}
   });
 }
+export const gradeCategories = [
+  {category: "Gateway", scaleFactor: 0},
+  {category: "Exams"},
+  {category: "Quizzes", maximumNumber: 10},
+  {category: "Problem sets", maximumNumber: 30},
+  {category: "Projects"},
+  {category: "Participation", maximumValue: 50}
+];
 function GradebookOverview() {
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let students = useRecoilValueLoadable(studentData);
   let assignments = useRecoilValueLoadable(assignmentData);
-  let overView = useRecoilValueLoadable(overViewData);
+  let overview = useRecoilValueLoadable(overviewData);
   let {canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   useEffect(() => {
     setSuppressMenus(canViewAndModifyGrades === "1" ? [] : ["GradeDownload"]);
   }, [canViewAndModifyGrades, setSuppressMenus]);
-  if (assignments.state !== "hasValue" || students.state !== "hasValue" || overView.state !== "hasValue") {
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  if (course?.canViewCourse == "0") {
+    return /* @__PURE__ */ React.createElement("h1", null, "No Access to view this page.");
+  }
+  if (assignments.state !== "hasValue" || students.state !== "hasValue" || overview.state !== "hasValue") {
     return null;
   }
-  let gradeCategories = [
-    {category: "Gateway", scaleFactor: 0},
-    {category: "Exams"},
-    {category: "Quizzes", maximumNumber: 10},
-    {category: "Problem sets", maximumNumber: 30},
-    {category: "Projects"},
-    {category: "Participation"}
-  ];
   let overviewTable = {};
   overviewTable.headers = [];
   overviewTable.rows = [];
@@ -487,15 +486,18 @@ function GradebookOverview() {
     accessor: "name",
     Footer: "Possible Points"
   });
+  let sortedAssignments = Object.entries(assignments.contents);
+  sortedAssignments.sort((a, b) => a[1].sortOrder < b[1].sortOrder ? -1 : 1);
   possiblePointRow["name"] = "Possible Points";
   for (let {
     category,
     scaleFactor = 1,
-    maximumNumber = Infinity
+    maximumNumber = Infinity,
+    maximumValue = Infinity
   } of gradeCategories) {
     let allpossiblepoints = [];
     let hasAssignments = false;
-    for (let doenetId in assignments.contents) {
+    for (let [doenetId] of sortedAssignments) {
       let inCategory = assignments.contents[doenetId].category;
       if (inCategory?.toLowerCase() !== category.toLowerCase()) {
         continue;
@@ -534,26 +536,28 @@ function GradebookOverview() {
     }
     let numberScores = allpossiblepoints.length;
     allpossiblepoints = allpossiblepoints.sort((a, b) => b - a).slice(0, maximumNumber);
-    let categoryPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+    let scaledPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+    let categoryPossiblePoints = Math.min(scaledPossiblePoints, maximumValue);
     totalPossiblePoints += categoryPossiblePoints;
     categoryPossiblePoints = Math.round(categoryPossiblePoints * 100) / 100;
-    let description = "";
+    let description = [];
     if (numberScores > maximumNumber) {
-      description = /* @__PURE__ */ React.createElement("div", {
-        style: {fontSize: ".7em"}
-      }, "(Based on top ", maximumNumber, " scores)");
+      description.push(`top ${maximumNumber} scores`);
     }
     if (scaleFactor !== 1) {
-      description = /* @__PURE__ */ React.createElement("div", {
-        style: {fontSize: ".7em"}
-      }, "(Based on rescaling by ", scaleFactor * 100, "%)");
+      description.push(`rescaling by ${scaleFactor * 100}%`);
+    }
+    if (scaledPossiblePoints > maximumValue) {
+      description.push(`a cap of ${maximumValue} points`);
     }
     if (hasAssignments) {
       overviewTable.headers.push({
         Header: category,
         columns: [
           {
-            Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
+            Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description.length > 0 && /* @__PURE__ */ React.createElement("div", {
+              style: {fontSize: ".7em"}
+            }, "Based on ", description.join(","))),
             accessor: category,
             Footer: categoryPossiblePoints,
             disableFilters: true
@@ -562,7 +566,7 @@ function GradebookOverview() {
       });
     } else {
       overviewTable.headers.push({
-        Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
+        Header: /* @__PURE__ */ React.createElement("div", null),
         accessor: category,
         Footer: categoryPossiblePoints,
         disableFilters: true
@@ -595,16 +599,17 @@ function GradebookOverview() {
     for (let {
       category,
       scaleFactor = 1,
-      maximumNumber = Infinity
+      maximumNumber = Infinity,
+      maximumValue = Infinity
     } of gradeCategories) {
       let scores = [];
-      for (let doenetId in assignments.contents) {
+      for (let [doenetId] of sortedAssignments) {
         let inCategory = assignments.contents[doenetId].category;
         if (inCategory?.toLowerCase() !== category.toLowerCase()) {
           continue;
         }
         let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
-        let credit = overView.contents[userId].assignments[doenetId];
+        let credit = overview.contents[userId].assignments[doenetId];
         let score = possiblepoints * credit;
         scores.push(score);
         score = Math.round(score * 100) / 100;
@@ -621,11 +626,13 @@ function GradebookOverview() {
                 previousCrumb: "student"
               }
             });
-          }
+          },
+          role: "button"
         }, score);
       }
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
-      let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      let scaledScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      let categoryScore = Math.min(scaledScore, maximumValue);
       totalScore += categoryScore;
       categoryScore = Math.round(categoryScore * 100) / 100;
       row[category] = categoryScore;
@@ -634,7 +641,6 @@ function GradebookOverview() {
     row["course total"] = totalScore;
     overviewTable.rows.push(row);
   }
-  console.log("rows", overviewTable.rows);
   return /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
     columns: overviewTable.headers,
     data: overviewTable.rows

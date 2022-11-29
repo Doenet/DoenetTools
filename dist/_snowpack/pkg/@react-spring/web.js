@@ -1,5 +1,5 @@
-import { r as react } from '../common/index-56a88a1e.js';
-import { r as reactDom } from '../common/index-c4ac9922.js';
+import { r as react } from '../common/index-61623f21.js';
+import { r as reactDom } from '../common/index-eaf9e997.js';
 import '../common/_commonjsHelpers-f5d70792.js';
 
 let updateQueue = makeQueue();
@@ -685,7 +685,7 @@ function findRange(input, inputRange) {
 }
 
 function _extends() {
-  _extends = Object.assign || function (target) {
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 
@@ -698,7 +698,6 @@ function _extends() {
 
     return target;
   };
-
   return _extends.apply(this, arguments);
 }
 
@@ -1197,7 +1196,7 @@ function getAnimatedType(value) {
 }
 
 function _extends$1() {
-  _extends$1 = Object.assign || function (target) {
+  _extends$1 = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 
@@ -1210,7 +1209,6 @@ function _extends$1() {
 
     return target;
   };
-
   return _extends$1.apply(this, arguments);
 }
 
@@ -1335,7 +1333,7 @@ const createHost = (components, {
 const getDisplayName = arg => is.str(arg) ? arg : arg && is.str(arg.displayName) ? arg.displayName : is.fun(arg) && arg.name || null;
 
 function _extends$2() {
-  _extends$2 = Object.assign || function (target) {
+  _extends$2 = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 
@@ -1348,7 +1346,6 @@ function _extends$2() {
 
     return target;
   };
-
   return _extends$2.apply(this, arguments);
 }
 
@@ -1872,8 +1869,8 @@ function runAsync(to, props, state, target) {
           }
         })(to);
       } else {
-          animating = Promise.resolve(to(animate, target.stop.bind(target)));
-        }
+        animating = Promise.resolve(to(animate, target.stop.bind(target)));
+      }
 
       await Promise.all([animating.then(preventBail), bailPromise]);
       result = getFinishedResult(target.get(), true, false);
@@ -2102,6 +2099,7 @@ class SpringValue extends FrameValue {
         const from = anim.fromValues[i];
         const v0 = node.v0 != null ? node.v0 : node.v0 = is.arr(config.velocity) ? config.velocity[i] : config.velocity;
         let velocity;
+        const precision = config.precision || (from == to ? 0.005 : Math.min(1, Math.abs(to - from) * 0.001));
 
         if (!is.und(config.duration)) {
           let p = 1;
@@ -2125,50 +2123,49 @@ class SpringValue extends FrameValue {
           velocity = (position - node.lastPosition) / dt;
           finished = p == 1;
         } else if (config.decay) {
-            const decay = config.decay === true ? 0.998 : config.decay;
-            const e = Math.exp(-(1 - decay) * elapsed);
-            position = from + v0 / (1 - decay) * (1 - e);
-            finished = Math.abs(node.lastPosition - position) < 0.1;
-            velocity = v0 * e;
-          } else {
-              velocity = node.lastVelocity == null ? v0 : node.lastVelocity;
-              const precision = config.precision || (from == to ? 0.005 : Math.min(1, Math.abs(to - from) * 0.001));
-              const restVelocity = config.restVelocity || precision / 10;
-              const bounceFactor = config.clamp ? 0 : config.bounce;
-              const canBounce = !is.und(bounceFactor);
-              const isGrowing = from == to ? node.v0 > 0 : from < to;
-              let isMoving;
-              let isBouncing = false;
-              const step = 1;
-              const numSteps = Math.ceil(dt / step);
+          const decay = config.decay === true ? 0.998 : config.decay;
+          const e = Math.exp(-(1 - decay) * elapsed);
+          position = from + v0 / (1 - decay) * (1 - e);
+          finished = Math.abs(node.lastPosition - position) <= precision;
+          velocity = v0 * e;
+        } else {
+          velocity = node.lastVelocity == null ? v0 : node.lastVelocity;
+          const restVelocity = config.restVelocity || precision / 10;
+          const bounceFactor = config.clamp ? 0 : config.bounce;
+          const canBounce = !is.und(bounceFactor);
+          const isGrowing = from == to ? node.v0 > 0 : from < to;
+          let isMoving;
+          let isBouncing = false;
+          const step = 1;
+          const numSteps = Math.ceil(dt / step);
 
-              for (let n = 0; n < numSteps; ++n) {
-                isMoving = Math.abs(velocity) > restVelocity;
+          for (let n = 0; n < numSteps; ++n) {
+            isMoving = Math.abs(velocity) > restVelocity;
 
-                if (!isMoving) {
-                  finished = Math.abs(to - position) <= precision;
+            if (!isMoving) {
+              finished = Math.abs(to - position) <= precision;
 
-                  if (finished) {
-                    break;
-                  }
-                }
-
-                if (canBounce) {
-                  isBouncing = position == to || position > to == isGrowing;
-
-                  if (isBouncing) {
-                    velocity = -velocity * bounceFactor;
-                    position = to;
-                  }
-                }
-
-                const springForce = -config.tension * 0.000001 * (position - to);
-                const dampingForce = -config.friction * 0.001 * velocity;
-                const acceleration = (springForce + dampingForce) / config.mass;
-                velocity = velocity + acceleration * step;
-                position = position + velocity * step;
+              if (finished) {
+                break;
               }
             }
+
+            if (canBounce) {
+              isBouncing = position == to || position > to == isGrowing;
+
+              if (isBouncing) {
+                velocity = -velocity * bounceFactor;
+                position = to;
+              }
+            }
+
+            const springForce = -config.tension * 0.000001 * (position - to);
+            const dampingForce = -config.friction * 0.001 * velocity;
+            const acceleration = (springForce + dampingForce) / config.mass;
+            velocity = velocity + acceleration * step;
+            position = position + velocity * step;
+          }
+        }
 
         node.lastVelocity = velocity;
 
@@ -2336,8 +2333,8 @@ class SpringValue extends FrameValue {
       if (!is.und(from)) {
         this._set(from);
       } else if (!getAnimated(this)) {
-          this._set(to);
-        }
+        this._set(to);
+      }
     }
 
     return range;
@@ -2510,8 +2507,8 @@ class SpringValue extends FrameValue {
       if (anim.changed && !reset) {
         started = true;
       } else if (!started) {
-          this._stop(prevTo);
-        }
+        this._stop(prevTo);
+      }
     }
 
     if (!hasAsyncTo) {
@@ -2545,8 +2542,8 @@ class SpringValue extends FrameValue {
           if (reset) {
             callProp(defaultProps.onRest, result);
           } else {
-              anim.onStart == null ? void 0 : anim.onStart(result, this);
-            }
+            anim.onStart == null ? void 0 : anim.onStart(result, this);
+          }
         });
       }
     }
@@ -2558,12 +2555,12 @@ class SpringValue extends FrameValue {
     if (hasAsyncTo) {
       resolve(runAsync(props.to, props, this._state, this));
     } else if (started) {
-        this._start();
-      } else if (isAnimating(this) && !hasToChanged) {
-          this._pendingCalls.add(resolve);
-        } else {
-            resolve(getNoopResult(value));
-          }
+      this._start();
+    } else if (isAnimating(this) && !hasToChanged) {
+      this._pendingCalls.add(resolve);
+    } else {
+      resolve(getNoopResult(value));
+    }
   }
 
   _focus(value) {
@@ -2993,36 +2990,36 @@ async function flushUpdate(ctrl, props, isLoop) {
       defaults.onRest = undefined;
     }
   } else {
-      each(BATCHED_EVENTS, key => {
-        const handler = props[key];
+    each(BATCHED_EVENTS, key => {
+      const handler = props[key];
 
-        if (is.fun(handler)) {
-          const queue = ctrl['_events'][key];
+      if (is.fun(handler)) {
+        const queue = ctrl['_events'][key];
 
-          props[key] = ({
-            finished,
-            cancelled
-          }) => {
-            const result = queue.get(handler);
+        props[key] = ({
+          finished,
+          cancelled
+        }) => {
+          const result = queue.get(handler);
 
-            if (result) {
-              if (!finished) result.finished = false;
-              if (cancelled) result.cancelled = true;
-            } else {
-              queue.set(handler, {
-                value: null,
-                finished: finished || false,
-                cancelled: cancelled || false
-              });
-            }
-          };
-
-          if (defaults) {
-            defaults[key] = props[key];
+          if (result) {
+            if (!finished) result.finished = false;
+            if (cancelled) result.cancelled = true;
+          } else {
+            queue.set(handler, {
+              value: null,
+              finished: finished || false,
+              cancelled: cancelled || false
+            });
           }
+        };
+
+        if (defaults) {
+          defaults[key] = props[key];
         }
-      });
-    }
+      }
+    });
+  }
 
   const state = ctrl['_state'];
 
@@ -3030,8 +3027,8 @@ async function flushUpdate(ctrl, props, isLoop) {
     state.paused = props.pause;
     flushCalls(props.pause ? state.pauseQueue : state.resumeQueue);
   } else if (state.paused) {
-      props.pause = true;
-    }
+    props.pause = true;
+  }
 
   const promises = (keys || Object.keys(ctrl.springs)).map(key => ctrl.springs[key].start(props));
   const cancel = props.cancel === true || getDefaultProp(props, 'cancel') === true;
@@ -3770,10 +3767,10 @@ class Interpolation extends FrameValue {
         this._start();
       }
     } else if (event.type == 'idle') {
-        this._active.delete(event.parent);
-      } else if (event.type == 'priority') {
-          this.priority = toArray(this.source).reduce((highest, parent) => Math.max(highest, (isFrameValue(parent) ? parent.priority : 0) + 1), 0);
-        }
+      this._active.delete(event.parent);
+    } else if (event.type == 'priority') {
+      this.priority = toArray(this.source).reduce((highest, parent) => Math.max(highest, (isFrameValue(parent) ? parent.priority : 0) + 1), 0);
+    }
   }
 
 }

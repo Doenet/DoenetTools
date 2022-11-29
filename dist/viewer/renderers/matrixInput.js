@@ -49,7 +49,7 @@ const Button = styled.button`
     padding: 2px;
     border: none;
     border-radius: var(--mainBorderRadius);
-    margin: 0px 12px 12px 0px;
+    margin: 0px 4px 4px 0px;
 
 
     &:hover {
@@ -79,10 +79,11 @@ export default React.memo(function MatrixInput(props) {
   let disabled = SVs.disabled;
   let surroundingBorderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
   let checkWorkStyle = {
-    cursor: "pointer"
+    cursor: "pointer",
+    padding: "1px 6px 1px 6px"
   };
   let checkWorkButton = null;
-  if (SVs.includeCheckWork) {
+  if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
     if (validationState.current === "unvalidated") {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
@@ -119,7 +120,7 @@ export default React.memo(function MatrixInput(props) {
         } else if (validationState.current === "partialcorrect") {
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = "50px";
+          checkWorkStyle.width = "44px";
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: id + "_partial",
@@ -136,6 +137,7 @@ export default React.memo(function MatrixInput(props) {
         }
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.padding = "1px 8px 1px 4px";
         checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
           id: id + "_saved",
           style: checkWorkStyle
@@ -157,7 +159,7 @@ export default React.memo(function MatrixInput(props) {
     let mathinputRow = [];
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(/* @__PURE__ */ React.createElement("td", {
-        style: {margin: "12px"},
+        style: {margin: "4px"},
         key: colInd,
         id: id + "_component_" + rowInd + "_" + colInd
       }, children[rowInd * SVs.numColumns + colInd]));
@@ -169,7 +171,7 @@ export default React.memo(function MatrixInput(props) {
   let rowNumControls = null;
   if (SVs.showSizeControls) {
     rowNumControls = /* @__PURE__ */ React.createElement("span", {
-      style: {margin: "0px 12px 12px 0px"}
+      style: {margin: "0px 4px 4px 0px"}
     }, /* @__PURE__ */ React.createElement(ActionButtonGroup, null, /* @__PURE__ */ React.createElement(ActionButton, {
       id: id + "_rowDecrement",
       value: "r-",
@@ -190,7 +192,7 @@ export default React.memo(function MatrixInput(props) {
   let colNumControls = null;
   if (SVs.showSizeControls) {
     colNumControls = /* @__PURE__ */ React.createElement("span", {
-      style: {margin: "0px 12px 12px 0px"}
+      style: {margin: "0px 4px 4px 0px"}
     }, /* @__PURE__ */ React.createElement(ActionButtonGroup, null, /* @__PURE__ */ React.createElement(ActionButton, {
       id: id + "_columnDecrement",
       value: "c-",
@@ -211,12 +213,12 @@ export default React.memo(function MatrixInput(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name: id
   }), /* @__PURE__ */ React.createElement("div", {
-    style: {display: "inline-flex", marginBottom: "12px"}
+    style: {display: "inline-flex", marginBottom: "4px"}
   }, /* @__PURE__ */ React.createElement(Matrix, {
     className: "matrixInputSurroundingBox",
     id,
-    style: {paddingLeft: "12px", paddingTop: "12px"}
+    style: {paddingLeft: "4px", paddingTop: "4px"}
   }, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("tbody", null, matrixInputs))), /* @__PURE__ */ React.createElement("div", {
-    style: {marginRight: "12px"}
+    style: {marginRight: "4px"}
   }), rowNumControls, colNumControls, checkWorkButton));
 });

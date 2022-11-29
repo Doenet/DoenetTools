@@ -294,6 +294,7 @@ describe('Angle Tag Tests', function () {
     cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(1, 1E-6)
     })
+    cy.get("#\\/radius2 .mjx-mrow").eq(0).should("have.text", "\uff3f")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -657,15 +658,18 @@ describe('Angle Tag Tests', function () {
   <math simplify>2<copy prop="angle" target="_angle1" /></math>
   <math simplify>2<copy prop="degrees" target="_angle1" /></math>
 
+  <angle degrees="75" />
+
   `}, "*");
     });
 
+    // TODO: once can simply ratios, check that 2*_angle2 is simplified correctly
+
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    // TODO: add this when can simplify ratios
-    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-    //   expect(text).eq("π2")
-    // })
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π2")
+    })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
@@ -678,12 +682,14 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).evaluate_to_constant()).closeTo(Math.PI / 2, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(["/", "pi", 2]);
       expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
       expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
       expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
       expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(0, 1E-14)
       expect(stateVariables['/_angle1'].stateValues.points[2][1]).eq(1);
+      expect(stateVariables['/_angle2'].stateValues.radians).eqls(["/", ["*", 5, "pi"], 12]);
+      expect(stateVariables['/_angle2'].stateValues.degrees).closeTo(75, 1E-12);
     })
 
   })

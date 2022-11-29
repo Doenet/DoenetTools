@@ -4,9 +4,9 @@ import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {toastType, useToast} from "../Toast.js";
-import {viewerDoenetMLAtom} from "../ToolPanels/EditorViewer.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {courseIdAtom} from "../../_reactComponents/Course/CourseActions.js";
+import {viewerDoenetMLAtom} from "../../_sharedRecoil/EditorViewerRecoil.js";
 export default function PageLink() {
   const addToast = useToast();
   const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
@@ -29,11 +29,10 @@ export default function PageLink() {
     let pageCid = data.cid;
     let linkText = `<copy uri="doenet:doenetId=${doenetId}&pageId=${pageId}&cid=${pageCid}" />`;
     copyToClipboard(linkText);
-    addToast("Link copied to clipboard!", toastType.SUCCESS);
   }
   return /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
-    "data-test": "Copy Page Link",
+    dataTest: "Copy Page Link",
     value: "Copy Page Link",
     onClick: savePageDoenetMLAndCopyLink
   });

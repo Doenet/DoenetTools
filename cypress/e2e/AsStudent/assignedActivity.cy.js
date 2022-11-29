@@ -30,12 +30,14 @@ describe('Assigned Activity Tests', function () {
 
   // Formatting the date to be 'mm/dd/yyyy' WITH leading zeros
   // Ex: '09/12/2022' for September 12, 2022
-  function formatDateWithYear(date) {
+  function formatDateWithYear(date,prefixZero) {
     const yyyy = date.getFullYear();
     let mm = date.getMonth() + 1; // Months start at 0!
     let dd = date.getDate();
     if (mm < 10) mm = '0' + mm;
-    if (dd < 10) dd = '0' + dd;
+    if (prefixZero){
+      if (dd < 10) dd = '0' + dd;
+    }
 
     return mm + '/' + dd + '/' + yyyy;
   }
@@ -85,14 +87,15 @@ describe('Assigned Activity Tests', function () {
 
     const assignedDate = new Date();
     let dueDate = new Date(assignedDate.getTime() + 7 * 24 * 60 * 60 * 1000); // One week from now
-
+    dueDate.setSeconds(0); //To prevent rounding up false tests
+  
     // Update the activity as the owner
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Due Date Checkbox"]').click();
-    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
+    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate,true) + ' ' + formatTime(dueDate));
     cy.get('[data-test="Assigned Date Checkbox"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1000); // Wait for activity to be saved and assigned
+    cy.get('[data-test="Unassign Activity"]').should('be.visible'); //Wait for activity to be saved
 
     // Sign in as a student
     cy.signin({ userId: studentUserId });
@@ -101,7 +104,7 @@ describe('Assigned Activity Tests', function () {
     // Check if the Content page contains the correct activity with the due date
     cy.get('.navigationRow').should('have.length', 1); // Need this to wait for the row to appear
     cy.get('[data-test="rowLabel"]').contains('Cypress Activity');
-    cy.get('.navigationRow').eq(0).get('.navigationColumn2').contains(formatDateWithYear(dueDate) + ', ' + formatHours(dueDate) + ':' + formatMinutes(dueDate) + ':00');
+    cy.get('.navigationRow').eq(0).get('.navigationColumn2').contains(formatDateWithYear(dueDate,false) + ', ' + formatHours(dueDate) + ':' + formatMinutes(dueDate) + ':00');
   
   })
 
@@ -114,22 +117,22 @@ describe('Assigned Activity Tests', function () {
     // Update the activity as the owner
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assigned Date Checkbox"]').click();
-    cy.get('[data-test="Assigned Date"]').should('have.value', formatDateWithYear(assignedDate) + ' ' + formatTime(assignedDate));
+    cy.get('[data-test="Assigned Date"]').should('have.value', formatDateWithYear(assignedDate,true) + ' ' + formatTime(assignedDate));
     cy.get('[data-test="Due Date Checkbox"]').click();
-    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate) + ' ' + formatTime(dueDate));
+    cy.get('[data-test="Due Date"]').should('have.value', formatDateWithYear(dueDate,true) + ' ' + formatTime(dueDate));
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1000); // Wait for activity to be saved and assigned
+    cy.get('[data-test="Unassign Activity"]').should('be.visible'); //Wait for activity to be saved
+
 
     // Sign in as a student
     // Check if the Content By Week page contains the correct activity with the assigned date and due date
     cy.signin({ userId: studentUserId });
     cy.visit(`http://localhost/course?tool=dashboard&courseId=${courseId}`);
-    cy.get('[data-test="Main Panel"]').scrollTo('right');
-    cy.get(':nth-child(2) > .sc-bBHHxi').click();
+    cy.get('[data-test="next week button"]').click();
     cy.get('table').should('have.length', 1); // Need this to wait for the row to appear
-    cy.get('table > :nth-child(2) > :nth-child(2)').contains('Cypress Activity');
-    cy.get('table > :nth-child(2) > :nth-child(3)').contains(formatDateWithoutYear(assignedDate) + ' ' + formatTime(assignedDate)); // Add the 'M' back to AM/PM
-    cy.get('table > :nth-child(2) > :nth-child(4)').contains(formatDateWithoutYear(dueDate) + ' ' + formatTime(dueDate));
+    cy.get('[data-test="cbw assignment label 0"]').contains('Cypress Activity');
+    cy.get('[data-test="cbw assigned date 0"]').contains(formatDateWithoutYear(assignedDate) + ' ' + formatTime(assignedDate)); // Add the 'M' back to AM/PM
+    cy.get('[data-test="cbw due date 0"]').contains(formatDateWithoutYear(dueDate) + ' ' + formatTime(dueDate));
   
   })
 

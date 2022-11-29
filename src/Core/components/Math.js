@@ -2,6 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition, superSubscriptsToUnicode, unicodeToSuperSubscripts } from '../utils/math';
 import { flattenDeep } from '../utils/array';
+import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 
 export default class MathComponent extends InlineComponent {
@@ -126,6 +127,38 @@ export default class MathComponent extends InlineComponent {
       public: true,
     }
 
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.layer = {
+      createComponentOfType: "number",
+      createStateVariable: "layer",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.anchor = {
+      createComponentOfType: "point",
+    }
+
+    attributes.positionFromAnchor = {
+      createComponentOfType: "text",
+      createStateVariable: "positionFromAnchor",
+      defaultValue: "center",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
+    }
+
+    attributes.styleNumber.defaultValue = 0;
+
     return attributes;
   }
 
@@ -147,6 +180,10 @@ export default class MathComponent extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
 
     stateVariableDefinitions.displayDigits = {
       public: true,
@@ -1133,6 +1170,7 @@ export default class MathComponent extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
+      forRenderer: true,
       shadowingInstructions: {
         createComponentOfType: "text",
       },
@@ -1942,6 +1980,56 @@ export default class MathComponent extends InlineComponent {
       },
     }
 
+    stateVariableDefinitions.anchor = {
+      defaultValue: me.fromText("(0,0)"),
+      public: true,
+      forRenderer: true,
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "point"
+      },
+      returnDependencies: () => ({
+        anchorAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "anchor",
+          variableNames: ["coords"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.anchorAttr) {
+          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
+        } else {
+          return { useEssentialOrDefaultValue: { anchor: true } }
+        }
+      },
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !await stateValues.draggable) {
+          return { success: false };
+        }
+
+        if (dependencyValues.anchorAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "anchorAttr",
+              desiredValue: desiredStateVariableValues.anchor,
+              variableIndex: 0,
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "anchor",
+              value: desiredStateVariableValues.anchor
+            }]
+          }
+        }
+
+      }
+    }
 
     return stateVariableDefinitions;
 
@@ -1956,6 +2044,58 @@ export default class MathComponent extends InlineComponent {
     "text",
     { componentType: "subsetOfReals", stateVariable: "value", substituteForPrimaryStateVariable: "subsetValue" }
   ];
+
+
+  async moveMath({ x, y, z, transient, actionId }) {
+    let components = ["vector"];
+    if (x !== undefined) {
+      components[1] = x;
+    }
+    if (y !== undefined) {
+      components[2] = y;
+    }
+    if (z !== undefined) {
+      components[3] = z;
+    }
+    if (transient) {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        transient,
+        actionId,
+      });
+    } else {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        actionId,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            x, y, z
+          }
+        }
+      });
+    }
+
+  }
+
+
+  actions = {
+    moveMath: this.moveMath.bind(this),
+  };
 
 }
 

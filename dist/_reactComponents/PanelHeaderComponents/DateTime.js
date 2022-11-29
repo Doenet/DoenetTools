@@ -18,7 +18,19 @@ export default function DateTime(props) {
   let borderColor = props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)";
   borderColor = props.disabled ? "2px solid var(--mainGray)" : borderColor;
   let cursorStyle = props.disabled ? "not-allowed" : "auto";
-  let width = props.width ? props.width : "170px";
+  var containerWidth = "170px";
+  var inputWidth = "170px";
+  if (props.width) {
+    if (props.width === "menu") {
+      containerWidth = "var(--menuWidth)";
+      inputWidth = "var(--menuWidth)";
+      if (props.label) {
+        containerWidth = "var(--menuWidth)";
+        inputWidth = "100%";
+      }
+    }
+  }
+  ;
   useEffect(() => {
     setLastValid(props.value);
     setValue(props.value);
@@ -41,7 +53,9 @@ export default function DateTime(props) {
     placeholder
   };
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
-    return /* @__PURE__ */ React.createElement("div", null, props.label ? /* @__PURE__ */ React.createElement(Label, {
+    return /* @__PURE__ */ React.createElement("div", {
+      style: {width: containerWidth}
+    }, props.label ? /* @__PURE__ */ React.createElement(Label, {
       id: "checkbox-label",
       vertical: props.vertical
     }, props.label) : null, /* @__PURE__ */ React.createElement("input", {
@@ -49,7 +63,7 @@ export default function DateTime(props) {
       style: {
         border: borderColor,
         cursor: cursorStyle,
-        width,
+        width: inputWidth,
         color: "var(--canvastext)",
         backgroundColor: "var(--canvas)",
         ...props.style
@@ -78,7 +92,12 @@ export default function DateTime(props) {
     }));
   };
   if (props.disabled) {
-    return /* @__PURE__ */ React.createElement("input", {
+    return /* @__PURE__ */ React.createElement("div", {
+      style: {width: containerWidth}
+    }, props.label ? /* @__PURE__ */ React.createElement(Label, {
+      id: "checkbox-label",
+      vertical: props.vertical
+    }, props.label) : null, /* @__PURE__ */ React.createElement("input", {
       ref: inputRef,
       onClick: props.disabledOnClick,
       value: props.disabledText,
@@ -89,12 +108,12 @@ export default function DateTime(props) {
         color: "var(--canvastext)",
         backgroundColor: "var(--canvas)",
         height: "18px",
-        width: "170px",
+        width: inputWidth,
         border: "2px solid var(--mainGray)",
         borderRadius: "var(--mainBorderRadius)",
         ...props.style
       }
-    });
+    }));
   }
   return /* @__PURE__ */ React.createElement(Datetime, {
     renderInput,

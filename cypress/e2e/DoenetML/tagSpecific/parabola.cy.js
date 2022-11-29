@@ -1662,6 +1662,8 @@ describe('Parabola Tag Tests', function () {
       let vertex3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[1].componentName;
 
 
+      cy.get(equationAnchor).should('contain.text', 'y=x2−3x+4')
+
 
       cy.window().then(async (win) => {
 

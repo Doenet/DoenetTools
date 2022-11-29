@@ -47,6 +47,7 @@ if ($success) {
         cr.canModifyCourseSettings,
         cr.dataAccessPermission,
         cr.canViewUsers,
+        cr.canViewCourse,
         cr.canManageUsers,
         cr.isAdmin,
         cr.isOwner

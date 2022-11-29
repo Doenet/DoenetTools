@@ -152,7 +152,8 @@ function SelectionMenu(props) {
       backgroundColor: "var(--canvas)",
       color: "var(--canvastext)",
       borderLeft: "8px solid var(--mainBlue)"
-    }
+    },
+    "data-test": "Menu Panel"
   }, props.children));
 }
 function Menu(props) {
@@ -206,7 +207,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     DataCap: lazy(() => import("../MenuPanelCaps/DataCap.js")),
     EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap.js")),
     AssignmentInfoCap: lazy(() => import("../MenuPanelCaps/AssignmentInfoCap.js")),
-    DraftActivityCap: lazy(() => import("../MenuPanelCaps/DraftActivityCap.js"))
+    DraftActivityCap: lazy(() => import("../MenuPanelCaps/DraftActivityCap.js")),
+    ContentInfoCap: lazy(() => import("../MenuPanelCaps/ContentInfoCap.js"))
   }).current;
   const LazyMenuObj = useRef({
     SelectedCourse: lazy(() => import("../Menus/SelectedCourse.js")),
@@ -239,6 +241,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),
     TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
     CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
+    ActivityDates: lazy(() => import("../Menus/ActivityDates.js")),
     ClassTimes: lazy(() => import("../Menus/ClassTimes.js")),
     CurrentContent: lazy(() => import("../Menus/CurrentContent.js")),
     ManageUsersMenu: lazy(() => import("../Menus/ManageUsersMenu.js"))

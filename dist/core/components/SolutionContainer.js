@@ -43,15 +43,19 @@ export default class SolutionContainer extends Template {
         component, componentInfoObjects
       })).replacements;
 
-      let replacementInstruction = {
-        changeType: "add",
-        changeTopLevelReplacements: true,
-        firstReplacementInd: 0,
-        numberReplacementsToReplace: 0,
-        serializedReplacements: replacements,
-      }
+      if (replacements.length > 0) {
+        let replacementInstruction = {
+          changeType: "add",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: 0,
+          numberReplacementsToReplace: 0,
+          serializedReplacements: replacements,
+        }
 
-      return [replacementInstruction];
+        return [replacementInstruction];
+      } else {
+        return [];
+      }
 
     } else {
       return [];

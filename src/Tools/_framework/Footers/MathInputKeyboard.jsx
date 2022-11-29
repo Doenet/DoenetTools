@@ -8,7 +8,7 @@ import VerticalDivider from '../../../_reactComponents/PanelHeaderComponents/Ver
 
 import { faBackspace, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import {
   focusedMathField,
@@ -16,9 +16,7 @@ import {
   focusedMathFieldReturn,
 } from './MathInputSelector';
 
-import { panelOpen } from '../Panels/Panel';
-
-import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/theme';
+// import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/theme';
 
 import { useRef } from 'react';
 
@@ -159,9 +157,6 @@ const LetterButton = styled.button`
 `;
 
 export default function VirtualKeyboard() {
-  const [toggleKeyboard, setToggleKeyboard] = useRecoilState(
-    panelOpen('keyboard'),
-  );
   const [toggleLetters, setToggleLetters] = useState(false);
   const [toggleCase, setToggleCase] = useState(false);
   const [toggleGreek, setToggleGreek] = useState(0);
@@ -178,7 +173,7 @@ export default function VirtualKeyboard() {
     setToggleFn(0);
     setToggleGreek(0);
     setToggleNumpad(0);
-  }, [toggleLetters, toggleCase]);
+  }, [toggleLetters, toggleCase, setPalletRef]);
 
   const handleToggleLetters = () => {
     setToggleLetters(!toggleLetters);
@@ -565,7 +560,7 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write y')}>
           <MathJax dynamic>\(y\)</MathJax>
         </Button>
-        <Button onClick={() => callback('type ^2')}>
+        <Button onClick={() => { callback('type ^2'); callback('keystroke Right') }}>
           <MathJax dynamic>\(a^2\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd ^')}>

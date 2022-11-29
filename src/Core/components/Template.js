@@ -1,7 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
-import { convertAttributesForComponentType } from '../utils/copy';
+import { convertAttributesForComponentType, verifyReplacementsMatchSpecifiedType } from '../utils/copy';
 import { setUpVariantSeedAndRng } from '../utils/variants';
 
 export default class Template extends CompositeComponent {
@@ -35,6 +35,12 @@ export default class Template extends CompositeComponent {
     attributes.isResponse = {
       leaveRaw: true,
     }
+    attributes.createComponentOfType = {
+      createPrimitiveOfType: "string",
+    };
+    attributes.nComponents = {
+      createPrimitiveOfType: "number",
+    };
     return attributes;
   }
 
@@ -46,6 +52,8 @@ export default class Template extends CompositeComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let componentClass = this;
 
     stateVariableDefinitions.serializedChildren = {
       returnDependencies: () => ({
@@ -142,6 +150,43 @@ export default class Template extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.nComponentsSpecified = {
+      returnDependencies: () => ({
+        nComponentsAttr: {
+          dependencyType: "attributePrimitive",
+          attributeName: "nComponents"
+        },
+        typeAttr: {
+          dependencyType: "attributePrimitive",
+          attributeName: "createComponentOfType"
+        }
+      }),
+      definition({ dependencyValues, componentInfoObjects }) {
+        let nComponentsSpecified;
+
+        if (dependencyValues.typeAttr) {
+          let componentType = componentInfoObjects.
+            componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+
+          if (!(componentType in componentInfoObjects.allComponentClasses)) {
+            throw Error(`Invalid componentType ${dependencyValues.typeAttr} of copy.`)
+          }
+          if (dependencyValues.nComponentsAttr !== null) {
+            nComponentsSpecified = dependencyValues.nComponentsAttr
+          } else {
+            nComponentsSpecified = 1;
+          }
+        } else if (dependencyValues.nComponentsAttr !== null) {
+          throw Error(`You must specify createComponentOfType when specifying nComponents for a ${componentClass.componentType}.`)
+        } else {
+          nComponentsSpecified = null;
+        }
+
+        return { setValue: { nComponentsSpecified } };
+      }
+    }
+
+
     return stateVariableDefinitions;
   }
 
@@ -150,6 +195,9 @@ export default class Template extends CompositeComponent {
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
     // console.log(await component.stateValues.rendered);
+
+    // evaluate nComponentsSpecified so get error if specify nComponents without createComponentOfType
+    await component.stateValues.nComponentsSpecified;
 
     if (!(await component.stateValues.rendered || alwaysCreateReplacements)) {
       return { replacements: [] };
@@ -206,14 +254,27 @@ export default class Template extends CompositeComponent {
         originalNamesAreConsistent: true
       });
 
-      return { replacements: processResult.serializedComponents };
+
+      let verificationResult = await verifyReplacementsMatchSpecifiedType({
+        component,
+        replacements: processResult.serializedComponents,
+        assignNames: component.doenetAttributes.assignNames,
+        componentInfoObjects, compositeAttributesObj: this.createAttributesObject(),
+        flags
+      });
+
+      // console.log(`serialized replacements for ${component.componentName}`)
+      // console.log(JSON.parse(JSON.stringify(verificationResult.replacements)))
+
+      return { replacements: verificationResult.replacements };
+
 
 
     }
 
   }
 
-  static async setUpVariant({
+  static setUpVariant({
     serializedComponent, sharedParameters,
     descendantVariantComponents,
   }) {

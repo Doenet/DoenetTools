@@ -21,62 +21,73 @@ const IncrementBox = styled.div`
   background-color: var(--canvas);
   `
 
-
 const IncrementContainer = styled.div`
   position: relative;
-  max-width: 210px;
+  width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : props.width};
 `;
 
 const IncreaseButton = styled.button`
   background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
   border-radius: 0px 2px 2px 0px;
   height: 100%;
-  width: 36px;
+  padding: 8px 12px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   border: none;
+  display: flex;
+  justify-content:center;
+  align-items: center;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
   &:focus {
-    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-    outline-offset: 4px;
+    z-index: 10;
+    border-radius: 2px; 
+    outline: ${(props) => (props.alert ? '3px solid var(--mainRed)' : '3px solid var(--mainBlue)')};
+    outline-offset: 2.5px;
   }
 `;
 
 const DecreaseButton = styled.button`
   background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
   border-radius: 2px 0px 0px 2px;
-  text-align: center;
   height: 100%;
+  padding: 8px 14px;
   width: 36px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   border: none;
+  display: flex;
+  justify-content:center;
+  align-items: center;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
   &:focus {
-    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-    outline-offset: 4px;
+    z-index: 10;
+    border-radius: 2px; 
+    outline: ${(props) => (props.alert ? '3px solid var(--mainRed)' : '3px solid var(--mainBlue)')};
+    outline-offset: 2.5px;
   }
 `;
 
 const TextField = styled.input`
-  z-index: 0;
   width: 70%;
   text-align: center;
   resize: none;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
   outline: none;
   border: none;
+  margin: 0 8px;
   &:focus {
-    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-    outline-offset: 6px;
+    z-index: 10;
+    border-radius: 2px; 
+    outline: ${(props) => (props.alert ? '3px solid var(--mainRed)' : '3px solid var(--mainBlue)')};
+    outline-offset: 4px;
   }
 `;
 
@@ -85,312 +96,164 @@ const Label = styled.span`
   margin-right: 5px;
 `;
 
-const Menu = styled.div`
-  background-color: var(--canvas);
-  border: var(--mainBorder);
-  border-radius: var(--mainBorderRadius);
-  position: absolute;
-  left: 0;
-  right: 0;
-  overflow: scroll;
-  max-height: ${(props) => props.maxHeight};
-  z-index: 100;
-`;
-
-const MenuOption = styled.button`
-  background-color: var(--canvas);
-  display: block;
-  width: 100%;
-  height: 24px;
-  border: none;
-  border-bottom: 2px var(--canvastext) solid;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-
-const findClosestIndex = (arr, value) => {
-  if (arr === null) {
-    return -1;
-  }
-  let closestIndex = 0;
-  let minDist = Math.abs(arr[0] - value);
-
-  for (let i = 1; i < arr.length; i++) {
-    if (Math.abs(arr[i] - value) < minDist) {
-      minDist = Math.abs(arr[i] - value);
-      closestIndex = i;
-    }
-  }
-
-  return closestIndex;
-};
-
 export default function Increment(props) {
   let increaseIcon = '+';
   let decreaseIcon = '-';
-
-  if (props.values) {
+  
+  if (props.values || props.font) {
     decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
     increaseIcon = <FontAwesomeIcon icon={faAngleRight} />;
   };
 
+  const values = props.values || (props.font && FONT_SIZES) || []
+  const [value, setValue] = useState(props.value || 0);
   const [index, setIndex] = useState(0);
-  const [value, setValue] = useState(props.value ?? '');
-  const [menuToggle, setMenuToggle] = useState(false);
-  const [values, setValues] = useState(props.values);
-  const [numericValue, setNumericValues] = useState(false);
   const incrementRef = useRef(null);
   const textFieldRef = useRef(null);
   const decrementRef = useRef(null);
   const containerRef = useRef(null);
-  const menuRef = useRef(null);
 
   useEffect(() => {
-    if (props.value) {
-      setValue(props.value);
-      if (values) {
-        setIndex(values.indexOf(props.value));
-      }
-    } else {
-      if (props.min !== undefined) {
-        setValue(props.min);
-      } else if (props.max !== undefined) {
-        setValue(props.max);
-      } else if (props.font) {
-        setValue(FONT_SIZES[4]);
-      } else if (values) {
-        setValue(values[0]);
-        setIndex(0);
-      } else {
-        setValue(0);
-      }
-    };
-  }, [props.value]);
-
-  useEffect(() => {
-    if (props.values) {
-      setIndex(props.values.indexOf(value));
-      decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
-      increaseIcon = <FontAwesomeIcon icon={faAngleRight} />;
-
-      let numericFlag = true;
-      for (let i = 0; i < props.values.length; i++) {
-        if (props.values[i] === '' || isNaN(props.values[i])) {
-          numericFlag = false;
-          break;
-        }
-      };
-
-      setNumericValues(numericFlag);
-      // console.log('>>> numericValues', numericFlag);
-    };
-    setValues(props.values);
-  }, [props.values]);
-
-  let menuOptions = null;
-
-  const containerOnBlur = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (
-      decrementRef.current &&
-      decrementRef.current.contains(e.relatedTarget)
-    ) {
-      // console.log('>>> clicked inside the decrement');
-    } else if (
-      textFieldRef.current &&
-      textFieldRef.current.contains(e.relatedTarget)
-    ) {
-      // console.log('>>> clicked inside the textfield');
-    } else if (
-      incrementRef.current &&
-      incrementRef.current.contains(e.relatedTarget)
-    ) {
-      // console.log('>>> clicked inside the increment');
-    } else if (menuRef.current && menuRef.current.contains(e.relatedTarget)) {
-      // console.log('>>> clicked inside the menu');
-    } else {
-      setMenuToggle(false);
-      if (values && props.restricted == true && index == -1) {
-        setIndex(findClosestIndex(values, value));
-        setValue(values[findClosestIndex(values, value)]);
-      } else if (props.font && (value === '' || isNaN(value) || value < 0)) {
-        setValue(FONT_SIZES[4]);
-      } else if (
-        props.min !== undefined &&
-        (value === '' || isNaN(value) || value < props.min)
-      ) {
-        setValue(props.min);
-      } else if (
-        props.max !== undefined &&
-        (value === '' || isNaN(value) || value > props.max)
-      ) {
-        setValue(props.max);
-      }
-      if (props.onBlur) {
-        props.onBlur(value);
-      }
+    // to handle placeholder issue
+    if (props.placeholder && value === "") {
+      setValue("")
+    } else if ((props.font || !values.length) && !value) {
+      setValue(0)
+    } 
+    // make sure onChange doesn't fire on manual typing
+    if ((values.includes(value) || typeof value === 'number') && props.onChange) {
+      props.onChange(value)
     }
-  };
+  }, [value])
 
-  const incrementOnClick = (e) => {
-    // console.log('props.max', props.max);
+  useEffect(() => {
+    if (props.value !== undefined) 
+      setValue(props.value)
+    else if (props.min !== undefined)
+      setValue(props.min)
+    else if (props.max !== undefined)
+      setValue(props.max)
+    else if (props.font)
+      setValue(FONT_SIZES[4])
+    else if (props.values !== undefined)
+      setValue(props.values[0])
+    else if (props.placeholder)
+      setValue("")
+    else
+      setValue(0)
+    
+    if (props.value && props.values) 
+      setIndex(props.values.indexOf(props.value))
+
+  }, [props.value]) //need to put this two as dependency because we might wanna change value manually from the parent component
+
+  // useEffect(() => {
+  //   console.log("value prop changed");
+  //   setValue(props.value)
+  // }, [props.value])
+
+  const incrementOnClick = () => {
     if (textFieldRef.current) {
       textFieldRef.current.focus();
     }
-
-    if (props.max !== undefined) {
-      if (value < props.max) {
-        if (value !== '' && !isNaN(value)) {
-          if (props.onChange) {
-            props.onChange(parseInt(value) + 1);
-          }
-          setValue(parseInt(value) + 1);
-        }
-      }
-    } else if (values) {
-      if (index === -1) {
-        if (props.onChange) {
-          props.onChange(values[findClosestIndex(values, value)]);
-        }
-        setIndex(findClosestIndex(values, value));
-        setValue(values[findClosestIndex(values, value)]);
-      } else if (index < values.length - 1) {
-        // console.log('increment values', values, value, index);
-        if (props.onChange) {
-          props.onChange(values[index + 1]);
-        }
-        setValue(values[index + 1]);
-        setIndex(index + 1);
-      }
-    } else {
-      if (value !== '' && !isNaN(value)) {
-        if (props.onChange) {
-          props.onChange(parseInt(value) + 1);
-        }
-        setValue(parseInt(value) + 1);
-      }
-    }
+    if (values.length && index <= values.length - 1) {
+      if (index == values.length - 1) return;
+      setValue(values[index + 1]);
+      setIndex(index + 1);
+    } else if (props.max === undefined || (props.max !== undefined && value < props.max)){
+      //deal with the case where placeholder is empty
+      setValue(props.placeholder && !value ? 1 : parseInt(value) + 1)
+    } 
   };
 
-  const decrementOnClick = (e) => {
-    // console.log('props.min', props.min);
+  const decrementOnClick = () => {
     if (textFieldRef.current) {
       textFieldRef.current.focus();
     }
-    if (props.min !== undefined) {
-      if (value > props.min) {
-        if (value !== '' && !isNaN(value)) {
-          if (props.onChange) {
-            props.onChange(parseInt(value) - 1);
-          }
-          setValue(parseInt(value) - 1);
-        }
+    if (values.length && index >= 0) {
+      if (index == 0) return;
+      setValue(values[index - 1]);
+      setIndex(index - 1);
+    } else if (props.min === undefined || (props.min !== undefined && value > props.min)) {
+      //deal with the case where placeholder is empty
+      setValue(props.placeholder && !value ? -1 : parseInt(value) - 1)
+    }    
+  };
+
+  const findClosestIndex = (arr, value) => {  
+    if (arr === null) {
+      return -1;
+    }
+    //deals with closest string/number
+    let closestIndex = 0;
+    let minDist = !isNaN(value) ? Math.abs(arr[0] - parseInt(value)) : Math.abs(arr[0].charCodeAt(0) - value.charCodeAt(0));
+  
+    for (let i = 1; i < arr.length; i++) {
+      let curDist = !isNaN(value) ? Math.abs(arr[i] - parseInt(value)) : Math.abs(arr[i].charCodeAt(0) - value.charCodeAt(0));
+      if (curDist < minDist) {
+        minDist = curDist;
+        closestIndex = i;
       }
-    } else if (values) {
-      if (index === -1) {
-        if (props.onChange) {
-          props.onChange(values[findClosestIndex(values, value)]);
-        }
-        setIndex(findClosestIndex(values, value));
-        setValue(values[findClosestIndex(values, value)]);
-      } else if (index > 0) {
-        // console.log('decrement values', values, value, index);
-        if (props.onChange) {
-          props.onChange(values[index - 1]);
-        }
-        setValue(values[index - 1]);
-        setIndex(index - 1);
-      }
+    }
+  
+    return closestIndex;
+  };
+
+  // validate the textfield input on textfield blur
+  const validateValue = () => {
+    if (!props.font && values.length) {
+      let closestIdx = findClosestIndex(values, value)
+      setIndex(closestIdx);
+      setValue(values[closestIdx]);
+      return;
+    }     
+
+    let tempValue = parseInt(value[0] == '0' ? parseInt(value.substring(1)) : parseInt(value))
+    if (props.min !== undefined && tempValue < props.min) {
+      // check min
+      tempValue = props.min;
+    } else if (props.max !== undefined && tempValue > props.max) {
+      // check max
+      tempValue = props.max;
     } else if (props.font) {
-      if (value !== '' && !isNaN(value) && value > 0) {
-        if (props.onChange) {
-          props.onChange(parseInt(value) - 1);
-        }
-        setValue(parseInt(value) - 1);
-      }
-    } else {
-      if (value !== '' && !isNaN(value)) {
-        if (props.onChange) {
-          props.onChange(parseInt(value) - 1);
-        }
-        setValue(parseInt(value) - 1);
-      }
-    }
-  };
-
-  const onTextFieldChange = (e) => {
-    setValue(e.target.value);
-    if (values) {
-      // console.log('changed index', values.indexOf(e.target.value));
-      setIndex(values.indexOf(e.target.value));
-    }
-    if (props.onChange) {
-      props.onChange(e.target.value);
-    }
-  };
-
-  const onTextFieldEnter = (e) => {
-    if (textFieldRef.current) {
-      textFieldRef.current.blur();
-    }
-  };
-
-  const onMenuClick = (e) => {
-    // console.log('onMenuClick clicked');
-    setValue(e.target.value);
-    setMenuToggle(false);
-    if (values) {
-      setIndex(values.indexOf(e.target.value));
-    }
-    if (props.onChange) {
-      props.onChange(e.target.value);
-    }
-    if (props.onBlur) {
-      props.onBlur(e.target.value);
-    }
-  };
-
-  if (props.font) {
-    menuOptions = FONT_SIZES.map((size, index) => (
-      <MenuOption key={index} value={size} onClick={onMenuClick}>
-        {size}
-      </MenuOption>
-    ));
-  } else if (values) {
-    menuOptions = values.map((value, index) => (
-      <MenuOption key={index} value={value} onClick={onMenuClick}>
-        {value}
-      </MenuOption>
-    ));
-  } else {
-    let generalChoices = []
-    let min = props.min !== undefined ? props.min : 1;
-    let max = props.max !== undefined ? props.max : 100;
-    let count = min;
-    for (let i=0; i <= max-min; i++) {
-      generalChoices[i] = count;
-      count++;
-    }
-    menuOptions =  generalChoices.map((choice, index) => (
-      <MenuOption key={index} value={choice} onClick={onMenuClick}>
-        {choice}
-      </MenuOption>
-    ));
+      //limit min and max of font
+      if (tempValue < FONT_SIZES[0]) 
+        tempValue = FONT_SIZES[0]; 
+      else if (tempValue > FONT_SIZES[FONT_SIZES.length - 1]) 
+        tempValue = FONT_SIZES[FONT_SIZES.length - 1]
+    } 
+    setValue(tempValue)
   }
 
-  // console.log(props.menuOptions);
+  //execute when the whole increment container blurs
+  const containerOnBlur = e => {
+    const currentTarget = e.currentTarget;
+    // Give browser time to focus the next element
+    requestAnimationFrame(() => {
+      // Check if the new focused element is a child of the original container
+      if (!currentTarget.contains(document.activeElement)) {
+        props.onBlur && props.onBlur(!isNaN(value) ? parseInt(value) : value)
+      }
+    });
+  }
+
+  const onTextfieldKeyDown = e => {
+    props.onKeyDown(e);
+    if (e.key === 'Enter' && textFieldRef.current) {
+      textFieldRef.current.blur();
+    };
+  };
+
+  let containerWidth = '210px';
+  if (props.width){
+    containerWidth = props.width;
+  }
 
   return (
     <Container label={props.label} vertical={props.vertical}>
       {props.label && <Label id="increment-label">{props.label}</Label> }
       {props.label && props.vertical && <br /> }
-      <IncrementContainer >
+      <IncrementContainer width={containerWidth}>
         <IncrementBox 
           ref={containerRef}
           onBlur={containerOnBlur}
@@ -417,24 +280,10 @@ export default function Increment(props) {
             data-test={props.dataTest}
             ref={textFieldRef}
             alert={props.alert}
-            disabled={props.disabled ? props.disabled : false}
-            onChange={onTextFieldChange}
-            onClick={(e) => {
-              setMenuToggle(true);
-            }}
-            onKeyDown={(e) => {
-              if (props.onKeyDown) {
-                props.onKeyDown(e);
-              };
-              if (e.key === 'Enter') {
-                onTextFieldEnter(e);
-                if (menuToggle) {
-                  setMenuToggle(false);
-                } else {
-                  setMenuToggle(true);
-                }
-              };
-            }}
+            disabled={props.disabled ? true : false}
+            onChange={e => setValue(e.target.value)}
+            onBlur={validateValue}
+            onKeyDown={props.onKeyDown && onTextfieldKeyDown}
           />
           <IncreaseButton
             alert={props.alert}
@@ -449,16 +298,7 @@ export default function Increment(props) {
             {increaseIcon}
           </IncreaseButton>
         </IncrementBox>
-        {!props.deactivateDropdown && menuOptions && menuToggle && (
-          <Menu
-            ref={menuRef}
-            maxHeight={props.maxHeight ? props.maxHeight : '150px'}
-          >
-            {menuOptions}
-          </Menu>
-        )}
       </IncrementContainer>
-      
     </Container>
   );
 };

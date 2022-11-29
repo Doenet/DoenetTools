@@ -3,7 +3,7 @@ import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
 import {fetchCoursesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
-import {assignmentData, overViewData, studentData} from "../ToolPanels/Gradebook.js";
+import {assignmentData, gradeCategories, overviewData, studentData} from "../ToolPanels/Gradebook.js";
 import axios from "../../_snowpack/pkg/axios.js";
 export default function GradeDownload() {
   const download = useRecoilCallback(({snapshot}) => async () => {
@@ -18,26 +18,9 @@ export default function GradeDownload() {
     }
     let filename = `${driveLabel}.csv`;
     let csvText;
-    let gradeCategories = [
-      {
-        category: "Gateway",
-        scaleFactor: 0
-      },
-      {category: "Exams"},
-      {
-        category: "Quizzes",
-        maximumNumber: 10
-      },
-      {
-        category: "Problem sets",
-        maximumNumber: 30
-      },
-      {category: "Projects"},
-      {category: "Participation"}
-    ];
     let assignments = await snapshot.getPromise(assignmentData);
     let students = await snapshot.getPromise(studentData);
-    let overview = await snapshot.getPromise(overViewData);
+    let overview = await snapshot.getPromise(overviewData);
     let {data} = await axios.get("/api/getEnrollment.php", {params: {driveId}});
     let enrollmentArray = data.enrollmentArray;
     let studentInfo = {};

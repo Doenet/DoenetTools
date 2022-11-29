@@ -18,12 +18,24 @@ export default function DateTime(props) {
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
 
+  let effectiveWidth = props.width;
+  if (props.width == 'menu' || !props.width){
+    effectiveWidth = 'var(--menuWidth)';
+  }
+  // console.log('props.width ', props.width, "effectiveWidth",effectiveWidth);
+
+
   let borderColor = props.alert
     ? '2px solid var(--mainRed)'
     : 'var(--mainBorder)';
   borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
-  let width = props.width ? props.width : '170px';
+
+  var containerWidth = effectiveWidth;
+  var inputWidth = effectiveWidth;
+  if (props.label) {
+    inputWidth = '100%';
+  }
 
   useEffect(() => {
     //todo try lastValid update
@@ -57,7 +69,7 @@ export default function DateTime(props) {
 
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
     return (
-      <div>
+      <div style={{width: containerWidth}}>
         {props.label ? (
           <Label id="checkbox-label" vertical={props.vertical}>
             {props.label}
@@ -68,7 +80,7 @@ export default function DateTime(props) {
           style={{
             border: borderColor,
             cursor: cursorStyle,
-            width: width,
+            width: inputWidth,
             color: 'var(--canvastext)',
             backgroundColor: 'var(--canvas)',
             ...props.style,
@@ -101,6 +113,12 @@ export default function DateTime(props) {
 
   if (props.disabled) {
     return (
+      <div style={{width: containerWidth}}>
+        {props.label ? (
+          <Label id="checkbox-label" vertical={props.vertical}>
+            {props.label}
+          </Label>
+        ) : null}
       <input
         ref={inputRef}
         onClick={props.disabledOnClick}
@@ -114,12 +132,13 @@ export default function DateTime(props) {
           color: 'var(--canvastext)',
           backgroundColor: 'var(--canvas)',
           height: '18px',
-          width: '170px',
+          width: inputWidth,
           border: '2px solid var(--mainGray)',
           borderRadius: 'var(--mainBorderRadius)',
           ...props.style,
         }}
       />
+      </div>
     );
   }
   // console.log('value:', value);

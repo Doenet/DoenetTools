@@ -54,10 +54,12 @@ export default function CourseCards(props) {
     return null;
   }
 
+  let filteredCourses = courses.filter((course)=>course.canViewCourse != '0')
+
   return (
     <div style={props.style}>
      <CourseCardWrapper
-          courses={courses}
+          courses={filteredCourses}
           drivePathSyncKey="main"
           types={['course']}
           isOneDriveSelect={false}

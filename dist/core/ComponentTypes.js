@@ -142,6 +142,7 @@ import Footnote from './components/Footnote.js';
 import Caption from './components/Caption.js';
 import Endpoint from './components/Endpoint.js';
 import Sort from './components/Sort.js';
+import Shuffle from './components/Shuffle.js';
 import SolveEquations from './components/SolveEquations.js';
 import SolutionContainer from './components/SolutionContainer.js';
 import SubsetOfRealsInput from './components/SubsetOfRealsInput.js';
@@ -160,7 +161,9 @@ import Chart from './components/Chart.js';
 import Legend from './components/Legend.js';
 import Label from './components/Label.js';
 import MatchesPattern from './components/MatchesPattern.js';
+import Matrix from './components/Matrix.js';
 import EigenDecomposition from './components/linearAlgebra/EigenDecomposition.js';
+import Latex from './components/Latex.js';
 
 
 //Extended
@@ -300,6 +303,7 @@ const componentTypeArray = [
   Caption,
   Endpoint,
   Sort,
+  Shuffle,
   SolveEquations,
   SolutionContainer,
   SubsetOfRealsInput,
@@ -318,7 +322,9 @@ const componentTypeArray = [
   Legend,
   Label,
   MatchesPattern,
+  Matrix,
   EigenDecomposition,
+  Latex,
 
   BaseComponent,
   InlineComponent,

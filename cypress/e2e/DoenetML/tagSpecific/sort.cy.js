@@ -922,6 +922,119 @@ describe('Sort Tag Tests', function () {
 
 
   })
+  
+  it('sort texts', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <aslist>
+  <sort assignNames="x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13" name="s">
+    <text>banana</text>
+    <text>apple</text>
+    <text>pear</text>
+    <textlist>grape cherry kiwi</textlist>
+    <text>strawberry</text>
+    <text>mango</text>
+    <text>passion fruit</text>
+    <textlist>orange boysenberry fig currant</textlist>
+  </sort>
+  </aslist>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/x1').should('have.text', 'apple')
+    cy.get('#\\/x2').should('have.text', 'banana')
+    cy.get('#\\/x3').should('have.text', 'boysenberry')
+    cy.get('#\\/x4').should('have.text', 'cherry')
+    cy.get('#\\/x5').should('have.text', 'currant')
+    cy.get('#\\/x6').should('have.text', 'fig')
+    cy.get('#\\/x7').should('have.text', 'grape')
+    cy.get('#\\/x8').should('have.text', 'kiwi')
+    cy.get('#\\/x9').should('have.text', 'mango')
+    cy.get('#\\/x10').should('have.text', 'orange')
+    cy.get('#\\/x11').should('have.text', 'passion fruit')
+    cy.get('#\\/x12').should('have.text', 'pear')
+    cy.get('#\\/x13').should('have.text', 'strawberry')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq('apple')
+      expect(stateVariables['/x2'].stateValues.value).eq('banana')
+      expect(stateVariables['/x3'].stateValues.value).eq('boysenberry')
+      expect(stateVariables['/x4'].stateValues.value).eq('cherry')
+      expect(stateVariables['/x5'].stateValues.value).eq('currant')
+      expect(stateVariables['/x6'].stateValues.value).eq('fig')
+      expect(stateVariables['/x7'].stateValues.value).eq('grape')
+      expect(stateVariables['/x8'].stateValues.value).eq('kiwi')
+      expect(stateVariables['/x9'].stateValues.value).eq('mango')
+      expect(stateVariables['/x10'].stateValues.value).eq('orange')
+      expect(stateVariables['/x11'].stateValues.value).eq('passion fruit')
+      expect(stateVariables['/x12'].stateValues.value).eq('pear')
+      expect(stateVariables['/x13'].stateValues.value).eq('strawberry')
+
+
+    })
+
+
+
+  })
+  
+  it('sort text, numbers, maths', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <aslist>
+  <sort assignNames="x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13" name="s">
+    <text>b</text>
+    <number>3</number>
+    <math>5</math>
+    <textlist>1 z 15 orange</textlist>
+    <math>x</math>
+    <number>222</number>
+    <mathlist>8 u</mathlist>
+    <numberlist>99 765</numberlist>
+  </sort>
+  </aslist>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/x1').should('have.text', '1')
+    cy.get('#\\/x2').should('have.text', '15')
+    cy.get('#\\/x3').should('have.text', '222')
+    cy.get('#\\/x4').should('have.text', '3')
+    cy.get('#\\/x5 .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get('#\\/x6').should('have.text', '765')
+    cy.get('#\\/x7 .mjx-mrow').eq(0).should('have.text', '8')
+    cy.get('#\\/x8').should('have.text', '99')
+    cy.get('#\\/x9').should('have.text', 'b')
+    cy.get('#\\/x10').should('have.text', 'orange')
+    cy.get('#\\/x11 .mjx-mrow').eq(0).should('have.text', 'u')
+    cy.get('#\\/x12 .mjx-mrow').eq(0).should('have.text', 'x')
+    cy.get('#\\/x13').should('have.text', 'z')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq('1')
+      expect(stateVariables['/x2'].stateValues.value).eq('15')
+      expect(stateVariables['/x3'].stateValues.value).eq(222)
+      expect(stateVariables['/x4'].stateValues.value).eq(3)
+      expect(stateVariables['/x5'].stateValues.value).eq(5)
+      expect(stateVariables['/x6'].stateValues.value).eq(765)
+      expect(stateVariables['/x7'].stateValues.value).eq(8)
+      expect(stateVariables['/x8'].stateValues.value).eq(99)
+      expect(stateVariables['/x9'].stateValues.value).eq('b')
+      expect(stateVariables['/x10'].stateValues.value).eq('orange')
+      expect(stateVariables['/x11'].stateValues.value).eq('u')
+      expect(stateVariables['/x12'].stateValues.value).eq('x')
+      expect(stateVariables['/x13'].stateValues.value).eq('z')
+    })
+
+
+  })
 
 })
 

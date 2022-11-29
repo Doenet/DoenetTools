@@ -17,6 +17,7 @@ import {
   MakePublic,
   PinAssignment,
   ProctorMakesAvailable,
+  AutoSubmit,
   ShowCorrectness,
   ShowCreditAchieved,
   Paginate,
@@ -27,7 +28,8 @@ import {
   ShowSolution,
   ShowSolutionInGradebook,
   TimeLimit,
-  TotalPointsOrPercent
+  TotalPointsOrPercent,
+  CanViewAfterCompleted
 } from "../../_reactComponents/Activity/SettingComponents.js";
 import {
   itemByDoenetId,
@@ -62,7 +64,6 @@ export default function SelectedActivity() {
         effectiveItemLabel = "Untitled";
       }
       setItemTextFieldLabel(effectiveItemLabel);
-      addToast("Every item must have a label.");
     }
     if (recoilLabel !== effectiveItemLabel) {
       renameItem(doenetId, effectiveItemLabel);
@@ -84,7 +85,7 @@ export default function SelectedActivity() {
     }, /* @__PURE__ */ React.createElement(ActionButton, {
       width: "menu",
       value: "Edit Activity",
-      "data-test": "Edit Activity",
+      dataTest: "Edit Activity",
       onClick: () => {
         if (firstPageDoenetId == null) {
           addToast(`ERROR: No page found in activity`, toastType.INFO);
@@ -105,7 +106,7 @@ export default function SelectedActivity() {
     }), /* @__PURE__ */ React.createElement(ActionButton, {
       width: "menu",
       value: "View Draft Activity",
-      "data-test": "View Draft Activity",
+      dataTest: "View Draft Activity",
       onClick: () => {
         compileActivity({
           activityDoenetId: doenetId,
@@ -126,7 +127,7 @@ export default function SelectedActivity() {
     }), /* @__PURE__ */ React.createElement(ActionButton, {
       width: "menu",
       value: "View Assigned Activity",
-      "data-test": "View Assigned Activity",
+      dataTest: "View Assigned Activity",
       onClick: () => {
         setPageToolView({
           page: "course",
@@ -142,7 +143,7 @@ export default function SelectedActivity() {
       courseId
     }), /* @__PURE__ */ React.createElement(Textfield, {
       label: "Label",
-      "data-test": "Label Activity",
+      dataTest: "Label Activity",
       vertical: true,
       width: "menu",
       value: itemTextFieldLabel,
@@ -158,16 +159,16 @@ export default function SelectedActivity() {
       width: "menu",
       onClick: () => create({itemType: "page"}),
       value: "Add Page",
-      "data-test": "Add Page"
+      dataTest: "Add Page"
     }), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       onClick: () => create({itemType: "order"}),
       value: "Add Order",
-      "data-test": "Add Order"
+      dataTest: "Add Order"
     }), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       onClick: () => create({itemType: "collectionLink"}),
-      "data-test": "Add Collection Link",
+      dataTest: "Add Collection Link",
       value: "Add Collection Link"
     })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
       doenetId,
@@ -175,7 +176,7 @@ export default function SelectedActivity() {
     }), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       value: "Delete Activity",
-      "data-test": "Delete Activity",
+      dataTest: "Delete Activity",
       alert: true,
       onClick: (e) => {
         e.preventDefault();
@@ -186,7 +187,7 @@ export default function SelectedActivity() {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
-    "data-test": "View Activity",
+    dataTest: "View Activity",
     value: "View Activity",
     onClick: () => {
       setPageToolView({
@@ -198,9 +199,6 @@ export default function SelectedActivity() {
         }
       });
     }
-  }), /* @__PURE__ */ React.createElement(AssignmentSettings, {
-    doenetId,
-    courseId
   }));
 }
 const temporaryRestrictToAtom = atom({
@@ -218,6 +216,7 @@ export function AssignmentSettings({doenetId, courseId}) {
       totalPointsOrPercent
     }
   } = useActivity(courseId, doenetId);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const sharedProps = {
     courseId,
     doenetId,
@@ -264,9 +263,13 @@ export function AssignmentSettings({doenetId, courseId}) {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(ProctorMakesAvailable, {
       ...sharedProps
+    }), /* @__PURE__ */ React.createElement(AutoSubmit, {
+      ...sharedProps
     }), /* @__PURE__ */ React.createElement(MakePublic, {
       ...sharedProps
     }), /* @__PURE__ */ React.createElement(ShowDoenetMLSource, {
+      ...sharedProps
+    }), /* @__PURE__ */ React.createElement(CanViewAfterCompleted, {
       ...sharedProps
     })), /* @__PURE__ */ React.createElement(PinAssignment, {
       ...sharedProps

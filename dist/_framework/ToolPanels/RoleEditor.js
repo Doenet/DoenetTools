@@ -15,7 +15,7 @@ export default function RolesEditor() {
   const {isAdmin} = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   if (isAdmin !== "1")
     return null;
-  return /* @__PURE__ */ React.createElement(Conainer, null, /* @__PURE__ */ React.createElement("h2", null, "Edit Role Permissons"), /* @__PURE__ */ React.createElement(AddRole, {
+  return /* @__PURE__ */ React.createElement(Conainer, null, /* @__PURE__ */ React.createElement("h2", null, "Edit Role Permissions"), /* @__PURE__ */ React.createElement(AddRole, {
     courseId
   }), /* @__PURE__ */ React.createElement(MangeRoles, {
     courseId

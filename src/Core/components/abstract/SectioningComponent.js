@@ -1,12 +1,13 @@
 import BlockComponent from './BlockComponent';
-import { getVariantsForDescendantsForUniqueVariants, setUpVariantSeedAndRng } from '../../utils/variants';
-import { numberToLetters } from '../../utils/sequence';
+import { determineVariantsForSection, getVariantsForDescendantsForUniqueVariants, setUpVariantSeedAndRng } from '../../utils/variants';
 import { returnStyleDefinitionStateVariables } from '../../utils/style';
 import { returnFeedbackDefinitionStateVariables } from '../../utils/feedback';
 
 export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningComponent";
   static renderChildren = true;
+
+  static includeBlankStringChildren = true;
 
   static createsVariants = true;
 
@@ -596,11 +597,6 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "value",
           value: sharedParameters.variantName,
         },
-        variantControlChild: {
-          dependencyType: "child",
-          childGroups: ["variantControls"],
-          variableNames: ["selectedVariantIndex", "selectedVariantName"]
-        },
         variantDescendants: {
           dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
@@ -619,13 +615,12 @@ export default class SectioningComponent extends BlockComponent {
 
         let generatedVariantInfo = {};
 
-        if (dependencyValues.variantControlChild.length === 0) {
-          generatedVariantInfo.seed = dependencyValues.variantSeed;
+        if (dependencyValues.variantName) {
+          generatedVariantInfo.index = dependencyValues.variantIndex;
+          generatedVariantInfo.name = dependencyValues.variantName;
 
         } else {
-          generatedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex;
-          generatedVariantInfo.name = dependencyValues.variantControlChild[0].stateValues.selectedVariantName;
-
+          generatedVariantInfo.seed = dependencyValues.variantSeed;
         }
 
 
@@ -845,20 +840,14 @@ export default class SectioningComponent extends BlockComponent {
     this.coreFunctions.resolveAction({ actionId });
   }
 
-  static async setUpVariant({
-    serializedComponent, sharedParameters, definingChildrenSoFar,
+  static setUpVariant({
+    serializedComponent, sharedParameters,
     descendantVariantComponents,
   }) {
 
-    let variantControlChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "variantControl") {
-        variantControlChild = child;
-        break;
-      }
-    }
 
-    if (variantControlChild === undefined) {
+    if (!serializedComponent.variants?.allPossibleVariants) {
+
       // no variant control child
       // so don't actually control variants
       // just calculate a seed
@@ -869,45 +858,65 @@ export default class SectioningComponent extends BlockComponent {
         useSubpartVariantRng: true,
       });
 
+      return;
 
-    } else {
-      sharedParameters.variantSeed = await variantControlChild.state.selectedSeed.value;
-      sharedParameters.variantName = await variantControlChild.state.selectedVariantName.value;
-      sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
-      sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
-      sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
-      sharedParameters.variantIndicesToIgnore = await variantControlChild.state.variantIndicesToIgnore.value;
     }
 
+
+    let nVariants = serializedComponent.variants.numberOfVariants;
+
+    let variantIndex;
+    // check if desiredVariant was specified
+    let desiredVariant = serializedComponent.variants.desiredVariant;
+    if (desiredVariant !== undefined) {
+      if (desiredVariant.index !== undefined) {
+        let desiredVariantIndex = Number(desiredVariant.index);
+        if (!Number.isFinite(desiredVariantIndex)) {
+          console.warn("Variant index " + desiredVariant.index + " must be a number");
+          variantIndex = 1;
+        } else {
+          if (!Number.isInteger(desiredVariantIndex)) {
+            console.warn("Variant index " + desiredVariant.index + " must be an integer");
+            desiredVariantIndex = Math.round(desiredVariantIndex);
+          }
+          let indexFrom0 = (desiredVariantIndex - 1) % nVariants;
+          if (indexFrom0 < 0) {
+            indexFrom0 += nVariants;
+          }
+          variantIndex = indexFrom0 + 1;
+        }
+      }
+    }
+
+    if (variantIndex === undefined) {
+      // if variant index wasn't specified, randomly generate a variant index
+      // random number in [0, 1)
+      let rand = sharedParameters.variantRng();
+
+      // random integer from 1 to nVariants
+      variantIndex = Math.floor(rand * nVariants) + 1;
+
+    }
+
+
+    sharedParameters.allPossibleVariants = serializedComponent.variants.allPossibleVariants;
+    sharedParameters.allVariantNames = serializedComponent.variants.allVariantNames;
+
+    sharedParameters.variantSeed = serializedComponent.variants.allPossibleVariantSeeds[variantIndex - 1];
+    sharedParameters.variantIndex = variantIndex;
+    sharedParameters.variantName = serializedComponent.variants.allPossibleVariants[variantIndex - 1];
+    sharedParameters.uniqueIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
+
+    sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
     sharedParameters.subpartVariantRng = new sharedParameters.rngClass(sharedParameters.variantSeed + 's');
+
 
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantControlChild.stateValues.selectedSeed);
     // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants
-    let desiredVariant;
-    if (serializedComponent.variants) {
-      desiredVariant = serializedComponent.variants.desiredVariant;
-    }
-    if (desiredVariant === undefined) {
-      desiredVariant = {};
-    }
-
-    // // if subvariants aren't defined but we have uniqueVariants specified
-    // // then calculate variant information for the descendant variant component
-    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-    //   let variantInfo = this.getUniqueVariant({
-    //     serializedComponent: serializedComponent,
-    //     variantIndex: sharedParameters.variantIndex,
-    //     allComponentClasses: allComponentClasses,
-    //   })
-    //   if (variantInfo.success) {
-    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
-    //   }
-    // }
-
-    if (desiredVariant.subvariants && descendantVariantComponents) {
+    if (desiredVariant?.subvariants && descendantVariantComponents) {
       for (let ind in desiredVariant.subvariants) {
         let subvariant = desiredVariant.subvariants[ind];
         let variantComponent = descendantVariantComponents[ind];
@@ -922,130 +931,24 @@ export default class SectioningComponent extends BlockComponent {
 
   static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
 
-    if (serializedComponent.variants === undefined) {
-      serializedComponent.variants = {};
-    }
-
-    let variantControlChild;
-    for (let child of serializedComponent.children) {
-      if (child.componentType === "variantControl") {
-        variantControlChild = child;
-        break;
-      }
-    }
-
-    if (!variantControlChild) {
-      return super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
-    }
-
-    let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
-
-    if (numberOfVariants === undefined) {
-      numberOfVariants = 100;
-    }
-
-    let numberOfVariantsPreIgnore = numberOfVariants;
-
-    let indicesToIgnore = [];
-    if (variantControlChild.attributes.variantIndicesToIgnore) {
-      indicesToIgnore = variantControlChild.attributes.variantIndicesToIgnore.component
-        .children.map(Number)
-        .filter(x => Number.isInteger(x) && x >= 1 && x <= numberOfVariants)
-        .sort((a, b) => a - b);
-    }
-
-    if (!variantControlChild.attributes.uniqueVariants?.primitive) {
-      if (indicesToIgnore.length > 0) {
-        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
-        numberOfVariants -= indicesToIgnore.length;
-      }
-      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
-      serializedComponent.variants.numberOfVariants = numberOfVariants;
-      return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
-    }
-
-
-    let result = super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
-
-    if (!result.success) {
-      // even if didn't successfully determine number of unique variants
-      // still report it as a success, as will have exactly number of variants
-      // given by the variant control
-      if (indicesToIgnore.length > 0) {
-        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
-        numberOfVariants -= indicesToIgnore.length;
-      }
-      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
-      serializedComponent.variants.numberOfVariants = numberOfVariants;
-      return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
-    }
-
-    numberOfVariants = Math.min(result.numberOfVariants, numberOfVariants);
-    numberOfVariantsPreIgnore = numberOfVariants;
-
-    if (indicesToIgnore.length > 0) {
-      indicesToIgnore = indicesToIgnore.filter(x => x <= numberOfVariants);
-      if (indicesToIgnore.length > 0) {
-        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
-        numberOfVariants -= indicesToIgnore.length;
-      }
-    }
-
-    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
-    serializedComponent.variants.uniqueVariants = true;
-
-    // console.log("Actual number of variants for section is " + numberOfVariants)
-
-    return {
-      success: true,
-      numberOfVariants,
-      numberOfVariantsPreIgnore
-    };
-
+    return determineVariantsForSection({
+      serializedComponent, componentInfoObjects,
+    })
 
   }
 
   static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
 
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
-      return { success: false }
-    }
 
-    if (serializedComponent.variants.desiredVariantFromDocument) {
-      numberOfVariants = serializedComponent.variants.numberOfVariantsPreIgnore;
-    }
-
-    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
-      return { success: false }
-    }
-
-
-
-    let variantControlChild;
-    for (let child of serializedComponent.children) {
-      if (child.componentType === "variantControl") {
-        variantControlChild = child;
-        break;
-      }
-    }
-
-    if (!variantControlChild) {
+    if (!serializedComponent.variants.allPossibleVariants) {
       return super.getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects });
     }
 
-    if (!serializedComponent.variants.desiredVariantFromDocument) {
-      if (serializedComponent.variants.indicesToIgnore) {
-        // adjust variantIndex so it counts only non-ignored indices
-        for (let ind of serializedComponent.variants.indicesToIgnore) {
-          if (variantIndex >= ind) {
-            variantIndex++;
-          } else {
-            break;
-          }
-        }
-      }
+
+    let uniqueIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
+
+    if (uniqueIndex === undefined) {
+      return { success: false }
     }
 
     if (!serializedComponent.variants.uniqueVariants) {
@@ -1059,7 +962,7 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     let result = getVariantsForDescendantsForUniqueVariants({
-      variantIndex,
+      variantIndex: uniqueIndex,
       serializedComponent,
       componentInfoObjects
     })
@@ -1081,7 +984,5 @@ export default class SectioningComponent extends BlockComponent {
     }
 
   }
-
-  static includeBlankStringChildren = true;
 
 }

@@ -134,7 +134,7 @@ export default function EditorViewer() {
   }, [effectivePageId, pageInitiated]);
 
   useEventListener("keydown", e => {
-    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+    if ((e.keyCode === 83 && e.metaKey) || (e.keyCode === 83 && e.ctrlKey)) {
       e.preventDefault();
       updateViewer();
     }
@@ -187,13 +187,12 @@ export default function EditorViewer() {
   let solutionDisplayMode = "button";
 
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants, variantIndicesToIgnore = []) {
+  function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
     setVariantPanel({
       index: cleanGeneratedVariant.index,
       allPossibleVariants,
-      variantIndicesToIgnore,
     });
     setVariantInfo({
       index: cleanGeneratedVariant.index,

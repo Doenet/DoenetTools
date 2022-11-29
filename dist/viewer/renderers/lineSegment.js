@@ -12,6 +12,7 @@ export default React.memo(function LineSegment(props) {
   let pointsAtDown = useRef(false);
   let draggedPoint = useRef(null);
   let previousWithLabel = useRef(null);
+  let previousLabelPosition = useRef(null);
   let pointCoords = useRef(null);
   let downOnPoint = useRef(null);
   let lastPositionsFromCore = useRef(null);
@@ -31,10 +32,11 @@ export default React.memo(function LineSegment(props) {
       return;
     }
     let fixed = !SVs.draggable || SVs.fixed;
+    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
     var jsxSegmentAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withlabel,
       fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -46,16 +48,46 @@ export default React.memo(function LineSegment(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle),
       highlight: !fixed
     };
-    jsxSegmentAttributes.label = {
-      highlight: false
-    };
-    if (SVs.labelHasLatex) {
-      jsxSegmentAttributes.label.useMathJax = true;
-    }
-    if (SVs.applyStyleToLabel) {
-      jsxSegmentAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    if (withlabel) {
+      let anchorx, anchory, offset;
+      if (SVs.labelPosition === "upperright") {
+        offset = [5, 5];
+        anchorx = "left";
+        anchory = "bottom";
+      } else if (SVs.labelPosition === "upperleft") {
+        offset = [-5, 5];
+        anchorx = "right";
+        anchory = "bottom";
+      } else if (SVs.labelPosition === "lowerright") {
+        offset = [5, -5];
+        anchorx = "left";
+        anchory = "top";
+      } else {
+        offset = [-5, -5];
+        anchorx = "right";
+        anchory = "top";
+      }
+      jsxSegmentAttributes.label = {
+        offset,
+        anchorx,
+        anchory,
+        highlight: false
+      };
+      if (SVs.labelHasLatex) {
+        jsxSegmentAttributes.label.useMathJax = true;
+      }
+      if (SVs.applyStyleToLabel) {
+        jsxSegmentAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        jsxSegmentAttributes.label.strokeColor = "#000000";
+      }
     } else {
-      jsxSegmentAttributes.label.strokeColor = "#000000";
+      jsxSegmentAttributes.label = {
+        highlight: false
+      };
+      if (SVs.labelHasLatex) {
+        jsxSegmentAttributes.label.useMathJax = true;
+      }
     }
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
     Object.assign(jsxPointAttributes, {
@@ -143,7 +175,8 @@ export default React.memo(function LineSegment(props) {
         [...point2JXG.current.coords.scrCoords]
       ];
     });
-    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
+    previousLabelPosition.current = SVs.labelPosition;
+    previousWithLabel.current = withlabel;
     return lineSegmentJXG.current;
   }
   function onDragHandler(i, e) {
@@ -276,13 +309,39 @@ export default React.memo(function LineSegment(props) {
       lineSegmentJXG.current.needsUpdate = true;
       lineSegmentJXG.current.update();
       if (lineSegmentJXG.current.hasLabel) {
+        lineSegmentJXG.current.label.needsUpdate = true;
         if (SVs.applyStyleToLabel) {
           lineSegmentJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
         } else {
           lineSegmentJXG.current.label.visProp.strokecolor = "#000000";
         }
-        lineSegmentJXG.current.label.needsUpdate = true;
-        lineSegmentJXG.current.label.update();
+        if (SVs.labelPosition !== previousLabelPosition.current) {
+          let anchorx, anchory, offset;
+          if (SVs.labelPosition === "upperright") {
+            offset = [5, 5];
+            anchorx = "left";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "upperleft") {
+            offset = [-5, 5];
+            anchorx = "right";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "lowerright") {
+            offset = [5, -5];
+            anchorx = "left";
+            anchory = "top";
+          } else {
+            offset = [-5, -5];
+            anchorx = "right";
+            anchory = "top";
+          }
+          lineSegmentJXG.current.label.visProp.anchorx = anchorx;
+          lineSegmentJXG.current.label.visProp.anchory = anchory;
+          lineSegmentJXG.current.label.visProp.offset = offset;
+          previousLabelPosition.current = SVs.labelPosition;
+          lineSegmentJXG.current.label.fullUpdate();
+        } else {
+          lineSegmentJXG.current.label.update();
+        }
       }
       point1JXG.current.needsUpdate = true;
       point1JXG.current.update();

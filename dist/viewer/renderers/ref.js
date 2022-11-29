@@ -6,6 +6,29 @@ import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import {itemByDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 import {scrollableContainerAtom} from "../PageViewer.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const RefButton = styled.button`
+  position: relative;
+  height: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  padding: 2px;
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  cursor: pointer;
+  padding: 1px 6px 1px 6px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+
+  &:focus {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
+  }
+`;
 export default React.memo(function Ref(props) {
   let {name, id, SVs, children} = useDoenetRender(props);
   const pageToolView = useRecoilValue(pageToolViewAtom);
@@ -85,7 +108,7 @@ export default React.memo(function Ref(props) {
         id
       }, /* @__PURE__ */ React.createElement("a", {
         name: id
-      }), /* @__PURE__ */ React.createElement("button", {
+      }), /* @__PURE__ */ React.createElement(RefButton, {
         id: id + "_button",
         onClick: () => window.location.href = url,
         disabled: SVs.disabled
@@ -95,7 +118,7 @@ export default React.memo(function Ref(props) {
         id
       }, /* @__PURE__ */ React.createElement("a", {
         name: id
-      }), /* @__PURE__ */ React.createElement("button", {
+      }), /* @__PURE__ */ React.createElement(RefButton, {
         id: id + "_button",
         onClick: () => navigate(url),
         disabled: SVs.disabled
@@ -104,7 +127,12 @@ export default React.memo(function Ref(props) {
   } else {
     if (haveValidTarget) {
       if (externalUri || url === "#") {
+        console.log("first case");
         return /* @__PURE__ */ React.createElement("a", {
+          style: {
+            color: "var(--mainBlue)",
+            borderRadius: "5px"
+          },
           target: targetForATag,
           id: name,
           name,
@@ -114,7 +142,12 @@ export default React.memo(function Ref(props) {
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = {fromLink: true};
         Object.defineProperty(stateObj, "previousScrollPosition", {get: () => scrollableContainer?.[scrollAttribute], enumerable: true});
+        console.log("second case");
         return /* @__PURE__ */ React.createElement(Link, {
+          style: {
+            color: "var(--mainBlue)",
+            borderRadius: "5px"
+          },
           target: targetForATag,
           id,
           name: id,

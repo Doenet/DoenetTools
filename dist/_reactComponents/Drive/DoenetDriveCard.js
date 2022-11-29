@@ -56,7 +56,7 @@ const LabelContainer = styled.p`
 const DriveCard = (props) => {
   let imageURL = `url(/media/drive_pictures/${props.image})`;
   return /* @__PURE__ */ React.createElement(DriveCardContainer, {
-    "data-test": "driveCard",
+    dataTest: "driveCard",
     "aria-labelledby": "card-label role-label",
     "data-cy": "driveCard",
     url: imageURL,

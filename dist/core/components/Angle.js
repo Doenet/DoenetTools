@@ -582,7 +582,8 @@ export default class Angle extends GraphicalComponent {
         } else if (dependencyValues.degrees !== null) {
           return {
             setValue: {
-              radians: dependencyValues.degrees.stateValues.value.multiply(me.fromAst(["/", 'pi', 180])).simplify(),
+              radians: dependencyValues.degrees.stateValues.value.divide(me.fromAst(180))
+                .simplify().multiply(me.fromAst('pi')).simplify(),
               swapPointOrder
             }
           }
@@ -659,7 +660,12 @@ export default class Angle extends GraphicalComponent {
         if (dependencyValues.radians.tree === "\uff3f" || Number.isNaN(dependencyValues.radians.tree)) {
           degrees = dependencyValues.radians;
         } else {
-          degrees = dependencyValues.radians.multiply(me.fromAst(["/", 180, 'pi'])).simplify()
+          let radNum = dependencyValues.radians.evaluate_to_constant();
+          if (Number.isFinite(radNum)) {
+            degrees = me.fromAst(radNum * 180 / Math.PI)
+          } else {
+            degrees = dependencyValues.radians.multiply(me.fromAst(["/", 180, 'pi'])).simplify()
+          }
         }
         return { setValue: { degrees } }
       }

@@ -2,7 +2,7 @@ import createStateProxyHandler from '../../StateProxyHandler';
 import { flattenDeep, mapDeep } from '../../utils/array';
 import { deepClone } from '../../utils/deepFunctions';
 import { enumerateCombinations } from '../../utils/enumeration';
-import { gatherVariantComponents } from '../../utils/serializedStateProcessing';
+import { gatherVariantComponents } from '../../utils/variants';
 import { returnDefaultGetArrayKeysFromVarName } from '../../utils/stateVariables';
 
 export default class BaseComponent {
