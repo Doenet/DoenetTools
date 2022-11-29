@@ -2704,6 +2704,9 @@ export default class MatrixComponentInput extends BaseComponent {
           componentName: this.componentName,
           stateVariable: "rawRendererValue",
           value: rawRendererValue,
+        }, {
+          updateType: "setComponentNeedingUpdateValue",
+          componentName: this.componentName,
         }],
         actionId,
       });
@@ -2736,6 +2739,8 @@ export default class MatrixComponentInput extends BaseComponent {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           valueOfStateVariable: "value",
+        }, {
+          updateType: "unsetComponentNeedingUpdateValue",
         }];
 
         if (immediateValue.tree !== '\uff3f') {

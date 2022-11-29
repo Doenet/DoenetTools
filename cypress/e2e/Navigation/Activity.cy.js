@@ -23,18 +23,17 @@ describe('Activity test', function () {
     })
 
     it('Renaming activity',()=>{
+        const label1 = 'Hello';
+        const label2 = 'First Activity';
         cy.get('[data-test="Add Activity Button"]').click();
         cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
         cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Activity');
         cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-        cy.get('[data-test="Label Activity"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type('Hello',{scrollBehavior:false})
+        cy.get('[data-test="Label Activity"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(label1,{scrollBehavior:false})
         cy.get('[data-test="infoPanelItemLabel"]').click();
-        cy.get('[data-test="rowLabel"]').should('contain.text', 'Hello');
-        // cy.get('[style="display: initial; width: 200px; align-items: center;"] > .sc-ctqQKy').clear();
-        // cy.get('[style="display: initial; width: 200px; align-items: center;"] > .sc-ctqQKy').click({force:true}).type('Hello');
-
-        //cy.get('[style="display: initial; width: 200px; align-items: center;"] > .sc-ctqQKy').type('First Activity');
-        
+        cy.get('[data-test="rowLabel"]').should('contain.text', label1);
+        cy.get('[data-test="Label Activity"]', {timeout:20000}).should('be.visible').clear({scrollBehavior:false}).type(label2,{scrollBehavior:false}).type('{enter}',{scrollBehavior:false});
+        cy.get('[data-test="rowLabel"]').should('contain.text', label2);
 
     })
 })

@@ -53,6 +53,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="Section"]').type(personToAdd.section)
     cy.get('[data-test="External Id"]').type(personToAdd.externalId)
     cy.get('[data-test="Add User"]').click()
+    cy.wait(1000);
 
     cy.task('queryDb', `SELECT * FROM course_user WHERE externalId="${personToAdd.externalId}"`).then((res) => {
         expect(res[0].roleId).to.equals(personToAdd.roleId)
@@ -70,6 +71,7 @@ describe('Activity Settings Test', function () {
     cy.get('[data-test="LoadPeople Menu"]').click()
     cy.get('[data-test="Import CSV file"]').attachFile('peopleExample.csv')
     cy.get('[data-test="Merge"]').click()
+    cy.wait(1000);
     
     peopleInCsv.forEach((person)  => {
       cy.task('queryDb', `SELECT * FROM course_user WHERE externalId="${person.externalId}"`).then((res) => {
@@ -84,6 +86,7 @@ describe('Activity Settings Test', function () {
 
     cy.get('[data-test="Import CSV file"]').attachFile('updatedPeopleExample.csv')
     cy.get('[data-test="Merge"]').click()
+    cy.wait(1000);
 
     updatedPeopleInCsv.forEach((person)  => {
       cy.task('queryDb', `SELECT * FROM course_user WHERE externalId="${person.externalId}"`).then((res) => {
@@ -101,12 +104,16 @@ describe('Activity Settings Test', function () {
     cy.viewport(1200, 660)
     cy.get('[data-test="Withdraw cyuserId@doenet.org"]').click()
     cy.get('[data-test="People Table"]').should('not.contain', 'cyuserId@doenet.org')
+    cy.wait(1000);
+
     cy.task('queryDb', `SELECT withdrew FROM course_user WHERE userId="cyuserId"`).then((res) => {
       expect(res[0].withdrew.data[0]).to.equals(1)
     })
 
     cy.get('[data-test="Show Withdrawn"]').click()
     cy.get('[data-test="Enroll cyuserId@doenet.org"]').click()
+    cy.wait(1000);
+
     cy.task('queryDb', `SELECT withdrew FROM course_user WHERE userId="cyuserId"`).then((res) => {
       expect(res[0].withdrew.data[0]).to.equals(0)
     })

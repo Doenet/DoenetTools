@@ -555,10 +555,10 @@ export default class MathInput extends Input {
           let parseScientificNotation = await stateValues.parseScientificNotation;
 
           let currentMath = calculateMathExpressionFromLatex({
-            latex: essentialValues.rawRendererValue, 
+            latex: essentialValues.rawRendererValue,
             unionFromU, functionSymbols, splitSymbols, parseScientificNotation
           });
-          
+
           // use deepCompare of trees rather than equalsViaSyntax
           // so even tiny numerical differences that are within double precision are detected
           if (!deepCompare(desiredStateVariableValues.rawRendererValue.tree, currentMath.tree)) {
@@ -614,6 +614,9 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "rawRendererValue",
           value: rawRendererValue,
+        }, {
+          updateType: "setComponentNeedingUpdateValue",
+          componentName: this.componentName,
         }],
         transient: true,
         actionId,
@@ -658,6 +661,8 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           valueOfStateVariable: "value",
+        }, {
+          updateType: "unsetComponentNeedingUpdateValue",
         }];
 
         if (immediateValue.tree !== '\uff3f') {

@@ -294,6 +294,7 @@ describe('Angle Tag Tests', function () {
     cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(1, 1E-6)
     })
+    cy.get("#\\/radius2 .mjx-mrow").eq(0).should("have.text", "\uff3f")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

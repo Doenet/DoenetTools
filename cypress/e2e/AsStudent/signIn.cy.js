@@ -2,8 +2,8 @@ describe('Student Sign-In Test', function () {
     const userId = "cyuserId";
     // const studentUserId = "cyStudentUserId";
     const courseId = "courseid1";
-    const doenetId = "activity1id";
-    const pageDoenetId = "_page1id";
+    // const doenetId = "activity1id";
+    // const pageDoenetId = "_page1id";
   
     before(()=>{
       cy.signin({ userId });
@@ -27,12 +27,24 @@ describe('Student Sign-In Test', function () {
     })
   
     
-    it('Student can sign in afeter being added to a course', () => {
-        cy.get(':nth-child(1) > .sc-hOGkXu').type("Scooby");
-        cy.get(':nth-child(2) > .sc-hOGkXu').type("Doo");
-        cy.get('.sc-jUosCB > :nth-child(4) > .sc-hOGkXu').type("scoobydoo@gmail.com");
-        cy.get('.sc-jQrDum > .sc-cTAqQK > .sc-iAKWXU').click();
-    
+    it('Student can sign in after being added to a course', () => {
+      const emailAddress = "scoobydoo@doenet.org";
+      cy.get('[data-test="First"]').type("Scooby");
+      cy.get('[data-test="Last"]').type("Doo");
+      cy.get('[data-test="Email"]').type(emailAddress);
+      cy.get('[data-test="Add User"]').click();
+      cy.visit(`http://localhost/settings`)
+      cy.get('[data-test="sign out button"]').click();
+      cy.get('[data-test="homepage button"]').should('be.visible');
+      cy.visit(`http://localhost/SignIn`)
+      cy.get('[data-test="email input"]').type(emailAddress);
+      cy.get('[data-test="sendEmailButton"]').click();
+      cy.task('queryDb', `SELECT signInCode FROM user_device ORDER BY id DESC LIMIT 1`).then((result)=>{
+        const code = result[0].signInCode;
+        cy.get('[data-test="signinCodeInput"]').type(code);
+        cy.get('[data-test="signInButton"]').click();
+        cy.get('[data-test="Nav to course"]').should('be.visible');
+      });
     
     })
 

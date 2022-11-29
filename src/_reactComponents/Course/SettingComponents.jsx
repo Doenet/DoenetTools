@@ -237,7 +237,7 @@ export function AddUserWithOptions({ courseId }) {
     <UserWithOptionsContainer>
       <Textfield
         label="First"
-        data-test="First"
+        dataTest="First"
         width="250px"
         value={userData.firstName}
         onChange={(e) => {
@@ -247,7 +247,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="Last"
-        data-test="Last"
+        dataTest="Last"
         width="250px"
         value={userData.lastName}
         onChange={(e) => {
@@ -267,7 +267,7 @@ export function AddUserWithOptions({ courseId }) {
       </ButtonFlexContainer>
       <Textfield
         label="Email"
-        data-test="Email"
+        dataTest="Email"
         width="250px"
         value={emailInput}
         onChange={(e) => {
@@ -281,7 +281,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="Section"
-        data-test="Section"
+        dataTest="Section"
         width="250px"
         value={userData.section}
         onChange={(e) => {
@@ -291,7 +291,7 @@ export function AddUserWithOptions({ courseId }) {
       />
       <Textfield
         label="External Id"
-        data-test="External Id"
+        dataTest="External Id"
         width="250px"
         value={userData.externalId}
         onChange={(e) => {

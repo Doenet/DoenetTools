@@ -513,6 +513,7 @@ describe('Video Tag Tests', function () {
     })
 
     cy.log('play')
+    cy.wait(100)  // for some reason, need this delay when headless for play button to be activated
     cy.get('#\\/playAction').click();
 
     cy.get('#\\/state').should("have.text", "playing")

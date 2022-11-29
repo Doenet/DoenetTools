@@ -1,10 +1,9 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
 import { deepClone } from '../utils/deepFunctions';
-import { gatherVariantComponents, markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
-import me from 'math-expressions';
-import { textToAst } from '../utils/math';
+import { markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
 import { returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import { gatherVariantComponents } from '../utils/variants';
 
 export default class Select extends CompositeComponent {
   static componentType = "select";
@@ -153,15 +152,15 @@ export default class Select extends CompositeComponent {
       })
     }
 
-    stateVariableDefinitions.allPossibleVariants = {
+    stateVariableDefinitions.allVariantNames = {
       returnDependencies: ({ sharedParameters }) => ({
-        allPossibleVariants: {
+        allVariantNames: {
           dependencyType: "value",
-          value: sharedParameters.allPossibleVariants,
+          value: sharedParameters.allVariantNames,
         }
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { allPossibleVariants: dependencyValues.allPossibleVariants }
+        setValue: { allVariantNames: dependencyValues.allVariantNames }
       })
     }
 
@@ -171,7 +170,7 @@ export default class Select extends CompositeComponent {
         optionChildren: {
           dependencyType: "child",
           childGroups: ["options"],
-          variableNames: ["selectForVariantNames", "selectWeight"]
+          variableNames: ["selectForVariants", "selectWeight"]
         },
       }),
       definition({ dependencyValues }) {
@@ -195,16 +194,16 @@ export default class Select extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "numberToSelect"
         },
-        allPossibleVariants: {
+        allVariantNames: {
           dependencyType: "stateVariable",
-          variableName: "allPossibleVariants"
+          variableName: "allVariantNames"
         }
       }),
       definition: function ({ dependencyValues }) {
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
-          for (let variantName of optionChild.stateValues.selectForVariantNames) {
+          for (let variantName of optionChild.stateValues.selectForVariants) {
             let variantLower = variantName.toLowerCase();
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];
@@ -224,13 +223,13 @@ export default class Select extends CompositeComponent {
         if (Object.keys(availableVariants).length > 0) {
           // if have at least one variant specified,
           // then require that all possible variants have a variant specified
-          for (let variantName of dependencyValues.allPossibleVariants) {
+          for (let variantName of dependencyValues.allVariantNames) {
             if (!(variantName in availableVariants)) {
               throw Error("Some variants are specified for select but no options are specified for possible variant name: " + variantName)
             }
           }
           for (let variantName in availableVariants) {
-            if (!(dependencyValues.allPossibleVariants.includes(variantName))) {
+            if (!(dependencyValues.allVariantNames.includes(variantName))) {
               throw Error("Variant name " + variantName + " that is specified for select is not a possible variant name.");
             }
           }
@@ -629,9 +628,9 @@ export default class Select extends CompositeComponent {
     }
 
     for (let child of serializedComponent.children) {
-      if (child.attributes?.selectWeight || child.attributes?.selectForVariantNames) {
-        // uniqueVariants disabled if have a child with selectWeight or selectForVariantNames specified
-        console.log(`Unique variants for select disabled if have an option with selectWeight or selectForVariantNames specified`)
+      if (child.attributes?.selectWeight || child.attributes?.selectForVariants) {
+        // uniqueVariants disabled if have a child with selectWeight or selectForVariants specified
+        console.log(`Unique variants for select disabled if have an option with selectWeight or selectForVariants specified`)
         return { success: false }
       }
     }

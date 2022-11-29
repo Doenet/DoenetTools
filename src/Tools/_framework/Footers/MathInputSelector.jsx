@@ -8,11 +8,6 @@ import {
   useRecoilValueLoadable,
 } from 'recoil';
 
-export const focusedMathFieldID = atom({
-  key: 'focusedMathFieldID',
-  default: null,
-});
-
 export const focusedMathField = atom({
   key: 'focusedMathField',
   default: () => {},
