@@ -151,8 +151,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(startingPoint, 0.5);
 
         let endingPoint = context.endingPoint;
-        expect(endingPoint).gt(4);
-        expect(endingPoint).lt(6);
+        expect(endingPoint).gte(4);
+        expect(endingPoint).lte(6);
 
         let rates = context.rates;
         expect(rates.length).eq(1);
@@ -189,8 +189,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(endingPoint, 0.5);
 
         startingPoint = context.endingPoint;  // endpoint point of skipped becomes next starting point
-        expect(startingPoint).gt(104);
-        expect(startingPoint).lt(106);
+        expect(startingPoint).gte(104);
+        expect(startingPoint).lte(106);
 
 
         playedInd = videoVerbs.indexOf("played");
@@ -222,8 +222,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(startingPoint, 0.5);
 
         endingPoint = context.endingPoint;
-        expect(endingPoint).gt(106);
-        expect(endingPoint).lt(108);
+        expect(endingPoint).gte(106);
+        expect(endingPoint).lte(108);
 
         rates = context.rates;
         expect(rates.length).eq(1);
@@ -246,8 +246,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(endingPoint, 0.5);
 
         startingPoint = context.endingPoint;  // endpoint point of skipped becomes next starting point
-        expect(startingPoint).gt(156);
-        expect(startingPoint).lt(158);
+        expect(startingPoint).gte(156);
+        expect(startingPoint).lte(158);
 
 
         playedInd = videoVerbs.indexOf("played");
@@ -279,8 +279,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(startingPoint, 0.5);
 
         endingPoint = context.endingPoint;
-        expect(endingPoint).gt(159);
-        expect(endingPoint).lt(161);
+        expect(endingPoint).gte(159);
+        expect(endingPoint).lte(161);
 
         rates = context.rates;
         expect(rates.length).eq(1);
@@ -317,8 +317,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(endingPoint, 0.5);
 
         startingPoint = context.endingPoint;  // endpoint point of skipped becomes next starting point
-        expect(startingPoint).gt(140);
-        expect(startingPoint).lt(142);
+        expect(startingPoint).gte(140);
+        expect(startingPoint).lte(142);
 
 
         playedInd = videoVerbs.indexOf("played");
@@ -350,8 +350,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(startingPoint, 0.5);
 
         endingPoint = context.endingPoint;
-        expect(endingPoint).gt(142);
-        expect(endingPoint).lt(144);
+        expect(endingPoint).gte(142);
+        expect(endingPoint).lte(144);
 
         rates = context.rates;
         expect(rates.length).eq(1);
@@ -374,8 +374,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(endingPoint, 0.5);
 
         startingPoint = context.endingPoint;  // endpoint point of skipped becomes next starting point
-        expect(startingPoint).gt(56);
-        expect(startingPoint).lt(58);
+        expect(startingPoint).gte(56);
+        expect(startingPoint).lte(58);
 
 
         playedInd = videoVerbs.indexOf("played");
@@ -446,8 +446,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(endingPoint, 0.5);
 
         startingPoint = context.endingPoint;  // endpoint point of skipped becomes next starting point
-        expect(startingPoint).gt(297);
-        expect(startingPoint).lt(299);
+        expect(startingPoint).gte(297);
+        expect(startingPoint).lte(299);
 
 
         playedInd = videoVerbs.indexOf("played");
@@ -480,8 +480,8 @@ describe('video events test', function () {
         expect(context.startingPoint).closeTo(startingPoint, 0.5);
 
         endingPoint = context.endingPoint;
-        expect(endingPoint).gt(298);
-        expect(endingPoint).lt(300);
+        expect(endingPoint).gte(298);
+        expect(endingPoint).lte(300);
 
         rates = context.rates;
         expect(rates.length).eq(1);
