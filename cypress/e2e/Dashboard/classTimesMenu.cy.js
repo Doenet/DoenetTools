@@ -35,7 +35,7 @@ describe('Dashboard Classtime Menu tests', function () {
       cy.get('[data-test="DOTW Dropdown 0"]').should('not.exist');
     })
 
-    it.only('stores in the database',()=>{
+    it('stores in the database',()=>{
       cy.get('[data-test="ClassTimes Menu"]').click();
       cy.get('[data-test="Add Classtime"]').click();
       cy.get('[data-test="DOTW Dropdown 0"]').should('exist');

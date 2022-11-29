@@ -694,6 +694,7 @@ export default class Document extends BaseComponent {
     }
 
     sharedParameters.allPossibleVariants = serializedComponent.variants.allPossibleVariants;
+    sharedParameters.allVariantNames = serializedComponent.variants.allVariantNames;
 
     sharedParameters.variantSeed = serializedComponent.variants.allPossibleVariantSeeds[variantIndex - 1];
     sharedParameters.variantIndex = variantIndex;

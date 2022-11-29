@@ -34,7 +34,7 @@ export async function returnAllPossibleVariants({
     componentInfoObjects
   })
 
-  let nVariants = results.numberOfVariantsPreIgnore;
+  let nVariants = results.numberOfVariants;
 
   let allPossibleVariants;
 

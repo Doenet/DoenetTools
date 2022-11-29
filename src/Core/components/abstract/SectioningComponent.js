@@ -846,7 +846,7 @@ export default class SectioningComponent extends BlockComponent {
   }) {
 
 
-    if (!serializedComponent.variants.allPossibleVariants) {
+    if (!serializedComponent.variants?.allPossibleVariants) {
 
       // no variant control child
       // so don't actually control variants
@@ -899,6 +899,7 @@ export default class SectioningComponent extends BlockComponent {
 
 
     sharedParameters.allPossibleVariants = serializedComponent.variants.allPossibleVariants;
+    sharedParameters.allVariantNames = serializedComponent.variants.allVariantNames;
 
     sharedParameters.variantSeed = serializedComponent.variants.allPossibleVariantSeeds[variantIndex - 1];
     sharedParameters.variantIndex = variantIndex;
@@ -942,9 +943,9 @@ export default class SectioningComponent extends BlockComponent {
     }
 
 
-    let originalVariantIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
+    let uniqueIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
 
-    if (originalVariantIndex === undefined) {
+    if (uniqueIndex === undefined) {
       return { success: false }
     }
 
@@ -959,7 +960,7 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     let result = getVariantsForDescendantsForUniqueVariants({
-      variantIndex,
+      variantIndex: uniqueIndex,
       serializedComponent,
       componentInfoObjects
     })
