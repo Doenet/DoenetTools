@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/docker-existing-docker-compose
 // If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
 {
-  "name": "Doenet Tool Development",
+  "name": "DoenetTools",
 
   // Update the 'dockerComposeFile' list if you have more compose files or use different names.
   // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
@@ -26,8 +26,9 @@
   // "shutdownAction": "none",
 
   // Uncomment the next line to run commands after the container is created - for example installing curl.
-  // "postCreateCommand": "npm install --omit=optional",
-  "postStartCommand": "npm run start:dev",
+  "initializeCommand": "docker compose down",
+  "postCreateCommand": "npm install --omit=optional",
+  "postStartCommand": "npx snowpack dev",
 
   // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
   // "remoteUser": "vscode"
