@@ -14,12 +14,14 @@ import {
 import styled from 'styled-components';
 import { toastType, useToast } from '../../Tools/_framework/Toast';
 import { drivecardSelectedNodesAtom } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
+import { DateToDateString } from '../../_utils/dateUtilityFunction';
 import { useValidateEmail } from '../../_utils/hooks/useValidateEmail';
 import Button from '../PanelHeaderComponents/Button';
 import ButtonGroup from '../PanelHeaderComponents/ButtonGroup';
 import CheckboxButton from '../PanelHeaderComponents/Checkbox';
 import CollapseSection from '../PanelHeaderComponents/CollapseSection';
 import ColorImagePicker from '../PanelHeaderComponents/ColorImagePicker';
+import DateTime from '../PanelHeaderComponents/DateTime';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
 import RelatedItems from '../PanelHeaderComponents/RelatedItems';
 import { RoleDropdown } from '../PanelHeaderComponents/RoleDropdown';
@@ -814,6 +816,122 @@ export function DeleteCourse({ courseId }) {
         onKeyDown={(e) => {
           if (e.keyCode === 13) {
             handelDelete();
+          }
+        }}
+      />
+    </ButtonGroup>
+  );
+}
+
+export function DuplicateCourse({ courseId }) {
+  const addToast = useToast();
+  const { duplicateCourse, label } = useCourse(courseId);
+  const [showForm,setShowForm] = useState(false);
+  const [sourceDate,setSourceDate] = useState("");
+  const [newDate,setNewDate] = useState("");
+  const [newCourseLabel,setNewCourseLabel] = useState("");
+  // const setCourseCardsSelection = useSetRecoilState(drivecardSelectedNodesAtom);
+
+  let submitEnabled = false;
+  let dateDifference = 0;
+  if (newCourseLabel != "" &&
+  newDate != "" &&
+  sourceDate != ""
+  ){
+    submitEnabled = true;
+    let source = new Date(sourceDate);
+    let newD = new Date(newDate);
+    let timediff = newD.getTime() - source.getTime();
+    dateDifference = timediff / (1000 * 3600 * 24);
+  }
+  // console.log("submitEnabled",submitEnabled)
+  // console.log("sourceDate",sourceDate)
+  // console.log("newDate",newDate)
+  // console.log("newCourseLabel",newCourseLabel)
+  console.log("dateDifference",dateDifference)
+
+
+  const handleDuplication = ({dateDifference,newLabel}) => {
+    duplicateCourse({dateDifference,newLabel},() => {
+      console.log("Duplication Success callback")
+      setShowForm(false);
+      // addToast(`${label} deleted`, toastType.SUCCESS);
+    });
+  };
+
+  if (showForm){
+    return (<>
+
+      <h2>Duplicate Course</h2>
+      <p>* - Required</p>
+      <Textfield vertical label="New Course's Name *" onChange={(e)=>{setNewCourseLabel(e.target.value)}} />
+      <p>Start Dates are used to adjust the new course's activity dates.</p>
+      <DateTime 
+      width="menu" 
+      timePicker={false} 
+      vertical label="Source Course's Start Date *" 
+      onChange={({valid,value})=>{
+        if (valid){
+          let dateValue = DateToDateString(value._d);
+          setSourceDate(dateValue)
+        }else{
+          setSourceDate("")
+        }
+      }}
+      />
+      <DateTime 
+      width="menu" 
+      timePicker={false} 
+      vertical 
+      label="New Course's Start Date *" 
+      onChange={({valid,value})=>{
+        if (valid){
+          let dateValue = DateToDateString(value._d);
+          setNewDate(dateValue)
+        }else{
+          setNewDate("")
+        }
+      }}
+      />
+      <br />
+      <br />
+      <ButtonGroup>
+        <Button
+          alert
+          width="100px"
+          value="Cancel"
+          onClick={()=>setShowForm(false)}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              setShowForm(false)
+            }
+          }}
+        />
+        <Button
+          width="100px"
+          value="Duplicate"
+          disabled={!submitEnabled}
+          onClick={()=>handleDuplication({dateDifference,newLabel:newCourseLabel})}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              handleDuplication({dateDifference,newLabel:newCourseLabel})
+            }
+          }}
+        />
+      </ButtonGroup>
+    </>
+    )
+  }
+
+  return (
+    <ButtonGroup vertical>
+      <Button
+        width="menu"
+        value="Duplicate Course"
+        onClick={()=>setShowForm(true)}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) {
+            setShowForm(true);
           }
         }}
       />
