@@ -7522,4 +7522,84 @@ describe('MathInput Tag Tests', function () {
 
   });
 
+  it('remove strings', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><mathinput name="mi1" removeStrings="," /> <math name="m1" copySource="mi1" /></p>
+  <p><mathinput name="mi2" removeStrings="$ %" /> <math name="m2" copySource="mi2" /></p>
+  <p><mathinput name="mi3" removeStrings=", $ % dx" /> <math name="m3" copySource="mi3" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+
+    
+    cy.get('#\\/mi1 textarea').type("12,345{enter}", { force: true });
+    cy.get('#\\/mi2 textarea').type("12,345{enter}", { force: true });
+    cy.get('#\\/mi3 textarea').type("12,345{enter}", { force: true });
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '12345')
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', '12,345')
+    cy.get('#\\/m3 .mjx-mrow').should('contain.text', '12345')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eq(12345)
+      expect(stateVariables["/mi2"].stateValues.value).eqls(["list", 12, 345])
+      expect(stateVariables["/mi3"].stateValues.value).eq(12345)
+    });
+
+    cy.get('#\\/mi1 textarea').type("{end}{shift+home}{backspace}$45.23{enter}", { force: true });
+    cy.get('#\\/mi2 textarea').type("{end}{shift+home}{backspace}$45.23{enter}", { force: true });
+    cy.get('#\\/mi3 textarea').type("{end}{shift+home}{backspace}$45.23{enter}", { force: true });
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', '45.23')
+    cy.get('#\\/m3 .mjx-mrow').should('contain.text', '45.23')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eq('\uff3f')
+      expect(stateVariables["/mi2"].stateValues.value).eq(45.23)
+      expect(stateVariables["/mi3"].stateValues.value).eq(45.23)
+    });
+
+
+    cy.get('#\\/mi1 textarea').type("{end}{shift+home}{backspace}78%{enter}", { force: true });
+    cy.get('#\\/mi2 textarea').type("{end}{shift+home}{backspace}78%{enter}", { force: true });
+    cy.get('#\\/mi3 textarea').type("{end}{shift+home}{backspace}78%{enter}", { force: true });
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', '78')
+    cy.get('#\\/m3 .mjx-mrow').should('contain.text', '78')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eq('\uff3f')
+      expect(stateVariables["/mi2"].stateValues.value).eq(78)
+      expect(stateVariables["/mi3"].stateValues.value).eq(78)
+    });
+
+    cy.get('#\\/mi1 textarea').type(`{end}{shift+home}{backspace}$34,000%dx{enter}`, { force: true });
+    cy.get('#\\/mi2 textarea').type(`{end}{shift+home}{backspace}$34,000%dx{enter}`, { force: true });
+    cy.get('#\\/mi3 textarea').type(`{end}{shift+home}{backspace}$34,000%dx{enter}`, { force: true });
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', '34,0dx')
+    cy.get('#\\/m3 .mjx-mrow').should('contain.text', '34000')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eq('\uff3f')
+      expect(stateVariables["/mi2"].stateValues.value).eqls(["list", 34, ["*", 0, "d", "x"]])
+      expect(stateVariables["/mi3"].stateValues.value).eq(34000)
+    });
+
+
+  });
+
 });
