@@ -1634,22 +1634,24 @@ export const useCourse = (courseId) => {
   const duplicateCourse = useRecoilCallback(
     ({ set }) =>
       async ({dateDifference,newLabel},successCallback,failureCallback=defaultFailure) => {
-        console.log("DUPLICATE COURSE",courseId)
-        console.log({dateDifference,newLabel,successCallback,failureCallback})
-        // try {
-        //   let resp = await axios.post('/api/duplicateCourse.php', { courseId });
-        //   if (resp.status < 300) {
-        //     //TODO: Set as owner
-        //     // set(coursePermissionsAndSettings, (prev) =>
-        //     //   prev.filter((c) => c.courseId !== courseId),
-        //     // );
+        // console.log("DUPLICATE COURSE",courseId)
+        // console.log({dateDifference,newLabel,successCallback,failureCallback})
+        try {
+          let resp = await axios.post('/api/duplicateCourse.php', { courseId, dateDifference, newLabel });
+          // console.log("resp",resp.data)
+          if (resp.status < 300) {
+            //TODO: Set as owner
+            //TODO: Set courses to include new one
+            // set(coursePermissionsAndSettings, (prev) =>
+            //   prev.filter((c) => c.courseId !== courseId),
+            // );
             successCallback?.();
-        //   } else {
-        //     throw new Error(`response code: ${resp.status}`);
-        //   }
-        // } catch (err) {
-        //   failureCallback(err.message);
-        // }
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          failureCallback(err.message);
+        }
       },
     [courseId, defaultFailure],
   );

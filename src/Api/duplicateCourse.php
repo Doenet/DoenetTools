@@ -23,6 +23,11 @@ if (!array_key_exists('courseId', $_POST)) {
 
 if ($success) {
     $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
+    $dateDifference = mysqli_real_escape_string(
+        $conn,
+        $_POST['dateDifference']
+    );
+    $newLabel = mysqli_real_escape_string($conn, $_POST['newLabel']);
 
     $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
@@ -58,12 +63,8 @@ if ($success) {
     //create duplicate course
     $result = $conn->query(
         "INSERT INTO course (courseId,label,image,defaultRoleId)
-        SELECT 
-        '$nextCourseId' AS courseId,
-        CONCAT('Copy of ',label) AS label,
-        '$course_pic' AS image,
-        '$defaultRoleId' AS defaultRoleId
-         FROM course WHERE courseId='$courseId'"
+        VALUES
+        ('$nextCourseId','$newLabel','$course_pic','$defaultRoleId')"
     );
 
     /** Default Roles */
@@ -176,9 +177,9 @@ if ($success) {
         //Proctor
         "INSERT INTO course_role
         SET
-        courseId= '$nextCourseId', 
-        roleId= '$proctorRoleId', 
-        label= 'Proctor', 
+        courseId= '$nextCourseId',
+        roleId= '$proctorRoleId',
+        label= 'Proctor',
         canProctor = '1',
         canViewUsers = '1'"
     );
@@ -187,9 +188,9 @@ if ($success) {
         //Student
         "INSERT INTO course_role
         SET
-        courseId= '$nextCourseId', 
-        roleId= '$defaultRoleId', 
-        label= 'Student', 
+        courseId= '$nextCourseId',
+        roleId= '$defaultRoleId',
+        label= 'Student',
         isIncludedInGradebook = '1'"
     );
 
@@ -197,8 +198,8 @@ if ($success) {
         //Auditor
         "INSERT INTO course_role
         SET
-        courseId= '$nextCourseId', 
-        roleId= '$auditorRoleId', 
+        courseId= '$nextCourseId',
+        roleId= '$auditorRoleId',
         label= 'Auditor'"
     );
 
@@ -230,6 +231,9 @@ if ($success) {
     doenetId,
     parentDoenetId,
     label,
+    isAssigned,
+    isGloballyAssigned,
+    isPublic,
     userCanViewSource,
     sortOrder,
     CAST(jsonDefinition as CHAR) AS json
@@ -241,6 +245,7 @@ if ($success) {
     $result = $conn->query($sql);
     $prevToNextDoenetIds = [];
     $previous_course_content = [];
+    $assigned_course_content_doenetIds = [];
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -250,7 +255,13 @@ if ($success) {
             $label = $row['label'];
             $userCanViewSource = $row['userCanViewSource'];
             $sortOrder = $row['sortOrder'];
+            $isAssigned = $row['isAssigned'];
+            $isGloballyAssigned = $row['isGloballyAssigned'];
+            $isPublic = $row['isPublic'];
             $json = $row['json'];
+            if ($isAssigned == '1') {
+                array_push($assigned_course_content_doenetIds, $doenetId);
+            }
 
             $nextDoenetId = include 'randomId.php';
             $prevToNextDoenetIds[$doenetId] = $nextDoenetId;
@@ -265,6 +276,9 @@ if ($success) {
                 'label' => $label,
                 'userCanViewSource' => $userCanViewSource,
                 'sortOrder' => $sortOrder,
+                'isAssigned' => $isAssigned,
+                'isGloballyAssigned' => $isGloballyAssigned,
+                'isPublic' => $isPublic,
                 'jsonDefinition' => $json,
             ]);
         }
@@ -320,15 +334,16 @@ if ($success) {
     $next_course_content = [];
 
     foreach ($previous_course_content as $row) {
-        // $row = $previous_course_content[0];
-
         $type = $row['type'];
         $courseId = $row['courseId'];
         $doenetId = $row['doenetId'];
         $parentDoenetId = $row['parentDoenetId'];
         $label = $row['label'];
-        $userCanViewSource = $row['userCanViewSource'];
         $sortOrder = $row['sortOrder'];
+        $isAssigned = $row['isAssigned'];
+        $isGloballyAssigned = $row['isGloballyAssigned'];
+        $isPublic = $row['isPublic'];
+        $userCanViewSource = $row['userCanViewSource'];
         $jsonDefinition = $row['jsonDefinition'];
 
         //Replace previous course_content rows json with next page doenetIds
@@ -348,13 +363,13 @@ if ($success) {
 
         array_push(
             $next_course_content,
-            "('$type','$courseId','$nextDoenetId','$nextParentDoenetId','$label',NOW(),'$userCanViewSource','$sortOrder','$jsonDefinition')"
+            "('$type','$nextCourseId','$nextDoenetId','$nextParentDoenetId','$label',NOW(),'$isAssigned','$isGloballyAssigned','$isPublic','$userCanViewSource','$sortOrder','$jsonDefinition')"
         );
     }
     $str_insert_to_course_content = implode(',', $next_course_content);
     // echo $str_insert_to_course_content;
     $sql = "
-    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,userCanViewSource,sortOrder,jsonDefinition)
+    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition)
     VALUES
     $str_insert_to_course_content
     ";
@@ -362,15 +377,73 @@ if ($success) {
 
     // INSERT next pages into next course
     $sql = "
-INSERT INTO pages (courseId,containingDoenetId,doenetId,label)
-VALUES
-$str_insert_to_pages
-";
+    INSERT INTO pages (courseId,containingDoenetId,doenetId,label)
+    VALUES
+    $str_insert_to_pages
+    ";
     $result = $conn->query($sql);
 }
 
 //Move Assignment table
 if ($success) {
+    foreach ($assigned_course_content_doenetIds as $assigned_doenetId) {
+        $next_assigned_doenetId = $prevToNextDoenetIds[$assigned_doenetId];
+        $sql = "
+        INSERT INTO assignment (
+            doenetId,
+            courseId,
+            assignedDate,
+            pinnedAfterDate,
+            pinnedUntilDate,
+            dueDate,
+            timeLimit,
+            numberOfAttemptsAllowed,
+            attemptAggregation,
+            totalPointsOrPercent,
+            gradeCategory,
+            individualize,
+            showSolution,
+            showSolutionInGradebook,
+            showFeedback,
+            showHints,
+            showCorrectness,
+            showCreditAchievedMenu,
+            paginate,
+            showFinishButton,
+            proctorMakesAvailable,
+            autoSubmit,
+            canViewAfterCompleted
+            )
+            SELECT '$next_assigned_doenetId' AS doenetId,
+            '$nextCourseId' AS courseId,
+            DATE_ADD(assignedDate, INTERVAL $dateDifference DAY) AS assignedDate,
+            DATE_ADD(pinnedAfterDate, INTERVAL $dateDifference DAY) AS pinnedAfterDate,
+            DATE_ADD(pinnedUntilDate, INTERVAL $dateDifference DAY) AS pinnedUntilDate,
+            DATE_ADD(dueDate, INTERVAL $dateDifference DAY) AS dueDate,
+            timeLimit,
+            numberOfAttemptsAllowed,
+            attemptAggregation,
+            totalPointsOrPercent,
+            gradeCategory,
+            individualize,
+            showSolution,
+            showSolutionInGradebook,
+            showFeedback,
+            showHints,
+            showCorrectness,
+            showCreditAchievedMenu,
+            paginate,
+            showFinishButton,
+            proctorMakesAvailable,
+            autoSubmit,
+            canViewAfterCompleted
+            FROM assignment
+            WHERE doenetId = '$assigned_doenetId'
+        ";
+        $result = $conn->query($sql);
+
+        //TODO: Copy Assignment Files to New DoenetIds
+    }
 }
 
 $response_arr = [
