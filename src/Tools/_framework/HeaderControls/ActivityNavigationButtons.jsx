@@ -34,9 +34,10 @@ const activityOrderByCourseId = selectorFamily({
     (courseId) =>
     ({ get, getCallback }) => {
       const itemOrder = get(itemOrderByCourseId(courseId));
-      const activityOrder = itemOrder.filter(
-        (doenetId) => get(itemByDoenetId(doenetId))?.type === 'activity',
-      );
+      const activityOrder = itemOrder.filter((doenetId) => {
+        const item = get(itemByDoenetId(doenetId));
+        return item?.type === 'activity' && !item.proctorMakesAvailable;
+      });
 
       const getInfoFromIndex = getCallback(({ snapshot }) => (idx) => {
         if (idx < 0 || idx >= activityOrder.length) return {};
@@ -61,7 +62,7 @@ const activityOrderByCourseId = selectorFamily({
     },
 });
 
-export default function ActivityNavigationbuttons(props) {
+export default function ActivityNavigationbuttons() {
   const [neighborParams, setNeighborParams] = useState({
     previous: null,
     next: null,
@@ -75,22 +76,29 @@ export default function ActivityNavigationbuttons(props) {
 
   useLayoutEffect(() => {
     const itemIdx = activityOrder.indexOf(doenetId);
-    setNeighborParams({
-      previous:
-        itemIdx > 0
-          ? {
-              doenetId: activityOrder[itemIdx - 1],
-              pageId: getFirstPageFromIndex(itemIdx - 1),
-            }
-          : null,
-      next:
-        itemIdx < activityOrder.length - 1
-          ? {
-              doenetId: activityOrder[itemIdx + 1],
-              pageId: getFirstPageFromIndex(itemIdx + 1),
-            }
-          : null,
-    });
+    if (itemIdx === -1) {
+      setNeighborParams({
+        previous: null,
+        next: null,
+      });
+    } else {
+      setNeighborParams({
+        previous:
+          itemIdx > 0
+            ? {
+                doenetId: activityOrder[itemIdx - 1],
+                pageId: getFirstPageFromIndex(itemIdx - 1),
+              }
+            : null,
+        next:
+          itemIdx < activityOrder.length - 1
+            ? {
+                doenetId: activityOrder[itemIdx + 1],
+                pageId: getFirstPageFromIndex(itemIdx + 1),
+              }
+            : null,
+      });
+    }
   }, [activityOrder, doenetId, getFirstPageFromIndex]);
 
   return (
