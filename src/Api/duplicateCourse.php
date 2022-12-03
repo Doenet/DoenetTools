@@ -264,8 +264,10 @@ if ($success) {
             }
 
             $nextDoenetId = include 'randomId.php';
+            $nextDoenetId = '_' . $nextDoenetId;
             $prevToNextDoenetIds[$doenetId] = $nextDoenetId;
             $nextParentDoenetId = include 'randomId.php';
+            $nextParentDoenetId = '_' . $nextParentDoenetId;
             $prevToNextDoenetIds[$parentDoenetId] = $nextParentDoenetId;
 
             array_push($previous_course_content, [
@@ -305,6 +307,7 @@ if ($success) {
             $containingDoenetId = $row['containingDoenetId'];
             $label = $row['label'];
             $nextDoenetId = include 'randomId.php';
+            $nextDoenetId = '_' . $nextDoenetId;
             $nextContainingDoenetId = $prevToNextDoenetIds[$containingDoenetId];
             array_push(
                 $insert_to_pages,
@@ -442,7 +445,24 @@ if ($success) {
         ";
         $result = $conn->query($sql);
 
-        //TODO: Copy Assignment Files to New DoenetIds
+        //Copy the original page files to the new doenetId files
+        foreach ($contained_pages[$assigned_doenetId] as $previous_pages_info) {
+            $previous_page_doenetId = $previous_pages_info['previous'];
+            $next_page_doenetId = $previous_pages_info['next'];
+
+            // echo "previous_page_doenetId $previous_page_doenetId \n\n";
+            // echo "next_page_doenetId $next_page_doenetId \n";
+            $sourceFile = "../media/byPageId/$previous_page_doenetId.doenet";
+            $destinationFile = "../media/byPageId/$next_page_doenetId.doenet";
+            $dirname = dirname($destinationFile);
+            if (!is_dir($dirname)) {
+                mkdir($dirname, 0755, true);
+            }
+            if (!copy($sourceFile, $destinationFile)) {
+                $success = false;
+                $message = 'failed to copy';
+            }
+        }
     }
 }
 
@@ -455,7 +475,7 @@ $response_arr = [
     'color' => 'none',
 ];
 
-echo json_encode($response_arr);
+// echo json_encode($response_arr);
 
 $conn->close();
 ?>
