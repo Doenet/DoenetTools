@@ -867,6 +867,7 @@ export function DuplicateCourse({ courseId }) {
       <Textfield vertical label="New Course's Name *" onChange={(e)=>{setNewCourseLabel(e.target.value)}} />
       <p>Start Dates are used to adjust the new course's activity dates.</p>
       <DateTime 
+      offset="-10px"
       width="menu" 
       timePicker={false} 
       vertical label="Source Course's Start Date *" 
@@ -880,6 +881,7 @@ export function DuplicateCourse({ courseId }) {
       }}
       />
       <DateTime 
+      offset="-10px"
       width="menu" 
       timePicker={false} 
       vertical 
