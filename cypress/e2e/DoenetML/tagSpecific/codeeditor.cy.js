@@ -837,6 +837,49 @@ describe('Code Editor Tag Tests', function () {
 
   })
 
+  it('set value from immediateValue on reload', () => {
+    let doenetML = `
+    <p><codeEditor name="ce" /></p>
+
+    <p name="pv">value: $ce</p>
+    <p name="piv">immediate value: $ce.immediateValue</p>
+    `
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get("#\\/ce .cm-content").type("hello")
+
+    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
+    cy.get('#\\/pv').should('have.text', 'value: ')
+
+    cy.wait(1500);  // wait for debounce
+
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+
+    cy.get('#\\/pv').should('have.text', 'value: hello')
+    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
+
+  });
 
 })
 

@@ -59,9 +59,8 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
     cy.get('[data-test="View Assigned Activity"]').click();
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
@@ -114,7 +113,7 @@ describe('Single page activity tests', function () {
 
   })
 
-  it('Navigating back remembers position where clicked internal link', () => {
+  it.skip('Navigating back remembers position where clicked internal link', () => {
     const doenetML = `
 <section>
 <lorem generateParagraphs="8" />
@@ -144,9 +143,8 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
     cy.get('[data-test="View Assigned Activity"]').click();
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
@@ -183,14 +181,15 @@ describe('Single page activity tests', function () {
 
     cy.get('#\\/bottom').then(el => {
       let rect = el[0].getBoundingClientRect();
+      cy.log(rect.top)
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
-
     cy.go("back");
     cy.url().should('match', /[^#]/)
-
+    
     cy.get('#\\/toAside').then(el => {
       let rect = el[0].getBoundingClientRect();
+      cy.log(rect.top)
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
@@ -231,14 +230,14 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
 
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
 
 
     cy.signin({ userId: studentUserId })
@@ -350,9 +349,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
-
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.log('go to url')
     cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
@@ -402,8 +399,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.signin({ userId: studentUserId })
 
@@ -412,6 +408,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="View Activity"]').click();
+    cy.wait(2000)
 
     cy.get('#\\/ans textarea').type("2{enter}", { force: true });
     cy.get('#\\/credit').should('have.text', '1')
@@ -443,13 +440,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer><mathinput name='ans2' />3</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
-
+    cy.wait(1000)
     cy.go("back")
 
     cy.signin({ userId: studentUserId })
@@ -459,10 +454,10 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="View Activity"]').click();
-
     cy.get('#\\/cr').should('contain.text', '1');
     cy.get('#\\/ans2').should('not.exist');
 
+    
     cy.get('[data-test=NewVersionAvailable]').click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
     cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
@@ -474,7 +469,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
     cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
     cy.get('[data-test=ConfirmNewVersion]').click();
-
+  
     cy.get('#\\/cr').should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -501,13 +496,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
-
+    cy.wait(1500)
     cy.go("back")
 
     cy.signin({ userId: studentUserId })
@@ -522,7 +515,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true });
+    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true }); 
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -545,8 +538,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -580,12 +572,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -633,12 +624,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -675,12 +665,9 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Attempt Limit Checkbox"]').click();
-    cy.get('[data-test="toast"]').contains('Updated Attempts Allowed to 1');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -701,12 +688,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -750,12 +736,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -790,12 +775,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -823,12 +807,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -877,16 +860,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Attempt Limit Checkbox"]').click();
-    cy.get('[data-test="toast"]').contains('Updated Attempts Allowed to 1');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Attempt Limit"]').type("{end}{backspace}2{enter}")
-    cy.get('[data-test="toast"]').contains('Updated Attempts Allowed to 2');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -925,12 +903,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -983,12 +960,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1020,12 +996,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1065,12 +1040,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1151,8 +1125,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -1199,12 +1172,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='extra'>Extra content</p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='extra'>Extra content</p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1241,8 +1213,7 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -1260,12 +1231,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='more1'>More content 1</p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='more1'>More content 1</p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1294,12 +1264,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{ctrl+end}{enter}<p name='more2'>More content 2</p>{enter}{ctrl+s}")
+    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='more2'>More content 2</p>{enter}{ctrl+s}")
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Assigned Activity Updated');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.go("back")
 
@@ -1337,16 +1306,11 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Auto Submit"]').click();
-    cy.get('[data-test="toast"]').contains('Updated Auto Submit to True');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Attempt Aggregation"] > div:nth-child(2)').click().type("{downArrow}{enter}")
-    cy.get('[data-test="toast"]').contains('Updated Attempt Aggregation to Last Attempt');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -1401,6 +1365,95 @@ describe('Single page activity tests', function () {
     })
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
+
+
+  })
+
+  it('reload text answer without blurring or hitting enter', () => {
+    const doenetML = `
+    <p>Enter 1: <answer>
+      <textinput name="ti" />
+      <award><when>$ti=hello</when></award>
+    </answer>
+    </p>
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
+    // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+
+    cy.signin({ userId: studentUserId })
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get('#\\/ti_input').type("hello", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.reload();
+
+    cy.get('#\\/ti_submit').click();
+    cy.get('#\\/ti_correct').should('be.visible');
+
+
+  })
+
+  it('reload text answer without blurring or hitting enter, clear IndexedDB', () => {
+    const doenetML = `
+    <p>Enter 1: <answer>
+      <textinput name="ti" />
+      <award><when>$ti=hello</when></award>
+    </answer>
+    </p>
+`
+
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
+    // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+
+
+    cy.signin({ userId: studentUserId })
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get('#\\/ti_input').type("hello", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.clearIndexedDB();
+    cy.reload();
+
+    cy.get('#\\/ti_submit').click();
+    cy.get('#\\/ti_correct').should('be.visible');
 
 
   })

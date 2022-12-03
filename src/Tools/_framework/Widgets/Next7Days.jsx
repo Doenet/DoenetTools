@@ -319,14 +319,16 @@ function buildRows({
         isFirstRow = false;
 
         newRows.push(
-          <tr key={`${effectiveRowLabel}${assignment.doenetId}`}>
+          <tr data-test={`cbw row ${i}`} key={`${effectiveRowLabel}${assignment.doenetId}`}>
             <td
+              data-test={`cbw row label ${i}`}
               style={{ borderBottom: '2px solid black', padding: '8px' }}
               rowSpan={numberOfVisibleRows}
             >
               {effectiveRowLabel}
             </td>
             <td
+              data-test={`cbw assignment label ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -338,6 +340,7 @@ function buildRows({
               {assignment.label}
             </td>
             <td
+              data-test={`cbw assigned date ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -349,6 +352,7 @@ function buildRows({
               {displayAssignedDate}
             </td>
             <td
+              data-test={`cbw due date ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -360,6 +364,7 @@ function buildRows({
               {displayDueDate}
             </td>
             <td
+              data-test={`cbw score ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -370,6 +375,7 @@ function buildRows({
               {score}
             </td>
             <td
+              data-test={`cbw completed ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -383,8 +389,9 @@ function buildRows({
         );
       } else {
         newRows.push(
-          <tr key={`${effectiveRowLabel}${assignment.doenetId}${i}`}>
+          <tr data-test={`cbw row ${i}`} key={`${effectiveRowLabel}${assignment.doenetId}${i}`}>
             <td
+              data-test={`cbw assignment label ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -396,6 +403,7 @@ function buildRows({
               {assignment.label}
             </td>
             <td
+              data-test={`cbw assigned date ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -407,6 +415,7 @@ function buildRows({
               {displayAssignedDate}
             </td>
             <td
+              data-test={`cbw due date ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -418,6 +427,7 @@ function buildRows({
               {displayDueDate}
             </td>
             <td
+              data-test={`cbw score ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -428,6 +438,7 @@ function buildRows({
               {score}
             </td>
             <td
+              data-test={`cbw completed ${i}`}
               style={{
                 backgroundColor: bgColor,
                 padding: '8px',
@@ -694,12 +705,14 @@ export default function Next7Days({ courseId }) {
         <ButtonGroup>
           <span>
             <Button
+              dataTest='previous week button'
               onClick={() => setWeekShift((was) => was - 1)}
               icon={<FontAwesomeIcon icon={faChevronLeft} />}
             />
           </span>
           <span>
             <Button
+              dataTest='next week button'
               onClick={() => setWeekShift((was) => was + 1)}
               icon={<FontAwesomeIcon icon={faChevronRight} />}
             />
