@@ -228,6 +228,7 @@ export const AssignedDate = ({ doenetId, courseId, editable = false }) => {
           }}
         />
         <DateTime
+          width='176px'
           disabled={assignedDate === null || assignedDate === undefined}
           value={assignedDate ? new Date(assignedDate) : null}
           dataTest="Assigned Date"
@@ -319,6 +320,7 @@ export const DueDate = ({ courseId, doenetId }) => {
         />
 
         <DateTime
+          width='176px'
           disabled={dueDate === null || dueDate === undefined}
           value={dueDate ? new Date(dueDate) : null}
           dataTest="Due Date"
@@ -984,6 +986,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
         />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <DateTime
+            width='176px'
             dataTest="Pinned After Date"
             disabled={pinnedAfterDate === null || pinnedAfterDate === undefined}
             disabledText="No Pinned After Date"
@@ -1041,6 +1044,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
           />
 
           <DateTime
+            width='176px'
             dataTest="Pinned Until Date"
             style={{ marginTop: '5px' }}
             disabled={pinnedUntilDate === null || pinnedUntilDate === undefined}

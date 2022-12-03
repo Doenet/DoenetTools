@@ -864,7 +864,12 @@ export function DuplicateCourse({ courseId }) {
 
       <h2>Duplicate Course</h2>
       <p>* - Required</p>
-      <Textfield vertical label="New Course's Name *" onChange={(e)=>{setNewCourseLabel(e.target.value)}} />
+      <Textfield 
+      vertical 
+      width="menu"
+      label="New Course's Label *" 
+      onChange={(e)=>{setNewCourseLabel(e.target.value)}} 
+      />
       <p>Start Dates are used to adjust the new course's activity dates.</p>
       <DateTime 
       offset="-10px"

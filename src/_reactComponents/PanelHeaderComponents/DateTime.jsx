@@ -28,7 +28,7 @@ export default function DateTime(props) {
 
   let effectiveWidth = props.width;
   if (props.width == 'menu' || !props.width){
-    effectiveWidth = 'var(--menuWidth)';
+    effectiveWidth = 'calc(var(--menuWidth) - 14px)';
   }
   // console.log('props.width ', props.width, "effectiveWidth",effectiveWidth);
 
