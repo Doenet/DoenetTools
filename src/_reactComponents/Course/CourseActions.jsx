@@ -810,9 +810,6 @@ export const useCourse = (courseId) => {
   const { label, color, image, defaultRoleId, canAutoEnroll } = useRecoilValue(
     coursePermissionsAndSettingsByCourseId(courseId)
   );
-  let coursePermissionsAndSettings = useRecoilValue(
-    coursePermissionsAndSettingsByCourseId(courseId)
-  );
   const addToast = useToast();
 
   function insertPageOrOrderToActivityInSpecificOrder({
