@@ -444,16 +444,19 @@ if ($success) {
             WHERE doenetId = '$assigned_doenetId'
         ";
         $result = $conn->query($sql);
+    }
+    //Copy the source page files to the new doenetId files
+    // for all activities and collections
 
-        //Copy the original page files to the new doenetId files
-        foreach ($contained_pages[$assigned_doenetId] as $previous_pages_info) {
+    foreach ($contained_pages as $array_of_pairs) {
+        foreach ($array_of_pairs as $previous_pages_info) {
             $previous_page_doenetId = $previous_pages_info['previous'];
             $next_page_doenetId = $previous_pages_info['next'];
 
-            // echo "previous_page_doenetId $previous_page_doenetId \n\n";
-            // echo "next_page_doenetId $next_page_doenetId \n";
             $sourceFile = "../media/byPageId/$previous_page_doenetId.doenet";
             $destinationFile = "../media/byPageId/$next_page_doenetId.doenet";
+            // echo "sourceFile $sourceFile \n";
+            // echo "destinationFile $destinationFile \n\n";
             $dirname = dirname($destinationFile);
             if (!is_dir($dirname)) {
                 mkdir($dirname, 0755, true);
