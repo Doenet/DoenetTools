@@ -243,6 +243,7 @@ export default class Legend extends GraphicalComponent {
                   lineWidth: selectedStyle.lineWidth,
                   lineOpacity: selectedStyle.lineOpacity,
                   fillColor: selectedStyle.fillColor,
+                  filled: selectedStyle.filled,
                   fillOpacity: selectedStyle.fillOpacity,
                   label: label.labelInfo
                 })

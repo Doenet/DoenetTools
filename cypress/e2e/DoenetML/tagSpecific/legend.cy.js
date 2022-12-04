@@ -390,9 +390,9 @@ describe('Legend Tag Tests', function () {
 
     <setup>
       <styleDefinitions>
-        <styleDefinition styleNumber="1" lineColor="green" lineWidth="1" lineOpacity="0.9" lineStyle="dotted" markerSize="5" markerStyle="triangle" markerColor="green" fillColor="red" fillOpacity="0.3" />
-        <styleDefinition styleNumber="2" lineColor="blue" lineWidth="2" lineOpacity="0.8" lineStyle="dashed" markerSize="4" markerStyle="square" markerColor="blue" fillColor="orange" fillOpacity="0.4" />
-        <styleDefinition styleNumber="3" lineColor="cyan" lineWidth="3" lineOpacity="0.7" lineStyle="solid" markerSize="3" markerStyle="circle" markerColor="cyan" fillColor="magenta" fillOpacity="0.5" />
+        <styleDefinition styleNumber="1" lineColor="green" lineWidth="1" lineOpacity="0.9" lineStyle="dotted" markerSize="5" markerStyle="triangle" markerColor="green" fillColor="red" fillOpacity="0.3" filled />
+        <styleDefinition styleNumber="2" lineColor="blue" lineWidth="2" lineOpacity="0.8" lineStyle="dashed" markerSize="4" markerStyle="square" markerColor="blue" fillColor="orange" fillOpacity="0.4" filled />
+        <styleDefinition styleNumber="3" lineColor="cyan" lineWidth="3" lineOpacity="0.7" lineStyle="solid" markerSize="3" markerStyle="circle" markerColor="cyan" fillColor="magenta" fillOpacity="0.5" filled />
         <styleDefinition styleNumber="4" lineColor="black" lineWidth="4" lineOpacity="0.6" lineStyle="dotted" />
       </styleDefinitions>
     </setup>
@@ -418,7 +418,7 @@ describe('Legend Tag Tests', function () {
         <label>third one</label>
         <label forObject="incorrect">This will be unused</label>
         <label>fourth one</label>
-        </legend>
+      </legend>
     </graph>
     `}, "*");
     });
@@ -515,6 +515,7 @@ describe('Legend Tag Tests', function () {
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineWidth).eq(3);
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineOpacity).eq(0.7);
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].fillColor).eq("magenta");
+      expect(stateVariables['/_legend1'].stateValues.legendElements[2].filled).eq(true);
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].fillOpacity).eq(0.5);
 
 
@@ -543,6 +544,7 @@ describe('Legend Tag Tests', function () {
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineWidth).eq(2);
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineOpacity).eq(0.8);
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillColor).eq("orange");
+      expect(stateVariables['/_legend1'].stateValues.legendElements[5].filled).eq(true);
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillOpacity).eq(0.4);
 
 

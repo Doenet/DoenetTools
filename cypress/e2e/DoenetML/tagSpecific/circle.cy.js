@@ -9073,4 +9073,113 @@ describe('Circle Tag Tests', function () {
 
   });
 
+  it('changing styles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <styledefinitions>
+        <styledefinition stylenumber="1" lineColor="blue" fillColor="blue" lineWidth="2" lineStyle="solid" />
+        <styledefinition stylenumber="2" lineColor="blue" fillColor="blue" lineWidth="2" lineStyle="solid" filled />
+        <styledefinition stylenumber="3" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" />
+        <styledefinition stylenumber="4" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" filled />
+
+        <styledefinition stylenumber="5" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" />
+        <styledefinition stylenumber="6" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" filled />
+        <styledefinition stylenumber="7" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" />
+        <styledefinition stylenumber="8" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" filled />
+        </styledefinitions>
+    </setup>
+
+    <graph>
+      <circle center="(-8,0)" name="c1" />
+      <circle center="(-8,4)" name="c2" stylenumber="2" />
+      <circle center="(-4,0)" name="c3" stylenumber="3" />
+      <circle center="(-4,4)" name="c4" stylenumber="4" />
+
+      <circle center="(0,0)" name="c5" stylenumber="5"/>
+      <circle center="(0,4)" name="c6" stylenumber="6" />
+      <circle center="(4,0)" name="c7" stylenumber="7" />
+      <circle center="(4,4)" name="c8" stylenumber="8" />
+
+    </graph>
+
+    <p>First circle is $c1.styleDescription{assignNames="st1"}.  It is a $c1.styleDescriptionWithNoun{assignNames="stn1"}. 
+      Its border is $c1.borderStyleDescription{assignNames="bst1"}.  Its fill is $c1.fillStyleDescription{assignNames="fst1"}.
+    </p>
+    <p>Second circle is $c2.styleDescription{assignNames="st2"}.  It is a $c2.styleDescriptionWithNoun{assignNames="stn2"}. 
+      Its border is $c2.borderStyleDescription{assignNames="bst2"}.  Its fill is $c2.fillStyleDescription{assignNames="fst2"}.
+    </p>
+    <p>Third circle is $c3.styleDescription{assignNames="st3"}.  It is a $c3.styleDescriptionWithNoun{assignNames="stn3"}. 
+      Its border is $c3.borderStyleDescription{assignNames="bst3"}.  Its fill is $c3.fillStyleDescription{assignNames="fst3"}.
+    </p>
+    <p>Fourth circle is $c4.styleDescription{assignNames="st4"}.  It is a $c4.styleDescriptionWithNoun{assignNames="stn4"}. 
+      Its border is $c4.borderStyleDescription{assignNames="bst4"}.  Its fill is $c4.fillStyleDescription{assignNames="fst4"}.
+    </p>
+
+    <p>Fifth circle is $c5.styleDescription{assignNames="st5"}.  It is a $c5.styleDescriptionWithNoun{assignNames="stn5"}. 
+      Its border is $c5.borderStyleDescription{assignNames="bst5"}.  Its fill is $c5.fillStyleDescription{assignNames="fst5"}.
+    </p>
+    <p>Sixth circle is $c6.styleDescription{assignNames="st6"}.  It is a $c6.styleDescriptionWithNoun{assignNames="stn6"}. 
+      Its border is $c6.borderStyleDescription{assignNames="bst6"}.  Its fill is $c6.fillStyleDescription{assignNames="fst6"}.
+    </p>
+    <p>Seventh circle is $c7.styleDescription{assignNames="st7"}.  It is a $c7.styleDescriptionWithNoun{assignNames="stn7"}. 
+      Its border is $c7.borderStyleDescription{assignNames="bst7"}.  Its fill is $c7.fillStyleDescription{assignNames="fst7"}.
+    </p>
+    <p>Eighth circle is $c8.styleDescription{assignNames="st8"}.  It is a $c8.styleDescriptionWithNoun{assignNames="stn8"}. 
+      Its border is $c8.borderStyleDescription{assignNames="bst8"}.  Its fill is $c8.fillStyleDescription{assignNames="fst8"}.
+    </p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    cy.get('#\\/st1').should('have.text', 'blue')
+    cy.get('#\\/stn1').should('have.text', 'blue circle')
+    cy.get('#\\/bst1').should('have.text', 'blue')
+    cy.get('#\\/fst1').should('have.text', 'unfilled')
+
+    cy.get('#\\/st2').should('have.text', 'filled blue')
+    cy.get('#\\/stn2').should('have.text', 'filled blue circle')
+    cy.get('#\\/bst2').should('have.text', 'blue')
+    cy.get('#\\/fst2').should('have.text', 'blue')
+
+    cy.get('#\\/st3').should('have.text', 'red')
+    cy.get('#\\/stn3').should('have.text', 'red circle')
+    cy.get('#\\/bst3').should('have.text', 'red')
+    cy.get('#\\/fst3').should('have.text', 'unfilled')
+
+    cy.get('#\\/st4').should('have.text', 'filled green with red border')
+    cy.get('#\\/stn4').should('have.text', 'filled green circle with a red border')
+    cy.get('#\\/bst4').should('have.text', 'red')
+    cy.get('#\\/fst4').should('have.text', 'green')
+
+    cy.get('#\\/st5').should('have.text', 'thick blue')
+    cy.get('#\\/stn5').should('have.text', 'thick blue circle')
+    cy.get('#\\/bst5').should('have.text', 'thick blue')
+    cy.get('#\\/fst5').should('have.text', 'unfilled')
+
+    cy.get('#\\/st6').should('have.text', 'filled blue with thick border')
+    cy.get('#\\/stn6').should('have.text', 'filled blue circle with a thick border')
+    cy.get('#\\/bst6').should('have.text', 'thick blue')
+    cy.get('#\\/fst6').should('have.text', 'blue')
+
+    cy.get('#\\/st7').should('have.text', 'thin dotted red')
+    cy.get('#\\/stn7').should('have.text', 'thin dotted red circle')
+    cy.get('#\\/bst7').should('have.text', 'thin dotted red')
+    cy.get('#\\/fst7').should('have.text', 'unfilled')
+
+    cy.get('#\\/st8').should('have.text', 'filled green with thin dotted red border')
+    cy.get('#\\/stn8').should('have.text', 'filled green circle with a thin dotted red border')
+    cy.get('#\\/bst8').should('have.text', 'thin dotted red')
+    cy.get('#\\/fst8').should('have.text', 'green')
+
+
+  });
+
+
 });

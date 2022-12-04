@@ -17,6 +17,7 @@ export let styleAttributes = {
   fillColor: { componentType: "text" },
   fillColorWord: { componentType: "text" },
   fillOpacity: { componentType: "number" },
+  filled: { componentType: "boolean" },
 }
 
 let defaultStyle = {
@@ -32,9 +33,10 @@ let defaultStyle = {
   markerStyle: "circle",
   markerStyleWord: "point",
   markerSize: 5,
-  fillColor: "none",
-  fillColorWord: "none",
+  fillColor: "#648FFF",
+  fillColorWord: "blue",
   fillOpacity: 0.3,
+  filled: false,
 }
 
 
@@ -54,9 +56,10 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerStyleWord: "point",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#648FFF",
+      fillColorWord: "blue",
       fillOpacity: 0.3,
+      filled: false,
     },
     2: {
       lineColor: "#D4042D",
@@ -71,9 +74,10 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "square",
       markerStyleWord: "square",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#D4042D",
+      fillColorWord: "red",
       fillOpacity: 0.3,
+      filled: false,
     },
     3: {
       lineColor: "#F19143",
@@ -88,9 +92,10 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "triangle",
       markerStyleWord: "triangle",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#F19143",
+      fillColorWord: "orange",
       fillOpacity: 0.3,
+      filled: false,
     },
     4: {
       lineColor: "#644CD6",
@@ -105,9 +110,10 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "diamond",
       markerStyleWord: "diamond",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#644CD6",
+      fillColorWord: "purple",
       fillOpacity: 0.3,
+      filled: false,
     },
     5: {
       lineColor: "black",
@@ -122,9 +128,10 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerStyleWord: "point",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "black",
+      fillColorWord: "black",
       fillOpacity: 0.3,
+      filled: false,
     },
     6: {
       lineColor: "gray",
@@ -139,9 +146,10 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerStyleWord: "point",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "gray",
+      fillColorWord: "gray",
       fillOpacity: 0.3,
+      filled: false,
     }
   }
 }
