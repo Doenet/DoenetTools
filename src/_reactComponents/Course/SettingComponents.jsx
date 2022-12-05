@@ -870,6 +870,18 @@ export function DuplicateCourse({ courseId }) {
       label="New Course's Label *" 
       onChange={(e)=>{setNewCourseLabel(e.target.value)}} 
       />
+      {/* <ColorImagePicker
+      // initialImage={image}
+      // initialColor={color}
+      imageCallback={(newImage) => {
+        console.log("newImage",newImage)
+        // modifyCourse({ image: newImage, color: 'none' });
+      }}
+      colorCallback={(newColor) => {
+        console.log("newColor",newColor)
+        // modifyCourse({ color: newColor, image: 'none' });
+      }}
+    /> */}
       <p>Start Dates are used to adjust the new course's activity dates.</p>
       <DateTime 
       offset="-10px"
