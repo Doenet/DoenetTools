@@ -478,7 +478,7 @@ $response_arr = [
     'color' => 'none',
 ];
 
-// echo json_encode($response_arr);
+echo json_encode($response_arr);
 
 $conn->close();
 ?>

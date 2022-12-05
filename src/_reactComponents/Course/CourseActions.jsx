@@ -1637,11 +1637,7 @@ export const useCourse = (courseId) => {
           let resp = await axios.post('/api/duplicateCourse.php', { courseId, dateDifference, newLabel });
           // console.log("resp",resp.data)
           if (resp.status < 300) {
-            //TODO: Set as owner
-            //TODO: Set courses to include new one
-            // set(coursePermissionsAndSettings, (prev) =>
-            //   prev.filter((c) => c.courseId !== courseId),
-            // );
+            set(coursePermissionsAndSettings, resp.data.permissionsAndSettings);
             successCallback?.();
           } else {
             throw new Error(`response code: ${resp.status}`);
