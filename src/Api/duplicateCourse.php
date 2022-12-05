@@ -244,6 +244,7 @@ if ($success) {
 
     $result = $conn->query($sql);
     $prevToNextDoenetIds = [];
+    $prevToNextDoenetIds[$courseId] = $nextCourseId; //Need this for parentDoenetIds
     $previous_course_content = [];
     $assigned_course_content_doenetIds = [];
 
@@ -266,9 +267,6 @@ if ($success) {
             $nextDoenetId = include 'randomId.php';
             $nextDoenetId = '_' . $nextDoenetId;
             $prevToNextDoenetIds[$doenetId] = $nextDoenetId;
-            $nextParentDoenetId = include 'randomId.php';
-            $nextParentDoenetId = '_' . $nextParentDoenetId;
-            $prevToNextDoenetIds[$parentDoenetId] = $nextParentDoenetId;
 
             array_push($previous_course_content, [
                 'type' => $type,
