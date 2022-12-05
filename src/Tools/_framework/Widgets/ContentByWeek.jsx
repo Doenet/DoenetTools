@@ -35,7 +35,6 @@ const Col = styled.td`
   height: 90px;
 `
 
-
 export default function NewNext7Days() {
 
   return (
@@ -55,41 +54,36 @@ export default function NewNext7Days() {
           </TableHead>
         </Row>
         <Row>
-          <Col>
-            
-              <Text>Assignment 1</Text>
-            
-          </Col>
-          <Col><Text>10/15</Text></Col>
+          <Col><Text>Assignment 1</Text></Col>
+          <Col textAlign="center"><Text>10/15</Text></Col>
           <Col>
             <DueDateBar  
               startDate={new Date("2022-01-01 00:00:00")}
               endDate={new Date("2022-12-31 00:00:00")}
               isCompleted
+              width="100%"
             />
           </Col>
         </Row>
         <Row>
-          <Col>
-              <Text>Assignment with a really really really long long long long name</Text>
-          </Col>
-          <Col><Text>-/25</Text></Col>
+          <Col><Text>Assignment with a really really really long long long long name</Text></Col>
+          <Col textAlign="center"><Text>-/25</Text></Col>
           <Col>
             <DueDateBar  
               startDate={new Date("2022-11-01 00:00:00")}
               endDate={new Date("2022-12-31 00:00:00")}
+              width="100%"
             />
           </Col>
         </Row>
         <Row>
-          <Col>
-              <Text>Assignment 3</Text>
-          </Col>
-          <Col><Text>-/15</Text></Col>
+          <Col><Text>Assignment 3</Text></Col>
+          <Col textAlign="center"><Text>-/15</Text></Col>
           <Col>
             <DueDateBar  
               startDate={new Date("2022-11-01 00:00:00")}
               endDate={new Date("2022-12-31 00:00:00")}
+              width="100%"
             />
           </Col>
         </Row>
