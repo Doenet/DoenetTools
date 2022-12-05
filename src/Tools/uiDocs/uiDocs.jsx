@@ -912,6 +912,13 @@ export default function Attempt() {
             'Changes the radius of the component',
         },
         {
+          name: 'Color',
+          propPreview: '<ProgressBar color="black" />',
+          propCode: { color: "black", progress: 0.4 },
+          description:
+            'Changes the color of the component',
+        },
+        {
           name: 'Progress Label',
           propPreview: '<ProgressBar showProgress"/>',
           propCode: { showProgress, progress: 0.4 },

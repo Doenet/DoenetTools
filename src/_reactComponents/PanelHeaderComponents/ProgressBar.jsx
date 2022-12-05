@@ -34,7 +34,7 @@ const InnerBar = styled.div`
   border-radius: ${props => props.isDonut ? "12.5px" : props.radius ? props.radius : "5px"};
   position: absolute;
   height: 100%;
-  background-color: var(--mainBlue); 
+  background-color ${props => props.color ? props.color : "var(--mainBlue)"}; 
   left: ${props => !props.rotated && 0};
   right: ${props => props.rotated && 0};
   width: ${props => props.progress + "%"};
@@ -114,6 +114,7 @@ export default function ProgressBar(props) {
             isDonut={props.donutIcon}
             rotated={props.rotated}
             radius={props.radius}
+            color={props.color}
           >
             { 
             props.donutIcon ? 
