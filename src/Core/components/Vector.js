@@ -1,6 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
+import { breakEmbeddedStringByCommas, returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
@@ -43,7 +43,7 @@ export default class Vector extends GraphicalComponent {
       createComponentOfType: "mathList",
     };
     attributes.displacement = {
-      createComponentOfType: "vector",
+      createComponentOfType: "coords",
     };
     attributes.head = {
       createComponentOfType: "point",
@@ -90,113 +90,112 @@ export default class Vector extends GraphicalComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
 
-    let breakIntoXsByCommas = function ({ matchedChildren, componentInfoObjects }) {
-      let childrenToComponentFunction = x => ({
-        componentType: "math", children: x
-      });
+    let breakIntoXsOrCoords = function ({ matchedChildren, componentInfoObjects }) {
 
-      let breakFunction = returnBreakStringsSugarFunction({
-        childrenToComponentFunction,
-        mustStripOffOuterParentheses: true
-      })
+      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
-      // find index of first and last string
-      let cTypes = matchedChildren.map(x => typeof x)
-      let beginInd = cTypes.indexOf("string");
-      let lastInd = cTypes.lastIndexOf("string");
+      // Find potential component children, i.e., consecutive children that aren't constraints or labels
+      // Note: including constraints here in case we add constraints later to vectors
 
-      if (beginInd === -1) {
-        // if have no strings but have exactly one child that isn't in child group,
-        // (point, vector, label)
-        // use that for displacement
+      let componentChildren = [], nonComponentChildrenBegin = [], nonComponentChildrenEnd = [];
 
-        let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
-
-        let otherChildren = matchedChildren.filter(child => !(
-          componentIsSpecifiedType(child, "point")
-          || componentIsSpecifiedType(child, "vector")
+      for (let child of matchedChildren) {
+        if (componentIsSpecifiedType(child, "constraints")
           || componentIsSpecifiedType(child, "label")
-        ));
+        ) {
+          if (componentChildren.length > 0) {
+            nonComponentChildrenEnd.push(child);
+          } else {
+            nonComponentChildrenBegin.push(child);
+          }
+        } else if (nonComponentChildrenEnd.length > 0) {
+          nonComponentChildrenEnd.push(child);
+        } else {
+          componentChildren.push(child);
+        }
+      }
 
-        if (otherChildren.length === 1) {
-          let mathChild = otherChildren[0];
-          let mathInd = matchedChildren.indexOf(mathChild);
+      if (componentChildren.length === 0) {
+        return { success: false }
+      }
 
-          let newChildren = [
-            ...matchedChildren.slice(0, mathInd),
-            ...matchedChildren.slice(mathInd + 1)
-          ];
+      if (componentChildren.length === 1) {
+        let child = componentChildren[0];
 
+        if (componentIsSpecifiedType(child, "point") || componentIsSpecifiedType(child, "vector")) {
+          // if have an isolated point or vector, don't use sugar
+          // and that child will picked up by the point or vector child group
+          return { success: false }
+        }
+      }
+
+      let nCompChildren = componentChildren.length;
+
+      // check if componentChildren represent a single expression inside parens
+      let firstChar, lastChar;
+      if (typeof componentChildren[0] === "string") {
+        componentChildren[0] = componentChildren[0].trimStart();
+        firstChar = componentChildren[0][0];
+      }
+      if (typeof componentChildren[nCompChildren - 1] === "string") {
+        componentChildren[nCompChildren - 1] = componentChildren[nCompChildren - 1].trimEnd();
+        let lastChild = componentChildren[nCompChildren - 1];
+        lastChar = lastChild[lastChild.length - 1];
+      }
+
+
+      if (firstChar === "(" && lastChar === ")") {
+        // start and end with parens, check if can split by commas after removing these parens
+        let modifiedChildren = [...componentChildren];
+        modifiedChildren[0] = modifiedChildren[0].substring(1);
+
+        let lastChild = modifiedChildren[modifiedChildren.length - 1];
+        modifiedChildren[modifiedChildren.length - 1] = lastChild.substring(0, lastChild.length - 1);
+
+        let breakResult = breakEmbeddedStringByCommas({ childrenList: modifiedChildren });
+
+        if (breakResult.success) {
+          // wrap maths around each piece, wrap whole thing in mathList
+          // and use for xs attribute
           return {
             success: true,
             newAttributes: {
-              displacement: {
+              xs: {
                 component: {
-                  componentType: "math",
-                  children: otherChildren
+                  componentType: "mathList",
+                  children: breakResult.pieces.map(x => ({ componentType: "math", children: x })),
+                  skipSugar: true,
                 }
               }
             },
-            newChildren
+            newChildren: [...nonComponentChildrenBegin, ...nonComponentChildrenEnd]
           }
-
-        } else {
-          // no strings and don't have exactly one non child-group child
-          return { success: false }
         }
 
       }
 
-      let newChildren = [
-        ...matchedChildren.slice(0, beginInd),
-        ...matchedChildren.slice(lastInd + 1)
-      ]
-      matchedChildren = matchedChildren.slice(beginInd, lastInd + 1);
 
-      let result = breakFunction({ matchedChildren });
 
-      if (!result.success && matchedChildren.length === 1) {
-        // if didn't succeed and just have a single string child,
-        // then just wrap string with a x
-        return {
-          success: true,
-          newAttributes: {
-            x: {
-              component: {
-                componentType: "math",
-                children: matchedChildren
-              }
+      // if didn't succeed in breaking it into xs, then use the component children as a displacement
+      return {
+        success: true,
+        newAttributes: {
+          displacement: {
+            component: {
+              componentType: "coords",
+              children: componentChildren,
             }
-          },
-          newChildren
-        }
-      }
-
-      if (result.success) {
-        // wrap xs around the x children
-        return {
-          success: true,
-          newAttributes: {
-            xs: {
-              component: {
-                componentType: "mathList",
-                children: result.newChildren,
-                skipSugar: true,
-              }
-            }
-          },
-          newChildren
-        }
-      } else {
-        return { success: false }
+          }
+        },
+        newChildren: [...nonComponentChildrenBegin, ...nonComponentChildrenEnd]
       }
 
 
     };
 
+
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
-      replacementFunction: breakIntoXsByCommas
+      replacementFunction: breakIntoXsOrCoords
     })
 
     return sugarInstructions;
@@ -208,11 +207,8 @@ export default class Vector extends GraphicalComponent {
     let childGroups = super.returnChildGroups();
 
     childGroups.push(...[{
-      group: "points",
-      componentTypes: ["point"]
-    }, {
-      group: "vectors",
-      componentTypes: ["vector"]
+      group: "pointsAndVectors",
+      componentTypes: ["point", "vector"]
     }])
 
     return childGroups;
@@ -439,21 +435,15 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "attributeComponent",
           attributeName: "displacement"
         },
-        pointChild: {
+        pointOrVectorChild: {
           dependencyType: "child",
-          childGroups: ["points"],
-        },
-        vectorChild: {
-          dependencyType: "child",
-          childGroups: ["vectors"],
-        },
+          childGroups: ["pointsAndVectors"],
+        }
       }),
       definition({ dependencyValues }) {
         let sourceOfDisplacement = null;
-        if (dependencyValues.vectorChild.length > 0) {
-          sourceOfDisplacement = "vectorChild"
-        } else if (dependencyValues.pointChild.length > 0) {
-          sourceOfDisplacement = "pointChild"
+        if (dependencyValues.pointOrVectorChild.length > 0) {
+          sourceOfDisplacement = "pointOrVectorChild"
         } else if (dependencyValues.displacementAttr !== null) {
           sourceOfDisplacement = "displacementAttr"
         } else if (dependencyValues.xsAttr !== null) {
@@ -608,16 +598,11 @@ export default class Vector extends GraphicalComponent {
           displacementAttr: {
             dependencyType: "attributeComponent",
             attributeName: "displacement",
-            variableNames: ["nDimensions"],
+            variableNames: ["value"],
           },
-          vectorChild: {
+          pointOrVectorChild: {
             dependencyType: "child",
-            childGroups: ["vectors"],
-            variableNames: ["nDimensions"],
-          },
-          pointChild: {
-            dependencyType: "child",
-            childGroups: ["points"],
+            childGroups: ["pointsAndVectors"],
             variableNames: ["nDimensions"],
           },
           xAttr: {
@@ -661,14 +646,16 @@ export default class Vector extends GraphicalComponent {
 
         if (dependencyValues.basedOnDisplacement) {
           switch (dependencyValues.sourceOfDisplacement) {
-            case ('vectorChild'):
-              nDimDisplacement = dependencyValues.vectorChild[0].stateValues.nDimensions;
-              break;
-            case ('pointChild'):
-              nDimDisplacement = dependencyValues.pointChild[0].stateValues.nDimensions;
+            case ('pointOrVectorChild'):
+              nDimDisplacement = dependencyValues.pointOrVectorChild[0].stateValues.nDimensions;
               break;
             case ('displacementAttr'):
-              nDimDisplacement = dependencyValues.displacementAttr.stateValues.nDimensions;
+              let displacementTree1 = dependencyValues.displacementAttr.stateValues.value.expand().simplify().tree;
+              if (Array.isArray(displacementTree1) && displacementTree1[0] === "vector") {
+                nDimDisplacement = displacementTree1.length - 1;
+              } else {
+                nDimDisplacement = 1;
+              }
               break;
             case ('xsAttr'):
               nDimDisplacement = dependencyValues.xsAttr.stateValues.nComponents;
@@ -685,9 +672,9 @@ export default class Vector extends GraphicalComponent {
             default:
               // since based on displacement and no source of displacement
               // we must have a displacement shadow
-              let displacementTree = dependencyValues.displacementShadow.tree;
-              if (Array.isArray(displacementTree) && ["tuple", "vector"].includes(displacementTree[0])) {
-                nDimDisplacement = displacementTree.length - 1;
+              let displacementTree2 = dependencyValues.displacementShadow.tuples_to_vectors().expand().simplify().tree;
+              if (Array.isArray(displacementTree2) && displacementTree2[0] === "vector") {
+                nDimDisplacement = displacementTree2.length - 1;
               } else {
                 nDimDisplacement = 1;
               }
@@ -1014,6 +1001,11 @@ export default class Vector extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "displacementShadow"
           },
+          displacementAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "displacement",
+            variableNames: ["value"],
+          },
           sourceOfDisplacement: {
             dependencyType: "stateVariable",
             variableName: "sourceOfDisplacement"
@@ -1030,21 +1022,11 @@ export default class Vector extends GraphicalComponent {
               attributeName: "xs",
               variableNames: ["math" + varEnding]
             },
-            displacementAttr: {
-              dependencyType: "attributeComponent",
-              attributeName: "displacement",
+            pointOrVectorChild: {
+              dependencyType: "child",
+              childGroups: ["pointsAndVectors"],
               variableNames: ["x" + varEnding],
             },
-            pointChild: {
-              dependencyType: "child",
-              childGroups: ["points"],
-              variableNames: ["x" + varEnding],
-            },
-            vectorChild: {
-              dependencyType: "child",
-              childGroups: ["vectors"],
-              variableNames: ["x" + varEnding],
-            }
           }
           if (arrayKey === "0") {
             dependenciesByKey[arrayKey].componentAttr = {
@@ -1093,56 +1075,72 @@ export default class Vector extends GraphicalComponent {
         let displacement = {};
         let essentialDisplacement = {};
 
-        for (let arrayKey of arrayKeys) {
-          let varEnding = Number(arrayKey) + 1;
-
-          if (globalDependencyValues.basedOnDisplacement) {
-            switch (globalDependencyValues.sourceOfDisplacement) {
-              case ('vectorChild'):
-                displacement[arrayKey] = dependencyValuesByKey[arrayKey].vectorChild[0].stateValues["x" + varEnding];
-                break;
-              case ('pointChild'):
-                displacement[arrayKey] = dependencyValuesByKey[arrayKey].pointChild[0].stateValues["x" + varEnding];
-                break;
-              case ('displacementAttr'):
-                displacement[arrayKey] = dependencyValuesByKey[arrayKey].displacementAttr.stateValues["x" + varEnding];
-                break;
-              case ('xsAttr'):
-                displacement[arrayKey] = dependencyValuesByKey[arrayKey].xsAttr.stateValues["math" + varEnding].simplify();
-                break;
-              case ('componentAttrs'):
-                let componentAttr = dependencyValuesByKey[arrayKey].componentAttr;
-                if (componentAttr === null) {
-                  // based on component attributes, but don't have
-                  // this particular one specified
-                  essentialDisplacement[arrayKey] = {
-                    defaultValue: me.fromAst(0)
-                  };
-                } else {
-                  displacement[arrayKey] = componentAttr.stateValues.value.simplify();
-                }
-                break;
-              default:
-                // since based on displacement and no source of displacement
-                // we must have a displacement shadow
-                let displacementTree = globalDependencyValues.displacementShadow.tree;
-                if (Array.isArray(displacementTree) && ["tuple", "vector"].includes(displacementTree[0])) {
-                  displacement[arrayKey] = globalDependencyValues.displacementShadow.get_component(Number(arrayKey));
-                } else {
-                  displacement[arrayKey] = globalDependencyValues.displacementShadow;
-                }
-            }
-          } else if (globalDependencyValues.basedOnHead) {
-            // basedOnDisplacement is false and based on head
-            // calculate displacement from head and tail
-            displacement[arrayKey] = dependencyValuesByKey[arrayKey].headX.subtract(dependencyValuesByKey[arrayKey].tailX).simplify();
-          } else {
-            // not based on displacement or head, use essential value
-            essentialDisplacement[arrayKey] = {
-              defaultValue: me.fromAst(arrayKey === "0" ? 1 : 0)
-            };
+        let prescribedDisplacement;
+        if (globalDependencyValues.basedOnDisplacement) {
+          if (globalDependencyValues.sourceOfDisplacement === "displacementAttr") {
+            prescribedDisplacement = globalDependencyValues.displacementAttr.stateValues.value;
+          } else if (globalDependencyValues.sourceOfDisplacement === null) {
+            prescribedDisplacement = globalDependencyValues.displacementShadow.tuples_to_vectors();
           }
+        }
 
+        if (prescribedDisplacement) {
+          prescribedDisplacement = prescribedDisplacement.expand().simplify();
+          let displacementTree = prescribedDisplacement.tree;
+          if (Array.isArray(displacementTree) && displacementTree[0] === "vector") {
+            for (let arrayKey of arrayKeys) {
+              let ind = Number(arrayKey);
+              if (ind >= 0 || ind < displacementTree.length - 1) {
+                if (displacementTree[ind + 1] === undefined) {
+                  displacement[arrayKey] = me.fromAst("\uff3f");
+                } else {
+                  displacement[arrayKey] = prescribedDisplacement.get_component(ind);
+                }
+              }
+            }
+          } else {
+            if (arrayKeys.includes('0')) {
+              displacement[0] = prescribedDisplacement;
+            }
+          }
+        } else {
+
+          for (let arrayKey of arrayKeys) {
+            let varEnding = Number(arrayKey) + 1;
+
+            if (globalDependencyValues.basedOnDisplacement) {
+              switch (globalDependencyValues.sourceOfDisplacement) {
+                case ('pointOrVectorChild'):
+                  displacement[arrayKey] = dependencyValuesByKey[arrayKey].pointOrVectorChild[0].stateValues["x" + varEnding];
+                  break;
+                case ('xsAttr'):
+                  displacement[arrayKey] = dependencyValuesByKey[arrayKey].xsAttr.stateValues["math" + varEnding].simplify();
+                  break;
+                case ('componentAttrs'):
+                  let componentAttr = dependencyValuesByKey[arrayKey].componentAttr;
+                  if (componentAttr === null) {
+                    // based on component attributes, but don't have
+                    // this particular one specified
+                    essentialDisplacement[arrayKey] = {
+                      defaultValue: me.fromAst(0)
+                    };
+                  } else {
+                    displacement[arrayKey] = componentAttr.stateValues.value.simplify();
+                  }
+                  break;
+              }
+            } else if (globalDependencyValues.basedOnHead) {
+              // basedOnDisplacement is false and based on head
+              // calculate displacement from head and tail
+              displacement[arrayKey] = dependencyValuesByKey[arrayKey].headX.subtract(dependencyValuesByKey[arrayKey].tailX).simplify();
+            } else {
+              // not based on displacement or head, use essential value
+              essentialDisplacement[arrayKey] = {
+                defaultValue: me.fromAst(arrayKey === "0" ? 1 : 0)
+              };
+            }
+
+          }
         }
 
 
@@ -1168,33 +1166,65 @@ export default class Vector extends GraphicalComponent {
 
         let instructions = [];
 
-        let updateDisplacementShadow = false;
+        if (globalDependencyValues.basedOnDisplacement) {
+          if (globalDependencyValues.sourceOfDisplacement === "displacementAttr") {
+            if (arraySize[0] > 1) {
+              let desiredDisplacement = ["vector"];
+              for (let arrayKey in desiredStateVariableValues.displacement) {
+                desiredDisplacement[Number(arrayKey) + 1] = desiredStateVariableValues.displacement[arrayKey].tree;
+              }
+              desiredDisplacement.length = arraySize[0] + 1
+              instructions.push({
+                setDependency: "displacementAttr",
+                desiredValue: me.fromAst(desiredDisplacement),
+                variableIndex: 0
+              })
+            } else if (arraySize[0] === 1 && "0" in desiredStateVariableValues.displacement) {
+              instructions.push({
+                setDependency: "displacementAttr",
+                desiredValue: desiredStateVariableValues.displacement[0],
+                variableIndex: 0
+              })
+            }
+            return {
+              success: true,
+              instructions
+            };
+          } else if (globalDependencyValues.sourceOfDisplacement === null) {
+            if (arraySize[0] > 1) {
+              let desiredDisplacement = ["vector"];
+              for (let arrayKey in desiredStateVariableValues.displacement) {
+                desiredDisplacement[Number(arrayKey) + 1] = desiredStateVariableValues.displacement[arrayKey].tree;
+              }
+              desiredDisplacement.length = arraySize[0] + 1
+              instructions.push({
+                setDependency: "displacementShadow",
+                desiredValue: me.fromAst(desiredDisplacement),
+              })
+            } else if (arraySize[0] === 1 && "0" in desiredStateVariableValues.displacement) {
+              instructions.push({
+                setDependency: "displacementShadow",
+                desiredValue: desiredStateVariableValues.displacement[0]
+              })
+            }
+            return {
+              success: true,
+              instructions
+            };
+          }
+        }
+
 
         for (let arrayKey in desiredStateVariableValues.displacement) {
 
 
           if (globalDependencyValues.basedOnDisplacement) {
             switch (globalDependencyValues.sourceOfDisplacement) {
-              case ('vectorChild'):
+              case ('pointOrVectorChild'):
                 instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].vectorChild,
+                  setDependency: dependencyNamesByKey[arrayKey].pointOrVectorChild,
                   desiredValue: desiredStateVariableValues.displacement[arrayKey],
                   childIndex: 0,
-                  variableIndex: 0,
-                })
-                break;
-              case ('pointChild'):
-                instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].pointChild,
-                  desiredValue: desiredStateVariableValues.displacement[arrayKey],
-                  childIndex: 0,
-                  variableIndex: 0,
-                })
-                break;
-              case ('displacementAttr'):
-                instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].displacementAttr,
-                  desiredValue: desiredStateVariableValues.displacement[arrayKey],
                   variableIndex: 0,
                 })
                 break;
@@ -1222,11 +1252,6 @@ export default class Vector extends GraphicalComponent {
                   })
                 }
                 break;
-              default:
-                // since based on displacement and no source of displacement
-                // we must have a displacement shadow
-                updateDisplacementShadow = true;
-
             }
           } else if (globalDependencyValues.basedOnHead) {
 
@@ -1249,24 +1274,6 @@ export default class Vector extends GraphicalComponent {
           }
         }
 
-        if (updateDisplacementShadow) {
-          if (arraySize[0] > 1) {
-            let desiredDisplacement = ["vector"];
-            for (let arrayKey in desiredStateVariableValues.displacement) {
-              desiredDisplacement[Number(arrayKey) + 1] = desiredStateVariableValues.displacement[arrayKey].tree;
-            }
-            desiredDisplacement.length = arraySize[0] + 1
-            instructions.push({
-              setDependency: "displacementShadow",
-              desiredValue: me.fromAst(desiredDisplacement),
-            })
-          } else if (arraySize[0] === 1 && "0" in desiredStateVariableValues.displacement) {
-            instructions.push({
-              setDependency: "displacementShadow",
-              desiredValue: desiredStateVariableValues.displacement[0]
-            })
-          }
-        }
 
         return {
           success: true,

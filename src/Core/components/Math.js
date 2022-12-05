@@ -2534,7 +2534,7 @@ function checkForLinearExpression(tree, variables, inverseTree, constants = [], 
       // if there are no variable or constant math activeChildren, then consider it linear
       let mappings = {};
       let key = "x" + components.join('_');
-      mappings[key] = { result: me.fromAst(inverseTree).simplify(), components: components };
+      mappings[key] = { result: me.fromAst(inverseTree).expand().simplify(), components: components };
       //let modifiableStrings = {[key]: components};
       return { foundLinear: true, mappings: mappings, template: key };
       //modifiableStrings: modifiableStrings };
@@ -2594,7 +2594,7 @@ function checkForScalarLinearExpression(tree, variables, inverseTree, components
   if ((typeof tree === "string") && variables.includes(tree)) {
     let mappings = {};
     let template = "x" + components.join('_');
-    mappings[template] = { result: me.fromAst(inverseTree).simplify(), components: components, mathChildSub: tree };
+    mappings[template] = { result: me.fromAst(inverseTree).expand().simplify(), components: components, mathChildSub: tree };
     return { foundLinear: true, mappings: mappings, template: template };
   }
 
@@ -2764,7 +2764,9 @@ async function invertMath({ desiredStateVariableValues, dependencyValues,
           // (i.e., that are marked as not modifiable from above)
           childValue = childValue.substitute(subsMap);
         }
-        childValue = childValue.simplify();
+
+        childValue = childValue.expand().simplify();
+
         instructions.push({
           setDependency: "mathChildren",
           desiredValue: childValue,

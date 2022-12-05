@@ -272,6 +272,74 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
   }
 }
 
+export function breakIntoPiecesBySpacesOutsideParens({ componentList }) {
+
+  let Nparens = 0;
+  let pieces = [];
+  let currentPiece = [];
+
+  for (let component of componentList) {
+
+    if (typeof component !== "string") {
+      currentPiece.push(component);
+      continue;
+    }
+
+    let s = component;
+
+    let beginInd = 0;
+
+    for (let ind = 0; ind < s.length; ind++) {
+      let char = s[ind];
+
+      if (char === "(") {
+        Nparens++;
+      } else if (char === ")") {
+        if (Nparens === 0) {
+          // parens didn't match, so return failure
+          return { success: false };
+        }
+        Nparens--
+      } else if (Nparens === 0 && char.match(/\s/)) {
+        // found a space outside parens
+
+        if (ind > beginInd) {
+          currentPiece.push(s.substring(beginInd, ind));
+        }
+
+        if (currentPiece.length > 0) {
+          pieces.push(currentPiece);
+          currentPiece = [];
+        }
+
+        beginInd = ind + 1;
+
+      }
+    }
+
+    if (s.length > beginInd) {
+      let newString = s.substring(beginInd, s.length).trim();
+      currentPiece.push(newString);
+    }
+
+  }
+
+  // parens didn't match, so return failure
+  if (Nparens !== 0) {
+    return { success: false };
+  }
+
+  if (currentPiece.length > 0) {
+    pieces.push(currentPiece);
+  }
+
+  return {
+    success: true,
+    pieces,
+  }
+}
+
+
 
 // function: breakIntoVectorComponents
 //
