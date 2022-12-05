@@ -3239,5 +3239,886 @@ describe('Specifying unique variant tests', function () {
 
   });
 
+  it('variantsToInclude and variantsToExclude', () => {
+
+    cy.log('get two variants with no include/exclude');
+
+    let baseDoenetMLa = `
+    <variantControl nVariants="10" variantNames="first second" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>2</text' + baseDoenetMLa,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>5</text' + baseDoenetMLa,
+        requestedVariantIndex: 5,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+
+    cy.log('get same variants when add variantsToInclude');
+
+
+    let baseDoenetMLb = `
+    <variantControl nVariants="10" variantNames="first second" variantsToInclude="second e" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>1</text' + baseDoenetMLb,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `1`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>2</text' + baseDoenetMLb,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+    cy.log('get same variants when add variantsToExclude');
+
+
+    let baseDoenetMLc = `
+    <variantControl nVariants="10" variantNames="first second" variantsToExclude="first d h j" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>1</text' + baseDoenetMLc,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `1`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>3</text' + baseDoenetMLc,
+        requestedVariantIndex: 3,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `3`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+
+    cy.log('get same variants when add variantsToInclude and variantsToExclude');
+
+
+    let baseDoenetMLd = `
+    <variantControl nVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>1</text' + baseDoenetMLd,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `1`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>2</text' + baseDoenetMLd,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+  });
+
+  it('variantsToInclude and variantsToExclude in problem as only child', () => {
+
+    cy.log('get two variants with no include/exclude');
+
+    let baseDoenetMLa = `
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLa,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLa,
+        requestedVariantIndex: 5,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(5);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+
+    cy.log('get same variants when add variantsToInclude');
+
+
+    let baseDoenetMLb = `
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" variantsToInclude="second e" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLb,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLb,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+    cy.log('get same variants when add variantsToExclude');
+
+
+    let baseDoenetMLc = `
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" variantsToExclude="first d h j" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLc,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLc,
+        requestedVariantIndex: 3,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('3');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(3);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+
+    cy.log('get same variants when add variantsToInclude and variantsToExclude');
+
+
+    let baseDoenetMLd = `
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLd,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLd,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+  });
+
+  it('variantsToInclude and variantsToExclude in problem, extra child', () => {
+
+    cy.log('get two variants with no include/exclude');
+
+    let baseDoenetMLa = `
+    Hello!
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+    let allDocVariants = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az', 'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bk', 'bl', 'bm', 'bn', 'bo', 'bp', 'bq', 'br', 'bs', 'bt', 'bu', 'bv', 'bw', 'bx', 'by', 'bz', 'ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm', 'cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv'];
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLa,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLa,
+        requestedVariantIndex: 5,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(5);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+
+    cy.log('get same variants when add variantsToInclude');
+
+
+    let baseDoenetMLb = `
+    Hello!
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" variantsToInclude="second e" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLb,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLb,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+    cy.log('get same variants when add variantsToExclude');
+
+
+    let baseDoenetMLc = `
+    Hello!
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" variantsToExclude="first d h j" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLc,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLc,
+        requestedVariantIndex: 3,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('3');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('c');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(3);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "c", "e", "f", "g", "i"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+
+
+    cy.log('get same variants when add variantsToInclude and variantsToExclude');
+
+
+    let baseDoenetMLd = `
+    Hello!
+    <problem>
+    <variantControl nVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="10" />
+    </problem>
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLd,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(2)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('second');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: baseDoenetMLd,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/n').should('have.text', `5`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(5)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c"]);
+      expect(stateVariables["/_document1"].sharedParameters.allVariantNames).eqls(allDocVariants);
+      expect(stateVariables["/_problem1"].sharedParameters.variantSeed).eq('5');
+      expect(stateVariables["/_problem1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_problem1"].sharedParameters.variantName).eq('e');
+      expect(stateVariables["/_problem1"].sharedParameters.allPossibleVariants).eqls(["second", "e", "g"]);
+      expect(stateVariables["/_problem1"].sharedParameters.allVariantNames).eqls(["first", "second", "c", "d", "e", "f", "g", "h", "i", "j"]);
+    })
+
+
+  });
+
+  it('unique variants determined by nVariants specified, even with variantsToInclude and variantsToExclude', () => {
+
+    cy.log('unique variants when nVariants is 1000');
+
+    let baseDoenetMLa = `
+    <variantControl nVariants="1000" variantsToInclude="b t ax cv" variantsToExclude="b ax" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="1000" />
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>1</text' + baseDoenetMLa,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `1`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(20)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('20');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('t');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["t", "cv"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>2</text' + baseDoenetMLa,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(100)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('100');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('cv');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["t", "cv"]);
+    })
+
+
+    cy.log('non-unique variants when nVariants is 100');
+
+    let baseDoenetMLb = `
+    <variantControl nVariants="100" variantsToInclude="b t ax cv" variantsToExclude="b ax" />
+    Selected number: 
+    <selectfromsequence assignnames="n" length="1000" />
+    `
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>1</text' + baseDoenetMLb,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `1`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).not.eq(20)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('20');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('t');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["t", "cv"]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: '<text>2</text' + baseDoenetMLb,
+        requestedVariantIndex: 2,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `2`)
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).not.eq(100)
+      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('100');
+      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('cv');
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["t", "cv"]);
+    })
+
+
+
+  });
+
+
 
 });

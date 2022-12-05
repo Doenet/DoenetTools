@@ -67,6 +67,12 @@ export default class AttractToGrid extends ConstraintComponent {
       defaultValue: false,
       public: true,
     };
+    attributes.ignoreGraphBounds = {
+      createComponentOfType: "boolean",
+      createStateVariable: "ignoreGraphBounds",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
@@ -135,10 +141,34 @@ export default class AttractToGrid extends ConstraintComponent {
           dependencyType: "stateVariable",
           variableName: "zthreshold"
         },
+        constraintAncestor: {
+          dependencyType: "ancestor",
+          componentType: "constraints",
+          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"]
+        },
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+        },
+        ignoreGraphBounds: {
+          dependencyType: "stateVariable",
+          variableName: "ignoreGraphBounds"
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
+
+
+            let ancestor;
+            if (dependencyValues.constraintAncestor !== null &&
+              dependencyValues.constraintAncestor.stateValues.graphXmin !== null) {
+              ancestor = "constraints";
+            } else if (dependencyValues.graphAncestor !== null &&
+              dependencyValues.graphAncestor.stateValues.xmin !== null) {
+              ancestor = "graph";
+            }
 
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
@@ -153,9 +183,30 @@ export default class AttractToGrid extends ConstraintComponent {
               let xoffset = dependencyValues.xoffset;
               let x1grid = Math.round((x1 - xoffset) / dx) * dx + xoffset;
 
-              if (Number.isFinite(x1grid) &&
-                Math.abs(x1 - x1grid) < dependencyValues.xthreshold
-              ) {
+              if (!Number.isFinite(x1grid)) {
+                return {};
+              }
+
+              if (!dependencyValues.ignoreGraphBounds) {
+                // if in a graph, exclude grid points outside graph bounds
+                let xmin, xmax;
+                if (ancestor === "constraints") {
+                  xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
+                  xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
+                } else if (ancestor === "graph") {
+                  xmin = dependencyValues.graphAncestor.stateValues.xmin;
+                  xmax = dependencyValues.graphAncestor.stateValues.xmax;
+                }
+                if (xmin !== undefined) {
+                  if (x1grid < xmin) {
+                    x1grid = Math.ceil((xmin - xoffset) / dx) * dx + xoffset;
+                  } else if (x1grid > xmax) {
+                    x1grid = Math.floor((xmax - xoffset) / dx) * dx + xoffset;
+                  }
+                }
+              }
+
+              if (Math.abs(x1 - x1grid) < dependencyValues.xthreshold) {
                 return {
                   constrained: true,
                   variables: { x1: x1grid }
@@ -178,9 +229,30 @@ export default class AttractToGrid extends ConstraintComponent {
               let dy = dependencyValues.dy;
               let yoffset = dependencyValues.yoffset;
               let x2grid = Math.round((x2 - yoffset) / dy) * dy + yoffset;
-              if (Number.isFinite(x2grid) &&
-                Math.abs(x2 - x2grid) < dependencyValues.ythreshold
-              ) {
+              if (!Number.isFinite(x2grid)) {
+                return {};
+              }
+
+              if (!dependencyValues.ignoreGraphBounds) {
+                // if in a graph, exclude grid points outside graph bounds
+                let ymin, ymax;
+                if (ancestor === "constraints") {
+                  ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
+                  ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
+                } else if (ancestor === "graph") {
+                  ymin = dependencyValues.graphAncestor.stateValues.ymin;
+                  ymax = dependencyValues.graphAncestor.stateValues.ymax;
+                }
+                if (ymin !== undefined) {
+                  if (x2grid < ymin) {
+                    x2grid = Math.ceil((ymin - yoffset) / dy) * dy + yoffset;
+                  } else if (x2grid > ymax) {
+                    x2grid = Math.floor((ymax - yoffset) / dy) * dy + yoffset;
+                  }
+                }
+              }
+
+              if (Math.abs(x2 - x2grid) < dependencyValues.ythreshold) {
                 return {
                   constrained: true,
                   variables: { x2: x2grid }

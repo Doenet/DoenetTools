@@ -47,7 +47,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(0.5, 0.05);
-      expect(varX).closeTo(1 / 12, 0.01)
+      expect(varX).closeTo(1 / 12, 0.015)
 
       let firstSample = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
       expect(firstSample.stateValues.mean).closeTo(0.5, 1E-10)
@@ -1721,7 +1721,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.8,
-        allowedErrorInVariance: 0.5,
+        allowedErrorInVariance: 0.8,
         checkAllSamples: false,
         stateVariables
       })

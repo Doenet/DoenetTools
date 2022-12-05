@@ -20,7 +20,7 @@ describe('Examples', function () {
     cy.setUserUpload({userId,newValue:'1'})
   })
 
-  it.only("set user's role can canEditContent",()=>{
+  it("set user's role can canEditContent",()=>{
 
   const roleId = "canEditRoleId";
   cy.createUserRole({courseId,roleId,label:"can edit role"});

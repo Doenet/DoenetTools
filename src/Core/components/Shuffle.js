@@ -199,7 +199,7 @@ export default class Shuffle extends CompositeComponent {
   }
 
 
-  static async setUpVariant({
+  static setUpVariant({
     serializedComponent, sharedParameters,
     descendantVariantComponents,
   }) {

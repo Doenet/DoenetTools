@@ -1508,11 +1508,11 @@ describe('Select Tag Tests', function () {
 
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariantNames="dill"><math>d</math></option>
-      <option selectForVariantNames="Carrot"><math>c</math></option>
-      <option selectForVariantNames="eggPlant"><math>e</math></option>
-      <option selectForVariantNames="avocadO"><math>a</math></option>
-      <option selectForVariantNames="broccOli"><math>b</math></option>
+      <option selectForVariants="dill"><math>d</math></option>
+      <option selectForVariants="Carrot"><math>c</math></option>
+      <option selectForVariants="eggPlant"><math>e</math></option>
+      <option selectForVariants="avocadO"><math>a</math></option>
+      <option selectForVariants="broccOli"><math>b</math></option>
     </select>
     </p>
 
@@ -1559,11 +1559,11 @@ describe('Select Tag Tests', function () {
     <p>Selected variables:
     <aslist>
     <select assignnames="(x)  (y)  (z)" numbertoselect="3">
-      <option selectForVariantNames="dill  carrot  avocado"><math>d</math></option>
-      <option selectForVariantNames="cArrOt eggplant eggplant"><math>c</math></option>
-      <option selectForVariantNames="eggplant  broccoli  dilL"><math>e</math></option>
-      <option selectForVariantNames="aVocado   avocado   broccoli"><math>a</math></option>
-      <option selectForVariantNames="  broccoli     caRRot     dill    "><math>b</math></option>
+      <option selectForVariants="dill  carrot  avocado"><math>d</math></option>
+      <option selectForVariants="cArrOt eggplant eggplant"><math>c</math></option>
+      <option selectForVariants="eggplant  broccoli  dilL"><math>e</math></option>
+      <option selectForVariants="aVocado   avocado   broccoli"><math>a</math></option>
+      <option selectForVariants="  broccoli     caRRot     dill    "><math>b</math></option>
     </select>
     </aslist>
     </p>

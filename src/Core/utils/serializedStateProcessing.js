@@ -266,6 +266,7 @@ function substituteDeprecations(serializedComponents) {
     targetsareresponses: "sourcesAreResponses",
     updatewithtarget: "updateWith",
     targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
+    selectforvariantnames: "selectForVariants",
   }
 
   // Note: use lower case for keys
@@ -699,7 +700,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
 
             }
           } else {
-            if(component.componentType === "copy") {
+            if (component.componentType === "copy") {
               console.warn(`invalid copy source: ${originalSource}`)
             } else {
               console.warn(`invalid target: ${originalSource}`)
@@ -881,7 +882,7 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
     }
 
     let attr = { component: newComponent };
-    if(attrObj.ignoreFixed) {
+    if (attrObj.ignoreFixed) {
       attr.ignoreFixed = true;
     }
     return attr;
@@ -2464,7 +2465,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           }
 
           comp.doenetAttributes.isAttributeChild = true;
-          if(attribute.ignoreFixed) {
+          if (attribute.ignoreFixed) {
             comp.doenetAttributes.ignoreParentFixed = true;
           }
 
@@ -2624,221 +2625,6 @@ let nanInfinityReviver = function (key, value) {
 
 export function serializedComponentsReviver(key, value) {
   return me.reviver(key, subsets.Subset.reviver(key, nanInfinityReviver(key, value)))
-}
-
-export function gatherVariantComponents({ serializedComponents, componentInfoObjects }) {
-
-  // returns a list of serialized components who are variant components,
-  // where the components are selected from serializedComponents themselves,
-  // or, if a particular component isn't a variant component, 
-  // then recurse to find descendant variant components
-
-  // Also, as a side effect, mark each found variant component as a variant component
-  // directly in the variants attribute of that component
-
-  let variantComponents = [];
-
-  for (let serializedComponent of serializedComponents) {
-
-    if (serializedComponent.variants?.isVariantComponent) {
-      variantComponents.push(serializedComponent);
-      continue;
-    }
-
-    let componentType = serializedComponent.componentType;
-
-    if (componentType in componentInfoObjects.componentTypesCreatingVariants) {
-      serializedComponent.variants = {
-        isVariantComponent: true
-      }
-      variantComponents.push(serializedComponent);
-      continue;
-    }
-
-
-    if (!serializedComponent.children) {
-      continue;
-    }
-
-    // check if have a variant control child, which means this component
-    // is a variant component
-    if (serializedComponent.children.some(x => x.componentType === "variantControl")) {
-      serializedComponent.variants = {
-        isVariantComponent: true
-      }
-      variantComponents.push(serializedComponent);
-      continue;
-    }
-
-    // if a component isn't a variant component, then recurse on children
-
-    let descendantVariantComponents = gatherVariantComponents({
-      serializedComponents: serializedComponent.children,
-      componentInfoObjects,
-    });
-
-    if (descendantVariantComponents.length > 0) {
-
-      serializedComponent.variants = {
-        descendantVariantComponents: descendantVariantComponents
-      }
-
-      variantComponents.push(...descendantVariantComponents)
-
-    }
-  }
-
-  return variantComponents;
-}
-
-export function getNumberOfVariants({ serializedComponent, componentInfoObjects }) {
-
-  // get number of variants from document (or other sectioning component)
-
-  if (!serializedComponent.variants) {
-    serializedComponent.variants = {};
-  }
-
-  let variantControlChild
-  for (let child of serializedComponent.children) {
-    if (child.componentType === "variantControl") {
-      variantControlChild = child;
-      break;
-    }
-  }
-
-  if (!variantControlChild) {
-
-    if (serializedComponent.componentType === "document") {
-      // if have a single child that is a section, use variants from that section
-
-      let nonBlankChildren = serializedComponent.children.filter(x => x.componentType || x.trim() !== "");
-
-      if (nonBlankChildren.length === 1 && componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: nonBlankChildren[0].componentType,
-        baseComponentType: "_sectioningComponent"
-      })) {
-
-        let results = getNumberOfVariants({
-          serializedComponent: nonBlankChildren[0],
-          componentInfoObjects
-        });
-
-
-        if (results.success) {
-          serializedComponent.variants.numberOfVariants = results.numberOfVariants;
-          serializedComponent.variants.variantNames = results.variantNames;
-          serializedComponent.variants.variantsFromChild = true;
-          serializedComponent.variants.numberOfVariantsPreIgnore = results.numberOfVariantsPreIgnore;
-          serializedComponent.variants.indicesToIgnore = results.indicesToIgnore;
-
-          return results;
-
-        }
-
-      }
-
-      // either didn't have a single section child or get number of varants wan't successful
-
-      let numberOfVariants = 100;
-      let numberOfVariantsPreIgnore = 100;
-
-      // check if have one unique variant
-      let compClass = componentInfoObjects.allComponentClasses[serializedComponent.componentType];
-      let result = compClass.determineNumberOfUniqueVariants({
-        serializedComponent, componentInfoObjects
-      })
-
-      // if have 100 or fewer unique variants, set to unique
-      if (result.success && result.numberOfVariantsPreIgnore <= 100) {
-        numberOfVariantsPreIgnore = result.numberOfVariantsPreIgnore;
-        numberOfVariants = result.numberOfVariants;
-        serializedComponent.variants.uniqueVariants = true;
-      }
-
-      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
-      serializedComponent.variants.numberOfVariants = numberOfVariants;
-      serializedComponent.variants.indicesToIgnore = [];
-
-      return {
-        success: true,
-        numberOfVariants,
-        numberOfVariantsPreIgnore,
-        indicesToIgnore: []
-      };
-
-    } else {
-      // if are a section without a variant control, it doesn't determine variants
-      return { success: false }
-    }
-
-  }
-
-  let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
-
-  if (numberOfVariants === undefined) {
-    numberOfVariants = 100;
-  }
-
-  let variantNames = variantControlChild.attributes.variantNames?.component?.children
-    .map(x => x.toLowerCase().substring(0, 1000));
-
-  let indicesToIgnore = [];
-  if (variantControlChild.attributes.variantIndicesToIgnore) {
-    indicesToIgnore = variantControlChild.attributes.variantIndicesToIgnore.component
-      .children.map(Number)
-      .filter(x => Number.isInteger(x) && x >= 1 && x <= numberOfVariants)
-      .sort((a, b) => a - b);
-  }
-
-  let numberOfVariantsPreIgnore = numberOfVariants;
-
-  if (!variantControlChild.attributes.uniqueVariants?.primitive) {
-    if (indicesToIgnore.length > 0) {
-      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
-      serializedComponent.variants.indicesToIgnore = indicesToIgnore;
-      numberOfVariants -= indicesToIgnore.length;
-    }
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
-    return {
-      success: true,
-      numberOfVariants,
-      variantNames,
-      numberOfVariantsPreIgnore,
-      indicesToIgnore,
-    }
-  }
-
-  // have unique variants so it is more complicated!
-
-  let compClass = componentInfoObjects.allComponentClasses[serializedComponent.componentType];
-
-  let result = compClass.determineNumberOfUniqueVariants({
-    serializedComponent, componentInfoObjects
-  })
-
-  if (result.success) {
-    numberOfVariantsPreIgnore = result.numberOfVariantsPreIgnore;
-    numberOfVariants = result.numberOfVariants;
-    serializedComponent.variants.uniqueVariants = true;
-
-    indicesToIgnore = indicesToIgnore.filter(x => x <= numberOfVariantsPreIgnore);
-
-    // don't have to add to serializedComponent.variants.numberOfVariants 
-    // as determineNumberOfUniqueVariants does it in this case
-  } else {
-    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
-  }
-
-  return {
-    success: true,
-    numberOfVariants,
-    variantNames,
-    numberOfVariantsPreIgnore,
-    indicesToIgnore,
-  };
-
 }
 
 export function processAssignNames({

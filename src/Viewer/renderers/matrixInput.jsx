@@ -6,6 +6,7 @@ import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/Acti
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
+import './mathInput.css';
 
 const Matrix = styled.div`
   position: relative;
@@ -210,7 +211,7 @@ export default React.memo(function MatrixInput(props) {
 
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(
-        <td style={{ margin: "4px"}} key={colInd} id={id + "_component_" + rowInd + "_" + colInd}>
+        <td key={colInd} className="matrixCell" id={id + "_component_" + rowInd + "_" + colInd}>
           {children[rowInd * SVs.numColumns + colInd]}
         </td>
       )
@@ -266,8 +267,8 @@ export default React.memo(function MatrixInput(props) {
 
   return <React.Fragment>
     <a name={id} />
-      <div style={{display: "inline-flex", marginBottom: "4px"}}>
-        <Matrix className="matrixInputSurroundingBox" id={id} style={{paddingLeft: "4px", paddingTop: "4px"}}>
+      <div style={{display: "inline-flex", margin: "0px 4px 4px 4px"}}>
+        <Matrix className="matrixInputSurroundingBox" id={id}>
           <table><tbody>
             {matrixInputs}
           </tbody></table>

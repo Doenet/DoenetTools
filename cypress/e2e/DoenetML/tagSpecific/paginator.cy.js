@@ -937,9 +937,9 @@ describe('Paginator Tag Tests', function () {
                 <title>Problem E</title>
                 <variantcontrol nVariants="3" variantNames="one two three" />
                 <select assignNames="(n)" hide>
-                  <option selectForVariantNames="one"><number>1</number></option>
-                  <option selectForVariantNames="two"><number>2</number></option>
-                  <option selectForVariantNames="three"><number>3</number></option>
+                  <option selectForVariants="one"><number>1</number></option>
+                  <option selectForVariants="two"><number>2</number></option>
+                  <option selectForVariants="three"><number>3</number></option>
                 </select>
                 <p>What is <m>3+$n</m>? 
                   <answer name="ans">
@@ -954,9 +954,9 @@ describe('Paginator Tag Tests', function () {
                 <title>Problem F</title>
                 <variantcontrol nVariants="3" variantNames="four five six" />
                 <select assignNames="(n)" hide>
-                  <option selectForVariantNames="four"><number>4</number></option>
-                  <option selectForVariantNames="five"><number>5</number></option>
-                  <option selectForVariantNames="six"><number>6</number></option>
+                  <option selectForVariants="four"><number>4</number></option>
+                  <option selectForVariants="five"><number>5</number></option>
+                  <option selectForVariants="six"><number>6</number></option>
                 </select>
                 <p>What is <m>3-$n</m>? 
                   <answer name="ans">
@@ -984,13 +984,13 @@ describe('Paginator Tag Tests', function () {
         <variantControl nVariants="7" variantNames="apple banana cherry date elderberry fig grape" />
         <!-- Note: explicitly don't put fruit in parens to test for previous error -->
         <select assignNames="fruit" hide>
-          <option selectForVariantNames="apple"><text>apple</text></option>
-          <option selectForVariantNames="banana"><text>banana</text></option>
-          <option selectForVariantNames="cherry"><text>cherry</text></option>
-          <option selectForVariantNames="date"><text>date</text></option>
-          <option selectForVariantNames="elderberry"><text>elderberry</text></option>
-          <option selectForVariantNames="fig"><text>fig</text></option>
-          <option selectForVariantNames="grape"><text>grape</text></option>
+          <option selectForVariants="apple"><text>apple</text></option>
+          <option selectForVariants="banana"><text>banana</text></option>
+          <option selectForVariants="cherry"><text>cherry</text></option>
+          <option selectForVariants="date"><text>date</text></option>
+          <option selectForVariants="elderberry"><text>elderberry</text></option>
+          <option selectForVariants="fig"><text>fig</text></option>
+          <option selectForVariants="grape"><text>grape</text></option>
         </select>
         <p>Enter $fruit:
           <answer name="ans" type="text">
@@ -1476,11 +1476,7 @@ describe('Paginator Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariantIndex: 10
-          // for now, at least, variant 10 gives mouse....
-          // subvariants: [{}, {
-          //   name: "mouse"
-          // }]
+        requestedVariantIndex: 3
       }, "*");
     });
 

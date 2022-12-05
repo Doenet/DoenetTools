@@ -1,8 +1,12 @@
 import InlineComponent from './abstract/InlineComponent';
 
-export default class Seeds extends InlineComponent {
-  static componentType = "seeds";
-  static rendererType = undefined;
+export default class TextListFromString extends InlineComponent {
+  static componentType = "textListFromString";
+  static rendererType = "asList";
+  static renderChildren = true;
+
+  static stateVariableForAttributeValue = "texts";
+
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
@@ -51,7 +55,7 @@ export default class Seeds extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nSeeds = {
+    stateVariableDefinitions.nComponents = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -63,25 +67,25 @@ export default class Seeds extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nSeeds: dependencyValues.stringChildren.length } }
+        return { setValue: { nComponents: dependencyValues.stringChildren.length } }
       }
     }
 
-    stateVariableDefinitions.seeds = {
+    stateVariableDefinitions.texts = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "seed",
+        createComponentOfType: "text",
       },
       isArray: true,
-      entryPrefixes: ["seed"],
+      entryPrefixes: ["text"],
       returnArraySizeDependencies: () => ({
-        nSeeds: {
+        nComponents: {
           dependencyType: "stateVariable",
-          variableName: "nSeeds",
+          variableName: "nComponents",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nSeeds];
+        return [dependencyValues.nComponents];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -95,17 +99,45 @@ export default class Seeds extends InlineComponent {
             }
           }
         }
-        return { dependenciesByKey };
+        return { dependenciesByKey }
       },
       arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
-        let seeds = {};
+        let texts = {};
         for (let arrayKey of arrayKeys) {
           if (dependencyValuesByKey[arrayKey].stringChild.length === 1) {
-            seeds[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0]
+            texts[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0];
           }
         }
-        return { setValue: { seeds } }
+        return { setValue: { texts } }
       }
+    }
+
+
+    stateVariableDefinitions.nValues = {
+      isAlias: true,
+      targetVariableName: "nComponents"
+    };
+
+    stateVariableDefinitions.values = {
+      isAlias: true,
+      targetVariableName: "texts"
+    };
+
+    stateVariableDefinitions.text = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      forRenderer: true,
+      returnDependencies: () => ({
+        texts: {
+          dependencyType: "stateVariable",
+          variableName: "texts"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        setValue: { text: dependencyValues.texts.join(", ") }
+      })
     }
 
     return stateVariableDefinitions;
