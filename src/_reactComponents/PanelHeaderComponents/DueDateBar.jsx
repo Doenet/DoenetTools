@@ -5,7 +5,7 @@ import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBa
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 330px;
+  width: ${props => props.width ? props.width : '330px'};
 `;
 
 const BarWrapper = styled.div`
@@ -26,10 +26,12 @@ const RemainingTimeContainer = styled.div`
 `;
 
 const CompletedBar = styled.div`
-  height: 25px;
-  width: 330px;
+  height: 30px;
+  width: 100%;
   border: 4px solid var(--mainBlue);
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: var(--mainGray);
 `;
 
@@ -38,7 +40,7 @@ const Text =  styled.span`
 `;
 
 
-export default function DueDateBar({ startDate, endDate, isCompleted}) {
+export default function DueDateBar({width, startDate, endDate, isCompleted}) {
   const TODAY = new Date();
   const STARTDATE = startDate;
   const ENDDATE = endDate;
@@ -105,9 +107,8 @@ export default function DueDateBar({ startDate, endDate, isCompleted}) {
   }
   
   return (
-    <Container>
+    <Container width={width}>
       {
-        
         <RemainingTimeContainer>
           <Text>
             {
@@ -133,9 +134,9 @@ export default function DueDateBar({ startDate, endDate, isCompleted}) {
           <ProgressBar 
             progress={isOverdue ? 1 : 1 - progress} 
             rotated 
-            width="330" 
-            height="30px" 
-            radius="15px" 
+            width="100%" 
+            height="30px"  
+            radius="15px"
             color={isOverdue ? "#121212" : "var(--mainBlue)"} 
           />
         }
