@@ -554,6 +554,7 @@ export const authorCourseItemOrderByCourseIdBySection = selectorFamily({
   }
 })
 
+//TODO: this should work with permission instead of splitting by author/student
 export const studentCourseItemOrderByCourseId = selectorFamily({
   key: 'studentCourseItemOrderByCourseId',
   get:(courseId)=> ({get})=>{
