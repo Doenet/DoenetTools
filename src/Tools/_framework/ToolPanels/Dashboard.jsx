@@ -11,6 +11,7 @@ import {
   profileAtom,
 } from '../NewToolRoot';
 import Next7Days from '../Widgets/Next7Days';
+import ContentByWeek from '../Widgets/ContentByWeek';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -137,7 +138,7 @@ export default function Dashboard(props) {
         </div>
       </div>
       <div style={{ marginTop: '10px', margin: '10px' }}>
-        <Next7Days courseId={courseId} />
+        <ContentByWeek />
       </div>
     </div>
   );
