@@ -221,6 +221,58 @@ if ($success) {
     $permissionsAndSettings = getpermissionsAndSettings($conn, $userId);
 }
 
+//Recursive function that returns order ids and collection link ids
+function mine_activity_for_ids($jsonArr)
+{
+    $linkids = [];
+    $orderids = [];
+    $pageids = [];
+    $collectionDoenetIds = [];
+    if (count($jsonArr) > 0) {
+        $jsonContent = $jsonArr['content'];
+        foreach ($jsonContent as $content) {
+            if ($content['type'] == 'collectionLink') {
+                array_push($linkids, $content['doenetId']);
+                //Add page ids here
+                foreach (
+                    $content['pagesByCollectionSource']
+                    as $key => $value
+                ) {
+                    if ($key != 'object') {
+                        //Only add if not there already
+                        if (!in_array($key, $collectionDoenetIds)) {
+                            array_push($collectionDoenetIds, $key);
+                        }
+                    }
+
+                    if (is_array($value) || is_object($value)) {
+                        foreach ($value as $page) {
+                            array_push($pageids, $page);
+                        }
+                    }
+                }
+            }
+            if ($content['type'] == 'order') {
+                array_push($orderids, $content['doenetId']);
+                $child_ids = mine_activity_for_ids($content);
+                $linkids = array_merge($linkids, $child_ids['LinkIds']);
+                $orderids = array_merge($orderids, $child_ids['OrderIds']);
+                $pageids = array_merge($pageids, $child_ids['PageIds']);
+                $collectionDoenetIds = array_merge(
+                    $collectionDoenetIds,
+                    $child_ids['CollectionIds']
+                );
+            }
+        }
+    }
+    return [
+        'LinkIds' => $linkids,
+        'OrderIds' => $orderids,
+        'PageIds' => $pageids,
+        'CollectionIds' => $collectionDoenetIds,
+    ];
+}
+
 //Duplicate Content
 if ($success) {
     //Figure out what the new doenetId's for content will be
@@ -333,10 +385,11 @@ if ($success) {
     //Update course content
     //Replace all the doenetIds for the pages with the new doenetId's
     $next_course_content = [];
+    $collection_page_link_ids = [];
 
     foreach ($previous_course_content as $row) {
         $type = $row['type'];
-        $courseId = $row['courseId'];
+        // $courseId = $row['courseId'];
         $doenetId = $row['doenetId'];
         $parentDoenetId = $row['parentDoenetId'];
         $label = $row['label'];
@@ -353,6 +406,36 @@ if ($success) {
                 $jsonDefinition = str_replace(
                     $pair['previous'],
                     $pair['next'],
+                    $jsonDefinition
+                );
+            }
+            $jsonIds = mine_activity_for_ids(
+                json_decode($jsonDefinition, true)
+            );
+            $collection_page_link_ids = array_merge(
+                $collection_page_link_ids,
+                $jsonIds['PageIds']
+            );
+            $needNewIds = array_merge(
+                $jsonIds['LinkIds'],
+                $jsonIds['OrderIds'],
+                $jsonIds['PageIds']
+            );
+            foreach ($needNewIds as $id) {
+                $nextDoenetId = include 'randomId.php';
+                $nextDoenetId = '_' . $nextDoenetId;
+                $jsonDefinition = str_replace(
+                    $id,
+                    $nextDoenetId,
+                    $jsonDefinition
+                );
+                $prevToNextDoenetIds[$id] = $nextDoenetId;
+            }
+            foreach ($jsonIds['CollectionIds'] as $id) {
+                $nextDoenetId = $prevToNextDoenetIds[$id];
+                $jsonDefinition = str_replace(
+                    $id,
+                    $nextDoenetId,
                     $jsonDefinition
                 );
             }
@@ -463,6 +546,72 @@ if ($success) {
                 $success = false;
                 $message = 'failed to copy';
             }
+        }
+    }
+}
+
+//Move Collection Links
+if ($success) {
+    $sql = "
+    SELECT
+    containingDoenetId,
+    parentDoenetId,
+    doenetId,
+    sourceCollectionDoenetId,
+    sourcePageDoenetId,
+    label,
+    timeOfLastUpdate
+    FROM link_pages
+    WHERE courseId = '$courseId'
+    ";
+    $result = $conn->query($sql);
+
+    $insert_to_link_pages = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $containingDoenetId = $row['containingDoenetId'];
+            $parentDoenetId = $row['parentDoenetId'];
+            $doenetId = $row['doenetId'];
+            $sourceCollectionDoenetId = $row['sourceCollectionDoenetId'];
+            $sourcePageDoenetId = $row['sourcePageDoenetId'];
+            $label = $row['label'];
+            $timeOfLastUpdate = $row['timeOfLastUpdate'];
+            array_push(
+                $insert_to_link_pages,
+                "('$nextCourseId',
+                '$prevToNextDoenetIds[$containingDoenetId]',
+                '$prevToNextDoenetIds[$parentDoenetId]',
+                '$prevToNextDoenetIds[$doenetId]',
+                '$prevToNextDoenetIds[$sourceCollectionDoenetId]',
+                '$prevToNextDoenetIds[$sourcePageDoenetId]',
+                '$label',
+                '$timeOfLastUpdate')"
+            );
+        }
+    }
+    $str_insert_to_link_pages = implode(',', $insert_to_link_pages);
+    // INSERT next link pages into next course
+    $sql = "
+    INSERT INTO link_pages (courseId,containingDoenetId,parentDoenetId,doenetId,sourceCollectionDoenetId,sourcePageDoenetId,label,timeOfLastUpdate)
+    VALUES
+    $str_insert_to_link_pages
+    ";
+    $result = $conn->query($sql);
+
+    //Copy page files
+    foreach ($collection_page_link_ids as $page_link_id) {
+        $next_page_link_id = $prevToNextDoenetIds[$page_link_id];
+
+        $sourceFile = "../media/byPageId/$page_link_id.doenet";
+        $destinationFile = "../media/byPageId/$next_page_link_id.doenet";
+        $dirname = dirname($destinationFile);
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0755, true);
+        }
+        if (!copy($sourceFile, $destinationFile)) {
+            $success = false;
+            $message = 'failed to copy link pages';
         }
     }
 }

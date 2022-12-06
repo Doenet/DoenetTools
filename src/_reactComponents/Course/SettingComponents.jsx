@@ -848,7 +848,7 @@ export function DuplicateCourse({ courseId }) {
   // console.log("sourceDate",sourceDate)
   // console.log("newDate",newDate)
   // console.log("newCourseLabel",newCourseLabel)
-  console.log("dateDifference",dateDifference)
+  // console.log("dateDifference",dateDifference)
 
 
   const handleDuplication = ({dateDifference,newLabel}) => {
