@@ -10601,7 +10601,7 @@ describe('Curve Tag Bezier Tests', function () {
         componentName: "/c",
         args: {
           controlVectorInds: [1, 0],
-          controlVector: [3,-5]
+          controlVector: [3, -5]
         }
       })
       await win.callAction1({
@@ -10609,7 +10609,7 @@ describe('Curve Tag Bezier Tests', function () {
         componentName: "/c",
         args: {
           controlVectorInds: [1, 1],
-          controlVector: [2,-4]
+          controlVector: [2, -4]
         }
       })
       await win.callAction1({
@@ -10617,7 +10617,7 @@ describe('Curve Tag Bezier Tests', function () {
         componentName: "/c",
         args: {
           controlVectorInds: [2, 0],
-          controlVector: [-2,-6]
+          controlVector: [-2, -6]
         }
       })
     })
@@ -10642,6 +10642,314 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get('#\\/cv6 .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(2,6)")
     })
+
+  })
+
+  it('sugared beziercontrols from vector operations', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="m">(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <curve name="c" through="(1,2) (3,4) (-2,6) (-3,-5)">
+        <beziercontrols>2(2,-3)+(3,4) 3$P $P+2$m{fixed} $m</beziercontrols>
+      </curve>
+    </graph>
+ 
+    <p><copy source="c.controlVectors" assignNames="V1 V2 V3 V4 V5 V6 V7 V8" /></p>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', "(−3,2)");
+    cy.get('#\\/V1 .mjx-mrow').eq(0).should('have.text', "(7,−2)");
+    cy.get('#\\/V2 .mjx-mrow').eq(0).should('have.text', "(−7,2)");
+    cy.get('#\\/V3 .mjx-mrow').eq(0).should('have.text', "(6,3)");
+    cy.get('#\\/V4 .mjx-mrow').eq(0).should('have.text', "(−6,−3)");
+    cy.get('#\\/V5 .mjx-mrow').eq(0).should('have.text', "(−4,5)");
+    cy.get('#\\/V6 .mjx-mrow').eq(0).should('have.text', "(4,−5)");
+    cy.get('#\\/V7 .mjx-mrow').eq(0).should('have.text', "(−3,2)");
+    cy.get('#\\/V8 .mjx-mrow').eq(0).should('have.text', "(3,−2)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[7, -2], [-7, 2]], [[6, 3], [-6, -3]], [[-4, 5], [4, -5]], [[-3, 2], [3, -2]]]);
+    })
+
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: [3, 5]
+        }
+      })
+
+    })
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−5)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(6,3)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(−6,−3)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−4,5)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(4,−5)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(−3,2)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(3,−2)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 5], [-3, -5]], [[6, 3], [-6, -3]], [[-4, 5], [4, -5]], [[-3, 2], [3, -2]]]);
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: [-9, -6]
+        }
+      })
+    })
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−5)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(−9,−6)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(9,6)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−9,2)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(9,−2)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(−3,2)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(3,−2)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 5], [-3, -5]], [[-9, -6], [9, 6]], [[-9, 2], [9, -2]], [[-3, 2], [3, -2]]]);
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: [-3, 1]
+        }
+      })
+    })
+
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−5)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(9,−9)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(−9,9)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−3,1)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(3,−1)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(−3,2)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(3,−2)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 5], [-3, -5]], [[9, -9], [-9, 9]], [[-3, 1], [3, -1]], [[-3, 2], [3, -2]]]);
+    })
+
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: [-4, 3]
+        }
+      })
+    })
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−5)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(9,−9)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(−9,9)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−5,3)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(5,−3)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(−4,3)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(4,−3)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 5], [-3, -5]], [[9, -9], [-9, 9]], [[-5, 3], [5, -3]], [[-4, 3], [4, -3]]]);
+    })
+
+
+  });
+
+  it('asymmetric controls sugared from vector operations', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="m">(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <curve through="(1,2) (3,4) (-5,6) (2,1)" name="c">
+        <beziercontrols>
+          <controlVectors>(3,1)</controlVectors>
+          <controlVectors direction="both">2(2,-3)+(3,4) 3$P</controlVectors>
+          <controlVectors direction="both"> $P+2$m{fixed} $m</controlVectors>
+          <controlVectors>(0,0)</controlVectors>
+        </beziercontrols>
+      </curve>
+    </graph>
+
+    <p><copy source="c.controlVectors" assignNames="V1 V2 V3 V4 V5 V6 V7 V8" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', "(−3,2)");
+    cy.get('#\\/V1 .mjx-mrow').eq(0).should('have.text', "(3,1)");
+    cy.get('#\\/V2 .mjx-mrow').eq(0).should('have.text', "(−3,−1)");
+    cy.get('#\\/V3 .mjx-mrow').eq(0).should('have.text', "(7,−2)");
+    cy.get('#\\/V4 .mjx-mrow').eq(0).should('have.text', "(6,3)");
+    cy.get('#\\/V5 .mjx-mrow').eq(0).should('have.text', "(−4,5)");
+    cy.get('#\\/V6 .mjx-mrow').eq(0).should('have.text', "(−3,2)");
+    cy.get('#\\/V7 .mjx-mrow').eq(0).should('have.text', "(0,0)");
+    cy.get('#\\/V8 .mjx-mrow').eq(0).should('have.text', "(0,0)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 1], [-3, -1]], [[7, -2], [6, 3]], [[-4, 5], [-3, 2]], [[0, 0], [-0, -0]]]);
+    })
+
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: [3, 5]
+        }
+      })
+
+    })
+
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−1)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(6,3)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−4,5)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(−3,2)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(0,0)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(0,0)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 1], [-3, -1]], [[3, 5], [6, 3]], [[-4, 5], [-3, 2]], [[0, 0], [-0, -0]]]);
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: [-9, -6]
+        }
+      })
+    })
+
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−1)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(−9,−6)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−9,2)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(−3,2)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(0,0)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(0,0)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 1], [-3, -1]], [[3, 5], [-9, -6]], [[-9, 2], [-3, 2]], [[0, 0], [-0, -0]]]);
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: [-3, 1]
+        }
+      })
+    })
+
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−1)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(9,−9)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−3,1)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(−3,2)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(0,0)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(0,0)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 1], [-3, -1]], [[3, 5], [9, -9]], [[-3, 1], [-3, 2]], [[0, 0], [-0, -0]]]);
+    })
+
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: [-4, 3]
+        }
+      })
+    })
+
+
+    cy.get('#\\/V1 .mjx-mrow').should('contain.text', "(3,1)");
+    cy.get('#\\/V2 .mjx-mrow').should('contain.text', "(−3,−1)");
+    cy.get('#\\/V3 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/V4 .mjx-mrow').should('contain.text', "(9,−9)");
+    cy.get('#\\/V5 .mjx-mrow').should('contain.text', "(−5,3)");
+    cy.get('#\\/V6 .mjx-mrow').should('contain.text', "(−4,3)");
+    cy.get('#\\/V7 .mjx-mrow').should('contain.text', "(0,0)");
+    cy.get('#\\/V8 .mjx-mrow').should('contain.text', "(0,0)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c'].stateValues.controlVectors).eqls([[[3, 1], [-3, -1]], [[3, 5], [9, -9]], [[-5, 3], [-4, 3]], [[0, 0], [-0, -0]]]);
+    })
+
+
 
   })
 

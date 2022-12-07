@@ -6,6 +6,9 @@ export default class VectorListComponent extends BaseComponent {
   static rendererType = "containerInline";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 

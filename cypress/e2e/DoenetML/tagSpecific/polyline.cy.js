@@ -3314,4 +3314,86 @@ describe('Polyline Tag Tests', function () {
 
   });
 
+  it('polyline from vector operations', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="m" fixed>(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <polyline vertices="2(2,-3)+(3,4) 3$P $P+2$m" name="polyline" />
+    </graph>
+ 
+    <p><copy source="polyline.vertices" assignNames="P1 P2 P3" /></p>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', "(−3,2)");
+    cy.get('#\\/P1 .mjx-mrow').eq(0).should('have.text', "(7,−2)");
+    cy.get('#\\/P2 .mjx-mrow').eq(0).should('have.text', "(6,3)");
+    cy.get('#\\/P3 .mjx-mrow').eq(0).should('have.text', "(−4,5)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/polyline'].stateValues.vertices).eqls([[7, -2], [6, 3], [-4, 5]]);
+    })
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/polyline",
+        args: {
+          pointCoords: { 0: [3, 5] }
+        }
+      })
+    })
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', "(6,3)");
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', "(−4,5)");
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/polyline'].stateValues.vertices).eqls([[3, 5], [6, 3], [-4, 5]]);
+    })
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/polyline",
+        args: {
+          pointCoords: { 1: [-9, -6] }
+        }
+      })
+    })
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', "(−9,−6)");
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', "(−9,2)");
+
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/polyline",
+        args: {
+          pointCoords: { 2: [-3, 1] }
+        }
+      })
+    })
+
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', "(3,5)");
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', "(9,−9)");
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', "(−3,1)");
+
+
+  });
+
 });

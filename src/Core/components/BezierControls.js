@@ -6,6 +6,9 @@ export default class BezierControls extends InlineComponent {
   static componentType = "bezierControls";
   static rendererType = "containerInline";
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -40,7 +43,7 @@ export default class BezierControls extends InlineComponent {
       return {
         success: true,
         newChildren: results.newChildren.map(function (child) {
-          if(!componentInfoObjects.componentIsSpecifiedType(child, "controlVectors")) {
+          if (!componentInfoObjects.componentIsSpecifiedType(child, "controlVectors")) {
             return {
               componentType: "controlVectors",
               children: [child]
