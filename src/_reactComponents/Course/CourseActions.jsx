@@ -1629,6 +1629,27 @@ export const useCourse = (courseId) => {
     [courseId, defaultFailure],
   );
 
+  const duplicateCourse = useRecoilCallback(
+    ({ set }) =>
+      async ({dateDifference,newLabel},successCallback,failureCallback=defaultFailure) => {
+        // console.log("DUPLICATE COURSE",courseId)
+        // console.log({dateDifference,newLabel,successCallback,failureCallback})
+        try {
+          let resp = await axios.post('/api/duplicateCourse.php', { courseId, dateDifference, newLabel });
+          // console.log("resp",resp.data)
+          if (resp.status < 300) {
+            set(coursePermissionsAndSettings, resp.data.permissionsAndSettings);
+            successCallback?.();
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          failureCallback(err.message);
+        }
+      },
+    [courseId, defaultFailure],
+  );
+
   const renameItem = useRecoilCallback(
     ({ snapshot,set }) =>
       async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
@@ -3234,6 +3255,7 @@ export const useCourse = (courseId) => {
     create, 
     deleteItem, 
     deleteCourse, 
+    duplicateCourse,
     modifyCourse, 
     modifyRolePermissions,
     renameItem, 
