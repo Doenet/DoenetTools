@@ -616,6 +616,23 @@ if ($success) {
     }
 }
 
+//Copy course times
+if ($success) {
+    $sql = "
+    INSERT INTO class_times
+    (courseId,dotwIndex,startTime,endTime,sortOrder)
+    SELECT 
+    '$nextCourseId' AS courseId,
+    dotwIndex,
+    startTime,
+    endTime,
+    sortOrder
+    FROM class_times
+    WHERE courseId = '$courseId'
+    ";
+    $result = $conn->query($sql);
+}
+
 $response_arr = [
     'success' => $success,
     'message' => $message,
