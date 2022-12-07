@@ -8,28 +8,22 @@ import {
   studentData,
 } from '../ToolPanels/Gradebook';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import { useRecoilValue } from 'recoil';
+import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 
 export default function GradeDownload() {
-  const download = useRecoilCallback(({ snapshot }) => async () => {
-    const driveId = await snapshot.getPromise(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const download = useRecoilCallback(({ snapshot }) => async (courseId) => {
+    const {label} = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(courseId));
 
-    let driveInfo = await snapshot.getPromise(fetchCoursesQuery);
-    let driveLabel;
-    for (let info of driveInfo.driveIdsAndLabels) {
-      if (info.driveId === driveId) {
-        driveLabel = info.label;
-        break;
-      }
-    }
-
-    let filename = `${driveLabel}.csv`;
+    let filename = `${label}.csv`;
     let csvText;
     let assignments = await snapshot.getPromise(assignmentData);
     let students = await snapshot.getPromise(studentData); //Need more id data
     let overview = await snapshot.getPromise(overviewData);
 
     let { data } = await axios.get('/api/getEnrollment.php', {
-      params: { driveId },
+      params: { courseId },
     });
     let enrollmentArray = data.enrollmentArray;
 
@@ -146,14 +140,14 @@ export default function GradeDownload() {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
-  });
+  }, []);
 
   return (
     <div>
       <Button
         value="Download CSV"
         onClick={() => {
-          download();
+          download(courseId);
         }}
       />
     </div>
