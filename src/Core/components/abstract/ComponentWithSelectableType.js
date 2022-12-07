@@ -2,7 +2,7 @@ import BaseComponent from './BaseComponent';
 import me from 'math-expressions';
 import { convertValueToMathExpression, textToAst } from '../../utils/math';
 import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
-import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from '../commonsugar/lists';
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from '../commonsugar/lists';
 
 export class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentWithSelectableType";
@@ -206,17 +206,11 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
         let componentType = type === "letters" ? "text" : type;
 
-        if (isAttributeComponent && !createdFromMacro) {
-          let groupIntoComponentTypesSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
-            componentType
-          });
-          return groupIntoComponentTypesSeparatedBySpaces({ matchedChildren });
-        } else {
-          let breakStringsIntoComponentTypesBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
-            componentType
-          });
-          return breakStringsIntoComponentTypesBySpaces({ matchedChildren })
-        }
+        let groupIntoComponentTypesSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+          componentType
+        });
+
+        return groupIntoComponentTypesSeparatedBySpaces({ matchedChildren });
       }
     });
 

@@ -1596,7 +1596,8 @@ function createEvaluateIfFindMatchedClosingParens({
         component: {
           componentType: "mathList",
           doenetAttributes: { createdFromMacro: true },
-          children: inputArray
+          children: inputArray,
+          skipSugar: true,
         }
       }
     }

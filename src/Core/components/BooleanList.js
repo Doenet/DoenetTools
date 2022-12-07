@@ -1,5 +1,5 @@
 import InlineComponent from './abstract/InlineComponent';
-import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from './commonsugar/lists';
 
 export default class BooleanList extends InlineComponent {
   static componentType = "booleanList";
@@ -37,22 +37,13 @@ export default class BooleanList extends InlineComponent {
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
-    let groupIntoBooleansSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
-      componentType: "boolean"
-    });
-    let breakStringsIntoBooleansBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
+    let groupIntoBooleansSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
       componentType: "boolean"
     });
 
     sugarInstructions.push({
-      replacementFunction: function ({
-        matchedChildren, isAttributeComponent = false, createdFromMacro = false,
-      }) {
-        if (isAttributeComponent && !createdFromMacro) {
-          return groupIntoBooleansSeparatedBySpaces({ matchedChildren });
-        } else {
-          return breakStringsIntoBooleansBySpaces({ matchedChildren })
-        }
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoBooleansSeparatedBySpaces({ matchedChildren });
       }
     });
 

@@ -58,7 +58,7 @@ describe('MathList Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist>a (  1+1 </mathlist>
+    <mathlist>a @  1+1 </mathlist>
     ` }, "*");
     });
 

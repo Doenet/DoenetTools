@@ -2042,7 +2042,9 @@ export default class MathComponent extends InlineComponent {
       stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
     },
     "text",
-    { componentType: "subsetOfReals", stateVariable: "value", substituteForPrimaryStateVariable: "subsetValue" }
+    { componentType: "point", stateVariable: "value" },
+    { componentType: "vector", stateVariable: "value" },
+    { componentType: "subsetOfReals", stateVariable: "value", substituteForPrimaryStateVariable: "subsetValue" },
   ];
 
 

@@ -50,7 +50,7 @@ describe('Curve Tag Bezier Tests', function () {
     <text>a</text>
   
     <graph>
-      <curve through="(1,2)(3,4)(-5,6)(2,1)" />
+      <curve through="(1, 2) (3, 4) (-5, 6) (2, 1)" />
     </graph>
 
     <graph name="g2" newNamespace>
@@ -3671,7 +3671,7 @@ describe('Curve Tag Bezier Tests', function () {
           <controlVectors pointNumber="4">(0,0)</controlVectors>
           <controlVectors pointNumber="3" direction="both"><vector>(5,3)</vector><vector>(7,-1)</vector></controlVectors>
           <controlVectors pointNumber="1"><vector>(3,1)</vector></controlVectors>
-          <controlVectors direction="both">(-1,5)(4,2)</controlVectors>
+          <controlVectors direction="both">(-1,5) (4,2)</controlVectors>
         </beziercontrols>
       </curve>
     </graph>
@@ -5376,7 +5376,7 @@ describe('Curve Tag Bezier Tests', function () {
       <beziercontrols>
         <controlVectors>(3,1)</controlVectors>
         <controlVectors>(5,-6)</controlVectors>
-        <controlVectors direction="both">(3,2)(-1,5)</controlVectors>
+        <controlVectors direction="both">(3,2) (-1,5)</controlVectors>
         <controlVectors>(1,4)</controlVectors>
       </beziercontrols>
     </curve>
@@ -5388,10 +5388,10 @@ describe('Curve Tag Bezier Tests', function () {
           <copy prop="controlVector1_1" source="_curve1" />
         </controlVectors>
         <controlVectors>
-        <vector>
-          (<extract prop="y"><copy prop="controlVector2_1" source="_curve1" /></extract>,
-          <extract prop="x"><copy prop="controlVector2_1" source="_curve1" /></extract>)
-        </vector>
+          <vector>
+            (<extract prop="y"><copy prop="controlVector2_1" source="_curve1" /></extract>,
+            <extract prop="x"><copy prop="controlVector2_1" source="_curve1" /></extract>)
+          </vector>
         </controlVectors>
         <controlVectors direction="both">
           <copy prop="controlVector3_1" source="_curve1" />

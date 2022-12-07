@@ -1,6 +1,6 @@
 import { roundForDisplay } from '../utils/math';
 import InlineComponent from './abstract/InlineComponent';
-import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from './commonsugar/lists';
 import me from 'math-expressions';
 
 export default class NumberList extends InlineComponent {
@@ -62,22 +62,13 @@ export default class NumberList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let groupIntoNumbersSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
-      componentType: "number"
-    });
-    let breakStringsIntoNumbersBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
+    let groupIntoNumbersSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
       componentType: "number"
     });
 
     sugarInstructions.push({
-      replacementFunction: function ({
-        matchedChildren, isAttributeComponent = false, createdFromMacro = false,
-      }) {
-        if (isAttributeComponent && !createdFromMacro) {
-          return groupIntoNumbersSeparatedBySpaces({ matchedChildren });
-        } else {
-          return breakStringsIntoNumbersBySpaces({ matchedChildren })
-        }
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoNumbersSeparatedBySpaces({ matchedChildren });
       }
     });
 

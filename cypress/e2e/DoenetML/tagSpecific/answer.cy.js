@@ -6235,7 +6235,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><textinput name="ti1" /> <textinput name="ti2" />
     <answer><award matchPartial><when>
-      <textlist isResponse>$ti1$ti2</textlist>=<textlist>  hello there </textlist>
+      <textlist isResponse>$ti1 $ti2</textlist>=<textlist>  hello there </textlist>
     </when></award></answer></p>
   <p>Current responses: <copy prop="currentResponses" target="_answer1" assignNames="cr1 cr2" /></p>
   <p>Submitted responses: <copy prop="submittedResponses" target="_answer1" assignNames="sr1 sr2" /></p>

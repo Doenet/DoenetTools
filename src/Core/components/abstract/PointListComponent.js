@@ -1,5 +1,5 @@
 import BaseComponent from './BaseComponent';
-import { breakIntoPiecesBySpacesOutsideParens } from '../commonsugar/breakstrings';
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from '../commonsugar/lists';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointListComponent";
@@ -13,35 +13,14 @@ export default class PointListComponent extends BaseComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
 
-    let createPointList = function ({ matchedChildren, componentInfoObjects }) {
-
-      let results = breakIntoPiecesBySpacesOutsideParens({
-        componentList: matchedChildren,
-      });
-
-      if (results.success !== true) {
-        return { success: false }
-      }
-
-      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
-
-      return {
-        success: true,
-        newChildren: results.pieces.map(function (piece) {
-          if (piece.length === 1 && componentIsSpecifiedType(piece[0], "point")) {
-            return piece[0];
-          } else {
-            return {
-              componentType: "point",
-              children: piece
-            }
-          }
-        })
-      }
-    }
+    let groupIntoPointsSeparatedBySpacesOutsideParens = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+      componentType: "point"
+    });
 
     sugarInstructions.push({
-      replacementFunction: createPointList
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoPointsSeparatedBySpacesOutsideParens({ matchedChildren });
+      }
     });
 
     return sugarInstructions;

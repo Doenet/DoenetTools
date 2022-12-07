@@ -1,12 +1,15 @@
 
-export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, forceComponentType = false }) {
+export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ componentType, forceComponentType = false, includeNonMacros = false }) {
 
   return function ({ matchedChildren, componentInfoObjects }) {
 
-    // any components not separated by a space 
-    // are wrapped by a componentType unless it is either
+    // Split strings and interleaving children by spaces in the strings that are outside parens.
+    // The resulting groups are wrapped by a componentType unless the group is either
     // - a single non-string component (when forceComponentType is false), or
-    // - a single component with a matching componentType (when forcComponentType is true)
+    // - a single component with a matching componentType (when forceComponentType is true)
+    // If includeNonMacros is false
+    // then non-string, non-macros components are always their own group of one component
+    // and reset the parens count
 
     let newChildren = [];
     let pieces = [];
@@ -14,30 +17,21 @@ export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, f
     function createNewChild() {
 
       let addedSingleMatch = false;
-      if (forceComponentType) {
-        // if have a single component of the matching componentType
-        // then add that component directly
-        if (pieces.length === 1) {
-          let comp = pieces[0];
-          let compComponentType = comp.componentType;
-          if (compComponentType === "copy" && comp.attributes?.createComponentOfType) {
-            if (!comp.attributes.nComponents || comp.attributes.nComponents.primitive === 1) {
-              compComponentType = comp.attributes.createComponentOfType.primitive;
-            }
-          }
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: compComponentType,
-            baseComponentType: componentType
-          })) {
+      if (pieces.length === 1) {
+        let comp = pieces[0];
+        if (forceComponentType) {
+          // if have a component of the matching componentType
+          // then add that component directly
+          if (componentInfoObjects.componentIsSpecifiedType(comp, componentType)) {
             newChildren.push(comp);
             addedSingleMatch = true;
           }
-        }
-      } else {
-        // forceComponentType is false so add any single non-string directly
-        if(pieces.length === 1 && typeof pieces[0] !== "string") {
-          newChildren.push(pieces[0]);
-          addedSingleMatch = true;
+        } else {
+          // forceComponentType is false so add any single non-string directly
+          if (typeof comp !== "string") {
+            newChildren.push(comp);
+            addedSingleMatch = true;
+          }
         }
       }
 
@@ -52,27 +46,52 @@ export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, f
       pieces = [];
     }
 
+    let Nparens = 0;
+
     for (let child of matchedChildren) {
       if (typeof child !== "string") {
-        pieces.push(child);
+        if (!(includeNonMacros || child.doenetAttributes?.createdFromMacro)) {
+          createNewChild();
+          pieces.push(child);
+          createNewChild();
+          Nparens = 0;
+        } else {
+          pieces.push(child);
+        }
       } else {
 
-        let stringPieces = child.split(/\s+/);
-        let s0 = stringPieces[0];
+        let s = child;
 
-        if (s0 === '') {
-          createNewChild();
-        } else {
-          pieces.push(s0)
+        let beginInd = 0;
+
+        for (let ind = 0; ind < s.length; ind++) {
+          let char = s[ind];
+
+          if (char === "(") {
+            Nparens++;
+          } else if (char === ")") {
+            if (Nparens === 0) {
+              // parens didn't match, so just make a child out of what have so far
+              createNewChild();
+            } else {
+              Nparens--
+            }
+          } else if (Nparens === 0 && char.match(/\s/)) {
+            // found a space outside parens
+
+            if (ind > beginInd) {
+              pieces.push(s.substring(beginInd, ind));
+            }
+
+            createNewChild();
+
+            beginInd = ind + 1;
+
+          }
         }
 
-        for (let s of stringPieces.slice(1)) {
-          // if have more than one piece, must have had a space in between pieces
-          createNewChild();
-          if (s !== "") {
-            pieces.push(s)
-          }
-
+        if (s.length > beginInd) {
+          pieces.push(s.substring(beginInd, s.length));
         }
 
       }
@@ -87,27 +106,76 @@ export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, f
   }
 }
 
-export function returnBreakStringsIntoComponentTypeBySpaces({ componentType }) {
+
+
+export function returnBreakStringsMacrosIntoComponentTypeBySpacesOutsideParens({ componentType }) {
 
   return function ({ matchedChildren }) {
 
-    // break any string by white space and wrap pieces with componentType
+    // break any string by white space that is outside parens and wrap pieces with componentType
 
-    let newChildren = matchedChildren.reduce(function (a, c) {
-      if (typeof c === "string") {
-        return [
-          ...a,
-          ...c.split(/\s+/)
-            .filter(s => s)
-            .map(s => ({
-              componentType,
-              children: [s]
-            }))
-        ]
+    let newChildren = [];
+
+    for (let child of matchedChildren) {
+      if (typeof child !== "string") {
+        newChildren.push(child);
       } else {
-        return [...a, c]
+
+        let Nparens = 0;
+        let s = child;
+
+        let beginInd = 0;
+
+        let childrenFromString = [];
+
+        for (let ind = 0; ind < s.length; ind++) {
+          let char = s[ind];
+
+          if (char === "(") {
+            Nparens++;
+          } else if (char === ")") {
+            if (Nparens === 0) {
+              // parens didn't match
+              // set parens to -1 so will wrap entire string at end
+              Nparens = -1;
+              break;
+            }
+            Nparens--
+          } else if (Nparens === 0 && char.match(/\s/)) {
+            // found a space outside parens
+
+            if (ind > beginInd) {
+              childrenFromString.push({
+                componentType,
+                children: [s.substring(beginInd, ind)]
+              });
+            }
+
+            beginInd = ind + 1;
+
+          }
+        }
+
+        // parens didn't match, so return failure
+        if (Nparens !== 0) {
+          newChildren.push({
+            componentType,
+            children: [child]
+          })
+        } else {
+          if (s.length > beginInd) {
+            childrenFromString.push({
+              componentType,
+              children: [s.substring(beginInd, s.length)]
+            });
+          }
+          newChildren.push(...childrenFromString)
+        }
+
+
       }
-    }, []);
+    }
+
 
     return {
       success: true,

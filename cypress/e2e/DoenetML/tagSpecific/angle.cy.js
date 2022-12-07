@@ -216,7 +216,7 @@ describe('Angle Tag Tests', function () {
 
   <graph>
   <line through="(1,2) ($_mathinput1, $_mathinput2)" />
-  <line through="(6,2)(8,4)" />
+  <line through="(6,2) (8,4)" />
 
   <angle betweenLines="$_line1 $_line2" />
   </graph>

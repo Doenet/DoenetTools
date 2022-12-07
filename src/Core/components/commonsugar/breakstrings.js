@@ -210,7 +210,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
       continue;
     }
 
-    let s = component.trim();
+    let s = component;
 
     let beginInd = 0;
 
@@ -231,7 +231,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
           // found end of piece in parens
           if (ind + 1 > beginInd) {
             let lastInd = removeParens ? ind : ind + 1;
-            let newString = s.substring(beginInd, lastInd).trim()
+            let newString = s.substring(beginInd, lastInd)
             if (newString.length > 0) {
               currentPiece.push(newString);
             }
@@ -251,7 +251,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
     }
 
     if (s.length > beginInd) {
-      let newString = s.substring(beginInd, s.length).trim();
+      let newString = s.substring(beginInd, s.length)
       currentPiece.push(newString);
     }
 

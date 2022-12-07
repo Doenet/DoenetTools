@@ -1075,8 +1075,8 @@ describe('Collection assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line through="(0,0)(1,1)"/>
-    <line through="(4,3)(2,1)"/>
+    <line through="(0,0) (1,1)"/>
+    <line through="(4,3) (2,1)"/>
   </graph>
 
   <graph>

@@ -46,7 +46,7 @@ describe('Numberlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><numberlist>5 (  1+1 </numberlist></p>
+    <p><numberlist>5 _  1+1 </numberlist></p>
     ` }, "*");
     });
 

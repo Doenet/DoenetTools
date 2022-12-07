@@ -1,5 +1,5 @@
 import InlineComponent from './abstract/InlineComponent';
-import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from './commonsugar/lists';
 
 export default class TextList extends InlineComponent {
   static componentType = "textList";
@@ -41,22 +41,13 @@ export default class TextList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let groupIntoTextsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
-      componentType: "text"
-    });
-    let breakStringsIntoTextsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
+    let groupIntoTextsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
       componentType: "text"
     });
 
     sugarInstructions.push({
-      replacementFunction: function ({
-        matchedChildren, isAttributeComponent = false, createdFromMacro = false,
-      }) {
-        if (isAttributeComponent && !createdFromMacro) {
-          return groupIntoTextsSeparatedBySpaces({ matchedChildren });
-        } else {
-          return breakStringsIntoTextsBySpaces({ matchedChildren })
-        }
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoTextsSeparatedBySpaces({ matchedChildren });
       }
     });
 
