@@ -386,6 +386,7 @@ if ($success) {
     //Replace all the doenetIds for the pages with the new doenetId's
     $next_course_content = [];
     $collection_page_link_ids = [];
+    $activity_and_collection_ids = [];
 
     foreach ($previous_course_content as $row) {
         $type = $row['type'];
@@ -402,6 +403,7 @@ if ($success) {
 
         //Replace previous course_content rows json with next page doenetIds
         if ($type == 'activity' || $type == 'bank') {
+            array_push($activity_and_collection_ids, $doenetId);
             foreach ($contained_pages[$doenetId] as $pair) {
                 $jsonDefinition = str_replace(
                     $pair['previous'],
@@ -631,6 +633,34 @@ if ($success) {
     WHERE courseId = '$courseId'
     ";
     $result = $conn->query($sql);
+}
+
+//copy support files
+if ($success) {
+    foreach ($activity_and_collection_ids as $doenetId) {
+        $nextDoenetId = $prevToNextDoenetIds[$doenetId];
+
+        $sql = "
+        INSERT INTO support_files
+        (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp,isListed,isPublic)
+        SELECT 
+        '$userId' AS userId,
+        cid,
+        '$nextDoenetId' AS doenetId,
+        fileType,
+        description,
+        asFileName,
+        sizeInBytes,
+        widthPixels,
+        heightPixels,
+        timestamp,
+        isListed,
+        isPublic
+        FROM support_files
+        WHERE doenetId = '$doenetId'
+    ";
+        $result = $conn->query($sql);
+    }
 }
 
 $response_arr = [
