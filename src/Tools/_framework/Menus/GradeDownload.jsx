@@ -9,7 +9,10 @@ import {
 } from '../ToolPanels/Gradebook';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useRecoilValue } from 'recoil';
-import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
+import {
+  coursePermissionsAndSettingsByCourseId,
+  peopleByCourseId,
+} from '../../../_reactComponents/Course/CourseActions';
 
 export default function GradeDownload() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
@@ -29,7 +32,9 @@ export default function GradeDownload() {
         let { data } = await axios.get('/api/getEnrollment.php', {
           params: { courseId },
         });
-        let enrollmentArray = data.enrollmentArray;
+        const { value: people } = await snapshot.getPromise(
+          peopleByCourseId(courseId),
+        );
 
         let studentInfo = {};
         let headingsCSV = 'Name,Email,Student ID,Section,Withdrew,';
@@ -42,7 +47,7 @@ export default function GradeDownload() {
           let studentId = '';
           let section = '';
           let withdrew = '';
-          for (const enrollment of enrollmentArray) {
+          for (const enrollment of people) {
             if (enrollment.userId === userId) {
               email = enrollment.email;
               studentId = enrollment.empId;
