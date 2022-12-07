@@ -1,7 +1,7 @@
 {
   "name": "doenet_tools",
   "scripts": {
-    "start": "npx snowpack dev",
+    "start": "docker compose up",
     "start:ci": "docker compose up -d",
     "start:dev": "npm install --omit=optional && npx snowpack dev",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
