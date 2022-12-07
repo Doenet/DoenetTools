@@ -1,7 +1,5 @@
-import React from 'react';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useRecoilCallback } from 'recoil';
-import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import React, { useRecoilCallback } from 'react';
+import axios from 'axios';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import {
   assignmentData,
@@ -9,7 +7,7 @@ import {
   overviewData,
   studentData,
 } from '../ToolPanels/Gradebook';
-import axios from 'axios';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 export default function GradeDownload() {
   const download = useRecoilCallback(({ snapshot }) => async () => {
