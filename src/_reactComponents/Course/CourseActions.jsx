@@ -196,7 +196,6 @@ export const peopleByCourseId = selectorFamily({
       }
     
     })
-    console.log(courseId, get(peopleAtomByCourseId(courseId)))
     return {
       value:get(peopleAtomByCourseId(courseId)),
       recoilWithdraw,
