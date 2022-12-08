@@ -1,14 +1,12 @@
-import React, { useRecoilCallback } from 'react';
-import axios from 'axios';
+import React from 'react';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import {
   assignmentData,
   gradeCategories,
   overviewData,
-  studentData,
 } from '../ToolPanels/Gradebook';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useRecoilCallback } from 'recoil';
 import {
   coursePermissionsAndSettingsByCourseId,
   courseRolePermissionsByCourseIdRoleId,
@@ -23,7 +21,6 @@ export default function GradeDownload() {
         const { label } = await snapshot.getPromise(
           coursePermissionsAndSettingsByCourseId(courseId),
         );
-
         let filename = `${label}.csv`;
         let csvText;
         let assignments = await snapshot.getPromise(assignmentData);
@@ -61,7 +58,7 @@ export default function GradeDownload() {
         }
 
         let courseTotalPossiblePoints = 0;
-        let sortedAssignments = Object.entries(assignments.contents);
+        let sortedAssignments = Object.entries(assignments);
         sortedAssignments.sort((a, b) =>
           a[1].sortOrder < b[1].sortOrder ? -1 : 1,
         );
@@ -102,7 +99,7 @@ export default function GradeDownload() {
                 credit === null &&
                 assignments?.[doenetId]?.isGloballyAssigned === '0'
               ) {
-                studentInfo[userId].csv = `${studentInfo[userId].csv}X,`;
+                studentInfo[userId].csv = `${studentInfo[userId].csv},`;
                 continue;
               }
               let score = possiblepoints * credit;
