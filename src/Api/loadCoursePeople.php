@@ -57,6 +57,7 @@ if ($success) {
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             $learner = [
+                'userId' => $row['userId'],
                 'firstName' => $row['firstName'],
                 'lastName' => $row['lastName'],
                 'screenName' => $row['screenName'],
@@ -73,7 +74,7 @@ if ($success) {
 }
 
 $response_arr = [
-    'success' => $allowed,
+    'success' => $success,
     'message' => $message,
     'peopleArray' => $peopleArray,
 ];
