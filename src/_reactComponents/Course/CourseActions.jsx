@@ -101,16 +101,26 @@ export const fileByPageId = atomFamily({
 
 const peopleAtomByCourseId = atomFamily({
   key:"peopleAtomByCourseId",
-  default:[],
-  effects:courseId => [ ({setSelf, trigger})=>{
-    if (trigger == 'get' && courseId){
-      axios.get('/api/loadCoursePeople.php', { params: { courseId } })
-      .then(resp=>{
-        setSelf(resp.data.peopleArray)
-      })
-    } 
-  },
-  ]
+  default: selectorFamily({
+    key: 'peopleAtomByCourseId/Default',
+    get: (courseId) => async () => {
+      const {data} = await axios.get('/api/loadCoursePeople.php', { params: { courseId } });
+      if(data.success) {
+        return data.peopleArray;
+      }
+      return []
+    }
+  }),
+  // effects:courseId => [ ({setSelf, trigger})=>{
+  //   if (trigger == 'get'){
+  //     axios.get('/api/loadCoursePeople.php', { params: { courseId } })
+  //     .then(resp=>{
+  //       console.log('here3',resp.data.peopleArray)
+  //       setSelf(resp.data.peopleArray)
+  //     })
+  //   } 
+  // },
+  // ]
 })
 
 export const peopleByCourseId = selectorFamily({
@@ -186,7 +196,7 @@ export const peopleByCourseId = selectorFamily({
       }
     
     })
-
+    console.log(courseId, get(peopleAtomByCourseId(courseId)))
     return {
       value:get(peopleAtomByCourseId(courseId)),
       recoilWithdraw,
