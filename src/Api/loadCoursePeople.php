@@ -38,6 +38,7 @@ $peopleArray = [];
 
 if ($success) {
     $sql = "SELECT
+        u.userId,
 		u.firstName,
 		u.lastName,
         u.screenName,
@@ -50,7 +51,7 @@ if ($success) {
 		FROM course_user AS cu, user AS u
 		WHERE cu.userId = u.userId 
         AND cu.courseId = '$courseId'
-		ORDER BY firstName
+		ORDER BY u.lastName
 		";
     $result = $conn->query($sql);
     if ($result) {
