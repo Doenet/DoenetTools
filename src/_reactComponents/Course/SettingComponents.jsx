@@ -865,6 +865,7 @@ export function DuplicateCourse({ courseId }) {
       <h2>Duplicate Course</h2>
       <p>* - Required</p>
       <Textfield 
+      dataTest="New Course Label Textfield"
       vertical 
       width="menu"
       label="New Course's Label *" 
@@ -884,6 +885,7 @@ export function DuplicateCourse({ courseId }) {
     /> */}
       <p>Start Dates are used to adjust the new course's activity dates.</p>
       <DateTime 
+      dataTest="Duplication Start Date"
       offset="-10px"
       width="menu" 
       timePicker={false} 
@@ -898,11 +900,12 @@ export function DuplicateCourse({ courseId }) {
       }}
       />
       <DateTime 
+      dataTest="Duplication End Date"
       offset="-10px"
       width="menu" 
       timePicker={false} 
       vertical 
-      label="New Course's Start Date *" 
+      label="New Course's End Date *" 
       onChange={({valid,value})=>{
         if (valid){
           let dateValue = DateToDateString(value._d);
@@ -927,6 +930,7 @@ export function DuplicateCourse({ courseId }) {
           }}
         />
         <Button
+          dataTest="Duplicate Action"
           width="100px"
           value="Duplicate"
           disabled={!submitEnabled}
@@ -945,6 +949,7 @@ export function DuplicateCourse({ courseId }) {
   return (
     <ButtonGroup vertical>
       <Button
+        dataTest="Duplicate Course Button"
         width="menu"
         value="Duplicate Course"
         onClick={()=>setShowForm(true)}
