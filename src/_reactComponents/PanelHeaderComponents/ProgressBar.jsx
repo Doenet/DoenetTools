@@ -108,7 +108,10 @@ export default function ProgressBar(props) {
        height={props.height}
        isDonut={props.donutIcon}
       >
-        <FullBar radius={props.radius}>
+        <FullBar 
+          radius={props.radius}
+          isDonut={props.donutIcon}
+        >
           <InnerBar 
             progress={props.progress * 100}
             isDonut={props.donutIcon}

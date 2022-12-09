@@ -922,7 +922,7 @@ export default function Attempt() {
           name: 'Progress Label',
           propPreview: '<ProgressBar showProgress"/>',
           propCode: { showProgress, progress: 0.4 },
-          description: 'Adds progress label to componenet',
+          description: 'Adds progress label to component',
         },
         {
           name: 'Label',
