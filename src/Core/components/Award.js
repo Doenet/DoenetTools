@@ -10,6 +10,9 @@ export default class Award extends BaseComponent {
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
+  static variableForPlainMacro = "awarded";
+  static variableForPlainCopy = "awarded";
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -573,6 +576,7 @@ export default class Award extends BaseComponent {
       },
       defaultValue: false,
       hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -711,9 +715,6 @@ export default class Award extends BaseComponent {
 
     return stateVariableDefinitions;
   }
-
-
-  static adapters = ["awarded"];
 
 
   static standardizedFeedback = {

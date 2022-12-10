@@ -6,6 +6,10 @@ export default class Choice extends InlineComponent {
   static rendererType = "containerInline";
   static renderChildren = true;
 
+
+  static variableForPlainMacro = "submitted";
+  static variableForPlainCopy = "submitted";
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.credit = {
@@ -131,6 +135,8 @@ export default class Choice extends InlineComponent {
           parentComponentType: "choiceInput",
           variableName: "childIndicesSelected"
         },
+        // Note: existence of primary shadow means that the choice is inside a shuffle or sort
+        // and the replacement from the shuffle/sort is the primary shadow (and the only one visible to parent)
         primaryShadow: {
           dependencyType: "primaryShadow",
           variableNames: ["selected"]
@@ -143,7 +149,7 @@ export default class Choice extends InlineComponent {
           selected = dependencyValues.childIndicesSelected.includes(
             dependencyValues.countAmongSiblings
           );
-        } else if(dependencyValues.primaryShadow) {
+        } else if (dependencyValues.primaryShadow) {
           selected = dependencyValues.primaryShadow.stateValues.selected;
         } else {
           selected = false;
@@ -162,20 +168,42 @@ export default class Choice extends InlineComponent {
       shadowingInstructions: {
         createComponentOfType: "boolean",
       },
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          submitted: true
+      doNotShadowEssential: true,
+      returnDependencies: () => ({
+        // Note: existence of primary shadow means that the choice is inside a shuffle or sort
+        // and the replacement from the shuffle/sort is the primary shadow (and the only one visible to parent)
+        primaryShadow: {
+          dependencyType: "primaryShadow",
+          variableNames: ["submitted"]
         }
       }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setEssentialValue: "submitted",
-            value: desiredStateVariableValues.submitted
-          }]
-        };
+      definition({ dependencyValues }) {
+        if (dependencyValues.primaryShadow) {
+          return {
+            setValue: { submitted: dependencyValues.primaryShadow.stateValues.submitted }
+          }
+        }
+        else
+          return {
+            useEssentialOrDefaultValue: {
+              submitted: true
+            }
+          }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.primaryShadow) {
+          // if have a primary shadow, then inversee definition should never be called
+          // as it will be called only on the shadow
+          return { success: false }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "submitted",
+              value: desiredStateVariableValues.submitted
+            }]
+          };
+        }
       }
     }
 
@@ -239,6 +267,6 @@ export default class Choice extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static adapters = ["submitted", "text", "math"];
+  static adapters = ["text", "math"];
 
 }
