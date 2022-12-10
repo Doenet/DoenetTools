@@ -1184,6 +1184,10 @@ function createComponentFromExtendedSource({ sourceName,
     }
 
     Object.assign(newComponent.attributes, attributesResult.newAttributes)
+
+    if (attributesResult.assignNames) {
+      newComponent.props = { assignNames: attributesResult.assignNames };
+    }
   }
 
 
@@ -1222,7 +1226,12 @@ function createComponentFromExtendedSource({ sourceName,
         return attributesResult;
       }
 
-      Object.assign(newComponent.attributes, attributesResult.newAttributes)
+      Object.assign(newComponent.attributes, attributesResult.newAttributes);
+
+
+      if (attributesResult.assignNames) {
+        newComponent.props = { assignNames: attributesResult.assignNames };
+      }
     }
 
 
@@ -1260,7 +1269,24 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
       message: "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex"
     }
   }
-  return { success: true, newAttributes }
+
+  let assignNames;
+  if (componentsForAttributes[0].props) {
+    for (let prop in componentsForAttributes[0].props) {
+      if (prop.toLowerCase() === "assignnames") {
+        if (assignNames) {
+          return {
+            success: false,
+            message: "Error in macro: cannot repeat assignNames"
+          }
+        } else {
+          assignNames = componentsForAttributes[0].props[prop];
+        }
+      }
+    }
+  }
+
+  return { success: true, newAttributes, assignNames }
 }
 
 function findFirstFullMacroInString(str) {
