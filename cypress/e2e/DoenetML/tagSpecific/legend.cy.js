@@ -390,9 +390,9 @@ describe('Legend Tag Tests', function () {
 
     <setup>
       <styleDefinitions>
-        <styleDefinition styleNumber="1" lineColor="green" lineWidth="1" lineOpacity="0.9" lineStyle="dotted" markerSize="5" markerStyle="triangle" markerColor="green" fillColor="red" fillOpacity="0.3" filled />
-        <styleDefinition styleNumber="2" lineColor="blue" lineWidth="2" lineOpacity="0.8" lineStyle="dashed" markerSize="4" markerStyle="square" markerColor="blue" fillColor="orange" fillOpacity="0.4" filled />
-        <styleDefinition styleNumber="3" lineColor="cyan" lineWidth="3" lineOpacity="0.7" lineStyle="solid" markerSize="3" markerStyle="circle" markerColor="cyan" fillColor="magenta" fillOpacity="0.5" filled />
+        <styleDefinition styleNumber="1" lineColor="green" lineWidth="1" lineOpacity="0.9" lineStyle="dotted" markerSize="5" markerStyle="triangle" markerColor="green" fillColor="red" fillOpacity="0.3" />
+        <styleDefinition styleNumber="2" lineColor="blue" lineWidth="2" lineOpacity="0.8" lineStyle="dashed" markerSize="4" markerStyle="square" markerColor="blue" fillColor="orange" fillOpacity="0.4" />
+        <styleDefinition styleNumber="3" lineColor="cyan" lineWidth="3" lineOpacity="0.7" lineStyle="solid" markerSize="3" markerStyle="circle" markerColor="cyan" fillColor="magenta" fillOpacity="0.5" />
         <styleDefinition styleNumber="4" lineColor="black" lineWidth="4" lineOpacity="0.6" lineStyle="dotted" />
       </styleDefinitions>
     </setup>
@@ -402,12 +402,12 @@ describe('Legend Tag Tests', function () {
     <graph>
       <lineSegment styleNumber="3" />
       <point styleNumber="1" displayDigits="2" name="A">(-3,2)</point>
-      <circle styleNumber="3" center="(5,-8)" />
+      <circle styleNumber="3" center="(5,-8)" filled />
       <vector styleNumber="2" head="(-3,1)" tail="(2,2)" />
       <point styleNumber="1" displayDigits="2" name="B">(-5,6)</point>
       <point styleNumber="2" name="C">(0,-6)</point>
       <function styleNumber="2" name="f">(x+5)^2</function>
-      <rectangle styleNumber="2" />
+      <rectangle styleNumber="2" filled />
       <curve through="(-9,-9) (-8, -8) (-7, -9)" styleNumber="4" />
 
       <legend displayClosedSwatches="$closedSwatches">

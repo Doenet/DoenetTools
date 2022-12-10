@@ -27,6 +27,14 @@ export default class Circle extends Curve {
       createComponentOfType: "math",
     };
 
+    attributes.filled = {
+      createComponentOfType: "boolean",
+      createStateVariable: "filled",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+
     delete attributes.parMin;
     delete attributes.parMax;
     delete attributes.variable;
@@ -53,6 +61,10 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -69,7 +81,7 @@ export default class Circle extends Curve {
         }
 
         let styleDescription;
-        if (!dependencyValues.selectedStyle.filled) {
+        if (!dependencyValues.filled) {
           styleDescription = borderDescription + dependencyValues.selectedStyle.lineColorWord;
         } else {
           if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
@@ -98,6 +110,10 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -113,7 +129,7 @@ export default class Circle extends Curve {
         }
 
         let styleDescriptionWithNoun;
-        if (!dependencyValues.selectedStyle.filled) {
+        if (!dependencyValues.filled) {
           styleDescriptionWithNoun = borderDescription + dependencyValues.selectedStyle.lineColorWord
             + " circle";
         } else {
@@ -176,12 +192,16 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
 
         let fillStyleDescription;
-        if (!dependencyValues.selectedStyle.filled) {
+        if (!dependencyValues.filled) {
           fillStyleDescription = "unfilled";
         } else {
           fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;

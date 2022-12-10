@@ -3318,27 +3318,23 @@ describe('Polygon Tag Tests', function () {
     <setup>
       <styledefinitions>
         <styledefinition stylenumber="1" lineColor="blue" fillColor="blue" lineWidth="2" lineStyle="solid" />
-        <styledefinition stylenumber="2" lineColor="blue" fillColor="blue" lineWidth="2" lineStyle="solid" filled />
-        <styledefinition stylenumber="3" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" />
-        <styledefinition stylenumber="4" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" filled />
+        <styledefinition stylenumber="2" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" />
 
-        <styledefinition stylenumber="5" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" />
-        <styledefinition stylenumber="6" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" filled />
-        <styledefinition stylenumber="7" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" />
-        <styledefinition stylenumber="8" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" filled />
+        <styledefinition stylenumber="3" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" />
+        <styledefinition stylenumber="4" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" />
         </styledefinitions>
     </setup>
 
     <graph>
       <polygon vertices="(0,0) (0,2) (2,0)" name="p1" />
-      <polygon vertices="(3,0) (3,2) (5,0)" name="p2" stylenumber="2" />
-      <polygon vertices="(0,3) (0,5) (2,3)" name="p3" stylenumber="3" />
-      <polygon vertices="(3,3) (3,5) (5,3)" name="p4" stylenumber="4" />
+      <polygon vertices="(3,0) (3,2) (5,0)" name="p2" filled />
+      <polygon vertices="(0,3) (0,5) (2,3)" name="p3" stylenumber="2" />
+      <polygon vertices="(3,3) (3,5) (5,3)" name="p4" stylenumber="2" filled />
 
-      <polygon vertices="(0,-10) (0,-8) (2,-10)" name="p5" stylenumber="5"/>
-      <polygon vertices="(3,-10) (3,-8) (5,-10)" name="p6" stylenumber="6" />
-      <polygon vertices="(0,-7) (0,-5) (2,-7)" name="p7" stylenumber="7" />
-      <polygon vertices="(3,-7) (3,-5) (5,-7)" name="p8" stylenumber="8" />
+      <polygon vertices="(0,-10) (0,-8) (2,-10)" name="p5" stylenumber="3"/>
+      <polygon vertices="(3,-10) (3,-8) (5,-10)" name="p6" stylenumber="3" filled />
+      <polygon vertices="(0,-7) (0,-5) (2,-7)" name="p7" stylenumber="4" />
+      <polygon vertices="(3,-7) (3,-5) (5,-7)" name="p8" stylenumber="4" filled />
 
     </graph>
 

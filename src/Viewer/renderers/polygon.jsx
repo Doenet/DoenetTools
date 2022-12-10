@@ -70,7 +70,7 @@ export default React.memo(function Polygon(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
 
-    const fillColor = SVs.selectedStyle.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
+    const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
     let jsxPolygonAttributes = {
       name: SVs.labelForGraph,
@@ -102,7 +102,7 @@ export default React.memo(function Polygon(props) {
       jsxPolygonAttributes.label.strokeColor = "#000000";
     }
 
-    if (SVs.selectedStyle.filled) {
+    if (SVs.filled) {
       jsxPolygonAttributes.hasInnerPoints = true;
     }
 
@@ -358,12 +358,12 @@ export default React.memo(function Polygon(props) {
         polygonJXG.current.label.update();
       }
 
-      const fillColor = SVs.selectedStyle.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
+      const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
       if (polygonJXG.current.visProp.fillcolor !== fillColor) {
         polygonJXG.current.visProp.fillcolor = fillColor;
         polygonJXG.current.visProp.highlightfillcolor = fillColor;
-        polygonJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.filled;
+        polygonJXG.current.visProp.hasinnerpoints = SVs.filled;
       }
 
       if (polygonJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {

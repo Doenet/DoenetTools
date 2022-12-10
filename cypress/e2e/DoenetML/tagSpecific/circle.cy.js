@@ -9081,27 +9081,23 @@ describe('Circle Tag Tests', function () {
     <setup>
       <styledefinitions>
         <styledefinition stylenumber="1" lineColor="blue" fillColor="blue" lineWidth="2" lineStyle="solid" />
-        <styledefinition stylenumber="2" lineColor="blue" fillColor="blue" lineWidth="2" lineStyle="solid" filled />
-        <styledefinition stylenumber="3" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" />
-        <styledefinition stylenumber="4" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" filled />
+        <styledefinition stylenumber="2" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" />
 
-        <styledefinition stylenumber="5" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" />
-        <styledefinition stylenumber="6" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" filled />
-        <styledefinition stylenumber="7" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" />
-        <styledefinition stylenumber="8" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" filled />
-        </styledefinitions>
+        <styledefinition stylenumber="3" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" />
+        <styledefinition stylenumber="4" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" />
+      </styledefinitions>
     </setup>
 
     <graph>
       <circle center="(-8,0)" name="c1" />
-      <circle center="(-8,4)" name="c2" stylenumber="2" />
-      <circle center="(-4,0)" name="c3" stylenumber="3" />
-      <circle center="(-4,4)" name="c4" stylenumber="4" />
+      <circle center="(-8,4)" name="c2" filled />
+      <circle center="(-4,0)" name="c3" stylenumber="2" />
+      <circle center="(-4,4)" name="c4" stylenumber="2" filled />
 
-      <circle center="(0,0)" name="c5" stylenumber="5"/>
-      <circle center="(0,4)" name="c6" stylenumber="6" />
-      <circle center="(4,0)" name="c7" stylenumber="7" />
-      <circle center="(4,4)" name="c8" stylenumber="8" />
+      <circle center="(0,0)" name="c5" stylenumber="3"/>
+      <circle center="(0,4)" name="c6" stylenumber="3" filled />
+      <circle center="(4,0)" name="c7" stylenumber="4" />
+      <circle center="(4,4)" name="c8" stylenumber="4" filled />
 
     </graph>
 

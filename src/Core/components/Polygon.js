@@ -17,6 +17,19 @@ export default class Polygon extends Polyline {
     return this.polylineClicked;
   }
 
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.filled = {
+      createComponentOfType: "boolean",
+      createStateVariable: "filled",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+
+    return attributes;
+  }
 
   static returnStateVariableDefinitions() {
 
@@ -31,6 +44,10 @@ export default class Polygon extends Polyline {
         selectedStyle: {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
+        },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -47,7 +64,7 @@ export default class Polygon extends Polyline {
         }
 
         let styleDescription;
-        if (!dependencyValues.selectedStyle.filled) {
+        if (!dependencyValues.filled) {
           styleDescription = borderDescription + dependencyValues.selectedStyle.lineColorWord;
         } else {
           if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
@@ -76,6 +93,10 @@ export default class Polygon extends Polyline {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -91,7 +112,7 @@ export default class Polygon extends Polyline {
         }
 
         let styleDescriptionWithNoun;
-        if (!dependencyValues.selectedStyle.filled) {
+        if (!dependencyValues.filled) {
           styleDescriptionWithNoun = borderDescription + dependencyValues.selectedStyle.lineColorWord
             + " polygon";
         } else {
@@ -155,12 +176,16 @@ export default class Polygon extends Polyline {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
 
         let fillStyleDescription;
-        if (!dependencyValues.selectedStyle.filled) {
+        if (!dependencyValues.filled) {
           fillStyleDescription = "unfilled";
         } else {
           fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;

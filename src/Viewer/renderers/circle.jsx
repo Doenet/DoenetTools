@@ -47,7 +47,7 @@ export default React.memo(function Circle(props) {
     }
 
     let fixed = !SVs.draggable || SVs.fixed;
-    const fillColor = SVs.selectedStyle.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
+    const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
@@ -71,7 +71,7 @@ export default React.memo(function Circle(props) {
     };
 
 
-    if (SVs.selectedStyle.filled) {
+    if (SVs.filled) {
       jsxCircleAttributes.hasInnerPoints = true;
     }
 
@@ -253,12 +253,12 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
       }
 
-      const fillColor = SVs.selectedStyle.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
+      const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
       if (circleJXG.current.visProp.fillcolor !== fillColor) {
         circleJXG.current.visProp.fillcolor = fillColor;
         circleJXG.current.visProp.highlightfillcolor = fillColor;
-        circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.filled;
+        circleJXG.current.visProp.hasinnerpoints = SVs.filled;
       }
       if (circleJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
         circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
