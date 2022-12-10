@@ -1,134 +1,179 @@
 import React from 'react';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useRecoilCallback } from 'recoil';
-import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { assignmentData, gradeCategories, overviewData, studentData } from '../ToolPanels/Gradebook';
-import axios from 'axios';
+import {
+  assignmentData,
+  gradeCategories,
+  overviewData,
+} from '../ToolPanels/Gradebook';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import { useRecoilValue, useRecoilCallback } from 'recoil';
+import {
+  coursePermissionsAndSettingsByCourseId,
+  courseRolePermissionsByCourseIdRoleId,
+  peopleByCourseId,
+} from '../../../_reactComponents/Course/CourseActions';
 
+export default function GradeDownload() {
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const download = useRecoilCallback(
+    ({ snapshot }) =>
+      async (courseId) => {
+        const { label } = await snapshot.getPromise(
+          coursePermissionsAndSettingsByCourseId(courseId),
+        );
+        let filename = `${label}.csv`;
+        let csvText;
+        let assignments = await snapshot.getPromise(assignmentData);
+        let overview = await snapshot.getPromise(overviewData);
+        const { value: people } = await snapshot.getPromise(
+          peopleByCourseId(courseId),
+        );
 
-export default function GradeDownload(){
+        let studentInfo = {};
+        let headingsCSV = 'Name,Email,External Id,Section,Withdrew,';
+        let possiblePointsCSV = 'Possible Points,,,,,';
+        for (const {
+          userId,
+          email,
+          roleId,
+          withdrew,
+          externalId,
+          section,
+          firstName,
+          lastName,
+        } of people) {
+          const { isIncludedInGradebook } = await snapshot.getPromise(
+            courseRolePermissionsByCourseIdRoleId({ courseId, roleId }),
+          );
+          if (isIncludedInGradebook !== '1') continue;
 
-    const download = useRecoilCallback(({snapshot})=> async ()=>{
+          const studentName = `${firstName} ${lastName}`.replaceAll('"', '""');
 
-      const driveId = await snapshot.getPromise(searchParamAtomFamily('driveId'))
+          studentInfo[userId] = {
+            courseTotal: 0,
+            csv: `"${studentName}",${email},${externalId},${section},${
+              withdrew === '1' ? 'X' : ''
+            },`,
+          };
+        }
 
-    let driveInfo = await snapshot.getPromise(fetchCoursesQuery);
-    let driveLabel;
-    for (let info of driveInfo.driveIdsAndLabels){
-      if (info.driveId === driveId){
-        driveLabel = info.label;
-        break;
-      }
-    }
+        let courseTotalPossiblePoints = 0;
+        let sortedAssignments = Object.entries(assignments);
+        sortedAssignments.sort((a, b) =>
+          a[1].sortOrder < b[1].sortOrder ? -1 : 1,
+        );
+        for (let {
+          category,
+          scaleFactor = 1,
+          maximumNumber = Infinity,
+          maximumValue = Infinity,
+        } of gradeCategories) {
+          let allCategoryPossiblePoints = [];
 
-    let filename = `${driveLabel}.csv`
-    let csvText;
-    let assignments = await snapshot.getPromise(assignmentData);
-    let students = await snapshot.getPromise(studentData); //Need more id data
-    let overview = await snapshot.getPromise(overviewData);
-
-    let { data } = await axios.get('/api/getEnrollment.php', { params: { driveId } })
-    let enrollmentArray = data.enrollmentArray;
-
-    let studentInfo = {}
-    let headingsCSV = "Name,Email,Student ID,Section,Withdrew,"
-    let possiblePointsCSV = "Possible Points,,,,,"
-    for (const userId in students){
-      if (students[userId].role !== 'Student'){ continue; }
-      let email = "";
-      let studentId = "";
-      let section = "";
-      let withdrew = "";
-      for (const enrollment of enrollmentArray){
-   
-        if (enrollment.userId === userId){
-          email = enrollment.email;
-          studentId = enrollment.empId;
-          section = enrollment.section;
-          if (enrollment.withdrew === "1"){
-            withdrew = 'X';
+          for (const userId in studentInfo) {
+            studentInfo[userId][category] = [];
           }
-          break;
-        }
-      }
 
-      let studentName = `${students[userId].firstName} ${students[userId].lastName}`.replaceAll('"','""')
+          for (const [doenetId] of sortedAssignments) {
+            let inCategory = assignments[doenetId]?.category;
+            if (inCategory.toLowerCase() !== category.toLowerCase()) {
+              continue;
+            }
 
-      studentInfo[userId] = {
-        courseTotal: 0,
-        csv:`"${studentName}",${email},${studentId},${section},${withdrew},`
-      }
-    }
-    let courseTotalPossiblePoints = 0;
+            //Make sure label will work with commas and double quotes
+            let assignmentLabel = assignments[doenetId]?.label.replaceAll(
+              '"',
+              '""',
+            );
+            headingsCSV += `"${assignmentLabel}"` + ',';
 
+            let possiblepoints =
+              assignments?.[doenetId]?.totalPointsOrPercent * 1;
 
-    for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
+            possiblePointsCSV = `${possiblePointsCSV}${possiblepoints},`;
+            allCategoryPossiblePoints.push(possiblepoints);
 
-      let categoryTotalPossiblePoints = 0;
-
-      for (const userId in students){
-      if (students[userId].role !== 'Student'){ continue; }
-
-        studentInfo[userId][category] = {
-          categoryTotal: 0
-        }
-      }
-            
-      
-            for(let doenetId in assignments){
-    
-                let inCategory = assignments[doenetId]?.category;
-                if (inCategory.toLowerCase() !== category.toLowerCase()){ continue;}
-    
-                let possiblepoints = assignments?.[doenetId]?.totalPointsOrPercent * 1;
-                possiblePointsCSV = `${possiblePointsCSV}${possiblepoints},`
-                categoryTotalPossiblePoints += possiblepoints;
-
-                //Make sure label will work with commas and double quotes
-                let assignmentLabel = assignments[doenetId]?.label.replaceAll('"','""')
-                headingsCSV += `"${assignmentLabel}"` + ','
-
-              for (const userId in students){
-                if (students[userId].role !== 'Student'){ continue; }
-                let credit = overview[userId]?.assignments?.[doenetId];
-                let score = possiblepoints * credit;
-                score = Math.round(score*100)/100;
-                studentInfo[userId].csv = `${studentInfo[userId].csv}${score},`
-                studentInfo[userId][category].categoryTotal += score;
-
+            for (const userId in studentInfo) {
+              let credit = overview[userId]?.assignments?.[doenetId];
+              if (
+                credit === null &&
+                assignments?.[doenetId]?.isGloballyAssigned === '0'
+              ) {
+                studentInfo[userId].csv = `${studentInfo[userId].csv},`;
+                continue;
               }
-
+              let score = possiblepoints * credit;
+              score = Math.round(score * 100) / 100;
+              studentInfo[userId].csv = `${studentInfo[userId].csv}${score},`;
+              studentInfo[userId][category].push(score);
             }
-            courseTotalPossiblePoints += categoryTotalPossiblePoints;
-            headingsCSV += `${category} Total,`
-            possiblePointsCSV = `${possiblePointsCSV}${categoryTotalPossiblePoints},`
-            for (const userId in students){
-              if (students[userId].role !== 'Student'){ continue; }
-              let catTotal = studentInfo[userId][category].categoryTotal;
-              studentInfo[userId].csv = `${studentInfo[userId].csv}${catTotal},`
-              studentInfo[userId].courseTotal += catTotal
-            }
+          }
+          // Sort by points value and retain maximumNumber
+          allCategoryPossiblePoints
+            .sort((a, b) => b - a)
+            .slice(0, maximumNumber);
 
-    }
-    headingsCSV += 'Course Total'
-    possiblePointsCSV = `${possiblePointsCSV}${courseTotalPossiblePoints}`
+          //Scale by scaleFactor
+          let categoryScaledPoints =
+            allCategoryPossiblePoints.reduce((a, b) => a + b, 0) * scaleFactor;
 
-    csvText = `${headingsCSV}\n${possiblePointsCSV}`
-    for (const userId in students){
-      if (students[userId].role !== 'Student'){ continue; }
-      csvText = `${csvText}\n${studentInfo[userId].csv}${studentInfo[userId].courseTotal}`
-      }
+          // Cap value at maximumValue
+          let categoryPossiblePoints = Math.min(
+            categoryScaledPoints,
+            maximumValue,
+          );
+          courseTotalPossiblePoints += categoryPossiblePoints;
 
-    var element = document.createElement('a');
-    element.setAttribute('href','data:text/plain;charset=utf-8, ' + encodeURIComponent(csvText));
-    element.setAttribute('download', filename);
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-})
+          headingsCSV += `${category} Total,`;
+          possiblePointsCSV = `${possiblePointsCSV}${categoryPossiblePoints},`;
+          for (const userId in studentInfo) {
+            let categoryScores = studentInfo[userId][category];
+            // Sort by points value and retain the maximumNumber
+            categoryScores = categoryScores
+              .sort((a, b) => b - a)
+              .slice(0, maximumNumber);
 
-  return <div>
-    <Button value='Download CSV' onClick={()=>{ download() }} />
-  </div>
+            // Scale by scaleFactor
+            let categoryScaledScores =
+              categoryScores.reduce((a, c) => a + c, 0) * scaleFactor;
+
+            // Cap value to maximumValue
+            let categoryScore = Math.min(categoryScaledScores, maximumValue);
+            studentInfo[
+              userId
+            ].csv = `${studentInfo[userId].csv}${categoryScore},`;
+            studentInfo[userId].courseTotal += categoryScore;
+          }
+        }
+        headingsCSV += 'Course Total';
+        possiblePointsCSV = `${possiblePointsCSV}${courseTotalPossiblePoints}`;
+
+        csvText = `${headingsCSV}\n${possiblePointsCSV}`;
+        for (const userId in studentInfo) {
+          csvText = `${csvText}\n${studentInfo[userId].csv}${studentInfo[userId].courseTotal}`;
+        }
+
+        var element = document.createElement('a');
+        element.setAttribute(
+          'href',
+          'data:text/plain;charset=utf-8, ' + encodeURIComponent(csvText),
+        );
+        element.setAttribute('download', filename);
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      },
+    [],
+  );
+
+  return (
+    <div>
+      <Button
+        value="Download CSV"
+        onClick={() => {
+          download(courseId);
+        }}
+      />
+    </div>
+  );
 }
