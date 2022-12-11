@@ -183,3 +183,9 @@ export class StandinForFutureLayoutTag extends SectioningComponent {
   }
 
 }
+
+
+export class externalContent extends SectioningComponent {
+  static componentType = "externalContent";
+  static rendererType = "containerBlock";
+}
