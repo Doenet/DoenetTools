@@ -2685,6 +2685,59 @@ describe('Copy Tag Tests', function () {
 
   })
 
+  it('copy uri containing variant control', () => {
+
+
+    const doenetML = `
+    <title>Two variants from copied document</title>
+    
+    <copy assignNames="thedoc" uri="doenet:cid=bafkreidlsgyexefli6dymalyij6se6hmjdky3lxag5jsgce3m7mazhsaja" />
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/_title1').should('have.text', 'Two variants from copied document');  // to wait for page to load
+
+    cy.get('#\\/thedoc').should('contain.text', 'first')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/thedoc"].sharedParameters.allPossibleVariants).eqls(["first", "last"])
+      expect(stateVariables["/thedoc"].sharedParameters.variantName).eq("first")
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b"])
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq("a")
+
+    });
+
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariantIndex: 2
+      }, "*");
+    });
+
+    cy.get('#\\/thedoc').should('contain.text', 'last')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/thedoc"].sharedParameters.allPossibleVariants).eqls(["first", "last"])
+      expect(stateVariables["/thedoc"].sharedParameters.variantName).eq("last")
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b"])
+      expect(stateVariables["/_document1"].sharedParameters.variantName).eq("b")
+
+    });
+
+  })
+
   it('copy of component that changes away from a copy', () => {
     cy.window().then(async (win) => {
       win.postMessage({

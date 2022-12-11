@@ -1,0 +1,5 @@
+<variantControl nVariants="2" variantNames="first last" />
+<select>
+  <option selectForVariants="first">first</option>
+  <option selectForVariants="last">last</option>
+</select>
