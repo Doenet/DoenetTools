@@ -755,9 +755,9 @@ export default function Attempt() {
       id: 'increment',
       code: Increment,
       codePreview: '<Increment/>',
-      req_props: null,
+      req_props: { dataTest: "Test" },
       req_children: null,
-      use: 'Text input with increment and decrement buttons. Also has dropdown menu to select given values',
+      use: 'Text input with increment and decrement buttons.',
       props: [
         {
           name: 'Width',
@@ -1832,8 +1832,8 @@ export default function Attempt() {
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
-              <li key={id} data-test={`componentLink${id}`}>
-                <Link to={`component/${id}`} style={{ color: 'black' }}>
+              <li key={id}>
+                <Link to={`component/${id}`} style={{ color: 'black' }} data-test={`componentLink ${id}`}>
                   {name}
                 </Link>
               </li>

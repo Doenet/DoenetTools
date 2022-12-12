@@ -19,11 +19,11 @@ const IncrementBox = styled.div`
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
   background-color: var(--canvas);
-  `
+`;
 
 const IncrementContainer = styled.div`
   position: relative;
-  width: ${props => props.width === 'menu' ? 'var(--menuWidth)' : props.width};
+  width: ${props => props.width == 'menu' ? 'var(--menuWidth)' : props.width || '210px'};
 `;
 
 const IncreaseButton = styled.button`
@@ -99,6 +99,9 @@ const Label = styled.span`
 export default function Increment(props) {
   let increaseIcon = '+';
   let decreaseIcon = '-';
+  // a transparent image Element to set as a placeholder when dragging to increment/decrement
+  let dragIcon = document.createElement('img')
+  dragIcon.src = '/media/transparent.png';
   
   if (props.values || props.font) {
     decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
@@ -108,12 +111,19 @@ export default function Increment(props) {
   const values = props.values || (props.font && FONT_SIZES) || []
   const [value, setValue] = useState(props.value || 0);
   const [index, setIndex] = useState(0);
+  const [xCoord, setXCoord] = useState(0);
   const incrementRef = useRef(null);
   const textFieldRef = useRef(null);
   const decrementRef = useRef(null);
   const containerRef = useRef(null);
-
+  const initialRender = useRef(true);
+  
   useEffect(() => {
+    // to prevent props.onChange from firing on mounted
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    } 
     // to handle placeholder issue
     if (props.placeholder && value === "") {
       setValue("")
@@ -145,12 +155,7 @@ export default function Increment(props) {
     if (props.value && props.values) 
       setIndex(props.values.indexOf(props.value))
 
-  }, [props.value]) //need to put this two as dependency because we might wanna change value manually from the parent component
-
-  // useEffect(() => {
-  //   console.log("value prop changed");
-  //   setValue(props.value)
-  // }, [props.value])
+  }, [props.value]) //need to put this as dependency because we might wanna change value manually from the parent component
 
   const incrementOnClick = () => {
     if (textFieldRef.current) {
@@ -181,9 +186,7 @@ export default function Increment(props) {
   };
 
   const findClosestIndex = (arr, value) => {  
-    if (arr === null) {
-      return -1;
-    }
+    if (arr === null) return -1;
     //deals with closest string/number
     let closestIndex = 0;
     let minDist = !isNaN(value) ? Math.abs(arr[0] - parseInt(value)) : Math.abs(arr[0].charCodeAt(0) - value.charCodeAt(0));
@@ -195,7 +198,6 @@ export default function Increment(props) {
         closestIndex = i;
       }
     }
-  
     return closestIndex;
   };
 
@@ -244,20 +246,34 @@ export default function Increment(props) {
     };
   };
 
-  let containerWidth = '210px';
-  if (props.width){
-    containerWidth = props.width;
+  const handleDragStart = e => {
+    if (textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+    e.dataTransfer.setDragImage(dragIcon, -100, -100);
   }
+
+  const handleDrag = e => {
+    const currentXCoord = e.clientX - e.target.offsetLeft;
+    if (currentXCoord == 0) return;
+    if (currentXCoord > xCoord) incrementOnClick();
+    else if (currentXCoord < xCoord) decrementOnClick();
+    setXCoord(currentXCoord);
+  };
 
   return (
     <Container label={props.label} vertical={props.vertical}>
       {props.label && <Label id="increment-label">{props.label}</Label> }
       {props.label && props.vertical && <br /> }
-      <IncrementContainer width={containerWidth}>
+      <IncrementContainer width={props.width}>
         <IncrementBox 
           ref={containerRef}
           onBlur={containerOnBlur}
           alert={props.alert}
+          draggable={!props.disabled}
+          onDragStart={handleDragStart}
+          onDrag={handleDrag}
+          data-test={`${props.dataTest}`}
         >
           <DecreaseButton
             aria-label="Decrease"
@@ -277,7 +293,7 @@ export default function Increment(props) {
             aria-disabled={props.disabled ? true : false}
             placeholder={props.placeholder}
             value={value}
-            data-test={props.dataTest}
+            data-test={`${props.dataTest} Textfield`}
             ref={textFieldRef}
             alert={props.alert}
             disabled={props.disabled ? true : false}

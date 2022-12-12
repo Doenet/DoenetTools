@@ -28,7 +28,7 @@ import Textfield from '../PanelHeaderComponents/Textfield';
 import { useSaveDraft } from '../../_utils/hooks/useSaveDraft';
 
 const InputWrapper = styled.div`
-  margin: 0 5px 10px 5px;
+  padding: 0 8px 10px 8px;
   display: ${(props) => (props.flex ? 'flex' : 'block')};
   align-items: ${(props) => props.flex && 'center'};
 `;
@@ -46,7 +46,6 @@ const InputControl = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: calc(var(--menuWidth) - 10px);
 `;
 
 const initializingWorkersAtom = atomFamily({
@@ -407,7 +406,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
           value={timeLimit}
           dataTest="Time Limit"
           min={1}
-          width='180px'
+          width="100%"
           onBlur={limit => {
             if (isNaN(limit) || limit < 1) limit = 1
             setTimeLimit(parseInt(limit))
@@ -465,8 +464,8 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
           disabled={!isEnabled}
           value={numberOfAttemptsAllowed}
           dataTest="Attempt Limit"
-          width='180px'
           min={1}
+          width='100%'
           onBlur={attempts => {
             if (isNaN(attempts) || attempts < 1) attempts = 1
             setNumberOfAttemptsAllowed(parseInt(attempts))
@@ -544,6 +543,7 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
           // value={totalPointsOrPercent || 0}
           dataTest='Total Points Or Percent'
           min={0}
+          width='100%'
           onBlur={(newValue) => {
             if (newValue !== recoilValue) {
               let totalPointsOrPercentLocal = null;
