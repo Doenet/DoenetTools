@@ -805,7 +805,7 @@ describe('Module Tag Tests', function () {
 
       let g2m1Anchor = cesc('#' + stateVariables[stateVariables["/g2"].replacements[3].componentName].activeChildren[1].componentName);
       let g2m3Anchor = cesc('#' + stateVariables[stateVariables["/g2"].replacements[5].componentName].activeChildren[3].componentName);
-      let g2extProblem = stateVariables[stateVariables[stateVariables[stateVariables[stateVariables["/g2"].replacements[7].componentName].replacements[0].componentName].replacements[0].componentName].replacements[3].componentName];
+      let g2extProblem = stateVariables[stateVariables[stateVariables[stateVariables["/g2"].replacements[7].componentName].replacements[0].componentName].replacements[3].componentName];
       let g2extm1Anchor = cesc('#' + stateVariables[g2extProblem.activeChildren[2].componentName].activeChildren[1].componentName);
       let g2extGraph = stateVariables[g2extProblem.activeChildren[4].componentName];
       let g2extPName = g2extGraph.activeChildren[0].componentName;
@@ -814,7 +814,7 @@ describe('Module Tag Tests', function () {
       let g2extAnswerIncorrectAnchor = cesc('#' + g2extProblem.activeChildren[6].componentName + "_incorrect");
       let g3m1Anchor = cesc('#' + stateVariables[stateVariables["/g3"].replacements[3].componentName].activeChildren[1].componentName);
       let g3m3Anchor = cesc('#' + stateVariables[stateVariables["/g3"].replacements[5].componentName].activeChildren[3].componentName);
-      let g3extProblem = stateVariables[stateVariables[stateVariables[stateVariables[stateVariables["/g3"].replacements[7].componentName].replacements[0].componentName].replacements[0].componentName].replacements[3].componentName];
+      let g3extProblem = stateVariables[stateVariables[stateVariables[stateVariables["/g3"].replacements[7].componentName].replacements[0].componentName].replacements[3].componentName];
       let g3extm1Anchor = cesc('#' + stateVariables[g3extProblem.activeChildren[2].componentName].activeChildren[1].componentName);
       let g3extGraph = stateVariables[g3extProblem.activeChildren[4].componentName];
       let g3extPName = g3extGraph.activeChildren[0].componentName;
