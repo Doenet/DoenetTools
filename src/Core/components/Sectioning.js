@@ -187,5 +187,12 @@ export class StandinForFutureLayoutTag extends SectioningComponent {
 
 export class externalContent extends SectioningComponent {
   static componentType = "externalContent";
-  static rendererType = "containerBlock";
+  static rendererType = "section";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.includeAutoNameNumberIfNoTitle.defaultValue = false;
+    return attributes;
+  }
+
 }
