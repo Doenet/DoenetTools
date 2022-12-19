@@ -76,7 +76,7 @@ export default function GradeDownload() {
 
           for (const [doenetId] of sortedAssignments) {
             let inCategory = assignments[doenetId]?.category;
-            if (inCategory.toLowerCase() !== category.toLowerCase()) {
+            if (inCategory?.toLowerCase() !== category?.toLowerCase()) {
               continue;
             }
 
