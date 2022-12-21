@@ -33,9 +33,6 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
     }
 
     let fillColor = SVs.selectedStyle.fillColor;
-    if(fillColor === "none") {
-      fillColor = SVs.selectedStyle.lineColor;
-    }
 
 
     // Note: actual content of label is being ignored
@@ -116,9 +113,6 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       }
 
       let fillColor = SVs.selectedStyle.fillColor;
-      if(fillColor === "none") {
-        fillColor = SVs.selectedStyle.lineColor;
-      }
 
       if (integralJXG.current.visProp.fillcolor !== fillColor) {
         integralJXG.current.visProp.fillcolor = fillColor;

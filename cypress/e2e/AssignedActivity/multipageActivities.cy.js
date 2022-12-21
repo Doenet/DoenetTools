@@ -693,6 +693,11 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
+    cy.wait(100)
+    // TODO: should not have to wait here.  It seems like this a bug
+    // Without the wait get into an inconsistent situation where the activity does appear for the student,
+    // but when click "View Activity" it says the assignment is not assigned
+
     cy.signin({ userId: studentUserId })
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
@@ -731,6 +736,11 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
+    cy.wait(100)
+    // TODO: should not have to wait here.  It seems like this a bug
+    // Without the wait get into an inconsistent situation where the activity does appear for the student,
+    // but when click "View Activity" it says the assignment is not assigned
 
     cy.signin({ userId: studentUserId })
 

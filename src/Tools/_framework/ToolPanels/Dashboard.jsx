@@ -61,6 +61,7 @@ export default function Dashboard(props) {
           }}
         >
           <Card
+            dataTest="Dashboard Content Card"
             name="Content"
             icon={<FontAwesomeIcon icon={faCode} />}
             value="Content"
@@ -73,6 +74,7 @@ export default function Dashboard(props) {
           />
           {canManageUsers === '1' ? (
             <Card
+              dataTest="Dashboard People Card"
               name="People"
               icon={<FontAwesomeIcon icon={faUser} />}
               value="People"
@@ -88,6 +90,7 @@ export default function Dashboard(props) {
           ) : null}
           {(dataAccessPermission ?? 'None') !== 'None' ? (
             <Card
+            dataTest="Dashboard Data Card"
               name="Data"
               icon={<FontAwesomeIcon icon={faChartPie} />}
               value="Data"
@@ -103,7 +106,8 @@ export default function Dashboard(props) {
           ) : null}
           {canViewAndModifyGrades === '1' ? (
             <Card
-              name="Gradebook"
+            dataTest="Dashboard Gradebook Card"
+            name="Gradebook"
               icon={<FontAwesomeIcon icon={faTasks} />}
               value="Gradebook"
               onClick={() =>

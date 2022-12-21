@@ -89,7 +89,8 @@ export default class Legend extends GraphicalComponent {
             dependencies[`graphicalElement${ind}`] = {
               dependencyType: "multipleStateVariables",
               componentName: cName,
-              variableNames: ["selectedStyle", "styleNumber"],
+              variableNames: ["selectedStyle", "styleNumber", "filled"],
+              variablesOptional: true,
             }
             dependencies[`graphicalElement${ind}AdapterSource`] = {
               dependencyType: "adapterSource",
@@ -243,6 +244,7 @@ export default class Legend extends GraphicalComponent {
                   lineWidth: selectedStyle.lineWidth,
                   lineOpacity: selectedStyle.lineOpacity,
                   fillColor: selectedStyle.fillColor,
+                  filled: componentForLabel.stateValues.filled,
                   fillOpacity: selectedStyle.fillOpacity,
                   label: label.labelInfo
                 })
