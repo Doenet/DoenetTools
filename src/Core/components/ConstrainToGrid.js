@@ -42,6 +42,12 @@ export default class ConstrainToGrid extends ConstraintComponent {
       defaultValue: 0,
       public: true,
     };
+    attributes.ignoreGraphBounds = {
+      createComponentOfType: "boolean",
+      createStateVariable: "ignoreGraphBounds",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
@@ -90,10 +96,33 @@ export default class ConstrainToGrid extends ConstraintComponent {
           dependencyType: "stateVariable",
           variableName: "zoffset"
         },
+        constraintAncestor: {
+          dependencyType: "ancestor",
+          componentType: "constraints",
+          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"]
+        },
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+        },
+        ignoreGraphBounds: {
+          dependencyType: "stateVariable",
+          variableName: "ignoreGraphBounds"
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
+
+            let ancestor;
+            if (dependencyValues.constraintAncestor !== null &&
+              dependencyValues.constraintAncestor.stateValues.graphXmin !== null) {
+              ancestor = "constraints";
+            } else if (dependencyValues.graphAncestor !== null &&
+              dependencyValues.graphAncestor.stateValues.xmin !== null) {
+              ancestor = "graph";
+            }
 
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
@@ -109,6 +138,26 @@ export default class ConstrainToGrid extends ConstraintComponent {
               let xoffset = dependencyValues.xoffset;
               let x1constrained = Math.round((x1 - xoffset) / dx) * dx + xoffset;
               if (Number.isFinite(x1constrained)) {
+
+                if (!dependencyValues.ignoreGraphBounds) {
+                  // if in a graph, exclude grid points outside graph bounds
+                  let xmin, xmax;
+                  if (ancestor === "constraints") {
+                    xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
+                    xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
+                  } else if (ancestor === "graph") {
+                    xmin = dependencyValues.graphAncestor.stateValues.xmin;
+                    xmax = dependencyValues.graphAncestor.stateValues.xmax;
+                  }
+                  if (xmin !== undefined) {
+                    if (x1constrained < xmin) {
+                      x1constrained = Math.ceil((xmin - xoffset) / dx) * dx + xoffset;
+                    } else if (x1constrained > xmax) {
+                      x1constrained = Math.floor((xmax - xoffset) / dx) * dx + xoffset;
+                    }
+                  }
+                }
+
                 return {
                   constrained: true,
                   variables: { x1: x1constrained }
@@ -132,6 +181,26 @@ export default class ConstrainToGrid extends ConstraintComponent {
               let yoffset = dependencyValues.yoffset;
               let x2constrained = Math.round((x2 - yoffset) / dy) * dy + yoffset;
               if (Number.isFinite(x2constrained)) {
+
+                if (!dependencyValues.ignoreGraphBounds) {
+                  // if in a graph, exclude grid points outside graph bounds
+                  let ymin, ymax;
+                  if (ancestor === "constraints") {
+                    ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
+                    ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
+                  } else if (ancestor === "graph") {
+                    ymin = dependencyValues.graphAncestor.stateValues.ymin;
+                    ymax = dependencyValues.graphAncestor.stateValues.ymax;
+                  }
+                  if (ymin !== undefined) {
+                    if (x2constrained < ymin) {
+                      x2constrained = Math.ceil((ymin - yoffset) / dy) * dy + yoffset;
+                    } else if (x2constrained > ymax) {
+                      x2constrained = Math.floor((ymax - yoffset) / dy) * dy + yoffset;
+                    }
+                  }
+                }
+
                 return {
                   constrained: true,
                   variables: { x2: x2constrained }

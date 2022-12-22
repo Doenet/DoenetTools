@@ -6,12 +6,12 @@ const Container = styled.div`
   width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
   /* flex-wrap: wrap; */
   // margin: 2px 0px 2px 0px
-  overflow: clip;
+  /* overflow: clip; */
 `;
 
 export default function ButtonGroup(props) {
     const buttonGroup = {
-        margin: '0px 2px 4px 2px',
+        margin: '0px 2px 0px 2px',
         borderRadius: '0',
         padding: '0px 12px 0px 10px'
     }; 

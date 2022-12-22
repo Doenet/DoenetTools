@@ -2,9 +2,9 @@
 * DEBT - menuPanelMargin css variable does not exist
 */
 
-.rdtPicker {
+/* .rdtPicker {
   margin-left: var(--menuPanelMargin, -50px);
-}
+} */
 
 .rdtDays {
   width: 220px;

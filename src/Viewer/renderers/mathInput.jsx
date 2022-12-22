@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
@@ -14,13 +14,13 @@ let EditableMathField = mathquill.EditableMathField;
 import {
   focusedMathField,
   focusedMathFieldReturn,
-  focusedMathFieldID,
   palletRef,
   handleRef,
 } from '../../Tools/_framework/Footers/MathInputSelector';
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
+import './mathInput.css';
 
 // Moved most of checkWorkStyle styling into Button
 const Button = styled.button `
@@ -51,6 +51,7 @@ export default function MathInput(props) {
   MathInput.baseStateVariable = 'rawRendererValue';
 
   const [mathField, setMathField] = useState(null);
+  const [focused, setFocused] = useState(null);
   const textareaRef = useRef(null); // Ref to keep track of the mathInput's disabled state
 
   const setRendererState = useSetRecoilState(rendererState(rendererName));
@@ -71,8 +72,6 @@ export default function MathInput(props) {
   let validationState = useRef(null);
 
   const setFocusedField = useSetRecoilState(focusedMathField);
-  const setFocusedFieldID = useSetRecoilState(focusedMathFieldID);
-  const focusedFieldID = useRecoilValue(focusedMathFieldID);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
   const containerRef = useRecoilValue(palletRef);
   const dragHandleRef = useRecoilValue(handleRef);
@@ -132,7 +131,7 @@ export default function MathInput(props) {
   const handleFocus = (e) => {
     setFocusedField(() => handleVirtualKeyboardClick);
     setFocusedFieldReturn(() => handlePressEnter);
-    setFocusedFieldID(mathField.id);
+    setFocused(true);
   };
 
   const handleBlur = (e) => {
@@ -152,8 +151,8 @@ export default function MathInput(props) {
       // console.log(">>>", e.relatedTarget.id, checkWorkButton.props.id);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
-      setFocusedFieldID(null);
     }
+    setFocused(false);
   };
 
   const onChangeHandler = (text) => {
@@ -186,28 +185,27 @@ export default function MathInput(props) {
 
   // const inputKey = this.componentName + '_input';
 
-  let mathInputStyle = { // Style the EditableMathField
-
-    // Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
-    // Currently does not work with border: "var(--mainBorder)"
-    borderColor: "black",
-    borderStyle: "solid",
-    borderWidth: "2px",
-
-    marginRight: "4px", 
-    marginBottom: "4px",
-  }
-
   let checkWorkStyle = {
     cursor: "pointer",
     padding: "1px 6px 1px 6px",
   }
 
-  let mathInputWrapper = { // Style the EditableMathField Wrapper
-    cursor: "pointer",
-    marginBottom: "4px",
+  let mathInputStyle = {
+    /* Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
+    Currently does not work with border: "var(--mainBorder)" */
+    borderColor: "black",
+    borderStyle: "solid",
+    borderWidth: "2px",
+    margin: "0px",
+    boxShadow: "none",
   }
 
+  if (focused) {
+    mathInputStyle.outline = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
+    mathInputStyle.outlineOffset = "2px";
+  }
+
+  let mathInputWrapperCursor = 'allowed';
   if (SVs.disabled) {
     // Disable the checkWorkButton
     checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
@@ -218,7 +216,7 @@ export default function MathInput(props) {
     mathInputStyle.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     mathInputStyle.backgroundColor = 'rgba(239, 239, 239, 0.3)';
     mathInputStyle.pointerEvents = 'none';
-    mathInputWrapper.cursor = 'not-allowed';
+    mathInputWrapperCursor = 'not-allowed';
   }
 
   if(textareaRef.current && textareaRef.current.disabled !== SVs.disabled) { // Update the mathInput ref's disabled state
@@ -322,8 +320,8 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={id} />
 
-      <span className="textInputSurroundingBox" id={id} style={mathInputWrapper}>
-        <span>
+      <span id={id}>
+        <div className="mathInputWrapper" style={{cursor: mathInputWrapperCursor}}>
           <EditableMathField
             style={mathInputStyle}
             latex={rendererValue.current}
@@ -358,7 +356,7 @@ export default function MathInput(props) {
               setMathField(mf);
             }}
           />
-        </span>
+        </div>
         {checkWorkButton}
       </span>
     </React.Fragment>

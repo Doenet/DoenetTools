@@ -585,7 +585,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }
 
 
-  static async setUpVariant({
+  static setUpVariant({
     serializedComponent, sharedParameters,
     descendantVariantComponents,
   }) {

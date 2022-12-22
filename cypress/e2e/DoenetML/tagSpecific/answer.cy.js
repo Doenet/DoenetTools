@@ -17076,16 +17076,16 @@ describe('Answer Tag Tests', function () {
         <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal)" hide>
-          <option selectForVariantNames="cat">
+          <option selectForVariants="cat">
             <text>cat</text>
           </option>
-          <option selectForVariantNames="dog">
+          <option selectForVariants="dog">
             <text>dog</text>
           </option>
-          <option selectForVariantNames="mouse">
+          <option selectForVariants="mouse">
             <text>mouse</text>
           </option>
-          <option selectForVariantNames="fish">
+          <option selectForVariants="fish">
             <text>fish</text>
           </option>
         </select>
@@ -17138,16 +17138,16 @@ describe('Answer Tag Tests', function () {
         <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal sound)" hide>
-          <option selectForVariantNames="cat">
+          <option selectForVariants="cat">
             <text>cat</text><text>meow</text>
           </option>
-          <option selectForVariantNames="dog">
+          <option selectForVariants="dog">
             <text>dog</text><text>woof</text>
           </option>
-          <option selectForVariantNames="mouse">
+          <option selectForVariants="mouse">
             <text>mouse</text><text>squeak</text>
           </option>
-          <option selectForVariantNames="fish">
+          <option selectForVariants="fish">
             <text>fish</text><text>blub</text>
           </option>
         </select>
@@ -19498,21 +19498,42 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <text>a</text>
   <p><answer name="an">
     <award name="aw">1.1</award>
-    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" />
+    <award copysource="aw" name="aw2" credit="0.5" allowedErrorInNumbers="0.001" />
   </answer></p>
   <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
-
+  <p name="pfa1">First award awarded: $aw</p>
+  <p name="pfa2">First award awarded: $aw.awarded</p>
+  <p name="pfa3">First award awarded: <copy source="aw" /></p>
+  <p name="pfa4">First award awarded: <copy source="aw.awarded" /></p>
+  <p name="pfa5">First award awarded: <boolean copysource="aw" /></p>
+  <p name="pfa6">First award awarded: <boolean copysource="aw.awarded" /></p>
+  <p name="psa1">Second award awarded: $aw2</p>
+  <p name="psa2">Second award awarded: $aw2.awarded</p>
+  <p name="psa3">Second award awarded: <copy source="aw2" /></p>
+  <p name="psa4">Second award awarded: <copy source="aw2.awarded" /></p>
+  <p name="psa5">Second award awarded: <boolean copysource="aw2" /></p>
+  <p name="psa6">Second award awarded: <boolean copysource="aw2.awarded" /></p>
 
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
     cy.get('#\\/nr').should('have.text', '1')
+
+    cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
+    cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19532,6 +19553,19 @@ describe('Answer Tag Tests', function () {
         expect(text).eq('1.1')
       })
 
+      cy.get('#\\/pfa1').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa2').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa3').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa4').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa5').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa6').should('have.text', 'First award awarded: true')
+      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+
       cy.get(mathinputAnchor).type("{end}1", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -19540,6 +19574,20 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.11')
       })
+
+      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
+      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+
       cy.get(mathinputAnchor).type("{end}{leftArrow}0", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -19548,6 +19596,20 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.101')
       })
+
+      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
+      cy.get('#\\/psa1').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa2').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa3').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa4').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa5').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa6').should('have.text', 'Second award awarded: true')
+
     })
   });
 
@@ -19555,21 +19617,43 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <text>a</text>
   <p><answer name="an">
     <mathinput name="mi" />
     <award name="aw"><when>$mi=1.1</when></award>
-    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" />
+    <award copysource="aw" name="aw2" credit="0.5" allowedErrorInNumbers="0.001" />
   </answer></p>
   <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
+  <p name="pfa1">First award awarded: $aw</p>
+  <p name="pfa2">First award awarded: $aw.awarded</p>
+  <p name="pfa3">First award awarded: <copy source="aw" /></p>
+  <p name="pfa4">First award awarded: <copy source="aw.awarded" /></p>
+  <p name="pfa5">First award awarded: <boolean copysource="aw" /></p>
+  <p name="pfa6">First award awarded: <boolean copysource="aw.awarded" /></p>
+  <p name="psa1">Second award awarded: $aw2</p>
+  <p name="psa2">Second award awarded: $aw2.awarded</p>
+  <p name="psa3">Second award awarded: <copy source="aw2" /></p>
+  <p name="psa4">Second award awarded: <copy source="aw2.awarded" /></p>
+  <p name="psa5">Second award awarded: <boolean copysource="aw2" /></p>
+  <p name="psa6">Second award awarded: <boolean copysource="aw2.awarded" /></p>
 
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
     cy.get('#\\/nr').should('have.text', '1')
+
+    cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
+    cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
+    cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
+    cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19589,6 +19673,19 @@ describe('Answer Tag Tests', function () {
         expect(text).eq('1.1')
       })
 
+      cy.get('#\\/pfa1').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa2').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa3').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa4').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa5').should('have.text', 'First award awarded: true')
+      cy.get('#\\/pfa6').should('have.text', 'First award awarded: true')
+      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+
       cy.get(mathinputAnchor).type("{end}1", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -19598,6 +19695,19 @@ describe('Answer Tag Tests', function () {
         expect(text).eq('1.11')
       })
 
+      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
+      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
+      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+
       cy.get(mathinputAnchor).type("{end}{leftArrow}0", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -19606,6 +19716,19 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.101')
       })
+
+      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
+      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
+      cy.get('#\\/psa1').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa2').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa3').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa4').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa5').should('have.text', 'Second award awarded: true')
+      cy.get('#\\/psa6').should('have.text', 'Second award awarded: true')
 
     })
   });
@@ -21755,6 +21878,88 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/pSubmitted .mjx-mrow').should('contain.text', '[abcd]');
     cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[abcd]');
     cy.get('#\\/pSubmitted .mjx-mrow').eq(0).should('have.text', '[abcd]');
+
+  });
+
+  it('reload math answer without blurring or hitting enter', () => {
+    let doenetML = `
+    <p>Enter 1: <answer>
+      <mathinput name="n" />
+      <award><when>$n=1</when></award>
+    </answer>
+    </p>
+    `
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/n textarea').type("1", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/n_submit').click();
+    cy.get('#\\/n_correct').should('be.visible');
+
+
+  });
+
+  it('reload text answer without blurring or hitting enter', () => {
+    let doenetML = `
+    <p>Enter 1: <answer>
+      <textinput name="ti" />
+      <award><when>$ti=hello</when></award>
+    </answer>
+    </p>
+    `
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/ti_input').type("hello", { force: true });
+
+    cy.wait(1500);  // wait for debounce
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+
+    cy.get('#\\/ti_submit').click();
+    cy.get('#\\/ti_correct').should('be.visible');
+
 
   });
 

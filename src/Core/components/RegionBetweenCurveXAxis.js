@@ -40,12 +40,7 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let styleDescription;
-        if (dependencyValues.selectedStyle.fillColor === "none") {
-          styleDescription = dependencyValues.selectedStyle.lineColorWord;
-        } else {
-          styleDescription = dependencyValues.selectedStyle.fillColorWord;
-        }
+        let styleDescription = dependencyValues.selectedStyle.fillColorWord;
 
         return { setValue: { styleDescription } };
       }

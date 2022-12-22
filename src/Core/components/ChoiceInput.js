@@ -1149,7 +1149,7 @@ export default class Choiceinput extends Input {
     }
   }
 
-  static async setUpVariant({
+  static setUpVariant({
     serializedComponent, sharedParameters,
     descendantVariantComponents,
   }) {

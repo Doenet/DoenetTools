@@ -969,6 +969,8 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get('#\\/m1').should('contain.text', '\uff3f')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);

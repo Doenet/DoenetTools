@@ -11,6 +11,7 @@ import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 
 import {
   DeleteCourse,
+  DuplicateCourse,
   EditImageAndColor,
   EditLabel,
 } from '../../../_reactComponents/Course/SettingComponents';
@@ -165,6 +166,7 @@ const CourseInfoPanel = function ({ courseId }) {
       )}
       <br />
       {isOwner === '1' && <DeleteCourse courseId={courseId} />}
+      {isOwner === '1' && <DuplicateCourse courseId={courseId} />}
     </>
   );
 };

@@ -125,10 +125,10 @@ export default function HomePage(props) {
   
   let signInButton = null;
   if (signedIn == true){
-    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div>
+    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button dataTest="Nav to course" size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div>
   }
   if (signedIn == false){
-    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>
+    signInButton = <div style={{display: "flex", justifyContent: "center"}}><Button dataTest="Nav to signin" onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>
   }
 
 

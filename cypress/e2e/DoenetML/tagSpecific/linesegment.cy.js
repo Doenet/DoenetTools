@@ -1119,6 +1119,7 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
+    cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(q,2)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls(["q", 2]);

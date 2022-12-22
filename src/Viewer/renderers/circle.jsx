@@ -47,6 +47,7 @@ export default React.memo(function Circle(props) {
     }
 
     let fixed = !SVs.draggable || SVs.fixed;
+    const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
@@ -62,15 +63,15 @@ export default React.memo(function Circle(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      fillColor: SVs.selectedStyle.fillColor,
+      fillColor,
       fillOpacity: SVs.selectedStyle.fillOpacity,
-      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillColor: fillColor,
       highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
       highlight: !fixed,
     };
 
 
-    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+    if (SVs.filled) {
       jsxCircleAttributes.hasInnerPoints = true;
     }
 
@@ -252,10 +253,12 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
       }
 
-      if (circleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
-        circleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
-        circleJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
-        circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
+
+      if (circleJXG.current.visProp.fillcolor !== fillColor) {
+        circleJXG.current.visProp.fillcolor = fillColor;
+        circleJXG.current.visProp.highlightfillcolor = fillColor;
+        circleJXG.current.visProp.hasinnerpoints = SVs.filled;
       }
       if (circleJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
         circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
