@@ -60,7 +60,8 @@ export default React.memo(function Figure(props) {
 
     // Set the figure's display property to be the same as the image's display property
     useEffect(() => {
-      const image = document.getElementById(id.replace("figure", "image")).parentElement; // The div surrounding the figure's image
+      const image = document.getElementById(id).children[1]; // The div surrounding the figure's image
+      console.log(image);
 
       if (image.style.display == "inline-block") {
         setFigureDisplay("inline-block");
