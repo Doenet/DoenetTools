@@ -99,6 +99,7 @@ if ($success){
   for ($i = 0; $i < count($newSourcePageDoenetIds); $i++){
     $sourcePage = $newSourcePageDoenetIds[$i];
     $label = $labels[$i];
+    $escapedLabel = mysqli_real_escape_string($conn, $label);
     $doenetId = include "randomId.php";
     $doenetId = "_" . $doenetId;
 
@@ -108,7 +109,7 @@ if ($success){
   INSERT INTO link_pages 
   (courseId,containingDoenetId,parentDoenetId,doenetId,sourceCollectionDoenetId,sourcePageDoenetId,label,timeOfLastUpdate)
   VALUES
-  ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$sourceCollectionDoenetId','$sourcePage','$label',NOW())
+  ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$sourceCollectionDoenetId','$sourcePage','$escapedLabel',NOW())
   ";
   $conn->query($sql);
 
