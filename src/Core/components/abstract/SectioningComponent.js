@@ -85,6 +85,13 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
     }
 
+    attributes.includeAutoNameNumberIfNoTitle = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeAutoNameNumberIfNoTitle",
+      defaultValue: true,
+      public: true,
+    }
+
     attributes.includeParentNumber = {
       createComponentOfType: "boolean",
       createStateVariable: "includeParentNumber",
@@ -263,7 +270,11 @@ export default class SectioningComponent extends BlockComponent {
         prerender: {
           dependencyType: "value",
           value: sharedParameters.prerender
-        }
+        },
+        includeAutoNameNumberIfNoTitle: {
+          dependencyType: "stateVariable",
+          variableName: "includeAutoNameNumberIfNoTitle"
+        },
       }),
       definition({ dependencyValues }) {
 
@@ -272,10 +283,10 @@ export default class SectioningComponent extends BlockComponent {
 
         const haveTitleChild = dependencyValues.titleChild.length > 0;
 
-        let includeAutoNumber = (dependencyValues.includeAutoNumber || !haveTitleChild)
+        let includeAutoNumber = (dependencyValues.includeAutoNumber || (!haveTitleChild && dependencyValues.includeAutoNameNumberIfNoTitle))
           && !dependencyValues.prerender;
 
-        let includeAutoName = dependencyValues.includeAutoName || !haveTitleChild;
+        let includeAutoName = dependencyValues.includeAutoName || (!haveTitleChild && dependencyValues.includeAutoNameNumberIfNoTitle);
 
         if (includeAutoNumber) {
           if (includeAutoName) {

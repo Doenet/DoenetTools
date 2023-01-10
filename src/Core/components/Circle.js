@@ -27,6 +27,14 @@ export default class Circle extends Curve {
       createComponentOfType: "math",
     };
 
+    attributes.filled = {
+      createComponentOfType: "boolean",
+      createStateVariable: "filled",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+
     delete attributes.parMin;
     delete attributes.parMax;
     delete attributes.variable;
@@ -53,6 +61,10 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -64,17 +76,22 @@ export default class Circle extends Curve {
           }
           borderDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
+        if (borderDescription) {
+          borderDescription += " ";
+        }
 
         let styleDescription;
-        if (dependencyValues.selectedStyle.fillColor === "none") {
-          styleDescription = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord;
+        if (!dependencyValues.filled) {
+          styleDescription = borderDescription + dependencyValues.selectedStyle.lineColorWord;
         } else {
           if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
-            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
-              + " with " + borderDescription + " border";
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord;
+            if (borderDescription) {
+              styleDescription += " with " + borderDescription + "border";
+            }
           } else {
             styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
-              + " with " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " with " + borderDescription + dependencyValues.selectedStyle.lineColorWord
               + " border";
           }
         }
@@ -93,6 +110,10 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -103,18 +124,24 @@ export default class Circle extends Curve {
           }
           borderDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
+        if (borderDescription) {
+          borderDescription += " ";
+        }
 
         let styleDescriptionWithNoun;
-        if (dependencyValues.selectedStyle.fillColor === "none") {
-          styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+        if (!dependencyValues.filled) {
+          styleDescriptionWithNoun = borderDescription + dependencyValues.selectedStyle.lineColorWord
             + " circle";
         } else {
           if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
             styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
-              + " circle with a " + borderDescription + " border";
+              + " circle";
+            if (borderDescription) {
+              styleDescriptionWithNoun += " with a " + borderDescription + "border";
+            }
           } else {
             styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
-              + " circle with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " circle with a " + borderDescription + dependencyValues.selectedStyle.lineColorWord
               + " border";
           }
         }
@@ -165,12 +192,16 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        filled: {
+          dependencyType: "stateVariable",
+          variableName: "filled",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
 
         let fillStyleDescription;
-        if (dependencyValues.selectedStyle.fillColor === "none") {
+        if (!dependencyValues.filled) {
           fillStyleDescription = "unfilled";
         } else {
           fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;

@@ -12,7 +12,7 @@ export default class FunctionOperator extends Function {
     let wrapStringsAndMacros = function ({ matchedChildren, componentInfoObjects }) {
 
 
-      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
+      let componentIsLabel = x => componentInfoObjects.componentIsSpecifiedType(x, "label");
 
       // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>
@@ -615,15 +615,40 @@ export default class FunctionOperator extends Function {
           }
 
         } else {
-          return {
-            setValue: {
-              fDefinition: {
-                functionType: "functionOperator",
-                componentType,
-                nOutputs: dependencyValues.nOutputs,
-                functionOperatorArguments: dependencyValues.numericalFunctionOperatorArguments,
-                operatorComposesWithOriginal: false,
-                originalFDefinition: dependencyValues.functionChild[0].stateValues.fDefinition,
+
+          if (dependencyValues.functionChild.length === 0) {
+            if (dependencyValues.mathChild.length === 0) {
+              return {
+                setValue: {
+                  fDefinition: {
+                    functionType: "formula",
+                    formula: '\uff3f',
+                    variables: dependencyValues.variables.map(x => x.tree),
+                    nInputs: dependencyValues.nInputs,
+                    nOutputs: dependencyValues.nOutputs,
+                    domain: dependencyValues.domain,
+                  }
+                }
+              }
+            } else {
+
+              // TODO: is this case with a math child used anywhere?
+              throw Error('function operator with math child not implemented yet')
+
+
+            }
+          } else {
+
+            return {
+              setValue: {
+                fDefinition: {
+                  functionType: "functionOperator",
+                  componentType,
+                  nOutputs: dependencyValues.nOutputs,
+                  functionOperatorArguments: dependencyValues.numericalFunctionOperatorArguments,
+                  operatorComposesWithOriginal: false,
+                  originalFDefinition: dependencyValues.functionChild[0].stateValues.fDefinition,
+                }
               }
             }
           }

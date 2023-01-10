@@ -4,6 +4,14 @@ import 'react-datetime/css/react-datetime.css';
 import styled from 'styled-components';
 import './DateTime.css';
 
+
+const CssWrapper = styled.div`
+  .rdtPicker {
+  margin-left: ${(props) => (props.offset ? props.offset : '-50px')};
+}
+
+`
+
 const Label = styled.div`
   font-size: 14px;
   width: fit-content;
@@ -20,7 +28,7 @@ export default function DateTime(props) {
 
   let effectiveWidth = props.width;
   if (props.width == 'menu' || !props.width){
-    effectiveWidth = 'var(--menuWidth)';
+    effectiveWidth = 'calc(var(--menuWidth) - 14px)';
   }
   // console.log('props.width ', props.width, "effectiveWidth",effectiveWidth);
 
@@ -144,6 +152,7 @@ export default function DateTime(props) {
   // console.log('value:', value);
   // console.log('lastValid:', lastValid);
   return (
+    <CssWrapper offset={props.offset}>
     <Datetime
       renderInput={renderInput}
       value={value}
@@ -181,5 +190,6 @@ export default function DateTime(props) {
         }
       }}
     />
+    </CssWrapper>
   );
 }

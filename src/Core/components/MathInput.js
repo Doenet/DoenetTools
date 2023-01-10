@@ -114,7 +114,11 @@ export default class MathInput extends Input {
       defaultValue: true,
       public: true,
     }
-
+    attributes.removeStrings = {
+      createComponentOfType: "textList",
+      createStateVariable: "removeStrings",
+      defaultValue: null,
+    }
     return attributes;
   }
 
@@ -519,12 +523,13 @@ export default class MathInput extends Input {
           let functionSymbols = await stateValues.functionSymbols;
           let splitSymbols = await stateValues.splitSymbols;
           let parseScientificNotation = await stateValues.parseScientificNotation;
+          let removeStrings = await stateValues.removeStrings;
 
           let currentMath = calculateMathExpressionFromLatex({
-            latex: currentValue, unionFromU, functionSymbols, splitSymbols, parseScientificNotation
+            latex: currentValue, unionFromU, functionSymbols, splitSymbols, parseScientificNotation, removeStrings
           });
           let desiredMath = calculateMathExpressionFromLatex({
-            latex: desiredValue, unionFromU, functionSymbols, splitSymbols, parseScientificNotation
+            latex: desiredValue, unionFromU, functionSymbols, splitSymbols, parseScientificNotation, removeStrings
           });
 
           // use deepCompare of trees rather than equalsViaSyntax
@@ -553,10 +558,11 @@ export default class MathInput extends Input {
           let functionSymbols = await stateValues.functionSymbols;
           let splitSymbols = await stateValues.splitSymbols;
           let parseScientificNotation = await stateValues.parseScientificNotation;
+          let removeStrings = await stateValues.removeStrings;
 
           let currentMath = calculateMathExpressionFromLatex({
             latex: essentialValues.rawRendererValue,
-            unionFromU, functionSymbols, splitSymbols, parseScientificNotation
+            unionFromU, functionSymbols, splitSymbols, parseScientificNotation, removeStrings
           });
 
           // use deepCompare of trees rather than equalsViaSyntax
@@ -735,9 +741,18 @@ export default class MathInput extends Input {
 }
 
 
-function calculateMathExpressionFromLatex({ latex, unionFromU, functionSymbols, splitSymbols, parseScientificNotation }) {
+function calculateMathExpressionFromLatex({ latex, unionFromU, functionSymbols, splitSymbols, parseScientificNotation, removeStrings }) {
 
   let expression;
+
+  if(removeStrings) {
+    for(let s of removeStrings) {
+      if(["$", "%"].includes(s)) {
+        s = "\\" + s;
+      }
+      latex = latex.replaceAll(s, '');
+    }
+  }
 
   latex = normalizeLatexString(latex, {
     unionFromU,

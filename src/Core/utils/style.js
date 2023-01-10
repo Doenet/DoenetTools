@@ -32,8 +32,8 @@ let defaultStyle = {
   markerStyle: "circle",
   markerStyleWord: "point",
   markerSize: 5,
-  fillColor: "none",
-  fillColorWord: "none",
+  fillColor: "#648FFF",
+  fillColorWord: "blue",
   fillOpacity: 0.3,
 }
 
@@ -54,8 +54,8 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerStyleWord: "point",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#648FFF",
+      fillColorWord: "blue",
       fillOpacity: 0.3,
     },
     2: {
@@ -71,8 +71,8 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "square",
       markerStyleWord: "square",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#D4042D",
+      fillColorWord: "red",
       fillOpacity: 0.3,
     },
     3: {
@@ -88,8 +88,8 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "triangle",
       markerStyleWord: "triangle",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#F19143",
+      fillColorWord: "orange",
       fillOpacity: 0.3,
     },
     4: {
@@ -105,8 +105,8 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "diamond",
       markerStyleWord: "diamond",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "#644CD6",
+      fillColorWord: "purple",
       fillOpacity: 0.3,
     },
     5: {
@@ -122,8 +122,8 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerStyleWord: "point",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "black",
+      fillColorWord: "black",
       fillOpacity: 0.3,
     },
     6: {
@@ -139,8 +139,8 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerStyleWord: "point",
       markerSize: 5,
-      fillColor: "none",
-      fillColorWord: "none",
+      fillColor: "gray",
+      fillColorWord: "gray",
       fillOpacity: 0.3,
     }
   }

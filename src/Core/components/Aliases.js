@@ -29,10 +29,6 @@ export class Else extends Template {
   static componentType = "else";
 }
 
-export class externalContent extends Template {
-  static componentType = "externalContent";
-}
-
 export class Xlabel extends Label {
   static componentType = "xlabel";
   static rendererType = "label";

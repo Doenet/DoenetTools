@@ -402,12 +402,12 @@ describe('Legend Tag Tests', function () {
     <graph>
       <lineSegment styleNumber="3" />
       <point styleNumber="1" displayDigits="2" name="A">(-3,2)</point>
-      <circle styleNumber="3" center="(5,-8)" />
+      <circle styleNumber="3" center="(5,-8)" filled />
       <vector styleNumber="2" head="(-3,1)" tail="(2,2)" />
       <point styleNumber="1" displayDigits="2" name="B">(-5,6)</point>
       <point styleNumber="2" name="C">(0,-6)</point>
       <function styleNumber="2" name="f">(x+5)^2</function>
-      <rectangle styleNumber="2" />
+      <rectangle styleNumber="2" filled />
       <curve through="(-9,-9) (-8, -8) (-7, -9)" styleNumber="4" />
 
       <legend displayClosedSwatches="$closedSwatches">
@@ -418,7 +418,7 @@ describe('Legend Tag Tests', function () {
         <label>third one</label>
         <label forObject="incorrect">This will be unused</label>
         <label>fourth one</label>
-        </legend>
+      </legend>
     </graph>
     `}, "*");
     });
@@ -515,6 +515,7 @@ describe('Legend Tag Tests', function () {
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineWidth).eq(3);
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineOpacity).eq(0.7);
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].fillColor).eq("magenta");
+      expect(stateVariables['/_legend1'].stateValues.legendElements[2].filled).eq(true);
       expect(stateVariables['/_legend1'].stateValues.legendElements[2].fillOpacity).eq(0.5);
 
 
@@ -543,6 +544,7 @@ describe('Legend Tag Tests', function () {
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineWidth).eq(2);
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineOpacity).eq(0.8);
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillColor).eq("orange");
+      expect(stateVariables['/_legend1'].stateValues.legendElements[5].filled).eq(true);
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillOpacity).eq(0.4);
 
 

@@ -47,28 +47,7 @@ if ($success){
   }
 }
 
-//In the future update the timeOfLastUpdate timestamp
-// //Make DoenetIds and copy collection doenetId files to new doenetIds
-// $linkPageObjs = [];
-// $sourcePages = [];
-// if ($success){
-
-//   $sql = "
-//     SELECT  
-//     CAST(jsonDefinition as CHAR) AS json
-//     FROM course_content
-//     WHERE doenetId='$collectionDoenetId'
-//   ";
-//   $result = $conn->query($sql);
-//     if ($result->num_rows > 0) {
-//         $row = $result->fetch_assoc();
-//         $json = json_decode($row["json"], true);
-//         $sourcePages = $json['pages'];
-//     }else{
-//       $success = FALSE;
-//       $message = "Collection not found.";
-//   }
-// }
+$nextLabels = [];
 
 if ($success){
 
@@ -85,9 +64,7 @@ if ($success){
       // Copy the original file to the doenetId
       $sourceFile = "../media/byPageId/$sourcePage.doenet";
       $destinationFile = "../media/byPageId/$doenetId.doenet";
-      // echo "sourceFile $sourceFile\n";
-      // echo "destinationFile $destinationFile\n";
-      // echo "\n--------\n\n";
+
       $dirname = dirname($destinationFile);
       if (!is_dir($dirname)) {
           mkdir($dirname, 0755, true);
@@ -96,15 +73,36 @@ if ($success){
           $success = FALSE;
           $message = "failed to copy";
       }
+    //Update link pages timeOfLastUpdate and label
+    $sql = "
+    SELECT label
+    FROM pages
+    WHERE courseId = '$courseId'
+    AND doenetId = '$sourcePage'
+    ";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    $label = $row['label'];
+    array_push($nextLabels,$label);
+    $escapedLabel = mysqli_real_escape_string($conn, $label);
+
+    $sql = "
+    UPDATE link_pages
+    SET timeOfLastUpdate=NOW(), 
+    label = '$escapedLabel'
+    WHERE courseId = '$courseId'
+      AND doenetId = '$doenetId'
+    ";
+    $conn->query($sql);
     }
   }
-    
 
 
 
 $response_arr = array(
   "success"=>$success,
   "message"=>$message,
+  "nextLabels"=>$nextLabels,
   );
 
 
