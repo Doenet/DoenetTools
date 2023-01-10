@@ -84,7 +84,7 @@ export default React.memo(function Figure(props) {
       var el = document.getElementById(id + "_caption");
       var divHeight = el.offsetHeight;
       var lineHeight = getLineHeight(document.getElementById(id + "_caption"));
-      var lines = divHeight / lineHeight;
+      var lines = Math.round(divHeight / lineHeight);
       return lines;
     }
 
