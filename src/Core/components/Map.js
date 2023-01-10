@@ -716,7 +716,8 @@ export default class Map extends CompositeComponent {
 
     setUpVariantSeedAndRng({
       serializedComponent, sharedParameters,
-      descendantVariantComponents
+      descendantVariantComponents,
+      useSubpartVariantRng: true,
     });
 
   }
