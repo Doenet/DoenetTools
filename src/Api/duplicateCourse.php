@@ -359,9 +359,10 @@ if ($success) {
             $nextDoenetId = include 'randomId.php';
             $nextDoenetId = '_' . $nextDoenetId;
             $nextContainingDoenetId = $prevToNextDoenetIds[$containingDoenetId];
+            $escapedLabel = mysqli_real_escape_string($conn, $label);
             array_push(
                 $insert_to_pages,
-                "('$nextCourseId','$nextContainingDoenetId','$nextDoenetId','$label')"
+                "('$nextCourseId','$nextContainingDoenetId','$nextDoenetId','$escapedLabel')"
             );
             if ($contained_pages[$containingDoenetId] == '') {
                 $contained_pages[$containingDoenetId] = [
@@ -447,9 +448,10 @@ if ($success) {
         $nextDoenetId = $prevToNextDoenetIds[$doenetId];
         $nextParentDoenetId = $prevToNextDoenetIds[$parentDoenetId];
 
+        $escapedLabel = mysqli_real_escape_string($conn, $label);
         array_push(
             $next_course_content,
-            "('$type','$nextCourseId','$nextDoenetId','$nextParentDoenetId','$label',NOW(),'$isAssigned','$isGloballyAssigned','$isPublic','$userCanViewSource','$sortOrder','$jsonDefinition')"
+            "('$type','$nextCourseId','$nextDoenetId','$nextParentDoenetId','$escapedLabel',NOW(),'$isAssigned','$isGloballyAssigned','$isPublic','$userCanViewSource','$sortOrder','$jsonDefinition')"
         );
     }
     $str_insert_to_course_content = implode(',', $next_course_content);
@@ -578,6 +580,7 @@ if ($success) {
             $sourceCollectionDoenetId = $row['sourceCollectionDoenetId'];
             $sourcePageDoenetId = $row['sourcePageDoenetId'];
             $label = $row['label'];
+            $escapedLabel = mysqli_real_escape_string($conn, $label);
             $timeOfLastUpdate = $row['timeOfLastUpdate'];
             array_push(
                 $insert_to_link_pages,
@@ -587,7 +590,7 @@ if ($success) {
                 '$prevToNextDoenetIds[$doenetId]',
                 '$prevToNextDoenetIds[$sourceCollectionDoenetId]',
                 '$prevToNextDoenetIds[$sourcePageDoenetId]',
-                '$label',
+                '$escapedLabel',
                 '$timeOfLastUpdate')"
             );
         }
