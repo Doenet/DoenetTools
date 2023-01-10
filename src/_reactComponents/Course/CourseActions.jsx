@@ -2220,7 +2220,19 @@ export const useCourse = (courseId) => {
           pageLinksToDelete,
           labels,
         });
-        // console.log("createAndDeletePageLinks",data)
+        // console.log("updateCreateAndDeletePageLinks",data)
+
+        //update page link labels
+        for (let [i,linkPageDoenetId] of Object.entries(data.linkPagesDoenetIds)){
+          let nextLabel = data.nextLabels[i];
+          set(itemByDoenetId(linkPageDoenetId),(prev)=>{
+            let next = {...prev}
+            next.timeOfLastUpdate = timeOfLastUpdate;
+            next.label = nextLabel;
+            return next
+          });
+
+        }
 
         //recoil new page links
         //Build sourceToPageLink as we go through
@@ -2297,13 +2309,12 @@ export const useCourse = (courseId) => {
           courseId,
           pages,
         });
-        // console.log("updateContentLinksToSources data",data)
         if (data.success){
-          for (let pageDoenetId of pages){
-        
+          for (let [i,pageDoenetId] of Object.entries(pages)){
             set(itemByDoenetId(pageDoenetId),(prev)=>{
               let next = {...prev}
               next.timeOfLastUpdate = timeOfLastUpdate;
+              next.label = data.nextLabels[i];
               return next
             })
           }

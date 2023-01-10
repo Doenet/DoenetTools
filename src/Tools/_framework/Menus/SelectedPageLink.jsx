@@ -37,7 +37,7 @@ export default function SelectedPageLink() {
   },[doenetId]) //Only check when the pageId changes
 
   let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
-    <FontAwesomeIcon icon={faLink} /> {pageObj.label} 
+    <FontAwesomeIcon icon={faLink} /> Link to {pageObj.label} 
   </h2>)
 
   function handleLabelModfication(){
@@ -63,18 +63,6 @@ export default function SelectedPageLink() {
           }}
         />
   </ActionButtonGroup>
-  <Textfield
-      label="Label"
-      vertical
-      width="menu"
-      value={itemTextFieldLabel}
-      onChange={(e) => setItemTextFieldLabel(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.keyCode === 13) handleLabelModfication();
-      }}
-      onBlur={handleLabelModfication}
-    />
-  <br />
   <br />
     <Button
     width="menu"

@@ -273,6 +273,8 @@ function mine_activity_for_ids($jsonArr)
     ];
 }
 
+$destinationFilesToUpdate = [];
+
 //Duplicate Content
 if ($success) {
     //Figure out what the new doenetId's for content will be
@@ -540,8 +542,8 @@ if ($success) {
 
             $sourceFile = "../media/byPageId/$previous_page_doenetId.doenet";
             $destinationFile = "../media/byPageId/$next_page_doenetId.doenet";
-            // echo "sourceFile $sourceFile \n";
-            // echo "destinationFile $destinationFile \n\n";
+            array_push($destinationFilesToUpdate,$destinationFile);
+
             $dirname = dirname($destinationFile);
             if (!is_dir($dirname)) {
                 mkdir($dirname, 0755, true);
@@ -610,6 +612,8 @@ if ($success) {
 
         $sourceFile = "../media/byPageId/$page_link_id.doenet";
         $destinationFile = "../media/byPageId/$next_page_link_id.doenet";
+        array_push($destinationFilesToUpdate,$destinationFile);
+
         $dirname = dirname($destinationFile);
         if (!is_dir($dirname)) {
             mkdir($dirname, 0755, true);
@@ -663,6 +667,19 @@ if ($success) {
         WHERE doenetId = '$doenetId'
     ";
         $result = $conn->query($sql);
+    }
+}
+ //Replace previous doenetIds with next doenetIds in destinationFile
+if ($success) {
+    foreach($destinationFilesToUpdate as &$destinationFile){
+        $doenetML = file_get_contents($destinationFile);
+
+        foreach(array_keys($prevToNextDoenetIds) as $prev){
+            $next = $prevToNextDoenetIds[$prev];
+            $doenetML=str_replace($prev, $next, $doenetML);
+        }
+
+        file_put_contents($destinationFile, $doenetML);
     }
 }
 
