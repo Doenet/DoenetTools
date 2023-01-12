@@ -30,39 +30,88 @@ export default React.memo(function Figure(props) {
     // getting it using the internal guts of componentInstructions
     // is just asking for trouble
     let childrenToRender = children;
+    let caption = null;
+    // let figureName = <strong>{SVs.figureName}</strong>
 
-    let caption = SVs.caption;
-    if (SVs.captionChildName) {
-      let captionChildInd;
-      for (let [ind, child] of children.entries()) {
-        if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
-          captionChildInd = ind;
-          break;
-        }
-      }
-      caption = children[captionChildInd]
-      childrenToRender.splice(captionChildInd, 1); // remove caption
-    } else {
-      caption = SVs.caption;
-    }
+      let captionText = SVs.caption;
+      let [captionChild, setCaptionChild] = useState(null);
 
-    const [captionTextAlign, setCaptionTextAlign] = useState("center");
 
-    if (!SVs.suppressFigureNameInCaption) {
       let figureName = <strong>{SVs.figureName}</strong>
-      if (caption) {
+      if (SVs.suppressFigureNameInCaption) {
+        figureName = null;
+      }
+
+      if (SVs.captionChildName) {
+        let captionChildInd;
+        for (let [ind, child] of children.entries()) {
+          if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
+            captionChildInd = ind;
+            break;
+          }
+        }
+        // console.log(id.replace("figure", "caption"));
+        captionChild = children[captionChildInd];
+        // let captionID = id.replace("figure", "caption");
+        // console.log(captionID);
+        // captionChild = document.getElementById(captionID);
+        // console.log(captionChild);
+        useEffect(() => {
+          const timer = setTimeout(() => {
+            captionChild = document.getElementById(id.replace("figure", "caption")).innerText;
+            console.log(captionChild);
+          }, 3000);
+          return () => clearTimeout(timer);
+        }, []);
+
+        childrenToRender.splice(captionChildInd, 1); // remove caption
+  
         caption = 
           <Measure onResize={handleResize}>
-            {({ measureRef }) => (
-              <div ref={measureRef} style={{ textAlign: captionTextAlign }}>
-                {figureName}: {SVs.caption}
-              </div>
-            )}
-          </Measure>
-      } else {
-        caption = figureName;
+          {({ measureRef }) => (
+            <div ref={measureRef} style={{ textAlign: captionTextAlign }}>
+              {figureName}: {captionChild}
+            </div>
+          )}
+        </Measure>
+        console.log("used react-measure");
+      } else { 
+        caption = <div>{figureName}: {captionText}</div>; 
+        console.log("didn't use react-measure");
       }
-    }
+
+    const [captionTextAlign, setCaptionTextAlign] = useState("center");
+    // let caption = SVs.caption;
+    // if (SVs.captionChildName) {
+    //   let captionChildInd;
+    //   for (let [ind, child] of children.entries()) {
+    //     if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
+    //       captionChildInd = ind;
+    //       break;
+    //     }
+    //   }
+    //   caption = children[captionChildInd]
+    //   childrenToRender.splice(captionChildInd, 1); // remove caption
+    // } else {
+    //   caption = SVs.caption;
+    // }
+
+    // // console.log(caption);
+    // if (!SVs.suppressFigureNameInCaption) {
+    //   let figureName = <strong>{SVs.figureName}</strong>
+    //   if (caption) {
+    //     caption = 
+    //       <Measure onResize={handleResize}>
+    //         {({ measureRef }) => (
+    //           <div ref={measureRef} style={{ textAlign: captionTextAlign }}>
+    //             {figureName}: {caption}
+    //           </div>
+    //         )}
+    //       </Measure>
+    //   } else {
+    //     caption = figureName;
+    //   }
+    // }
 
     // Helper function for countCaptionLines
     function getLineHeight(el) {
