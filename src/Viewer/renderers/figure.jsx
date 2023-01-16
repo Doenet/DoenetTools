@@ -30,88 +30,36 @@ export default React.memo(function Figure(props) {
     // getting it using the internal guts of componentInstructions
     // is just asking for trouble
     let childrenToRender = children;
-    let caption = null;
-    // let figureName = <strong>{SVs.figureName}</strong>
+    let caption = null; // The <div/> element holding the figureName and the caption description
+    let captionChild = null; // The caption description
 
-      let captionText = SVs.caption;
-      let [captionChild, setCaptionChild] = useState(null);
-
-
-      let figureName = <strong>{SVs.figureName}</strong>
-      if (SVs.suppressFigureNameInCaption) {
-        figureName = null;
-      }
-
-      if (SVs.captionChildName) {
-        let captionChildInd;
-        for (let [ind, child] of children.entries()) {
-          if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
-            captionChildInd = ind;
-            break;
-          }
+    if (SVs.captionChildName) {
+      let captionChildInd;
+      for (let [ind, child] of children.entries()) {
+        if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
+          captionChildInd = ind;
+          break;
         }
-        // console.log(id.replace("figure", "caption"));
-        captionChild = children[captionChildInd];
-        // let captionID = id.replace("figure", "caption");
-        // console.log(captionID);
-        // captionChild = document.getElementById(captionID);
-        // console.log(captionChild);
-        useEffect(() => {
-          const timer = setTimeout(() => {
-            captionChild = document.getElementById(id.replace("figure", "caption")).innerText;
-            console.log(captionChild);
-          }, 3000);
-          return () => clearTimeout(timer);
-        }, []);
-
-        childrenToRender.splice(captionChildInd, 1); // remove caption
-  
-        caption = 
-          <Measure onResize={handleResize}>
-          {({ measureRef }) => (
-            <div ref={measureRef} style={{ textAlign: captionTextAlign }}>
-              {figureName}: {captionChild}
-            </div>
-          )}
-        </Measure>
-        console.log("used react-measure");
-      } else { 
-        caption = <div>{figureName}: {captionText}</div>; 
-        console.log("didn't use react-measure");
       }
+
+      captionChild = children[captionChildInd];
+      childrenToRender.splice(captionChildInd, 1); // remove caption
+    }
+
+    if (!SVs.suppressFigureNameInCaption) {
+      let figureName = <strong>{SVs.figureName}</strong>
+      if (captionChild) {
+        caption = <div>{figureName}: {captionChild}</div>
+      } else { 
+        caption = <div>{figureName}</div>
+      }
+    } else {
+      if (captionChild) {
+        caption = <div>{captionChild}</div>
+      }
+    }
 
     const [captionTextAlign, setCaptionTextAlign] = useState("center");
-    // let caption = SVs.caption;
-    // if (SVs.captionChildName) {
-    //   let captionChildInd;
-    //   for (let [ind, child] of children.entries()) {
-    //     if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
-    //       captionChildInd = ind;
-    //       break;
-    //     }
-    //   }
-    //   caption = children[captionChildInd]
-    //   childrenToRender.splice(captionChildInd, 1); // remove caption
-    // } else {
-    //   caption = SVs.caption;
-    // }
-
-    // // console.log(caption);
-    // if (!SVs.suppressFigureNameInCaption) {
-    //   let figureName = <strong>{SVs.figureName}</strong>
-    //   if (caption) {
-    //     caption = 
-    //       <Measure onResize={handleResize}>
-    //         {({ measureRef }) => (
-    //           <div ref={measureRef} style={{ textAlign: captionTextAlign }}>
-    //             {figureName}: {caption}
-    //           </div>
-    //         )}
-    //       </Measure>
-    //   } else {
-    //     caption = figureName;
-    //   }
-    // }
 
     // Helper function for countCaptionLines
     function getLineHeight(el) {
@@ -128,6 +76,7 @@ export default React.memo(function Figure(props) {
       return ret;
     }
 
+    // Helper function for handleResize
     // Count the number of lines in the caption
     function countCaptionLines() {
       var el = document.getElementById(id + "_caption");
@@ -138,16 +87,13 @@ export default React.memo(function Figure(props) {
     }
 
     // Change the display of the caption based on the number of lines in the caption
+    // Same behavior as LaTeX
     function handleResize() {
       if (countCaptionLines() >= 2) {
-        setCaptionTextAlign("left");
-        console.log("The caption is 2 lines long!");
+        setCaptionTextAlign("left"); // If the caption is 2 or more lines long, it is left-aligned
       } else { 
-        setCaptionTextAlign("center");
-        console.log("The caption is 1 line long!"); 
+        setCaptionTextAlign("center"); // Otherwise, it is centered
       }
-
-      console.log(captionTextAlign);
     }
    
     return (
@@ -155,7 +101,15 @@ export default React.memo(function Figure(props) {
       <figure id={id} style={{ margin: "12px 0" }}>
         <a name={id} />
         {childrenToRender}
-        <figcaption id={ id + "_caption" }>{caption}</figcaption>
+        <figcaption id={ id + "_caption" }>
+          <Measure onResize={handleResize}>
+            {({ measureRef }) => (
+              <div ref={measureRef} style={{ textAlign: captionTextAlign }}>
+                {caption}
+              </div>
+            )}
+          </Measure>
+        </figcaption>
       </figure>
       </VisibilitySensor>
     )
