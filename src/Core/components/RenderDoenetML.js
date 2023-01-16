@@ -291,7 +291,8 @@ export default class RenderDoenetML extends CompositeComponent {
 
     setUpVariantSeedAndRng({
       serializedComponent, sharedParameters,
-      descendantVariantComponents
+      descendantVariantComponents,
+      useSubpartVariantRng: true,
     });
 
   }

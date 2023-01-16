@@ -273,6 +273,8 @@ function mine_activity_for_ids($jsonArr)
     ];
 }
 
+$destinationFilesToUpdate = [];
+
 //Duplicate Content
 if ($success) {
     //Figure out what the new doenetId's for content will be
@@ -359,9 +361,10 @@ if ($success) {
             $nextDoenetId = include 'randomId.php';
             $nextDoenetId = '_' . $nextDoenetId;
             $nextContainingDoenetId = $prevToNextDoenetIds[$containingDoenetId];
+            $escapedLabel = mysqli_real_escape_string($conn, $label);
             array_push(
                 $insert_to_pages,
-                "('$nextCourseId','$nextContainingDoenetId','$nextDoenetId','$label')"
+                "('$nextCourseId','$nextContainingDoenetId','$nextDoenetId','$escapedLabel')"
             );
             if ($contained_pages[$containingDoenetId] == '') {
                 $contained_pages[$containingDoenetId] = [
@@ -447,9 +450,10 @@ if ($success) {
         $nextDoenetId = $prevToNextDoenetIds[$doenetId];
         $nextParentDoenetId = $prevToNextDoenetIds[$parentDoenetId];
 
+        $escapedLabel = mysqli_real_escape_string($conn, $label);
         array_push(
             $next_course_content,
-            "('$type','$nextCourseId','$nextDoenetId','$nextParentDoenetId','$label',NOW(),'$isAssigned','$isGloballyAssigned','$isPublic','$userCanViewSource','$sortOrder','$jsonDefinition')"
+            "('$type','$nextCourseId','$nextDoenetId','$nextParentDoenetId','$escapedLabel',NOW(),'$isAssigned','$isGloballyAssigned','$isPublic','$userCanViewSource','$sortOrder','$jsonDefinition')"
         );
     }
     $str_insert_to_course_content = implode(',', $next_course_content);
@@ -538,8 +542,8 @@ if ($success) {
 
             $sourceFile = "../media/byPageId/$previous_page_doenetId.doenet";
             $destinationFile = "../media/byPageId/$next_page_doenetId.doenet";
-            // echo "sourceFile $sourceFile \n";
-            // echo "destinationFile $destinationFile \n\n";
+            array_push($destinationFilesToUpdate,$destinationFile);
+
             $dirname = dirname($destinationFile);
             if (!is_dir($dirname)) {
                 mkdir($dirname, 0755, true);
@@ -578,6 +582,7 @@ if ($success) {
             $sourceCollectionDoenetId = $row['sourceCollectionDoenetId'];
             $sourcePageDoenetId = $row['sourcePageDoenetId'];
             $label = $row['label'];
+            $escapedLabel = mysqli_real_escape_string($conn, $label);
             $timeOfLastUpdate = $row['timeOfLastUpdate'];
             array_push(
                 $insert_to_link_pages,
@@ -587,7 +592,7 @@ if ($success) {
                 '$prevToNextDoenetIds[$doenetId]',
                 '$prevToNextDoenetIds[$sourceCollectionDoenetId]',
                 '$prevToNextDoenetIds[$sourcePageDoenetId]',
-                '$label',
+                '$escapedLabel',
                 '$timeOfLastUpdate')"
             );
         }
@@ -607,6 +612,8 @@ if ($success) {
 
         $sourceFile = "../media/byPageId/$page_link_id.doenet";
         $destinationFile = "../media/byPageId/$next_page_link_id.doenet";
+        array_push($destinationFilesToUpdate,$destinationFile);
+
         $dirname = dirname($destinationFile);
         if (!is_dir($dirname)) {
             mkdir($dirname, 0755, true);
@@ -660,6 +667,19 @@ if ($success) {
         WHERE doenetId = '$doenetId'
     ";
         $result = $conn->query($sql);
+    }
+}
+ //Replace previous doenetIds with next doenetIds in destinationFile
+if ($success) {
+    foreach($destinationFilesToUpdate as &$destinationFile){
+        $doenetML = file_get_contents($destinationFile);
+
+        foreach(array_keys($prevToNextDoenetIds) as $prev){
+            $next = $prevToNextDoenetIds[$prev];
+            $doenetML=str_replace($prev, $next, $doenetML);
+        }
+
+        file_put_contents($destinationFile, $doenetML);
     }
 }
 

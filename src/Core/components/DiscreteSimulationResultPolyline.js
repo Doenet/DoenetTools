@@ -99,7 +99,14 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { allIterates: dependencyValues.allIteratesSub.filter(x => Number.isFinite(x.tree)) } }
+        return {
+          setValue: {
+            allIterates: dependencyValues.allIteratesSub.filter(x =>
+              Number.isFinite(x.tree) ||
+              (Array.isArray(x.tree) && ["tuple", "vector"].includes(x.tree[0]) && x.tree.slice(1).every(Number.isFinite))
+            )
+          }
+        }
       }
     }
 
