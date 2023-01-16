@@ -702,6 +702,7 @@ export default class Document extends BaseComponent {
     sharedParameters.uniqueIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
 
     sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+    sharedParameters.subpartVariantRng = new sharedParameters.rngClass(sharedParameters.variantSeed + 's');
 
 
     // console.log("Document variant name: " + sharedParameters.variantName);

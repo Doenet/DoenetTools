@@ -4566,6 +4566,149 @@ describe('Specifying single variant document tests', function () {
 
   });
 
+  it('adding non-random component does not change what is selected in a variant', () => {
+
+    // random piece 1 has more than 100 options so doesn't attempt to use non-random unique variants
+    let randomPiece1 = `
+      <selectFromSequence length="1000" assignNames="n" />
+    `;
+
+    let randomPiece2 = `
+      <select assignNames="a">a b c d e f g h i j k l m n o p q r s t u v w x y z</select>
+    `;
+
+    let randomPiece3 = `
+      <lorem generateWords="3" assignNames="w1 w2 w3" />
+    `
+
+    let randomPiece4 = `
+      <section>
+        <variantControl />
+
+        <title>Random number</title>
+        <selectFromSequence length="4" assignNames='m' />
+      </section>
+    `
+
+    let nonRandom1 = `
+      <solution>Hello</solution>
+    `;
+
+    let nonRandom2 = `
+      <group>
+        <p>one</p>
+        <p>two</p>
+      </group>
+    `;
+
+    let nonRandom3 = `
+      <map assignNames='(p1 p2 p3 p4)'>
+        <template><p>$i, $v</p></template>
+        <sources alias="v" indexAlias="i">
+          <sequence from="1" to="4" />
+        </sources>
+      </map>
+    `
+
+    let nonRandom4 = `
+       <section>
+         <title>New section</title>
+         <p>content</p>
+        </section>
+    `
+
+    let doenetML1 = `<text>1</text>` + randomPiece1 + randomPiece2;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: doenetML1,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `1`);
+
+    let n, a;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      n = stateVariables["/n"].stateValues.value;
+      a = stateVariables["/a"].stateValues.value;
+    });
+
+    
+    let doenetML2 = `<text>2</text>` + randomPiece1 + nonRandom1 + randomPiece2 + nonRandom2 + nonRandom3 + nonRandom4;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: doenetML2,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `2`);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(n);
+      expect(stateVariables["/a"].stateValues.value).eq(a);
+    });
+
+
+    let doenetML3 = `<text>3</text>` + randomPiece1 + randomPiece2 + randomPiece3 + randomPiece4;
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: doenetML3,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `3`);
+
+
+    let w1, w2, w3, m;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n2 = stateVariables["/n"].stateValues.value;
+      expect(n2).not.eq(n);
+      n = n2;
+      a = stateVariables["/a"].stateValues.value;
+      w1 = stateVariables["/w1"].stateValues.value;
+      w2 = stateVariables["/w2"].stateValues.value;
+      w3 = stateVariables["/w3"].stateValues.value;
+      m = stateVariables["/m"].stateValues.value;
+      
+    });
+
+
+    let doenetML4 = `<text>4</text>` + randomPiece1 + nonRandom1 + randomPiece2 + nonRandom2 + randomPiece3 + nonRandom3 + randomPiece4 + nonRandom4;
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: doenetML4,
+        requestedVariantIndex: 1,
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `4`);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n"].stateValues.value).eq(n);
+      expect(stateVariables["/a"].stateValues.value).eq(a);
+      expect(stateVariables["/w1"].stateValues.value).eq(w1);
+      expect(stateVariables["/w2"].stateValues.value).eq(w2);
+      expect(stateVariables["/w3"].stateValues.value).eq(w3);
+      expect(stateVariables["/m"].stateValues.value).eq(m);
+    });
+  });
+
   it('variantsToInclude and variantsToExclude', () => {
 
     cy.log('get two variants with no include/exclude');
