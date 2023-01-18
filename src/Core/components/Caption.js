@@ -2,7 +2,7 @@ import BlockComponent from './abstract/BlockComponent';
 
 export default class Caption extends BlockComponent {
   static componentType = "caption";
-  static rendererType = "containerBlock";
+  static rendererType = "containerInline";
 
   static renderChildren = true;
 
