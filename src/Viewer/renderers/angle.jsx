@@ -46,8 +46,6 @@ export default React.memo(function Angle(props) {
       return null;
     }
 
-    let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
-
     var jsxAngleAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
@@ -55,8 +53,8 @@ export default React.memo(function Angle(props) {
       fixed: true,//SVs.draggable !== true,
       layer: 10 * SVs.layer + 7,
       radius: SVs.numericalRadius,
-      fillColor: angleColor,
-      strokeColor: angleColor,
+      fillColor: SVs.selectedStyle.fillColor,
+      strokeColor: SVs.selectedStyle.lineColor,
       highlight: false
     };
 
@@ -136,6 +134,13 @@ export default React.memo(function Angle(props) {
       angleJXG.current.point3.coords.setCoordinates(JXG.COORDS_BY_USER, through[2]);
 
       angleJXG.current.setAttribute({ radius: SVs.numericalRadius, visible: !SVs.hidden });
+
+      if (angleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        angleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+      }
+      if (angleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        angleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+      }
 
       angleJXG.current.name = SVs.labelForGraph;
 

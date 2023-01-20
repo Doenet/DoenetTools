@@ -236,6 +236,9 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
+        }, {
+          updateType: "setComponentNeedingUpdateValue",
+          componentName: this.componentName,
         }],
         transient: true,
         actionId,
@@ -270,6 +273,8 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           valueOfStateVariable: "value",
+        }, {
+          updateType: "unsetComponentNeedingUpdateValue",
         }];
 
         let event = {
@@ -304,9 +309,9 @@ export default class Textinput extends Input {
       }
 
     }
-    
+
     this.coreFunctions.resolveAction({ actionId });
-    
+
   }
 
 }

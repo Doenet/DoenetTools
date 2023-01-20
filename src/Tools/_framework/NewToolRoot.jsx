@@ -163,6 +163,9 @@ export default function ToolRoot() {
     AssignmentNewAttempt: lazy(() =>
       import('./HeaderControls/AssignmentNewAttempt'),
     ),
+    ActivityNavigationButtons: lazy(() => 
+      import('./HeaderControls/ActivityNavigationButtons')
+    )
   }).current;
 
   const LazyFooterObj = useRef({
@@ -527,8 +530,8 @@ let navigationObj = {
       currentMainPanel: 'AssignmentViewer',
       currentMenus: ['CreditAchieved', 'TimerMenu', 'ActivityDates'],
       menusTitles: ['Credit Achieved', 'Time Remaining', 'Details'],
-      menusInitOpen: [false, false, false],
-      headerControls: ['AssignmentBreadCrumb', 'AssignmentNewAttempt'],
+      menusInitOpen: [true, true, false],
+      headerControls: ['AssignmentBreadCrumb', 'AssignmentNewAttempt','ActivityNavigationButtons'],
       waitForMenuSuppression: true,
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },

@@ -196,7 +196,7 @@ describe('Feedback Tag Tests', function () {
   <feedback condition="$_award1">
   <p>You got award 1.</p>
   </feedback>
-  <feedback condition="$_award2">
+  <feedback condition="$_award2.awarded">
   <p>You got award 2.</p>
   </feedback>
   </section>
@@ -267,7 +267,7 @@ describe('Feedback Tag Tests', function () {
     })
   });
 
-  it('feedback from awards, select which one to display', () => {
+  it('feedback from full awards', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -285,13 +285,13 @@ describe('Feedback Tag Tests', function () {
   <feedback condition="$_award1">
     <p>Larger than 1</p>
   </feedback>
-  <feedback condition="$_award2" >
+  <feedback condition="$_award2.awarded" >
     <p>Larger than 10</p>
   </feedback>
   <feedback condition="$_award3">
     <p>Larger than 2</p>
   </feedback>
-  <feedback condition="$_award4">
+  <feedback condition="$_award4.awarded">
     <p>Larger than 0.9</p>
   </feedback>
   <feedback condition="$_award5">
@@ -403,7 +403,105 @@ describe('Feedback Tag Tests', function () {
 
   });
 
-  it('feedback from multiple choice, select which one to display', () => {
+  it('feedback from copied awards', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer><award name="xy"><math>x+y</math></award><award name="x" credit="0.5"><math>x</math></award></answer></p>
+  <section>
+  <feedback condition="$xy">
+  <p>You got award 1.</p>
+  </feedback>
+  <feedback condition="$x.awarded">
+  <p>You got award 2.</p>
+  </feedback>
+  </section>
+  <p><answer><award copySource="xy" name="xy2" credit="0.5" /><award copysource="x" name="x2" credit="1"/></answer></p>
+  <section>
+  <feedback condition="$xy2">
+  <p>You got award 1.</p>
+  </feedback>
+  <feedback condition="$x2.awarded">
+  <p>You got award 2.</p>
+  </feedback>
+  </section>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinput1Name = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
+      let mathinput1PartialAnchor = cesc('#' + mathinput1Name + '_partial');
+
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+
+
+      cy.get('#\\/_section1 p').should('not.exist')
+      cy.get('#\\/_section2 p').should('not.exist')
+      cy.get(mathinput1SubmitAnchor).should('be.visible');
+      cy.get(mathinput2SubmitAnchor).should('be.visible');
+
+      cy.log("Submit correct answer 1")
+      cy.get(mathinput1Anchor).type(`x+y{enter}`, { force: true });
+      cy.get(mathinput1CorrectAnchor).should('be.visible');
+      cy.get(mathinput2SubmitAnchor).should('be.visible');
+      cy.get('#\\/_section1 p').should('have.text', `You got award 1.`)
+      cy.get('#\\/_section2 p').should('not.exist')
+
+      cy.log("Submit wrong answer 1")
+      cy.get(mathinput1Anchor).type(`{end}{backspace}{backspace}{enter}`, { force: true });
+      cy.get(mathinput1PartialAnchor).should('be.visible');
+      cy.get(mathinput2SubmitAnchor).should('be.visible');
+      cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
+      cy.get('#\\/_section2 p').should('not.exist')
+
+
+      cy.log("Submit wrong answer 2")
+      cy.get(mathinput2Anchor).type(`x+y{enter}`, { force: true });
+      cy.get(mathinput2PartialAnchor).should('be.visible');
+      cy.get(mathinput1PartialAnchor).should('be.visible');
+      cy.get('#\\/_section2 p').should('have.text', `You got award 1.`)
+      cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
+
+      cy.log("Submit correct answer 2")
+      cy.get(mathinput2Anchor).type(`{end}{backspace}{backspace}{enter}`, { force: true });
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+      cy.get(mathinput1PartialAnchor).should('be.visible');
+      cy.get('#\\/_section2 p').should('have.text', `You got award 2.`)
+      cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
+
+
+      cy.log("Enter different wrong answer 1")
+      cy.get(mathinput1Anchor).type(`{end}{backspace}y{enter}`, { force: true });
+      cy.get(mathinput1IncorrectAnchor).should('be.visible');
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+      cy.get('#\\/_section1 p').should('not.exist')
+      cy.get('#\\/_section2 p').should('have.text', `You got award 2.`)
+
+      cy.log("Enter different wrong answer 2")
+      cy.get(mathinput2Anchor).type(`{end}{backspace}y{enter}`, { force: true });
+      cy.get(mathinput2IncorrectAnchor).should('be.visible');
+      cy.get(mathinput1IncorrectAnchor).should('be.visible');
+      cy.get('#\\/_section2 p').should('not.exist')
+      cy.get('#\\/_section1 p').should('not.exist')
+
+
+    })
+  });
+
+  it('feedback from multiple choice', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -422,13 +520,13 @@ describe('Feedback Tag Tests', function () {
   <feedback condition="$_choice1">
     <p>Meow</p>
   </feedback>
-  <feedback condition="$_choice2">
+  <feedback condition="$_choice2.submitted">
     <p>Ruff</p>
   </feedback>
   <feedback condition="$_choice3">
     <p>Moo</p>
   </feedback>
-  <feedback condition="$_choice4">
+  <feedback condition="$_choice4.submitted">
     <p>Squeak</p>
   </feedback>
   <feedback condition="$_choice5">
@@ -499,6 +597,233 @@ describe('Feedback Tag Tests', function () {
       cy.get("#\\/ca").invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
+    })
+  });
+
+  it('feedback from multiple choice, some choices inside shuffle', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer>
+    <choiceinput>
+    <choice credit="0.1">cat</choice>
+    <shuffle>
+      <choice credit="1">dog</choice>
+      <choice credit="0.2">cow</choice>
+    </shuffle>
+    <choice credit="0.1">mouse</choice>
+    <choice>banana</choice>
+    </choiceinput>
+  </answer></p>
+  <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
+  <section>
+  <feedback condition="$_choice1">
+    <p>Meow</p>
+  </feedback>
+  <feedback condition="$_choice2.submitted">
+    <p>Ruff</p>
+  </feedback>
+  <feedback condition="$_choice3">
+    <p>Moo</p>
+  </feedback>
+  <feedback condition="$_choice4.submitted">
+    <p>Squeak</p>
+  </feedback>
+  <feedback condition="$_choice5">
+    <p>Huh?</p>
+  </feedback>
+  </section>
+  `, requestedVariantIndex: 2,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName;
+      let choiceinputAnchor = cesc('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
+
+      cy.log('Test value displayed in browser')
+      cy.get("#\\/ca").invoke('text').then((text) => {
+        expect(text.trim()).equal('0')
+      });
+      cy.get('#\\/_section1 p').should('not.exist')
+
+      cy.log("Select dog")
+      cy.get(choiceinputAnchor).contains(`dog`).click({ force: true });
+      cy.get('#\\/_section1 p').should('not.exist')
+      cy.get("#\\/ca").invoke('text').then((text) => {
+        expect(text.trim()).equal('0')
+      });
+
+      cy.log("Submit answer")
+      cy.get(choiceinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      cy.get('#\\/_section1 p').should('have.text', `Ruff`)
+      cy.get("#\\/ca").invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      });
+
+      cy.log("submit cow")
+      cy.get(choiceinputAnchor).contains(`cow`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get('#\\/_section1 p').should('have.text', `Moo`)
+      cy.get("#\\/ca").invoke('text').then((text) => {
+        expect(text.trim()).equal('0.2')
+      });
+
+      cy.log("submit cat")
+      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get('#\\/_section1 p').should('have.text', `Meow`)
+      cy.get("#\\/ca").invoke('text').then((text) => {
+        expect(text.trim()).equal('0.1')
+      });
+
+      cy.log("submit mouse")
+      cy.get(choiceinputAnchor).contains(`mouse`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get('#\\/_section1 p').should('have.text', `Squeak`)
+      cy.get("#\\/ca").invoke('text').then((text) => {
+        expect(text.trim()).equal('0.1')
+      });
+
+      cy.log("submit banana")
+      cy.get(choiceinputAnchor).contains(`banana`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get('#\\/_section1 p').should('have.text', `Huh?`)
+      cy.get("#\\/ca").invoke('text').then((text) => {
+        expect(text.trim()).equal('0')
+      });
+    })
+  });
+
+  it('feedback from multiple choice, copied choices, some choices inside shuffle', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer>
+    <choiceinput>
+      <choice name="cat1" credit="0.1">cat</choice>
+      <shuffle>
+        <choice credit="1" name="dog1">dog</choice>
+        <choice name="cow1">cow</choice>
+      </shuffle>
+    </choiceinput>
+  </answer></p>
+  <p>Credit achieved 1: <copy assignNames="ca1" prop="creditAchieved" target="_answer1" /></p>
+  <section>
+  <feedback condition="$cat1">
+    <p>Meow</p>
+  </feedback>
+  <feedback condition="$dog1.submitted">
+    <p>Ruff</p>
+  </feedback>
+  <feedback condition="$cow1">
+    <p>Moo</p>
+  </feedback>
+  </section>
+
+  <p><answer>
+    <choiceinput>
+      <choice copySource="dog1" name="dog2" credit="0.1"/>
+      <shuffle>
+        <choice copySource="cow1" name="cow2" />
+        <choice copySource="cat1" name="cat2" credit="1" />
+      </shuffle>
+    </choiceinput>
+  </answer></p>
+  <p>Credit achieved 2: <copy assignNames="ca2" prop="creditAchieved" target="_answer2" /></p>
+  <section>
+  <feedback condition="$dog2">
+    <p>Ruff</p>
+  </feedback>
+  <feedback condition="$cat2.submitted">
+    <p>Meow</p>
+  </feedback>
+  <feedback condition="$cow2">
+    <p>Moo</p>
+  </feedback>
+  </section>
+  `, requestedVariantIndex: 2,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceinput1Name = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName;
+      let choiceinput1Anchor = cesc('#' + choiceinput1Name);
+      let choiceinput1SubmitAnchor = cesc('#' + choiceinput1Name + '_submit');
+      let choiceinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName;
+      let choiceinput2Anchor = cesc('#' + choiceinput2Name);
+      let choiceinput2SubmitAnchor = cesc('#' + choiceinput2Name + '_submit');
+
+      cy.log('Test value displayed in browser')
+      cy.get("#\\/ca1").should('have.text', '0');
+      cy.get("#\\/ca2").should('have.text', '0');
+      cy.get('#\\/_section1 p').should('not.exist')
+      cy.get('#\\/_section2 p').should('not.exist')
+
+      cy.log("Submit dog1")
+      cy.get(choiceinput1Anchor).contains(`dog`).click({ force: true });
+      cy.get(choiceinput1SubmitAnchor).click();
+      cy.get('#\\/_section1 p').should('have.text', `Ruff`)
+      cy.get('#\\/_section2 p').should('not.exist')
+      cy.get("#\\/ca1").should('have.text', '1');
+      cy.get("#\\/ca2").should('have.text', '0');
+
+
+      cy.log("submit cow1")
+      cy.get(choiceinput1Anchor).contains(`cow`).click({ force: true });
+      cy.get(choiceinput1SubmitAnchor).click();
+      cy.get('#\\/_section1 p').should('have.text', `Moo`)
+      cy.get('#\\/_section2 p').should('not.exist')
+
+      cy.get("#\\/ca1").should('have.text', '0');
+      cy.get("#\\/ca2").should('have.text', '0');
+
+
+      cy.log("Submit dog2")
+      cy.get(choiceinput2Anchor).contains(`dog`).click({ force: true });
+      cy.get(choiceinput2SubmitAnchor).click();
+      cy.get('#\\/_section2 p').should('have.text', `Ruff`)
+      cy.get('#\\/_section1 p').should('have.text', `Moo`)
+      cy.get("#\\/ca2").should('have.text', '0.1');
+      cy.get("#\\/ca1").should('have.text', '0');
+
+      cy.log("Submit cat2")
+      cy.get(choiceinput2Anchor).contains(`cat`).click({ force: true });
+      cy.get(choiceinput2SubmitAnchor).click();
+      cy.get('#\\/_section2 p').should('have.text', `Meow`)
+      cy.get('#\\/_section1 p').should('have.text', `Moo`)
+      cy.get("#\\/ca2").should('have.text', '1');
+      cy.get("#\\/ca1").should('have.text', '0');
+
+      cy.log("Submit cat1")
+      cy.get(choiceinput1Anchor).contains(`cat`).click({ force: true });
+      cy.get(choiceinput1SubmitAnchor).click();
+      cy.get('#\\/_section1 p').should('have.text', `Meow`)
+      cy.get('#\\/_section2 p').should('have.text', `Meow`)
+      cy.get("#\\/ca1").should('have.text', '0.1');
+      cy.get("#\\/ca2").should('have.text', '1');
+
+
+      cy.log("Submit cow2")
+      cy.get(choiceinput2Anchor).contains(`cow`).click({ force: true });
+      cy.get(choiceinput2SubmitAnchor).click();
+      cy.get('#\\/_section2 p').should('have.text', `Moo`)
+      cy.get('#\\/_section1 p').should('have.text', `Meow`)
+      cy.get("#\\/ca2").should('have.text', '0');
+      cy.get("#\\/ca1").should('have.text', '0.1');
+
+
     })
   });
 

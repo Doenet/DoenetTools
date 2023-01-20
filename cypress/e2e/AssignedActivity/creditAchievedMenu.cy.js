@@ -50,8 +50,7 @@ describe('Credit achieved menu tests', function () {
     
     cy.get('[data-test="Assign Activity"]').click();
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -100,9 +99,8 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
     
     cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -199,12 +197,11 @@ const doenetML4 = `
     
     cy.get('[data-test="Assign Activity"]').click();
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
 
     cy.get('[data-test="Paginate"').click();
-    cy.get('[data-test="toast"]').contains('Updated Paginate to False');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.wait(100) //TODO: need the UI to let us know this was successful
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -295,12 +292,12 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
 
     cy.get('[data-test="Item Weights"]').clear().type("2 0 1 0", {force: true}).blur()
-    cy.get('[data-test="toast"]').contains('Updated Item Weights');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.wait(100) //TODO: need the UI to let us know this was successful
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -389,9 +386,7 @@ const doenetML3 = `
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
     
     cy.get('[data-test="Assign Activity"]').click();
-
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -403,6 +398,7 @@ const doenetML3 = `
 
     cy.url().should('match', /#page1$/)
 
+
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -413,7 +409,6 @@ const doenetML3 = `
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '33.3%')
-
 
     cy.get('[data-test="Item 3 Credit"]').click();
 
@@ -487,12 +482,10 @@ const doenetML3 = `
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
     
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.get('[data-test="Paginate"').click();
-    cy.get('[data-test="toast"]').contains('Updated Paginate to False');
-    cy.get('[data-test="toast cancel button"]').click();
+    cy.wait(100) //TODO: need the UI to let us know this was successful
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -510,6 +503,7 @@ const doenetML3 = `
 
     cy.url().should('match', /#page1$/)
 
+    // cy.get('[data-test="CreditAchieved Menu"]').click();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')

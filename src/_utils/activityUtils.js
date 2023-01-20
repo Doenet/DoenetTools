@@ -331,21 +331,12 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
 
   let variantForEachPage;
 
-  // filter out the ignored variants for each page
-  let allPossibleNonIgnoredPerPage = [], indicesToIgnorePerPage = [];
+  let allPossiblePerPage = [];
   let numberOfVariantsPerPage = [];
 
   for (let pageResult of pageVariantsResult) {
-    let allPossibleVariants = [...pageResult.allPossibleVariants];
-    let indicesToIgnore = [...pageResult.variantIndicesToIgnore]
-    for (let ind of indicesToIgnore) {
-      delete allPossibleVariants[ind];
-    }
-    let numberOfVariants = allPossibleVariants.filter(x => x !== undefined).length;
-
-    allPossibleNonIgnoredPerPage.push(allPossibleVariants);
-    indicesToIgnorePerPage.push(indicesToIgnore);
-    numberOfVariantsPerPage.push(numberOfVariants);
+    allPossiblePerPage.push(pageResult.allPossibleVariants);
+    numberOfVariantsPerPage.push(pageResult.allPossibleVariants.length);
   }
 
   let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1)
@@ -370,15 +361,6 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
 
     let pageVariantIndex = variantForEachPage[ind];
 
-    let indicesToIgnore = indicesToIgnorePerPage[ind];
-
-    for (let i of indicesToIgnore) {
-      if (pageVariantIndex >= i) {
-        pageVariantIndex++;
-      } else {
-        break;
-      }
-    }
 
     variantsByPage.push(pageVariantIndex);
 

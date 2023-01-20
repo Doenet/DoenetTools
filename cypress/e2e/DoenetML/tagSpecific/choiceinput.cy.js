@@ -2274,7 +2274,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
-    let originalChoices = ["mouse", "dog", "cat", "monkey", ];
+    let originalChoices = ["mouse", "dog", "cat", "monkey",];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
     cy.get('#\\/_p2').should('have.text', 'Selected index: ')
     cy.get('#\\/pMouse').should('have.text', 'Selected mouse: false')
@@ -2338,5 +2338,111 @@ describe('ChoiceInput Tag Tests', function () {
     }
 
   });
+
+  it('copy choices', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <choice name="cat0">cat</choice>
+    </setup>
+    <choiceinput>
+      <choice copySource="cat0" name="cat1" />
+      <choice name="dog1">dog</choice>
+      <choice name="monkey1">monkey</choice>
+    </choiceinput>
+
+    <choiceinput>
+      <choice copySource="cat1" name="cat2" />
+      <choice copySource="dog1" name="dog2" />
+      <choice name="monkey2">monkey</choice>
+    </choiceinput>
+
+    <p name="pSv1">Selected value 1: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p name="pSi1">Selected index 1: <copy prop='selectedindex' target="_choiceinput1" /></p>
+
+    <p name="pSv2">Selected value 2: <copy prop='selectedvalue' target="_choiceinput2" /></p>
+    <p name="pSi2">Selected index 2: <copy prop='selectedindex' target="_choiceinput2" /></p>
+
+    <p name="pCat0">Selected cat0: $cat0.selected</p>
+
+    <p name="pCat1">Selected cat1: $cat1.selected</p>
+    <p name="pDog1">Selected dog1: $dog1.selected</p>
+    <p name="pMonkey1">Selected monkey1: $monkey1.selected</p>
+
+    <p name="pCat2">Selected cat2: $cat2.selected</p>
+    <p name="pDog2">Selected dog2: $dog2.selected</p>
+    <p name="pMonkey2">Selected monkey2: $monkey2.selected</p>
+
+    `}, "*");
+    });
+
+
+    let choices = ["cat", "dog", "monkey"];
+    cy.get('#\\/pSv1').should('have.text', 'Selected value 1: ')
+    cy.get('#\\/pSi1').should('have.text', 'Selected index 1: ')
+    cy.get('#\\/pSv2').should('have.text', 'Selected value 2: ')
+    cy.get('#\\/pSi2').should('have.text', 'Selected index 2: ')
+
+    cy.get('#\\/pCat1').should('have.text', 'Selected cat1: false')
+    cy.get('#\\/pDog1').should('have.text', 'Selected dog1: false')
+    cy.get('#\\/pMonkey1').should('have.text', 'Selected monkey1: false')
+    cy.get('#\\/pCat2').should('have.text', 'Selected cat2: false')
+    cy.get('#\\/pDog2').should('have.text', 'Selected dog2: false')
+    cy.get('#\\/pMonkey2').should('have.text', 'Selected monkey2: false')
+
+
+    cy.log('select options 1 in order')
+
+    for (let i = 0; i < 3; i++) {
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
+
+
+      cy.get('#\\/pSv1').should('have.text', 'Selected value 1: ' + choices[i])
+      cy.get('#\\/pSi1').should('have.text', 'Selected index 1: ' + (i + 1))
+
+
+      cy.get('#\\/pSv2').should('have.text', 'Selected value 2: ')
+      cy.get('#\\/pSi2').should('have.text', 'Selected index 2: ')
+
+
+      cy.get('#\\/pCat1').should('have.text', `Selected cat1: ${i === 0}`)
+      cy.get('#\\/pDog1').should('have.text', `Selected dog1: ${i === 1}`)
+      cy.get('#\\/pMonkey1').should('have.text', `Selected monkey1: ${i == 2}`)
+      cy.get('#\\/pCat2').should('have.text', 'Selected cat2: false')
+      cy.get('#\\/pDog2').should('have.text', 'Selected dog2: false')
+      cy.get('#\\/pMonkey2').should('have.text', 'Selected monkey2: false')
+
+    }
+
+
+
+    cy.log('select options 2 in order')
+
+    for (let i = 0; i < 3; i++) {
+      cy.get(`#\\/_choiceinput2_choice${i + 1}_input`).click();
+
+
+      cy.get('#\\/pSv2').should('have.text', 'Selected value 2: ' + choices[i])
+      cy.get('#\\/pSi2').should('have.text', 'Selected index 2: ' + (i + 1))
+
+
+      cy.get('#\\/pSv1').should('have.text', 'Selected value 1: monkey')
+      cy.get('#\\/pSi1').should('have.text', 'Selected index 1: 3')
+
+
+      cy.get('#\\/pCat1').should('have.text', 'Selected cat1: false')
+      cy.get('#\\/pDog1').should('have.text', 'Selected dog1: false')
+      cy.get('#\\/pMonkey1').should('have.text', 'Selected monkey1: true')
+
+      cy.get('#\\/pCat2').should('have.text', `Selected cat2: ${i === 0}`)
+      cy.get('#\\/pDog2').should('have.text', `Selected dog2: ${i === 1}`)
+      cy.get('#\\/pMonkey2').should('have.text', `Selected monkey2: ${i == 2}`)
+
+    }
+
+  });
+
 
 });

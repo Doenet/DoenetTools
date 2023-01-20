@@ -2196,4 +2196,35 @@ describe('Function Operator Tag Tests', function () {
     })
   })
 
+  it('handle no child', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <derivative name="d1" symbolic></derivative>
+      <derivative name="d2">$nothing</derivative>
+
+      <p>$$d1(0)</p>
+      <p>$$d2(0)</p>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/d1 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get('#\\/d2 .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).should('have.text', 'NaN')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinition);
+      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinition);
+
+      expect(d1(0)).eqls(NaN)
+      expect(d2(0)).eqls(NaN)
+
+
+    })
+  })
+
 })

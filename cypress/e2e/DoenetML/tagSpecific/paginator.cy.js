@@ -937,9 +937,9 @@ describe('Paginator Tag Tests', function () {
                 <title>Problem E</title>
                 <variantcontrol nVariants="3" variantNames="one two three" />
                 <select assignNames="(n)" hide>
-                  <option selectForVariantNames="one"><number>1</number></option>
-                  <option selectForVariantNames="two"><number>2</number></option>
-                  <option selectForVariantNames="three"><number>3</number></option>
+                  <option selectForVariants="one"><number>1</number></option>
+                  <option selectForVariants="two"><number>2</number></option>
+                  <option selectForVariants="three"><number>3</number></option>
                 </select>
                 <p>What is <m>3+$n</m>? 
                   <answer name="ans">
@@ -954,9 +954,9 @@ describe('Paginator Tag Tests', function () {
                 <title>Problem F</title>
                 <variantcontrol nVariants="3" variantNames="four five six" />
                 <select assignNames="(n)" hide>
-                  <option selectForVariantNames="four"><number>4</number></option>
-                  <option selectForVariantNames="five"><number>5</number></option>
-                  <option selectForVariantNames="six"><number>6</number></option>
+                  <option selectForVariants="four"><number>4</number></option>
+                  <option selectForVariants="five"><number>5</number></option>
+                  <option selectForVariants="six"><number>6</number></option>
                 </select>
                 <p>What is <m>3-$n</m>? 
                   <answer name="ans">
@@ -984,13 +984,13 @@ describe('Paginator Tag Tests', function () {
         <variantControl nVariants="7" variantNames="apple banana cherry date elderberry fig grape" />
         <!-- Note: explicitly don't put fruit in parens to test for previous error -->
         <select assignNames="fruit" hide>
-          <option selectForVariantNames="apple"><text>apple</text></option>
-          <option selectForVariantNames="banana"><text>banana</text></option>
-          <option selectForVariantNames="cherry"><text>cherry</text></option>
-          <option selectForVariantNames="date"><text>date</text></option>
-          <option selectForVariantNames="elderberry"><text>elderberry</text></option>
-          <option selectForVariantNames="fig"><text>fig</text></option>
-          <option selectForVariantNames="grape"><text>grape</text></option>
+          <option selectForVariants="apple"><text>apple</text></option>
+          <option selectForVariants="banana"><text>banana</text></option>
+          <option selectForVariants="cherry"><text>cherry</text></option>
+          <option selectForVariants="date"><text>date</text></option>
+          <option selectForVariants="elderberry"><text>elderberry</text></option>
+          <option selectForVariants="fig"><text>fig</text></option>
+          <option selectForVariants="grape"><text>grape</text></option>
         </select>
         <p>Enter $fruit:
           <answer name="ans" type="text">
@@ -1338,12 +1338,12 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
     cy.get(cesc('#/pcontrols_next')).click()
-    cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinput2Name = stateVariables["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput2Name = stateVariables["/problem2/_answer1"].stateValues.inputChildren[0].componentName;
 
       let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
       let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
@@ -1375,7 +1375,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '0.667')
 
       cy.get(cesc('#/pcontrols_next')).click()
-      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
       cy.get(mathinput2Correct).should("be.visible");
       cy.get(cesc('#/ca')).should('have.text', '0.667')
 
@@ -1405,7 +1405,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '1')
 
       cy.get(cesc('#/pcontrols_previous')).click()
-      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
       cy.get(mathinput2Correct).should("be.visible");
       cy.get(cesc('#/ca')).should('have.text', '1')
 
@@ -1476,11 +1476,7 @@ describe('Paginator Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariantIndex: 10
-          // for now, at least, variant 10 gives mouse....
-          // subvariants: [{}, {
-          //   name: "mouse"
-          // }]
+        requestedVariantIndex: 3
       }, "*");
     });
 
@@ -1518,12 +1514,12 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
     cy.get(cesc('#/pcontrols_next')).click()
-    cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinput2Name = stateVariables["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput2Name = stateVariables["/problem2/_answer1"].stateValues.inputChildren[0].componentName;
 
       let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
       let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
@@ -1555,7 +1551,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '0.667')
 
       cy.get(cesc('#/pcontrols_next')).click()
-      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
       cy.get(mathinput2Correct).should("be.visible");
       cy.get(cesc('#/ca')).should('have.text', '0.667')
 
@@ -1585,7 +1581,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '1')
 
       cy.get(cesc('#/pcontrols_previous')).click()
-      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
       cy.get(mathinput2Correct).should("be.visible");
       cy.get(cesc('#/ca')).should('have.text', '1')
 
@@ -1946,12 +1942,12 @@ describe('Paginator Tag Tests', function () {
     <paginatorControls paginator="pgn" name="pcontrols" />
 
     <paginator name="pgn">
-      <select numberToSelect="2" assignNames="((problem1)) ((problem2))">
+      <select numberToSelect="2" assignNames="(problem1) (problem2)">
         <option>
-          <copy uri="doenet:cid=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" />
+          <problem copyfromuri="doenet:cid=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" />
         </option>
         <option>
-          <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
+          <problem copyfromuri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
         </option>
       </select>    
     </paginator>
@@ -2057,7 +2053,7 @@ describe('Paginator Tag Tests', function () {
 
             if (problemOrder[ind] === 1) {
 
-              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
+              cy.get(cesc(`#${thisProbName}_title`)).should('have.text', `Problem ${ind + 1}`)
               cy.wait(10);
 
               cy.window().then(async (win) => {
@@ -2109,7 +2105,7 @@ describe('Paginator Tag Tests', function () {
               })
 
             } else {
-              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
+              cy.get(cesc(`#${thisProbName}_title`)).should('have.text', `Animal sounds`)
               cy.wait(10);
 
               cy.window().then(async (win) => {
@@ -2176,7 +2172,7 @@ describe('Paginator Tag Tests', function () {
 
           if (problemOrder[ind] === 1) {
 
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
+            cy.get(cesc(`#${thisProbName}_title`)).should('have.text', `Problem ${ind + 1}`)
             cy.wait(10);
 
             cy.window().then(async (win) => {
@@ -2218,7 +2214,7 @@ describe('Paginator Tag Tests', function () {
             })
 
           } else {
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
+            cy.get(cesc(`#${thisProbName}_title`)).should('have.text', `Animal sounds`)
             cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
 
             cy.wait(10);
@@ -2280,7 +2276,7 @@ describe('Paginator Tag Tests', function () {
 
           if (problemOrder[ind] === 1) {
 
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
+            cy.get(cesc(`#${thisProbName}_title`)).should('have.text', `Problem ${ind + 1}`)
             cy.wait(10);
 
             cy.window().then(async (win) => {
@@ -2322,7 +2318,7 @@ describe('Paginator Tag Tests', function () {
             })
 
           } else {
-            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
+            cy.get(cesc(`#${thisProbName}_title`)).should('have.text', `Animal sounds`)
             cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
 
             cy.wait(10);

@@ -45,7 +45,8 @@ it('make sure events are recorded in general',()=>{
   cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
-  cy.get('[data-test="toast"]').contains('Activity Assigned');
+  cy.get('[data-test="Unassign Activity"]').should('be.visible');
+
 
   cy.wait(1000)
 

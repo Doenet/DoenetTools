@@ -94,12 +94,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
       let checkChildForReplacements = matchChildToTypes(child);
       if (ignoreReplacementsOfEncounteredComposites && !checkChildForReplacements) {
         // we explicitly will not ignore replacements of copies of external content
-        checkChildForReplacements = !(
-          child.componentType === "copy" &&
-          (child.replacements?.[0]?.componentType === "externalContent"
-            || child.doenetAttributes.fromCopyFromURI
-          )
-        );
+        checkChildForReplacements = !(child.componentType === "copy" && child.doenetAttributes.copiedURI);
       }
       if (checkChildForReplacements && componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,

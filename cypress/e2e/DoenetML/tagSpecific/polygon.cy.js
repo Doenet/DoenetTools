@@ -3310,4 +3310,108 @@ describe('Polygon Tag Tests', function () {
 
   });
 
+  it('changing styles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <styledefinitions>
+        <styledefinition stylenumber="1" lineColor="blue" fillColor="blue" lineWidth="2" lineStyle="solid" />
+        <styledefinition stylenumber="2" lineColor="red" fillColor="green" lineWidth="2" lineStyle="solid" />
+
+        <styledefinition stylenumber="3" lineColor="blue" fillColor="blue" lineWidth="5" lineStyle="solid" />
+        <styledefinition stylenumber="4" lineColor="red" fillColor="green" lineWidth="1" lineStyle="dotted" />
+        </styledefinitions>
+    </setup>
+
+    <graph>
+      <polygon vertices="(0,0) (0,2) (2,0)" name="p1" />
+      <polygon vertices="(3,0) (3,2) (5,0)" name="p2" filled />
+      <polygon vertices="(0,3) (0,5) (2,3)" name="p3" stylenumber="2" />
+      <polygon vertices="(3,3) (3,5) (5,3)" name="p4" stylenumber="2" filled />
+
+      <polygon vertices="(0,-10) (0,-8) (2,-10)" name="p5" stylenumber="3"/>
+      <polygon vertices="(3,-10) (3,-8) (5,-10)" name="p6" stylenumber="3" filled />
+      <polygon vertices="(0,-7) (0,-5) (2,-7)" name="p7" stylenumber="4" />
+      <polygon vertices="(3,-7) (3,-5) (5,-7)" name="p8" stylenumber="4" filled />
+
+    </graph>
+
+    <p>First polygon is $p1.styleDescription{assignNames="st1"}.  It is a $p1.styleDescriptionWithNoun{assignNames="stn1"}. 
+      Its border is $p1.borderStyleDescription{assignNames="bst1"}.  Its fill is $p1.fillStyleDescription{assignNames="fst1"}.
+    </p>
+    <p>Second polygon is $p2.styleDescription{assignNames="st2"}.  It is a $p2.styleDescriptionWithNoun{assignNames="stn2"}. 
+      Its border is $p2.borderStyleDescription{assignNames="bst2"}.  Its fill is $p2.fillStyleDescription{assignNames="fst2"}.
+    </p>
+    <p>Third polygon is $p3.styleDescription{assignNames="st3"}.  It is a $p3.styleDescriptionWithNoun{assignNames="stn3"}. 
+      Its border is $p3.borderStyleDescription{assignNames="bst3"}.  Its fill is $p3.fillStyleDescription{assignNames="fst3"}.
+    </p>
+    <p>Fourth polygon is $p4.styleDescription{assignNames="st4"}.  It is a $p4.styleDescriptionWithNoun{assignNames="stn4"}. 
+      Its border is $p4.borderStyleDescription{assignNames="bst4"}.  Its fill is $p4.fillStyleDescription{assignNames="fst4"}.
+    </p>
+
+    <p>Fifth polygon is $p5.styleDescription{assignNames="st5"}.  It is a $p5.styleDescriptionWithNoun{assignNames="stn5"}. 
+      Its border is $p5.borderStyleDescription{assignNames="bst5"}.  Its fill is $p5.fillStyleDescription{assignNames="fst5"}.
+    </p>
+    <p>Sixth polygon is $p6.styleDescription{assignNames="st6"}.  It is a $p6.styleDescriptionWithNoun{assignNames="stn6"}. 
+      Its border is $p6.borderStyleDescription{assignNames="bst6"}.  Its fill is $p6.fillStyleDescription{assignNames="fst6"}.
+    </p>
+    <p>Seventh polygon is $p7.styleDescription{assignNames="st7"}.  It is a $p7.styleDescriptionWithNoun{assignNames="stn7"}. 
+      Its border is $p7.borderStyleDescription{assignNames="bst7"}.  Its fill is $p7.fillStyleDescription{assignNames="fst7"}.
+    </p>
+    <p>Eighth polygon is $p8.styleDescription{assignNames="st8"}.  It is a $p8.styleDescriptionWithNoun{assignNames="stn8"}. 
+      Its border is $p8.borderStyleDescription{assignNames="bst8"}.  Its fill is $p8.fillStyleDescription{assignNames="fst8"}.
+    </p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    cy.get('#\\/st1').should('have.text', 'blue')
+    cy.get('#\\/stn1').should('have.text', 'blue polygon')
+    cy.get('#\\/bst1').should('have.text', 'blue')
+    cy.get('#\\/fst1').should('have.text', 'unfilled')
+
+    cy.get('#\\/st2').should('have.text', 'filled blue')
+    cy.get('#\\/stn2').should('have.text', 'filled blue polygon')
+    cy.get('#\\/bst2').should('have.text', 'blue')
+    cy.get('#\\/fst2').should('have.text', 'blue')
+
+    cy.get('#\\/st3').should('have.text', 'red')
+    cy.get('#\\/stn3').should('have.text', 'red polygon')
+    cy.get('#\\/bst3').should('have.text', 'red')
+    cy.get('#\\/fst3').should('have.text', 'unfilled')
+
+    cy.get('#\\/st4').should('have.text', 'filled green with red border')
+    cy.get('#\\/stn4').should('have.text', 'filled green polygon with a red border')
+    cy.get('#\\/bst4').should('have.text', 'red')
+    cy.get('#\\/fst4').should('have.text', 'green')
+
+    cy.get('#\\/st5').should('have.text', 'thick blue')
+    cy.get('#\\/stn5').should('have.text', 'thick blue polygon')
+    cy.get('#\\/bst5').should('have.text', 'thick blue')
+    cy.get('#\\/fst5').should('have.text', 'unfilled')
+
+    cy.get('#\\/st6').should('have.text', 'filled blue with thick border')
+    cy.get('#\\/stn6').should('have.text', 'filled blue polygon with a thick border')
+    cy.get('#\\/bst6').should('have.text', 'thick blue')
+    cy.get('#\\/fst6').should('have.text', 'blue')
+
+    cy.get('#\\/st7').should('have.text', 'thin dotted red')
+    cy.get('#\\/stn7').should('have.text', 'thin dotted red polygon')
+    cy.get('#\\/bst7').should('have.text', 'thin dotted red')
+    cy.get('#\\/fst7').should('have.text', 'unfilled')
+
+    cy.get('#\\/st8').should('have.text', 'filled green with thin dotted red border')
+    cy.get('#\\/stn8').should('have.text', 'filled green polygon with a thin dotted red border')
+    cy.get('#\\/bst8').should('have.text', 'thin dotted red')
+    cy.get('#\\/fst8').should('have.text', 'green')
+
+
+  });
+
 });

@@ -151,7 +151,7 @@ export default function ClassTimes() {
             icon={<FontAwesomeIcon icon={faTimes} />}
             alert
             onClick={() => {
-              deleteClassTime({ index });
+              deleteClassTime({ index, courseId });
             }}
           />
         </tr>

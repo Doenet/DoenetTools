@@ -274,14 +274,15 @@ export default class Template extends CompositeComponent {
 
   }
 
-  static async setUpVariant({
+  static setUpVariant({
     serializedComponent, sharedParameters,
     descendantVariantComponents,
   }) {
 
     setUpVariantSeedAndRng({
       serializedComponent, sharedParameters,
-      descendantVariantComponents
+      descendantVariantComponents,
+      useSubpartVariantRng: true,
     });
 
   }

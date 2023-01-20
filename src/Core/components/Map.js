@@ -1,8 +1,8 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
-import { gatherVariantComponents, markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
+import { markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
 import { convertAttributesForComponentType } from '../utils/copy';
-import { setUpVariantSeedAndRng } from '../utils/variants';
+import { gatherVariantComponents, setUpVariantSeedAndRng } from '../utils/variants';
 
 export default class Map extends CompositeComponent {
   static componentType = "map";
@@ -709,14 +709,15 @@ export default class Map extends CompositeComponent {
     return replacementChanges;
   }
 
-  static async setUpVariant({
+  static setUpVariant({
     serializedComponent, sharedParameters,
     descendantVariantComponents,
   }) {
 
     setUpVariantSeedAndRng({
       serializedComponent, sharedParameters,
-      descendantVariantComponents
+      descendantVariantComponents,
+      useSubpartVariantRng: true,
     });
 
   }

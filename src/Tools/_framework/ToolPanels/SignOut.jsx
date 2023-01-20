@@ -54,7 +54,7 @@ export default function SignOut() {
           />
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <h2>You are Signed Out!</h2>
-            <Button value="Homepage" onClick={() => {setPageToolView({page: 'home', tool: '', view: ''})}}/>
+            <Button dataTest='homepage button' value="Homepage" onClick={() => {setPageToolView({page: 'home', tool: '', view: ''})}}/>
           </div>
         </div>
       </div>
