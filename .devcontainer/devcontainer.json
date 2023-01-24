@@ -17,16 +17,16 @@
   "workspaceFolder": "/home/node/workspace",
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [],
+  // "forwardPorts": ["dev:80"],
 
   // Uncomment the next line if you want start specific services in your Docker Compose config.
   // "runServices": [],
 
   // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
-  // "shutdownAction": "none",
+  "shutdownAction": "stopCompose",
 
   // Uncomment the next line to run commands after the container is created - for example installing curl.
-  "initializeCommand": "docker compose down",
+  "initializeCommand": "docker compose -f docker-compose.yml -f .devcontainer/docker-compose.extend.yml down",
   "postCreateCommand": "npm install --omit=optional",
   "postStartCommand": "npx snowpack dev",
 
