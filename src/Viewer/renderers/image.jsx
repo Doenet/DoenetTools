@@ -29,6 +29,8 @@ export default React.memo(function Image(props) {
 
   let currentOffset = useRef(null);
 
+  let rotationTransforms = useRef([0, null, null, null]);
+
   const urlOrSource = (SVs.cid ? url : SVs.source) || "";
 
   let onChangeVisibility = isVisible => {
@@ -70,7 +72,7 @@ export default React.memo(function Image(props) {
       visible: !SVs.hidden,
       fixed,
       layer: 10 * SVs.layer + 0,
-      highlight: !fixed
+      highlight: !fixed,
     };
 
 
@@ -137,6 +139,30 @@ export default React.memo(function Image(props) {
 
     let newImageJXG = board.create('image', [urlOrSource, offset, [width, height]], jsxImageAttributes);
 
+    var tOff = board.create('transform', [
+      function () {
+        return -newImageJXG.X() - newImageJXG.W() * 0.5;
+      }, function () {
+        return -newImageJXG.Y() - newImageJXG.H() * 0.5;
+      }
+    ], { type: 'translate' });
+    var tOffInverse = board.create('transform', [
+      function () {
+        return newImageJXG.X() + newImageJXG.W() * 0.5;
+      }, function () {
+        return newImageJXG.Y() + newImageJXG.H() * 0.5;
+      }
+    ], { type: 'translate' });
+    var tRot = board.create('transform', [
+      SVs.rotate
+    ], { type: 'rotate' });
+
+
+    tOff.bindTo(newImageJXG);        // Shift image to origin
+    tRot.bindTo(newImageJXG);        // Rotate
+    tOffInverse.bindTo(newImageJXG); // Shift image back
+
+    rotationTransforms.current = [SVs.rotate, tOff, tRot, tOff];
 
     newImageJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -214,6 +240,9 @@ export default React.memo(function Image(props) {
     previousPositionFromAnchor.current = SVs.positionFromAnchor;
     currentSize.current = [width, height];
 
+    // need fullUpdate to get initial rotation in case image was from a blob
+    imageJXG.current.fullUpdate();
+
   }
 
   if (board) {
@@ -288,6 +317,12 @@ export default React.memo(function Image(props) {
         imageJXG.current.setSize(width, height);
         currentSize.current = [width, height];
       }
+
+      if (SVs.rotate != rotationTransforms.current[0]) {
+        rotationTransforms.current[2].setMatrix(board, "rotate", [SVs.rotate]);
+        rotationTransforms.current[0] = SVs.rotate;
+      }
+
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current || sizeChanged) {
         let offset;
