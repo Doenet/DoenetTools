@@ -101,7 +101,7 @@ export default function DueDateBar({width, startDate, endDate, isCompleted}) {
   }
   
   const formatDate = date => {
-    const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const DAYS = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"];
     const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     return `${DAYS[date.getDay()]}, ${MONTHS[date.getMonth()]} ${date.getDate()}`
   }
@@ -112,13 +112,13 @@ export default function DueDateBar({width, startDate, endDate, isCompleted}) {
         <RemainingTimeContainer>
           <Text>
             {
-              isOverdue ? 
-                `Assignment Overdue`  
-              :
-              !isCompleted ? 
-                `${timeLeft.value} ${timeLeft.unit} remaining` 
-              :
-              null
+              !isCompleted ?
+                isOverdue ? 
+                  `Assignment Overdue`  
+                :
+                  `${timeLeft.value} ${timeLeft.unit} remaining` 
+                :
+                null
             }
           </Text>
         </RemainingTimeContainer>
