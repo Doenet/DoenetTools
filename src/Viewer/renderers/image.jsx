@@ -29,7 +29,8 @@ export default React.memo(function Image(props) {
 
   let currentOffset = useRef(null);
 
-  let rotationTransforms = useRef([0, null, null, null]);
+  let rotationTransform = useRef(null);
+  let lastRotate = useRef(SVs.rotate);
 
   const urlOrSource = (SVs.cid ? url : SVs.source) || "";
 
@@ -139,6 +140,8 @@ export default React.memo(function Image(props) {
 
     let newImageJXG = board.create('image', [urlOrSource, offset, [width, height]], jsxImageAttributes);
 
+    // tranformation code copied from jsxgraph documentation:
+    // https://jsxgraph.uni-bayreuth.de/wiki/index.php?title=Images#The_JavaScript_code_5
     var tOff = board.create('transform', [
       function () {
         return -newImageJXG.X() - newImageJXG.W() * 0.5;
@@ -162,7 +165,8 @@ export default React.memo(function Image(props) {
     tRot.bindTo(newImageJXG);        // Rotate
     tOffInverse.bindTo(newImageJXG); // Shift image back
 
-    rotationTransforms.current = [SVs.rotate, tOff, tRot, tOff];
+    rotationTransform.current = tRot;
+    lastRotate.current = SVs.rotate;
 
     newImageJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -318,9 +322,9 @@ export default React.memo(function Image(props) {
         currentSize.current = [width, height];
       }
 
-      if (SVs.rotate != rotationTransforms.current[0]) {
-        rotationTransforms.current[2].setMatrix(board, "rotate", [SVs.rotate]);
-        rotationTransforms.current[0] = SVs.rotate;
+      if (SVs.rotate != lastRotate.current) {
+        rotationTransform.current.setMatrix(board, "rotate", [SVs.rotate]);
+        lastRotate.current = SVs.rotate;
       }
 
 
