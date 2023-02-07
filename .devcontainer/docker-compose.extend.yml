@@ -1,0 +1,81 @@
+# version: '3.9'
+services:
+  dev:
+    # Do we need auth sock?
+    # If you want add a non-root user to your Dockerfile, you can use the "remoteUser"
+    # property in devcontainer.json to cause VS Code its sub-processes (terminals, tasks,
+    # debugging) to execute as the user. Uncomment the next line if you want the entire
+    # container to run as this user instead. Note that, on Linux, you may need to
+    # ensure the UID and GID of the container user you create matches your local user.
+    # See https://aka.ms/vscode-remote/containers/non-root for details.
+    #
+    # user: vscode
+    # Uncomment if you want to override the service's Dockerfile to one in the .devcontainer
+    # folder. Note that the path of the Dockerfile and context is relative to the *primary*
+    # docker-compose.yml file (the first in the devcontainer.json "dockerComposeFile"
+    # array). The sample below assumes your primary file is in the root of your project.
+    #
+    # build:
+    #   context: .
+    #   dockerfile: .devcontainer/Dockerfile
+    image: lyanthropos/doenet_test:snowpack-dev
+    ports:
+      - 80:80
+    volumes:
+      # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # mount local files
+      - ./:/home/node/workspace
+      - node_modules:/home/node/workspace/node_modules
+      - ~/.ssh:/home/node/.ssh
+    networks:
+      - dev_net
+    environment:
+      - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
+    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    restart: on-failure
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"
+  php:
+    volumes:
+      - ./src/Api:/usr/local/apache2/htdocs/api
+      - ./src/Media:/usr/local/apache2/htdocs/media
+      - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
+      - vendor:/usr/local/apache2/htdocs/api/vendor
+    restart: on-failure
+  apache:
+    volumes:
+      - ./dist:/usr/local/apache2/htdocs/
+      - ./src/Api:/usr/local/apache2/htdocs/api
+      - ./src/Media:/usr/local/apache2/htdocs/media
+      - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
+      - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
+  mysql:
+    ports:
+      - 3306:3306
+    volumes:
+      - ./doenet_docker/volumes/db:/var/lib/mysql
+      - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
+    restart: on-failure
+
+  # for realtime testing
+  # rtnode:
+  #   image: node:lts-alpine3.13
+  #   user: 'node'
+  #   working_dir: /home/node/app
+  #   volumes:
+  #     - ./:/home/node/app
+  #     - node_modules:/home/node/app/node_modules
+  #   command: 'npm run realtime'
+  #   ports:
+  #     - '81:81'
+  #   networks:
+  #     - dev_net
+
+volumes:
+  node_modules:
+  vendor:
