@@ -72,12 +72,6 @@ export default function ContentByWeek({ courseId }) {
   const [initialized, setInitialized] = useState(false);
 
   const loadAssignments = async courseId => {
-    //Clear selection when click on main panel
-    // set(mainPanelClickAtom, (was) => [
-    //   ...was,
-    //   { atom: clearDriveAndItemSelections, value: null },
-    //   { atom: selectedMenuPanelAtom, value: null },
-    // ]);
 
     const { data } = await axios.get('/api/loadTODO.php', {
       params: { courseId },
@@ -98,25 +92,6 @@ export default function ContentByWeek({ courseId }) {
 
     setPinnedAssignments(amendedPinnedAssignments);
     setAssignments(amendedAssignments);
-    // let da = assignments.map(assignment => new Date(assignment.dueDate) > monday && new Date(assignment.dueDate) < sunday)
-    // console.log(da);
-    // setDisplayedAssignments();
-    console.log('Next7 data: ', data);
-    // console.log('Next7 first assignment: ', data.assignments[0]);
-    // if (!data.success) {
-    //   setProblemMessage(data.message);
-    //   return;
-    // }
-    // if (data.assignments) {
-    //   setAssignmentArray(data.assignments);
-    //   setPinnedArray(data.pinned);
-    // }
-    // if (data.classTimes) {
-    //   set(classTimesAtom, data.classTimes);
-    // }
-    // if (data.completed) {
-    //   setCompletedArray(data.completed);
-    // }
   };
   
 

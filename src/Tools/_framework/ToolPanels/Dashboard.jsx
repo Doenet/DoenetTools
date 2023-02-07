@@ -10,7 +10,7 @@ import {
   searchParamAtomFamily,
   profileAtom,
 } from '../NewToolRoot';
-import Next7Days from '../Widgets/Next7Days';
+// import Next7Days from '../Widgets/Next7Days';
 import ContentByWeek from '../Widgets/ContentByWeek';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
