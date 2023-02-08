@@ -9,19 +9,6 @@ import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import { useState } from 'react';
 
 
-const Headings = styled.h1`
-  line-height: 1.1em;
-`;
-
-const DoenetLogo = styled.div`
-  display: flex;
-  position: relative;
-  width: 100%;
-  min-height: 340px;
-  background-color: var(--mainGray);
-  justify-content: center;
-  align-items: center;
-`;
 
 
 const LightBlueColor = styled.div`
@@ -35,17 +22,7 @@ const LightBlueColorSection = styled(LightBlueColor)`
   align-items: center;
   text-align: center;
 `;
-// const ShadowColor = styled.div`
-//   background-color: #e3d2d2;
-//   color: #333333;
-// `;
-// const ShadowColorSection = styled(ShadowColor)`
-//   padding: 20px 10px 60px 10px;
-//   margin: 0px;
-//   justify-content: center;
-//   align-items: center;
-//   text-align: center;
-// `;
+
 const SectionText = styled.div`
   text-align: center;
   max-width: 800px;
@@ -75,10 +52,6 @@ const Footer = styled.div`
   text-align: center;
 `;
 
-const Caption = styled.p`
-  text-align: center;
-  display: block;
-`;
 
 const LinkStyling = styled.a`
   color: var(--mainBlue);
@@ -87,6 +60,27 @@ const LinkStyling = styled.a`
     outline: 2px solid var(--mainBlue);
   }
 `;
+
+const H1responsive = styled.h1`
+  line-height: 0.1em;
+  @media (max-width: 760px) {
+  font-size: 1.1em;
+  }
+`
+
+const H4responsive = styled.h4`
+  line-height: 0.1em;
+  @media (max-width: 760px) {
+  font-size: .6em;
+  }
+`
+
+const HPVideo = styled.video`
+  height: 420px;
+  @media (max-width: 780px) {
+  height: 240px;
+  }
+`
 
 
 function Heading(props) {
@@ -167,12 +161,8 @@ export default function HomePage(props) {
         alignItems: 'center',
         height: '100px',
       }}>
-        <h1 style={{
-          lineHeight: '0.1em',
-        }}>The Distributed Open Education Network</h1>
-        <h4 style={{
-          lineHeight: '0.1em',
-        }}>The free and open data-driven education technology platform</h4>
+        <H1responsive>The Distributed Open Education Network</H1responsive>
+        <H4responsive>The free and open data-driven education technology platform</H4responsive>
       </div>
     </div>
 
@@ -184,11 +174,12 @@ export default function HomePage(props) {
       justifyContent: 'center',
       alignItems: 'center',
       height: '500px',
-      background: '#333333'
+      background: '#0e1111',
     }}>
 
-      <video
-        height='420px'
+      <HPVideo
+        // height='420px'
+        fluid='false'
         src='/media/homepagevideo.mp4'
         loop
         muted
@@ -197,7 +188,7 @@ export default function HomePage(props) {
         ref={videoEl}
       // autoplay
       // controls
-      ><source src="/media/homepagevideo.mp4" type="video/mp4" /></video>
+      ><source src="/media/homepagevideo.mp4" type="video/mp4" /></HPVideo>
 
     </div>
 
@@ -286,11 +277,6 @@ export default function HomePage(props) {
         </div>
       </SectionText>
     </Footer>
-    {/* {isSignedIn ?  */}
-    {/* <div><button onClick={()=>navigate('/course')}>Go To Course</button></div> */}
-    {/* : */}
-    {/* <div><button onClick={goToSignIn}>Sign In</button></div>  */}
-    {/* } */}
 
   </div>
 }
