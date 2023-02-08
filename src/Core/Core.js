@@ -8421,6 +8421,21 @@ export default class Core {
       actionId,
     });
 
+
+    if (this.updateInfo.componentsToUpdateRenderers.length > 0) {
+      // remove any names that were just updated
+      // (which can happen if tried to expand composites while updating renderers)
+
+      let newNames = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+      this.updateInfo.componentsToUpdateRenderers = [];
+      for (let name of newNames) {
+        if (!componentNamesToUpdate.includes(name)) {
+          this.updateInfo.componentsToUpdateRenderers.push(name);
+        }
+      }
+    }
+
+
     // updating renderer instructions could trigger more composite updates
     // (presumably from deriving child results)
     // if so, make replacement changes and update renderer instructions again
