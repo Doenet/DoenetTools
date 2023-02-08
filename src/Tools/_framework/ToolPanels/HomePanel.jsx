@@ -116,7 +116,7 @@ function DemoCard({ imagePath, text, link }) {
     marginRight: '20px',
     '-webkitUserSelect': 'none',
     userSelect: 'none'
-  }} href={link}><div style={{
+  }} href={link} target="_blank"><div style={{
     display: 'flex',
     alignItems: 'center',
     // border: '4px solid orange',
@@ -128,7 +128,8 @@ function DemoCard({ imagePath, text, link }) {
     width: '200px',
     height: '100px',
     border: '2px solid #2D5994',
-    background: '#0e1111',
+    // background: '#0e1111',
+    background: '#121212',
     borderRadius: '6px'
   }}>
         <img style={{
@@ -202,8 +203,8 @@ function HPCarousel(props) {
           // border: '4px solid orange',
         }}>
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
+            imagePath="/media/bafkreibws5wpblki6anm47dfnb56f3d62yw3qjjktqcw3sj55ggbdbvm4y.jpg"
+            text="Kitten 1"
             link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
           />
           <DemoCard
