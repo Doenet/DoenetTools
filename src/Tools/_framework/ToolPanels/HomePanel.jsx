@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'
-// import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import styled from 'styled-components';
 import './homepage.css';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -10,7 +9,12 @@ import { useState } from 'react';
 import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import {
+//   faCalendarPlus,
+//   faCalendarTimes,
+//   fachevronleft,
+// } from '@fortawesome/free-solid-svg-icons';
 
 
 const SectionText = styled.div`
@@ -91,9 +95,72 @@ function Heading(props) {
 }
 
 
+function HPCarousel(props) {
+  return <div style={{ maxWidth: '800px' }}>
+    {/* 
+    <FontAwesomeIcon style={{ fontSize: '100px' }} icon={fachevronleft} />
+    <FontAwesomeIcon icon={faCalendarPlus} /> */}
+  </div>
+}
+
+
 
 export default function HomePage(props) {
   // console.log(">>>===HomePage")
+  let doenetML = `
+  <example>
+<setup>
+<number name="num_lines">2</number>
+<math name="left0">x^2+4x-3</math>
+<math name="right0">2x^2+4x-7</math>
+<math name="left1">x^2-3</math>
+<math name="right1">2x^2-7</math>
+</setup>
+
+<p>Simplify the equation <m>$left0 = $right0</m>, explaining each step in the box at the right.</p>
+
+
+
+<map name="map">
+<template newNamespace>
+  <setup>
+    <conditionalContent assignNames="(left_prefill right_prefill text_prefill)">
+      <case condition="$i=1">$(../left0) $(../right0) <text>original expression</text></case>
+      <case condition="$i=2">$(../left1) $(../right1) <text>subtracted 4x from both sides</text></case>
+      <else>$(../map[$i-1]/left) $(../map[$i-1]/right) <text></text></else>
+    </conditionalContent>
+  </setup>
+
+  <sideBySide widths="50% 40% 10%">
+    <div>
+      <mathInput name="left" prefill="$left_prefill"/>
+      <m>=</m> <mathInput name="right" prefill="$right_prefill"/>
+    </div>
+    <div><textinput width="250px" height="35px" expanded prefill="$text_prefill" /></div>
+    <div>
+      <updateValue target="../num_lines" newValue="$(../num_lines)+1" 
+           type="number" hide="$(../num_lines) > $i">
+        <label>+</label>
+      </updateValue><nbsp/>
+      <updateValue target="../num_lines" newValue="$(../num_lines)-1" 
+           type="number" hide="$(../num_lines) > $i" disabled="$i=1">
+        <label>-</label>
+      </updateValue>
+    </div>
+  </sideBySide>
+</template>
+<sources alias="v" indexAlias="i"><sequence from="1" to="$num_lines" /></sources>
+</map>
+
+
+
+<hint>
+<title>Hint on showing simplification steps</title>
+<p>To perform a simplification step, click the <c>+</c> button, which will copy your work to a new line. Modify the expression and explain the step in the box to the right.  You can remove a line by clicking the <c>-</c> button.  Your work will be hand-graded after the due date.</p>
+</hint>
+    
+  </example>
+  `
   let navigate = useNavigate();
   const [signedIn, setSignedIn] = useState(null);
   let checkingCookie = useRef(false);
@@ -217,7 +284,7 @@ export default function HomePage(props) {
         marginLeft: '3em',
         marginRight: '3em',
       }}>
-        Make carousel to go here
+        <HPCarousel />
       </div>
     </div>
 
@@ -243,11 +310,11 @@ export default function HomePage(props) {
         <h3>Immediate feedback in class</h3>
         <p>One benefit of using Doenet during in-class activities is the immediate feedback
           students receive even before an instructor can come by their group.</p>
-        <h3>Open-ended questions</h3>
+        <h3>Open-ended response example (<a target="_blank" href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL">See Source</a>)</h3>
 
         <PageViewer
           key={`HPpageViewer`}
-          doenetML="<graph ><point>(2,3)</point></graph>"
+          doenetML={doenetML}
           flags={{
             showCorrectness: true,
             solutionDisplayMode: true,
