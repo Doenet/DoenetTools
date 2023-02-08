@@ -7537,7 +7537,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '\uff3f')
     cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '\uff3f')
 
-    
+
     cy.get('#\\/mi1 textarea').type("12,345{enter}", { force: true });
     cy.get('#\\/mi2 textarea').type("12,345{enter}", { force: true });
     cy.get('#\\/mi3 textarea').type("12,345{enter}", { force: true });
@@ -7597,6 +7597,33 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables["/mi1"].stateValues.value).eq('\uff3f')
       expect(stateVariables["/mi2"].stateValues.value).eqls(["list", 34, ["*", 0, "d", "x"]])
       expect(stateVariables["/mi3"].stateValues.value).eq(34000)
+    });
+
+
+  });
+
+  it('mathinput updates not messed up with invalid child logic containing a composite', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <ol>
+        <math name="m">x</math> $m
+        <li><mathinput name="mi" /> <math name="m2" copySource="mi" /></li>
+      </ol>
+  `}, "*");
+    });
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', 'x')
+
+    cy.get('#\\/mi textarea').type("sqrt4{enter}", { force: true });
+
+    cy.get('#\\/m2 .mjx-mrow').should('contain.text', '√4')
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '√4')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(["apply", "sqrt", 4]);
+      expect(stateVariables["/m2"].stateValues.value).eqls(["apply", "sqrt", 4]);
     });
 
 
