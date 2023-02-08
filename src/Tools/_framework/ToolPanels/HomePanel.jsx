@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import styled from 'styled-components';
@@ -112,6 +112,20 @@ export default function HomePage(props) {
   const [signedIn, setSignedIn] = useState(null);
   let checkingCookie = useRef(false);
 
+  const videoEl = useRef(null);
+
+  const attemptPlay = () => {
+    videoEl &&
+      videoEl.current &&
+      videoEl.current.play().catch(error => {
+        console.error("Error attempting to play", error);
+      });
+  };
+
+  useEffect(() => {
+    attemptPlay();
+  }, []);
+
   //Only ask once
   if (!checkingCookie.current) {
     checkingCookie.current = true;
@@ -178,9 +192,12 @@ export default function HomePage(props) {
         src='/media/homepagevideo.mp4'
         loop
         muted
-        autoplay
-        controls
-      />
+        playsInline
+        alt="Demonstration video on making DoenetML content"
+        ref={videoEl}
+      // autoplay
+      // controls
+      ><source src="/media/homepagevideo.mp4" type="video/mp4" /></video>
 
     </div>
 
