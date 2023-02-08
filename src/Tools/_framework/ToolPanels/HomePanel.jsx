@@ -10,11 +10,12 @@ import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import {
-//   faCalendarPlus,
-//   faCalendarTimes,
-//   fachevronleft,
-// } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendarPlus,
+  faCalendarTimes,
+  faChevronLeft,
+  faChevronRight
+} from '@fortawesome/free-solid-svg-icons';
 
 
 const SectionText = styled.div`
@@ -94,12 +95,172 @@ function Heading(props) {
   </div>
 }
 
+const LeftRightChevron = styled(FontAwesomeIcon)`
+  color: #949494;
+  font-size: 50px;
+  margin-top: 140px;
+  margin-left: 40px;
+  margin-right: 40px;
+  cursor: pointer;
+  &: hover {
+  color: #0e1111;
+  }
+`
+
+
+
+function DemoCard({ imagePath, text, link }) {
+  return <a style={{
+    textDecoration: 'none',
+    marginLeft: '20px',
+    marginRight: '20px',
+    '-webkitUserSelect': 'none',
+    userSelect: 'none'
+  }} href={link}><div style={{
+    display: 'flex',
+    alignItems: 'center',
+    // border: '4px solid orange',
+    flexDirection: 'column',
+  }}><div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '200px',
+    height: '100px',
+    border: '2px solid #2D5994',
+    background: '#0e1111',
+    borderRadius: '6px'
+  }}>
+        <img style={{
+          maxWidth: '194px',
+          height: '94px'
+        }} src={imagePath} />
+      </div>
+      <div style={{ maxWidth: '180px', maxHeight: '50px', color: 'black' }}>{text}</div>
+    </div>
+  </a>
+}
 
 function HPCarousel(props) {
-  return <div style={{ maxWidth: '800px' }}>
-    {/* 
-    <FontAwesomeIcon style={{ fontSize: '100px' }} icon={fachevronleft} />
-    <FontAwesomeIcon icon={faCalendarPlus} /> */}
+  const [activeSectionNumber, setActiveSectionNumber] = useState(0);
+
+  let activeMenuStyle = {
+    textDecoration: 'underline',
+    fontWeight: 'bold',
+    marginLeft: '40px',
+    marginRight: '40px',
+    '-webkitUserSelect': 'none',
+    userSelect: 'none'
+  }
+  let inactiveMenuStyle = {
+    cursor: 'pointer',
+    marginLeft: '40px',
+    marginRight: '40px',
+    '-webkitUserSelect': 'none',
+    userSelect: 'none'
+  }
+
+  let menuStyles = [];
+  for (let i = 0; i < 3; i++) {
+    if (activeSectionNumber == i) {
+      menuStyles.push(activeMenuStyle)
+    } else {
+      menuStyles.push(inactiveMenuStyle)
+    }
+  }
+
+  return <div style={{
+    marginTop: '40px',
+  }}>
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+    }}>
+      <LeftRightChevron icon={faChevronLeft} onClick={() => setActiveSectionNumber((current) => {
+        if (current == 0) {
+          return 2;
+        } else {
+          return current - 1;
+        }
+      })} />
+      <div>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '20px',
+        }}>
+          <div style={menuStyles[0]} onClick={() => setActiveSectionNumber(0)}>College Math</div>
+          <div style={menuStyles[1]} onClick={() => setActiveSectionNumber(1)}>Science & Engineering</div>
+          <div style={menuStyles[2]} onClick={() => setActiveSectionNumber(2)}>K-12 Math</div>
+        </div>
+
+
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          maxWidth: '980px',
+          // border: '4px solid orange',
+        }}>
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+
+        </div>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          maxWidth: '980px',
+          // border: '4px solid orange',
+        }}>
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+          <DemoCard
+            imagePath="/media/HPImage1.png"
+            text="Sketching the Derivative of a Function"
+            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+          />
+
+        </div>
+      </div>
+      <LeftRightChevron icon={faChevronRight} onClick={() => setActiveSectionNumber((current) => {
+        if (current == 2) {
+          return 0;
+        } else {
+          return current + 1;
+        }
+      })} />
+    </div>
+
   </div>
 }
 
@@ -216,6 +377,7 @@ export default function HomePage(props) {
 
 
   return <div style={props.style}>
+
     <div style={{
       display: 'flex',
       background: 'var(--mainGray)',
@@ -268,26 +430,27 @@ export default function HomePage(props) {
     </div>
 
     <Heading heading="Explore" subheading="Interact with our existing content" />
+
     <div style={{
       padding: '20px 10px 60px 10px',
       margin: '0px',
       justifyContent: 'center',
       alignItems: 'center',
       textAlign: 'center',
-      background: 'var(--mainGray)'
-
+      background: 'var(--mainGray)',
+      // height: '500px',
     }}>
       <div style={{
         textAlign: 'center',
-        maxWidth: '800px',
+        // maxWidth: '800px',
         display: 'inline-block',
         marginLeft: '3em',
         marginRight: '3em',
       }}>
         <HPCarousel />
+
       </div>
     </div>
-
 
     <Heading heading="Learn" subheading="Designed for the In-Person Classroom" />
 
