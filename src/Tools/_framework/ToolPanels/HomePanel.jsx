@@ -180,14 +180,14 @@ export default function HomePage(props) {
       <HPVideo
         // height='420px'
         fluid='false'
-        src='/media/homepagevideo.mp4'
+        src='/media/homepagevideo2.mp4'
         loop
         muted
         playsInline
         alt="Demonstration video on making DoenetML content"
         ref={videoEl}
-      // autoplay
-      // controls
+        // autoplay
+        controls
       ><source src="/media/homepagevideo.mp4" type="video/mp4" /></HPVideo>
 
     </div>
