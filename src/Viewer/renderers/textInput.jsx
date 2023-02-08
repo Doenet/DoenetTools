@@ -323,7 +323,7 @@ export default function TextInput(props) {
 
   return <React.Fragment>
     <a name={id} />
-    <span className="textInputSurroundingBox" id={id} style={{display: "inline-flex"}}>
+    <span className="textInputSurroundingBox" id={id} style={{display: "inline-flex", maxWidth: "100%" }}>
       {input}
       {checkWorkButton}
     </span>
