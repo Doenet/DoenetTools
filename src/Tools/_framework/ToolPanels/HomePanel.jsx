@@ -22,40 +22,7 @@ const DoenetLogo = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const DoenetImage = styled.img`
-@media (max-width: 768px) {
-  width:500px;
-}
 
-&:focus {
-  outline: 2px solid var(--mainBlue);
-  outline-offset: 2px;
-}
-`;
-
-const SectionDiv = styled.div`
-  background-color: var(--canvas);
-  color: var(--canvastext);
-  padding: 20px 10px 60px 10px;
-  margin: 0px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-`;
-
-
-
-const CloudColor = styled.div`
-  background-color: var(--canvas);
-  color: var(--canvastext);
-`;
-const CloudColorSection = styled(CloudColor)`
-  padding: 20px 10px 60px 10px;
-  margin: 0px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-`;
 
 const LightBlueColor = styled.div`
 background-color: var(--lightBlue);
@@ -196,6 +163,27 @@ export default function HomePage(props) {
     </div>
 
     <Heading heading="Create Content" subheading="Authors can quickly create interactive activities" />
+
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '500px',
+      background: '#333333'
+    }}>
+
+      <video
+        height='420px'
+        src='/media/homepagevideo.mp4'
+        loop
+        muted
+        autoplay
+        controls
+      />
+
+    </div>
+
     <Heading heading="Explore" subheading="Interact with our existing content" />
     <LightBlueColorSection>
       <SectionText>
