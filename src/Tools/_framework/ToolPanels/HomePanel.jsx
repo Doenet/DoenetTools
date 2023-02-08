@@ -1,27 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
+// import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import styled from 'styled-components';
 import './homepage.css';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import DoenetDriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
+// import DoenetDriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import { useState } from 'react';
+import PageViewer from '../../../Viewer/PageViewer';
+import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 
-
-
-const LightBlueColor = styled.div`
-background-color: var(--lightBlue);
-color: black;
-`;
-const LightBlueColorSection = styled(LightBlueColor)`
-  padding: 20px 10px 60px 10px;
-  margin: 0px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-`;
 
 const SectionText = styled.div`
   text-align: center;
@@ -100,11 +90,17 @@ function Heading(props) {
   </div>
 }
 
+
+
 export default function HomePage(props) {
   // console.log(">>>===HomePage")
   let navigate = useNavigate();
   const [signedIn, setSignedIn] = useState(null);
   let checkingCookie = useRef(false);
+
+  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+
 
   const videoEl = useRef(null);
 
@@ -119,6 +115,18 @@ export default function HomePage(props) {
   useEffect(() => {
     attemptPlay();
   }, []);
+
+  function variantCallback(generatedVariantInfo, allPossibleVariants) {
+    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
+    setVariantPanel({
+      index: cleanGeneratedVariant.index,
+      allPossibleVariants,
+    });
+    setVariantInfo({
+      index: cleanGeneratedVariant.index,
+    });
+  }
 
   //Only ask once
   if (!checkingCookie.current) {
@@ -193,42 +201,76 @@ export default function HomePage(props) {
     </div>
 
     <Heading heading="Explore" subheading="Interact with our existing content" />
-    <LightBlueColorSection>
-      <SectionText>
+    <div style={{
+      padding: '20px 10px 60px 10px',
+      margin: '0px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      background: 'var(--mainGray)'
 
-        <Paragraph>
-          <div style={{ width: '850px', display: "flex", justifyContent: "space-between" }}>
-            <a aria-labelledby="Randomly-Generated-Graphs" href="/public?tool=editor&doenetId=_qyPDhmvsuwjwNGM9OPy3Q" style={{ textDecoration: "none" }}><DoenetDriveCard id="Randomly-Generated-Graphs" image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+    }}>
+      <div style={{
+        textAlign: 'center',
+        maxWidth: '800px',
+        display: 'inline-block',
+        marginLeft: '3em',
+        marginRight: '3em',
+      }}>
+        Make carousel to go here
+      </div>
+    </div>
 
-            <a aria-aria-labelledby="Hands-On-Activities" href="/public?tool=editor&doenetId=_T-cgqOlqTxAJbicaXqtKg" style={{ textDecoration: "none" }}><DoenetDriveCard id="Hands-On-Activities" image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
-
-            <a aria-labelledby="Dynamic-Content-Interactions" href="/public?tool=editor&doenetId=_JXTxrd8XXjfEy9GuFPcy6" style={{ textDecoration: "none" }}><DoenetDriveCard id="Dynamic-Content-Interactions" image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
-
-            <a aria-labelledby="Basics-of-Answer-Validation" href="/public?tool=editor&doenetId=_UdDWyNkqfF21O6Ew-Qh4O" style={{ textDecoration: "none" }}><DoenetDriveCard id="Basics-of-Answer-Validation" image="BasicAnswerValidation.jpg" label="Basics of Answer Validation" wwidth="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
-          </div>
-        </Paragraph>
-
-
-        <Paragraph>
-          <div style={{ width: '850px', display: "flex", justifyContent: "space-between" }}>
-            <a aria-labelledby="Dynamical-System" href="/public?tool=editor&doenetId=_Sf8u9bDhC5W6ta3YP0XWD" style={{ textDecoration: "none" }}><DoenetDriveCard id="Dynamical-System" image="AnteaterDynamicalSystem.jpg" label="Exploring an Anteater Dynamical System" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
-
-            <a aria-labelledby="Derivative-of-a-Gaussian" href="/public?tool=editor&doenetId=_i7KDJsUQeSToEv4DGmLKq" style={{ textDecoration: "none" }}><DoenetDriveCard id="Derivative-of-a-Gaussian" image="SketchGaussianCurve.jpg" label="Sketching the Derivative of a Gaussian" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
-
-            <a aria-labelledby="Average-Rate-of-Change" href="/public?tool=editor&doenetId=_2yATouuOTFtJAs9j_dzU3" style={{ textDecoration: "none" }}><DoenetDriveCard id="Average-Rate-of-Change" image="AverageRateOfChange.jpg" label="Average Rate of Change, Squirrel and Owl" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
-
-            <a aria-labelledby="Riemann-Sums" href="/public?tool=editor&doenetId=_cbOJJuuBUuzmhE1LcCHe6" style={{ textDecoration: "none" }}><DoenetDriveCard id="Riemann-Sums" image="RiemannSums.jpg" label="Sketching Riemann Sums, Varying Intervals" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
-          </div>
-        </Paragraph>
-
-
-
-      </SectionText>
-    </LightBlueColorSection>
 
     <Heading heading="Learn" subheading="Designed for the In-Person Classroom" />
 
+    <div style={{
+      padding: '20px 10px 60px 10px',
+      margin: '0px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      background: 'var(--lightBlue)'
 
+    }}>
+      <div style={{
+        textAlign: 'Left',
+        maxWidth: '800px',
+        display: 'inline-block',
+        marginLeft: '3em',
+        marginRight: '3em',
+      }}>
+        <h3>Immediate feedback in class</h3>
+        <p>One benefit of using Doenet during in-class activities is the immediate feedback
+          students receive even before an instructor can come by their group.</p>
+        <h3>Open-ended questions</h3>
+
+        <PageViewer
+          key={`HPpageViewer`}
+          doenetML="<graph ><point>(2,3)</point></graph>"
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: true,
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: false,
+            allowSaveState: false,
+            allowLocalState: false,
+            allowSaveSubmissions: false,
+            allowSaveEvents: false
+          }}
+          // doenetId={doenetId}
+          attemptNumber={1}
+          generatedVariantCallback={variantCallback} //TODO:Replace
+          requestedVariantIndex={variantInfo.index}
+
+          // setIsInErrorState={setIsInErrorState}
+          pageIsActive={true}
+        />
+      </div>
+
+    </div>
 
     <Footer>
       <SectionText>
