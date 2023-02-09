@@ -16,6 +16,7 @@ import {
   faChevronLeft,
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 
 const SectionText = styled.div`
@@ -110,6 +111,19 @@ const LeftRightChevron = styled(FontAwesomeIcon)`
 
 
 function DemoCard({ imagePath, text, link }) {
+
+  let image = <p style={{ fontSize: '2em', color: 'white' }}>Loading...</p>
+
+  if (imagePath == undefined) {
+    image = <p style={{ fontSize: '2em', color: 'white' }}>Coming Soon</p>
+  } else if (imagePath) {
+    image = <img style={{
+      maxWidth: '194px',
+      height: '94px'
+    }} src={imagePath} />
+  }
+
+
   return <a style={{
     textDecoration: 'none',
     marginLeft: '20px',
@@ -132,17 +146,17 @@ function DemoCard({ imagePath, text, link }) {
     background: '#121212',
     borderRadius: '6px'
   }}>
-        <img style={{
-          maxWidth: '194px',
-          height: '94px'
-        }} src={imagePath} />
+        {image}
       </div>
-      <div style={{ maxWidth: '180px', maxHeight: '50px', color: 'black' }}>{text}</div>
+      {imagePath || imagePath != '' ?
+        <div style={{ maxWidth: '180px', height: '45px', color: 'black' }}>{text}</div>
+        :
+        null}
     </div>
   </a>
 }
 
-function HPCarousel(props) {
+function HPCarousel({ data }) {
   const [activeSectionNumber, setActiveSectionNumber] = useState(0);
 
   let activeMenuStyle = {
@@ -203,24 +217,25 @@ function HPCarousel(props) {
           // border: '4px solid orange',
         }}>
           <DemoCard
-            imagePath="/media/bafkreibws5wpblki6anm47dfnb56f3d62yw3qjjktqcw3sj55ggbdbvm4y.jpg"
-            text="Kitten 1"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            // imagePath="/media/bafkreibws5wpblki6anm47dfnb56f3d62yw3qjjktqcw3sj55ggbdbvm4y.jpg"
+            imagePath={data[activeSectionNumber]?.[0]?.imagePath}
+            text={data[activeSectionNumber]?.[0]?.text}
+            link={data[activeSectionNumber]?.[0]?.link}
           />
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            imagePath={data[activeSectionNumber]?.[1]?.imagePath}
+            text={data[activeSectionNumber]?.[1]?.text}
+            link={data[activeSectionNumber]?.[1]?.link}
           />
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            imagePath={data[activeSectionNumber]?.[2]?.imagePath}
+            text={data[activeSectionNumber]?.[2]?.text}
+            link={data[activeSectionNumber]?.[2]?.link}
           />
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            imagePath={data[activeSectionNumber]?.[3]?.imagePath}
+            text={data[activeSectionNumber]?.[3]?.text}
+            link={data[activeSectionNumber]?.[3]?.link}
           />
 
         </div>
@@ -231,24 +246,24 @@ function HPCarousel(props) {
           // border: '4px solid orange',
         }}>
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            imagePath={data[activeSectionNumber]?.[4]?.imagePath}
+            text={data[activeSectionNumber]?.[4]?.text}
+            link={data[activeSectionNumber]?.[4]?.link}
           />
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            imagePath={data[activeSectionNumber]?.[5]?.imagePath}
+            text={data[activeSectionNumber]?.[5]?.text}
+            link={data[activeSectionNumber]?.[5]?.link}
           />
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            imagePath={data[activeSectionNumber]?.[6]?.imagePath}
+            text={data[activeSectionNumber]?.[6]?.text}
+            link={data[activeSectionNumber]?.[6]?.link}
           />
           <DemoCard
-            imagePath="/media/HPImage1.png"
-            text="Sketching the Derivative of a Function"
-            link="https://www.doenet.org/public?tool=editor&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX"
+            imagePath={data[activeSectionNumber]?.[7]?.imagePath}
+            text={data[activeSectionNumber]?.[7]?.text}
+            link={data[activeSectionNumber]?.[7]?.link}
           />
 
         </div>
@@ -268,7 +283,31 @@ function HPCarousel(props) {
 
 
 export default function HomePage(props) {
-  // console.log(">>>===HomePage")
+
+  let carouselData = useRef([]);
+
+  async function getCarouselData() {
+    try {
+      const resp = await axios.get('/api/getHPCarouselData.php');
+
+      if (resp.data.success) {
+        carouselData.current = resp.data.carouselData;
+
+      } else {
+        console.log("Couldn't load data");
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    console.log("CALL ONCE!!!")
+    getCarouselData();
+  }, [])
+
+  console.log(">>>===HomePage", carouselData.current)
   let doenetML = `
   <example>
 <setup>
@@ -379,6 +418,9 @@ export default function HomePage(props) {
 
   return <div style={props.style}>
 
+
+
+
     <div style={{
       display: 'flex',
       background: 'var(--mainGray)',
@@ -448,7 +490,7 @@ export default function HomePage(props) {
         marginLeft: '3em',
         marginRight: '3em',
       }}>
-        <HPCarousel />
+        <HPCarousel data={carouselData.current} />
 
       </div>
     </div>
@@ -475,7 +517,7 @@ export default function HomePage(props) {
         <p>One benefit of using Doenet during in-class activities is the immediate feedback
           students receive even before an instructor can come by their group.</p>
         <h3>Open-ended response </h3>
-        <p>Try our live example! (<a target="_blank" href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL">See source</a>)</p>
+        <p>Try our open-ended response example! (<a target="_blank" href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL">See source</a>)</p>
         <div style={{
           background: 'white',
           padding: '20px 0px 20px 0px'
