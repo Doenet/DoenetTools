@@ -474,7 +474,8 @@ export default function HomePage(props) {
         <h3>Immediate feedback in class</h3>
         <p>One benefit of using Doenet during in-class activities is the immediate feedback
           students receive even before an instructor can come by their group.</p>
-        <h3>Open-ended response example (<a target="_blank" href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL">See Source</a>)</h3>
+        <h3>Open-ended response </h3>
+        <p>Try our live example! (<a target="_blank" href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL">See source</a>)</p>
         <div style={{
           background: 'white',
           padding: '20px 0px 20px 0px'
