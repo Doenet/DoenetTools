@@ -18288,7 +18288,7 @@ describe('Answer Tag Tests', function () {
       </choiceInput>
     
     </sideBySide>
-    <copy prop='selectedValue' target='choice1' />
+    <copy prop='selectedValue' target='choice1' assignNames="sv" />
     
     <answer>
       <award><when><copy prop='selectedValue' target='choice1' /> = 4</when></award>
@@ -18304,6 +18304,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Select correct answer")
     cy.get('#\\/choice1').select(`4`);
+    cy.get('#\\/sv').should('have.text', '4');
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -18319,6 +18320,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Select incorrect answer and submit")
     cy.get('#\\/choice1').select(`3`);
+    cy.get('#\\/sv').should('have.text', '3');
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')

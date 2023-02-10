@@ -1514,6 +1514,11 @@ export default class Core {
     parent.unexpandedCompositesReady = result.unexpandedCompositesReady;
     parent.unexpandedCompositesNotReady = result.unexpandedCompositesNotReady;
 
+    let previousActiveChildren;
+
+    if (parent.activeChildren) {
+      previousActiveChildren = parent.activeChildren.map(child => child.componentName ? child.componentName : child);
+    }
 
     parent.activeChildren = parent.definingChildren.slice(); // shallow copy
 
@@ -1575,7 +1580,13 @@ export default class Core {
 
 
     if (parent.constructor.renderChildren) {
-      this.componentsWithChangedChildrenToRender.add(parent.componentName);
+      let childrenUnchanged = previousActiveChildren && previousActiveChildren.length == parent.activeChildren.length
+        && parent.activeChildren.every(
+          (child, ind) => child.componentName ? child.componentName === previousActiveChildren[ind] : child === previousActiveChildren[ind]
+        );
+      if (!childrenUnchanged) {
+        this.componentsWithChangedChildrenToRender.add(parent.componentName);
+      }
     }
 
     return childGroupResults;
@@ -8407,7 +8418,7 @@ export default class Core {
     // as even if changes were prevented, the renderers need to be given that information
     // so they can revert if the showed the changes before hearing back from core
     if (!canSkipUpdatingRenderer) {
-      updateInstructions.forEach(comp => this.updateInfo.componentsToUpdateRenderers.add(comp.componentName));
+      updateInstructions.forEach(comp => { if (comp.componentName) { this.updateInfo.componentsToUpdateRenderers.add(comp.componentName) } });
     }
 
     let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
@@ -8419,15 +8430,6 @@ export default class Core {
       actionId,
     });
 
-
-    if (this.updateInfo.componentsToUpdateRenderers.size > 0) {
-      // remove any names that were just updated
-      // (which can happen if tried to expand composites while updating renderers)
-
-      for (let cName of componentNamesToUpdate) {
-        this.updateInfo.componentsToUpdateRenderers.delete(cName);
-      }
-    }
 
 
     // updating renderer instructions could trigger more composite updates
