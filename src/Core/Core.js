@@ -74,10 +74,10 @@ export default class Core {
     }
 
     this.updateInfo = {
-      componentsToUpdateRenderers: [],
+      componentsToUpdateRenderers: new Set([]),
       compositesToExpand: new Set([]),
-      compositesToUpdateReplacements: [],
-      inactiveCompositesToUpdateReplacements: [],
+      compositesToUpdateReplacements: new Set([]),
+      inactiveCompositesToUpdateReplacements: new Set([]),
       componentsToUpdateActionChaining: {},
 
       unresolvedDependencies: {},
@@ -296,7 +296,7 @@ export default class Core {
       initialAdd: true,
     })
 
-    this.updateInfo.componentsToUpdateRenderers = [];
+    this.updateInfo.componentsToUpdateRenderers.clear();
 
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
@@ -494,11 +494,11 @@ export default class Core {
       // if so, make replacement changes and update renderer instructions again
       // TODO: should we check for child results earlier so we don't have to check them
       // when updating renderer instructions?
-      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+      if (this.updateInfo.compositesToUpdateReplacements.size > 0) {
         await this.replacementChangesFromCompositesToUpdate();
 
-        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
-        this.updateInfo.componentsToUpdateRenderers = [];
+        let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+        this.updateInfo.componentsToUpdateRenderers.clear();
 
         await this.updateRendererInstructions({
           componentNamesToUpdate,
@@ -574,11 +574,11 @@ export default class Core {
       // if so, make replacement changes and update renderer instructions again
       // TODO: should we check for child results earlier so we don't have to check them
       // when updating renderer instructions?
-      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+      if (this.updateInfo.compositesToUpdateReplacements.size > 0) {
         await this.replacementChangesFromCompositesToUpdate();
 
-        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
-        this.updateInfo.componentsToUpdateRenderers = [];
+        let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+        this.updateInfo.componentsToUpdateRenderers.clear();
 
         await this.updateRendererInstructions({
           componentNamesToUpdate,
@@ -2473,10 +2473,9 @@ export default class Core {
     // add them back to the queue
     if (!await composite.stateValues.isInactiveCompositeReplacement) {
       let cName = composite.componentName;
-      if (this.updateInfo.inactiveCompositesToUpdateReplacements.includes(cName)) {
-        this.updateInfo.inactiveCompositesToUpdateReplacements
-          = this.updateInfo.inactiveCompositesToUpdateReplacements.filter(x => x != cName);
-        this.updateInfo.compositesToUpdateReplacements.push(cName);
+      if (this.updateInfo.inactiveCompositesToUpdateReplacements.has(cName)) {
+        this.updateInfo.inactiveCompositesToUpdateReplacements.delete(cName);
+        this.updateInfo.compositesToUpdateReplacements.add(cName);
       }
 
     }
@@ -6153,7 +6152,7 @@ export default class Core {
     // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
     if (varName in this.rendererVariablesByComponentType[component.componentType]) {
-      this.updateInfo.componentsToUpdateRenderers.push(component.componentName);
+      this.updateInfo.componentsToUpdateRenderers.add(component.componentName);
     }
 
     let allStateVariablesAffectedObj = { [varName]: component.state[varName] };
@@ -6221,7 +6220,7 @@ export default class Core {
       }
 
       if (result.updateReplacements) {
-        this.updateInfo.compositesToUpdateReplacements.push(component.componentName);
+        this.updateInfo.compositesToUpdateReplacements.add(component.componentName);
       }
 
       if (result.updateParentRenderedChildren) {
@@ -6597,7 +6596,7 @@ export default class Core {
 
           for (let varName of upDep.upstreamVariableNames) {
             if (varName in this.rendererVariablesByComponentType[this.components[upDep.upstreamComponentName].componentType]) {
-              this.updateInfo.componentsToUpdateRenderers.push(upDep.upstreamComponentName);
+              this.updateInfo.componentsToUpdateRenderers.add(upDep.upstreamComponentName);
               break;
             }
           }
@@ -6677,7 +6676,7 @@ export default class Core {
 
 
             if (result.updateReplacements) {
-              this.updateInfo.compositesToUpdateReplacements.push(upDep.upstreamComponentName);
+              this.updateInfo.compositesToUpdateReplacements.add(upDep.upstreamComponentName);
             }
 
             if (result.updateParentRenderedChildren) {
@@ -7142,12 +7141,12 @@ export default class Core {
       // don't use recursive form since all children should already be included
       this.deregisterComponent(component, false);
 
+      // remove deleted components from this.updateInfo sets
+      this.updateInfo.componentsToUpdateRenderers.delete(componentName);
+      this.updateInfo.compositesToUpdateReplacements.delete(componentName);
+      this.updateInfo.inactiveCompositesToUpdateReplacements.delete(componentName);
+
     }
-
-
-    // remove deleted components from this.updateInfo arrays
-    this.updateInfo.componentsToUpdateRenderers = [... new Set(this.updateInfo.componentsToUpdateRenderers)].filter(x => !(x in componentsToDelete))
-    this.updateInfo.compositesToUpdateReplacements = [... new Set(this.updateInfo.compositesToUpdateReplacements)].filter(x => !(x in componentsToDelete))
 
     return {
       success: true,
@@ -7430,7 +7429,7 @@ export default class Core {
             await this.processNewDefiningChildren({ parent, expandComposites: false });
 
             let componentsAffected = await this.componentAndRenderedDescendants(parent);
-            this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
+            componentsAffected.forEach(cName => this.updateInfo.componentsToUpdateRenderers.add(cName));
 
           } else {
             // if not top level replacements
@@ -7450,7 +7449,7 @@ export default class Core {
             }
 
             let componentsAffected = await this.componentAndRenderedDescendants(parent);
-            this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
+            componentsAffected.forEach(cName => this.updateInfo.componentsToUpdateRenderers.add(cName));
 
             let newChange = {
               changeType: "addedReplacements",
@@ -7627,7 +7626,7 @@ export default class Core {
       for (let parent of deleteResults.parentsOfDeleted) {
         parentsOfDeleted.add(parent.componentName);
         let componentsAffected = await this.componentAndRenderedDescendants(parent);
-        this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
+        componentsAffected.forEach(cName => this.updateInfo.componentsToUpdateRenderers.add(cName));
       }
       let deletedNamesByParent = {};
       for (let compName in deleteResults.deletedComponents) {
@@ -7651,7 +7650,7 @@ export default class Core {
       Object.assign(deletedComponents, deleteResults.deletedComponents);
       let parent = this._components[composite.parentName];
       let componentsAffected = await this.componentAndRenderedDescendants(parent);
-      this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
+      componentsAffected.forEach(cName => this.updateInfo.componentsToUpdateRenderers.add(cName));
     }
     else {
       // if not change top level replacements
@@ -7669,7 +7668,7 @@ export default class Core {
       for (let parent of deleteResults.parentsOfDeleted) {
         parentsOfDeleted.add(parent.componentName);
         let componentsAffected = await this.componentAndRenderedDescendants(parent);
-        this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
+        componentsAffected.forEach(cName => this.updateInfo.componentsToUpdateRenderers.add(cName));
       }
       let deletedNamesByParent = {};
       for (let compName in deleteResults.deletedComponents) {
@@ -7700,7 +7699,7 @@ export default class Core {
     let parent = this._components[component.parentName];
     await this.processNewDefiningChildren({ parent, expandComposites: false });
     let componentsAffected = await this.componentAndRenderedDescendants(parent);
-    this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
+    componentsAffected.forEach(cName => this.updateInfo.componentsToUpdateRenderers.add(cName));
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
@@ -8408,12 +8407,11 @@ export default class Core {
     // as even if changes were prevented, the renderers need to be given that information
     // so they can revert if the showed the changes before hearing back from core
     if (!canSkipUpdatingRenderer) {
-      this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
+      updateInstructions.forEach(comp => this.updateInfo.componentsToUpdateRenderers.add(comp.componentName));
     }
 
-    // use set to create deduplicated list of components to update renderers
-    let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
-    this.updateInfo.componentsToUpdateRenderers = [];
+    let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+    this.updateInfo.componentsToUpdateRenderers.clear();
 
     await this.updateRendererInstructions({
       componentNamesToUpdate,
@@ -8422,16 +8420,12 @@ export default class Core {
     });
 
 
-    if (this.updateInfo.componentsToUpdateRenderers.length > 0) {
+    if (this.updateInfo.componentsToUpdateRenderers.size > 0) {
       // remove any names that were just updated
       // (which can happen if tried to expand composites while updating renderers)
 
-      let newNames = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
-      this.updateInfo.componentsToUpdateRenderers = [];
-      for (let name of newNames) {
-        if (!componentNamesToUpdate.includes(name)) {
-          this.updateInfo.componentsToUpdateRenderers.push(name);
-        }
+      for (let cName of componentNamesToUpdate) {
+        this.updateInfo.componentsToUpdateRenderers.delete(cName);
       }
     }
 
@@ -8441,11 +8435,11 @@ export default class Core {
     // if so, make replacement changes and update renderer instructions again
     // TODO: should we check for child results earlier so we don't have to check them
     // when updating renderer instructions?
-    if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+    if (this.updateInfo.compositesToUpdateReplacements.size > 0) {
       await this.replacementChangesFromCompositesToUpdate();
 
-      let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
-      this.updateInfo.componentsToUpdateRenderers = [];
+      let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+      this.updateInfo.componentsToUpdateRenderers.clear();
 
       await this.updateRendererInstructions({
         componentNamesToUpdate,
@@ -8459,8 +8453,7 @@ export default class Core {
     // it is possible that components were added back to componentNamesToUpdateRenderers
     // while processing the renderer instructions
     // so delete any names that were just addressed
-    this.updateInfo.componentsToUpdateRenderers
-      = this.updateInfo.componentsToUpdateRenderers.filter(x => !componentNamesToUpdate.includes(x));
+    componentNamesToUpdate.forEach(cName => this.updateInfo.componentsToUpdateRenderers.delete(cName));
 
     // TODO: when should we actually warn of unmatchedChildren
     // It shouldn't be just on update, but also on initial construction!
@@ -8832,10 +8825,10 @@ export default class Core {
 
   async replacementChangesFromCompositesToUpdate() {
 
-    let compositesToUpdateReplacements = [...new Set(this.updateInfo.compositesToUpdateReplacements)];
-    this.updateInfo.compositesToUpdateReplacements = [];
+    let compositesToUpdateReplacements = [...this.updateInfo.compositesToUpdateReplacements];
+    this.updateInfo.compositesToUpdateReplacements.clear();
 
-    let compositesNotReady = [];
+    let compositesNotReady = new Set([]);
 
     let nPasses = 0;
 
@@ -8851,7 +8844,7 @@ export default class Core {
 
           if (composite.state.readyToExpandWhenResolved.initiallyResolved) {
             if (await composite.stateValues.isInactiveCompositeReplacement) {
-              this.updateInfo.inactiveCompositesToUpdateReplacements.push(cName)
+              this.updateInfo.inactiveCompositesToUpdateReplacements.add(cName)
             } else {
               let result = await this.updateCompositeReplacements({
                 component: composite,
@@ -8879,7 +8872,7 @@ export default class Core {
               }
             }
           } else {
-            compositesNotReady.push(cName)
+            compositesNotReady.add(cName)
           }
         }
       }
@@ -8891,8 +8884,8 @@ export default class Core {
       // Note 2: if we don't update a composite here, the state variable indicating
       // its replacements need processing may remain stale, which will
       // prevent futher changes from being triggered
-      compositesToUpdateReplacements = [...new Set(this.updateInfo.compositesToUpdateReplacements)];
-      this.updateInfo.compositesToUpdateReplacements = [];
+      compositesToUpdateReplacements = [...this.updateInfo.compositesToUpdateReplacements];
+      this.updateInfo.compositesToUpdateReplacements.clear();
 
       // just in case have infinite loop, throw error after 100 passes
       nPasses++;
@@ -8990,7 +8983,7 @@ export default class Core {
         }
 
         if (vName in this.rendererVariablesByComponentType[comp.componentType]) {
-          this.updateInfo.componentsToUpdateRenderers.push(comp.componentName);
+          this.updateInfo.componentsToUpdateRenderers.add(comp.componentName);
         }
 
         if (compStateObj.isArray) {
