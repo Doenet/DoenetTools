@@ -151,7 +151,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
           };
 
           originalCopyWithUri.children = [extContent, ...originalCopyWithUri.children];
-          
+
         }
       }
     }
@@ -586,9 +586,9 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
   }
 }
 
-function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObjects) {
+function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObjects, ancestorString = "") {
 
-  for (let component of serializedComponents) {
+  for (let [component_ind, component] of serializedComponents.entries()) {
 
     // Note: do not do this for collect, as this dot notation would be confusing for collect
 
@@ -703,7 +703,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
                 // then wrap the extract in a setup and append
                 // and modify the updateValue/animateFromSequence to point to the extract
 
-                let longNameId = "fromExtendedSource|" + serializedComponents.length;
+                let longNameId = "fromExtendedSource" + ancestorString + "|" + component_ind;
                 let nameForExtract = createUniqueName("extract", longNameId);
                 newComponent.doenetAttributes.prescribedName = nameForExtract;
                 newComponent.doenetAttributes.createdFromMacro = true;
@@ -752,7 +752,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
     }
 
     if (component.children) {
-      breakUpTargetIntoPropsAndIndices(component.children, componentInfoObjects);
+      breakUpTargetIntoPropsAndIndices(component.children, componentInfoObjects, ancestorString + "|" + component_ind);
     }
   }
 }
@@ -2475,7 +2475,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
           children = children.slice(1)
 
-          let separateNewNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed:{} };
+          let separateNewNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed: {} };
           namespaceStack.push(separateNewNamespaceInfo);
 
           createComponentNames({
