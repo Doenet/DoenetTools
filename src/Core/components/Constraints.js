@@ -10,9 +10,7 @@ export default class Constraints extends BaseComponent {
     let attributes = super.createAttributesObject();
 
     attributes.baseOnGraph = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "baseOnGraph",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
     return attributes
@@ -92,22 +90,15 @@ export default class Constraints extends BaseComponent {
     }
 
     stateVariableDefinitions.graphComponentName = {
-      stateVariablesDeterminingDependencies: ["baseOnGraph"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.baseOnGraph) {
-          return {
-            graphComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.baseOnGraph
-            }
-          }
-        } else {
-          return {}
+      returnDependencies: () => ({
+        graphComponentName: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "baseOnGraph"
         }
-      },
+      }),
       definition({ dependencyValues }) {
-        if (dependencyValues.graphComponentName) {
-          return { setValue: { graphComponentName: dependencyValues.graphComponentName } }
+        if (dependencyValues.graphComponentName?.length === 1) {
+          return { setValue: { graphComponentName: dependencyValues.graphComponentName[0].absoluteName } }
         } else {
           return { setValue: { graphComponentName: null } }
         }

@@ -9,9 +9,7 @@ export default class SummaryStatistics extends BlockComponent {
     let attributes = super.createAttributesObject();
 
     attributes.source = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "source",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
     attributes.column = {
@@ -155,17 +153,19 @@ export default class SummaryStatistics extends BlockComponent {
     };
 
     stateVariableDefinitions.sourceName = {
-      stateVariablesDeterminingDependencies: ["source"],
-      returnDependencies: ({stateValues}) => ({
-        sourceName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.source
+      returnDependencies: () => ({
+        source: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "source"
         }
       }),
       definition({ dependencyValues }) {
-        let sourceName = null;
-        if (dependencyValues.sourceName) {
-          sourceName = dependencyValues.sourceName
+        let sourceName;
+
+        if (dependencyValues.source?.length === 1) {
+          sourceName = dependencyValues.source[0].absoluteName;
+        } else {
+          sourceName = null;
         }
         return { setValue: { sourceName } }
       }
@@ -182,7 +182,7 @@ export default class SummaryStatistics extends BlockComponent {
         },
         forRenderer: true,
       }],
-      returnDependencies({stateValues}) {
+      returnDependencies({ stateValues }) {
         return {
           dataFrame: {
             dependencyType: "stateVariable",
