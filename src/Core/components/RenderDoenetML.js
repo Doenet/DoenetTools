@@ -20,9 +20,7 @@ export default class RenderDoenetML extends CompositeComponent {
     }
 
     attributes.codeSource = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "rawCodeSource",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
 
@@ -38,21 +36,22 @@ export default class RenderDoenetML extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.codeSourceComponentName = {
-      stateVariablesDeterminingDependencies: ["rawCodeSource"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.rawCodeSource) {
-          return {
-            codeSourceComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.rawCodeSource
-            }
-          }
-        } else {
-          return {}
+      returnDependencies: () => ({
+        codeSource: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "codeSource"
         }
-      },
+      }),
       definition({ dependencyValues }) {
-        return { setValue: { codeSourceComponentName: dependencyValues.codeSourceComponentName } }
+        let codeSourceComponentName;
+
+        if (dependencyValues.codeSource?.length === 1) {
+          codeSourceComponentName = dependencyValues.codeSource[0].absoluteName;
+        } else {
+          codeSourceComponentName = null;
+        }
+
+        return { setValue: { codeSourceComponentName } }
       }
     }
 

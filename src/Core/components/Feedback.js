@@ -13,7 +13,7 @@ export default class Feedback extends BlockComponent {
       createComponentOfType: "boolean"
     }
     attributes.updateWith = {
-      createPrimitiveOfType: "string"
+      createTargetComponentNames: true,
     }
 
     return attributes;
@@ -32,40 +32,19 @@ export default class Feedback extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.updateWith = {
-      returnDependencies: () => ({
-        updateWithAttr: {
-          dependencyType: "attributePrimitive",
-          attributeName: "updateWith"
-        }
-      }),
-      definition({ dependencyValues }) {
-        return {
-          setValue: { updateWith: dependencyValues.updateWithAttr }
-        }
-      }
-    }
-
     stateVariableDefinitions.updateWithComponentNames = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateHide"
       },
-      stateVariablesDeterminingDependencies: ["updateWith"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.updateWith) {
-          return {
-            updateWithComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.updateWith
-            }
-          }
-        } else {
-          return {}
+      returnDependencies: () => ({
+        updateWith: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "updateWith"
         }
-      },
+      }),
       definition({ dependencyValues }) {
-        if (dependencyValues.updateWithComponentName) {
-          return { setValue: { updateWithComponentNames: [dependencyValues.updateWithComponentName] } }
+        if (dependencyValues.updateWith) {
+          return { setValue: { updateWithComponentNames: dependencyValues.updateWith.map(x => x.absoluteName) } }
         } else {
           return { setValue: { updateWithComponentNames: [] } }
         }
@@ -105,27 +84,24 @@ export default class Feedback extends BlockComponent {
       forRenderer: true,
       defaultValue: true,
       hasEssential: true,
-      stateVariablesDeterminingDependencies: ["updateWith"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.updateWith) {
-          return {};
-        } else {
-          return {
-            condition: {
-              dependencyType: "attributeComponent",
-              attributeName: "condition",
-              variableNames: ["value"],
-            },
-            showFeedback: {
-              dependencyType: "flag",
-              flagName: "showFeedback",
-            }
-          }
+      returnDependencies: () => ({
+        updateWith: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "updateWith"
+        },
+        condition: {
+          dependencyType: "attributeComponent",
+          attributeName: "condition",
+          variableNames: ["value"],
+        },
+        showFeedback: {
+          dependencyType: "flag",
+          flagName: "showFeedback",
         }
-      },
+      }),
       definition: function ({ dependencyValues }) {
 
-        if (!("condition" in dependencyValues)) {
+        if (dependencyValues.updateWith) {
           return {
             useEssentialOrDefaultValue: { hide: true }
           }
@@ -145,7 +121,7 @@ export default class Feedback extends BlockComponent {
         return { setValue: { hide } }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if ("condition" in dependencyValues) {
+        if (!dependencyValues.updateWith) {
           return { success: false }
         } else {
           return {

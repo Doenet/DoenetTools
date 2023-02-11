@@ -10,9 +10,7 @@ export default class CodeViewer extends BlockComponent {
     let attributes = super.createAttributesObject();
 
     attributes.codeSource = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "rawCodeSource",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
     attributes.width = {
@@ -52,7 +50,7 @@ export default class CodeViewer extends BlockComponent {
       if (componentAttributes.codeSource) {
         renderDoenetML.attributes = {
           codeSource: {
-            primitive: componentAttributes.codeSource
+            targetComponentNames: componentAttributes.codeSource
           }
         }
       }
@@ -178,21 +176,22 @@ export default class CodeViewer extends BlockComponent {
     }
 
     stateVariableDefinitions.codeSourceComponentName = {
-      stateVariablesDeterminingDependencies: ["rawCodeSource"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.rawCodeSource) {
-          return {
-            codeSourceComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.rawCodeSource
-            }
-          }
-        } else {
-          return {}
+      returnDependencies: () => ({
+        codeSource: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "codeSource"
         }
-      },
+      }),
       definition({ dependencyValues }) {
-        return { setValue: { codeSourceComponentName: dependencyValues.codeSourceComponentName } }
+        let codeSourceComponentName;
+
+        if (dependencyValues.codeSource?.length === 1) {
+          codeSourceComponentName = dependencyValues.codeSource[0].absoluteName;
+        } else {
+          codeSourceComponentName = null;
+        }
+
+        return { setValue: { codeSourceComponentName } }
       }
     }
 

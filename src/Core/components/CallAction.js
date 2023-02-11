@@ -51,11 +51,11 @@ export default class CallAction extends InlineComponent {
     }
 
     attributes.triggerWith = {
-      createPrimitiveOfType: "string"
+      createTargetComponentNames: true,
     }
 
     attributes.triggerWhenObjectsClicked = {
-      createPrimitiveOfType: "string"
+      createTargetComponentNames: true,
     }
 
     attributes.numbers = {
@@ -162,11 +162,11 @@ export default class CallAction extends InlineComponent {
     stateVariableDefinitions.triggerWith = {
       returnDependencies: () => ({
         triggerWith: {
-          dependencyType: "attributePrimitive",
+          dependencyType: "attributeTargetComponentNames",
           attributeName: "triggerWith"
         },
         triggerWhenObjectsClicked: {
-          dependencyType: "attributePrimitive",
+          dependencyType: "attributeTargetComponentNames",
           attributeName: "triggerWhenObjectsClicked"
         },
         triggerWhen: {
@@ -185,13 +185,13 @@ export default class CallAction extends InlineComponent {
 
           let triggerWith = [];
           if (dependencyValues.triggerWith !== null) {
-            for (let target of dependencyValues.triggerWith.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target })
+            for (let nameObj of dependencyValues.triggerWith) {
+              triggerWith.push({ target: nameObj.absoluteName });
             }
           }
           if (dependencyValues.triggerWhenObjectsClicked !== null) {
-            for (let target of dependencyValues.triggerWhenObjectsClicked.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target, triggeringAction: "click" })
+            for (let nameObj of dependencyValues.triggerWhenObjectsClicked) {
+              triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "click" })
             }
           }
 
@@ -208,32 +208,19 @@ export default class CallAction extends InlineComponent {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "callAction"
       },
-      stateVariablesDeterminingDependencies: ["triggerWith"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          triggerWith: {
-            dependencyType: "stateVariable",
-            variableName: "triggerWith"
-          }
-        };
-        if (stateValues.triggerWith) {
-          for (let [ind, targetObj] of stateValues.triggerWith.entries()) {
-
-            dependencies[`triggerWithTargetComponentName${ind}`] = {
-              dependencyType: "expandTargetName",
-              target: targetObj.target
-            }
-          }
+      returnDependencies: () => ({
+        triggerWith: {
+          dependencyType: "stateVariable",
+          variableName: "triggerWith"
         }
-        return dependencies;
-      },
+      }),
       definition({ dependencyValues }) {
         let triggerWithTargetIds = [];
 
         if (dependencyValues.triggerWith) {
-          for (let [ind, targetObj] of dependencyValues.triggerWith.entries()) {
+          for (let targetObj of dependencyValues.triggerWith) {
 
-            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
+            let id = targetObj.target;
 
             if (targetObj.triggeringAction) {
               id += "|" + targetObj.triggeringAction;
