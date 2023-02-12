@@ -2680,6 +2680,46 @@ describe('Conditional Content Tag Tests', function () {
 
   })
 
+  it('correctly withhold replacements when shadowing', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <booleanInput name="bi" />
+
+  <p name="p">
+    <conditionalContent condition="$bi">
+      hello
+    </conditionalContent>
+    <conditionalContent condition="not $bi">
+      bye
+    </conditionalContent>  
+  </p>
+  
+  <booleanInput name="bi2" />
+  <conditionalContent condition="$bi2" assignNames="(p2)">
+    $p
+  </conditionalContent>
+  
+  `}, "*");
+    });
+
+    cy.get('#\\/p').should('contain.text', 'bye');
+    cy.get('#\\/p').should('not.contain.text', 'hello');
+    cy.get('#\\/p2').should('not.exist');
+
+    cy.get('#\\/bi').click();
+
+    cy.get('#\\/p').should('contain.text', 'hello');
+    cy.get('#\\/p').should('not.contain.text', 'bye');
+    cy.get('#\\/p2').should('not.exist');
+
+
+    cy.get('#\\/bi2').click();
+
+    cy.get('#\\/p2').should('contain.text', 'hello');
+    cy.get('#\\/p2').should('not.contain.text', 'bye');
+  })
+
 
 })
 

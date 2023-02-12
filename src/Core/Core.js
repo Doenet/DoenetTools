@@ -2241,6 +2241,11 @@ export default class Core {
       serializedReplacements,
     });
 
+    if (shadowedComposite.replacementsToWithhold > 0) {
+      component.replacementsToWithhold = shadowedComposite.replacementsToWithhold;
+    }
+
+
     // record that are finished expanding the composite
     let targetInd = this.updateInfo.compositesBeingExpanded.indexOf(component.componentName);
     if (targetInd === -1) {
