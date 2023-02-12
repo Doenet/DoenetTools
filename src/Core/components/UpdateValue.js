@@ -64,6 +64,10 @@ export default class UpdateValue extends InlineComponent {
       createTargetComponentNames: "string"
     }
 
+    attributes.triggerWhenMouseDownOnObjects = {
+      createTargetComponentNames: "string"
+    }
+
     // for newValue with type==="math"
     // let simplify="" or simplify="true" be full simplify
     attributes.simplify = {
@@ -325,6 +329,10 @@ export default class UpdateValue extends InlineComponent {
           dependencyType: "attributeTargetComponentNames",
           attributeName: "triggerWhenObjectsClicked"
         },
+        triggerWhenMouseDownOnObjects: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "triggerWhenMouseDownOnObjects"
+        },
         triggerWhen: {
           dependencyType: "attributeComponent",
           attributeName: "triggerWhen"
@@ -348,6 +356,11 @@ export default class UpdateValue extends InlineComponent {
           if (dependencyValues.triggerWhenObjectsClicked !== null) {
             for (let nameObj of dependencyValues.triggerWhenObjectsClicked) {
               triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "click" })
+            }
+          }
+          if (dependencyValues.triggerWhenMouseDownOnObjects !== null) {
+            for (let nameObj of dependencyValues.triggerWhenMouseDownOnObjects) {
+              triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "down" })
             }
           }
 

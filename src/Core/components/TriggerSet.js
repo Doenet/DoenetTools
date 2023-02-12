@@ -31,6 +31,10 @@ export default class triggerSet extends InlineComponent {
       createTargetComponentNames: true,
     }
 
+    attributes.triggerWhenMouseDownOnObjects = {
+      createTargetComponentNames: "string"
+    }
+
     return attributes;
   }
 
@@ -82,6 +86,10 @@ export default class triggerSet extends InlineComponent {
           dependencyType: "attributeTargetComponentNames",
           attributeName: "triggerWhenObjectsClicked"
         },
+        triggerWhenMouseDownOnObjects: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "triggerWhenMouseDownOnObjects"
+        },
         triggerWhen: {
           dependencyType: "attributeComponent",
           attributeName: "triggerWhen"
@@ -100,6 +108,11 @@ export default class triggerSet extends InlineComponent {
           if (dependencyValues.triggerWhenObjectsClicked !== null) {
             for (let nameObj of dependencyValues.triggerWhenObjectsClicked) {
               triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "click" })
+            }
+          }
+          if (dependencyValues.triggerWhenMouseDownOnObjects !== null) {
+            for (let nameObj of dependencyValues.triggerWhenMouseDownOnObjects) {
+              triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "down" })
             }
           }
 
