@@ -180,6 +180,7 @@ export default React.memo(function Point(props) {
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
+            fromRenderer: true,
           }
         });
       } else if (SVs.switchable && !SVs.fixed) {
@@ -233,6 +234,7 @@ export default React.memo(function Point(props) {
           y: calculatedY.current,
           transient: true,
           skippable: true,
+          fromRenderer: true,
         }
       });
 
@@ -262,7 +264,7 @@ export default React.memo(function Point(props) {
       //if values update
       let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
-      
+
       if (pointJXG.current.visProp.fillcolor !== fillColor) {
         pointJXG.current.visProp.fillcolor = fillColor;
       }
@@ -349,9 +351,7 @@ export default React.memo(function Point(props) {
       }
 
       //Update only when the change was initiated with this point
-      if (sourceOfUpdate.sourceInformation &&
-        name in sourceOfUpdate.sourceInformation
-      ) {
+      if (sourceOfUpdate.sourceInformation?.[name]?.fromRenderer) {
         board.updateInfobox(pointJXG.current);
       }
 
@@ -447,8 +447,8 @@ function normalizeSize(size, style) {
   } else if (style === "plus") {
     return size * 1.2;
   } else if (style === "square") {
-      return size * 1.1;
-  } else if (style.substring(0,8) === "triangle") {
+    return size * 1.1;
+  } else if (style.substring(0, 8) === "triangle") {
     return size * 1.5;
   } else return size;
 }
