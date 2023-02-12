@@ -204,7 +204,14 @@ export default React.memo(function Curve(props) {
     if (SVs.curveType === "bezier") {
 
       board.on('up', upBoard);
-      newCurveJXG.on('down', downOther);
+      newCurveJXG.on('down', () => {
+        downOther();
+        callAction({
+          action: actions.mouseDownOnCurve,
+          args: { name }   // send name so get original name if adapted
+        });
+
+      });
 
       segmentAttributes.current = {
         visible: false,
@@ -271,6 +278,10 @@ export default React.memo(function Curve(props) {
     } else {
       newCurveJXG.on('down', function (e) {
         updateSinceDown.current = false;
+        callAction({
+          action: actions.mouseDownOnCurve,
+          args: { name }   // send name so get original name if adapted
+        });
       });
     }
     return newCurveJXG;
@@ -279,6 +290,7 @@ export default React.memo(function Curve(props) {
   function deleteCurveJXG() {
     board.off('up', upBoard);
     curveJXG.current.off('down');
+    curveJXG.current.off('up');
     board.removeObject(curveJXG.current);
     curveJXG.current = null;
     deleteControls();
