@@ -11,6 +11,7 @@ export default class Circle extends Curve {
   actions = {
     moveCircle: this.moveCircle.bind(this),
     circleClicked: this.circleClicked.bind(this),
+    mouseDownOnCircle: this.mouseDownOnCircle.bind(this),
   };
 
 
@@ -2411,6 +2412,17 @@ export default class Circle extends Curve {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnCircle({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
       componentName: this.componentName,
     })
 

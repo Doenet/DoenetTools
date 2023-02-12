@@ -173,12 +173,18 @@ export default React.memo(function Vector(props) {
       tailBeingDragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 1;
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
     newPoint2JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 2;
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
 
     // if drag vector, need to keep track of original point positions
@@ -191,6 +197,9 @@ export default React.memo(function Vector(props) {
         [...newVectorJXG.point1.coords.scrCoords],
         [...newVectorJXG.point2.coords.scrCoords]
       ];
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
 
     function onDragHandler(e, i) {

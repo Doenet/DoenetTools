@@ -8,6 +8,7 @@ export default class LineSegment extends GraphicalComponent {
   actions = {
     moveLineSegment: this.moveLineSegment.bind(this),
     lineSegmentClicked: this.lineSegmentClicked.bind(this),
+    mouseDownOnLineSegment: this.mouseDownOnLineSegment.bind(this),
   };
 
   static createAttributesObject() {
@@ -574,6 +575,17 @@ export default class LineSegment extends GraphicalComponent {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnLineSegment({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
       componentName: this.componentName,
     })
 

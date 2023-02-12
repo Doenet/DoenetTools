@@ -8,6 +8,7 @@ export default class Ray extends GraphicalComponent {
   actions = {
     moveRay: this.moveRay.bind(this),
     rayClicked: this.rayClicked.bind(this),
+    mouseDownOnRay: this.mouseDownOnRay.bind(this),
   };
 
   static createAttributesObject() {
@@ -1487,6 +1488,17 @@ export default class Ray extends GraphicalComponent {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnRay({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
       componentName: this.componentName,
     })
 

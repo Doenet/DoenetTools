@@ -142,6 +142,9 @@ export default React.memo(function Circle(props) {
       centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
+      callAction({
+        action: actions.mouseDownOnCircle
+      });
     });
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
