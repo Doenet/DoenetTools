@@ -26,19 +26,19 @@ const SectionText = styled.div`
   margin-left:3em;
   margin-right:3em;`;
 
-const Paragraph = styled.p`
-  text-align: left;
-   display: block;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    @media (max-width: 768px) {
-        margin-left:1em;
-        margin-right:1em;
-        text-align: left;
-        display: block;
-    }`;
+// const Paragraph = styled.p`
+//   text-align: left;
+//    display: block;
+//     margin-block-start: 1em;
+//     margin-block-end: 1em;
+//     margin-inline-start: 0px;
+//     margin-inline-end: 0px;
+//     @media (max-width: 768px) {
+//         margin-left:1em;
+//         margin-right:1em;
+//         text-align: left;
+//         display: block;
+//     }`;
 
 const Footer = styled.div`
   background-color: var(--mainGray);
@@ -96,12 +96,25 @@ function Heading(props) {
   </div>
 }
 
-const LeftRightChevron = styled(FontAwesomeIcon)`
+const LeftChevron = styled(FontAwesomeIcon)`
+  grid-area: 2/1/4/1;
   color: #949494;
   font-size: 50px;
-  margin-top: 140px;
-  margin-left: 40px;
-  margin-right: 40px;
+  /* margin-right: 40px;  */
+  margin-top: 80px;
+  cursor: pointer;
+  &: hover {
+  color: #0e1111;
+  }
+`
+
+const RightChevron = styled(FontAwesomeIcon)`
+  /* grid-area: 2/6/4/6; */
+  /* align-self: center; */
+  color: #949494;
+  margin-left: -20px;
+  font-size: 50px;
+  margin-top: 80px;
   cursor: pointer;
   &: hover {
   color: #0e1111;
@@ -120,37 +133,33 @@ function DemoCard({ imagePath, text, link }) {
     image = <p style={{
       maxWidth: '194px',
       height: '94px',
-      fontSize: '.2em',
+      fontSize: '1.5em',
       // fontSize: '2em',
       color: 'white'
     }}>Coming Soon</p>
   } else if (imagePath) {
     image = <img style={{
       maxWidth: '194px',
-      height: '94px'
+      // width: '95%',
+      height: '94px',
+      // height: '95%',
     }} src={imagePath} />
   }
 
 
   return <a style={{
     textDecoration: 'none',
-    // marginLeft: '20px',
-    // marginRight: '20px',
     '-webkitUserSelect': 'none',
     userSelect: 'none'
   }} href={link} target="_blank"><div style={{
     display: 'flex',
     alignItems: 'center',
-    // border: '4px solid orange',
     flexDirection: 'column',
   }}><div style={{
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    // width: '200px',
     width: '100%',
-    // height: '1fr',
-    // height: '.5fr',
     height: '100px',
     border: '2px solid #2D5994',
     // background: '#0e1111',
@@ -166,48 +175,80 @@ function DemoCard({ imagePath, text, link }) {
     </div>
   </a>
 }
+const CarouselOutsideContainer = styled.div`
+      display: grid;
+      grid-template-columns: 20px repeat(4, 1fr) 20px;
+      grid-template-rows: 30px 100px 100px;
+      row-gap: 5px;
+      column-gap: 20px;
+      width: 80%;
+      max-width: 900px;
+      @media (max-width: 500px) {
+        grid-template-columns: 10px repeat(4, 1fr) 10px;
+        grid-template-rows: 50px 100px 100px;
+  }
+`
 
 const CarouselContainer = styled.div`
-  display: grid;
-  grid-template-columns: 20px repeat(4, 1fr) 20px;
-  grid-template-rows: 24px 100px 100px;
-  row-gap: 10px;
-  column-gap: 10px;
-  width: 80%;
-  max-width: 900px;
-  @media (max-width: 900px) {
-    grid-template-columns: 20px repeat(4, 1fr) 20px;
-    grid-template-rows: 24px 100px 100px;
+    display: grid;
+    grid-area: 2/2/4/6;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 100px 100px;
+    column-gap: 10px;
+    row-gap: 10px;
+  @media (max-width: 800px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 100px);
   }
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(8, 100px);
+  }
+`
+
+const CarouselHeaderBar = styled.div`
+  grid-area: 1/1/1/7; 
+  display: flex; 
+  justify-content: center; 
+`
+
+const CarouselHeader = styled.div`
+    text-decoration: ${(props) => (props.active ? 'underline' : 'none')};
+    font-weight: ${(props) => (props.active ? 'bold' : 'none')};
+    cursor: pointer;
+    margin-left: 40px;
+    margin-right: 40px;
+    -webkit-user-select: none;
+    user-select: none;
+  @media (max-width: 800px) {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  @media (max-width: 500px) {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: .8em;
+  }
+`
+
+const CarouselSection = styled.div`
+  padding: 20px 10px 60px 10px;
+      margin: 0px;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: var(--mainGray);
+      height: 300px;
+      @media (max-width: 800px) {
+        height: 500px;
+      }
+      @media (max-width: 500px) {
+        height: 1000px;
+      }
 `
 
 function HPCarousel({ data }) {
   const [activeSectionNumber, setActiveSectionNumber] = useState(0);
-
-  let activeMenuStyle = {
-    textDecoration: 'underline',
-    fontWeight: 'bold',
-    marginLeft: '40px',
-    marginRight: '40px',
-    '-webkitUserSelect': 'none',
-    userSelect: 'none'
-  }
-  let inactiveMenuStyle = {
-    cursor: 'pointer',
-    marginLeft: '40px',
-    marginRight: '40px',
-    '-webkitUserSelect': 'none',
-    userSelect: 'none'
-  }
-
-  let menuStyles = [];
-  for (let i = 0; i < 3; i++) {
-    if (activeSectionNumber == i) {
-      menuStyles.push(activeMenuStyle)
-    } else {
-      menuStyles.push(inactiveMenuStyle)
-    }
-  }
 
   return <div style={{
     marginTop: '40px',
@@ -215,34 +256,62 @@ function HPCarousel({ data }) {
     justifyContent: 'center',
 
   }}>
-    {/* <div style={{
-      // marginTop: '40px',
-      display: 'grid',
-      gridTemplateColumns: '20px repeat(4, 1fr) 20px',
-      gridTemplateRows: '24px 100px 100px',
-      rowGap: '10px',
-      columnGap: '10px',
-      width: '80%',
-      maxWidth: '900px',
-    }}> */}
-    <CarouselContainer>
-      <div style={{ gridArea: '1/1/1/7', background: 'green' }} >menus</div>
-      <div style={{ gridArea: '2/1/4/1', background: 'red' }} >left</div>
-      <div style={{ gridArea: '2/6/4/6', background: 'red' }} >right</div>
+    <CarouselOutsideContainer>
 
-      <div style={{ gridArea: '2/2/3/2', background: 'grey' }} >1 item</div>
-      <div style={{ gridArea: '2/3/3/3', background: 'grey' }} >2 item</div>
-      <div style={{ gridArea: '2/4/3/4', background: 'grey' }} >3 item</div>
-      <div style={{ gridArea: '2/5/3/5', background: 'grey' }} >4 item</div>
-      <div style={{ gridArea: '3/2/3/2', background: 'grey' }} >5 item</div>
-      <div style={{ gridArea: '3/3/3/3', background: 'grey' }} >6 item</div>
-      <div style={{ gridArea: '3/4/3/4', background: 'grey' }} >7 item</div>
-      <div style={{ gridArea: '3/5/3/5', background: 'grey' }} >8 item</div>
-    </CarouselContainer>
+      <CarouselHeaderBar>
+        <CarouselHeader active={activeSectionNumber == 0} onClick={() => setActiveSectionNumber(0)}>College Math</CarouselHeader>
+        <CarouselHeader active={activeSectionNumber == 1} onClick={() => setActiveSectionNumber(1)}>Science & Engineering</CarouselHeader>
+        <CarouselHeader active={activeSectionNumber == 2} onClick={() => setActiveSectionNumber(2)}>K-12 Math</CarouselHeader>
+      </CarouselHeaderBar>
+      <div style={{ gridArea: '2/1/4/1' }} >
+        <LeftChevron icon={faChevronLeft} onClick={() => setActiveSectionNumber((current) => {
+          if (current == 0) {
+            return 2;
+          } else {
+            return current - 1;
+          }
+        })} />
+      </div>
+
+      <div style={{
+        gridArea: '2/6/4/6',
+      }} >
+        <RightChevron icon={faChevronRight} onClick={() => setActiveSectionNumber((current) => {
+          if (current == 2) {
+            return 0;
+          } else {
+            return current + 1;
+          }
+        })} />
+
+      </div>
+
+
+      <CarouselContainer>
+        <DemoCard imagePath={data[activeSectionNumber]?.[0]?.imagePath} text={data[activeSectionNumber]?.[0]?.text}
+          link={data[activeSectionNumber]?.[0]?.link} />
+        <DemoCard imagePath={data[activeSectionNumber]?.[1]?.imagePath} text={data[activeSectionNumber]?.[1]?.text}
+          link={data[activeSectionNumber]?.[1]?.link} />
+        <DemoCard imagePath={data[activeSectionNumber]?.[2]?.imagePath} text={data[activeSectionNumber]?.[2]?.text}
+          link={data[activeSectionNumber]?.[2]?.link} />
+        <DemoCard imagePath={data[activeSectionNumber]?.[3]?.imagePath} text={data[activeSectionNumber]?.[3]?.text}
+          link={data[activeSectionNumber]?.[3]?.link} />
+        <DemoCard imagePath={data[activeSectionNumber]?.[4]?.imagePath} text={data[activeSectionNumber]?.[4]?.text}
+          link={data[activeSectionNumber]?.[4]?.link} />
+        <DemoCard imagePath={data[activeSectionNumber]?.[5]?.imagePath} text={data[activeSectionNumber]?.[5]?.text}
+          link={data[activeSectionNumber]?.[5]?.link} />
+        <DemoCard imagePath={data[activeSectionNumber]?.[6]?.imagePath} text={data[activeSectionNumber]?.[6]?.text}
+          link={data[activeSectionNumber]?.[6]?.link} />
+        <DemoCard imagePath={data[activeSectionNumber]?.[7]?.imagePath} text={data[activeSectionNumber]?.[7]?.text}
+          link={data[activeSectionNumber]?.[7]?.link} />
+      </CarouselContainer>
+
+    </CarouselOutsideContainer >
   </div>
-  // </div>
+
 
 }
+
 
 
 
@@ -379,41 +448,19 @@ export default function HomePage(props) {
     signInButton = <div style={signInButtonStyle}><Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" /></div>
   }
 
-  return <div style={{
-    padding: '20px 10px 60px 10px',
-    margin: '0px',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
-    background: 'var(--mainGray)',
-  }}>
-    <HPCarousel data={carouselData.current} />
+  // return <div style={{
+  //   padding: '20px 10px 60px 10px',
+  //   margin: '0px',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   textAlign: 'center',
+  //   background: 'var(--mainGray)',
+  // }}>
+  //   <HPCarousel data={carouselData.current} />
 
-  </div>
+  // </div>
 
   return <div style={props.style}>
-
-    <div style={{
-      padding: '20px 10px 60px 10px',
-      margin: '0px',
-      justifyContent: 'center',
-      alignItems: 'center',
-      textAlign: 'center',
-      background: 'var(--mainGray)',
-      // height: '500px',
-    }}>
-      <HPCarousel data={carouselData.current} />
-      {/* <div style={{
-        textAlign: 'center',
-        // maxWidth: '800px',
-        display: 'inline-block',
-        marginLeft: '3em',
-        marginRight: '3em',
-      }}> */}
-
-      {/* </div> */}
-    </div>
-
 
 
     <div style={{
@@ -469,6 +516,18 @@ export default function HomePage(props) {
 
     <Heading heading="Explore" subheading="Interact with our existing content" />
 
+    {/* <div style={{
+      padding: '20px 10px 60px 10px',
+      margin: '0px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      background: 'var(--mainGray)',
+      // height: '500px',
+    }}> */}
+    <CarouselSection>
+      <HPCarousel data={carouselData.current} />
+    </CarouselSection>
 
     <Heading heading="Learn" subheading="Designed for the In-Person Classroom" />
 
