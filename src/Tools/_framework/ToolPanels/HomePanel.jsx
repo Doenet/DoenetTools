@@ -110,12 +110,20 @@ const LeftRightChevron = styled(FontAwesomeIcon)`
 
 
 
+
+
 function DemoCard({ imagePath, text, link }) {
 
   let image = <p style={{ fontSize: '2em', color: 'white' }}>Loading...</p>
 
   if (imagePath == undefined) {
-    image = <p style={{ fontSize: '2em', color: 'white' }}>Coming Soon</p>
+    image = <p style={{
+      maxWidth: '194px',
+      height: '94px',
+      fontSize: '.2em',
+      // fontSize: '2em',
+      color: 'white'
+    }}>Coming Soon</p>
   } else if (imagePath) {
     image = <img style={{
       maxWidth: '194px',
@@ -126,8 +134,8 @@ function DemoCard({ imagePath, text, link }) {
 
   return <a style={{
     textDecoration: 'none',
-    marginLeft: '20px',
-    marginRight: '20px',
+    // marginLeft: '20px',
+    // marginRight: '20px',
     '-webkitUserSelect': 'none',
     userSelect: 'none'
   }} href={link} target="_blank"><div style={{
@@ -139,7 +147,10 @@ function DemoCard({ imagePath, text, link }) {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '200px',
+    // width: '200px',
+    width: '100%',
+    // height: '1fr',
+    // height: '.5fr',
     height: '100px',
     border: '2px solid #2D5994',
     // background: '#0e1111',
@@ -155,6 +166,20 @@ function DemoCard({ imagePath, text, link }) {
     </div>
   </a>
 }
+
+const CarouselContainer = styled.div`
+  display: grid;
+  grid-template-columns: 20px repeat(4, 1fr) 20px;
+  grid-template-rows: 24px 100px 100px;
+  row-gap: 10px;
+  column-gap: 10px;
+  width: 80%;
+  max-width: 900px;
+  @media (max-width: 900px) {
+    grid-template-columns: 20px repeat(4, 1fr) 20px;
+    grid-template-rows: 24px 100px 100px;
+  }
+`
 
 function HPCarousel({ data }) {
   const [activeSectionNumber, setActiveSectionNumber] = useState(0);
@@ -186,98 +211,37 @@ function HPCarousel({ data }) {
 
   return <div style={{
     marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+
   }}>
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-    }}>
-      <LeftRightChevron icon={faChevronLeft} onClick={() => setActiveSectionNumber((current) => {
-        if (current == 0) {
-          return 2;
-        } else {
-          return current - 1;
-        }
-      })} />
-      <div>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: '20px',
-        }}>
-          <div style={menuStyles[0]} onClick={() => setActiveSectionNumber(0)}>College Math</div>
-          <div style={menuStyles[1]} onClick={() => setActiveSectionNumber(1)}>Science & Engineering</div>
-          <div style={menuStyles[2]} onClick={() => setActiveSectionNumber(2)}>K-12 Math</div>
-        </div>
+    {/* <div style={{
+      // marginTop: '40px',
+      display: 'grid',
+      gridTemplateColumns: '20px repeat(4, 1fr) 20px',
+      gridTemplateRows: '24px 100px 100px',
+      rowGap: '10px',
+      columnGap: '10px',
+      width: '80%',
+      maxWidth: '900px',
+    }}> */}
+    <CarouselContainer>
+      <div style={{ gridArea: '1/1/1/7', background: 'green' }} >menus</div>
+      <div style={{ gridArea: '2/1/4/1', background: 'red' }} >left</div>
+      <div style={{ gridArea: '2/6/4/6', background: 'red' }} >right</div>
 
-
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          maxWidth: '980px',
-          // border: '4px solid orange',
-        }}>
-          <DemoCard
-            // imagePath="/media/bafkreibws5wpblki6anm47dfnb56f3d62yw3qjjktqcw3sj55ggbdbvm4y.jpg"
-            imagePath={data[activeSectionNumber]?.[0]?.imagePath}
-            text={data[activeSectionNumber]?.[0]?.text}
-            link={data[activeSectionNumber]?.[0]?.link}
-          />
-          <DemoCard
-            imagePath={data[activeSectionNumber]?.[1]?.imagePath}
-            text={data[activeSectionNumber]?.[1]?.text}
-            link={data[activeSectionNumber]?.[1]?.link}
-          />
-          <DemoCard
-            imagePath={data[activeSectionNumber]?.[2]?.imagePath}
-            text={data[activeSectionNumber]?.[2]?.text}
-            link={data[activeSectionNumber]?.[2]?.link}
-          />
-          <DemoCard
-            imagePath={data[activeSectionNumber]?.[3]?.imagePath}
-            text={data[activeSectionNumber]?.[3]?.text}
-            link={data[activeSectionNumber]?.[3]?.link}
-          />
-
-        </div>
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          maxWidth: '980px',
-          // border: '4px solid orange',
-        }}>
-          <DemoCard
-            imagePath={data[activeSectionNumber]?.[4]?.imagePath}
-            text={data[activeSectionNumber]?.[4]?.text}
-            link={data[activeSectionNumber]?.[4]?.link}
-          />
-          <DemoCard
-            imagePath={data[activeSectionNumber]?.[5]?.imagePath}
-            text={data[activeSectionNumber]?.[5]?.text}
-            link={data[activeSectionNumber]?.[5]?.link}
-          />
-          <DemoCard
-            imagePath={data[activeSectionNumber]?.[6]?.imagePath}
-            text={data[activeSectionNumber]?.[6]?.text}
-            link={data[activeSectionNumber]?.[6]?.link}
-          />
-          <DemoCard
-            imagePath={data[activeSectionNumber]?.[7]?.imagePath}
-            text={data[activeSectionNumber]?.[7]?.text}
-            link={data[activeSectionNumber]?.[7]?.link}
-          />
-
-        </div>
-      </div>
-      <LeftRightChevron icon={faChevronRight} onClick={() => setActiveSectionNumber((current) => {
-        if (current == 2) {
-          return 0;
-        } else {
-          return current + 1;
-        }
-      })} />
-    </div>
-
+      <div style={{ gridArea: '2/2/3/2', background: 'grey' }} >1 item</div>
+      <div style={{ gridArea: '2/3/3/3', background: 'grey' }} >2 item</div>
+      <div style={{ gridArea: '2/4/3/4', background: 'grey' }} >3 item</div>
+      <div style={{ gridArea: '2/5/3/5', background: 'grey' }} >4 item</div>
+      <div style={{ gridArea: '3/2/3/2', background: 'grey' }} >5 item</div>
+      <div style={{ gridArea: '3/3/3/3', background: 'grey' }} >6 item</div>
+      <div style={{ gridArea: '3/4/3/4', background: 'grey' }} >7 item</div>
+      <div style={{ gridArea: '3/5/3/5', background: 'grey' }} >8 item</div>
+    </CarouselContainer>
   </div>
+  // </div>
+
 }
 
 
@@ -415,9 +379,40 @@ export default function HomePage(props) {
     signInButton = <div style={signInButtonStyle}><Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" /></div>
   }
 
+  return <div style={{
+    padding: '20px 10px 60px 10px',
+    margin: '0px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    background: 'var(--mainGray)',
+  }}>
+    <HPCarousel data={carouselData.current} />
+
+  </div>
 
   return <div style={props.style}>
 
+    <div style={{
+      padding: '20px 10px 60px 10px',
+      margin: '0px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      background: 'var(--mainGray)',
+      // height: '500px',
+    }}>
+      <HPCarousel data={carouselData.current} />
+      {/* <div style={{
+        textAlign: 'center',
+        // maxWidth: '800px',
+        display: 'inline-block',
+        marginLeft: '3em',
+        marginRight: '3em',
+      }}> */}
+
+      {/* </div> */}
+    </div>
 
 
 
@@ -460,40 +455,20 @@ export default function HomePage(props) {
       <HPVideo
         // height='420px'
         fluid='false'
-        src='/media/homepagevideo2.mp4'
-        loop
+        // src='/media/homepagevideo2.mp4'
+        // loop
         muted
         playsInline
         alt="Demonstration video on making DoenetML content"
         ref={videoEl}
         // autoplay
         controls
-      ><source src="/media/homepagevideo.mp4" type="video/mp4" /></HPVideo>
+      ><source src="/media/homepagevideo3.mp4" type="video/mp4" /></HPVideo>
 
     </div>
 
     <Heading heading="Explore" subheading="Interact with our existing content" />
 
-    <div style={{
-      padding: '20px 10px 60px 10px',
-      margin: '0px',
-      justifyContent: 'center',
-      alignItems: 'center',
-      textAlign: 'center',
-      background: 'var(--mainGray)',
-      // height: '500px',
-    }}>
-      <div style={{
-        textAlign: 'center',
-        // maxWidth: '800px',
-        display: 'inline-block',
-        marginLeft: '3em',
-        marginRight: '3em',
-      }}>
-        <HPCarousel data={carouselData.current} />
-
-      </div>
-    </div>
 
     <Heading heading="Learn" subheading="Designed for the In-Person Classroom" />
 
@@ -598,5 +573,5 @@ export default function HomePage(props) {
       </SectionText>
     </Footer>
 
-  </div>
+  </div >
 }
