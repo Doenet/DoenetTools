@@ -434,6 +434,48 @@ describe('Conditional Content Tag Tests', function () {
 
   });
 
+  it('correctly withhold replacements when shadowing', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <p>Hide greeting:
+    <booleanInput name="hide" />
+    </p>
+    
+    <p name="p">Greeting is hidden: $hide. Greeting: <conditionalContent condition="not $hide">Hello!</conditionalContent></p>
+    
+    <p>Show copy:
+      <booleanInput name="show_copy" />
+    </p>
+    <conditionalContent condition="$show_copy" assignNames="(p2)">
+      $p
+    </conditionalContent>
+    
+  `}, "*");
+    });
+
+    cy.get('#\\/p').should('have.text', 'Greeting is hidden: false. Greeting: Hello!');
+    cy.get('#\\/p2').should('not.exist');
+
+    cy.get('#\\/hide').click();
+
+    cy.get('#\\/p').should('have.text', 'Greeting is hidden: true. Greeting: ');
+    cy.get('#\\/p2').should('not.exist');
+
+
+    cy.get('#\\/show_copy').click();
+    cy.get('#\\/p2').should('have.text', 'Greeting is hidden: true. Greeting: ');
+
+
+    cy.get('#\\/hide').click();
+
+    cy.get('#\\/p').should('have.text', 'Greeting is hidden: false. Greeting: Hello!');
+    cy.get('#\\/p2').should('have.text', 'Greeting is hidden: false. Greeting: Hello!');
+
+
+
+  })
+
 
   // tests with cases or else
 
@@ -2678,46 +2720,6 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/winner0').should('have.text', "no winner");
     cy.get('#\\/_p5').should('have.text', "We have no winner.");
 
-  })
-
-  it('correctly withhold replacements when shadowing', () => {
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-  <booleanInput name="bi" />
-
-  <p name="p">
-    <conditionalContent condition="$bi">
-      hello
-    </conditionalContent>
-    <conditionalContent condition="not $bi">
-      bye
-    </conditionalContent>  
-  </p>
-  
-  <booleanInput name="bi2" />
-  <conditionalContent condition="$bi2" assignNames="(p2)">
-    $p
-  </conditionalContent>
-  
-  `}, "*");
-    });
-
-    cy.get('#\\/p').should('contain.text', 'bye');
-    cy.get('#\\/p').should('not.contain.text', 'hello');
-    cy.get('#\\/p2').should('not.exist');
-
-    cy.get('#\\/bi').click();
-
-    cy.get('#\\/p').should('contain.text', 'hello');
-    cy.get('#\\/p').should('not.contain.text', 'bye');
-    cy.get('#\\/p2').should('not.exist');
-
-
-    cy.get('#\\/bi2').click();
-
-    cy.get('#\\/p2').should('contain.text', 'hello');
-    cy.get('#\\/p2').should('not.contain.text', 'bye');
   })
 
 
