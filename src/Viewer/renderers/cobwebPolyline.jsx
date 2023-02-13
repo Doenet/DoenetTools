@@ -156,7 +156,7 @@ export default React.memo(function CobwebPolyline(props) {
     let newPolylineJXG = board.create('curve', [x, y], jsxPolylineAttributes);
 
     for (let i = 0; i < SVs.nPoints; i++) {
-      pointsJXG.current[i].on('drag', x => dragHandler(i));
+      pointsJXG.current[i].on('drag', e => dragHandler(i, e));
       pointsJXG.current[i].on('up', x => upHandler(i));
       pointsJXG.current[i].on('down', x => draggedPoint.current = null);
     }
@@ -189,7 +189,10 @@ export default React.memo(function CobwebPolyline(props) {
     }
   }
 
-  function dragHandler(i) {
+  function dragHandler(i, e) {
+
+    let viaPointer = e.type === "pointermove";
+
     draggedPoint.current = i;
 
     pointCoords.current = {};
@@ -198,8 +201,8 @@ export default React.memo(function CobwebPolyline(props) {
       action: actions.movePolyline,
       args: {
         pointCoords: pointCoords.current,
-        transient: true,
-        skippable: true,
+        transient: viaPointer,
+        skippable: viaPointer,
         sourceInformation: { vertex: i }
       }
     })
@@ -273,7 +276,7 @@ export default React.memo(function CobwebPolyline(props) {
             board.create('point', [...SVs.numericalVertices[i]], pointAttributes)
           );
 
-          pointsJXG.current[i].on('drag', x => dragHandler(i));
+          pointsJXG.current[i].on('drag', e => dragHandler(i, e));
           pointsJXG.current[i].on('up', x => upHandler(i));
           pointsJXG.current[i].on('down', x => draggedPoint.current = null);
         }

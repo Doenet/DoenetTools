@@ -1114,7 +1114,7 @@ export default class Point extends GraphicalComponent {
 
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.numericalXs) {
-          if (!dependencyValuesByKey[arrayKey]) {
+          if (!dependencyNamesByKey[arrayKey]) {
             continue;
           }
           instructions.push({

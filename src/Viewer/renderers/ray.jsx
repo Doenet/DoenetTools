@@ -12,11 +12,11 @@ export default React.memo(function Ray(props) {
 
   let rayJXG = useRef(null);
 
-  let pointerAtDown = useRef(false);
-  let pointsAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointsAtDown = useRef(null);
   let dragged = useRef(false);
 
-  let previousWithLabel = useRef(false);
+  let previousWithLabel = useRef(null);
   let pointCoords = useRef(null);
 
   let lastEndpointFromCore = useRef(null);
@@ -89,20 +89,48 @@ export default React.memo(function Ray(props) {
     let newRayJXG = board.create('line', through, jsxRayAttributes);
 
     newRayJXG.on('drag', function (e) {
+
+      let viaPointer = e.type === "pointermove";
+
       //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
         dragged.current = true;
 
-        pointCoords.current = calculatePointPositions(e);
+        pointCoords.current = []
+
+        for (let i = 0; i < 2; i++) {
+          if (viaPointer) {
+            // the reason we calculate point position with this algorithm,
+            // rather than using .X() and .Y() directly
+            // is so that points don't get trapped on an attracting object
+            // if you move the mouse slowly.
+            // The attributes .X() and .Y() are affected by
+            // .setCoordinates functions called in update()
+            // so will get modified to go back to the attracting object
+            var o = board.origin.scrCoords;
+            let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+              - o[1]) / board.unitX;
+            let calculatedY = (o[2] -
+              (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+              / board.unitY;
+            pointCoords.current.push([calculatedX, calculatedY]);
+          } else {
+            pointCoords.current.push([newRayJXG.point1.X(), newRayJXG.point1.Y()]);
+            pointCoords.current.push([newRayJXG.point2.X(), newRayJXG.point2.Y()]);
+          }
+        }
+
 
         callAction({
           action: actions.moveRay,
           args: {
             endpointcoords: pointCoords.current[0],
             throughcoords: pointCoords.current[1],
-            transient: true,
-            skippable: true,
+            transient: viaPointer,
+            skippable: viaPointer,
           }
         });
       }
@@ -152,30 +180,6 @@ export default React.memo(function Ray(props) {
     rayJXG.current = null;
   }
 
-  function calculatePointPositions(e) {
-
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is so that points don't get trapped on an attracting object
-    // if you move the mouse slowly.
-    // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called in update()
-    // so will get modified to go back to the attracting object
-
-    var o = board.origin.scrCoords;
-
-    let pointCoords = []
-
-    for (let i = 0; i < 2; i++) {
-      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      let calculatedY = (o[2] -
-        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      pointCoords.push([calculatedX, calculatedY]);
-    }
-    return pointCoords;
-  }
 
   if (board) {
 

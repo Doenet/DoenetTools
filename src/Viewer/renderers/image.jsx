@@ -16,8 +16,8 @@ export default React.memo(function Image(props) {
 
   const board = useContext(BoardContext);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
   let dragged = useRef(false);
 
   let calculatedX = useRef(null);
@@ -160,16 +160,16 @@ export default React.memo(function Image(props) {
     });
 
     newImageJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let xminAdjusted = xmin + 0.01 * (xmax - xmin) - currentOffset.current[0] - currentSize.current[0];
@@ -178,13 +178,33 @@ export default React.memo(function Image(props) {
       let ymaxAdjusted = ymax - 0.01 * (ymax - ymin) - currentOffset.current[1];
 
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+        var o = board.origin.scrCoords;
+
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+
+        calculatedX.current = newAnchorPointJXG.X() + newImageJXG.relativeCoords.usrCoords[1] - currentOffset.current[0];
+        calculatedY.current = newAnchorPointJXG.Y() + newImageJXG.relativeCoords.usrCoords[2] - currentOffset.current[1];
+
+      }
+
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
@@ -192,19 +212,14 @@ export default React.memo(function Image(props) {
         args: {
           x: calculatedX.current,
           y: calculatedY.current,
-          transient: true,
-          skippable: true,
+          transient: viaPointer,
+          skippable: viaPointer,
         }
       });
 
       newImageJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, currentOffset.current);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
 
     });
 

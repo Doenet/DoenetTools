@@ -15,8 +15,8 @@ export default React.memo(function Label(props) {
 
   const board = useContext(BoardContext);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
   let dragged = useRef(false);
 
   let calculatedX = useRef(null);

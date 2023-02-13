@@ -15,8 +15,8 @@ export default React.memo(function Point(props) {
   let pointJXG = useRef(null);
   let shadowPointJXG = useRef(null);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
@@ -204,26 +204,41 @@ export default React.memo(function Point(props) {
     });
 
     newShadowPointJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
+        var o = board.origin.scrCoords;
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+        calculatedX.current = newShadowPointJXG.X();
+        calculatedY.current = newShadowPointJXG.Y();
+      }
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
       calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
 
       callAction({
@@ -231,19 +246,14 @@ export default React.memo(function Point(props) {
         args: {
           x: calculatedX.current,
           y: calculatedY.current,
-          transient: true,
-          skippable: true,
+          transient: viaPointer,
+          skippable: viaPointer,
         }
       });
 
       newPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
       board.updateInfobox(newPointJXG);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
 
     });
 
@@ -262,7 +272,7 @@ export default React.memo(function Point(props) {
       //if values update
       let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
-      
+
       if (pointJXG.current.visProp.fillcolor !== fillColor) {
         pointJXG.current.visProp.fillcolor = fillColor;
       }
@@ -447,8 +457,8 @@ function normalizeSize(size, style) {
   } else if (style === "plus") {
     return size * 1.2;
   } else if (style === "square") {
-      return size * 1.1;
-  } else if (style.substring(0,8) === "triangle") {
+    return size * 1.1;
+  } else if (style.substring(0, 8) === "triangle") {
     return size * 1.5;
   } else return size;
 }

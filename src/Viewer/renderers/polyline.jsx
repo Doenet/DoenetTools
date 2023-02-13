@@ -162,26 +162,51 @@ export default React.memo(function Polyline(props) {
   }
 
   function dragHandler(i, e) {
+
+    let viaPointer = e.type === "pointermove";
+
     //Protect against very small unintended drags
-    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+    if (!viaPointer ||
+      Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1
+    ) {
       draggedPoint.current = i;
 
       if (i === -1) {
-        pointCoords.current = calculatePointPositions(e);
+
+        polylineJXG.current.updateTransformMatrix();
+        let shiftX = polylineJXG.current.transformMat[1][0];
+        let shiftY = polylineJXG.current.transformMat[2][0];
+
+        var o = board.origin.scrCoords;
+        pointCoords.current = [];
+
+        for (let i = 0; i < polylineJXG.current.points.length; i++) {
+          if (viaPointer) {
+            // the reason we calculate point positions with this algorithm,
+            // is so that points don't get trapped on an attracting object
+            // if you move the mouse slowly.
+            let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+              - o[1]) / board.unitX;
+            let calculatedY = (o[2] -
+              (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+              / board.unitY;
+            pointCoords.current.push([calculatedX, calculatedY]);
+          } else {
+            pointCoords.current.push([polylineJXG.current.dataX[i] + shiftX, polylineJXG.current.dataY[i] + shiftY]);
+
+          }
+        }
 
         callAction({
           action: actions.movePolyline,
           args: {
             pointCoords: pointCoords.current,
-            transient: true,
-            skippable: true,
+            transient: viaPointer,
+            skippable: viaPointer,
           }
         })
 
-        polylineJXG.current.updateTransformMatrix();
-        let shiftX = polylineJXG.current.transformMat[1][0];
-        let shiftY = polylineJXG.current.transformMat[2][0];
 
 
         for (let j = 0; j < SVs.nVertices; j++) {
@@ -197,8 +222,8 @@ export default React.memo(function Polyline(props) {
           action: actions.movePolyline,
           args: {
             pointCoords: pointCoords.current,
-            transient: true,
-            skippable: true,
+            transient: viaPointer,
+            skippable: viaPointer,
             sourceInformation: { vertex: i }
           }
         })
@@ -237,27 +262,6 @@ export default React.memo(function Polyline(props) {
     if (i !== -1) {
       downOnPoint.current = null;
     }
-  }
-
-  function calculatePointPositions(e) {
-
-    // the reason we calculate point positions with this algorithm,
-    // is so that points don't get trapped on an attracting object
-    // if you move the mouse slowly.
-
-    var o = board.origin.scrCoords;
-
-    let pointCoords = []
-
-    for (let i = 0; i < polylineJXG.current.points.length; i++) {
-      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      let calculatedY = (o[2] -
-        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      pointCoords.push([calculatedX, calculatedY]);
-    }
-    return pointCoords;
   }
 
 

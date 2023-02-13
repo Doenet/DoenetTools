@@ -173,20 +173,45 @@ export default React.memo(function Polygon(props) {
   }
 
   function dragHandler(i, e) {
+
+    let viaPointer = e.type === "pointermove";
+
     //Protect against very small unintended drags
-    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+    if (!viaPointer ||
+      Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1
+    ) {
       draggedPoint.current = i;
 
       if (i === -1) {
-        pointCoords.current = calculatePointPositions(e);
+
+        pointCoords.current = [];
+
+        var o = board.origin.scrCoords;
+
+        for (let i = 0; i < polygonJXG.current.vertices.length - 1; i++) {
+          if (viaPointer) {
+            // the reason we calculate point positions with this algorithm,
+            // is so that points don't get trapped on an attracting object
+            // if you move the mouse slowly.
+            let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+              - o[1]) / board.unitX;
+            let calculatedY = (o[2] -
+              (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+              / board.unitY;
+            pointCoords.current.push([calculatedX, calculatedY]);
+          } else {
+            let vertex = polygonJXG.current.vertices[i];
+            pointCoords.current.push([vertex.X(), vertex.Y()]);
+          }
+        }
 
         callAction({
           action: actions.movePolygon,
           args: {
             pointCoords: pointCoords.current,
-            transient: true,
-            skippable: true
+            transient: viaPointer,
+            skippable: viaPointer
           }
         })
 
@@ -200,8 +225,8 @@ export default React.memo(function Polygon(props) {
           action: actions.movePolygon,
           args: {
             pointCoords: pointCoords.current,
-            transient: true,
-            skippable: true,
+            transient: viaPointer,
+            skippable: viaPointer,
             sourceInformation: { vertex: i }
           }
         })
@@ -240,27 +265,6 @@ export default React.memo(function Polygon(props) {
     if (i !== -1) {
       downOnPoint.current = null;
     }
-  }
-
-  function calculatePointPositions(e) {
-
-    // the reason we calculate point positions with this algorithm,
-    // is so that points don't get trapped on an attracting object
-    // if you move the mouse slowly.
-
-    var o = board.origin.scrCoords;
-
-    let pointCoords = []
-
-    for (let i = 0; i < polygonJXG.current.vertices.length - 1; i++) {
-      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      let calculatedY = (o[2] -
-        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      pointCoords.push([calculatedX, calculatedY]);
-    }
-    return pointCoords;
   }
 
 

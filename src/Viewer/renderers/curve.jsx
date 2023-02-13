@@ -300,9 +300,10 @@ export default React.memo(function Curve(props) {
       let seg1 = board.create('segment', [tp, cp1], segmentAttributes.current);
       let seg2 = board.create('segment', [tp, cp2], segmentAttributes.current);
       segmentsJXG.current.push([seg1, seg2]);
-      tp.on('drag', e => dragThroughPoint(i));
+      tp.on('drag', e => dragThroughPoint(i, e));
       tp.on('down', e => downThroughPoint(i, e));
       tp.on('up', e => upThroughPoint(i));
+      tp.on('hit', e => downThroughPoint(i, e));
       cp1.on('drag', e => dragControlPoint(i, 0));
       cp2.on('drag', e => dragControlPoint(i, 1));
       cp1.on('down', downOther);
@@ -345,17 +346,40 @@ export default React.memo(function Curve(props) {
     }
   }
 
-  function dragThroughPoint(i) {
+  function downThroughPoint(i, e) {
+    // console.log(`down through point: ${i}`)
+
+    // also called when navigate to point using keyboard
+    if (!SVs.draggable || SVs.fixed) {
+      return;
+    }
+
+    draggedThroughPoint.current = null;
+    draggedControlPoint.current = null;
+
+    let viaPointer = e.type === "pointerdown";
+
+    hitObject.current = viaPointer;
+
+    makeThroughPointsAlwaysVisible();
+    makeVectorControlVisible(i);
+    board.updateRenderer();
+  }
+
+  function dragThroughPoint(i, e) {
     draggedThroughPoint.current = i;
 
     tpCoords.current[i] = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
+
+    let viaPointer = e.type === "pointermove";
+
     callAction({
       action: actions.moveThroughPoint,
       args: {
         throughPoint: tpCoords.current[i],
         throughPointInd: i,
-        transient: true,
-        skippable: true,
+        transient: viaPointer,
+        skippable: viaPointer,
       }
     })
 
@@ -484,23 +508,6 @@ export default React.memo(function Curve(props) {
       board.updateRenderer();
     }
     hitObject.current = false;
-  }
-
-  function downThroughPoint(i, e) {
-
-    if (!SVs.draggable || SVs.fixed) {
-      return;
-    }
-
-    draggedThroughPoint.current = null;
-    draggedControlPoint.current = null;
-
-    // console.log(`down through point: ${i}`)
-    hitObject.current = true;
-
-    makeThroughPointsAlwaysVisible();
-    makeVectorControlVisible(i);
-    board.updateRenderer();
   }
 
   function makeVectorControlVisible(i) {
@@ -733,6 +740,7 @@ export default React.memo(function Curve(props) {
           tp.on('drag', e => dragThroughPoint(i));
           tp.on('down', e => downThroughPoint(i, e));
           tp.on('up', e => upThroughPoint(i));
+          tp.on('hit', e => downThroughPoint(i, e));
           cp1.on('drag', e => dragControlPoint(i, 0));
           cp1.on('down', downOther);
           cp1.on('up', e => upControlPoint(i, 0));
@@ -776,6 +784,7 @@ export default React.memo(function Curve(props) {
           tp.off('drag')
           tp.off('down')
           tp.off('up')
+          tp.off('hit')
           board.removeObject(tp);
         }
 

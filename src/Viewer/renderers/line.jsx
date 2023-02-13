@@ -14,8 +14,8 @@ export default React.memo(function Line(props) {
 
   let lineJXG = useRef({});
 
-  let pointerAtDown = useRef(false);
-  let pointsAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointsAtDown = useRef(null);
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
@@ -124,19 +124,49 @@ export default React.memo(function Line(props) {
     let newLineJXG = board.create('line', through, jsxLineAttributes);
 
     newLineJXG.on('drag', function (e) {
+
+      let viaPointer = e.type === "pointermove";
+
       //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
         dragged.current = true;
       }
-      calculatePointPositions(e);
+
+      pointCoords.current = []
+
+      if (viaPointer) {
+        var o = board.origin.scrCoords;
+        for (let i = 0; i < 2; i++) {
+          // the reason we calculate point position with this algorithm,
+          // rather than using .X() and .Y() directly
+          // is so that points don't get trapped on an attracting object
+          // if you move the mouse slowly.
+          // The attributes .X() and .Y() are affected by
+          // .setCoordinates functions called in update()
+          // so will get modified to go back to the attracting object
+
+          let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+            - o[1]) / board.unitX;
+          let calculatedY = (o[2] -
+            (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+            / board.unitY;
+          pointCoords.current.push([calculatedX, calculatedY]);
+        }
+      } else {
+        pointCoords.current.push([newLineJXG.point1.X(), newLineJXG.point1.Y()]);
+        pointCoords.current.push([newLineJXG.point2.X(), newLineJXG.point2.Y()]);
+      }
+
       callAction({
         action: actions.moveLine,
         args: {
           point1coords: pointCoords.current[0],
           point2coords: pointCoords.current[1],
-          transient: true,
-          skippable: true,
+          transient: viaPointer,
+          skippable: viaPointer,
         }
       })
 
@@ -185,26 +215,7 @@ export default React.memo(function Line(props) {
 
   function calculatePointPositions(e) {
 
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is so that points don't get trapped on an attracting object
-    // if you move the mouse slowly.
-    // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called in update()
-    // so will get modified to go back to the attracting object
 
-    var o = board.origin.scrCoords;
-
-    pointCoords.current = []
-
-    for (let i = 0; i < 2; i++) {
-      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      let calculatedY = (o[2] -
-        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      pointCoords.current.push([calculatedX, calculatedY]);
-    }
 
   }
 

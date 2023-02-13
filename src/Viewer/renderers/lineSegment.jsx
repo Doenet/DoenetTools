@@ -13,8 +13,8 @@ export default React.memo(function LineSegment(props) {
   let point1JXG = useRef(null);
   let point2JXG = useRef(null);
 
-  let pointerAtDown = useRef(false);
-  let pointsAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointsAtDown = useRef(null);
   let draggedPoint = useRef(null);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
@@ -222,9 +222,13 @@ export default React.memo(function LineSegment(props) {
 
   function onDragHandler(i, e) {
 
+    let viaPointer = e.type === "pointermove";
+
     //Protect against very small unintended drags
-    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+    if (!viaPointer ||
+      Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1
+    ) {
       draggedPoint.current = i;
 
       if (i == 1) {
@@ -233,8 +237,8 @@ export default React.memo(function LineSegment(props) {
           action: actions.moveLineSegment,
           args: {
             point1coords: pointCoords.current,
-            transient: true,
-            skippable: true,
+            transient: viaPointer,
+            skippable: viaPointer,
           }
         })
       } else if (i == 2) {
@@ -243,19 +247,45 @@ export default React.memo(function LineSegment(props) {
           action: actions.moveLineSegment,
           args: {
             point2coords: pointCoords.current,
-            transient: true,
-            skippable: true,
+            transient: viaPointer,
+            skippable: viaPointer,
           }
         })
       } else {
-        calculatePointPositions(e);
+        pointCoords.current = []
+
+        if (viaPointer) {
+          // the reason we calculate point position with this algorithm,
+          // rather than using .X() and .Y() directly
+          // is so that points don't get trapped on an attracting object
+          // if you move the mouse slowly.
+          // The attributes .X() and .Y() are affected by
+          // .setCoordinates functions called
+          // so will get modified to go back to the attracting object
+
+          var o = board.origin.scrCoords;
+
+          for (let i = 0; i < 2; i++) {
+            let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+              - o[1]) / board.unitX;
+            let calculatedY = (o[2] -
+              (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+              / board.unitY;
+            pointCoords.current.push([calculatedX, calculatedY]);
+          }
+        } else {
+
+          pointCoords.current.push([lineSegmentJXG.current.point1.X(), lineSegmentJXG.current.point1.Y()]);
+          pointCoords.current.push([lineSegmentJXG.current.point2.X(), lineSegmentJXG.current.point2.Y()]);
+        }
+
         callAction({
           action: actions.moveLineSegment,
           args: {
             point1coords: pointCoords.current[0],
             point2coords: pointCoords.current[1],
-            transient: true,
-            skippable: true,
+            transient: viaPointer,
+            skippable: viaPointer,
           }
         })
       }
@@ -264,31 +294,6 @@ export default React.memo(function LineSegment(props) {
     lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
     lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
 
-  }
-
-  function calculatePointPositions(e) {
-
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is so that points don't get trapped on an attracting object
-    // if you move the mouse slowly.
-    // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called
-    // so will get modified to go back to the attracting object
-
-    var o = board.origin.scrCoords;
-
-    pointCoords.current = []
-
-    for (let i = 0; i < 2; i++) {
-      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      let calculatedY = (o[2] -
-        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      pointCoords.current.push([calculatedX, calculatedY]);
-    }
-    return pointCoords.current;
   }
 
 

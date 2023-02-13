@@ -12,11 +12,11 @@ export default React.memo(function Circle(props) {
   let circleJXG = useRef(null)
 
   let dragged = useRef(false);
-  let pointerAtDown = useRef(false);
-  let centerAtDown = useRef(false);
-  let radiusAtDown = useRef(false);
-  let throughAnglesAtDown = useRef(false);
-  let previousWithLabel = useRef(false);
+  let pointerAtDown = useRef(null);
+  let centerAtDown = useRef(null);
+  let radiusAtDown = useRef(null);
+  let throughAnglesAtDown = useRef(null);
+  let previousWithLabel = useRef(null);
   let centerCoords = useRef(null);
 
   let lastCenterFromCore = useRef(null);
@@ -97,21 +97,47 @@ export default React.memo(function Circle(props) {
 
 
     newCircleJXG.on('drag', function (e) {
+
+      let viaPointer = e.type === "pointermove";
+
       //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
         dragged.current = true;
       }
 
-      centerCoords.current = calculateCenterPosition(e);
+
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is so that center doesn't get trapped on an attracting object
+        // if you move the mouse slowly.
+        // The attributes .X() and .Y() are affected by
+        // .setCoordinates functions called in update()
+        // so will get modified to go back to the attracting object
+
+        var o = board.origin.scrCoords;
+        let calculatedX = (centerAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+        let calculatedY = (o[2] -
+          (centerAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+        centerCoords.current = [calculatedX, calculatedY];
+      } else {
+        centerCoords.current = [newCircleJXG.center.X(), newCircleJXG.center.Y()];
+      }
+
+
       callAction({
         action: actions.moveCircle,
         args: {
           center: centerCoords.current,
           radius: radiusAtDown.current,
           throughAngles: throughAnglesAtDown.current,
-          transient: true,
-          skippable: true,
+          transient: viaPointer,
+          skippable: viaPointer,
         }
       })
 
@@ -150,25 +176,6 @@ export default React.memo(function Circle(props) {
 
   }
 
-  function calculateCenterPosition(e) {
-
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is so that center doesn't get trapped on an attracting object
-    // if you move the mouse slowly.
-    // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called in update()
-    // so will get modified to go back to the attracting object
-
-    var o = board.origin.scrCoords;
-
-    let calculatedX = (centerAtDown.current[1] + e.x - pointerAtDown.current[0]
-      - o[1]) / board.unitX;
-    let calculatedY = (o[2] -
-      (centerAtDown.current[2] + e.y - pointerAtDown.current[1]))
-      / board.unitY;
-    return [calculatedX, calculatedY];
-  }
 
   function deleteCircleJXG() {
     circleJXG.current.off('drag');

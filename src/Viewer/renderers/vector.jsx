@@ -15,15 +15,15 @@ export default React.memo(function Vector(props) {
   let point1JXG = useRef({})
   let point2JXG = useRef({});
 
-  let pointerAtDown = useRef(false);
-  let pointsAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointsAtDown = useRef(null);
   let headBeingDragged = useRef(false);
   let tailBeingDragged = useRef(false);
   let downOnPoint = useRef(null);
   let headcoords = useRef(null);
   let tailcoords = useRef(null);
 
-  let previousWithLabel = useRef(false);
+  let previousWithLabel = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
 
@@ -194,9 +194,14 @@ export default React.memo(function Vector(props) {
     });
 
     function onDragHandler(e, i) {
+
+      let viaPointer = e.type === "pointermove";
+
       //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
 
         if (i === 0) {
           tailBeingDragged.current = true;
@@ -207,7 +212,7 @@ export default React.memo(function Vector(props) {
           tailBeingDragged.current = true;
         }
 
-        let instructions = { transient: true, skippable: true };
+        let instructions = { transient: viaPointer, skippable: viaPointer };
 
         if (headBeingDragged.current) {
           if (i === -1) {
@@ -276,17 +281,29 @@ export default React.memo(function Vector(props) {
   }
 
   function calculatePointPosition(e, i) {
-    var o = board.origin.scrCoords;
 
+    let viaPointer = e.type === "pointermove";
 
-    let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-      - o[1]) / board.unitX;
-    let calculatedY = (o[2] -
-      (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-      / board.unitY;
-    let pointCoords = [calculatedX, calculatedY];
+    if (viaPointer) {
 
-    return pointCoords;
+      var o = board.origin.scrCoords;
+
+      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+        - o[1]) / board.unitX;
+      let calculatedY = (o[2] -
+        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+        / board.unitY;
+      let pointCoords = [calculatedX, calculatedY];
+
+      return pointCoords;
+    } else {
+      if (i == 0) {
+        return [vectorJXG.current.point1.X(), vectorJXG.current.point1.Y()]
+      } else {
+        return [vectorJXG.current.point2.X(), vectorJXG.current.point2.Y()]
+      }
+
+    }
   }
 
 
