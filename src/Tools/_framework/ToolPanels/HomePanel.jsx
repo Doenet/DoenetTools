@@ -11,8 +11,8 @@ import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoi
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCalendarPlus,
-  faCalendarTimes,
+  // faCalendarPlus,
+  // faCalendarTimes,
   faChevronLeft,
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
@@ -59,14 +59,14 @@ const LinkStyling = styled.a`
 
 const H1responsive = styled.h1`
   line-height: 0.1em;
-  @media (max-width: 760px) {
+  @media (max-width: 800px) {
   font-size: 1.1em;
   }
 `
 
 const H4responsive = styled.h4`
   line-height: 0.1em;
-  @media (max-width: 760px) {
+  @media (max-width: 800px) {
   font-size: .6em;
   }
 `
@@ -77,7 +77,6 @@ const HPVideo = styled.video`
   height: 240px;
   }
 `
-
 
 function Heading(props) {
   return <div style={{
@@ -120,10 +119,6 @@ const RightChevron = styled(FontAwesomeIcon)`
   color: #0e1111;
   }
 `
-
-
-
-
 
 function DemoCard({ imagePath, text, link }) {
 
@@ -247,6 +242,19 @@ const CarouselSection = styled.div`
       }
 `
 
+const HeaderSection = styled.div`
+    display: flex;
+    background: var(--mainGray);
+    justify-content: center;
+    align-items: center;
+    height: 175px;
+    position: relative;
+    @media (max-width: 500px) {
+        height: 300px;
+        flex-direction: column-reverse;
+      }
+`
+
 function HPCarousel({ data }) {
   const [activeSectionNumber, setActiveSectionNumber] = useState(0);
 
@@ -311,8 +319,6 @@ function HPCarousel({ data }) {
 
 
 }
-
-
 
 
 export default function HomePage(props) {
@@ -463,14 +469,15 @@ export default function HomePage(props) {
   return <div style={props.style}>
 
 
-    <div style={{
+    {/* <div style={{
       display: 'flex',
       background: 'var(--mainGray)',
       justifyContent: 'center',
       alignItems: 'center',
       height: '175px',
       position: 'relative'
-    }}>
+    }}> */}
+    <HeaderSection>
       {signInButton}
       <img style={{
         width: '143px'
@@ -486,7 +493,8 @@ export default function HomePage(props) {
         <H1responsive>The Distributed Open Education Network</H1responsive>
         <H4responsive>The free and open data-driven education technology platform</H4responsive>
       </div>
-    </div>
+    </HeaderSection>
+    {/* </div> */}
 
     <Heading heading="Create Content" subheading="Authors can quickly create interactive activities" />
 
