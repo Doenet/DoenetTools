@@ -4,6 +4,7 @@ import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import cssesc from 'cssesc';
+import JXG from 'jsxgraph';
 
 function cesc(s) {
   s = cssesc(s, { isIdentifier: true });
@@ -214,11 +215,11 @@ export default React.memo(function Graph(props) {
       }
     } else {
       if (xaxis.current) {
-        xaxis.current.defaultTicks.setAttribute({ majorHeight: 20 });
+        xaxis.current.defaultTicks.setAttribute({ majorHeight: 12 });
         xaxis.current.defaultTicks.setAttribute({ minorHeight: 10 });
       }
       if (yaxis.current) {
-        yaxis.current.defaultTicks.setAttribute({ majorHeight: 20 });
+        yaxis.current.defaultTicks.setAttribute({ majorHeight: 12 });
         yaxis.current.defaultTicks.setAttribute({ minorHeight: 10 });
       }
     }
@@ -228,12 +229,12 @@ export default React.memo(function Graph(props) {
     let displayXAxisChanged = SVs.displayXAxis ? !Boolean(xaxis.current) : Boolean(xaxis.current);
     let displayYAxisChanged = SVs.displayYAxis ? !Boolean(yaxis.current) : Boolean(yaxis.current);
 
-    if(displayYAxisChanged && !displayXAxisChanged && SVs.displayXAxis) {
+    if (displayYAxisChanged && !displayXAxisChanged && SVs.displayXAxis) {
       board.removeObject(xaxis.current);
       xaxis.current = null;
     }
 
-    if(displayXAxisChanged && !displayYAxisChanged && SVs.displayYAxis) {
+    if (displayXAxisChanged && !displayYAxisChanged && SVs.displayYAxis) {
       board.removeObject(yaxis.current);
       yaxis.current = null;
     }
@@ -428,7 +429,7 @@ export default React.memo(function Graph(props) {
       yaxisOptions.ticks.majorHeight = -1;
       yaxisOptions.ticks.minorHeight = 10;
     } else {
-      yaxisOptions.ticks.majorHeight = 20;
+      yaxisOptions.ticks.majorHeight = 12;
       yaxisOptions.ticks.minorHeight = 10;
     }
 
@@ -587,7 +588,7 @@ export default React.memo(function Graph(props) {
       xaxisOptions.ticks.majorHeight = -1;
       xaxisOptions.ticks.minorHeight = 10;
     } else {
-      xaxisOptions.ticks.majorHeight = 20;
+      xaxisOptions.ticks.majorHeight = 12;
       xaxisOptions.ticks.minorHeight = 10;
     }
 

@@ -65,6 +65,7 @@
     "idb-keyval": "^6.1.0",
     "js-cookie": "^2.2.1",
     "json-stringify-deterministic": "^1.0.1",
+    "jsxgraph": "^1.5.0",
     "lodash.debounce": "^4.0.8",
     "lorem-ipsum": "^2.0.4",
     "math-expressions": "^2.0.0-alpha52",
