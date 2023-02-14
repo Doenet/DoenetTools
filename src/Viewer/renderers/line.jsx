@@ -165,8 +165,8 @@ export default React.memo(function Line(props) {
         args: {
           point1coords: pointCoords.current[0],
           point2coords: pointCoords.current[1],
-          transient: viaPointer,
-          skippable: viaPointer,
+          transient: true,
+          skippable: true,
         }
       })
 
@@ -197,6 +197,19 @@ export default React.memo(function Line(props) {
       }
     })
 
+    newLineJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveLine,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newLineJXG.on('down', function (e) {
       dragged.current = false;
       pointerAtDown.current = [e.x, e.y];
@@ -207,15 +220,39 @@ export default React.memo(function Line(props) {
 
     })
 
+
+    newLineJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveLine,
+            args: {
+              point1coords: pointCoords.current[0],
+              point2coords: pointCoords.current[1],
+            }
+          })
+          dragged.current = false;
+        }
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchLine,
+          })
+          callAction({
+            action: actions.lineClicked
+          });
+        } else {
+          callAction({
+            action: actions.lineClicked
+          });
+        }
+      }
+    })
+
+
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     lineJXG.current = newLineJXG;
-
-  }
-
-  function calculatePointPositions(e) {
-
-
 
   }
 
@@ -223,6 +260,8 @@ export default React.memo(function Line(props) {
     lineJXG.current.off('drag');
     lineJXG.current.off('down');
     lineJXG.current.off('up');
+    lineJXG.current.off('keyfocusout');
+    lineJXG.current.off('keydown');
     board.removeObject(lineJXG.current);
     lineJXG.current = {};
   }

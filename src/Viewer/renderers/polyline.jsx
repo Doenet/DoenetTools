@@ -119,6 +119,8 @@ export default React.memo(function Polyline(props) {
     for (let i = 0; i < SVs.nVertices; i++) {
       pointsJXG.current[i].on('drag', (e) => dragHandler(i, e));
       pointsJXG.current[i].on('up', () => upHandler(i));
+      pointsJXG.current[i].on('keyfocusout', () => keyFocusOutHandler(i));
+      pointsJXG.current[i].on('keydown', (e) => keyDownHandler(i, e));
       pointsJXG.current[i].on('down', (e) => {
         draggedPoint.current = null;
         pointerAtDown.current = [e.x, e.y];
@@ -128,6 +130,8 @@ export default React.memo(function Polyline(props) {
 
     newPolylineJXG.on('drag', e => dragHandler(-1, e));
     newPolylineJXG.on('up', () => upHandler(-1));
+    newPolylineJXG.on('keyfocusout', () => keyFocusOutHandler(-1));
+    newPolylineJXG.on('keydown', (e) => keyDownHandler(-1, e));
 
     newPolylineJXG.on('down', function (e) {
       draggedPoint.current = null
@@ -149,6 +153,8 @@ export default React.memo(function Polyline(props) {
     polylineJXG.current.off('drag');
     polylineJXG.current.off('down');
     polylineJXG.current.off('up');
+    polylineJXG.current.off('keyfocusout');
+    polylineJXG.current.off('keydown');
     board.removeObject(polylineJXG.current);
     polylineJXG.current = null;
 
@@ -156,6 +162,8 @@ export default React.memo(function Polyline(props) {
       pointsJXG.current[i].off('drag');
       pointsJXG.current[i].off('down');
       pointsJXG.current[i].off('up');
+      pointsJXG.current[i].off('keyfocusout');
+      pointsJXG.current[i].off('keydown');
       board.removeObject(pointsJXG.current[i]);
       delete pointsJXG.current[i];
     }
@@ -202,8 +210,8 @@ export default React.memo(function Polyline(props) {
           action: actions.movePolyline,
           args: {
             pointCoords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
           }
         })
 
@@ -222,8 +230,8 @@ export default React.memo(function Polyline(props) {
           action: actions.movePolyline,
           args: {
             pointCoords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
             sourceInformation: { vertex: i }
           }
         })
@@ -261,6 +269,60 @@ export default React.memo(function Polyline(props) {
 
     if (i !== -1) {
       downOnPoint.current = null;
+    }
+  }
+
+
+  function keyFocusOutHandler(i) {
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+          }
+        })
+      } else {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: { vertex: i }
+          }
+        })
+
+      }
+    }
+    draggedPoint.current = null
+  }
+
+  function keyDownHandler(i, e) {
+    if (e.key === "Enter") {
+
+      if (draggedPoint.current === i) {
+        if (i === -1) {
+          callAction({
+            action: actions.movePolyline,
+            args: {
+              pointCoords: pointCoords.current,
+            }
+          })
+        } else {
+          callAction({
+            action: actions.movePolyline,
+            args: {
+              pointCoords: pointCoords.current,
+              sourceInformation: { vertex: i }
+            }
+          })
+
+        }
+      }
+      draggedPoint.current = null
+      callAction({
+        action: actions.polylineClicked
+      });
+
     }
   }
 
@@ -310,9 +372,11 @@ export default React.memo(function Polyline(props) {
           );
           polylineJXG.current.dataX.length = SVs.nVertices;
 
-          pointsJXG.current[i].on('drag', x => dragHandler(i, true));
-          pointsJXG.current[i].on('up', x => dragHandler(i, false));
-          pointsJXG.current[i].on('down', x => draggedPoint.current = null);
+          pointsJXG.current[i].on('drag', e => dragHandler(i, e));
+          pointsJXG.current[i].on('up', e => upHandler(i));
+          pointsJXG.current[i].on('down', e => draggedPoint.current = null);
+          pointsJXG.current[i].on('keyfocusout', e => keyFocusOutHandler(i));
+          pointsJXG.current[i].on('keydown', e => keyDownHandler(i, e));
         }
       } else if (SVs.nVertices < previousNVertices.current) {
         for (let i = SVs.nVertices; i < previousNVertices.current; i++) {
@@ -320,6 +384,8 @@ export default React.memo(function Polyline(props) {
           pt.off('drag');
           pt.off('down');
           pt.off('up');
+          pt.off('keyfocusout');
+          pt.off('keydown');
           board.removeObject(pt);
         }
         polylineJXG.current.dataX.length = SVs.nVertices;

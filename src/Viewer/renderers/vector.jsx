@@ -125,6 +125,7 @@ export default React.memo(function Vector(props) {
     newPoint1JXG.on('drag', e => onDragHandler(e, 0));
     newPoint2JXG.on('drag', e => onDragHandler(e, 1));
     newVectorJXG.on('drag', e => onDragHandler(e, -1));
+
     newPoint1JXG.on('up', e => {
       if (!headBeingDragged.current && tailBeingDragged.current) {
         callAction({
@@ -168,6 +169,40 @@ export default React.memo(function Vector(props) {
       }
     });
 
+    newPoint1JXG.on('keyfocusout', e => {
+      if (!headBeingDragged.current && tailBeingDragged.current) {
+        callAction({
+          action: actions.moveVector,
+          args: { tailcoords: tailcoords.current }
+        });
+      }
+      headBeingDragged.current = false;
+      tailBeingDragged.current = false;
+    });
+    newPoint2JXG.on('keyfocusout', e => {
+      if (headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.moveVector,
+          args: { headcoords: headcoords.current }
+        });
+      }
+      headBeingDragged.current = false;
+      tailBeingDragged.current = false;
+    });
+    newVectorJXG.on('keyfocusout', e => {
+      if (headBeingDragged.current && tailBeingDragged.current) {
+        callAction({
+          action: actions.moveVector,
+          args: {
+            headcoords: headcoords.current,
+            tailcoords: tailcoords.current
+          }
+        });
+      }
+      headBeingDragged.current = false;
+      tailBeingDragged.current = false;
+    });
+
     newPoint1JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
@@ -193,6 +228,55 @@ export default React.memo(function Vector(props) {
       ];
     });
 
+    newPoint1JXG.on('keydown', e => {
+      if (e.key === "Enter") {
+        if (!headBeingDragged.current && tailBeingDragged.current) {
+          callAction({
+            action: actions.moveVector,
+            args: { tailcoords: tailcoords.current }
+          });
+        }
+        headBeingDragged.current = false;
+        tailBeingDragged.current = false;
+        callAction({
+          action: actions.vectorClicked
+        });
+      }
+    });
+    newPoint2JXG.on('keydown', e => {
+      if (e.key === "Enter") {
+        if (headBeingDragged.current && !tailBeingDragged.current) {
+          callAction({
+            action: actions.moveVector,
+            args: { headcoords: headcoords.current }
+          });
+        }
+        headBeingDragged.current = false;
+        tailBeingDragged.current = false;
+        callAction({
+          action: actions.vectorClicked
+        });
+      }
+    });
+    newVectorJXG.on('keydown', e => {
+      if (e.key === "Enter") {
+        if (headBeingDragged.current && tailBeingDragged.current) {
+          callAction({
+            action: actions.moveVector,
+            args: {
+              headcoords: headcoords.current,
+              tailcoords: tailcoords.current
+            }
+          });
+        }
+        headBeingDragged.current = false;
+        tailBeingDragged.current = false;
+        callAction({
+          action: actions.vectorClicked
+        });
+      }
+    });
+
     function onDragHandler(e, i) {
 
       let viaPointer = e.type === "pointermove";
@@ -212,7 +296,7 @@ export default React.memo(function Vector(props) {
           tailBeingDragged.current = true;
         }
 
-        let instructions = { transient: viaPointer, skippable: viaPointer };
+        let instructions = { transient: true, skippable: true };
 
         if (headBeingDragged.current) {
           if (i === -1) {
@@ -263,6 +347,8 @@ export default React.memo(function Vector(props) {
     vectorJXG.current.off('drag');
     vectorJXG.current.off('down');
     vectorJXG.current.off('up');
+    vectorJXG.current.off('keyfocusout');
+    vectorJXG.current.off('keydown');
     board.removeObject(vectorJXG.current);
     vectorJXG.current = {};
 
@@ -270,12 +356,16 @@ export default React.memo(function Vector(props) {
     point1JXG.current.off('drag');
     point1JXG.current.off('down');
     point1JXG.current.off('up');
+    point1JXG.current.off('keyfocusout');
+    point1JXG.current.off('keydown');
     board.removeObject(point1JXG.current);
     point1JXG.current = {};
 
     point2JXG.current.off('drag');
     point2JXG.current.off('down');
     point2JXG.current.off('up');
+    point2JXG.current.off('keyfocusout');
+    point2JXG.current.off('keydown');
     board.removeObject(point2JXG.current);
     point2JXG.current = {};
   }

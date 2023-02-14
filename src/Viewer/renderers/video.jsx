@@ -6,7 +6,6 @@
 import React, { useRef, useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
-import cssesc from 'cssesc';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import styled from 'styled-components';
 const VideoStyling = styled.div`
@@ -50,7 +49,7 @@ export default React.memo(function Video(props) {
   useEffect(() => {
     if (SVs.youtube) {
 
-      let cName = cssesc(id);
+      let cName = id;
 
       // protect against window.YT being undefined,
       // which could occur if cannot reach youtube
@@ -488,7 +487,7 @@ export default React.memo(function Video(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <VideoStyling  tabIndex="0" style={outerStyle} id={id + "_outer"}>
+      <VideoStyling tabIndex="0" style={outerStyle} id={id + "_outer"}>
         <a name={id} />
         {videoTag}
       </VideoStyling>

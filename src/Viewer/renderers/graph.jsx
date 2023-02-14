@@ -3,16 +3,7 @@ import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
-import cssesc from 'cssesc';
 import JXG from 'jsxgraph';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
 
 
 export const BoardContext = createContext();
@@ -20,6 +11,14 @@ export const BoardContext = createContext();
 export default React.memo(function Graph(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
   // console.log({ name, SVs, children, actions })
+
+
+  // TODO: remove this if jsxgraph can support escaped "/" again,
+  // as this replacement introduces a possibility of non-unique id's
+  // if someone, for example, creates graphs named "/g/g" and "/g_g".
+  // If jsxgraph doesn't fix this regression (https://github.com/jsxgraph/jsxgraph/issues/513),
+  // we need to find a better permanent solution.
+  id = id.replaceAll("\\/", "_");
 
   const [board, setBoard] = useState(null);
 
@@ -124,6 +123,42 @@ export default React.memo(function Graph(props) {
     boardJustInitialized.current = true;
 
     previousShowNavigation.current = SVs.showNavigation;
+
+    // Question: jsxgraph has added a "hit" listener for keyfocusin
+    // so we just add a keyfocusout listener.
+    // Should we add a keyfocusin listener so we can have parity
+    // in the event names?
+    // (And in case they change "hit" to include focus by mouse)
+
+    function keyFocusOutListener(evt) {
+      let id_node = evt.target.id;
+
+      if (id_node === '') {
+        return false;
+      }
+
+      let el_id = id_node.replace(id + '_', '');
+      let el = newBoard.select(el_id);
+      el.triggerEventHandlers(['keyfocusout'], [evt]);
+    }
+
+    newBoard.containerObj.addEventListener("focusout", keyFocusOutListener)
+
+
+    function keyDownListener(evt) {
+      let id_node = evt.target.id;
+
+      if (id_node === '') {
+        return false;
+      }
+
+
+      let el_id = id_node.replace(id + '_', '');
+      let el = newBoard.select(el_id);
+      el.triggerEventHandlers(['keydown'], [evt]);
+    }
+
+    newBoard.containerObj.addEventListener("keydown", keyDownListener)
 
     // on unmount
     return () => {
@@ -695,7 +730,7 @@ export default React.memo(function Graph(props) {
 
   function addNavigationButtons() {
     // not sure why getElementById doesn't work
-    let navigationBar = document.querySelector('#' + cesc(id) + `_navigationbar`);
+    let navigationBar = document.querySelector('#' + id + `_navigationbar`);
 
     // code modified from abstract.js and env.js of JSXGraph
 
@@ -760,7 +795,7 @@ export default React.memo(function Graph(props) {
 
   function removeNavigationButtons() {
     for (let i = 7; i >= 1; i--) {
-      let button = document.querySelector('#' + cesc(id) + `_navigationbar > :first-child`);
+      let button = document.querySelector('#' + id + `_navigationbar > :first-child`);
       button.remove();
     }
 

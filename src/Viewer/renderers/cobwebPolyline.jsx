@@ -104,7 +104,7 @@ export default React.memo(function CobwebPolyline(props) {
       highlight: false
     }
     if (SVs.labelHasLatex) {
-      jsxPolylineAttributes.label.useMathJax = true 
+      jsxPolylineAttributes.label.useMathJax = true
     }
 
     jsxPointAttributes.current = {
@@ -158,6 +158,8 @@ export default React.memo(function CobwebPolyline(props) {
     for (let i = 0; i < SVs.nPoints; i++) {
       pointsJXG.current[i].on('drag', e => dragHandler(i, e));
       pointsJXG.current[i].on('up', x => upHandler(i));
+      pointsJXG.current[i].on('keyfocusout', () => keyFocusOutHandler(i));
+      pointsJXG.current[i].on('keydown', (e) => keyDownHandler(i, e));
       pointsJXG.current[i].on('down', x => draggedPoint.current = null);
     }
 
@@ -182,6 +184,8 @@ export default React.memo(function CobwebPolyline(props) {
       if (pointsJXG.current[i]) {
         pointsJXG.current[i].off('drag')
         pointsJXG.current[i].off('up')
+        pointsJXG.current[i].off('keyfocusout')
+        pointsJXG.current[i].off('keydown')
         pointsJXG.current[i].off('down')
         board.removeObject(pointsJXG.current[i]);
         delete pointsJXG.current[i];
@@ -201,8 +205,8 @@ export default React.memo(function CobwebPolyline(props) {
       action: actions.movePolyline,
       args: {
         pointCoords: pointCoords.current,
-        transient: viaPointer,
-        skippable: viaPointer,
+        transient: true,
+        skippable: true,
         sourceInformation: { vertex: i }
       }
     })
@@ -225,6 +229,42 @@ export default React.memo(function CobwebPolyline(props) {
         sourceInformation: { vertex: i }
       }
     })
+  }
+
+  function keyFocusOutHandler(i) {
+    if (draggedPoint.current !== i) {
+      draggedPoint.current = null;
+      return;
+    }
+    draggedPoint.current = null;
+
+    callAction({
+      action: actions.movePolyline,
+      args: {
+        pointCoords: pointCoords.current,
+        sourceInformation: { vertex: i }
+      }
+    })
+  }
+
+
+
+  function keyDownHandler(i, e) {
+    if (e.key === "Enter") {
+
+      if (draggedPoint.current === i) {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: { vertex: i }
+          }
+        })
+
+      }
+      draggedPoint.current = null
+
+    }
   }
 
 
@@ -278,6 +318,8 @@ export default React.memo(function CobwebPolyline(props) {
 
           pointsJXG.current[i].on('drag', e => dragHandler(i, e));
           pointsJXG.current[i].on('up', x => upHandler(i));
+          pointsJXG.current[i].on('keyfocusout', () => keyFocusOutHandler(i));
+          pointsJXG.current[i].on('keydown', (e) => keyDownHandler(i, e));
           pointsJXG.current[i].on('down', x => draggedPoint.current = null);
         }
       } else if (SVs.nPoints < previousNPoints.current) {
@@ -285,8 +327,12 @@ export default React.memo(function CobwebPolyline(props) {
           let pt = pointsJXG.current.pop();
           pt.off('drag')
           pt.off('up')
+          pt.off('keyfocusout')
+          pt.off('keydown')
           pt.off('down')
+          console.log('about to remove', pt)
           board.removeObject(pt);
+          board.update();
         }
         polylineJXG.current.dataX.length = SVs.nPoints;
       }

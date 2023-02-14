@@ -60,6 +60,16 @@ export default React.memo(function Image(props) {
     }
   }, [])
 
+  useEffect(() => {
+    //On unmount
+    return () => {
+      // if line is defined
+      if (Object.keys(imageJXG.current).length !== 0) {
+        deleteImageJXG();
+      }
+    }
+  }, [])
+
 
   function createImageJXG() {
 
@@ -154,10 +164,27 @@ export default React.memo(function Image(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
+      } else {
+        callAction({
+          action: actions.imageClicked
+        });
       }
-      dragged.current = false;
 
     });
+
+    newImageJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveImage,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
 
     newImageJXG.on('drag', function (e) {
 
@@ -212,8 +239,8 @@ export default React.memo(function Image(props) {
         args: {
           x: calculatedX.current,
           y: calculatedY.current,
-          transient: viaPointer,
-          skippable: viaPointer,
+          transient: true,
+          skippable: true,
         }
       });
 
@@ -223,12 +250,41 @@ export default React.memo(function Image(props) {
 
     });
 
+    newImageJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveImage,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          })
+          dragged.current = false;
+        }
+        callAction({
+          action: actions.imageClicked
+        });
+      }
+    })
 
     imageJXG.current = newImageJXG;
     anchorPointJXG.current = newAnchorPointJXG;
     previousPositionFromAnchor.current = SVs.positionFromAnchor;
     currentSize.current = [width, height];
 
+  }
+
+
+  function deleteImageJXG() {
+    imageJXG.current.off('drag');
+    imageJXG.current.off('down');
+    imageJXG.current.off('up');
+    imageJXG.current.off('keyfocusout');
+    imageJXG.current.off('keydown');
+    board.removeObject(imageJXG.current);
+    imageJXG.current = {};
   }
 
   if (board) {

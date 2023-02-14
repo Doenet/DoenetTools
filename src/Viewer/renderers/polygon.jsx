@@ -124,6 +124,8 @@ export default React.memo(function Polygon(props) {
 
     newPolygonJXG.on('drag', e => dragHandler(-1, e));
     newPolygonJXG.on('up', e => upHandler(-1));
+    newPolygonJXG.on('keyfocusout', e => keyFocusOutHandler(-1));
+    newPolygonJXG.on('keydown', e => keyDownHandler(-1, e));
 
     newPolygonJXG.on('down', function (e) {
       draggedPoint.current = null
@@ -150,6 +152,10 @@ export default React.memo(function Polygon(props) {
       vertex.on('drag', (e) => dragHandler(i, e));
       vertex.off('up');
       vertex.on('up', () => upHandler(i));
+      vertex.off('keyfocusout');
+      vertex.on('keyfocusout', () => keyFocusOutHandler(i));
+      vertex.off('keydown');
+      vertex.on('keydown', (e) => keyDownHandler(i, e));
       vertex.off('down');
       vertex.on('down', (e) => {
         draggedPoint.current = null;
@@ -168,6 +174,9 @@ export default React.memo(function Polygon(props) {
         vertex.off('down');
       }
     }
+    polygonJXG.off('drag');
+    polygonJXG.off('up');
+    polygonJXG.off('down');
     board.removeObject(polygonJXG.current);
     polygonJXG.current = null;
   }
@@ -268,6 +277,60 @@ export default React.memo(function Polygon(props) {
   }
 
 
+  function keyFocusOutHandler(i) {
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+          }
+        })
+      } else {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: { vertex: i }
+          }
+        })
+
+      }
+    }
+    draggedPoint.current = null
+  }
+
+  function keyDownHandler(i, e) {
+    if (e.key === "Enter") {
+
+      if (draggedPoint.current === i) {
+        if (i === -1) {
+          callAction({
+            action: actions.movePolygon,
+            args: {
+              pointCoords: pointCoords.current,
+            }
+          })
+        } else {
+          callAction({
+            action: actions.movePolygon,
+            args: {
+              pointCoords: pointCoords.current,
+              sourceInformation: { vertex: i }
+            }
+          })
+
+        }
+      }
+      draggedPoint.current = null
+      callAction({
+        action: actions.polygonClicked
+      });
+
+    }
+  }
+
+
   if (board) {
 
     if (!polygonJXG.current) {
@@ -301,6 +364,8 @@ export default React.memo(function Polygon(props) {
           polygonJXG.current.vertices[i].off('drag')
           polygonJXG.current.vertices[i].off('down')
           polygonJXG.current.vertices[i].off('up')
+          polygonJXG.current.vertices[i].off('keyfocusout')
+          polygonJXG.current.vertices[i].off('keydown')
           polygonJXG.current.removePoints(polygonJXG.current.vertices[i]);
         }
         initializePoints(polygonJXG.current);

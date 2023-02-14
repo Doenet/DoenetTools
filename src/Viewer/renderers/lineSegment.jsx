@@ -193,6 +193,43 @@ export default React.memo(function LineSegment(props) {
       }
     });
 
+
+    point1JXG.current.on('keyfocusout', () => {
+      if (draggedPoint.current === 1) {
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current,
+          }
+        })
+      }
+      draggedPoint.current = null;
+    })
+    point2JXG.current.on('keyfocusout', () => {
+      if (draggedPoint.current === 2) {
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point2coords: pointCoords.current,
+          }
+        })
+      }
+      draggedPoint.current = null;
+    })
+    lineSegmentJXG.current.on('keyfocusout', function (e) {
+      if (draggedPoint.current === 0) {
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+          }
+        })
+      }
+      draggedPoint.current = null;
+    });
+
+
     point1JXG.current.on('down', (e) => {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
@@ -210,6 +247,63 @@ export default React.memo(function LineSegment(props) {
         [...point1JXG.current.coords.scrCoords],
         [...point2JXG.current.coords.scrCoords]
       ]
+    });
+
+
+    point1JXG.current.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (draggedPoint.current === 1) {
+          callAction({
+            action: actions.moveLineSegment,
+            args: {
+              point1coords: pointCoords.current,
+            }
+          })
+        }
+        draggedPoint.current = null;
+        callAction({
+          action: actions.lineSegmentClicked
+        });
+      }
+    })
+
+
+    point2JXG.current.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (draggedPoint.current === 2) {
+          callAction({
+            action: actions.moveLineSegment,
+            args: {
+              point2coords: pointCoords.current,
+            }
+          })
+        }
+        draggedPoint.current = null;
+        callAction({
+          action: actions.lineSegmentClicked
+        });
+      }
+    })
+
+    lineSegmentJXG.current.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (draggedPoint.current === 0) {
+          callAction({
+            action: actions.moveLineSegment,
+            args: {
+              point1coords: pointCoords.current[0],
+              point2coords: pointCoords.current[1],
+            }
+          })
+        }
+        draggedPoint.current = null;
+        callAction({
+          action: actions.lineSegmentClicked
+        });
+      }
     });
 
     previousLabelPosition.current = SVs.labelPosition;
@@ -237,8 +331,8 @@ export default React.memo(function LineSegment(props) {
           action: actions.moveLineSegment,
           args: {
             point1coords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
           }
         })
       } else if (i == 2) {
@@ -247,8 +341,8 @@ export default React.memo(function LineSegment(props) {
           action: actions.moveLineSegment,
           args: {
             point2coords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
           }
         })
       } else {
@@ -284,8 +378,8 @@ export default React.memo(function LineSegment(props) {
           args: {
             point1coords: pointCoords.current[0],
             point2coords: pointCoords.current[1],
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
           }
         })
       }
@@ -302,18 +396,24 @@ export default React.memo(function LineSegment(props) {
     lineSegmentJXG.current.off('drag');
     lineSegmentJXG.current.off('down');
     lineSegmentJXG.current.off('up');
+    lineSegmentJXG.current.off('keydown');
+    lineSegmentJXG.current.off('keyfocusout');
     board.removeObject(lineSegmentJXG.current);
     lineSegmentJXG.current = null;
 
     point1JXG.current.off('drag');
     point1JXG.current.off('down');
     point1JXG.current.off('up');
+    point1JXG.current.off('keydown');
+    point1JXG.current.off('keyfocusout');
     board.removeObject(point1JXG.current);
     point1JXG.current = null;
 
     point2JXG.current.off('drag');
     point2JXG.current.off('down');
     point2JXG.current.off('up');
+    point2JXG.current.off('keydown');
+    point2JXG.current.off('keyfocusout');
     board.removeObject(point2JXG.current);
     point2JXG.current = null;
   }

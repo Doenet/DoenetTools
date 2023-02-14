@@ -38,6 +38,8 @@ export default React.memo(function Point(props) {
         shadowPointJXG.current.off('drag');
         shadowPointJXG.current.off('down');
         shadowPointJXG.current.off('up');
+        shadowPointJXG.current.off('keyfocusout');
+        shadowPointJXG.current.off('keydown');
         board.removeObject(pointJXG.current);
         board.removeObject(shadowPointJXG.current);
         pointJXG.current = null;
@@ -160,6 +162,8 @@ export default React.memo(function Point(props) {
     shadowPointAttributes.withlabel = false;
     shadowPointAttributes.fillOpacity = 0;
     shadowPointAttributes.strokeOpacity = 0;
+    shadowPointAttributes.highlightFillOpacity = 0;
+    shadowPointAttributes.highlightStrokeOpacity = 0;
 
     let newShadowPointJXG = board.create('point', coords, shadowPointAttributes);
 
@@ -168,8 +172,8 @@ export default React.memo(function Point(props) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newShadowPointJXG.coords.scrCoords];
       dragged.current = false;
-      shadowPointJXG.current.visProp.fillopacity = pointJXG.current.visProp.fillopacity;
-      shadowPointJXG.current.visProp.strokeopacity = pointJXG.current.visProp.strokeopacity;
+      shadowPointJXG.current.visProp.highlightfillopacity = pointJXG.current.visProp.fillopacity;
+      shadowPointJXG.current.visProp.highlightstrokeopacity = pointJXG.current.visProp.strokeopacity;
 
     });
 
@@ -182,6 +186,7 @@ export default React.memo(function Point(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
       } else if (SVs.switchable && !SVs.fixed) {
 
         // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
@@ -197,11 +202,24 @@ export default React.memo(function Point(props) {
           action: actions.pointClicked
         });
       }
-      dragged.current = false;
 
-      shadowPointJXG.current.visProp.fillopacity = 0;
-      shadowPointJXG.current.visProp.strokeopacity = 0;
+      shadowPointJXG.current.visProp.highlightfillopacity = 0;
+      shadowPointJXG.current.visProp.highlightstrokeopacity = 0;
     });
+
+
+    newShadowPointJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.movePoint,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        });
+        dragged.current = false;
+      }
+    })
 
     newShadowPointJXG.on('drag', function (e) {
 
@@ -246,16 +264,55 @@ export default React.memo(function Point(props) {
         args: {
           x: calculatedX.current,
           y: calculatedY.current,
-          transient: viaPointer,
-          skippable: viaPointer,
+          transient: true,
+          skippable: true,
         }
       });
+
+
+      let shadowX = Math.min(xmax, Math.max(xmin, newShadowPointJXG.X()));
+      let shadowY = Math.min(ymax, Math.max(ymin, newShadowPointJXG.Y()));
+      newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [shadowX, shadowY]);
 
       newPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
       board.updateInfobox(newPointJXG);
 
 
     });
+
+
+    newShadowPointJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+
+        if (dragged.current) {
+          callAction({
+            action: actions.movePoint,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          });
+          dragged.current = false;
+        }
+
+        if (SVs.switchable && !SVs.fixed) {
+
+          // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
+          // as useEffect will not be rerun
+          callAction({
+            action: actions.switchPoint
+          });
+          callAction({
+            action: actions.pointClicked
+          });
+        } else {
+          callAction({
+            action: actions.pointClicked
+          });
+        }
+      }
+    })
 
     pointJXG.current = newPointJXG;
     shadowPointJXG.current = newShadowPointJXG;

@@ -201,6 +201,24 @@ export default React.memo(function Curve(props) {
       }
     });
 
+
+    newCurveJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
+        // as useEffect will not be rerun
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchCurve
+          });
+        }
+        callAction({
+          action: actions.curveClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
+
     if (SVs.curveType === "bezier") {
 
       board.on('up', upBoard);
@@ -279,6 +297,8 @@ export default React.memo(function Curve(props) {
   function deleteCurveJXG() {
     board.off('up', upBoard);
     curveJXG.current.off('down');
+    curveJXG.current.off('up');
+    curveJXG.current.off('keydown');
     board.removeObject(curveJXG.current);
     curveJXG.current = null;
     deleteControls();
@@ -300,16 +320,17 @@ export default React.memo(function Curve(props) {
       let seg1 = board.create('segment', [tp, cp1], segmentAttributes.current);
       let seg2 = board.create('segment', [tp, cp2], segmentAttributes.current);
       segmentsJXG.current.push([seg1, seg2]);
-      tp.on('drag', e => dragThroughPoint(i, e));
+      tp.on('drag', e => dragThroughPoint(i));
       tp.on('down', e => downThroughPoint(i, e));
-      tp.on('up', e => upThroughPoint(i));
       tp.on('hit', e => downThroughPoint(i, e));
+      tp.on('up', e => upThroughPoint(i));
+      tp.on('keyfocusout', e => upThroughPoint(i));
       cp1.on('drag', e => dragControlPoint(i, 0));
       cp2.on('drag', e => dragControlPoint(i, 1));
       cp1.on('down', downOther);
       cp2.on('down', downOther);
       seg1.on('down', downOther);
-      seg1.on('down', downOther);
+      seg2.on('down', downOther);
       cp1.on('up', e => upControlPoint(i, 0));
       cp2.on('up', e => upControlPoint(i, 1));
     }
@@ -340,6 +361,7 @@ export default React.memo(function Curve(props) {
         x.off('drag')
         x.off('down')
         x.off('up')
+        x.off('keyfocusout')
         board.removeObject(x)
       });
       throughPointsJXG.current = [];
@@ -366,20 +388,18 @@ export default React.memo(function Curve(props) {
     board.updateRenderer();
   }
 
-  function dragThroughPoint(i, e) {
+  function dragThroughPoint(i) {
     draggedThroughPoint.current = i;
 
     tpCoords.current[i] = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
-
-    let viaPointer = e.type === "pointermove";
 
     callAction({
       action: actions.moveThroughPoint,
       args: {
         throughPoint: tpCoords.current[i],
         throughPointInd: i,
-        transient: viaPointer,
-        skippable: viaPointer,
+        transient: true,
+        skippable: true,
       }
     })
 
@@ -389,6 +409,8 @@ export default React.memo(function Curve(props) {
   }
 
   function upThroughPoint(i) {
+    // also called when navigate away from point using keyboard
+
     if (draggedThroughPoint.current !== i) {
       return;
     }
@@ -739,8 +761,9 @@ export default React.memo(function Curve(props) {
 
           tp.on('drag', e => dragThroughPoint(i));
           tp.on('down', e => downThroughPoint(i, e));
-          tp.on('up', e => upThroughPoint(i));
           tp.on('hit', e => downThroughPoint(i, e));
+          tp.on('up', e => upThroughPoint(i));
+          tp.on('keyfocusout', e => upThroughPoint(i));
           cp1.on('drag', e => dragControlPoint(i, 0));
           cp1.on('down', downOther);
           cp1.on('up', e => upControlPoint(i, 0));
@@ -785,6 +808,7 @@ export default React.memo(function Curve(props) {
           tp.off('down')
           tp.off('up')
           tp.off('hit')
+          tp.off('keyfocusout')
           board.removeObject(tp);
         }
 

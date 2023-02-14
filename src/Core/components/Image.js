@@ -522,9 +522,21 @@ export default class Image extends BlockComponent {
     this.coreFunctions.resolveAction({ actionId });
   }
 
+  async imageClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
   actions = {
     moveImage: this.moveImage.bind(this),
     recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    imageClicked: this.imageClicked.bind(this),
   }
 
 }

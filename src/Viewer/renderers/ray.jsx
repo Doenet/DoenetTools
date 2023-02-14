@@ -129,8 +129,8 @@ export default React.memo(function Ray(props) {
           args: {
             endpointcoords: pointCoords.current[0],
             throughcoords: pointCoords.current[1],
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
           }
         });
       }
@@ -156,7 +156,21 @@ export default React.memo(function Ray(props) {
       }
     });
 
+    newRayJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveRay,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newRayJXG.on('down', function (e) {
+
       dragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       pointsAtDown.current = [
@@ -165,6 +179,27 @@ export default React.memo(function Ray(props) {
       ]
 
     });
+
+    newRayJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveRay,
+            args: {
+              point1coords: pointCoords.current[0],
+              point2coords: pointCoords.current[1],
+            }
+          })
+          dragged.current = false;
+        }
+
+        callAction({
+          action: actions.rayClicked
+        });
+      }
+    })
+
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
@@ -176,6 +211,8 @@ export default React.memo(function Ray(props) {
     rayJXG.current.off('drag');
     rayJXG.current.off('down');
     rayJXG.current.off('up');
+    rayJXG.current.off('keyfocusout');
+    rayJXG.current.off('keydown');
     board.removeObject(rayJXG.current);
     rayJXG.current = null;
   }

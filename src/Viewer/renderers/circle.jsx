@@ -136,8 +136,8 @@ export default React.memo(function Circle(props) {
           center: centerCoords.current,
           radius: radiusAtDown.current,
           throughAngles: throughAnglesAtDown.current,
-          transient: viaPointer,
-          skippable: viaPointer,
+          transient: true,
+          skippable: true,
         }
       })
 
@@ -162,6 +162,22 @@ export default React.memo(function Circle(props) {
       }
     });
 
+
+    newCircleJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveCircle,
+          args: {
+            center: centerCoords.current,
+            radius: radiusAtDown.current,
+            throughAngles: throughAnglesAtDown.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
+
     newCircleJXG.on('down', function (e) {
       dragged.current = false;
       pointerAtDown.current = [e.x, e.y];
@@ -169,6 +185,34 @@ export default React.memo(function Circle(props) {
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
     });
+
+    // hit is called by jsxgraph when focused in via keyboard
+    newCircleJXG.on('hit', function (e) {
+      dragged.current = false;
+      centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
+      radiusAtDown.current = newCircleJXG.radius;
+      throughAnglesAtDown.current = [...throughAnglesFromCore.current];
+    });
+
+    newCircleJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveCircle,
+            args: {
+              center: centerCoords.current,
+              radius: radiusAtDown.current,
+              throughAngles: throughAnglesAtDown.current,
+            }
+          })
+          dragged.current = false;
+        }
+        callAction({
+          action: actions.circleClicked
+        });
+      }
+    })
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
@@ -181,6 +225,9 @@ export default React.memo(function Circle(props) {
     circleJXG.current.off('drag');
     circleJXG.current.off('down');
     circleJXG.current.off('up');
+    circleJXG.current.off('hit');
+    circleJXG.current.off('keyfocusout');
+    circleJXG.current.off('keydown');
     board.removeObject(circleJXG.current);
     circleJXG.current = null;
   }
