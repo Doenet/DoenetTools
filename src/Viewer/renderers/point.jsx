@@ -416,9 +416,7 @@ export default React.memo(function Point(props) {
       }
 
       //Update only when the change was initiated with this point
-      if (sourceOfUpdate.sourceInformation &&
-        name in sourceOfUpdate.sourceInformation
-      ) {
+      if (sourceOfUpdate.sourceInformation?.[name]?.fromRenderer) {
         board.updateInfobox(pointJXG.current);
       }
 
