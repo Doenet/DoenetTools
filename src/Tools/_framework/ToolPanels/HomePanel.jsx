@@ -11,8 +11,6 @@ import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoi
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  // faCalendarPlus,
-  // faCalendarTimes,
   faChevronLeft,
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
@@ -170,6 +168,7 @@ function DemoCard({ imagePath, text, link }) {
     </div>
   </a>
 }
+
 const CarouselOutsideContainer = styled.div`
       display: grid;
       grid-template-columns: 20px repeat(4, 1fr) 20px;
