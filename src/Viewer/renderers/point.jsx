@@ -207,6 +207,9 @@ export default React.memo(function Point(props) {
       shadowPointJXG.current.visProp.highlightstrokeopacity = 0;
     });
 
+    newShadowPointJXG.on('hit', function (e) {
+      board.updateInfobox(pointJXG.current);
+    })
 
     newShadowPointJXG.on('keyfocusout', function (e) {
       if (dragged.current) {
@@ -415,8 +418,7 @@ export default React.memo(function Point(props) {
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
       }
 
-      //Update only when the change was initiated with this point
-      if (sourceOfUpdate.sourceInformation?.[name]?.fromRenderer) {
+      if (shadowPointJXG.current.highlighted) {
         board.updateInfobox(pointJXG.current);
       }
 

@@ -1172,7 +1172,8 @@ export default class Point extends GraphicalComponent {
     stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
   }];
 
-  async movePoint({ x, y, z, transient, actionId, sourceInformation = {} }) {
+  async movePoint({ x, y, z, transient, actionId }) {
+
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -1190,7 +1191,6 @@ export default class Point extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "xs",
           value: components,
-          sourceInformation,
         }],
         transient,
         actionId,
@@ -1202,7 +1202,6 @@ export default class Point extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "xs",
           value: components,
-          sourceInformation,
         }],
         actionId,
         event: {

@@ -502,6 +502,13 @@ export default React.memo(function LineSegment(props) {
         previousWithLabel.current = withlabel;
       }
 
+      if (point1JXG.current.highlighted) {
+        board.updateInfobox(point1JXG.current);
+      } else if (point2JXG.current.highlighted) {
+        board.updateInfobox(point2JXG.current);
+      }
+
+
       lineSegmentJXG.current.needsUpdate = true;
       lineSegmentJXG.current.update()
       if (lineSegmentJXG.current.hasLabel) {
