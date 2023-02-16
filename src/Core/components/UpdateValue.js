@@ -64,7 +64,7 @@ export default class UpdateValue extends InlineComponent {
       createTargetComponentNames: "string"
     }
 
-    attributes.triggerWhenMouseDownOnObjects = {
+    attributes.triggerWhenObjectsFocused = {
       createTargetComponentNames: "string"
     }
 
@@ -329,9 +329,9 @@ export default class UpdateValue extends InlineComponent {
           dependencyType: "attributeTargetComponentNames",
           attributeName: "triggerWhenObjectsClicked"
         },
-        triggerWhenMouseDownOnObjects: {
+        triggerWhenObjectsFocused: {
           dependencyType: "attributeTargetComponentNames",
-          attributeName: "triggerWhenMouseDownOnObjects"
+          attributeName: "triggerWhenObjectsFocused"
         },
         triggerWhen: {
           dependencyType: "attributeComponent",
@@ -358,8 +358,8 @@ export default class UpdateValue extends InlineComponent {
               triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "click" })
             }
           }
-          if (dependencyValues.triggerWhenMouseDownOnObjects !== null) {
-            for (let nameObj of dependencyValues.triggerWhenMouseDownOnObjects) {
+          if (dependencyValues.triggerWhenObjectsFocused !== null) {
+            for (let nameObj of dependencyValues.triggerWhenObjectsFocused) {
               triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "down" })
             }
           }

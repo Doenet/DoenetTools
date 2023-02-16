@@ -1297,7 +1297,7 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" name="rs" triggerWhenMouseDownOnObjects="P" >
+    <p><callAction target="s" actionName="resample" name="rs" triggerWhenObjectsFocused="P" >
       <label>roll dice</label>
     </callAction></p>
     `}, "*");
