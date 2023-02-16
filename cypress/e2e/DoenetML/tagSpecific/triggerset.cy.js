@@ -735,7 +735,7 @@ describe('TriggerSet Tag Tests', function () {
   <math name="x">x</math>
   <math name="y">y</math>
   
-  <triggerSet triggerWhenMouseDownOnObjects="P" >
+  <triggerSet triggerWhenObjectsFocused="P" >
     <updateValue name="trip" target="x" newValue="3$x" simplify />
     <updateValue name="quad" target="y" newValue="4$y" simplify />
   </triggerSet>

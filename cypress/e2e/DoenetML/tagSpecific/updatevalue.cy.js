@@ -837,7 +837,7 @@ describe('UpdateValue Tag Tests', function () {
     </graph>
     <math name="x">x</math>
     
-    <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenMouseDownOnObjects="P" />
+    <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenObjectsFocused="P" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
