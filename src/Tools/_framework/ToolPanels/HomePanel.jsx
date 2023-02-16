@@ -70,9 +70,12 @@ const H4responsive = styled.h4`
 `
 
 const HPVideo = styled.video`
-  height: 420px;
+  height: 350px;
   @media (max-width: 780px) {
   height: 240px;
+  }
+  @media (max-width: 450px) {
+  height: 180px;
   }
 `
 
@@ -251,6 +254,21 @@ const HeaderSection = styled.div`
     @media (max-width: 500px) {
         height: 300px;
         flex-direction: column-reverse;
+      }
+`
+
+const CreateContentSection = styled.div`
+  display: flex;
+  column-gap: 20px;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  background: #0e1111;
+  @media (max-width: 1024px) {
+        /* height: 300px; */
+        flex-direction: column;
+        row-gap: 20px;
+        height: 600px;
       }
 `
 
@@ -495,16 +513,15 @@ export default function HomePage(props) {
     </HeaderSection>
     {/* </div> */}
 
-    <Heading heading="Create Content" subheading="Authors can quickly create interactive activities" />
+    <Heading heading="Create Content" subheading="Quickly create interactive activities" />
 
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '500px',
-      background: '#0e1111',
-    }}>
+    <CreateContentSection>
+
+      <div>
+        <h1 style={{ color: 'white' }}>Introducing DoenetML</h1>
+        <h4 style={{ width: '340px', color: 'white', lineHeight: '1em' }}>DoenetML is the markup language we've created to let you focus on the meaning of the elements you wish to create.</h4>
+        <Button value="See Inside" onClick={() => window.open('https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0', '_blank')} />
+      </div>
 
       <HPVideo
         // height='420px'
@@ -517,21 +534,12 @@ export default function HomePage(props) {
         ref={videoEl}
         // autoplay
         controls
-      ><source src="/media/homepagevideo3.mp4" type="video/mp4" /></HPVideo>
-
-    </div>
+      ><source src="/media/homepagevideo.mp4" type="video/mp4" /></HPVideo>
+    </CreateContentSection>
 
     <Heading heading="Explore" subheading="Interact with our existing content" />
 
-    {/* <div style={{
-      padding: '20px 10px 60px 10px',
-      margin: '0px',
-      justifyContent: 'center',
-      alignItems: 'center',
-      textAlign: 'center',
-      background: 'var(--mainGray)',
-      // height: '500px',
-    }}> */}
+
     <CarouselSection>
       <HPCarousel data={carouselData.current} />
     </CarouselSection>
