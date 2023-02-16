@@ -15,6 +15,7 @@ import {
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 
 
 const SectionText = styled.div`
@@ -172,76 +173,24 @@ function DemoCard({ imagePath, text, link }) {
   </a>
 }
 
-const CarouselOutsideContainer = styled.div`
-      display: grid;
-      grid-template-columns: 20px repeat(4, 1fr) 20px;
-      grid-template-rows: 30px 100px 100px;
-      row-gap: 5px;
-      column-gap: 20px;
-      width: 80%;
-      max-width: 900px;
-      @media (max-width: 500px) {
-        grid-template-columns: 10px repeat(4, 1fr) 10px;
-        grid-template-rows: 50px 100px 100px;
-  }
-`
-
-const CarouselContainer = styled.div`
-    display: grid;
-    grid-area: 2/2/4/6;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 100px 100px;
-    column-gap: 10px;
-    row-gap: 10px;
-  @media (max-width: 800px) {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(4, 100px);
-  }
-  @media (max-width: 500px) {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(8, 100px);
-  }
-`
-
-const CarouselHeaderBar = styled.div`
-  grid-area: 1/1/1/7; 
-  display: flex; 
-  justify-content: center; 
-`
-
-const CarouselHeader = styled.div`
-    text-decoration: ${(props) => (props.active ? 'underline' : 'none')};
-    font-weight: ${(props) => (props.active ? 'bold' : 'none')};
-    cursor: pointer;
-    margin-left: 40px;
-    margin-right: 40px;
-    -webkit-user-select: none;
-    user-select: none;
-  @media (max-width: 800px) {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-  @media (max-width: 500px) {
-    margin-left: 5px;
-    margin-right: 5px;
-    font-size: .8em;
-  }
-`
 
 const CarouselSection = styled.div`
-  padding: 20px 10px 60px 10px;
+      display: flex;
+      flex-direction: column;
+      padding: 60px 10px 60px 10px;
       margin: 0px;
+      row-gap: 45px;
       justify-content: center;
       align-items: center;
       text-align: center;
       background: var(--mainGray);
-      height: 300px;
-      @media (max-width: 800px) {
+      height: 920px;
+      /* @media (max-width: 800px) {
         height: 500px;
       }
       @media (max-width: 500px) {
         height: 1000px;
-      }
+      } */
 `
 
 const HeaderSection = styled.div`
@@ -541,7 +490,9 @@ export default function HomePage(props) {
 
 
     <CarouselSection>
-      <HPCarousel data={carouselData.current} />
+      <Carousel title="College Math" data={carouselData.current[0]} />
+      <Carousel title="Science & Engineering" data={carouselData.current[1]} />
+      <Carousel title="K-12 Math" data={carouselData.current[2]} />
     </CarouselSection>
 
     <Heading heading="Learn" subheading="Designed for the In-Person Classroom" />
