@@ -1253,7 +1253,7 @@ export default class Core {
         });
 
       }
-      
+
       if (componentClass.keepChildrenSerialized) {
         let childrenAddressed = new Set([]);
 
@@ -1958,6 +1958,22 @@ export default class Core {
 
     }
 
+
+    // Call the static function createSerializedReplacements from the composite component
+    // which returns an object containing a key "replacements" with value an array 
+    // of serialized components that will be turned into real components.
+    // The replacement components will be used to replace
+    // the composite itself as children for the composite's parent
+    // Arguments
+    // component: the composite component
+    // components: all components in the document
+    // workspace: an initially empty object that a composite can use to store information that will then 
+    //   be provided when updating composite replacements via calculateReplacementChanges
+    // componentInfoObjects
+    // flags
+    // resolveItem: a function that the composite can use to resolve any state variables
+    // publicCaseInsensitiveAliasSubstitutions: a function that can be used to find a case insensitive match
+    //   to a public state variable, substituting aliases if necessary
     let result = await component.constructor.createSerializedReplacements({
       component: this.components[component.componentName],  // to create proxy
       components: this.components,
@@ -1992,10 +2008,6 @@ export default class Core {
         component,
         serializedReplacements,
       });
-
-      if (result.withholdReplacements) {
-        component.replacementsToWithhold = component.replacements.length;
-      }
 
     } else {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
@@ -7181,9 +7193,6 @@ export default class Core {
 
   async updateCompositeReplacements({ component, componentChanges, sourceOfUpdate }) {
 
-    // TODO: this function is only partially converted to the new system
-
-
     // console.log("updateCompositeReplacements " + component.componentName);
 
     let deletedComponents = {};
@@ -7218,6 +7227,22 @@ export default class Core {
     // TODO: why must we evaluate and not just resolve it?
     await component.stateValues.readyToExpandWhenResolved;
 
+    // Call the static function calculateReplacementChanges from the composite component
+    // which returns the an array of replacement instructions that specify
+    // changes to the replacements of the composite.
+    // Arguments
+    // component: the composite component
+    // componentChanges: an array of changes made to the replacements of composites during the current update
+    //   that was formerly used by composites to inform their replacement changes but is currently
+    //   not used by any composites.  It is retained in case we need this information again.
+    // components: all components in the document
+    // workspace: an a composite can use to store information that can be share between
+    //   the initial call to createSerializedReplacements and subsequence calls to calculateReplacementChanges
+    // componentInfoObjects
+    // flags
+    // resolveItem: a function that the composite can use to resolve any state variables
+    // publicCaseInsensitiveAliasSubstitutions: a function that can be used to find a case insensitive match
+    //   to a public state variable, substituting aliases if necessary
     const replacementChanges = await component.constructor.calculateReplacementChanges({
       component: proxiedComponent,
       componentChanges,
@@ -7432,16 +7457,6 @@ export default class Core {
           parentsOfDeleted, deletedComponents, addedComponents,
         });
 
-
-      } else if (change.changeType === "moveDependency") {
-
-        // TODO: this is not converted to new system
-        throw Error('moveDependency not implemented');
-
-      } else if (change.changeType === "addDependency") {
-
-        // TODO: this is not converted to new system
-        throw Error('addDependency not implemented');
 
       } else if (change.changeType === "updateStateVariables") {
 
