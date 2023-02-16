@@ -16,6 +16,8 @@ export default React.memo(function Line(props) {
 
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
@@ -35,8 +37,19 @@ export default React.memo(function Line(props) {
         deleteLineJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
   function createLineJXG() {
@@ -183,18 +196,22 @@ export default React.memo(function Line(props) {
             point2coords: pointCoords.current[1],
           }
         })
-      } else if (SVs.switchable && !SVs.fixed) {
-        callAction({
-          action: actions.switchLine,
-        })
-        callAction({
-          action: actions.lineClicked
-        });
-      } else {
-        callAction({
-          action: actions.lineClicked
-        });
+      } else if (!pointerMovedSinceDown.current) {
+
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchLine,
+          })
+          callAction({
+            action: actions.lineClicked
+          });
+        } else {
+          callAction({
+            action: actions.lineClicked
+          });
+        }
       }
+      pointerIsDown.current = false;
     })
 
     newLineJXG.on('keyfocusout', function (e) {
@@ -217,7 +234,8 @@ export default React.memo(function Line(props) {
         [...newLineJXG.point1.coords.scrCoords],
         [...newLineJXG.point2.coords.scrCoords]
       ]
-
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     })
 
 
@@ -255,6 +273,18 @@ export default React.memo(function Line(props) {
     lineJXG.current = newLineJXG;
 
   }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
+
 
   function deleteLineJXG() {
     lineJXG.current.off('drag');

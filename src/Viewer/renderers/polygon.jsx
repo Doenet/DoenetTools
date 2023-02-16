@@ -17,6 +17,8 @@ export default React.memo(function Polygon(props) {
   let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let previousNVertices = useRef(null);
   let jsxPointAttributes = useRef(null);
 
@@ -33,8 +35,20 @@ export default React.memo(function Polygon(props) {
       if (polygonJXG.current) {
         deletePolygonJXG();
       }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
 
@@ -127,14 +141,7 @@ export default React.memo(function Polygon(props) {
     newPolygonJXG.on('keyfocusout', e => keyFocusOutHandler(-1));
     newPolygonJXG.on('keydown', e => keyDownHandler(-1, e));
 
-    newPolygonJXG.on('down', function (e) {
-      draggedPoint.current = null
-      pointerAtDown.current = [e.x, e.y];
-
-      pointsAtDown.current = newPolygonJXG.vertices.map(x => [...x.coords.scrCoords])
-
-    });
-
+    newPolygonJXG.on('down', e => downHandler(-1, e));
 
     board.unsuspendUpdate();
 
@@ -142,6 +149,17 @@ export default React.memo(function Polygon(props) {
 
     return newPolygonJXG;
 
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
   }
 
 
@@ -157,11 +175,7 @@ export default React.memo(function Polygon(props) {
       vertex.off('keydown');
       vertex.on('keydown', (e) => keyDownHandler(i, e));
       vertex.off('down');
-      vertex.on('down', (e) => {
-        draggedPoint.current = null;
-        pointerAtDown.current = [e.x, e.y];
-        downOnPoint.current = i;
-      });
+      vertex.on('down', (e) => downHandler(i, e));
     }
   }
 
@@ -245,6 +259,21 @@ export default React.memo(function Polygon(props) {
     }
   }
 
+  function downHandler(i, e) {
+
+    draggedPoint.current = null
+    pointerAtDown.current = [e.x, e.y];
+
+    if (i === -1) {
+      pointsAtDown.current = polygonJXG.current.vertices.map(x => [...x.coords.scrCoords])
+    } else {
+      downOnPoint.current = i;
+    }
+
+    pointerIsDown.current = true;
+    pointerMovedSinceDown.current = false;
+  }
+
   function upHandler(i) {
     if (draggedPoint.current === i) {
       if (i === -1) {
@@ -264,7 +293,7 @@ export default React.memo(function Polygon(props) {
         })
 
       }
-    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+    } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1)) {
       // Note: counting on fact that up on polygon itself (i===-1) will trigger before up on points
       callAction({
         action: actions.polygonClicked
@@ -274,6 +303,9 @@ export default React.memo(function Polygon(props) {
     if (i !== -1) {
       downOnPoint.current = null;
     }
+
+    pointerIsDown.current = false;
+
   }
 
 

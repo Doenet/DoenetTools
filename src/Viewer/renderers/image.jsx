@@ -18,6 +18,8 @@ export default React.memo(function Image(props) {
 
   let pointerAtDown = useRef(null);
   let pointAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
 
   let calculatedX = useRef(null);
@@ -67,8 +69,19 @@ export default React.memo(function Image(props) {
       if (Object.keys(imageJXG.current).length !== 0) {
         deleteImageJXG();
       }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
   function createImageJXG() {
@@ -152,7 +165,8 @@ export default React.memo(function Image(props) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
-
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
 
     newImageJXG.on('up', function (e) {
@@ -165,11 +179,12 @@ export default React.memo(function Image(props) {
           }
         });
         dragged.current = false;
-      } else {
+      } else if (!pointerMovedSinceDown.current) {
         callAction({
           action: actions.imageClicked
         });
       }
+      pointerIsDown.current = false;
 
     });
 
@@ -274,6 +289,17 @@ export default React.memo(function Image(props) {
     previousPositionFromAnchor.current = SVs.positionFromAnchor;
     currentSize.current = [width, height];
 
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
   }
 
 

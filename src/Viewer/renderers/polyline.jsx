@@ -18,6 +18,8 @@ export default React.memo(function Polyline(props) {
   let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let previousNVertices = useRef(null);
   let jsxPointAttributes = useRef(null);
 
@@ -34,9 +36,19 @@ export default React.memo(function Polyline(props) {
       if (polylineJXG.current) {
         deletePolylineJXG();
       }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
     }
   }, [])
 
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
   function createPolylineJXG() {
@@ -121,30 +133,30 @@ export default React.memo(function Polyline(props) {
       pointsJXG.current[i].on('up', () => upHandler(i));
       pointsJXG.current[i].on('keyfocusout', () => keyFocusOutHandler(i));
       pointsJXG.current[i].on('keydown', (e) => keyDownHandler(i, e));
-      pointsJXG.current[i].on('down', (e) => {
-        draggedPoint.current = null;
-        pointerAtDown.current = [e.x, e.y];
-        downOnPoint.current = i;
-      });
+      pointsJXG.current[i].on('down', (e) => downHandler(i, e));
     }
 
     newPolylineJXG.on('drag', e => dragHandler(-1, e));
     newPolylineJXG.on('up', () => upHandler(-1));
     newPolylineJXG.on('keyfocusout', () => keyFocusOutHandler(-1));
     newPolylineJXG.on('keydown', (e) => keyDownHandler(-1, e));
-
-    newPolylineJXG.on('down', function (e) {
-      draggedPoint.current = null
-      pointerAtDown.current = [e.x, e.y];
-
-      pointsAtDown.current = newPolylineJXG.points.map(x => [...x.scrCoords])
-
-    });
+    newPolylineJXG.on('down', e => downHandler(-1, e));
 
     previousNVertices.current = SVs.nVertices;
 
     return newPolylineJXG;
 
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
   }
 
   function deletePolylineJXG() {
@@ -242,6 +254,21 @@ export default React.memo(function Polyline(props) {
     }
   }
 
+  function downHandler(i, e) {
+
+    draggedPoint.current = null
+    pointerAtDown.current = [e.x, e.y];
+
+    if (i === -1) {
+      pointsAtDown.current = polylineJXG.current.points.map(x => [...x.scrCoords])
+    } else {
+      downOnPoint.current = i;
+    }
+
+    pointerIsDown.current = true;
+    pointerMovedSinceDown.current = false;
+  }
+
   function upHandler(i) {
     if (draggedPoint.current === i) {
       if (i === -1) {
@@ -260,7 +287,7 @@ export default React.memo(function Polyline(props) {
           }
         })
       }
-    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+    } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1)) {
       // Note: counting on fact that up on polyline itself (i===-1) will trigger before up on points
       callAction({
         action: actions.polylineClicked
@@ -270,6 +297,9 @@ export default React.memo(function Polyline(props) {
     if (i !== -1) {
       downOnPoint.current = null;
     }
+
+    pointerIsDown.current = false;
+
   }
 
 

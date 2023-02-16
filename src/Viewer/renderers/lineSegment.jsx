@@ -15,6 +15,8 @@ export default React.memo(function LineSegment(props) {
 
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let draggedPoint = useRef(null);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
@@ -34,8 +36,19 @@ export default React.memo(function LineSegment(props) {
         deleteLineSegmentJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
   function createLineSegmentJXG() {
@@ -154,12 +167,13 @@ export default React.memo(function LineSegment(props) {
             point1coords: pointCoords.current,
           }
         })
-      } else if (draggedPoint.current === null) {
+      } else if (!pointerMovedSinceDown.current) {
         callAction({
           action: actions.lineSegmentClicked
         });
       }
       downOnPoint.current = null;
+      pointerIsDown.current = false;
     })
     point2JXG.current.on('up', () => {
       if (draggedPoint.current === 2) {
@@ -169,12 +183,13 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current,
           }
         })
-      } else if (draggedPoint.current === null) {
+      } else if (!pointerMovedSinceDown.current) {
         callAction({
           action: actions.lineSegmentClicked
         });
       }
       downOnPoint.current = null;
+      pointerIsDown.current = false;
     })
     lineSegmentJXG.current.on('up', function (e) {
       if (draggedPoint.current === 0) {
@@ -185,12 +200,13 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current[1],
           }
         })
-      } else if (draggedPoint.current === null && downOnPoint.current === null) {
+      } else if (!pointerMovedSinceDown.current && downOnPoint.current === null) {
         // Note: counting on fact that up on line segment will trigger before up on points
         callAction({
           action: actions.lineSegmentClicked
         });
       }
+      pointerIsDown.current = false;
     });
 
 
@@ -234,11 +250,15 @@ export default React.memo(function LineSegment(props) {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 1;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
     point2JXG.current.on('down', (e) => {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 2;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
     lineSegmentJXG.current.on('down', function (e) {
       draggedPoint.current = null;
@@ -247,6 +267,8 @@ export default React.memo(function LineSegment(props) {
         [...point1JXG.current.coords.scrCoords],
         [...point2JXG.current.coords.scrCoords]
       ]
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
 
 
@@ -313,6 +335,16 @@ export default React.memo(function LineSegment(props) {
 
   }
 
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
 
   function onDragHandler(i, e) {
 

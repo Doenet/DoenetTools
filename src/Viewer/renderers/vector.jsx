@@ -17,6 +17,8 @@ export default React.memo(function Vector(props) {
 
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let headBeingDragged = useRef(false);
   let tailBeingDragged = useRef(false);
   let downOnPoint = useRef(null);
@@ -39,8 +41,19 @@ export default React.memo(function Vector(props) {
         deleteVectorJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
   function createVectorJXG() {
 
@@ -132,12 +145,13 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: { tailcoords: tailcoords.current }
         });
-      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+      } else if (!pointerMovedSinceDown.current) {
         callAction({
           action: actions.vectorClicked
         });
       }
       downOnPoint.current = null;
+      pointerIsDown.current = false;
     });
     newPoint2JXG.on('up', e => {
       if (headBeingDragged.current && !tailBeingDragged.current) {
@@ -145,12 +159,13 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: { headcoords: headcoords.current }
         });
-      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+      } else if (!pointerMovedSinceDown.current) {
         callAction({
           action: actions.vectorClicked
         });
       }
       downOnPoint.current = null;
+      pointerIsDown.current = false;
     });
     newVectorJXG.on('up', e => {
       if (headBeingDragged.current && tailBeingDragged.current) {
@@ -161,12 +176,13 @@ export default React.memo(function Vector(props) {
             tailcoords: tailcoords.current
           }
         });
-      } else if (!headBeingDragged.current && !tailBeingDragged.current && downOnPoint.current === null) {
+      } else if (!pointerMovedSinceDown.current && downOnPoint.current === null) {
         // Note: counting on fact that up on vector will trigger before up on points
         callAction({
           action: actions.vectorClicked
         });
       }
+      pointerIsDown.current = false;
     });
 
     newPoint1JXG.on('keyfocusout', e => {
@@ -208,12 +224,16 @@ export default React.memo(function Vector(props) {
       tailBeingDragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 1;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
     newPoint2JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 2;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
 
     // if drag vector, need to keep track of original point positions
@@ -226,6 +246,8 @@ export default React.memo(function Vector(props) {
         [...newVectorJXG.point1.coords.scrCoords],
         [...newVectorJXG.point2.coords.scrCoords]
       ];
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
 
     newPoint1JXG.on('keydown', e => {
@@ -277,69 +299,81 @@ export default React.memo(function Vector(props) {
       }
     });
 
-    function onDragHandler(e, i) {
-
-      let viaPointer = e.type === "pointermove";
-
-      //Protect against very small unintended drags
-      if (!viaPointer ||
-        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
-      ) {
-
-        if (i === 0) {
-          tailBeingDragged.current = true;
-        } else if (i === 1) {
-          headBeingDragged.current = true;
-        } else {
-          headBeingDragged.current = true;
-          tailBeingDragged.current = true;
-        }
-
-        let instructions = { transient: true, skippable: true };
-
-        if (headBeingDragged.current) {
-          if (i === -1) {
-            headcoords.current = calculatePointPosition(e, 1);
-          } else {
-            headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
-          }
-          instructions.headcoords = headcoords.current;
-        }
-        if (tailBeingDragged.current) {
-          if (i === -1) {
-            tailcoords.current = calculatePointPosition(e, 0);
-          } else {
-            tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
-          }
-          instructions.tailcoords = tailcoords.current;
-
-        }
-
-        if (i === 0 || i === 1) {
-          instructions.sourceInformation = { vertex: i };
-        }
-
-        callAction({
-          action: actions.moveVector,
-          args: instructions
-        });
-
-        newVectorJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
-        newVectorJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
-        if (i === 0) {
-          board.updateInfobox(newPoint1JXG);
-        } else if (i === 1) {
-          board.updateInfobox(newPoint2JXG);
-        }
-      }
-
-    }
-
 
     vectorJXG.current = newVectorJXG;
     point1JXG.current = newPoint1JXG;
     point2JXG.current = newPoint2JXG;
+  }
+
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
+
+  function onDragHandler(e, i) {
+
+    let viaPointer = e.type === "pointermove";
+
+    //Protect against very small unintended drags
+    if (!viaPointer ||
+      Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1
+    ) {
+
+      if (i === 0) {
+        tailBeingDragged.current = true;
+      } else if (i === 1) {
+        headBeingDragged.current = true;
+      } else {
+        headBeingDragged.current = true;
+        tailBeingDragged.current = true;
+      }
+
+      let instructions = { transient: true, skippable: true };
+
+      if (headBeingDragged.current) {
+        if (i === -1) {
+          headcoords.current = calculatePointPosition(e, 1);
+        } else {
+          headcoords.current = [vectorJXG.current.point2.X(), vectorJXG.current.point2.Y()];
+        }
+        instructions.headcoords = headcoords.current;
+      }
+      if (tailBeingDragged.current) {
+        if (i === -1) {
+          tailcoords.current = calculatePointPosition(e, 0);
+        } else {
+          tailcoords.current = [vectorJXG.current.point1.X(), vectorJXG.current.point1.Y()];
+        }
+        instructions.tailcoords = tailcoords.current;
+
+      }
+
+      if (i === 0 || i === 1) {
+        instructions.sourceInformation = { vertex: i };
+      }
+
+      callAction({
+        action: actions.moveVector,
+        args: instructions
+      });
+
+      vectorJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
+      vectorJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
+      if (i === 0) {
+        board.updateInfobox(point1JXG.current);
+      } else if (i === 1) {
+        board.updateInfobox(point2JXG.current);
+      }
+    }
+
   }
 
   function deleteVectorJXG() {

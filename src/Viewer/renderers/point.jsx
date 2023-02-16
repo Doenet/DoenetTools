@@ -17,6 +17,8 @@ export default React.memo(function Point(props) {
 
   let pointerAtDown = useRef(null);
   let pointAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
@@ -46,8 +48,20 @@ export default React.memo(function Point(props) {
         shadowPointJXG.current = null;
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
 
   function createPointJXG() {
     let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
@@ -174,6 +188,8 @@ export default React.memo(function Point(props) {
       dragged.current = false;
       shadowPointJXG.current.visProp.highlightfillopacity = pointJXG.current.visProp.fillopacity;
       shadowPointJXG.current.visProp.highlightstrokeopacity = pointJXG.current.visProp.strokeopacity;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
 
     });
 
@@ -187,21 +203,24 @@ export default React.memo(function Point(props) {
           }
         });
         dragged.current = false;
-      } else if (SVs.switchable && !SVs.fixed) {
+      } else if (!pointerMovedSinceDown.current) {
+        if (SVs.switchable && !SVs.fixed) {
 
-        // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
-        // as useEffect will not be rerun
-        callAction({
-          action: actions.switchPoint
-        });
-        callAction({
-          action: actions.pointClicked
-        });
-      } else {
-        callAction({
-          action: actions.pointClicked
-        });
+          // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
+          // as useEffect will not be rerun
+          callAction({
+            action: actions.switchPoint
+          });
+          callAction({
+            action: actions.pointClicked
+          });
+        } else {
+          callAction({
+            action: actions.pointClicked
+          });
+        }
       }
+      pointerIsDown.current = false;
 
       shadowPointJXG.current.visProp.highlightfillopacity = 0;
       shadowPointJXG.current.visProp.highlightstrokeopacity = 0;
@@ -323,6 +342,16 @@ export default React.memo(function Point(props) {
     previousWithLabel.current = withlabel;
   }
 
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
 
 
   if (board) {

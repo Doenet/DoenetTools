@@ -18,7 +18,9 @@ export default React.memo(function Curve(props) {
   let previousCurveType = useRef(null);
   let draggedControlPoint = useRef(null);
   let draggedThroughPoint = useRef(null);
-  let updateSinceDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let previousFlipFunction = useRef(null);
   let segmentAttributes = useRef(null);
   let throughPointAttributes = useRef(null);
@@ -51,8 +53,19 @@ export default React.memo(function Curve(props) {
       if (curveJXG.current) {
         deleteCurveJXG();
       }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
 
@@ -188,7 +201,7 @@ export default React.memo(function Curve(props) {
     newCurveJXG.on('up', function (e) {
       // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
       // as useEffect will not be rerun
-      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null) {
+      if (!pointerMovedSinceDown.current) {
         if (SVs.switchable && !SVs.fixed) {
           callAction({
             action: actions.switchCurve
@@ -199,6 +212,7 @@ export default React.memo(function Curve(props) {
           args: { name }   // send name so get original name if adapted
         });
       }
+      pointerIsDown.current = false;
     });
 
 
@@ -218,6 +232,12 @@ export default React.memo(function Curve(props) {
         });
       }
     })
+
+    newCurveJXG.on('down', function (e) {
+      pointerAtDown.current = [e.x, e.y];
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+    });
 
     if (SVs.curveType === "bezier") {
 
@@ -287,11 +307,20 @@ export default React.memo(function Curve(props) {
       }
 
     } else {
-      newCurveJXG.on('down', function (e) {
-        updateSinceDown.current = false;
-      });
+
     }
     return newCurveJXG;
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
   }
 
   function deleteCurveJXG() {
@@ -574,8 +603,6 @@ export default React.memo(function Curve(props) {
 
     hitObject.current = true;
 
-    updateSinceDown.current = false;
-
     makeThroughPointsAlwaysVisible();
     board.updateRenderer();
   }
@@ -617,8 +644,6 @@ export default React.memo(function Curve(props) {
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
         board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
-
-      updateSinceDown.current = true;
 
       let visible = !SVs.hidden;
 

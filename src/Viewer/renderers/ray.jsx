@@ -14,6 +14,8 @@ export default React.memo(function Ray(props) {
 
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
 
   let previousWithLabel = useRef(null);
@@ -34,8 +36,20 @@ export default React.memo(function Ray(props) {
         deleteRayJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
 
   function createRayJXG() {
 
@@ -149,11 +163,12 @@ export default React.memo(function Ray(props) {
             throughcoords: pointCoords.current[1],
           }
         })
-      } else {
+      } else if (!pointerMovedSinceDown.current) {
         callAction({
           action: actions.rayClicked
         });
       }
+      pointerIsDown.current = false;
     });
 
     newRayJXG.on('keyfocusout', function (e) {
@@ -177,6 +192,8 @@ export default React.memo(function Ray(props) {
         [...newRayJXG.point1.coords.scrCoords],
         [...newRayJXG.point2.coords.scrCoords]
       ]
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
 
     });
 
@@ -205,6 +222,17 @@ export default React.memo(function Ray(props) {
 
     rayJXG.current = newRayJXG;
 
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
   }
 
   function deleteRayJXG() {

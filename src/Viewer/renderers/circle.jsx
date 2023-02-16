@@ -13,6 +13,8 @@ export default React.memo(function Circle(props) {
 
   let dragged = useRef(false);
   let pointerAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let centerAtDown = useRef(null);
   let radiusAtDown = useRef(null);
   let throughAnglesAtDown = useRef(null);
@@ -34,8 +36,19 @@ export default React.memo(function Circle(props) {
         deleteCircleJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
 
   function createCircleJXG() {
 
@@ -155,7 +168,7 @@ export default React.memo(function Circle(props) {
             throughAngles: throughAnglesAtDown.current,
           }
         })
-      } else {
+      } else if (!pointerMovedSinceDown.current) {
         callAction({
           action: actions.circleClicked
         });
@@ -175,6 +188,7 @@ export default React.memo(function Circle(props) {
         })
         dragged.current = false;
       }
+      pointerIsDown.current = false;
     })
 
 
@@ -184,6 +198,8 @@ export default React.memo(function Circle(props) {
       centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
     });
 
     // hit is called by jsxgraph when focused in via keyboard
@@ -220,6 +236,17 @@ export default React.memo(function Circle(props) {
 
   }
 
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
 
   function deleteCircleJXG() {
     circleJXG.current.off('drag');
