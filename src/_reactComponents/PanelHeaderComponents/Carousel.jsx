@@ -22,58 +22,142 @@ import {
   faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
-import { a } from "@react-spring/web";
 import useMeasure from 'react-use-measure' //Temporary
-import { set } from "lodash";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
 function Card({ imagePath, text, link }) {
+  const cardStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '180px',
+    backgroundColor: 'black',
+    overflow: 'hidden',
+    margin: '10px',
+    border: "2px solid #949494",
+    borderRadius: "6px"
+  };
+
+  const topStyle = {
+    height: '128px',
+    minWidth: '150px',
+  };
+
+  const imgStyle = {
+    height: 'auto',
+    maxWidth: '100%',
+    // maxHeight: '50px',
+    maxHeight: '110px',
+    objectFit: 'cover',
+  };
+
+  const bottomStyle = {
+    height: '54px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    padding: '2px',
+    color: 'black',
+    background: 'white',
+    // whiteSpace: 'normal',
+    // overflow: 'hidden',
+    // textOverflow: 'ellipsis',
+    // display: '-webkit-box',
+    // WebkitLineClamp: 2,
+    // WebkitBoxOrient: 'vertical',
+  };
+
+  const textStyle = {
+    fontSize: '.8em',
+    display: 'inline',
+    '-webkit-line-clamp': 2,
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    display: '-webkit-box',
+    '-webkit-box-orient': 'vertical',
+    wordWrap: 'break-word',
+  }
+
+  const linkStyle = {
+    textDecoration: 'none',
+    userSelect: 'none',
+    cursor: 'pointer',
+    flexGrow: '1',
+    maxWidth: '240px',
+  }
+
   return (
-    <a style={{
-      textDecoration: 'none',
-      // '-webkitUserSelect': 'none',
-      userSelect: 'none',
-      cursor: 'pointer',
-      flexGrow: '1',
-      maxWidth: '240px',
-    }} href={link} target="_blank">
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          flexDirection: "column",
-          height: "180px",
-          border: "2px solid #949494",
-          borderRadius: "6px"
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: "128px",
-            background: "#121212",
-            borderRadius: "5px 5px 0px 0px"
-          }}
-        >
-          <img style={{ height: '120px' }} src={imagePath} />
+    <a style={linkStyle} href={link} target="_blank">
+      <div style={cardStyle}>
+        <div style={topStyle}>
+          <img src={imagePath} alt="Card" style={imgStyle} />
         </div>
-        <div
-          style={{
-            height: "54px",
-            width: "100%",
-            color: "black"
-          }}
-        >
-          {text}
+        <div style={bottomStyle}>
+          <span style={textStyle}>{text}</span>
         </div>
       </div>
-    </a >
+    </a>
   );
 }
+
+// function Card({ imagePath, text, link }) {
+//   return (
+// <a style={{
+//   textDecoration: 'none',
+//   // '-webkitUserSelect': 'none',
+//   userSelect: 'none',
+//   cursor: 'pointer',
+//   flexGrow: '1',
+//   maxWidth: '240px',
+// }} href={link} target="_blank">
+//       <div
+//         style={{
+//           display: "flex",
+//           alignItems: "center",
+//           flexDirection: "column",
+//           height: "180px",
+// border: "2px solid #949494",
+// borderRadius: "6px"
+//         }}
+//       >
+//         <div
+//           style={{
+//             // display: "flex",
+//             // justifyContent: "center",
+//             // alignItems: "center",
+//             // width: '3fr',
+//             // width: "100%",
+//             // maxWidth: "236px",
+//             flexGrow: '1',
+//             height: "128px",
+//             background: "#121212",
+//             borderRadius: "5px 5px 0px 0px",
+//             overflow: "hidden",
+
+//           }}
+//         >
+//           <img style={{ width: '140px' }} src={imagePath} />
+//           {/* <img src={imagePath} /> */}
+//         </div>
+//         <div
+//           style={{
+//             flexGrow: '1',
+//             height: "54px",
+//             // width: ".9fr",
+//             color: "black",
+//             padding: "2px",
+//             textOverflow: "ellipsis",
+//             overflow: "hidden",
+//             fontSize: ".9em",
+//             // whiteSpace: "nowrap"
+//           }}
+//         >
+//           {text}
+//         </div>
+//       </div>
+//     </a >
+//   );
+// }
 
 const LeftChevron = styled(FontAwesomeIcon)`
   color: #949494;
@@ -165,6 +249,11 @@ export function Carousel({ title = "", data = [] }) {
             }}
           />
           <div style={{
+            // display: "flex",
+            // flexGrow: 1,
+            // height: "230px",
+            // columnGap: '20px',
+            // justifyContent: "center",
             display: "flex",
             flexGrow: 1,
             height: "230px",
