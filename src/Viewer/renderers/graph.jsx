@@ -405,11 +405,11 @@ export default React.memo(function Graph(props) {
       ticksDistance: 2,
       label: {
         offset: [12, -2],
-        layer: 2
+        layer: 2, 
+        strokeColor: "var(--canvastext)"
       },
       // minorTicks: 4,
       precision: 4,
-      strokeColor: "var(--canvastext)",
       drawLabels: SVs.displayYAxisTickLabels
     };
     if (SVs.yTickScaleFactor !== null) {
@@ -562,10 +562,10 @@ export default React.memo(function Graph(props) {
       label: {
         offset: [-5, -15],
         layer: 2,
+        strokeColor: "var(--canvastext)"
       },
       // minorTicks: 4,
       precision: 4,
-      strokeColor: 'var(--canvastext)',
       drawLabels: SVs.displayXAxisTickLabels
     };
     if (SVs.xTickScaleFactor !== null) {
