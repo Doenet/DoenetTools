@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 
 import SwiperCore, {
   // Navigation,
@@ -22,56 +22,44 @@ import {
   faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
-import { a } from "@react-spring/web";
-import useMeasure from 'react-use-measure' //Temporary
-import { set } from "lodash";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
-function Card({ imagePath, text, link }) {
+function Card({ text }) {
   return (
-    <a style={{
-      textDecoration: 'none',
-      // '-webkitUserSelect': 'none',
-      userSelect: 'none',
-      cursor: 'pointer',
-      flexGrow: '1',
-      maxWidth: '240px',
-    }} href={link} target="_blank">
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column",
+        height: "180px",
+        border: "2px solid #949494",
+        borderRadius: "6px"
+      }}
+    >
       <div
         style={{
           display: "flex",
+          justifyContent: "center",
           alignItems: "center",
-          flexDirection: "column",
-          height: "180px",
-          border: "2px solid #949494",
-          borderRadius: "6px"
+          width: "100%",
+          height: "128px",
+          background: "#121212",
+          borderRadius: "5px 5px 0px 0px"
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: "128px",
-            background: "#121212",
-            borderRadius: "5px 5px 0px 0px"
-          }}
-        >
-          <img style={{ height: '120px' }} src={imagePath} />
-        </div>
-        <div
-          style={{
-            height: "54px",
-            width: "100%",
-            color: "black"
-          }}
-        >
-          {text}
-        </div>
+        Image here
       </div>
-    </a >
+      <div
+        style={{
+          height: "54px",
+          width: "100%",
+          color: "black"
+        }}
+      >
+        {text}
+      </div>
+    </div>
   );
 }
 
@@ -95,27 +83,8 @@ const RightChevron = styled(FontAwesomeIcon)`
   }
 `;
 
-export function Carousel({ title = "", data = [] }) {
+export function Carousel() {
   const swiperElRef = useRef(null);
-
-  const [ref, bounds] = useMeasure(); //Temporary
-  const [index, setIndex] = useState(0); //Temporary
-  const numberOfCardsInView = Math.floor(bounds.width / 175) //Temporary
-
-  let cards = []; //Temporary
-  let end = Math.min(numberOfCardsInView + index, data.length)
-  let start = Math.min(index, end - numberOfCardsInView);
-  if (start < 0) { start = 0; }
-  // console.log("data.length", data.length)
-  // console.log("index", index)
-  // console.log("numberOfCardsInView", numberOfCardsInView)
-  // console.log("start", start)
-  // console.log("end", end)
-  // console.log("---------\n")
-  for (let i = start; i < end; i++) {
-    cards.push(<Card key={`slide${i}`} {...data[i]} />)
-  }
-
 
   const pagination = {
     clickable: true,
@@ -139,45 +108,41 @@ export function Carousel({ title = "", data = [] }) {
   return (
     <>
       <div
-        ref={ref}
         style={{
-          border: "2px solid #949494",
-          borderRadius: "6px",
-          padding: "10px",
-          minWidth: "320px",
-          maxWidth: "1000px",
-          width: "80%",
-          textAlign: "center",
+          display: "flex",
+          justifyContent: "center"
         }}
       >
-        <div style={{ display: "inline-block", padding: "4px" }}>{title}</div>
-
-        <div style={{
-          display: "flex"
-        }}>
-          <LeftChevron
-            icon={faChevronLeft}
-            onClick={() => {
-              // swiperElRef.current.swiper.slidePrev();
-              let next = start - numberOfCardsInView;
-              if (next < 0) { next = 0 }
-              setIndex(next)
-            }}
-          />
-          <div style={{
-            display: "flex",
-            flexGrow: 1,
-            height: "230px",
-            columnGap: '20px',
-            justifyContent: "center",
-          }}>
-            {cards}
-            {/* <Card text="Slide 1" />
-            <Card text="Slide 2" />
-            <Card text="Slide 3" /> */}
-          </div>
-
-          {/* <Swiper
+        <div
+          style={{
+            border: "2px solid #949494",
+            borderRadius: "6px",
+            padding: "10px",
+            minWidth: "320px",
+            maxWidth: "1000px",
+            width: "80%",
+            textAlign: "center"
+            // display:"flex",
+            // flexDirection:"column",
+            // justifyContent:"center",
+          }}
+        >
+          <div style={{ display: "inline-block", padding: "4px" }}>Title</div>
+          <div style={{ display: "flex" }}>
+            <LeftChevron
+              icon={faChevronLeft}
+              onClick={() => {
+                swiperElRef.current.swiper.slidePrev();
+              }}
+            />
+            test
+            {/* <Swiper
+              ref={swiperElRef} >
+              <SwiperSlide>one</SwiperSlide>
+              <SwiperSlide>two</SwiperSlide>
+              <SwiperSlide>three</SwiperSlide>
+            </Swiper> */}
+            {/* <Swiper
               ref={swiperElRef}
               style={{ height: "230px" }}
               modules={[Pagination, A11y]}
@@ -214,7 +179,7 @@ export function Carousel({ title = "", data = [] }) {
             // onSwiper={(swiper) => console.log("swiper", swiper)}
             // onSlideChange={() => console.log("slide change")}
             > */}
-          {/* <SwiperSlide>
+            {/* <SwiperSlide>
               <Card text="Slide 1" />
             </SwiperSlide>
             <SwiperSlide>
@@ -238,7 +203,7 @@ export function Carousel({ title = "", data = [] }) {
             <SwiperSlide>
               <Card text="Slide 8" />
             </SwiperSlide> */}
-          {/* <SwiperSlide>
+            {/* <SwiperSlide>
                              <Card text="Slide 9" />
                            </SwiperSlide>
                            <SwiperSlide>
@@ -250,20 +215,39 @@ export function Carousel({ title = "", data = [] }) {
                            <SwiperSlide>
                              <Card text="Slide 12" />
                            </SwiperSlide>  */}
-          {/* </Swiper> */}
+            {/* </Swiper> */}
 
-          <RightChevron
-            icon={faChevronRight}
-            onClick={() => {
-              // swiperElRef.current.swiper.slideNext();
-              let next = start + numberOfCardsInView;
-              if (next > (data.length - numberOfCardsInView)) { next = data.length - numberOfCardsInView }
-              setIndex(next)
-            }}
-          />
+            {/* <button
+         onClick={() => {
+           // swiperElRef.current.swiper.
+           swiperElRef.current.swiper.slideTo(0, 100);
+         }}
+       >
+         1
+       </button>
+       <button
+         onClick={() => {
+           // swiperElRef.current.swiper.
+           swiperElRef.current.swiper.slideTo(3, 100);
+         }}
+       >
+         4
+       </button> */ }
+            <RightChevron
+              icon={faChevronRight}
+              onClick={() => {
+                swiperElRef.current.swiper.slideNext();
+              }}
+            />
+          </div>
         </div>
       </div>
     </>
   );
+  // return <div>
+  //   <LeftChevron icon={faChevronLeft} />
+  //   <Card text="my test" />
+  //   <RightChevron icon={faChevronRight} />
+  // </div>
 }
 
