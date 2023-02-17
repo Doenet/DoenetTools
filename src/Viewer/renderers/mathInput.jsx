@@ -193,16 +193,18 @@ export default function MathInput(props) {
   let mathInputStyle = {
     /* Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
     Currently does not work with border: "var(--mainBorder)" */
-    borderColor: "black",
+    borderColor: "var(--canvastext)",
     borderStyle: "solid",
     borderWidth: "2px",
     margin: "0px",
     boxShadow: "none",
+    outlineOffset: "2px",
+    outlineColor: "var(--canvastext)",
+    outlineWidth: "2px",
   }
 
   if (focused) {
-    mathInputStyle.outline = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
-    mathInputStyle.outlineOffset = "2px";
+    mathInputStyle.outlineStyle = "solid";
   }
 
   let mathInputWrapperCursor = 'allowed';
