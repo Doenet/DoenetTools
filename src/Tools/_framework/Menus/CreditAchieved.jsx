@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useRecoilValue, useRecoilCallback, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilCallback, useSetRecoilState, useRecoilState } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import axios from 'axios';
 import { creditAchievedAtom, currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
@@ -39,7 +39,9 @@ function FinalScore({ score }) {
   let userId = useRecoilValue(searchParamAtomFamily('userId'));
   let { canViewAndModifyGrades } = useRecoilValue(effectivePermissionsByCourseId(courseId));
   let setAttempts = useSetRecoilState(attemptData(doenetId))
-
+  let recoilAttempts = useRecoilValue(attemptData(doenetId))
+  // const [recoilAttempts, setAttempts] = useRecoilState(attemptData(doenetId))
+  console.log("recoilAttempts", recoilAttempts)
   const { totalPointsOrPercent } = useRecoilValue(creditAchievedAtom);
   const setCreditAchieved = useSetRecoilState(creditAchievedAtom);
   const [editMode, setEditMode] = useState(false);
@@ -64,13 +66,18 @@ function FinalScore({ score }) {
             next.creditForAssignment = creditForAssignment;
             return next;
           })
-          setAttempts((prev) => {
-            let next = { ...prev }
-            next[userId] = { ...prev[userId] };
-            next[userId].credit = `${creditForAssignment}`;
-            return next;
-          })
+          // setAttempts((prev) => {
+          //   let next = { ...prev }
+          //   next[userId] = { ...prev[userId] };
+          //   next[userId].credit = `${creditForAssignment}`;
+          //   // console.log("userId", userId)
+          //   // console.log("next", next)
+          //   // console.log("next[userId].credit", next[userId].credit)
+          //   return next;
+          //   // return { c9xqxhdpqljdHWSbn8xTq: { credit: "test" } }
+          // })
           // }
+          setAttempts({ userId, creditOverride: `${creditForAssignment}` });
         }
 
       }} />

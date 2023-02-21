@@ -294,27 +294,27 @@ export const attemptDataQuery = atomFamily({
     key: 'attemptDataQuery/Default',
     get:
       (doenetId) =>
-      async ({ get }) => {
-        const courseId = get(searchParamAtomFamily('courseId'));
-        try {
-          let {
-            data: { success, message, assignmentAttemptsData },
-          } = await axios.get('/api/loadGradebookAssignmentAttempts.php', {
-            params: { courseId, doenetId },
-          });
-          if (success) {
-            return assignmentAttemptsData;
+        async ({ get }) => {
+          const courseId = get(searchParamAtomFamily('courseId'));
+          try {
+            let {
+              data: { success, message, assignmentAttemptsData },
+            } = await axios.get('/api/loadGradebookAssignmentAttempts.php', {
+              params: { courseId, doenetId },
+            });
+            if (success) {
+              return assignmentAttemptsData;
+            }
+            throw new Error(message);
+          } catch (error) {
+            console.warn(
+              'Error loading attempts data for doenetId: ',
+              doenetId,
+              error.message,
+            );
+            return {};
           }
-          throw new Error(message);
-        } catch (error) {
-          console.warn(
-            'Error loading attempts data for doenetId: ',
-            doenetId,
-            error.message,
-          );
-          return {};
-        }
-      },
+        },
   }),
 });
 
@@ -322,37 +322,55 @@ export const attemptData = selectorFamily({
   key: 'attemptData',
   get:
     (doenetId) =>
-    ({ get }) => {
-      let attempts = {};
+      ({ get }) => {
+        let attempts = {};
 
-      const students = get(studentData);
+        const students = get(studentData);
 
-      for (let userId in students) {
-        attempts[userId] = {
-          credit: null,
-          creditOverrides: {},
-          attempts: {},
-        };
-      }
+        for (let userId in students) {
+          attempts[userId] = {
+            credit: null,
+            creditOverrides: {},
+            attempts: {},
+          };
+        }
 
-      let data = get(attemptDataQuery(doenetId));
-      for (let row of data) {
-        let [
-          userId,
-          attemptNumber,
-          assignmentCredit,
-          attemptCredit,
-          creditOverride,
-        ] = row;
-        if (attempts[userId]) {
-          attempts[userId].credit = assignmentCredit;
-          attempts[userId].attempts[attemptNumber] = attemptCredit;
-          attempts[userId].creditOverrides[attemptNumber] = creditOverride;
+        let data = get(attemptDataQuery(doenetId));
+        console.log("attemptData data", data)
+        for (let row of data) {
+          let [
+            userId,
+            attemptNumber,
+            assignmentCredit,
+            attemptCredit,
+            creditOverride,
+          ] = row;
+          if (attempts[userId]) {
+            attempts[userId].credit = assignmentCredit;
+            attempts[userId].attempts[attemptNumber] = attemptCredit;
+            attempts[userId].creditOverrides[attemptNumber] = creditOverride;
+          }
+        }
+        console.log("attempts", attempts)
+        return attempts;
+      },
+  set: (doenetId) => ({ set }, { userId, creditOverride }) => {
+    set(attemptDataQuery(doenetId), (prev) => {
+
+      let next = [];
+      for (let arr of prev) {
+        if (arr[0] == userId) {
+          let newArr = [...arr];
+          // newArr[2] = creditOverride
+          newArr[4] = creditOverride //update
+          next.push(newArr);
+        } else {
+          next.push(arr);
         }
       }
-
-      return attempts;
-    },
+      return next;
+    })
+  }
 });
 
 const specificAttemptDataQuery = atomFamily({
@@ -386,25 +404,25 @@ export const specificAttemptData = selectorFamily({
   key: 'specificAttemptData',
   get:
     (params) =>
-    ({ get }) => {
-      let data = get(specificAttemptDataQuery(params));
-      //console.log("debug data: ", data.assignmentAttempted);
-      let doenetML = get(doenetMLQuery(data.contentId));
-      let specificAttempt = {
-        assignmentAttempted: data.assignmentAttempted,
-        stateVariables: data.stateVariables,
-        variant: data.variant,
-        interactionSource: data.interactionSource,
-        assignmentCredit: data.assignmentCredit,
-        assignmentCreditOverride: data.assignmentCreditOverride,
-        attemptCredit: data.attemptCredit,
-        attemptCreditOverride: data.attemptCreditOverride,
-        timestamp: data.timestamp,
-        doenetML: doenetML,
-      };
+      ({ get }) => {
+        let data = get(specificAttemptDataQuery(params));
+        //console.log("debug data: ", data.assignmentAttempted);
+        let doenetML = get(doenetMLQuery(data.contentId));
+        let specificAttempt = {
+          assignmentAttempted: data.assignmentAttempted,
+          stateVariables: data.stateVariables,
+          variant: data.variant,
+          interactionSource: data.interactionSource,
+          assignmentCredit: data.assignmentCredit,
+          assignmentCreditOverride: data.assignmentCreditOverride,
+          attemptCredit: data.attemptCredit,
+          attemptCreditOverride: data.attemptCreditOverride,
+          timestamp: data.timestamp,
+          doenetML: doenetML,
+        };
 
-      return specificAttempt;
-    },
+        return specificAttempt;
+      },
 });
 
 const doenetMLQuery = atomFamily({
@@ -432,8 +450,8 @@ export function Table({ columns, data }) {
           const rowValue = row.values[id];
           return rowValue !== undefined
             ? String(rowValue)
-                .toLowerCase()
-                .startsWith(String(filterValue).toLowerCase())
+              .toLowerCase()
+              .startsWith(String(filterValue).toLowerCase())
             : true;
         });
       },
@@ -608,7 +626,7 @@ function GradebookOverview() {
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0'){
+  if (course?.canViewCourse == '0') {
     return <h1>No Access to view this page.</h1>
   }
 
@@ -882,11 +900,11 @@ function GradebookOverview() {
       <Table
         columns={overviewTable.headers}
         data={overviewTable.rows}
-        // getRowProps={row => ({
-        //     style: {
-        //       backgroundColor: overviewTable.rows[0]['name'] === "Possible Points" ? '#e2e2e2' : 'white',
-        //     },
-        //   })}
+      // getRowProps={row => ({
+      //     style: {
+      //       backgroundColor: overviewTable.rows[0]['name'] === "Possible Points" ? '#e2e2e2' : 'white',
+      //     },
+      //   })}
       />
     </Styles>
   );
