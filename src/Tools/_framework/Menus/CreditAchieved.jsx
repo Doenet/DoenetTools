@@ -12,7 +12,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { toastType, useToast } from '../Toast';
-import { attemptData } from '../ToolPanels/Gradebook';
+import { overviewData } from '../ToolPanels/Gradebook';
 
 const Line = styled.div`
   border-bottom: 2px solid var(--canvastext);
@@ -38,9 +38,6 @@ function FinalScore({ score }) {
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   let userId = useRecoilValue(searchParamAtomFamily('userId'));
   let { canViewAndModifyGrades } = useRecoilValue(effectivePermissionsByCourseId(courseId));
-  let setAttempts = useSetRecoilState(attemptData(doenetId))
-  let recoilAttempts = useRecoilValue(attemptData(doenetId))
-  // const [recoilAttempts, setAttempts] = useRecoilState(attemptData(doenetId))
   const { totalPointsOrPercent } = useRecoilValue(creditAchievedAtom);
   const [creditAchieved, setCreditAchieved] = useRecoilState(creditAchievedAtom);
   let currentScore = score;
@@ -49,6 +46,7 @@ function FinalScore({ score }) {
   }
   const [editMode, setEditMode] = useState(false);
   const [scoreState, setScore] = useState(currentScore);
+  const setOverview = useSetRecoilState(overviewData);
 
   if (editMode) {
     return <div style={{ display: "flex", flexDirection: "column", rowGap: "4px" }}>
@@ -70,8 +68,7 @@ function FinalScore({ score }) {
             next.creditOverride = creditOverride;
             return next;
           })
-
-          setAttempts({ userId, creditOverride: `${creditOverride}` });
+          setOverview({ doenetId, userId, creditOverride: `${creditOverride}` })
         }
 
       }} />

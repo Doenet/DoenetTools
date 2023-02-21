@@ -268,24 +268,44 @@ export const overviewData = selector({
       overview[userId] = {
         grade: students[userId].courseGrade,
         assignments: {},
+        override: {}
       };
 
       for (let doenetId in assignments) {
         overview[userId].assignments[doenetId] = null;
+        overview[userId].override[doenetId] = null;
       }
     }
 
     let data = get(overviewDataQuery);
 
     for (let userAssignment of data) {
-      let [doenetId, credit, userId] = userAssignment;
+      let [doenetId, credit, userId, override] = userAssignment;
       if (overview[userId]) {
         overview[userId].assignments[doenetId] = credit;
+        overview[userId].override[doenetId] = override;
       }
     }
 
     return overview;
   },
+  set: ({ set }, { doenetId, userId, creditOverride }) => {
+    set(overviewDataQuery, (prev) => {
+      let next = [];
+      for (let userActivityArr of prev) {
+        if (userActivityArr[0] == doenetId &&
+          userActivityArr[2] == userId
+        ) {
+          let newArr = [...userActivityArr];
+          newArr[3] = creditOverride;
+          next.push(newArr)
+        } else {
+          next.push(userActivityArr);
+        }
+      }
+      return next;
+    })
+  }
 });
 
 export const attemptDataQuery = atomFamily({
@@ -336,7 +356,6 @@ export const attemptData = selectorFamily({
         }
 
         let data = get(attemptDataQuery(doenetId));
-        console.log("attemptData data", data)
         for (let row of data) {
           let [
             userId,
@@ -351,26 +370,25 @@ export const attemptData = selectorFamily({
             attempts[userId].creditOverrides[attemptNumber] = creditOverride;
           }
         }
-        console.log("attempts", attempts)
         return attempts;
       },
-  set: (doenetId) => ({ set }, { userId, creditOverride }) => {
-    set(attemptDataQuery(doenetId), (prev) => {
+  // set: (doenetId) => ({ set }, { userId, creditOverride }) => {
+  //   set(attemptDataQuery(doenetId), (prev) => {
 
-      let next = [];
-      for (let arr of prev) {
-        if (arr[0] == userId) {
-          let newArr = [...arr];
-          // newArr[2] = creditOverride
-          newArr[4] = creditOverride //update
-          next.push(newArr);
-        } else {
-          next.push(arr);
-        }
-      }
-      return next;
-    })
-  }
+  //     let next = [];
+  //     for (let arr of prev) {
+  //       if (arr[0] == userId) {
+  //         let newArr = [...arr];
+  //         // newArr[2] = creditOverride
+  //         newArr[4] = creditOverride //update
+  //         next.push(newArr);
+  //       } else {
+  //         next.push(arr);
+  //       }
+  //     }
+  //     return next;
+  //   })
+  // }
 });
 
 const specificAttemptDataQuery = atomFamily({
@@ -620,9 +638,9 @@ function GradebookOverview() {
   useEffect(() => {
     setSuppressMenus(canViewAndModifyGrades === '1' ? [] : ['GradeDownload']);
   }, [canViewAndModifyGrades, setSuppressMenus]);
-  // console.log(">>>>students",students)
-  // console.log(">>>>assignments",assignments)
-  // console.log(">>>>overview",overview)
+  // console.log(">>>>students", students)
+  // console.log(">>>>assignments", assignments.contents)
+  // console.log(">>>>overview", overview)
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
@@ -833,7 +851,11 @@ function GradebookOverview() {
         let possiblepoints =
           assignments.contents[doenetId].totalPointsOrPercent * 1;
         let credit = overview.contents[userId].assignments[doenetId];
+        let override = overview.contents[userId].override[doenetId];
         let score = possiblepoints * credit;
+        if (override) {
+          score = possiblepoints * override;
+        }
 
         scores.push(score);
 

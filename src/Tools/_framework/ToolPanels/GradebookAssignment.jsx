@@ -8,6 +8,7 @@ import {
   attemptDataQuery,
   studentDataQuery,
   overviewDataQuery,
+  overviewData,
 } from './Gradebook';
 
 import {
@@ -303,6 +304,7 @@ export default function GradebookAssignmentView() {
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   let courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
+  let overview = useRecoilValueLoadable(overviewData);
   let students = useRecoilValueLoadable(studentData);
   let process = useRecoilValue(processGradesAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
@@ -321,7 +323,7 @@ export default function GradebookAssignmentView() {
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0'){
+  if (course?.canViewCourse == '0') {
     return <h1>No Access to view this page.</h1>
   }
 
@@ -333,6 +335,7 @@ export default function GradebookAssignmentView() {
   ) {
     return null;
   }
+
 
   const label = assignments.contents[doenetId].label;
   const totalPossiblePoints = Number(
@@ -442,7 +445,12 @@ export default function GradebookAssignmentView() {
       // </Link>
     }
 
-    let totalCredit = attempts.contents[userId]?.credit;
+    let totalCredit = overview?.contents?.[userId]?.assignments?.[doenetId];
+    let override = overview?.contents?.[userId]?.override?.[doenetId];
+    if (override) {
+      totalCredit = override;
+    }
+
     let totalPointsEarned =
       Math.round(totalCredit * totalPossiblePoints * 100) / 100;
     row['grade'] = totalCredit ? totalPointsEarned : '0';

@@ -86,6 +86,10 @@ export default function GradebookStudent() {
         let possiblepoints =
           assignments.contents[doenetId].totalPointsOrPercent * 1;
         let credit = overview.contents[userId].assignments[doenetId];
+        let override = overview.contents[userId].override[doenetId];
+        if (override) {
+          credit = override;
+        }
         if (
           credit === null &&
           assignments.contents[doenetId].isGloballyAssigned === '0'
