@@ -41,21 +41,25 @@ function FinalScore({ score }) {
   let setAttempts = useSetRecoilState(attemptData(doenetId))
   let recoilAttempts = useRecoilValue(attemptData(doenetId))
   // const [recoilAttempts, setAttempts] = useRecoilState(attemptData(doenetId))
-  console.log("recoilAttempts", recoilAttempts)
   const { totalPointsOrPercent } = useRecoilValue(creditAchievedAtom);
-  const setCreditAchieved = useSetRecoilState(creditAchievedAtom);
+  const [creditAchieved, setCreditAchieved] = useRecoilState(creditAchievedAtom);
+  let currentScore = score;
+  if (creditAchieved?.creditOverride) {
+    currentScore = Math.round(creditAchieved.creditOverride * totalPointsOrPercent * 100) / 100;
+  }
   const [editMode, setEditMode] = useState(false);
-  const [scoreState, setScore] = useState(score);
+  const [scoreState, setScore] = useState(currentScore);
 
   if (editMode) {
     return <div style={{ display: "flex", flexDirection: "column", rowGap: "4px" }}>
       <div>Final Score:</div>
+      <ScoreContainer>Original Final Score: <ScoreOnRight data-test="Original Final Score">{score}</ScoreOnRight></ScoreContainer>
       <Textfield width="menu" value={scoreState} onChange={(e) => { setScore(e.target.value) }} />
       <Button value="Update" onClick={async () => {
         if (isNaN(scoreState) || scoreState == "") {
           addToast("Final Score needs to be a number.", toastType.ERROR);
         } else {
-          let creditForAssignment = Number(scoreState) / totalPointsOrPercent;
+          let creditOverride = Number(scoreState) / totalPointsOrPercent;
           // const { data } = await axios.get(`/api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
 
           // if (data.success) {
@@ -63,21 +67,11 @@ function FinalScore({ score }) {
           setEditMode(false);
           setCreditAchieved((prev) => {
             let next = { ...prev }
-            next.creditForAssignment = creditForAssignment;
+            next.creditOverride = creditOverride;
             return next;
           })
-          // setAttempts((prev) => {
-          //   let next = { ...prev }
-          //   next[userId] = { ...prev[userId] };
-          //   next[userId].credit = `${creditForAssignment}`;
-          //   // console.log("userId", userId)
-          //   // console.log("next", next)
-          //   // console.log("next[userId].credit", next[userId].credit)
-          //   return next;
-          //   // return { c9xqxhdpqljdHWSbn8xTq: { credit: "test" } }
-          // })
-          // }
-          setAttempts({ userId, creditOverride: `${creditForAssignment}` });
+
+          setAttempts({ userId, creditOverride: `${creditOverride}` });
         }
 
       }} />
@@ -85,10 +79,10 @@ function FinalScore({ score }) {
   }
 
   if (canViewAndModifyGrades == 1) {
-    return <ScoreContainer><ButtonGroup>Final Score <Button value="Edit" onClick={() => setEditMode(true)} />: <ScoreOnRight data-test="Final Score">{score}</ScoreOnRight></ButtonGroup> </ScoreContainer>
+    return <ScoreContainer><ButtonGroup>Final Score <Button value="Edit" onClick={() => setEditMode(true)} />: <ScoreOnRight data-test="Final Score">{currentScore}</ScoreOnRight></ButtonGroup> </ScoreContainer>
 
   }
-  return <ScoreContainer>Final Score: <ScoreOnRight data-test="Final Score">{score}</ScoreOnRight></ScoreContainer>
+  return <ScoreContainer>Final Score: <ScoreOnRight data-test="Final Score">{currentScore}</ScoreOnRight></ScoreContainer>
 
 }
 
@@ -115,11 +109,11 @@ export default function CreditAchieved() {
 
 
     const { data } = await axios.get(`/api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
-
     if (data.success) {
       const creditByItem = data.creditByItem.map(Number);
       const creditForAssignment = Number(data.creditForAssignment)
       const creditForAttempt = Number(data.creditForAttempt)
+      const creditOverride = Number(data.creditOverride_for_assignment);
       const showCorrectness = data.showCorrectness === "1";
       const totalPointsOrPercent = Number(data.totalPointsOrPercent)
 
@@ -132,6 +126,7 @@ export default function CreditAchieved() {
           newObj.creditForAssignment = creditForAssignment;
           newObj.creditForAttempt = creditForAttempt;
           newObj.totalPointsOrPercent = totalPointsOrPercent;
+          newObj.creditOverride = creditOverride;
           return newObj;
         })
       }

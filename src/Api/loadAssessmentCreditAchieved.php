@@ -106,7 +106,7 @@ if ($success) {
         // look credit for assignment from user_asssignment
 
         $result = $conn->query(
-            "SELECT credit
+            "SELECT credit,creditOverride
             FROM user_assignment
             WHERE userId = '$studentUserId'
               AND doenetId = '$doenetId'"
@@ -118,6 +118,7 @@ if ($success) {
         } else {
             $row = $result->fetch_assoc();
             $credit_for_assignment = $row['credit'];
+            $creditOverride_for_assignment = $row['creditOverride'];
         }
 
         // Get credit for attempt from user_assignment_attempt
@@ -161,6 +162,7 @@ $response_arr = [
     'databaseError' => $databaseError,
     'creditForAttempt' => $credit_for_attempt,
     'creditForAssignment' => $credit_for_assignment,
+    'creditOverride_for_assignment' => $creditOverride_for_assignment,
     'creditByItem' => $credit_by_item,
     'showCorrectness' => $showCorrectness,
     'totalPointsOrPercent' => $totalPointsOrPercent,
