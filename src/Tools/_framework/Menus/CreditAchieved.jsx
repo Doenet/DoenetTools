@@ -58,17 +58,18 @@ function FinalScore({ score }) {
           addToast("Final Score needs to be a number.", toastType.ERROR);
         } else {
           let creditOverride = Number(scoreState) / totalPointsOrPercent;
-          // const { data } = await axios.get(`/api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
+          const { data } = await axios.get(`/api/saveActivityOverrideGrades.php`, { params: { score: scoreState, doenetId, userId } });
 
-          // if (data.success) {
+          if (data.success) {
 
-          setEditMode(false);
-          setCreditAchieved((prev) => {
-            let next = { ...prev }
-            next.creditOverride = creditOverride;
-            return next;
-          })
-          setOverview({ doenetId, userId, creditOverride: `${creditOverride}` })
+            setEditMode(false);
+            setCreditAchieved((prev) => {
+              let next = { ...prev }
+              next.creditOverride = creditOverride;
+              return next;
+            })
+            setOverview({ doenetId, userId, creditOverride: `${creditOverride}` })
+          }
         }
 
       }} />
