@@ -36,9 +36,9 @@ const Panel = styled.div`
 
 const ContainerSection = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex-wrap: no-wrap;
-  flex-basis: 27%;
+  /* flex-basis: 27%; */
   flex-grow: 1;
 `;
 
@@ -57,8 +57,8 @@ const ToggleButtonSection = styled.div`
 
 const Section = styled.div`
   height: 160px;
-  min-width: 100px;
-  max-width: 300px;
+  /* min-width: 100px; */
+  /* max-width: 300px; */
   margin-left: auto;
   margin-right: auto;
   margin-top: auto;
@@ -82,7 +82,7 @@ const LettersSection = styled.div`
 `;
 
 const Button = styled.button`
-  flex-basis: 23%;
+  flex-basis: 18%;
   height: 30px;
   color: var(--mainBlue);
   border: 2px solid var(--mainBlue);
@@ -110,7 +110,7 @@ const White15Button = styled.button`
 `;
 
 const CursorButton = styled.button`
-  flex-basis: 42%;
+  flex-basis: 18%;
   height: 30px;
   background: var(--mainBlue);
   border: none;
@@ -119,7 +119,7 @@ const CursorButton = styled.button`
 `;
 
 const DeleteButton = styled.button`
-  flex-basis: 90%;
+  flex-basis: 18%;
   height: 30px;
   background: var(--mainBlue);
   border: none;
@@ -128,7 +128,7 @@ const DeleteButton = styled.button`
 `;
 
 const EnterButton = styled.button`
-  flex-basis: 90%;
+  flex-basis: 18%;
   height: 30px;
   background: var(--mainBlue);
   border: none;
@@ -361,14 +361,30 @@ export default function VirtualKeyboard() {
         <Button33 onClick={() => callback('write \\tan^{-1}')}>
           <MathJax dynamic>{`\\(\\tan^{-1}\\)`}</MathJax>
         </Button33>
-        <Button33 onClick={() => callback('cmd \\sinh')}>
-          <MathJax dynamic>\(\sinh\)</MathJax>
+        <Button33 onClick={() => callback('cmd \\ln')}>
+          <MathJax dynamic>\(\ln\)</MathJax>
         </Button33>
-        <Button33 onClick={() => callback('cmd \\tanh')}>
-          <MathJax dynamic>\(\tanh\)</MathJax>
+        <Button33 onClick={() => callback('write \\log_{}')}>
+          <MathJax dynamic>\(\log_a\)</MathJax>
         </Button33>
-        <Button33 onClick={() => callback('cmd \\cosh')}>
-          <MathJax dynamic>\(\cosh\)</MathJax>
+        <Button33 onClick={() => callback('write \\log_{10}')}>
+          <MathJax dynamic>\(\log_10\)</MathJax>
+        </Button33>
+        <Button33
+          onClick={() => {
+            callback('write e^{}');
+            callback('keystroke Left');
+          }}
+        >
+          <MathJax dynamic>{`\\(e^{a}\\)`}</MathJax>
+        </Button33>
+        <Button33
+          onClick={() => {
+            callback('write 10^{}');
+            callback('keystroke Left');
+          }}
+        >
+          <MathJax dynamic>{`\\(10^{a}\\)`}</MathJax>
         </Button33>
       </Section>
     );
@@ -616,6 +632,9 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write 9')}>
           <MathJax dynamic>\(9\)</MathJax>
         </Button>
+        <Button onClick={() => callback('type *')}>
+          <MathJax dynamic>\(\times\)</MathJax>
+        </Button>
         <Button onClick={() => callback('cmd /')}>
           <MathJax dynamic>\(\div\)</MathJax>
         </Button>
@@ -628,8 +647,11 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write 6')}>
           <MathJax dynamic>\(6\)</MathJax>
         </Button>
-        <Button onClick={() => callback('type *')}>
-          <MathJax dynamic>\(\times\)</MathJax>
+        <Button onClick={() => callback('write +')}>
+          <MathJax dynamic>\(+\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('cmd -')}>
+          <MathJax dynamic>\(-\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 1')}>
           <MathJax dynamic>\(1\)</MathJax>
@@ -640,21 +662,25 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write 3')}>
           <MathJax dynamic>\(3\)</MathJax>
         </Button>
-        <Button onClick={() => callback('cmd -')}>
-          <MathJax dynamic>\(-\)</MathJax>
+        <Button onClick={() => callback('write =')}>
+          <MathJax dynamic>\(=\)</MathJax>
         </Button>
+        <DeleteButton onClick={() => callback('keystroke Backspace')}>
+          <FontAwesomeIcon icon={faBackspace} />
+        </DeleteButton>
         <Button onClick={() => callback('write 0')}>
           <MathJax dynamic>\(0\)</MathJax>
         </Button>
         <Button onClick={() => callback('write .')}>
           <MathJax dynamic>\(.\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write =')}>
-          <MathJax dynamic>\(=\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write +')}>
-          <MathJax dynamic>\(+\)</MathJax>
-        </Button>
+        <CursorButton onClick={() => callback('keystroke Left')}>
+          <MathJax dynamic>\(\leftarrow\)</MathJax>
+        </CursorButton>
+        <CursorButton onClick={() => callback('keystroke Right')}>
+          <MathJax dynamic>\(\rightarrow\)</MathJax>
+        </CursorButton>
+        <EnterButton onClick={() => returncallback()}>Enter</EnterButton>
       </Section>
     );
 
@@ -677,7 +703,7 @@ export default function VirtualKeyboard() {
 
     return (
       <Panel tabIndex="0" ref={containerRef}>
-        <ContainerSection>
+        {/* <ContainerSection>
           <ToggleButtonSection>
             <ToggleButtonGroup onClick={handleGreekToggle}>
               <ToggleButton value="Greek 1" />
@@ -689,19 +715,20 @@ export default function VirtualKeyboard() {
             : toggleGreek === 1
               ? sectionGreek2
               : null}
-        </ContainerSection>
-        <VerticalDivider height="230px" marginTop="10px" />
+        </ContainerSection> */}
+        {/* <VerticalDivider height="230px" marginTop="10px" /> */}
         <ContainerSection>
           <ToggleButtonSection>
             <ToggleButtonGroup onClick={handleFnToggle}>
-              <ToggleButton value="Trig 1" />
-              <ToggleButton value="Trig 2" />
-              <ToggleButton value="Set" />
-              <ToggleButton value="Fn" />
+              <ToggleButton value="123" />
+              <ToggleButton value="f(x)" />
+              <ToggleButton value="ABC" />
+              <ToggleButton value="αβγ" />
+              <ToggleButton value="#&¬" />
             </ToggleButtonGroup>
           </ToggleButtonSection>
           {toggleFn === 0
-            ? sectionTrig1
+            ? (<ContainerSection>{sectionTrig1}{section123}</ContainerSection>)
             : toggleFn === 1
               ? sectionTrig2
               : toggleFn === 2
@@ -710,22 +737,22 @@ export default function VirtualKeyboard() {
                   ? sectionFn
                   : null}
         </ContainerSection>
-        <VerticalDivider height="230px" marginTop="10px" />
+        {/* <VerticalDivider height="230px" marginTop="10px" /> */}
         <ContainerSection>
-          <ToggleButtonSection>
+          {/* <ToggleButtonSection>
             <ToggleButtonGroup onClick={handleNumpadToggle}>
               <ToggleButton value="123" />
               <ToggleButton value="xy" />
             </ToggleButtonGroup>
-          </ToggleButtonSection>
-          {toggleNumpad === 0
+          </ToggleButtonSection> */}
+          {/* {toggleNumpad === 0
             ? section123
             : toggleNumpad === 1
               ? sectionXYZ
-              : null}
+              : null} */}
         </ContainerSection>
-        <VerticalDivider height="230px" marginTop="10px" />
-        <ControlSection>{sectionControl}</ControlSection>
+        {/* <VerticalDivider height="230px" marginTop="10px" /> */}
+        {/* <ControlSection>{sectionControl}</ControlSection> */}
       </Panel>
     );
   }
