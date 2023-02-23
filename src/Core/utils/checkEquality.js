@@ -304,7 +304,7 @@ export default function checkEquality({
       // a list of length 1
       // make object1 act like a list of the one element
       object1 = [object1.tree];
-    } else if (object1_operator === "vector") {
+    } else if (object1_operator === "vector" || object1_operator === "altvector") {
       // change object1 to array of elements
       object1 = object1.tree.slice(1);
 
@@ -313,7 +313,7 @@ export default function checkEquality({
         || object2_operator === "set"
       ) {
         return { fraction_equal: 0 };
-      } else if (object2_operator === "tuple" || object2_operator === "vector") {
+      } else if (object2_operator === "tuple" || object2_operator === "vector" || object2_operator === "altvector") {
         // since we can convert tuple to vector
         // change object2 to array of selements
         object2 = object2.tree.slice(1);
@@ -322,7 +322,7 @@ export default function checkEquality({
         // make object2 array of the one element
         object2 = [object2.tree];
       }
-    } else if (object2_operator === "vector") {
+    } else if (object2_operator === "vector" || object2_operator === "altvector") {
       // change object2 to array of elements
       object2 = object2.tree.slice(1);
 

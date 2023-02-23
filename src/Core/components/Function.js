@@ -605,7 +605,7 @@ export default class Function extends InlineComponent {
         } else if (dependencyValues.mathChild.length > 0) {
           let formula = dependencyValues.mathChild[0].stateValues.value;
           let formulaIsVectorValued = Array.isArray(formula.tree) &&
-            ["tuple", "vector"].includes(formula.tree[0]);
+            ["tuple", "vector", "altvector"].includes(formula.tree[0]);
 
           let nOutputs = 1;
           if (formulaIsVectorValued) {
@@ -2365,11 +2365,11 @@ export default class Function extends InlineComponent {
           }
         }
         if (varName === "minimumLocations") {
-            // if propIndex has additional entries, ignore them
+          // if propIndex has additional entries, ignore them
           return "minimumLocation" + propIndex[0];
         }
         if (varName === "minimumValues") {
-            // if propIndex has additional entries, ignore them
+          // if propIndex has additional entries, ignore them
           return "minimumValue" + propIndex[0];
         }
         if (varName.slice(0, 7) === "minimum") {
@@ -2980,11 +2980,11 @@ export default class Function extends InlineComponent {
           }
         }
         if (varName === "maximumLocations") {
-            // if propIndex has additional entries, ignore them
+          // if propIndex has additional entries, ignore them
           return "maximumLocation" + propIndex[0];
         }
         if (varName === "maximumValues") {
-            // if propIndex has additional entries, ignore them
+          // if propIndex has additional entries, ignore them
           return "maximumValue" + propIndex[0];
         }
         if (varName.slice(0, 7) === "maximum") {
@@ -3184,11 +3184,11 @@ export default class Function extends InlineComponent {
           }
         }
         if (varName === "extremumLocations") {
-            // if propIndex has additional entries, ignore them
+          // if propIndex has additional entries, ignore them
           return "extremumLocation" + propIndex[0];
         }
         if (varName === "extremumValues") {
-            // if propIndex has additional entries, ignore them
+          // if propIndex has additional entries, ignore them
           return "extremumValue" + propIndex[0];
         }
         if (varName.slice(0, 8) === "extremum") {

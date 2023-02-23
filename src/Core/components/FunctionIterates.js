@@ -117,7 +117,7 @@ export default class FunctionIterates extends InlineComponent {
           !functionComp || dependencyValues.nDimensions === 0 ||
           !(dependencyValues.nDimensions === 1 ||
             Array.isArray(initialValue.tree)
-            && ["vector", "tuple"].includes(initialValue.tree[0])
+            && ["vector", "altvector", "tuple"].includes(initialValue.tree[0])
             && initialValue.tree.length === dependencyValues.nDimensions + 1
           )
         ) {

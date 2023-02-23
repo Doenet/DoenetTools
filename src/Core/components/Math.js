@@ -1422,7 +1422,7 @@ export default class MathComponent extends InlineComponent {
 
         if (nMathChildren === 0 ||
           !Array.isArray(expressionWithCodesTree) ||
-          !["tuple", "vector"].includes(expressionWithCodesTree[0])
+          !["tuple", "vector", "altvector"].includes(expressionWithCodesTree[0])
         ) {
           return { setValue: { mathChildrenByVectorComponent: null } };
         }
@@ -1478,7 +1478,7 @@ export default class MathComponent extends InlineComponent {
         let tree = dependencyValues.value.tree;
 
         if (Array.isArray(tree)) {
-          if (["vector", "tuple", "list"].includes(tree[0])) {
+          if (["vector", "altvector", "tuple", "list"].includes(tree[0])) {
             nDimensions = tree.length - 1;
           } else if (tree[0] === "matrix") {
             let size = tree[1].slice(1);
@@ -1488,7 +1488,7 @@ export default class MathComponent extends InlineComponent {
             } else if (size[1] === 1) {
               nDimensions = size[0];
             }
-          } else if ((tree[1][0] === "vector" || tree[1][0] === "tuple")
+          } else if ((tree[1][0] === "vector" || tree[1][0] === "altvector" || tree[1][0] === "tuple")
             && ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
           ) {
             nDimensions = tree[1].length - 1;
@@ -1544,7 +1544,7 @@ export default class MathComponent extends InlineComponent {
 
         let vector = {};
         if (Array.isArray(tree)) {
-          if (["vector", "tuple", "list"].includes(tree[0])) {
+          if (["vector", "altvector", "tuple", "list"].includes(tree[0])) {
             for (let ind = 0; ind < arraySize[0]; ind++) {
               vector[ind] = me.fromAst(tree[ind + 1]);
             }
@@ -1562,7 +1562,7 @@ export default class MathComponent extends InlineComponent {
               }
               createdVector = true;
             }
-          } else if ((tree[1][0] === "vector" || tree[1][0] === "tuple")
+          } else if ((tree[1][0] === "vector" || tree[1][0] === "altvector" || tree[1][0] === "tuple")
             && ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
           ) {
             for (let ind = 0; ind < arraySize[0]; ind++) {
@@ -1598,7 +1598,7 @@ export default class MathComponent extends InlineComponent {
         let desiredValue;
         let tree = globalDependencyValues.value.tree;
         if (Array.isArray(tree)) {
-          if (["vector", "tuple", "list"].includes(tree[0])) {
+          if (["vector", "altvector", "tuple", "list"].includes(tree[0])) {
             desiredValue = me.fromAst([tree[0], ...workspace.desiredVector.map(x => x.tree)])
           } else if (tree[0] === "matrix") {
             let size = tree[1].slice(1);
@@ -1616,7 +1616,7 @@ export default class MathComponent extends InlineComponent {
               }
               desiredValue = me.fromAst(["matrix", tree[1], desiredMatrixVals])
             }
-          } else if ((tree[1][0] === "vector" || tree[1][0] === "tuple")
+          } else if ((tree[1][0] === "vector" || tree[1][0] === "altvector" || tree[1][0] === "tuple")
             && ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
           ) {
             desiredValue = [tree[0], [tree[1][0], ...workspace.desiredVector.map(x => x.tree)]]
@@ -1677,11 +1677,11 @@ export default class MathComponent extends InlineComponent {
         let tree = dependencyValues.value.tree;
 
         if (Array.isArray(tree)) {
-          if (["vector", "tuple", "list"].includes(tree[0])) {
+          if (["vector", "altvector", "tuple", "list"].includes(tree[0])) {
             matrixSize = [tree.length - 1, 1];
           } else if (tree[0] === "matrix") {
             matrixSize = tree[1].slice(1);
-          } else if ((tree[1][0] === "vector" || tree[1][0] === "tuple")
+          } else if ((tree[1][0] === "vector" || tree[1][0] === "altvector" || tree[1][0] === "tuple")
             && ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
           ) {
             matrixSize = [1, tree[1].length - 1];
@@ -1886,7 +1886,7 @@ export default class MathComponent extends InlineComponent {
 
         let matrix = {};
         if (Array.isArray(tree)) {
-          if (["vector", "tuple", "list"].includes(tree[0])) {
+          if (["vector", "altvector", "tuple", "list"].includes(tree[0])) {
             for (let ind = 0; ind < arraySize[0]; ind++) {
               matrix[ind + ",0"] = me.fromAst(tree[ind + 1]);
             }
@@ -1899,7 +1899,7 @@ export default class MathComponent extends InlineComponent {
               }
             }
             createdMatrix = true;
-          } else if ((tree[1][0] === "vector" || tree[1][0] === "tuple")
+          } else if ((tree[1][0] === "vector" || tree[1][0] === "altvector" || tree[1][0] === "tuple")
             && ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
           ) {
             for (let ind = 0; ind < arraySize[1]; ind++) {
@@ -1937,7 +1937,7 @@ export default class MathComponent extends InlineComponent {
         let desiredValue;
         let tree = globalDependencyValues.value.tree;
         if (Array.isArray(tree)) {
-          if (["vector", "tuple", "list"].includes(tree[0])) {
+          if (["vector", "altvector", "tuple", "list"].includes(tree[0])) {
             desiredValue = [tree[0]]
             for (let ind = 0; ind < arraySize[0]; ind++) {
               desiredValue.push(workspace.desiredMatrix[ind + ",0"].tree)
@@ -1954,7 +1954,7 @@ export default class MathComponent extends InlineComponent {
               desiredMatrixVals.push(row);
             }
             desiredValue = me.fromAst(["matrix", tree[1], desiredMatrixVals])
-          } else if ((tree[1][0] === "vector" || tree[1][0] === "tuple")
+          } else if ((tree[1][0] === "vector" || tree[1][0] === "altvector" || tree[1][0] === "tuple")
             && ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
           ) {
 
@@ -2553,7 +2553,7 @@ function checkForLinearExpression(tree, variables, inverseTree, constants = [], 
   let operands = tree.slice(1);
 
   // for container, check if at least one component is a linear expression
-  if (operator === "tuple" || operator === "vector" || operator === "list") {
+  if (operator === "tuple" || operator === "vector" || operator === "altvector" || operator === "list") {
 
     let result = { mappings: {}, template: [operator] };//, modifiableStrings: {}};
     let numLinear = 0;
@@ -2809,7 +2809,7 @@ async function invertMath({ desiredStateVariableValues, dependencyValues,
       }
     }
 
-    if (["vector", "tuple", "list"].includes(newExpressionWithCodes.tree[0]) &&
+    if (["vector", "altvector", "tuple", "list"].includes(newExpressionWithCodes.tree[0]) &&
       !newExpressionWithCodes.tree.slice(1).every(mathComponentContainsCode)
     ) {
 

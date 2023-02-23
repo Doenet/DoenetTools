@@ -442,7 +442,7 @@ export default class Point extends GraphicalComponent {
         if (basedOnCoords) {
 
           let coordsTree = coords.tree;
-          if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
+          if (Array.isArray(coordsTree) && ["tuple", "vector", "altvector"].includes(coordsTree[0])) {
             nDimensions = Math.max(coordsTree.length - 1, nDimensions);
           } else {
             nDimensions = Math.max(1, nDimensions);
@@ -602,7 +602,7 @@ export default class Point extends GraphicalComponent {
         if (basedOnCoords) {
 
           let coordsTree = coords.tree;
-          if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
+          if (Array.isArray(coordsTree) && ["tuple", "vector", "altvector"].includes(coordsTree[0])) {
             for (let arrayKey of arrayKeys) {
               let ind = Number(arrayKey);
               if (ind >= 0 || ind < coordsTree.length - 1) {
@@ -952,7 +952,7 @@ export default class Point extends GraphicalComponent {
 
         let coordsTree = desiredStateVariableValues.coords.tree;
 
-        if (!(Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0]))) {
+        if (!(Array.isArray(coordsTree) && ["tuple", "vector", "altvector"].includes(coordsTree[0]))) {
           desiredXValues[0] = desiredStateVariableValues.coords;
         } else {
           for (let i = 0; i < coordsTree.length - 1; i++) {

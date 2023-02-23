@@ -2064,6 +2064,42 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
     })
 
+    cy.log('create 2D point from altvector')
+    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 5, -2])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 5, -2])
+    })
+
+
+    cy.log('move point P to (7,8)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 7, y: 8 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 7, 8])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 7, 8])
+    })
+
   });
 
   it('point sugar from single math', () => {
@@ -2197,6 +2233,43 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
       expect((stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+    })
+
+
+    cy.log('create 2D point from altvector')
+    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 5, -2])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 5, -2])
+    })
+
+
+    cy.log('move point P to (7,8)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 7, y: 8 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 7, 8])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 7, 8])
     })
 
   });
@@ -2334,6 +2407,43 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
     })
 
+
+    cy.log('create 2D point from altvector')
+    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 5, -2])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 5, -2])
+    })
+
+
+    cy.log('move point P to (7,8)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 7, y: 8 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 7, 8])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 7, 8])
+    })
+
   });
 
   it('point from copied vector with sugared single math', () => {
@@ -2468,6 +2578,43 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
       expect((stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+    })
+
+
+    cy.log('create 2D point from altvector')
+    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 5, -2])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 5, -2])
+    })
+
+
+    cy.log('move point P to (7,8)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 7, y: 8 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 7, 8])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([7, 8])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 7, 8])
     })
 
   });
@@ -9828,7 +9975,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Create 3D point')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}(2x,u/v{rightarrow},w^2{rightarrow}){enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{end}{backspace}\\langle 2x,u/v{rightarrow},w^2{rightarrow}\\rangle {enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(2x,uv,w2)')
 
@@ -10229,7 +10376,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('change the coordinates from point 2 coords')
-    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}(i,j,k){enter}', { force: true });
+    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}\\langle i,j,k\\rangle {enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(i,j,k)')
 

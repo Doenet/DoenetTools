@@ -351,7 +351,7 @@ export default class Evaluate extends MathComponent {
         // if have a single input, check if it is a vector
         if (input.length === 1) {
           let inputTree = input[0].tree;
-          if (Array.isArray(inputTree) && ["vector", "tuple"].includes(inputTree[0])) {
+          if (Array.isArray(inputTree) && ["vector", "altvector", "tuple"].includes(inputTree[0])) {
             input = inputTree.slice(1).map(x => me.fromAst(x));
           }
         }

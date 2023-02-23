@@ -1171,7 +1171,7 @@ export default class Spreadsheet extends BlockComponent {
           }
 
           if (Array.isArray(cellME.tree) && (
-            cellME.tree[0] === "tuple" || cellME.tree[0] === "vector"
+            cellME.tree[0] === "tuple" || cellME.tree[0] === "vector" || cellME.tree[0] === "altvector"
           )) {
             pointsInCells[arrayKey] = cellME;
           } else {

@@ -210,7 +210,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
         if (dependencyValues.allIterates.length > 0 &&
           Array.isArray(dependencyValues.allIterates[0].tree) &&
-          ["vector", "tuple"].includes(dependencyValues.allIterates[0].tree[0])
+          ["vector", "altvector", "tuple"].includes(dependencyValues.allIterates[0].tree[0])
         ) {
           nComponents = dependencyValues.allIterates[0].tree.length - 1;
           haveVector = true;
