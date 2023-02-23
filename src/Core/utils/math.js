@@ -32,7 +32,7 @@ export var appliedFunctionSymbolsDefaultLatex = [
   'nPr', 'nCr',
 ];
 
-let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset', 'angle', 'circ']
+let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset', 'angle', 'circ', '$', '%']
 
 export var textToAst = new me.converters.textToAstObj({
   appliedFunctionSymbols: appliedFunctionSymbolsDefault
@@ -543,11 +543,11 @@ export function mergeListsWithOtherContainers(tree) {
 
 export function wrapWordWithVar(string, parseScientificNotation) {
 
-  // wrap words that aren't already in a \var with a \var
+  // wrap words that aren't already in a \operatorname with a \operatorname
 
   let newString = "";
 
-  let regex = /\\var\s*{[^{}]*}/
+  let regex = /\\operatorname\s*{[^{}]*}/
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
@@ -597,7 +597,7 @@ function wrapWordWithVarSub(string, parseScientificNotation) {
     } else {
       let beginWord = beginMatch + match[1].length;
       newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
+      newString += `\\operatorname{${match[2]}}`;
       string = string.substring(endMatch);
     }
 
@@ -614,7 +614,7 @@ export function wrapWordIncludingNumberWithVar(string, parseScientificNotation) 
 
   let newString = "";
 
-  let regex = /\\var\s*{[^{}]*}/
+  let regex = /\\operatorname\s*{[^{}]*}/
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
@@ -665,7 +665,7 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
     } else {
       let beginWord = beginMatch + match[1].length;
       newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
+      newString += `\\operatorname{${match[2]}}`;
       string = string.substring(endMatch);
     }
 
@@ -679,7 +679,7 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
 }
 
 export function stripLatex(latex) {
-  return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
+  return latex.replaceAll(`\\,`, '').replaceAll(/\\operatorname{([^{}]*)}/g, '$1');
 }
 
 export function superSubscriptsToUnicode(text) {

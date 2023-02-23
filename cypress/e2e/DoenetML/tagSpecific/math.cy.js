@@ -1917,32 +1917,32 @@ describe('Math Tag Tests', function () {
   <p><text>a</text></p>
   <p><math format="latex" name="m1">xyz</math></p>
   <p><math format="latex" name="m2" splitSymbols="false">xyz</math></p>
-  <p><math format="latex" name="m2a" >\\var{xyz}</math></p>
-  <p><math format="latex" name="m2b" splitSymbols="false" >\\var{xyz}</math></p>
+  <p><math format="latex" name="m2a" >\\operatorname{xyz}</math></p>
+  <p><math format="latex" name="m2b" splitSymbols="false" >\\operatorname{xyz}</math></p>
   <p><math format="latex" name="m3" splitSymbols="true">xyz</math></p>
   <p><math format="latex" name="m4" simplify>xyx</math></p>
   <p><math format="latex" name="m5" simplify splitSymbols="false">xyx</math></p>
-  <p><math format="latex" name="m5a" simplify>\\var{xyx}</math></p>
-  <p><math format="latex" name="m5b" simplify splitSymbols="false">\\var{xyx}</math></p>
+  <p><math format="latex" name="m5a" simplify>\\operatorname{xyx}</math></p>
+  <p><math format="latex" name="m5b" simplify splitSymbols="false">\\operatorname{xyx}</math></p>
   <p><math format="latex" name="m6" simplify splitSymbols="true">xyx</math></p>
   <p><math format="latex" name="m7">xy_uv</math></p>
   <p><math format="latex" name="m8">x2_2x</math></p>
-  <p><math format="latex" name="m8a">\\var{x2}_2x</math></p>
+  <p><math format="latex" name="m8a">\\operatorname{x2}_2x</math></p>
   <p><math format="latex" name="m9">2x_x2</math></p>
-  <p><math format="latex" name="m9a">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m9a">2x_\\operatorname{x2}</math></p>
   <p><math format="latex" name="m9b">2x_{x2}</math></p>
   <p><math format="latex" name="m10">xy uv x2y 2x x2</math></p>
-  <p><math format="latex" name="m10a">xy uv \\var{x2y} 2x \\var{x2}</math></p>
+  <p><math format="latex" name="m10a">xy uv \\operatorname{x2y} 2x \\operatorname{x2}</math></p>
   <p><math format="latex" name="m11" splitSymbols="false">xy_uv</math></p>
-  <p><math format="latex" name="m11a">\\var{xy}_\\var{uv}</math></p>
-  <p><math format="latex" name="m11b" splitSymbols="false">\\var{xy}_\\var{uv}</math></p>
+  <p><math format="latex" name="m11a">\\operatorname{xy}_\\operatorname{uv}</math></p>
+  <p><math format="latex" name="m11b" splitSymbols="false">\\operatorname{xy}_\\operatorname{uv}</math></p>
   <p><math format="latex" name="m12" splitSymbols="false">x2_2x</math></p>
-  <p><math format="latex" name="m12a" splitSymbols="false">\\var{x2}_2x</math></p>
+  <p><math format="latex" name="m12a" splitSymbols="false">\\operatorname{x2}_2x</math></p>
   <p><math format="latex" name="m13" splitSymbols="false">2x_x2</math></p>
-  <p><math format="latex" name="m13a" splitSymbols="false">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m13a" splitSymbols="false">2x_\\operatorname{x2}</math></p>
   <p><math format="latex" name="m14" splitSymbols="false">xy uv x2y 2x x2</math></p>
-  <p><math format="latex" name="m14a">\\var{xy} \\var{uv} x2y 2x x2</math></p>
-  <p><math format="latex" name="m14b" splitSymbols="false">\\var{xy} \\var{uv} x2y 2x x2</math></p>
+  <p><math format="latex" name="m14a">\\operatorname{xy} \\operatorname{uv} x2y 2x x2</math></p>
+  <p><math format="latex" name="m14b" splitSymbols="false">\\operatorname{xy} \\operatorname{uv} x2y 2x x2</math></p>
   <p><math format="latex" name="m15">3^x2</math></p>
   <p><math format="latex" name="m15a" splitSymbols="false">3^x2</math></p>
   `}, "*");
@@ -5690,6 +5690,171 @@ describe('Math Tag Tests', function () {
 
     cy.get("#\\/pContent1 .mjx-mrow").eq(0).should('have.text', 'x23+5')
     cy.get("#\\/pContent2 .mjx-mrow").eq(0).should('have.text', 'e−x2−a')
+
+  })
+
+  it('vec', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">\\vec{a}</math>
+    <math>vec a</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', '→a')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', '→a')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["vec", "a"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["vec", "a"]);
+    });
+
+  })
+
+  it('perp', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">v \\perp u</math>
+    <math>v perp u</math>
+    <math format="latex">v^\\perp</math>
+    <math>v^perp</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', 'v⊥u')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', 'v⊥u')
+    cy.get("#\\/_math3 .mjx-mrow").eq(0).should('have.text', 'v⊥')
+    cy.get("#\\/_math4 .mjx-mrow").eq(0).should('have.text', 'v⊥')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["perp", "v", "u"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["perp", "v", "u"]);
+      expect(stateVariables['/_math3'].stateValues.value).eqls(["^", "v", "perp"]);
+      expect(stateVariables['/_math4'].stateValues.value).eqls(["^", "v", "perp"]);
+    });
+
+
+  })
+
+  it('parallel', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">v \\parallel u</math>
+    <math>v parallel u</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', 'v∥u')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', 'v∥u')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["parallel", "v", "u"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["parallel", "v", "u"]);
+    });
+
+
+  })
+
+  it('basic units', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>
+    <math name="dol5">$5</math>
+    <math name="perc25">25%</math>
+    <math name="deg60">60 deg</math>
+    <math name="dol5b" format="latex">\\$5</math>
+    <math name="perc25b" format="latex">25\\%</math>
+    <math name="deg60b" format="latex">60^{\\circ}</math>
+    <math name="dol5c" format="latex">$5</math>
+    <math name="perc25c" format="latex">25%</math>
+    <math name="sin90deg">sin(90 deg)</math>
+  </p>
+  <p>
+    <number name="ndol5">$5</number>
+    <number name="nperc25">25%</number>
+    <number name="ndeg60">60 deg</number>
+    <number name="nsin90deg">sin(90 deg)</number>
+  </p>
+  ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/dol5 .mjx-mrow").eq(0).should('have.text', '$5')
+    cy.get("#\\/perc25 .mjx-mrow").eq(0).should('have.text', '25%')
+    cy.get("#\\/deg60 .mjx-mrow").eq(0).should('have.text', '60∘')
+    cy.get("#\\/dol5b .mjx-mrow").eq(0).should('have.text', '$5')
+    cy.get("#\\/perc25b .mjx-mrow").eq(0).should('have.text', '25%')
+    cy.get("#\\/deg60b .mjx-mrow").eq(0).should('have.text', '60∘')
+    cy.get("#\\/dol5c .mjx-mrow").eq(0).should('have.text', '$5')
+    cy.get("#\\/perc25c .mjx-mrow").eq(0).should('have.text', '25%')
+    cy.get("#\\/sin90deg .mjx-mrow").eq(0).should('have.text', 'sin(90∘)')
+
+    cy.get("#\\/ndol5").should('have.text', '5')
+    cy.get("#\\/nperc25").should('have.text', '0.25')
+    cy.get("#\\/ndeg60").invoke('text').then(text => {
+      expect(parseFloat(text)).closeTo(Math.PI / 3, 1E-6)
+    });
+    cy.get("#\\/nsin90deg").should('have.text', '1')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/dol5'].stateValues.value).eqls(["unit", "$", 5]);
+      expect(stateVariables['/perc25'].stateValues.value).eqls(["unit", 25, "%"]);
+      expect(stateVariables['/deg60'].stateValues.value).eqls(["unit", 60, "deg"]);
+      expect(stateVariables['/dol5b'].stateValues.value).eqls(["unit", "$", 5]);
+      expect(stateVariables['/perc25b'].stateValues.value).eqls(["unit", 25, "%"]);
+      expect(stateVariables['/deg60b'].stateValues.value).eqls(["unit", 60, "deg"]);
+      expect(stateVariables['/dol5c'].stateValues.value).eqls(["unit", "$", 5]);
+      expect(stateVariables['/perc25c'].stateValues.value).eqls(["unit", 25, "%"]);
+      expect(stateVariables['/ndol5'].stateValues.value).eq(5);
+      expect(stateVariables['/nperc25'].stateValues.value).eq(.25);
+      expect(stateVariables['/ndeg60'].stateValues.value).closeTo(Math.PI / 3, 1E-14);
+      expect(stateVariables['/nsin90deg'].stateValues.value).eq(1);
+    });
+
+
+  })
+
+  it('some support for integral', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>
+    <math name="indefint">int f(x) dx</math>
+    <math name="defint">int_a^b f(x) dx</math>
+    <math name="indefintb" format="latex">\\int f(x) dx</math>
+    <math name="defintb" format="latex">\\int_a^b f(x) dx</math>
+  </p>
+  ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/indefint .mjx-mrow").eq(0).should('have.text', '∫f(x)dx')
+    cy.get("#\\/defint .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
+    cy.get("#\\/indefintb .mjx-mrow").eq(0).should('have.text', '∫f(x)dx')
+    cy.get("#\\/defintb .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
+
 
   })
 

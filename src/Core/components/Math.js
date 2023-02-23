@@ -2200,7 +2200,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
       if (dependencyValues.format === 'latex') {
         // for latex, must explicitly denote that code
         // is a multicharacter variable
-        nextString = '\\var{' + code + '}';
+        nextString = '\\operatorname{' + code + '}';
       }
       else {
         // for text, just make sure code is surrounded by spaces
@@ -2369,7 +2369,7 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
       let subCodes = {};
       if (mathInd !== undefined) {
         if (dependencyValues.format === "latex") {
-          subCodes.prevCode = '\\var{' + dependencyValues.codePre + mathInd + '}';
+          subCodes.prevCode = '\\operatorname{' + dependencyValues.codePre + mathInd + '}';
         } else {
           subCodes.prevCode = dependencyValues.codePre + mathInd;
         }
@@ -2383,7 +2383,7 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
         }
 
         if (dependencyValues.format === "latex") {
-          subCodes.nextCode = '\\var{' + dependencyValues.codePre + nextInd + '}';
+          subCodes.nextCode = '\\operatorname{' + dependencyValues.codePre + nextInd + '}';
         } else {
           subCodes.nextCode = dependencyValues.codePre + nextInd;
         }

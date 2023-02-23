@@ -178,6 +178,7 @@ describe('Math expressions equality tests', function () {
     <boolean name="t1">nCr(5,3) = 10</boolean>
     <boolean name="t2">nPr(5,3) = 60</boolean>
     <boolean name="t3">binom(5,3) = 10</boolean>
+    <boolean name="t4">binom(m,n) = nCr(m,n)</boolean>
     </p>
 
     `}, "*");
@@ -186,7 +187,7 @@ describe('Math expressions equality tests', function () {
     cy.get('#\\/_text1').should('contain.text', 'a')
 
 
-    let nTrues = 3, nFalses = 0;
+    let nTrues = 4, nFalses = 0;
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
     }
@@ -213,7 +214,6 @@ describe('Math expressions equality tests', function () {
         doenetML: `
     <text>a</text>
 
-    <math>⟨a,b⟩</math>
     <p>
     <boolean name="t1">⟨a,b⟩ = (a,b)</boolean>
     <boolean name="t2">⟨a,b⟩ = <math createVectors>(a,b)</math></boolean>
@@ -232,6 +232,162 @@ describe('Math expressions equality tests', function () {
 
 
     let nTrues = 3, nFalses = 2;
+    for (let i = 1; i <= nTrues; i++) {
+      cy.get(`#\\/t${i}`).should('have.text', "true")
+    }
+
+    for (let i = 1; i <= nFalses; i++) {
+      cy.get(`#\\/f${i}`).should('have.text', "false")
+    }
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 1; i <= nTrues; i++) {
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
+      }
+      for (let i = 1; i <= nFalses; i++) {
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
+      }
+    })
+
+  })
+
+  it('angles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>
+    <boolean name="t1">angle ABC = angle CBA</boolean>
+    <boolean name="t2">angle(A,B,C) = angle(C,B,A)</boolean>
+    <boolean name="t3">angle A'B'C' = angle C'B'A'</boolean>
+    <boolean name="t4">angle ABC = angle(A,B,C)</boolean>
+    <boolean name="t5"><math>angle ABC</math> = <math>angle(A,B,C)</math></boolean>
+    <boolean name="t6">angle A'B'C' = angle(A',B',C')</boolean>
+    <boolean name="t7">angle A B C = angle(A,B,C)</boolean>
+    </p>
+
+    <p>
+    <boolean name="f1">angle ABC = angle ACB></boolean>
+    <boolean name="f2">angle ABC = angle A'B'C'</boolean>
+    <boolean name="f3">angle(A,B,C) = angle (A,C,B)</boolean>
+    <boolean name="f4">angle(A,B,C) = angle (A',B',C')</boolean>
+    </p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('contain.text', 'a')
+
+
+
+    let nTrues = 7, nFalses = 2;
+
+    for (let i = 1; i <= nTrues; i++) {
+      cy.get(`#\\/t${i}`).should('have.text', "true")
+    }
+
+    for (let i = 1; i <= nFalses; i++) {
+      cy.get(`#\\/f${i}`).should('have.text', "false")
+    }
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 1; i <= nTrues; i++) {
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
+      }
+      for (let i = 1; i <= nFalses; i++) {
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
+      }
+    })
+
+  })
+
+  it('units', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>
+    <boolean name="t1">90 deg = pi/2</boolean>
+    <boolean name="t2">50% = 0.5</boolean>
+    <boolean name="t3">$5 = $3+$2</boolean>
+    <boolean name="t4">90 deg = 360 deg - 270 deg</boolean>
+    <boolean name="t5">250% = 50% * 5</boolean>
+    <boolean name="t6">$3 = $12 / 4</boolean>
+    <boolean name="t7">sin(45 deg) = 1/sqrt(2)</boolean>
+    <boolean name="t8">x% = x/100</boolean>
+    <boolean name="t9">x deg = pi x/180</boolean>
+    <boolean name="t10">(3x)% = x% 3</boolean>
+    </p>
+
+    <p>
+    <boolean name="f1">90 deg = 90</boolean>
+    <boolean name="f2">50% = 50</boolean>
+    <boolean name="f3">360 deg = 0 deg</boolean>
+    <boolean name="f4">$5 = 5</boolean>
+    </p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('contain.text', 'a')
+
+
+
+    let nTrues = 10, nFalses = 4;
+
+    for (let i = 1; i <= nTrues; i++) {
+      cy.get(`#\\/t${i}`).should('have.text', "true")
+    }
+
+    for (let i = 1; i <= nFalses; i++) {
+      cy.get(`#\\/f${i}`).should('have.text', "false")
+    }
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 1; i <= nTrues; i++) {
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
+      }
+      for (let i = 1; i <= nFalses; i++) {
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
+      }
+    })
+
+  })
+
+  it('some support for interal', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>
+    <boolean name="t1">int f(x) dx = int dx f(x)</boolean>
+    <boolean name="t2">int (x*x + x + x - x^2/3) dx = int (2x^2/3 + 2x) dx</boolean>
+    <boolean name="t3">int_a^b f(x) dx = int_a^b dx f(x)</boolean>
+    <boolean name="t4">int_(a+a)^(b*b) x*x*x dx = int_(2a)^(b^2) x^3dx</boolean>
+    </p>
+
+    <p>
+    <boolean name="f1">int f(x) dx = int_a^b f(x) dx</boolean>
+    <boolean name="f2">int x^2 dx = int x^3 dx</boolean>
+    <boolean name="f3">int_a^b f(x) dx = int_c^d f(x) dx</boolean>
+    <boolean name="f4">int_a^b x^2 dx = int_a^b x^3 dx</boolean>
+    </p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('contain.text', 'a')
+
+
+
+    let nTrues = 4, nFalses = 4;
+
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
     }
