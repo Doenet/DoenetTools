@@ -39,7 +39,8 @@
         "ms-azuretools.vscode-docker",
         "esbenp.prettier-vscode",
         "styled-components.vscode-styled-components",
-        "meganrogge.template-string-converter"
+        "meganrogge.template-string-converter",
+        "GitHub.vscode-pull-request-github"
       ],
       "settings": {
         "editor.formatOnSave": true,
