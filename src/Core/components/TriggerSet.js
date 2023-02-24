@@ -1,4 +1,5 @@
 import { returnLabelStateVariableDefinitions } from '../utils/label';
+import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggeringAttributes } from '../utils/triggering';
 import InlineComponent from './abstract/InlineComponent';
 
 export default class triggerSet extends InlineComponent {
@@ -16,24 +17,9 @@ export default class triggerSet extends InlineComponent {
       public: true,
     };
 
-    attributes.triggerWhen = {
-      createComponentOfType: "boolean",
-      createStateVariable: "triggerWhen",
-      defaultValue: false,
-      triggerActionOnChange: "triggerActionsIfTriggerNewlyTrue"
-    }
+    let triggerAttributes = returnStandardTriggeringAttributes("triggerActionsIfTriggerNewlyTrue")
 
-    attributes.triggerWith = {
-      createTargetComponentNames: true,
-    }
-
-    attributes.triggerWhenObjectsClicked = {
-      createTargetComponentNames: true,
-    }
-
-    attributes.triggerWhenObjectsFocused = {
-      createTargetComponentNames: "string"
-    }
+    Object.assign(attributes, triggerAttributes);
 
     return attributes;
   }
@@ -56,6 +42,8 @@ export default class triggerSet extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    addStandardTriggeringStateVariableDefinitions(stateVariableDefinitions, "triggerActions");
+
     let labelDefinitions = returnLabelStateVariableDefinitions();
 
     Object.assign(stateVariableDefinitions, labelDefinitions);
@@ -76,115 +64,6 @@ export default class triggerSet extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.triggerWith = {
-      returnDependencies: () => ({
-        triggerWith: {
-          dependencyType: "attributeTargetComponentNames",
-          attributeName: "triggerWith"
-        },
-        triggerWhenObjectsClicked: {
-          dependencyType: "attributeTargetComponentNames",
-          attributeName: "triggerWhenObjectsClicked"
-        },
-        triggerWhenObjectsFocused: {
-          dependencyType: "attributeTargetComponentNames",
-          attributeName: "triggerWhenObjectsFocused"
-        },
-        triggerWhen: {
-          dependencyType: "attributeComponent",
-          attributeName: "triggerWhen"
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen) {
-          return { setValue: { triggerWith: null } }
-        } else {
-          let triggerWith = [];
-          if (dependencyValues.triggerWith !== null) {
-            for (let nameObj of dependencyValues.triggerWith) {
-              triggerWith.push({ target: nameObj.absoluteName });
-            }
-          }
-          if (dependencyValues.triggerWhenObjectsClicked !== null) {
-            for (let nameObj of dependencyValues.triggerWhenObjectsClicked) {
-              triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "click" })
-            }
-          }
-          if (dependencyValues.triggerWhenObjectsFocused !== null) {
-            for (let nameObj of dependencyValues.triggerWhenObjectsFocused) {
-              triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "down" })
-            }
-          }
-
-          if (triggerWith.length === 0) {
-            triggerWith = null;
-          }
-
-          return { setValue: { triggerWith } }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWithTargetIds = {
-      chainActionOnActionOfStateVariableTargets: {
-        triggeredAction: "triggerActions"
-      },
-      returnDependencies: () => ({
-        triggerWith: {
-          dependencyType: "stateVariable",
-          variableName: "triggerWith"
-        }
-      }),
-      definition({ dependencyValues }) {
-        let triggerWithTargetIds = [];
-
-        if (dependencyValues.triggerWith) {
-          for (let targetObj of dependencyValues.triggerWith) {
-
-            let id = targetObj.target;
-
-            if (targetObj.triggeringAction) {
-              id += "|" + targetObj.triggeringAction;
-            };
-
-            if (!triggerWithTargetIds.includes(id)) {
-              triggerWithTargetIds.push(id);
-            }
-
-          }
-        }
-
-        return { setValue: { triggerWithTargetIds } }
-      },
-      markStale() {
-        return { updateActionChaining: true }
-      },
-    }
-
-
-    let originalHiddenReturnDependencies = stateVariableDefinitions.hidden.returnDependencies;
-    let originalHiddenDefinition = stateVariableDefinitions.hidden.definition;
-
-    stateVariableDefinitions.hidden.returnDependencies = function (args) {
-      let dependencies = originalHiddenReturnDependencies(args);
-      dependencies.triggerWhen = {
-        dependencyType: "attributeComponent",
-        attributeName: "triggerWhen"
-      },
-        dependencies.triggerWith = {
-          dependencyType: "stateVariable",
-          variableName: "triggerWith"
-        }
-      return dependencies;
-    }
-
-    stateVariableDefinitions.hidden.definition = function (args) {
-      if (args.dependencyValues.triggerWhen || args.dependencyValues.triggerWith) {
-        return { setValue: { hidden: true } }
-      } else {
-        return originalHiddenDefinition(args);
-      }
-    }
 
     return stateVariableDefinitions;
 
