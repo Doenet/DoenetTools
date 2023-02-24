@@ -31,7 +31,7 @@
   "postStartCommand": "npx snowpack dev",
 
   // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
-  // "remoteUser": "vscode"
+  "remoteUser": "root",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -39,10 +39,14 @@
         "ms-azuretools.vscode-docker",
         "esbenp.prettier-vscode",
         "styled-components.vscode-styled-components",
-        "meganrogge.template-string-converter"
+        "meganrogge.template-string-converter",
+        "GitHub.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "DotJoshJohnson.xml"
       ],
       "settings": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "extensions.verifySignature": false
       }
     }
   }
