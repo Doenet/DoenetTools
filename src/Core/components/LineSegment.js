@@ -26,6 +26,10 @@ export default class LineSegment extends GraphicalComponent {
       forRenderer: true
     };
 
+    attributes.endpointsDraggable = {
+      createComponentOfType: "boolean",
+    };
+
     attributes.endpoints = {
       createComponentOfType: "_pointListComponent"
     }
@@ -103,6 +107,39 @@ export default class LineSegment extends GraphicalComponent {
         let styleDescriptionWithNoun = dependencyValues.styleDescription + " line segment";
 
         return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+    stateVariableDefinitions.endpointsDraggable = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean"
+      },
+      hasEssential: true,
+      forRenderer: true,
+      returnDependencies: () => ({
+        endpointsDraggableAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "endpointsDraggable",
+          variableNames: ["value"]
+        },
+        draggable: {
+          dependencyType: "stateVariable",
+          variableName: "draggable"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.endpointsDraggableAttr) {
+          return {
+            setValue: { endpointsDraggable: dependencyValues.endpointsDraggableAttr.stateValues.value }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              endpointsDraggable: { defaultValue: dependencyValues.draggable }
+            }
+          }
+        }
       }
     }
 
@@ -291,12 +328,6 @@ export default class LineSegment extends GraphicalComponent {
         // console.log(desiredStateVariableValues)
         // console.log(JSON.parse(JSON.stringify(stateValues)))
         // console.log(dependencyValuesByKey);
-
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
 
 
         let instructions = [];
@@ -610,6 +641,20 @@ export default class LineSegment extends GraphicalComponent {
 
 
   async moveLineSegment({ point1coords, point2coords, transient, actionId }) {
+
+
+    if (point1coords === undefined || point2coords === undefined) {
+      // single point dragged
+      if (!await this.stateValues.endpointsDraggable) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    } else {
+      // whole line segment dragged
+      if (!await this.stateValues.draggable) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    }
+
 
     let newComponents = {};
 

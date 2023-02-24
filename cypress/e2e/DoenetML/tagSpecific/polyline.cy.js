@@ -3314,4 +3314,330 @@ describe('Polyline Tag Tests', function () {
 
   });
 
+  it('draggable, vertices draggable', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <graph>
+    <polyline vertices="(1,3) (5,7) (-2,6)" name="p" draggable="$draggable" verticesDraggable="$verticesDraggable" />
+  </graph>
+  <p>To wait: <booleaninput name="bi" /> <boolean copySource="bi" name="bi2" /></p>
+  <p>draggable: <booleaninput name="draggable" /> <boolean copySource="p.draggable" name="d2" /></p>
+  <p>vertices draggable: <booleaninput name="verticesDraggable" /> <boolean copySource="p.verticesDraggable" name="vd2" /></p>
+  <p name="pvert">all vertices: $p.vertices</p>
+  `}, "*");
+    });
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(−2,6)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(false);
+    })
+
+    cy.log('cannot move single vertex')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: { 0: [4, 7] }
+        }
+      })
+    })
+
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'true')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/vd2").should('have.text', 'false')
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(−2,6)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(false);
+    })
+
+
+
+    cy.log('cannot move all vertices')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: [[4, 7], [8, 10], [1, 9]]
+        }
+      })
+    })
+
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'false')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/vd2").should('have.text', 'false')
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(−2,6)')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(false);
+    })
+
+
+    cy.log('only vertices draggable')
+
+    cy.get('#\\/verticesDraggable').click()
+    cy.get('#\\/vd2').should('have.text', 'true')
+
+
+    cy.log('can move single vertex')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: { 0: [4, 7] }
+        }
+      })
+    })
+
+
+    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(4,7)')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/vd2").should('have.text', 'true')
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(−2,6)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([4, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(true);
+    })
+
+
+
+    cy.log('cannot move all vertices')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: [[3, 8], [8, 10], [1, 9]]
+        }
+      })
+    })
+
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'true')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/vd2").should('have.text', 'true')
+
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(−2,6)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([4, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(true);
+    })
+
+
+
+    cy.log('vertices and polyline draggable')
+
+    cy.get('#\\/draggable').click()
+    cy.get('#\\/d2').should('have.text', 'true')
+
+
+    cy.log('can move single vertex')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: { 1: [-3, 2] }
+        }
+      })
+    })
+
+
+    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(−3,2)')
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/vd2").should('have.text', 'true')
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(−3,2)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(−2,6)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([4, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([-3, 2]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(true);
+    })
+
+
+
+    cy.log('can move all vertices')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: [[3, 8], [8, 10], [1, 9]]
+        }
+      })
+    })
+
+
+    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(3,8)')
+
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/vd2").should('have.text', 'true')
+
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(8,10)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(1,9)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([3, 8]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([8, 10]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([1, 9]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(true);
+    })
+
+
+    cy.log('polyline but not vertices draggable')
+
+    cy.get('#\\/verticesDraggable').click()
+    cy.get('#\\/vd2').should('have.text', 'false')
+
+
+    cy.log('cannot move single vertex')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: { 2: [9, 3] }
+        }
+      })
+    })
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'false')
+
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/vd2").should('have.text', 'false')
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(8,10)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(1,9)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([3, 8]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([8, 10]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([1, 9]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(false);
+    })
+
+
+
+    cy.log('can move all vertices')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: [[-4, 1], [9, -4], [0, 7]]
+        }
+      })
+    })
+
+
+    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(−4,1)')
+
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/vd2").should('have.text', 'false')
+
+
+    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(−4,1)')
+    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(9,−4)')
+    cy.get("#\\/pvert .mjx-mrow").eq(4).should('have.text', '(0,7)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([-4, 1]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([9, -4]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([0, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.verticesDraggable).eq(false);
+    })
+
+
+
+  })
+
+
 });
