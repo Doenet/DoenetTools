@@ -40,7 +40,9 @@
         "esbenp.prettier-vscode",
         "styled-components.vscode-styled-components",
         "meganrogge.template-string-converter",
-        "GitHub.vscode-pull-request-github"
+        "GitHub.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "DotJoshJohnson.xml"
       ],
       "settings": {
         "editor.formatOnSave": true,
