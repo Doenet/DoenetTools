@@ -3,6 +3,14 @@ import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 import me from 'math-expressions';
 
 export default class Label extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveLabel: this.moveLabel.bind(this),
+    });
+
+  }
   static componentType = "label";
   static renderChildren = true;
   static rendererType = "label";
@@ -487,10 +495,5 @@ export default class Label extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveLabel: this.moveLabel.bind(this),
-  };
 
 }

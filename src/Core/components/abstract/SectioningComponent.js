@@ -4,6 +4,18 @@ import { returnStyleDefinitionStateVariables } from '../../utils/style';
 import { returnFeedbackDefinitionStateVariables } from '../../utils/feedback';
 
 export default class SectioningComponent extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      submitAllAnswers: this.submitAllAnswers.bind(this),
+      revealSection: this.revealSection.bind(this),
+      closeSection: this.closeSection.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this)
+    })
+
+  }
+
   static componentType = "_sectioningComponent";
   static renderChildren = true;
 
@@ -764,12 +776,6 @@ export default class SectioningComponent extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  actions = {
-    submitAllAnswers: this.submitAllAnswers.bind(this),
-    revealSection: this.revealSection.bind(this),
-    closeSection: this.closeSection.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this)
-  }
 
   async submitAllAnswers({ actionId }) {
 

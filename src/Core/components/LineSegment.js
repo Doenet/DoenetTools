@@ -3,13 +3,17 @@ import me from 'math-expressions';
 import { convertValueToMathExpression } from '../utils/math';
 
 export default class LineSegment extends GraphicalComponent {
-  static componentType = "lineSegment";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveLineSegment: this.moveLineSegment.bind(this),
-    lineSegmentClicked: this.lineSegmentClicked.bind(this),
-    mouseDownOnLineSegment: this.mouseDownOnLineSegment.bind(this),
-  };
+    Object.assign(this.actions, {
+      moveLineSegment: this.moveLineSegment.bind(this),
+      lineSegmentClicked: this.lineSegmentClicked.bind(this),
+      mouseDownOnLineSegment: this.mouseDownOnLineSegment.bind(this),
+    });
+
+  }
+  static componentType = "lineSegment";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

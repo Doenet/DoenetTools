@@ -1,6 +1,16 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Solution extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      revealSolution: this.revealSolution.bind(this),
+      closeSolution: this.closeSolution.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "solution";
   static renderChildren = true;
 
@@ -285,12 +295,6 @@ export default class Solution extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    revealSolution: this.revealSolution.bind(this),
-    closeSolution: this.closeSolution.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

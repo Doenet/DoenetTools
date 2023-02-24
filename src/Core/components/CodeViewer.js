@@ -1,6 +1,15 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class CodeViewer extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      updateComponents: this.updateComponents.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "codeViewer";
   static renderChildren = true;
 
@@ -253,11 +262,5 @@ export default class CodeViewer extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-
-  actions = {
-    updateComponents: this.updateComponents.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 }

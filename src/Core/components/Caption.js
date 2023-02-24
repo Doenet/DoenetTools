@@ -1,6 +1,14 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Caption extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "caption";
   static rendererType = "containerInline";
 
@@ -67,10 +75,6 @@ export default class Caption extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

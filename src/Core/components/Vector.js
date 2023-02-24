@@ -4,13 +4,17 @@ import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
-  static componentType = "vector";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveVector: this.moveVector.bind(this),
-    vectorClicked: this.vectorClicked.bind(this),
-    mouseDownOnVector: this.mouseDownOnVector.bind(this),
+    Object.assign(this.actions, {
+      moveVector: this.moveVector.bind(this),
+      vectorClicked: this.vectorClicked.bind(this),
+      mouseDownOnVector: this.mouseDownOnVector.bind(this),
+    });
+
   }
+  static componentType = "vector";
 
   static primaryStateVariableForDefinition = "displacementShadow";
 

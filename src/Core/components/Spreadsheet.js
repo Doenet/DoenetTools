@@ -6,6 +6,15 @@ import { HyperFormula } from 'hyperformula';
 
 
 export default class Spreadsheet extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      onChange: this.onChange.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "spreadsheet";
 
   static createAttributesObject() {
@@ -1245,12 +1254,6 @@ export default class Spreadsheet extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    onChange: this.onChange.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
-
 
 
 }

@@ -6,6 +6,14 @@ import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 
 export default class MathComponent extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveMath: this.moveMath.bind(this),
+    });
+
+  }
   static componentType = "math";
 
   // used when creating new component via adapter or copy prop
@@ -2091,11 +2099,6 @@ export default class MathComponent extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveMath: this.moveMath.bind(this),
-  };
 
 }
 

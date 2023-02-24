@@ -3,6 +3,14 @@ import me from 'math-expressions';
 import { roundForDisplay } from '../utils/math';
 
 export default class SummaryStatistics extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "summaryStatistics";
 
   static createAttributesObject() {
@@ -684,10 +692,6 @@ export default class SummaryStatistics extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }
