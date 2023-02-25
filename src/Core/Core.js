@@ -9340,7 +9340,29 @@ export default class Core {
                   }
                 }
               } else {
-                Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
+                if (depStateVarObj.nDimensions === 1) {
+                  Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
+                } else {
+                  // need to convert multidimensional array (newInstruction.desiredValue)
+                  // to an object with multidimesional arrayKeys
+                  // where each array key is a concatenation of the array indices, joined by commas
+
+                  let convert_md_array = (array, n_dim) => {
+                    if (n_dim === 1) {
+                      return Object.assign({}, array)
+                    } else {
+                      let new_obj = {}
+                      for (let ind in array) {
+                        let sub_obj = convert_md_array(array[ind], n_dim - 1);
+                        for (let key in sub_obj) {
+                          new_obj[`${ind},${key}`] = sub_obj[key]
+                        }
+                      }
+                      return new_obj;
+                    }
+                  }
+                  Object.assign(arrayInstructionInProgress.desiredValue, convert_md_array(newInstruction.desiredValue, depStateVarObj.nDimensions))
+                }
               }
 
 
