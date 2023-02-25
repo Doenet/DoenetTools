@@ -26,7 +26,7 @@ export class Paginator extends BlockComponent {
 
   }
 
-  
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -236,9 +236,7 @@ export class PaginatorControls extends BlockComponent {
       public: true,
     }
     attributes.paginator = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "paginator",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
     return attributes;
@@ -252,21 +250,22 @@ export class PaginatorControls extends BlockComponent {
 
 
     stateVariableDefinitions.paginatorComponentName = {
-      stateVariablesDeterminingDependencies: ["paginator"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.paginator) {
-          return {
-            paginatorComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.paginator
-            }
-          }
-        } else {
-          return {}
+      returnDependencies: () => ({
+        paginator: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "paginator"
         }
-      },
+      }),
       definition({ dependencyValues }) {
-        return { setValue: { paginatorComponentName: dependencyValues.paginatorComponentName } }
+        let paginatorComponentName;
+
+        if (dependencyValues.paginator?.length === 1) {
+          paginatorComponentName = dependencyValues.paginator[0].absoluteName;
+        } else {
+          paginatorComponentName = null;
+        }
+
+        return { setValue: { paginatorComponentName } }
       }
     }
 

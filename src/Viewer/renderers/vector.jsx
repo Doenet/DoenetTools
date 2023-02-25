@@ -226,6 +226,9 @@ export default React.memo(function Vector(props) {
       downOnPoint.current = 1;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
     newPoint2JXG.on('down', function (e) {
       headBeingDragged.current = false;
@@ -234,6 +237,9 @@ export default React.memo(function Vector(props) {
       downOnPoint.current = 2;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
 
     // if drag vector, need to keep track of original point positions
@@ -248,6 +254,9 @@ export default React.memo(function Vector(props) {
       ];
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
 
     newPoint1JXG.on('keydown', e => {

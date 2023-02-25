@@ -260,8 +260,17 @@ export default React.memo(function Polyline(props) {
     pointerAtDown.current = [e.x, e.y];
 
     if (i === -1) {
+      if (downOnPoint.current === null) {
+        // Note: counting on fact that down on polyline itself will trigger after down on points
+        callAction({
+          action: actions.mouseDownOnPolyline
+        });
+      }
       pointsAtDown.current = polylineJXG.current.points.map(x => [...x.scrCoords])
     } else {
+      callAction({
+        action: actions.mouseDownOnPolyline
+      });
       downOnPoint.current = i;
     }
 

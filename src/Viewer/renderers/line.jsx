@@ -236,6 +236,10 @@ export default React.memo(function Line(props) {
       ]
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnLine
+      });
+
     })
 
 

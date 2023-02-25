@@ -200,6 +200,9 @@ export default React.memo(function Circle(props) {
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnCircle
+      });
     });
 
     // hit is called by jsxgraph when focused in via keyboard

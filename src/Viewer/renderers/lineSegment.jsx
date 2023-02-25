@@ -252,6 +252,9 @@ export default React.memo(function LineSegment(props) {
       downOnPoint.current = 1;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnLineSegment
+      });
     });
     point2JXG.current.on('down', (e) => {
       draggedPoint.current = null;
@@ -259,6 +262,9 @@ export default React.memo(function LineSegment(props) {
       downOnPoint.current = 2;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnLineSegment
+      });
     });
     lineSegmentJXG.current.on('down', function (e) {
       draggedPoint.current = null;
@@ -269,6 +275,13 @@ export default React.memo(function LineSegment(props) {
       ]
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+
+      if (downOnPoint.current === null) {
+        // Note: counting on fact that down on line segment itself will trigger after down on points
+        callAction({
+          action: actions.mouseDownOnLineSegment
+        })
+      }
     });
 
 

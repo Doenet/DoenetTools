@@ -6,7 +6,8 @@ export default class Polygon extends Polyline {
 
   actions = {
     movePolygon: this.movePolygon.bind(this),
-    polygonClicked: this.polygonClicked.bind(this)
+    polygonClicked: this.polygonClicked.bind(this),
+    mouseDownOnPolygon: this.mouseDownOnPolygon.bind(this),
   };
 
   get movePolygon() {
@@ -15,6 +16,10 @@ export default class Polygon extends Polyline {
 
   get polygonClicked() {
     return this.polylineClicked;
+  }
+
+  get mouseDownOnPolygon() {
+    return this.mouseDownOnPolyline;
   }
 
   static createAttributesObject() {

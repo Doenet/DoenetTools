@@ -426,11 +426,6 @@ export default class Core {
         return [];
       }
 
-      if (parent.isShadow) {
-        console.warn(`Cannot add children to parent ${parentName} as it is a shadow component.`);
-        return [];
-      }
-
       ancestors = [
         {
           componentName: parentName,
@@ -1253,7 +1248,7 @@ export default class Core {
         });
 
       }
-      
+
       if (componentClass.keepChildrenSerialized) {
         let childrenAddressed = new Set([]);
 
@@ -2610,12 +2605,10 @@ export default class Core {
         hasEssential: true,
       };
 
-      let attributeFromPrimitive = !attributeSpecification.createComponentOfType;
-
       if (attributeSpecification.public) {
         stateVarDef.public = true;
         stateVarDef.shadowingInstructions = {};
-        if (attributeFromPrimitive) {
+        if (attributeSpecification.createPrimitiveOfType) {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
           if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
             stateVarDef.shadowingInstructions.createComponentOfType = "text";
@@ -2624,6 +2617,8 @@ export default class Core {
           } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
             stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
+        } else if (attributeSpecification.createTargetComponentNames) {
+          throw Error("Cannot make a public state variable from an attribute with createTargetComponentNames");
         } else {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
@@ -2631,7 +2626,7 @@ export default class Core {
 
       let stateVariableForAttributeValue;
 
-      if (!attributeFromPrimitive) {
+      if (attributeSpecification.createComponentOfType) {
 
         let attributeClass = this.componentInfoObjects.allComponentClasses[attributeSpecification.createComponentOfType];
         if (!attributeClass) {
@@ -2656,9 +2651,14 @@ export default class Core {
             variableName: attributeSpecification.fallBackToParentStateVariable
           }
         }
-        if (attributeFromPrimitive) {
+        if (attributeSpecification.createPrimitiveOfType) {
           dependencies.attributePrimitive = {
             dependencyType: "attributePrimitive",
+            attributeName: attrName
+          }
+        } else if (attributeSpecification.createTargetComponentNames) {
+          dependencies.attributeTargetComponentNames = {
+            dependencyType: "attributeTargetComponentNames",
             attributeName: attrName
           }
         } else {
@@ -2682,6 +2682,10 @@ export default class Core {
           && dependencyValues.attributePrimitive !== null
         ) {
           attributeValue = dependencyValues.attributePrimitive;
+        } else if (dependencyValues.attributeTargetComponentNames !== undefined
+          && dependencyValues.attributeTargetComponentNames !== null
+        ) {
+          attributeValue = dependencyValues.attributeTargetComponentNames;
         } else {
 
           // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
@@ -2716,6 +2720,10 @@ export default class Core {
           if (!dependencyValues.attributeComponent) {
             if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
               // can't invert if have primitive
+              return { success: false }
+            }
+            if (dependencyValues.attributeTargetComponentNames !== undefined && dependencyValues.attributeTargetComponentNames !== null) {
+              // can't invert if have target component names
               return { success: false }
             }
 
@@ -2801,12 +2809,10 @@ export default class Core {
         hasEssential: true,
       };
 
-      let attributeFromPrimitive = !attributeSpecification.createComponentOfType;
-
       if (attributeSpecification.public) {
         stateVarDef.public = true;
         stateVarDef.shadowingInstructions = {};
-        if (attributeFromPrimitive) {
+        if (attributeSpecification.createPrimitiveOfType) {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
           if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
             stateVarDef.shadowingInstructions.createComponentOfType = "text";
@@ -2815,6 +2821,8 @@ export default class Core {
           } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
             stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
+        } else if (attributeSpecification.createTargetComponentNames) {
+          throw Error("Cannot make a public state variable from an attribute with createTargetComponentNames");
         } else {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
@@ -2989,7 +2997,7 @@ export default class Core {
       if (attributeSpecification.public) {
         stateVarDef.public = true;
         stateVarDef.shadowingInstructions = {};
-        if (attributeFromPrimitive) {
+        if (attributeSpecification.createPrimitiveOfType) {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
           if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
             stateVarDef.shadowingInstructions.createComponentOfType = "text";
@@ -2998,6 +3006,8 @@ export default class Core {
           } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
             stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
+        } else if (attributeSpecification.createTargetComponentNames) {
+          throw Error("Cannot make a public state variable from an attribute with createTargetComponentNames");
         } else {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
@@ -3006,7 +3016,7 @@ export default class Core {
 
       let stateVariableForAttributeValue;
 
-      if (!attributeFromPrimitive) {
+      if (attributeSpecification.createComponentOfType) {
 
         let attributeClass = this.componentInfoObjects.allComponentClasses[attributeSpecification.createComponentOfType];
         if (!attributeClass) {
@@ -3024,9 +3034,14 @@ export default class Core {
 
       let thisDependencies = {}
 
-      if (attributeFromPrimitive) {
+      if (attributeSpecification.createPrimitiveOfType) {
         thisDependencies.attributePrimitive = {
           dependencyType: "attributePrimitive",
+          attributeName: attrName
+        }
+      } else if (attributeSpecification.createTargetComponentNames) {
+        thisDependencies.attributeTargetComponentNames = {
+          dependencyType: "attributeTargetComponentNames",
           attributeName: attrName
         }
       } else {
@@ -3053,6 +3068,8 @@ export default class Core {
           attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
         } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
           attributeValue = dependencyValues.attributePrimitive;
+        } else if (dependencyValues.attributeTargetComponentNames !== undefined && dependencyValues.attributeTargetComponentNames !== null) {
+          attributeValue = dependencyValues.attributeTargetComponentNames;
         } else {
 
           // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
@@ -3095,6 +3112,10 @@ export default class Core {
           if (!dependencyValues.attributeComponent) {
             if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
               // can't invert if have primitive
+              return { success: false }
+            }
+            if (dependencyValues.attributeTargetComponentNames !== undefined && dependencyValues.attributeTargetComponentNames !== null) {
+              // can't invert if have target component names
               return { success: false }
             }
 

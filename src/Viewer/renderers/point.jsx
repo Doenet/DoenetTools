@@ -188,9 +188,13 @@ export default React.memo(function Point(props) {
       dragged.current = false;
       shadowPointJXG.current.visProp.highlightfillopacity = pointJXG.current.visProp.fillopacity;
       shadowPointJXG.current.visProp.highlightstrokeopacity = pointJXG.current.visProp.strokeopacity;
+
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
 
+      callAction({
+        action: actions.mouseDownOnPoint
+      });
     });
 
     newShadowPointJXG.on('up', function (e) {

@@ -194,6 +194,9 @@ export default React.memo(function Ray(props) {
       ]
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      callAction({
+        action: actions.mouseDownOnRay
+      });
 
     });
 
