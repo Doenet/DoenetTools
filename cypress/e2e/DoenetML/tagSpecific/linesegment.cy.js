@@ -3362,6 +3362,10 @@ describe('LineSegment Tag Tests', function () {
       <linesegment name="l" endpoints="$A $B" />
     </graph>
     <copy prop="length" target="l" assignNames="length" />
+    <point name="Ap" copySource="A" />
+    <point name="Bp" copySource="B" />
+    <mathinput name="milength" bindValueTo="$length" />
+    <p><booleaninput name="bi"/><boolean copySource="bi" name="bi2" /></p>
     `}, "*");
     });
 
@@ -3372,7 +3376,9 @@ describe('LineSegment Tag Tests', function () {
     let t2x = 7, t2y = -2;
     let len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
 
-    cy.get('#\\/length').should('contain.text', String(Math.round(len*10**9)/10**9))
+    cy.get('#\\/length').should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
+    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(3,4)');
+    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3391,17 +3397,47 @@ describe('LineSegment Tag Tests', function () {
       })
 
       cy.get('#\\/length').should('contain.text', String(len))
+      cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,3)');
+      cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−2)');
 
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(Math.abs(stateVariables['/l'].stateValues.length)).eq(len);
+      expect(stateVariables['/l'].stateValues.length).eq(len);
+    })
+
+
+    cy.get('#\\/milength textarea').type("{end}{backspace}10{enter}", { force: true });
+
+    cy.get('#\\/length').should('contain.text', '10')
+    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.length).eq(10);
+    })
+
+
+    cy.log("ignore requested negative length");
+    cy.get('#\\/milength textarea').type("{end}{backspace}{backspace}-3{enter}", { force: true });
+    cy.get("#\\/bi").click();
+    cy.get('#\\/bi2').should('have.text', 'true');  // so know that core has responded to both requests
+
+    cy.get('#\\/length').should('contain.text', '10')
+    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.length).eq(10);
     })
 
 
     cy.window().then(async (win) => {
 
+      t1y = 5.5;
       t2x = -9;
       t2y = 5;
       len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
@@ -3411,13 +3447,33 @@ describe('LineSegment Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/length').should('contain.text', String(Math.round(len*10**8)/10**8))
-
+      cy.get('#\\/length').should('contain.text', String(Math.round(len * 10 ** 8) / 10 ** 8))
+      cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+      cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(−9,5)');
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/l'].stateValues.length).eq(len);
+    })
+  });
+
+  it('lineSegment symbolic length', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <linesegment name="l" endpoints="(x,y) (u,v)" />
+    <copy prop="length" source="l" assignNames="length" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/l'].stateValues.length).equals(me.fromText('sqrt((x-u)^2+(y-v)^2)'))).eq(true);
     })
   });
 

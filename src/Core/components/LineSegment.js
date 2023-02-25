@@ -329,6 +329,117 @@ export default class LineSegment extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.length = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+        endpoints: {
+          dependencyType: "stateVariable",
+          variableName: "endpoints"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let length2 = 0;
+        let epoint1 = dependencyValues.endpoints[0];
+        let epoint2 = dependencyValues.endpoints[1];
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let v1 = epoint1[dim].evaluate_to_constant();
+          if (!Number.isFinite(v1)) {
+            all_numeric = false;
+            break;
+          }
+          let v2 = epoint2[dim].evaluate_to_constant();
+          if (!Number.isFinite(v2)) {
+            all_numeric = false;
+            break;
+          }
+          let d = v1 - v2;
+          length2 += d * d;
+        }
+
+        if (all_numeric) {
+          return { setValue: { length: me.fromAst(Math.sqrt(length2)) } };
+        }
+
+        length2 = ['+'];
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          length2.push([
+            '^',
+            ['+', epoint1[dim], ['-', epoint2[dim]]],
+            2
+          ])
+        }
+
+        return {
+          setValue: {
+            length:
+              me.fromAst(['apply', 'sqrt', length2])
+          }
+        }
+
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let midpoint = [];
+        let dir = [];
+        let epoint1 = dependencyValues.endpoints[0];
+        let epoint2 = dependencyValues.endpoints[1];
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let v1 = epoint1[dim].evaluate_to_constant();
+          if (!Number.isFinite(v1)) {
+            all_numeric = false;
+            break;
+          }
+          let v2 = epoint2[dim].evaluate_to_constant();
+          if (!Number.isFinite(v2)) {
+            all_numeric = false;
+            break;
+          }
+          midpoint.push((v1 + v2) / 2)
+          dir.push(v1 - v2);
+        }
+
+        if (!all_numeric) {
+          return { success: false }
+        }
+
+        // make dir be unit length
+        let dir_length = Math.sqrt(dir.reduce((a, c) => a + c * c, 0));
+        dir = dir.map(x => x / dir_length);
+
+        let desiredLength = desiredStateVariableValues.length.evaluate_to_constant();
+
+        if (!Number.isFinite(desiredLength) || desiredLength < 0) {
+          return { success: false }
+        }
+
+        let desiredEndpoint1 = [], desiredEndpoint2 = [];
+        let halfDesiredlength = desiredLength / 2;
+
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          desiredEndpoint1.push(me.fromAst(midpoint[dim] + dir[dim] * halfDesiredlength));
+          desiredEndpoint2.push(me.fromAst(midpoint[dim] - dir[dim] * halfDesiredlength));
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "endpoints",
+            desiredValue: [desiredEndpoint1, desiredEndpoint2]
+          }]
+        }
+
+
+      }
+    }
+
 
     stateVariableDefinitions.numericalEndpoints = {
       isArray: true,
@@ -487,32 +598,6 @@ export default class LineSegment extends GraphicalComponent {
         let slope = (ps[1][1] - ps[0][1]) / (ps[1][0] - ps[0][0]);
 
         return { setValue: { slope } }
-      }
-    }
-
-    stateVariableDefinitions.length = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "number",
-      },
-      returnDependencies: () => ({
-        numericalEndpoints: {
-          dependencyType: "stateVariable",
-          variableName: "numericalEndpoints"
-        },
-        nDimensions: {
-          dependencyType: "stateVariable",
-          variableName: "nDimensions",
-        }
-      }),
-      definition({ dependencyValues }) {
-        let ps = dependencyValues.numericalEndpoints;
-        let length2 = 0;
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
-          length2 += (ps[1][dim] - ps[0][dim]) ** 2;
-        }
-
-        return { setValue: { length: Math.sqrt(length2) } }
       }
     }
 
