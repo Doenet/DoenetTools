@@ -135,6 +135,9 @@ export default React.memo(function Ray(props) {
         [...newRayJXG.point1.coords.scrCoords],
         [...newRayJXG.point2.coords.scrCoords]
       ]
+      callAction({
+        action: actions.mouseDownOnRay
+      });
 
     });
 

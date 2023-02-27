@@ -17,10 +17,7 @@ export default class Label extends InlineComponent {
     let attributes = super.createAttributesObject();
 
     attributes.forObject = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "forObject",
-      defaultValue: null,
-      public: true,
+      createTargetComponentNames: true,
     }
 
     attributes.draggable = {
@@ -367,15 +364,22 @@ export default class Label extends InlineComponent {
     }
 
     stateVariableDefinitions.forObjectComponentName = {
-      stateVariablesDeterminingDependencies: ["forObject"],
-      returnDependencies: ({ stateValues }) => ({
-        forObjectComponentName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.forObject
+      returnDependencies: () => ({
+        forObject: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "forObject"
         }
       }),
       definition({ dependencyValues }) {
-        return { setValue: { forObjectComponentName: dependencyValues.forObjectComponentName } }
+        let forObjectComponentName;
+
+        if (dependencyValues.forObject?.length === 1) {
+          forObjectComponentName = dependencyValues.forObject[0].absoluteName;
+        } else {
+          forObjectComponentName = null;
+        }
+
+        return { setValue: { forObjectComponentName } }
       }
 
     }

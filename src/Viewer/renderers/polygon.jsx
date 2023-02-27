@@ -131,6 +131,12 @@ export default React.memo(function Polygon(props) {
 
       pointsAtDown.current = newPolygonJXG.vertices.map(x => [...x.coords.scrCoords])
 
+      if (downOnPoint.current === null) {
+        // Note: counting on fact that down on polygon itself will trigger after down on points
+        callAction({
+          action: actions.mouseDownOnPolygon
+        });
+      }
     });
 
 
@@ -155,6 +161,9 @@ export default React.memo(function Polygon(props) {
         draggedPoint.current = null;
         pointerAtDown.current = [e.x, e.y];
         downOnPoint.current = i;
+        callAction({
+          action: actions.mouseDownOnPolygon
+        });
       });
     }
   }

@@ -123,6 +123,9 @@ export default React.memo(function Polyline(props) {
         draggedPoint.current = null;
         pointerAtDown.current = [e.x, e.y];
         downOnPoint.current = i;
+        callAction({
+          action: actions.mouseDownOnPolyline
+        });
       });
     }
 
@@ -135,6 +138,12 @@ export default React.memo(function Polyline(props) {
 
       pointsAtDown.current = newPolylineJXG.points.map(x => [...x.scrCoords])
 
+      if (downOnPoint.current === null) {
+        // Note: counting on fact that down on polyline itself will trigger after down on points
+        callAction({
+          action: actions.mouseDownOnPolyline
+        });
+      }
     });
 
     previousNVertices.current = SVs.nVertices;
