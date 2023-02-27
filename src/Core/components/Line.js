@@ -8,7 +8,8 @@ export default class Line extends GraphicalComponent {
   actions = {
     moveLine: this.moveLine.bind(this),
     switchLine: this.switchLine.bind(this),
-    lineClicked: this.lineClicked.bind(this)
+    lineClicked: this.lineClicked.bind(this),
+    mouseDownOnLine: this.mouseDownOnLine.bind(this),
   };
 
 
@@ -1682,6 +1683,17 @@ export default class Line extends GraphicalComponent {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnLine({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
       componentName: this.componentName,
     })
 

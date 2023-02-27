@@ -170,7 +170,9 @@ export default React.memo(function Point(props) {
       dragged.current = false;
       shadowPointJXG.current.visProp.fillopacity = pointJXG.current.visProp.fillopacity;
       shadowPointJXG.current.visProp.strokeopacity = pointJXG.current.visProp.strokeopacity;
-
+      callAction({
+        action: actions.mouseDownOnPoint
+      });
     });
 
     newShadowPointJXG.on('up', function (e) {
@@ -262,7 +264,7 @@ export default React.memo(function Point(props) {
       //if values update
       let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
-      
+
       if (pointJXG.current.visProp.fillcolor !== fillColor) {
         pointJXG.current.visProp.fillcolor = fillColor;
       }
@@ -447,8 +449,8 @@ function normalizeSize(size, style) {
   } else if (style === "plus") {
     return size * 1.2;
   } else if (style === "square") {
-      return size * 1.1;
-  } else if (style.substring(0,8) === "triangle") {
+    return size * 1.1;
+  } else if (style.substring(0, 8) === "triangle") {
     return size * 1.5;
   } else return size;
 }

@@ -197,11 +197,17 @@ export default React.memo(function LineSegment(props) {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 1;
+      callAction({
+        action: actions.mouseDownOnLineSegment
+      });
     });
     point2JXG.current.on('down', (e) => {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 2;
+      callAction({
+        action: actions.mouseDownOnLineSegment
+      });
     });
     lineSegmentJXG.current.on('down', function (e) {
       draggedPoint.current = null;
@@ -210,6 +216,12 @@ export default React.memo(function LineSegment(props) {
         [...point1JXG.current.coords.scrCoords],
         [...point2JXG.current.coords.scrCoords]
       ]
+      if (downOnPoint.current === null) {
+        // Note: counting on fact that down on line segment itself will trigger after down on points
+        callAction({
+          action: actions.mouseDownOnLineSegment
+        });
+      }
     });
 
     previousLabelPosition.current = SVs.labelPosition;

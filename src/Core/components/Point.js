@@ -1235,10 +1235,23 @@ export default class Point extends GraphicalComponent {
   }
 
 
+  async mouseDownOnPoint({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+
   actions = {
     movePoint: this.movePoint.bind(this),
     switchPoint: this.switchPoint.bind(this),
     pointClicked: this.pointClicked.bind(this),
+    mouseDownOnPoint: this.mouseDownOnPoint.bind(this),
   };
 
 }

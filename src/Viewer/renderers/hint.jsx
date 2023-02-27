@@ -9,7 +9,7 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 
 import styled from 'styled-components';
 
-const SpanStyling= styled.span`
+const SpanStyling = styled.span`
 &: focus {
   outline: 2px solid var(--canvastext);
   outline-offset: 2px;
@@ -47,8 +47,8 @@ export default React.memo(function Hint(props) {
   // is just asking for trouble
   if (SVs.titleChildName) {
     for (let [ind, child] of children.entries()) {
-      //child might be a string
-      if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
+      //child might be null or a string
+      if (child?.props?.componentInstructions.componentName === SVs.titleChildName) {
         title = children[ind];
         children.splice(ind, 1); // remove title
         break;
@@ -71,8 +71,8 @@ export default React.memo(function Hint(props) {
       action: actions.revealHint,
     });
   };
-  let  onKeyPressFunction = (e) => {
-    if(e.key === "Enter"){
+  let onKeyPressFunction = (e) => {
+    if (e.key === "Enter") {
       callAction({
         action: actions.revealHint,
       });
@@ -82,7 +82,7 @@ export default React.memo(function Hint(props) {
   let openCloseText = 'open';
 
   if (SVs.open) {
-   // twirlIcon = <FontAwesomeIcon icon={twirlIsOpen} />;
+    // twirlIcon = <FontAwesomeIcon icon={twirlIsOpen} />;
     openCloseText = 'close';
     icon = <FontAwesomeIcon icon={lightOn} />;
     info = children;
@@ -97,13 +97,13 @@ export default React.memo(function Hint(props) {
       backgroundColor: 'white',
     };
     onKeyPressFunction = (e) => {
-      if(e.key === "Enter"){
+      if (e.key === "Enter") {
         callAction({
           action: actions.closeHint,
         });
       }
     };
-  
+
     onClickFunction = () => {
       callAction({
         action: actions.closeHint,
@@ -113,33 +113,33 @@ export default React.memo(function Hint(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <aside id={id} key={id}>
-      <a name={id} />
+      <aside id={id} key={id}>
+        <a name={id} />
 
-      <SpanStyling
+        <SpanStyling
 
-        style={{
-          display: 'block',
-          margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
-          padding: '6px',
-          border: '2px solid black',
-          borderTopLeftRadius: '5px',
-          borderTopRightRadius: '5px',
-          borderBottomLeftRadius: SVs.open ? '0px' : '5px',
-          borderBottomRightRadius: SVs.open ? '0px' : '5px',
-          backgroundColor: 'var(--mainGray)',
-          cursor: 'pointer',
-        }}
+          style={{
+            display: 'block',
+            margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
+            padding: '6px',
+            border: '2px solid black',
+            borderTopLeftRadius: '5px',
+            borderTopRightRadius: '5px',
+            borderBottomLeftRadius: SVs.open ? '0px' : '5px',
+            borderBottomRightRadius: SVs.open ? '0px' : '5px',
+            backgroundColor: 'var(--mainGray)',
+            cursor: 'pointer',
+          }}
 
-        tabIndex="0"
-        data-test="hint-heading"
-        onClick={onClickFunction}
-        onKeyDown={onKeyPressFunction}
-      > {icon} {title} (click to {openCloseText})
-      </SpanStyling>
-      <span style={infoBlockStyle} >{info}</span>
+          tabIndex="0"
+          data-test="hint-heading"
+          onClick={onClickFunction}
+          onKeyDown={onKeyPressFunction}
+        > {icon} {title} (click to {openCloseText})
+        </SpanStyling>
+        <span style={infoBlockStyle} >{info}</span>
 
-    </aside>
+      </aside>
     </VisibilitySensor>
   );
 })
