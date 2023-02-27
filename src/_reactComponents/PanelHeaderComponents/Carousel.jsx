@@ -73,7 +73,7 @@ function Card({ imagePath, text, link }) {
     '-webkit-line-clamp': 2,
     textOverflow: 'ellipsis',
     overflow: 'hidden',
-    display: '-webkit-box',
+    // display: '-webkit-box',
     '-webkit-box-orient': 'vertical',
     wordWrap: 'break-word',
   }
