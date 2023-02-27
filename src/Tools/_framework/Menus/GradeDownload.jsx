@@ -95,6 +95,10 @@ export default function GradeDownload() {
 
             for (const userId in studentInfo) {
               let credit = overview[userId]?.assignments?.[doenetId];
+              let override = overview[userId]?.override?.[doenetId]
+              if (override){
+                credit = override;
+              }
               if (
                 credit === null &&
                 assignments?.[doenetId]?.isGloballyAssigned === '0'
