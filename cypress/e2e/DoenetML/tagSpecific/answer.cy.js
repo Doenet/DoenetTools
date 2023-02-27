@@ -21963,4 +21963,48 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('a function defined by formula uses formula for a response', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Type the function <m>f(x) = <function name="correctFunction">x^2</function></m></p>
+  <p><m>f(x) = </m><mathInput name="userFormula"/></p>
+  
+  <answer>
+    <award>
+      <when>$userFormula = $correctFunction</when>
+    </award>
+  </answer>
+
+  <p>Submitted responses: <copy prop="submittedResponses" source="_answer1" assignNames="sr1 sr2" /></p>
+
+  `}, "*");
+    });
+
+
+    cy.get("#\\/_p1").should("contain.text", "Type the function");
+
+
+    cy.get("#\\/userFormula textarea").type("x^2{enter}", { force: true });
+
+    cy.get("#\\/_answer1_submit").click();
+
+    cy.get("#\\/_answer1_correct").should("be.visible");
+
+    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "x2");
+    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
+
+    cy.get("#\\/userFormula textarea").type("{home}3{enter}", { force: true });
+
+    cy.get("#\\/_answer1_submit").click();
+
+    cy.get("#\\/_answer1_incorrect").should("be.visible");
+
+    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "3x2");
+    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
+
+
+  });
+
 })
