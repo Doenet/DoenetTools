@@ -23,9 +23,11 @@ export default React.memo(function Ray(props) {
 
   let lastEndpointFromCore = useRef(null);
   let lastThroughpointFromCore = useRef(null);
+  let fixed = useRef(false);
 
   lastEndpointFromCore.current = SVs.numericalEndpoint;
   lastThroughpointFromCore.current = SVs.numericalThroughpoint;
+  fixed.current = !SVs.draggable || SVs.fixed;
 
   useEffect(() => {
 
@@ -61,15 +63,13 @@ export default React.memo(function Ray(props) {
       return;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + 7,
-      fixed,
+      fixed: fixed.current,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
@@ -77,7 +77,7 @@ export default React.memo(function Ray(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed,
+      highlight: !fixed.current,
       straightFirst: false,
     };
 
@@ -194,10 +194,19 @@ export default React.memo(function Ray(props) {
       ]
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
-      callAction({
-        action: actions.mouseDownOnRay
-      });
+      if (!fixed.current) {
+        callAction({
+          action: actions.rayFocused
+        });
+      }
 
+    });
+
+    newRayJXG.on('hit', function (e) {
+      dragged.current = false;
+      callAction({
+        action: actions.rayFocused
+      });
     });
 
     newRayJXG.on('keydown', function (e) {
@@ -241,6 +250,7 @@ export default React.memo(function Ray(props) {
   function deleteRayJXG() {
     rayJXG.current.off('drag');
     rayJXG.current.off('down');
+    rayJXG.current.off('hit');
     rayJXG.current.off('up');
     rayJXG.current.off('keyfocusout');
     rayJXG.current.off('keydown');
@@ -292,10 +302,8 @@ export default React.memo(function Ray(props) {
         // rayJXG.current.setAttribute({visible: false})
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      rayJXG.current.visProp.fixed = fixed;
-      rayJXG.current.visProp.highlight = !fixed;
+      rayJXG.current.visProp.fixed = fixed.current;
+      rayJXG.current.visProp.highlight = !fixed.current;
 
       let layer = 10 * SVs.layer + 7;
       let layerChanged = rayJXG.current.visProp.layer !== layer;

@@ -8,7 +8,7 @@ export default class Polyline extends GraphicalComponent {
     movePolyline: this.movePolyline.bind(this),
     finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
     polylineClicked: this.polylineClicked.bind(this),
-    mouseDownOnPolyline: this.mouseDownOnPolyline.bind(this),
+    polylineFocused: this.polylineFocused.bind(this),
   };
 
   static createAttributesObject() {
@@ -599,10 +599,10 @@ export default class Polyline extends GraphicalComponent {
 
   }
 
-  async mouseDownOnPolyline({ actionId }) {
+  async polylineFocused({ actionId }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
+      triggeringAction: "focus",
       componentName: this.componentName,
     })
 

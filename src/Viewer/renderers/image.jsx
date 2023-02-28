@@ -34,6 +34,9 @@ export default React.memo(function Image(props) {
   let rotationTransform = useRef(null);
   let lastRotate = useRef(SVs.rotate);
 
+  let fixed = useRef(false);
+  fixed.current = !SVs.draggable || SVs.fixed;
+
   const urlOrSource = (SVs.cid ? url : SVs.source) || "";
 
   let onChangeVisibility = isVisible => {
@@ -89,14 +92,12 @@ export default React.memo(function Image(props) {
 
   function createImageJXG() {
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
     //things to be passed to JSXGraph as attributes
     let jsxImageAttributes = {
       visible: !SVs.hidden,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + 0,
-      highlight: !fixed,
+      highlight: !fixed.current,
     };
 
 
@@ -197,6 +198,19 @@ export default React.memo(function Image(props) {
       dragged.current = false;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.imageFocused
+        });
+      }
+    });
+
+    newImageJXG.on('hit', function (e) {
+      pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
+      dragged.current = false;
+      callAction({
+        action: actions.imageFocused
+      });
     });
 
     newImageJXG.on('up', function (e) {
@@ -339,6 +353,7 @@ export default React.memo(function Image(props) {
   function deleteImageJXG() {
     imageJXG.current.off('drag');
     imageJXG.current.off('down');
+    imageJXG.current.off('hit');
     imageJXG.current.off('up');
     imageJXG.current.off('keyfocusout');
     imageJXG.current.off('keydown');
@@ -397,11 +412,9 @@ export default React.memo(function Image(props) {
         imageJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
 
-
-      imageJXG.current.visProp.highlight = !fixed;
-      imageJXG.current.visProp.fixed = fixed;
+      imageJXG.current.visProp.highlight = !fixed.current;
+      imageJXG.current.visProp.fixed = fixed.current;
 
       imageJXG.current.needsUpdate = true;
 

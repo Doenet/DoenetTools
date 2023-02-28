@@ -23,9 +23,11 @@ export default React.memo(function Circle(props) {
 
   let lastCenterFromCore = useRef(null);
   let throughAnglesFromCore = useRef(null);
+  let fixed = useRef(false);
 
   lastCenterFromCore.current = SVs.numericalCenter;
   throughAnglesFromCore.current = SVs.throughAngles;
+  fixed.current = !SVs.draggable || SVs.fixed;
 
   useEffect(() => {
 
@@ -59,7 +61,6 @@ export default React.memo(function Circle(props) {
       return null;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
     const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
     //things to be passed to JSXGraph as attributes
@@ -67,7 +68,7 @@ export default React.memo(function Circle(props) {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -80,7 +81,7 @@ export default React.memo(function Circle(props) {
       fillOpacity: SVs.selectedStyle.fillOpacity,
       highlightFillColor: fillColor,
       highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
-      highlight: !fixed,
+      highlight: !fixed.current,
     };
 
 
@@ -200,9 +201,11 @@ export default React.memo(function Circle(props) {
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
-      callAction({
-        action: actions.mouseDownOnCircle
-      });
+      if (!fixed.current) {
+        callAction({
+          action: actions.circleFocused
+        });
+      }
     });
 
     // hit is called by jsxgraph when focused in via keyboard
@@ -211,6 +214,9 @@ export default React.memo(function Circle(props) {
       centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
+      callAction({
+        action: actions.circleFocused
+      });
     });
 
     newCircleJXG.on('keydown', function (e) {
@@ -307,11 +313,9 @@ export default React.memo(function Circle(props) {
         // circleJXG.current.setAttribute({visible: false})
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
 
-
-      circleJXG.current.visProp.fixed = fixed;
-      circleJXG.current.visProp.highlight = !fixed;
+      circleJXG.current.visProp.fixed = fixed.current;
+      circleJXG.current.visProp.highlight = !fixed.current;
 
       let layer = 10 * SVs.layer + 5;
       let layerChanged = circleJXG.current.visProp.layer !== layer;

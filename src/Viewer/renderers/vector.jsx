@@ -28,9 +28,14 @@ export default React.memo(function Vector(props) {
   let previousWithLabel = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
+  let fixed = useRef(false);
+  let headDraggable = useRef(true);
+  let tailDraggable = useRef(true);
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
-
+  fixed.current = !SVs.draggable || SVs.fixed;
+  tailDraggable.current = SVs.tailDraggable && !SVs.fixed;
+  headDraggable.current = SVs.headDraggable && !SVs.fixed;
 
   useEffect(() => {
 
@@ -68,14 +73,13 @@ export default React.memo(function Vector(props) {
     }
 
     let layer = 10 * SVs.layer + 7;
-    let fixed = !SVs.draggable || SVs.fixed;
 
     //things to be passed to JSXGraph as attributes
     var jsxVectorAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      fixed,
+      fixed: fixed.current,
       layer,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -84,7 +88,7 @@ export default React.memo(function Vector(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed,
+      highlight: !fixed.current,
       lastArrow: { type: 1, size: 3, highlightSize: 3 },
     };
 
@@ -106,17 +110,15 @@ export default React.memo(function Vector(props) {
 
     // create invisible points at endpoints
     let tailPointAttributes = Object.assign({}, jsxPointAttributes);
-    let tailDraggable = SVs.tailDraggable && !SVs.fixed;
-    tailPointAttributes.visible = tailDraggable;
-    tailPointAttributes.fixed = !tailDraggable;
-    tailPointAttributes.highlight = tailDraggable;
+    tailPointAttributes.visible = tailDraggable.current;
+    tailPointAttributes.fixed = !tailDraggable.current;
+    tailPointAttributes.highlight = tailDraggable.current;
     let newPoint1JXG = board.create('point', endpoints[0], tailPointAttributes);
 
     let headPointAttributes = Object.assign({}, jsxPointAttributes);
-    let headDraggable = SVs.headDraggable && !SVs.fixed;
-    headPointAttributes.visible = headDraggable;
-    headPointAttributes.fixed = !headDraggable;
-    headPointAttributes.highlight = headDraggable;
+    headPointAttributes.visible = headDraggable.current;
+    headPointAttributes.fixed = !headDraggable.current;
+    headPointAttributes.highlight = headDraggable.current;
     let newPoint2JXG = board.create('point', endpoints[1], headPointAttributes);
 
 
@@ -226,10 +228,21 @@ export default React.memo(function Vector(props) {
       downOnPoint.current = 1;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      if (tailDraggable.current) {
+        callAction({
+          action: actions.vectorFocused
+        });
+      }
+    });
+
+    newPoint1JXG.on('hit', function (e) {
+      headBeingDragged.current = false;
+      tailBeingDragged.current = false;
       callAction({
-        action: actions.mouseDownOnVector
+        action: actions.vectorFocused
       });
     });
+
     newPoint2JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
@@ -237,8 +250,18 @@ export default React.memo(function Vector(props) {
       downOnPoint.current = 2;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      if (headDraggable.current) {
+        callAction({
+          action: actions.vectorFocused
+        });
+      }
+    });
+
+    newPoint2JXG.on('hit', function (e) {
+      headBeingDragged.current = false;
+      tailBeingDragged.current = false;
       callAction({
-        action: actions.mouseDownOnVector
+        action: actions.vectorFocused
       });
     });
 
@@ -254,8 +277,18 @@ export default React.memo(function Vector(props) {
       ];
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.vectorFocused
+        });
+      }
+    });
+
+    newVectorJXG.on('hit', function (e) {
+      headBeingDragged.current = false;
+      tailBeingDragged.current = false;
       callAction({
-        action: actions.mouseDownOnVector
+        action: actions.vectorFocused
       });
     });
 
@@ -389,6 +422,7 @@ export default React.memo(function Vector(props) {
 
     vectorJXG.current.off('drag');
     vectorJXG.current.off('down');
+    vectorJXG.current.off('hit');
     vectorJXG.current.off('up');
     vectorJXG.current.off('keyfocusout');
     vectorJXG.current.off('keydown');
@@ -398,6 +432,7 @@ export default React.memo(function Vector(props) {
 
     point1JXG.current.off('drag');
     point1JXG.current.off('down');
+    point1JXG.current.off('hit');
     point1JXG.current.off('up');
     point1JXG.current.off('keyfocusout');
     point1JXG.current.off('keydown');
@@ -406,6 +441,7 @@ export default React.memo(function Vector(props) {
 
     point2JXG.current.off('drag');
     point2JXG.current.off('down');
+    point2JXG.current.off('hit');
     point2JXG.current.off('up');
     point2JXG.current.off('keyfocusout');
     point2JXG.current.off('keydown');
@@ -469,10 +505,8 @@ export default React.memo(function Vector(props) {
 
       let visible = !SVs.hidden;
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      vectorJXG.current.visProp.fixed = fixed;
-      vectorJXG.current.visProp.highlight = !fixed;
+      vectorJXG.current.visProp.fixed = fixed.current;
+      vectorJXG.current.visProp.highlight = !fixed.current;
 
 
       if (validPoints) {
@@ -480,7 +514,7 @@ export default React.memo(function Vector(props) {
         vectorJXG.current.visPropCalc["visible"] = visible;
         // vectorJXG.current.setAttribute({visible: visible})
 
-        if (SVs.tailDraggable && !SVs.fixed) {
+        if (tailDraggable.current) {
           point1JXG.current.visProp["visible"] = visible;
           point1JXG.current.visPropCalc["visible"] = visible;
           point1JXG.current.visProp["fixed"] = false;
@@ -490,7 +524,7 @@ export default React.memo(function Vector(props) {
           point1JXG.current.visProp["fixed"] = true;
         }
 
-        if (SVs.headDraggable && !SVs.fixed) {
+        if (headDraggable.current) {
           point2JXG.current.visProp["visible"] = visible;
           point2JXG.current.visPropCalc["visible"] = visible;
           point2JXG.current.visProp["fixed"] = false;

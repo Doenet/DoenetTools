@@ -24,8 +24,10 @@ export default React.memo(function Polyline(props) {
   let jsxPointAttributes = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
-  lastPositionsFromCore.current = SVs.numericalVertices;
+  let fixed = useRef(false);
 
+  lastPositionsFromCore.current = SVs.numericalVertices;
+  fixed.current = !SVs.draggable || SVs.fixed;
 
 
   useEffect(() => {
@@ -70,15 +72,13 @@ export default React.memo(function Polyline(props) {
       }
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + 7,
-      fixed,
+      fixed: fixed.current,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
@@ -86,7 +86,7 @@ export default React.memo(function Polyline(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed,
+      highlight: !fixed.current,
       lineCap: "butt"
     };
 
@@ -100,7 +100,7 @@ export default React.memo(function Polyline(props) {
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 9,
     });
-    if (fixed || SVs.hidden || !validCoords) {
+    if (fixed.current || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
     }
     jsxPolylineAttributes.label = {
@@ -134,6 +134,7 @@ export default React.memo(function Polyline(props) {
       pointsJXG.current[i].on('keyfocusout', () => keyFocusOutHandler(i));
       pointsJXG.current[i].on('keydown', (e) => keyDownHandler(i, e));
       pointsJXG.current[i].on('down', (e) => downHandler(i, e));
+      pointsJXG.current[i].on('hit', (e) => hitHandler());
     }
 
     newPolylineJXG.on('drag', e => dragHandler(-1, e));
@@ -141,6 +142,7 @@ export default React.memo(function Polyline(props) {
     newPolylineJXG.on('keyfocusout', () => keyFocusOutHandler(-1));
     newPolylineJXG.on('keydown', (e) => keyDownHandler(-1, e));
     newPolylineJXG.on('down', e => downHandler(-1, e));
+    newPolylineJXG.on('hit', e => hitHandler());
 
     previousNVertices.current = SVs.nVertices;
 
@@ -164,6 +166,7 @@ export default React.memo(function Polyline(props) {
 
     polylineJXG.current.off('drag');
     polylineJXG.current.off('down');
+    polylineJXG.current.off('hit');
     polylineJXG.current.off('up');
     polylineJXG.current.off('keyfocusout');
     polylineJXG.current.off('keydown');
@@ -173,6 +176,7 @@ export default React.memo(function Polyline(props) {
     for (let i = 0; i < SVs.nVertices; i++) {
       pointsJXG.current[i].off('drag');
       pointsJXG.current[i].off('down');
+      pointsJXG.current[i].off('hit');
       pointsJXG.current[i].off('up');
       pointsJXG.current[i].off('keyfocusout');
       pointsJXG.current[i].off('keydown');
@@ -260,22 +264,32 @@ export default React.memo(function Polyline(props) {
     pointerAtDown.current = [e.x, e.y];
 
     if (i === -1) {
-      if (downOnPoint.current === null) {
+      if (downOnPoint.current === null && !fixed.current) {
         // Note: counting on fact that down on polyline itself will trigger after down on points
         callAction({
-          action: actions.mouseDownOnPolyline
+          action: actions.polylineFocused
         });
       }
       pointsAtDown.current = polylineJXG.current.points.map(x => [...x.scrCoords])
     } else {
-      callAction({
-        action: actions.mouseDownOnPolyline
-      });
+      if (!fixed.current) {
+        callAction({
+          action: actions.polylineFocused
+        });
+      }
       downOnPoint.current = i;
     }
 
     pointerIsDown.current = true;
     pointerMovedSinceDown.current = false;
+  }
+
+
+  function hitHandler() {
+    draggedPoint.current = null
+    callAction({
+      action: actions.polylineFocused
+    });
   }
 
   function upHandler(i) {
@@ -389,10 +403,8 @@ export default React.memo(function Polyline(props) {
         }
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      polylineJXG.current.visProp.fixed = fixed;
-      polylineJXG.current.visProp.highlight = !fixed;
+      polylineJXG.current.visProp.fixed = fixed.current;
+      polylineJXG.current.visProp.highlight = !fixed.current;
 
       let polylineLayer = 10 * SVs.layer + 7;
       let layerChanged = polylineJXG.current.visProp.layer !== polylineLayer;
@@ -413,7 +425,8 @@ export default React.memo(function Polyline(props) {
 
           pointsJXG.current[i].on('drag', e => dragHandler(i, e));
           pointsJXG.current[i].on('up', e => upHandler(i));
-          pointsJXG.current[i].on('down', e => draggedPoint.current = null);
+          pointsJXG.current[i].on('down', e => downHandler(i, e));
+          pointsJXG.current[i].on('hit', e => hitHandler());
           pointsJXG.current[i].on('keyfocusout', e => keyFocusOutHandler(i));
           pointsJXG.current[i].on('keydown', e => keyDownHandler(i, e));
         }
@@ -422,6 +435,7 @@ export default React.memo(function Polyline(props) {
           let pt = pointsJXG.current.pop()
           pt.off('drag');
           pt.off('down');
+          pt.off('hit');
           pt.off('up');
           pt.off('keyfocusout');
           pt.off('keydown');
@@ -452,7 +466,7 @@ export default React.memo(function Polyline(props) {
         polylineJXG.current.visPropCalc["visible"] = visible;
         // polylineJXG.current.setAttribute({visible: visible})
 
-        let pointsVisible = visible && !fixed;
+        let pointsVisible = visible && !fixed.current;
 
         for (let i = 0; i < SVs.nVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = pointsVisible;

@@ -24,8 +24,10 @@ export default React.memo(function LineSegment(props) {
   let downOnPoint = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
+  let fixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
+  fixed.current = !SVs.draggable || SVs.fixed;
 
   useEffect(() => {
 
@@ -62,7 +64,6 @@ export default React.memo(function LineSegment(props) {
       return;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
     //things to be passed to JSXGraph as attributes
@@ -70,7 +71,7 @@ export default React.memo(function LineSegment(props) {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withlabel,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -79,7 +80,7 @@ export default React.memo(function LineSegment(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed,
+      highlight: !fixed.current,
     };
 
     if (withlabel) {
@@ -139,7 +140,7 @@ export default React.memo(function LineSegment(props) {
       layer: 10 * SVs.layer + 8,
       showInfoBox: SVs.showCoordsWhenDragging,
     });
-    if (!SVs.draggable || SVs.fixed) {
+    if (fixed.current) {
       jsxPointAttributes.visible = false;
     }
 
@@ -252,8 +253,16 @@ export default React.memo(function LineSegment(props) {
       downOnPoint.current = 1;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.lineSegmentFocused
+        });
+      }
+    });
+    point1JXG.current.on('hit', (e) => {
+      draggedPoint.current = null;
       callAction({
-        action: actions.mouseDownOnLineSegment
+        action: actions.lineSegmentFocused
       });
     });
     point2JXG.current.on('down', (e) => {
@@ -262,8 +271,16 @@ export default React.memo(function LineSegment(props) {
       downOnPoint.current = 2;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.lineSegmentFocused
+        });
+      }
+    });
+    point2JXG.current.on('hit', (e) => {
+      draggedPoint.current = null;
       callAction({
-        action: actions.mouseDownOnLineSegment
+        action: actions.lineSegmentFocused
       });
     });
     lineSegmentJXG.current.on('down', function (e) {
@@ -276,12 +293,18 @@ export default React.memo(function LineSegment(props) {
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
 
-      if (downOnPoint.current === null) {
+      if (downOnPoint.current === null && !fixed.current) {
         // Note: counting on fact that down on line segment itself will trigger after down on points
         callAction({
-          action: actions.mouseDownOnLineSegment
+          action: actions.lineSegmentFocused
         })
       }
+    });
+    lineSegmentJXG.current.on('hit', (e) => {
+      draggedPoint.current = null;
+      callAction({
+        action: actions.lineSegmentFocused
+      });
     });
 
 
@@ -440,6 +463,7 @@ export default React.memo(function LineSegment(props) {
   function deleteLineSegmentJXG() {
     lineSegmentJXG.current.off('drag');
     lineSegmentJXG.current.off('down');
+    lineSegmentJXG.current.off('hit');
     lineSegmentJXG.current.off('up');
     lineSegmentJXG.current.off('keydown');
     lineSegmentJXG.current.off('keyfocusout');
@@ -448,6 +472,7 @@ export default React.memo(function LineSegment(props) {
 
     point1JXG.current.off('drag');
     point1JXG.current.off('down');
+    point1JXG.current.off('hit');
     point1JXG.current.off('up');
     point1JXG.current.off('keydown');
     point1JXG.current.off('keyfocusout');
@@ -456,6 +481,7 @@ export default React.memo(function LineSegment(props) {
 
     point2JXG.current.off('drag');
     point2JXG.current.off('down');
+    point2JXG.current.off('hit');
     point2JXG.current.off('up');
     point2JXG.current.off('keydown');
     point2JXG.current.off('keyfocusout');
@@ -508,10 +534,8 @@ export default React.memo(function LineSegment(props) {
         // lineSegmentJXG.current.setAttribute({visible: false})
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      lineSegmentJXG.current.visProp.fixed = fixed;
-      lineSegmentJXG.current.visProp.highlight = !fixed;
+      lineSegmentJXG.current.visProp.fixed = fixed.current;
+      lineSegmentJXG.current.visProp.highlight = !fixed.current;
 
       let layer = 10 * SVs.layer + 7;
       let layerChanged = lineSegmentJXG.current.visProp.layer !== layer;

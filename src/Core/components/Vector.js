@@ -9,7 +9,7 @@ export default class Vector extends GraphicalComponent {
   actions = {
     moveVector: this.moveVector.bind(this),
     vectorClicked: this.vectorClicked.bind(this),
-    mouseDownOnVector: this.mouseDownOnVector.bind(this),
+    vectorFocused: this.vectorFocused.bind(this),
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";
@@ -2091,10 +2091,10 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async mouseDownOnVector({ actionId }) {
+  async vectorFocused({ actionId }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
+      triggeringAction: "focus",
       componentName: this.componentName,
     })
 

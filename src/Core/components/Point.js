@@ -1236,10 +1236,10 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  async mouseDownOnPoint({ actionId }) {
+  async pointFocused({ actionId }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
+      triggeringAction: "focus",
       componentName: this.componentName,
     })
 
@@ -1252,7 +1252,7 @@ export default class Point extends GraphicalComponent {
     movePoint: this.movePoint.bind(this),
     switchPoint: this.switchPoint.bind(this),
     pointClicked: this.pointClicked.bind(this),
-    mouseDownOnPoint: this.mouseDownOnPoint.bind(this),
+    pointFocused: this.pointFocused.bind(this),
   };
 
 }

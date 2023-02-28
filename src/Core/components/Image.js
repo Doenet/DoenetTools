@@ -541,10 +541,22 @@ export default class Image extends BlockComponent {
 
   }
 
+  async imageFocused({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "focus",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
   actions = {
     moveImage: this.moveImage.bind(this),
     recordVisibilityChange: this.recordVisibilityChange.bind(this),
     imageClicked: this.imageClicked.bind(this),
+    imageFocused: this.imageFocused.bind(this),
   }
 
 }

@@ -26,8 +26,12 @@ export default React.memo(function Point(props) {
   let calculatedY = useRef(null);
 
   let lastPositionFromCore = useRef(null);
+  let fixed = useRef(false);
+  let switchable = useRef(false);
 
   lastPositionFromCore.current = SVs.numericalXs;
+  fixed.current = !SVs.draggable || SVs.fixed;
+  switchable.current = SVs.switchable && !SVs.fixed;
 
   const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
 
@@ -39,6 +43,7 @@ export default React.memo(function Point(props) {
       if (pointJXG.current !== null) {
         shadowPointJXG.current.off('drag');
         shadowPointJXG.current.off('down');
+        shadowPointJXG.current.off('hit');
         shadowPointJXG.current.off('up');
         shadowPointJXG.current.off('keyfocusout');
         shadowPointJXG.current.off('keydown');
@@ -67,7 +72,6 @@ export default React.memo(function Point(props) {
     let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
     let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
 
-    let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
     //things to be passed to JSXGraph as attributes
@@ -85,7 +89,7 @@ export default React.memo(function Point(props) {
       highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
       size: normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle),
       face: normalizeStyle(SVs.selectedStyle.markerStyle),
-      highlight: !fixed
+      highlight: !fixed.current
     };
 
 
@@ -150,7 +154,7 @@ export default React.memo(function Point(props) {
       }
     }
 
-    if (fixed) {
+    if (fixed.current) {
       jsxPointAttributes.showInfoBox = false;
     } else {
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
@@ -171,7 +175,7 @@ export default React.memo(function Point(props) {
 
     let shadowPointAttributes = { ...jsxPointAttributes };
     shadowPointAttributes.layer--;
-    shadowPointAttributes.fixed = fixed;
+    shadowPointAttributes.fixed = fixed.current;
     shadowPointAttributes.showInfoBox = false;
     shadowPointAttributes.withlabel = false;
     shadowPointAttributes.fillOpacity = 0;
@@ -192,8 +196,17 @@ export default React.memo(function Point(props) {
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
 
+      if (!fixed.current) {
+        callAction({
+          action: actions.pointFocused
+        });
+      }
+    });
+
+    newShadowPointJXG.on('hit', function (e) {
+      dragged.current = false;
       callAction({
-        action: actions.mouseDownOnPoint
+        action: actions.pointFocused
       });
     });
 
@@ -208,10 +221,7 @@ export default React.memo(function Point(props) {
         });
         dragged.current = false;
       } else if (!pointerMovedSinceDown.current) {
-        if (SVs.switchable && !SVs.fixed) {
-
-          // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
-          // as useEffect will not be rerun
+        if (switchable.current) {
           callAction({
             action: actions.switchPoint
           });
@@ -322,10 +332,7 @@ export default React.memo(function Point(props) {
           dragged.current = false;
         }
 
-        if (SVs.switchable && !SVs.fixed) {
-
-          // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
-          // as useEffect will not be rerun
+        if (switchable.current) {
           callAction({
             action: actions.switchPoint
           });
@@ -417,11 +424,9 @@ export default React.memo(function Point(props) {
         pointJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      pointJXG.current.visProp.highlight = !fixed;
-      shadowPointJXG.current.visProp.highlight = !fixed;
-      shadowPointJXG.current.visProp.fixed = fixed;
+      pointJXG.current.visProp.highlight = !fixed.current;
+      shadowPointJXG.current.visProp.highlight = !fixed.current;
+      shadowPointJXG.current.visProp.fixed = fixed.current;
 
       if (pointJXG.current.visProp.strokecolor !== strokeColor) {
         pointJXG.current.visProp.strokecolor = strokeColor;

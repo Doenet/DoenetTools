@@ -24,8 +24,12 @@ export default React.memo(function Line(props) {
   let pointCoords = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
+  let fixed = useRef(false);
+  let switchable = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalPoints;
+  fixed.current = !SVs.draggable || SVs.fixed;
+  switchable.current = SVs.switchable && !SVs.fixed;
 
 
   useEffect(() => {
@@ -61,7 +65,6 @@ export default React.memo(function Line(props) {
       return;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
     //things to be passed to JSXGraph as attributes
@@ -69,7 +72,7 @@ export default React.memo(function Line(props) {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withlabel,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -78,7 +81,7 @@ export default React.memo(function Line(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
-      highlight: !fixed,
+      highlight: !fixed.current,
     };
 
     if (withlabel) {
@@ -198,7 +201,7 @@ export default React.memo(function Line(props) {
         })
       } else if (!pointerMovedSinceDown.current) {
 
-        if (SVs.switchable && !SVs.fixed) {
+        if (switchable.current) {
           callAction({
             action: actions.switchLine,
           })
@@ -236,8 +239,22 @@ export default React.memo(function Line(props) {
       ]
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.lineFocused
+        });
+      }
+
+    })
+
+    newLineJXG.on('hit', function (e) {
+      dragged.current = false;
+      pointsAtDown.current = [
+        [...newLineJXG.point1.coords.scrCoords],
+        [...newLineJXG.point2.coords.scrCoords]
+      ]
       callAction({
-        action: actions.mouseDownOnLine
+        action: actions.lineFocused
       });
 
     })
@@ -256,7 +273,7 @@ export default React.memo(function Line(props) {
           })
           dragged.current = false;
         }
-        if (SVs.switchable && !SVs.fixed) {
+        if (switchable.current) {
           callAction({
             action: actions.switchLine,
           })
@@ -293,6 +310,7 @@ export default React.memo(function Line(props) {
   function deleteLineJXG() {
     lineJXG.current.off('drag');
     lineJXG.current.off('down');
+    lineJXG.current.off('hit');
     lineJXG.current.off('up');
     lineJXG.current.off('keyfocusout');
     lineJXG.current.off('keydown');
@@ -347,10 +365,8 @@ export default React.memo(function Line(props) {
         // lineJXG.current.setAttribute({visible: false})
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      lineJXG.current.visProp.fixed = fixed;
-      lineJXG.current.visProp.highlight = !fixed;
+      lineJXG.current.visProp.fixed = fixed.current;
+      lineJXG.current.visProp.highlight = !fixed.current;
 
       let layer = 10 * SVs.layer + 7;
       let layerChanged = lineJXG.current.visProp.layer !== layer;

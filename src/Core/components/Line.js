@@ -9,7 +9,7 @@ export default class Line extends GraphicalComponent {
     moveLine: this.moveLine.bind(this),
     switchLine: this.switchLine.bind(this),
     lineClicked: this.lineClicked.bind(this),
-    mouseDownOnLine: this.mouseDownOnLine.bind(this),
+    lineFocused: this.lineFocused.bind(this),
   };
 
 
@@ -1690,10 +1690,10 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  async mouseDownOnLine({ actionId }) {
+  async lineFocused({ actionId }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
+      triggeringAction: "focus",
       componentName: this.componentName,
     })
 
