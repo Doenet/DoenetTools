@@ -8,6 +8,7 @@ import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
+import RouterLogo from '../RouterLogo';
 
 
 const SectionText = styled.div`
@@ -167,8 +168,7 @@ const SignInButtonContainer = styled.div`
 `
 
 const Header = styled.header`
-  background-color: #b61515;
-  /* background-color: #fff; */
+  background-color: #fff;
   color: #000;
   height: 40px;
   position: fixed;
@@ -200,6 +200,15 @@ const HeaderSection = styled.div`
         height: 300px;
         flex-direction: column-reverse;
       }
+`
+const Branding = styled.span`
+  margin: 4px 0px 4px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 110px;
+  cursor: default;
+  font-size: 16px;
 `
 
 export default function HomePage(props) {
@@ -255,7 +264,9 @@ export default function HomePage(props) {
   //  console.log("favorites",favorites)
   return <>
   <Header>
-  <div>Logo</div>
+    <Branding>
+    <RouterLogo /><p>Doenet</p>
+    </Branding>
   <div>menus</div>
   <SignInButtonContainer>{signInButton}</SignInButtonContainer>
 </Header>
