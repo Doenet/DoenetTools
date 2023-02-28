@@ -1,5 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { vectorOperators } from '../utils/math';
 
 export default class FunctionIterates extends InlineComponent {
   static componentType = "functionIterates";
@@ -117,7 +118,7 @@ export default class FunctionIterates extends InlineComponent {
           !functionComp || dependencyValues.nDimensions === 0 ||
           !(dependencyValues.nDimensions === 1 ||
             Array.isArray(initialValue.tree)
-            && ["vector", "tuple"].includes(initialValue.tree[0])
+            && vectorOperators.includes(initialValue.tree[0])
             && initialValue.tree.length === dependencyValues.nDimensions + 1
           )
         ) {
