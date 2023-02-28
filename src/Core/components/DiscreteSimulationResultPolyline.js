@@ -1,5 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
+import { vectorOperators } from '../utils/math';
 
 export default class DiscreteSimulationResultPolyline extends GraphicalComponent {
   constructor(args) {
@@ -107,7 +108,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           setValue: {
             allIterates: dependencyValues.allIteratesSub.filter(x =>
               Number.isFinite(x.tree) ||
-              (Array.isArray(x.tree) && ["tuple", "vector"].includes(x.tree[0]) && x.tree.slice(1).every(Number.isFinite))
+              (Array.isArray(x.tree) && vectorOperators.includes(x.tree[0]) && x.tree.slice(1).every(Number.isFinite))
             )
           }
         }

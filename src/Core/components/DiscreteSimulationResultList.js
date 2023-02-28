@@ -1,4 +1,4 @@
-import { roundForDisplay } from '../utils/math';
+import { roundForDisplay, vectorOperators } from '../utils/math';
 import BlockComponent from './abstract/BlockComponent';
 
 
@@ -210,7 +210,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
         if (dependencyValues.allIterates.length > 0 &&
           Array.isArray(dependencyValues.allIterates[0].tree) &&
-          ["vector", "tuple"].includes(dependencyValues.allIterates[0].tree[0])
+          vectorOperators.includes(dependencyValues.allIterates[0].tree[0])
         ) {
           nComponents = dependencyValues.allIterates[0].tree.length - 1;
           haveVector = true;

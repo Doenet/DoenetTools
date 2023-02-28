@@ -4799,6 +4799,21 @@ export default class Core {
         args.usedDefaultByKey = usedDefaultByKey;
 
         args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
+
+        // only include array keys that exist
+        let newDesiredStateVariableValues = {};
+        for (let vName in args.desiredStateVariableValues) {
+          newDesiredStateVariableValues[vName] = {}
+          for (let key in args.desiredStateVariableValues[vName]) {
+            if (args.arrayKeys.includes(key)) {
+              newDesiredStateVariableValues[vName][key] = args.desiredStateVariableValues[vName][key];
+
+            }
+          }
+        }
+        args.desiredStateVariableValues = newDesiredStateVariableValues;
+
+
         // args.arraySize = stateVarObj.arraySize;
 
         // let arrayKeysToInvert = [];

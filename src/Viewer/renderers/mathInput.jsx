@@ -23,7 +23,7 @@ import { rendererState } from './useDoenetRenderer';
 import './mathInput.css';
 
 // Moved most of checkWorkStyle styling into Button
-const Button = styled.button `
+const Button = styled.button`
   position: relative;
   width: 24px;
   height: 24px;
@@ -219,7 +219,7 @@ export default function MathInput(props) {
     mathInputWrapperCursor = 'not-allowed';
   }
 
-  if(textareaRef.current && textareaRef.current.disabled !== SVs.disabled) { // Update the mathInput ref's disabled state
+  if (textareaRef.current && textareaRef.current.disabled !== SVs.disabled) { // Update the mathInput ref's disabled state
     textareaRef.current.disabled = SVs.disabled;
   }
 
@@ -321,7 +321,7 @@ export default function MathInput(props) {
       <a name={id} />
 
       <span id={id}>
-        <div className="mathInputWrapper" style={{cursor: mathInputWrapperCursor}}>
+        <div className="mathInputWrapper" style={{ cursor: mathInputWrapperCursor }}>
           <EditableMathField
             style={mathInputStyle}
             latex={rendererValue.current}
@@ -331,12 +331,13 @@ export default function MathInput(props) {
               autoOperatorNames:
                 'arg deg det dim exp gcd hom ker lg lim ln log max min' +
                 ' Pr' +
-                ' sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth' +
-                ' sin cos tan sec cosec csc cotan cot ctg' +
-                ' arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg' +
-                ' sinh cosh tanh sech cosech csch cotanh coth ctgh' +
-                ' arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh' +
-                ' arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh',
+                ' cos cosh acos acosh arccos arccosh' +
+                ' cot coth acot acoth arccot arccoth' +
+                ' csc csch acsc acsch arccsc arccsch' +
+                ' sec sech asec asech arcsec arcsech' +
+                ' sin sinh asin asinh arcsin arcsinh' +
+                ' tan tanh atan atanh arctan arctanh' +
+                ' nPr nCr',
               handlers: {
                 enter: handlePressEnter,
               },

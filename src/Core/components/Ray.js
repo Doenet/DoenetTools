@@ -1,6 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, vectorOperators } from '../utils/math';
 
 export default class Ray extends GraphicalComponent {
   constructor(args) {
@@ -326,7 +326,7 @@ export default class Ray extends GraphicalComponent {
             nDimDirection = dependencyValues.directionAttr.stateValues.nDimensions;
           } else if (dependencyValues.directionShadow) {
             let directionTree = dependencyValues.directionShadow.tree;
-            if (Array.isArray(directionTree) && ["tuple", "vector"].includes(directionTree[0])) {
+            if (Array.isArray(directionTree) && vectorOperators.includes(directionTree[0])) {
               nDimDirection = directionTree.length - 1;
             } else {
               nDimDirection = 2;
@@ -410,7 +410,7 @@ export default class Ray extends GraphicalComponent {
             nDimThrough = dependencyValues.throughAttr.stateValues.nDimensions;
           } else if (dependencyValues.throughShadow) {
             let throughTree = dependencyValues.throughShadow.tree;
-            if (Array.isArray(throughTree) && ["tuple", "vector"].includes(throughTree[0])) {
+            if (Array.isArray(throughTree) && vectorOperators.includes(throughTree[0])) {
               nDimThrough = throughTree.length - 1;
             } else {
               nDimThrough = 2;
@@ -494,7 +494,7 @@ export default class Ray extends GraphicalComponent {
             nDimEndpoint = dependencyValues.endpointAttr.stateValues.nDimensions;
           } else if (dependencyValues.endpointShadow) {
             let endpointTree = dependencyValues.endpointShadow.tree;
-            if (Array.isArray(endpointTree) && ["tuple", "vector"].includes(endpointTree[0])) {
+            if (Array.isArray(endpointTree) && vectorOperators.includes(endpointTree[0])) {
               nDimEndpoint = endpointTree.length - 1;
             } else {
               nDimEndpoint = 2;

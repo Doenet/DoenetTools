@@ -841,6 +841,27 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
       nonMathCodes, foundNonMath,
       init: false
     }))]
+  } else if (operator === "angle") {
+    let newOperands = [];
+    for (let op of operands) {
+      if (typeof op === "string" && !foundNonMath) {
+        let splitResult = fromTextSplit(op).tree;
+        if (splitResult[0] === "*") {
+          newOperands.push(...splitResult.slice(1))
+        } else {
+          newOperands.push(splitResult)
+        }
+      } else {
+        newOperands.push(
+          splitSymbolsIfMath({
+            logicTree: op,
+            nonMathCodes, foundNonMath,
+            init: false
+          })
+        )
+      }
+    }
+    return [operator, ...newOperands];
   } else {
     return [operator, ...operands.map(x => splitSymbolsIfMath({
       logicTree: x,

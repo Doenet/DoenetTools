@@ -5923,6 +5923,59 @@ describe('Function Tag Tests', function () {
     })
   })
 
+  it('3D vector-valued function of two variables, as alt vector', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="s t">⟨s^2t^3, s^3t^2, st⟩</function>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
+
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
+      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 2);
+      // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      // let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
+      // let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      // let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
+      // let symbolicf3 = (stateVariables['/_function1'].stateValues.symbolicfs)[2];
+
+      expect(f1(-5, 2)).closeTo(200, 1E-12);
+      expect(f2(-5, 2)).closeTo(-500, 1E-12);
+      expect(f3(-5, 2)).closeTo(-10, 1E-12);
+      expect(f1(3, -4)).closeTo(-576, 1E-12);
+      expect(f2(3, -4)).closeTo(432, 1E-12);
+      expect(f3(3, -4)).closeTo(-12, 1E-12);
+      // expect(numericalf1(-5, 2)).closeTo(200, 1E-12);
+      // expect(numericalf2(-5, 2)).closeTo(-500, 1E-12);
+      // expect(numericalf3(-5, 2)).closeTo(-10, 1E-12);
+      // expect(numericalf1(3, -4)).closeTo(-576, 1E-12);
+      // expect(numericalf2(3, -4)).closeTo(432, 1E-12);
+      // expect(numericalf3(3, -4)).closeTo(-12, 1E-12);
+      // expect(symbolicf1(-5, 2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
+      // expect(symbolicf2(-5, 2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
+      // expect(symbolicf3(-5, 2).equals(me.fromText('(-5)*2'))).eq(true);
+      // expect(symbolicf1(3, -4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
+      // expect(symbolicf2(3, -4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
+      // expect(symbolicf3(3, -4).equals(me.fromText('3*(-4)'))).eq(true);
+      // expect(symbolicf1('z', 'w').equals(me.fromText('z^2w^3'))).eq(true);
+      // expect(symbolicf2('z', 'w').equals(me.fromText('z^3w^2'))).eq(true);
+      // expect(symbolicf3('z', 'w').equals(me.fromText('zw'))).eq(true);
+
+
+    })
+  })
+
   it('copy function and overwrite symbolic attribute', () => {
     cy.window().then(async (win) => {
       win.postMessage({

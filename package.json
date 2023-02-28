@@ -68,7 +68,7 @@
     "jsxgraph": "^1.5.0",
     "lodash.debounce": "^4.0.8",
     "lorem-ipsum": "^2.0.4",
-    "math-expressions": "^2.0.0-alpha52",
+    "math-expressions": "^2.0.0-alpha58",
     "nanoid": "^3.1.31",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.3",
