@@ -107,6 +107,14 @@ export default class Image extends BlockComponent {
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
     }
 
+    attributes.rotate = {
+      createComponentOfType: "number",
+      createStateVariable: "rotate",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true,
+    }
+
     attributes.styleNumber.defaultValue = 0;
 
     return attributes;

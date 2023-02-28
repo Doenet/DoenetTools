@@ -1534,8 +1534,8 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x'].stateValues.value).eq(1);
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([1,2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1,2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([1, 2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
@@ -1565,14 +1565,14 @@ describe('AnimateFromSequence Tag Tests', function () {
       lastValue1 = stateVariables['/x'].stateValues.value;
       expect(lastValue1 === 5 || lastValue1 === 6).be.true;
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, 2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, 2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 2, 3`)
       cy.get('#\\/p2').should('have.text', `${lastValue1}, 2, 3`)
-  
+
 
     })
 
@@ -1608,8 +1608,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(lastValue2 === 7 || lastValue2 === 8).be.true;
 
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,lastValue2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,lastValue2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, lastValue2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, lastValue2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
@@ -1620,7 +1620,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click().then(()=> {
+    cy.get(`#\\/b`).click().then(() => {
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 9, 3`)
       cy.get('#\\/p2').should('have.text', `${lastValue1}, 9, 3`)
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 10, 3`)
@@ -1653,8 +1653,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       lastValue2 = stateVariables['/nl'].stateValues.numbers[1];
       expect(lastValue2 === 1 || lastValue2 === 2).be.true;
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,lastValue2,lastValue3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,lastValue2,lastValue3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, lastValue2, lastValue3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, lastValue2, lastValue3]);
 
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
@@ -1697,8 +1697,8 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x'].stateValues.value).eq(1);
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([1,2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1,2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([1, 2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
@@ -1728,14 +1728,14 @@ describe('AnimateFromSequence Tag Tests', function () {
       lastValue1 = stateVariables['/x'].stateValues.value;
       expect(lastValue1 === 5 || lastValue1 === 6).be.true;
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, 2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, 2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 2, 3`)
       cy.get('#\\/p2').should('have.text', `${lastValue1}, 2, 3`)
-  
+
 
     })
 
@@ -1771,8 +1771,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(lastValue2 === 7 || lastValue2 === 8).be.true;
 
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,lastValue2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,lastValue2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, lastValue2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, lastValue2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
@@ -1783,7 +1783,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click().then(()=> {
+    cy.get(`#\\/b`).click().then(() => {
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 9, 3`)
       cy.get('#\\/p2').should('have.text', `${lastValue1}, 9, 3`)
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 10, 3`)
@@ -1816,8 +1816,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       lastValue2 = stateVariables['/nl'].stateValues.numbers[1];
       expect(lastValue2 === 1 || lastValue2 === 2).be.true;
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,lastValue2,lastValue3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,lastValue2,lastValue3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, lastValue2, lastValue3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, lastValue2, lastValue3]);
 
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
@@ -1863,8 +1863,8 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x'].stateValues.value).eq(1);
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([1,2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1,2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([1, 2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
@@ -1894,14 +1894,14 @@ describe('AnimateFromSequence Tag Tests', function () {
       lastValue1 = stateVariables['/x'].stateValues.value;
       expect(lastValue1 === 5 || lastValue1 === 6).be.true;
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, 2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, 2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 2, 3`)
       cy.get('#\\/p2').should('have.text', `${lastValue1}, 2, 3`)
-  
+
 
     })
 
@@ -1937,8 +1937,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(lastValue2 === 7 || lastValue2 === 8).be.true;
 
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,lastValue2,3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,lastValue2,3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, lastValue2, 3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, lastValue2, 3]);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
@@ -1949,7 +1949,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click().then(()=> {
+    cy.get(`#\\/b`).click().then(() => {
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 9, 3`)
       cy.get('#\\/p2').should('have.text', `${lastValue1}, 9, 3`)
       cy.get('#\\/p1').should('have.text', `${lastValue1}, 10, 3`)
@@ -1982,8 +1982,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       lastValue2 = stateVariables['/nl'].stateValues.numbers[1];
       expect(lastValue2 === 1 || lastValue2 === 2).be.true;
 
-      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1,lastValue2,lastValue3]);
-      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1,lastValue2,lastValue3]);
+      expect(stateVariables['/nl'].stateValues.numbers).eqls([lastValue1, lastValue2, lastValue3]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([lastValue1, lastValue2, lastValue3]);
 
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
@@ -1993,6 +1993,36 @@ describe('AnimateFromSequence Tag Tests', function () {
 
 
     })
+
+  })
+
+  it('animation stops when triggered by its own variable', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <number name="t">1</number>
+  <animateFromSequence name="timeAnimation" target="t" from="1" to="100" 
+  animationOn="true" animationMode="increase once" animationInterval='100'/>
+
+  <updateValue triggerWhen="$t > 2" target="timeAnimation.animationOn"
+   newValue="false" type="boolean" />
+
+  <boolean name="isOn" copySource="timeAnimation.animationOn" />
+
+
+  `}, "*");
+    });
+
+    cy.get("#\\/isOn").should('have.text', 'true');
+    cy.get('#\\/t').should('have.text', '1');
+    cy.get('#\\/t').should('have.text', '2');
+    cy.get('#\\/t').should('have.text', '3');
+    cy.get("#\\/isOn").should('have.text', 'false');
+
+    cy.wait(500);
+
+    cy.get('#\\/t').should('have.text', '3');
+    cy.get("#\\/isOn").should('have.text', 'false');
 
   })
 

@@ -16,7 +16,7 @@ import styled from 'styled-components';
 //     }
 //   `;
 
-const RefButton = styled.button `
+const RefButton = styled.button`
   position: relative;
   height: 24px;
   display: inline-block;
@@ -87,6 +87,8 @@ export default React.memo(function Ref(props) {
         url = `tool=editor&${url}`;
       }
       url = `/public?${url}`
+    } else if(pageToolView.page === "placementexam") {
+      url = `?tool=exam&${url}`
     } else {
       url = `?tool=assignment&${url}`
     }
@@ -128,16 +130,16 @@ export default React.memo(function Ref(props) {
 
 
   if (SVs.createButton) {
-    if (externalUri) {
+    if (targetForATag === "_blank") {
       return <span id={id}><a name={id} />
-        <RefButton id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</RefButton>
+        <RefButton id={id + "_button"} onClick={() => window.open(url, targetForATag)} disabled={SVs.disabled}>{SVs.linkText}</RefButton>
       </span>;
     } else {
       return <span id={id}><a name={id} />
         <RefButton id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</RefButton>
       </span>;
     }
-    
+
   } else {
     if (haveValidTarget) {
 
@@ -145,8 +147,10 @@ export default React.memo(function Ref(props) {
         // for some reason, if url = "#", the <Link>, below, causes a refresh
         // as it removes the # from the url.  So we use a <a> directly in this case.
         console.log('first case');
-        return <a style={{color: 'var(--mainBlue)',
-          borderRadius: '5px'}} target={targetForATag} id={name} name={name} href={url} >{linkContent}</a>
+        return <a style={{
+          color: 'var(--mainBlue)',
+          borderRadius: '5px'
+        }} target={targetForATag} id={name} name={name} href={url} >{linkContent}</a>
 
       } else {
 
@@ -154,10 +158,12 @@ export default React.memo(function Ref(props) {
         let stateObj = { fromLink: true }
         Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer?.[scrollAttribute], enumerable: true });
         console.log('second case');
-        return <Link 
-        style={{color: 'var(--mainBlue)',
-        borderRadius: '5px'}}
-        target={targetForATag} id={id} name={id} to={url} state={stateObj} >{linkContent}</Link>
+        return <Link
+          style={{
+            color: 'var(--mainBlue)',
+            borderRadius: '5px'
+          }}
+          target={targetForATag} id={id} name={id} to={url} state={stateObj} >{linkContent}</Link>
 
       }
     } else {

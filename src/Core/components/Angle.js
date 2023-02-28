@@ -78,6 +78,14 @@ export default class Angle extends GraphicalComponent {
       public: true,
     };
 
+    attributes.emphasizeRightAngle = {
+      createComponentOfType: "boolean",
+      createStateVariable: "emphasizeRightAngle",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    }
+
     return attributes;
   }
 

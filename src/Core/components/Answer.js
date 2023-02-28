@@ -5,6 +5,7 @@ import { serializedComponentsReplacer, serializedComponentsReviver } from '../ut
 import sha1 from 'crypto-js/sha1';
 import Base64 from 'crypto-js/enc-base64';
 import stringify from 'json-stringify-deterministic';
+import me from "math-expressions";
 
 export default class Answer extends InlineComponent {
   static componentType = "answer";
@@ -874,7 +875,7 @@ export default class Answer extends InlineComponent {
               dependencyType: "descendant",
               ancestorName: child.componentName,
               componentTypes: ["_base"],
-              variableNames: ["isResponse", "value", "values", "componentType"],
+              variableNames: ["isResponse", "value", "values", "formula", "componentType"],
               variablesOptional: true,
               recurseToMatchedChildren: true,
               includeAttributeChildren: true,
@@ -988,9 +989,15 @@ export default class Answer extends InlineComponent {
             currentResponses.push(...component.stateValues.values)
             componentType.push(...Array(component.stateValues.values.length)
               .fill(ct));
-          } else {
+          } else if (component.stateValues.value !== undefined) {
             currentResponses.push(component.stateValues.value)
             componentType.push(ct)
+          } else if (component.stateValues.formula instanceof me.class) {
+            currentResponses.push(component.stateValues.formula)
+            componentType.push("math");
+          } else {
+            currentResponses.push("");
+            componentType.push("text")
           }
         }
 

@@ -2168,4 +2168,41 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('bug fix: no duplicate name error, #1921', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <updateValue target="v.tail.coords" newValue="(3,4)"><label>Move tail</label></updateValue>
+    <triggerSet>
+      <label>Move both</label>
+      <updateValue target="v.head.coords" newValue="(5,6)" />
+      <updateValue target="v.tail.coords" newValue="(7,2)" />
+    </triggerSet><graph>
+      <vector name="v" />
+    </graph><copy source="v.tail" assignNames="vt" /><copy source="v.head" assignNames="vh" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_updatevalue1').should('contain.text', 'Move tail')
+    cy.get('#\\/_triggerset1').should('contain.text', 'Move both')
+    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(1,0)")
+    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+
+    cy.get('#\\/_updatevalue1').click();
+
+    cy.get('#\\/vt .mjx-mrow').should('contain.text', "(3,4)")
+
+    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(3,4)")
+    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(4,4)")
+
+    cy.get('#\\/_triggerset1').click();
+    cy.get('#\\/vt .mjx-mrow').should('contain.text', "(7,2)")
+
+    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(7,2)")
+    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(9,4)")
+
+
+  })
+
 });
