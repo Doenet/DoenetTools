@@ -1,6 +1,24 @@
 import BlockComponent from '../abstract/BlockComponent';
 
 export default class OrbitalDiagramInput extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      addRow: this.addRow.bind(this),
+      removeRow: this.removeRow.bind(this),
+      addBox: this.addBox.bind(this),
+      removeBox: this.removeBox.bind(this),
+      addUpArrow: this.addUpArrow.bind(this),
+      addDownArrow: this.addDownArrow.bind(this),
+      removeArrow: this.removeArrow.bind(this),
+      updateRowText: this.updateRowText.bind(this),
+      selectRow: this.selectRow.bind(this),
+      selectBox: this.selectBox.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
 
   static componentType = "orbitalDiagramInput";
 
@@ -50,9 +68,9 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
         function processedPrefill() {
 
-          if(dependencyValues.prefill?.length > 0) {
+          if (dependencyValues.prefill?.length > 0) {
             let value = JSON.parse(JSON.stringify(dependencyValues.prefill));
-            for(let [rowInd, row] of value.entries()) {
+            for (let [rowInd, row] of value.entries()) {
               if (dependencyValues.prefillLabel[rowInd]) {
                 row.orbitalText = dependencyValues.prefillLabel[rowInd];
               }
@@ -672,20 +690,6 @@ export default class OrbitalDiagramInput extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    addRow: this.addRow.bind(this),
-    removeRow: this.removeRow.bind(this),
-    addBox: this.addBox.bind(this),
-    removeBox: this.removeBox.bind(this),
-    addUpArrow: this.addUpArrow.bind(this),
-    addDownArrow: this.addDownArrow.bind(this),
-    removeArrow: this.removeArrow.bind(this),
-    updateRowText: this.updateRowText.bind(this),
-    selectRow: this.selectRow.bind(this),
-    selectBox: this.selectBox.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 
 }

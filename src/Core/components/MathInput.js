@@ -7,10 +7,10 @@ export default class MathInput extends Input {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateRawValue: this.updateRawValue.bind(this),
       updateValue: this.updateValue.bind(this)
-    };
+    });
 
     this.externalActions = {};
 
@@ -745,9 +745,9 @@ function calculateMathExpressionFromLatex({ latex, unionFromU, functionSymbols, 
 
   let expression;
 
-  if(removeStrings) {
-    for(let s of removeStrings) {
-      if(["$", "%"].includes(s)) {
+  if (removeStrings) {
+    for (let s of removeStrings) {
+      if (["$", "%"].includes(s)) {
         s = "\\" + s;
       }
       latex = latex.replaceAll(s, '');

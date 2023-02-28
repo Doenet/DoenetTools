@@ -2,6 +2,14 @@ import BlockComponent from '../abstract/BlockComponent';
 
 
 export default class OrbitalDiagram extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
 
   static componentType = "orbitalDiagram";
 
@@ -44,7 +52,7 @@ export default class OrbitalDiagram extends BlockComponent {
     return [{
       group: "tupleLists",
       componentTypes: ["tupleList"],
-    },{
+    }, {
       group: "orbitalDiagrams",
       componentTypes: ["orbitalDiagram"]
     }]
@@ -108,7 +116,7 @@ export default class OrbitalDiagram extends BlockComponent {
             }
           }
 
-          if(dependencyValues.orbitalDiagramChildren.length === 1) {
+          if (dependencyValues.orbitalDiagramChildren.length === 1) {
             return dependencyValues.orbitalDiagramChildren[0].stateValues.value;
           }
 
@@ -160,10 +168,6 @@ export default class OrbitalDiagram extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

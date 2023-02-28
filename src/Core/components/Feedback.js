@@ -1,6 +1,15 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Feedback extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      updateHide: this.updateHide.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "feedback";
   static renderChildren = true;
 
@@ -174,10 +183,5 @@ export default class Feedback extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    updateHide: this.updateHide.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 }

@@ -3,6 +3,15 @@ import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggering
 import InlineComponent from './abstract/InlineComponent';
 
 export default class triggerSet extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      triggerActions: this.triggerActions.bind(this),
+      triggerActionsIfTriggerNewlyTrue: this.triggerActionsIfTriggerNewlyTrue.bind(this)
+    });
+
+  }
   static componentType = "triggerSet";
 
   static createAttributesObject() {
@@ -110,9 +119,4 @@ export default class triggerSet extends InlineComponent {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
-
-  actions = {
-    triggerActions: this.triggerActions.bind(this),
-    triggerActionsIfTriggerNewlyTrue: this.triggerActionsIfTriggerNewlyTrue.bind(this)
-  };
 }

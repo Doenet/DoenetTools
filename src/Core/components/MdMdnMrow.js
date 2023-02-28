@@ -5,6 +5,14 @@ import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 export class Md extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveMath: this.moveMath.bind(this),
+    });
+
+  }
   static componentType = "md";
   static rendererType = "math";
 
@@ -284,7 +292,7 @@ export class Md extends InlineComponent {
     return stateVariableDefinitions;
   }
 
-  
+
   async moveMath({ x, y, z, transient, actionId }) {
     let components = ["vector"];
     if (x !== undefined) {
@@ -330,11 +338,6 @@ export class Md extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveMath: this.moveMath.bind(this),
-  };
 
 }
 

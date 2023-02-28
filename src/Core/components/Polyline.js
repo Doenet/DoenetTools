@@ -2,14 +2,18 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 
 export default class Polyline extends GraphicalComponent {
-  static componentType = "polyline";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    movePolyline: this.movePolyline.bind(this),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
-    polylineClicked: this.polylineClicked.bind(this),
-    mouseDownOnPolyline: this.mouseDownOnPolyline.bind(this),
-  };
+    Object.assign(this.actions, {
+      movePolyline: this.movePolyline.bind(this),
+      finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
+      polylineClicked: this.polylineClicked.bind(this),
+      mouseDownOnPolyline: this.mouseDownOnPolyline.bind(this),
+    });
+
+  }
+  static componentType = "polyline";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

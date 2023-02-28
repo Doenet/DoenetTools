@@ -1,6 +1,14 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export class Pre extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "pre";
   static renderChildren = true;
 
@@ -25,10 +33,6 @@ export class Pre extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

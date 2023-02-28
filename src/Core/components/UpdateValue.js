@@ -4,6 +4,15 @@ import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggering
 import InlineComponent from './abstract/InlineComponent';
 
 export default class UpdateValue extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      updateValue: this.updateValue.bind(this),
+      updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this)
+    });
+
+  }
   static componentType = "updateValue";
 
   static acceptTarget = true;
@@ -361,10 +370,5 @@ export default class UpdateValue extends InlineComponent {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
-
-  actions = {
-    updateValue: this.updateValue.bind(this),
-    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this)
-  };
 }
 

@@ -1,6 +1,15 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export class Paginator extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      setPage: this.setPage.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "paginator";
   static rendererType = "containerBlock";
   static renderChildren = true;
@@ -177,11 +186,6 @@ export class Paginator extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    setPage: this.setPage.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 }
 
