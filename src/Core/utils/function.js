@@ -1,5 +1,5 @@
 import me from 'math-expressions';
-import { convertValueToMathExpression, normalizeMathExpression } from './math';
+import { convertValueToMathExpression, normalizeMathExpression, vectorOperators } from './math';
 
 
 export function createFunctionFromDefinition(fDefinition, component = 0) {
@@ -60,7 +60,7 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
   component = Number(component);
 
   let formulaIsVectorValued = Array.isArray(formula.tree) &&
-    ["tuple", "vector", "altvector"].includes(formula.tree[0]);
+    vectorOperators.includes(formula.tree[0]);
 
   if (formulaIsVectorValued) {
     try {
@@ -146,7 +146,7 @@ export function returnSymbolicFunctionFromFormula(dependencyValues, arrayKey) {
   let formula = dependencyValues.formula;
 
   let formulaIsVectorValued = Array.isArray(formula.tree) &&
-    ["tuple", "vector", "altvector"].includes(formula.tree[0]);
+    vectorOperators.includes(formula.tree[0]);
 
   if (formulaIsVectorValued) {
     try {

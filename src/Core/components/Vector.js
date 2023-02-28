@@ -1,7 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
-import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
+import { convertValueToMathExpression, roundForDisplay, vectorOperators } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
   constructor(args) {
@@ -698,7 +698,7 @@ export default class Vector extends GraphicalComponent {
               // since based on displacement and no source of displacement
               // we must have a displacement shadow
               let displacementTree = dependencyValues.displacementShadow.tree;
-              if (Array.isArray(displacementTree) && ["tuple", "vector", "altvector"].includes(displacementTree[0])) {
+              if (Array.isArray(displacementTree) && vectorOperators.includes(displacementTree[0])) {
                 nDimDisplacement = displacementTree.length - 1;
               } else {
                 nDimDisplacement = 1;
@@ -782,7 +782,7 @@ export default class Vector extends GraphicalComponent {
             nDimHead = dependencyValues.headAttr.stateValues.nDimensions;
           } else if (dependencyValues.headShadow) {
             let headTree = dependencyValues.headShadow.tree;
-            if (Array.isArray(headTree) && ["tuple", "vector", "altvector"].includes(headTree[0])) {
+            if (Array.isArray(headTree) && vectorOperators.includes(headTree[0])) {
               nDimHead = headTree.length - 1;
             } else {
               nDimHead = 2;
@@ -866,7 +866,7 @@ export default class Vector extends GraphicalComponent {
             nDimTail = dependencyValues.tailAttr.stateValues.nDimensions;
           } else if (dependencyValues.tailShadow) {
             let tailTree = dependencyValues.tailShadow.tree;
-            if (Array.isArray(tailTree) && ["tuple", "vector", "altvector"].includes(tailTree[0])) {
+            if (Array.isArray(tailTree) && vectorOperators.includes(tailTree[0])) {
               nDimTail = tailTree.length - 1;
             } else {
               nDimTail = 2;
@@ -1138,7 +1138,7 @@ export default class Vector extends GraphicalComponent {
                 // since based on displacement and no source of displacement
                 // we must have a displacement shadow
                 let displacementTree = globalDependencyValues.displacementShadow.tree;
-                if (Array.isArray(displacementTree) && ["tuple", "vector", "altvector"].includes(displacementTree[0])) {
+                if (Array.isArray(displacementTree) && vectorOperators.includes(displacementTree[0])) {
                   displacement[arrayKey] = globalDependencyValues.displacementShadow.get_component(Number(arrayKey));
                 } else {
                   displacement[arrayKey] = globalDependencyValues.displacementShadow;
@@ -1879,7 +1879,7 @@ export default class Vector extends GraphicalComponent {
         let coordsAst = desiredStateVariableValues.displacementCoords.tree;
         let newDisplacement;
 
-        if (Array.isArray(coordsAst) && (coordsAst[0] === "vector" || coordsAst[0] === "altvector" || coordsAst[0] === "tuple")) {
+        if (Array.isArray(coordsAst) && vectorOperators.includes(coordsAst[0])) {
           newDisplacement = coordsAst.slice(1).map(x => me.fromAst(x));
         } else {
           newDisplacement = [desiredStateVariableValues.displacementCoords];

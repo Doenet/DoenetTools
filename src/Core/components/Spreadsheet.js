@@ -1,6 +1,6 @@
 import { normalizeIndex } from '../utils/table';
 import BlockComponent from './abstract/BlockComponent';
-import { textToAst } from '../utils/math';
+import { textToAst, vectorOperators } from '../utils/math';
 import me from 'math-expressions';
 import { HyperFormula } from 'hyperformula';
 
@@ -1170,9 +1170,7 @@ export default class Spreadsheet extends BlockComponent {
             continue;
           }
 
-          if (Array.isArray(cellME.tree) && (
-            cellME.tree[0] === "tuple" || cellME.tree[0] === "vector" || cellME.tree[0] === "altvector"
-          )) {
+          if (Array.isArray(cellME.tree) && vectorOperators.includes(cellME.tree[0])) {
             pointsInCells[arrayKey] = cellME;
           } else {
             pointsInCells[arrayKey] = null;

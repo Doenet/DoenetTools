@@ -1,7 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { normalizeMathExpression, returnNVariables, roundForDisplay } from '../utils/math';
+import { normalizeMathExpression, returnNVariables, roundForDisplay, vectorOperators } from '../utils/math';
 import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula } from '../utils/function';
 
 export default class Function extends InlineComponent {
@@ -605,7 +605,7 @@ export default class Function extends InlineComponent {
         } else if (dependencyValues.mathChild.length > 0) {
           let formula = dependencyValues.mathChild[0].stateValues.value;
           let formulaIsVectorValued = Array.isArray(formula.tree) &&
-            ["tuple", "vector", "altvector"].includes(formula.tree[0]);
+            vectorOperators.includes(formula.tree[0]);
 
           let nOutputs = 1;
           if (formulaIsVectorValued) {

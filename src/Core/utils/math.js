@@ -224,7 +224,7 @@ export async function preprocessMathInverseDefinition({ desiredValue,
   stateValues, variableName = "value", arrayKey,
   workspace }) {
 
-  if ((desiredValue.tree[0] !== "tuple" && desiredValue.tree[0] !== "vector" && desiredValue.tree[0] !== "altvector")
+  if (!vectorOperators.includes(desiredValue.tree[0])
     || !desiredValue.tree.includes()
   ) {
     return { desiredValue };
@@ -252,7 +252,7 @@ export async function preprocessMathInverseDefinition({ desiredValue,
       currentValue = currentValue[arrayKey]
     }
 
-    if (currentValue && (currentValue.tree[0] === "tuple" || currentValue.tree[0] === "vector" || currentValue.tree[0] === "altvector")) {
+    if (currentValue && vectorOperators.includes(currentValue.tree[0])) {
 
       // if we have a currentValue that is a vector
       // we will merge components from desired value into current value
@@ -531,7 +531,7 @@ export function mergeListsWithOtherContainers(tree) {
   let operator = tree[0];
   let operands = tree.slice(1);
 
-  if (["tuple", "vector", "altvector", "list", "set"].includes(operator)) {
+  if ([...vectorOperators, "list", "set"].includes(operator)) {
     operands = operands.reduce((a, c) => Array.isArray(c) && c[0] === "list" ? [...a, ...c.slice(1)] : [...a, c], [])
   }
 
@@ -827,3 +827,5 @@ export const mathjaxConfig = {
     displayMath: [['\\[', '\\]']]
   }
 };
+
+export const vectorOperators = ["vector", "altvector", "tuple"];
