@@ -5716,6 +5716,29 @@ describe('Math Tag Tests', function () {
 
   })
 
+  it('line segment', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">\\overline{AB}</math>
+    <math>linesegment(A,B)</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', '¯¯¯¯¯¯¯¯AB')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', '¯¯¯¯¯¯¯¯AB')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["linesegment", "A", "B"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["linesegment", "A", "B"]);
+    });
+
+  })
+
   it('perp', () => {
     cy.window().then(async (win) => {
       win.postMessage({

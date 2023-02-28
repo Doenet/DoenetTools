@@ -45,7 +45,7 @@ describe('Math expressions equality tests', function () {
     cy.get('#\\/_text1').should('contain.text', 'a')
 
 
-    let nTrues = 6, nFalses = 2;
+    let nTrues = 9, nFalses = 3;
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
     }
@@ -266,10 +266,12 @@ describe('Math expressions equality tests', function () {
     <boolean name="t5"><math>angle ABC</math> = <math>angle(A,B,C)</math></boolean>
     <boolean name="t6">angle A'B'C' = angle(A',B',C')</boolean>
     <boolean name="t7">angle A B C = angle(A,B,C)</boolean>
+    <boolean name="t8" symbolicEquality>angle ABC = angle CBA</boolean>
+    <boolean name="t9" symbolicEquality>angle(A,B,C) = angle(C,B,A)</boolean>
     </p>
 
     <p>
-    <boolean name="f1">angle ABC = angle ACB></boolean>
+    <boolean name="f1">angle ABC = angle ACB</boolean>
     <boolean name="f2">angle ABC = angle A'B'C'</boolean>
     <boolean name="f3">angle(A,B,C) = angle (A,C,B)</boolean>
     <boolean name="f4">angle(A,B,C) = angle (A',B',C')</boolean>
@@ -282,7 +284,7 @@ describe('Math expressions equality tests', function () {
 
 
 
-    let nTrues = 7, nFalses = 2;
+    let nTrues = 9, nFalses = 4;
 
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
@@ -359,7 +361,7 @@ describe('Math expressions equality tests', function () {
 
   })
 
-  it('some support for interal', () => {
+  it('some support for integral', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -387,6 +389,101 @@ describe('Math expressions equality tests', function () {
 
 
     let nTrues = 4, nFalses = 4;
+
+    for (let i = 1; i <= nTrues; i++) {
+      cy.get(`#\\/t${i}`).should('have.text', "true")
+    }
+
+    for (let i = 1; i <= nFalses; i++) {
+      cy.get(`#\\/f${i}`).should('have.text', "false")
+    }
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 1; i <= nTrues; i++) {
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
+      }
+      for (let i = 1; i <= nFalses; i++) {
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
+      }
+    })
+
+  })
+
+  it('vecs', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>
+    <boolean name="t1">vec(x) = vec x</boolean>
+    <boolean name="t2">vec(x) + vec(x) = 2vec(x)</boolean>
+    <boolean name="t3">vec(x)*vec(x)vec(y)/(vec(x)*vec(x)) = vec(y)</boolean>
+    </p>
+
+    <p>
+    <boolean name="f1">vec(x) = x</boolean>
+    <boolean name="f2">vec(xy) = vec(x)vec(y)</boolean>
+    <boolean name="f3">vec(2x) = 2vec(x)</boolean>
+    </p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('contain.text', 'a')
+
+
+
+    let nTrues = 3, nFalses = 3;
+
+    for (let i = 1; i <= nTrues; i++) {
+      cy.get(`#\\/t${i}`).should('have.text', "true")
+    }
+
+    for (let i = 1; i <= nFalses; i++) {
+      cy.get(`#\\/f${i}`).should('have.text', "false")
+    }
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 1; i <= nTrues; i++) {
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
+      }
+      for (let i = 1; i <= nFalses; i++) {
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
+      }
+    })
+
+  })
+
+  it('linesegments', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>
+    <boolean name="t1">linesegment(A,B) = linesegment(B,A)</boolean>
+    <boolean name="t2">vec(x) + vec(x) = 2vec(x)</boolean>
+    <boolean name="t3">vec(x)*vec(x)vec(y)/(vec(x)*vec(x)) = vec(y)</boolean>
+    <boolean name="t4" symbolicEquality>linesegment(A,B) = linesegment(B,A)</boolean>
+    </p>
+
+    <p>
+    <boolean name="f1">vec(x) = x</boolean>
+    <boolean name="f2">vec(xy) = vec(x)vec(y)</boolean>
+    <boolean name="f3">vec(2x) = 2vec(x)</boolean>
+    </p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('contain.text', 'a')
+
+
+
+    let nTrues = 4, nFalses = 3;
 
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
