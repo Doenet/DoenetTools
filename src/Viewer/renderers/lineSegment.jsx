@@ -25,9 +25,12 @@ export default React.memo(function LineSegment(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let endpointsFixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
   fixed.current = !SVs.draggable || SVs.fixed;
+  endpointsFixed.current = !SVs.endpointsDraggable || SVs.fixed;
+
 
   useEffect(() => {
 
@@ -130,8 +133,7 @@ export default React.memo(function LineSegment(props) {
       }
     }
 
-    let endpointsFixed = !SVs.endpointsDraggable || SVs.fixed;
-    let endpointsVisible = !endpointsFixed && !SVs.hidden;
+    let endpointsVisible = !endpointsFixed.current && !SVs.hidden;
 
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
     Object.assign(jsxPointAttributes, {
@@ -256,7 +258,7 @@ export default React.memo(function LineSegment(props) {
       downOnPoint.current = 1;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
-      if (!fixed.current) {
+      if (!endpointsFixed.current) {
         callAction({
           action: actions.lineSegmentFocused
         });
@@ -274,7 +276,7 @@ export default React.memo(function LineSegment(props) {
       downOnPoint.current = 2;
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
-      if (!fixed.current) {
+      if (!endpointsFixed.current) {
         callAction({
           action: actions.lineSegmentFocused
         });
@@ -537,8 +539,7 @@ export default React.memo(function LineSegment(props) {
         // lineSegmentJXG.current.setAttribute({visible: false})
       }
 
-      let endpointsFixed = !SVs.endpointsDraggable || SVs.fixed;
-      let endpointsVisible = !endpointsFixed && visible;
+      let endpointsVisible = !endpointsFixed.current && visible;
 
       point1JXG.current.visProp["visible"] = endpointsVisible;
       point1JXG.current.visPropCalc["visible"] = endpointsVisible;

@@ -24,10 +24,11 @@ export default React.memo(function Polygon(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let verticesFixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalVertices;
   fixed.current = !SVs.draggable || SVs.fixed;
-
+  verticesFixed.current = !SVs.verticesDraggable || SVs.fixed;
 
 
   useEffect(() => {
@@ -61,14 +62,13 @@ export default React.memo(function Polygon(props) {
       return null;
     }
 
-    let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
 
     jsxPointAttributes.current = {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      visible: !verticesFixed && !SVs.hidden,
+      visible: !verticesFixed.current && !SVs.hidden,
       withLabel: false,
       layer: 10 * SVs.layer + 9,
       highlight: true,
@@ -282,7 +282,7 @@ export default React.memo(function Polygon(props) {
       }
       pointsAtDown.current = polygonJXG.current.vertices.map(x => [...x.coords.scrCoords])
     } else {
-      if (!fixed.current) {
+      if (!verticesFixed.current) {
         callAction({
           action: actions.polygonFocused
         });
@@ -432,8 +432,7 @@ export default React.memo(function Polygon(props) {
         initializePoints(polygonJXG.current);
       }
 
-      let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
-      let verticesVisible = !verticesFixed && !SVs.hidden;
+      let verticesVisible = !verticesFixed.current && !SVs.hidden;
 
       for (let i = 0; i < SVs.nVertices; i++) {
         polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalVertices[i]]);

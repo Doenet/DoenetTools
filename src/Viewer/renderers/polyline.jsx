@@ -25,9 +25,11 @@ export default React.memo(function Polyline(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let verticesFixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalVertices;
   fixed.current = !SVs.draggable || SVs.fixed;
+  verticesFixed.current = !SVs.verticesDraggable || SVs.fixed;
 
 
   useEffect(() => {
@@ -90,7 +92,6 @@ export default React.memo(function Polyline(props) {
       lineCap: "butt"
     };
 
-    let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
 
     jsxPointAttributes.current = Object.assign({}, jsxPolylineAttributes);
     Object.assign(jsxPointAttributes.current, {
@@ -103,7 +104,7 @@ export default React.memo(function Polyline(props) {
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 9,
     });
-    if (verticesFixed || SVs.hidden || !validCoords) {
+    if (verticesFixed.current || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
     }
     jsxPolylineAttributes.label = {
@@ -275,7 +276,7 @@ export default React.memo(function Polyline(props) {
       }
       pointsAtDown.current = polylineJXG.current.points.map(x => [...x.scrCoords])
     } else {
-      if (!fixed.current) {
+      if (!verticesFixed.current) {
         callAction({
           action: actions.polylineFocused
         });
@@ -469,8 +470,7 @@ export default React.memo(function Polyline(props) {
         polylineJXG.current.visPropCalc["visible"] = visible;
         // polylineJXG.current.setAttribute({visible: visible})
 
-        let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
-        let pointsVisible = visible && !verticesFixed;
+        let pointsVisible = visible && !verticesFixed.current;
 
         for (let i = 0; i < SVs.nVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = pointsVisible;
