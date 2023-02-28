@@ -70,11 +70,11 @@ function Card({ imagePath, text, link }) {
   const textStyle = {
     fontSize: '.8em',
     display: 'inline',
-    '-webkit-line-clamp': 2,
+    WebkitLineClamp: 2,
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     // display: '-webkit-box',
-    '-webkit-box-orient': 'vertical',
+    WebkitBoxOrient: 'vertical',
     wordWrap: 'break-word',
   }
 

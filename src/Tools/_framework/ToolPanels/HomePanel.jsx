@@ -287,7 +287,7 @@ function HPCarousel({ data }) {
 }
 
 
-export default function HomePage(props) {
+export default function HomePanel(props) {
 
   let carouselData = useRef([]);
 
@@ -308,7 +308,7 @@ export default function HomePage(props) {
   }
 
   useEffect(() => {
-    console.log("CALL ONCE!!!")
+    // console.log("CALL ONCE!!!")
     getCarouselData();
   }, [])
 

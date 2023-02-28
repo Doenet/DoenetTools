@@ -933,17 +933,15 @@ function RootController(props) {
     nextMenusAndPanels = {
       ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool],
     };
+    // console.log("navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus",navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus)
     nextMenusAndPanels.currentMenus = [
-      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]
-        .currentMenus,
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus,
     ];
     nextMenusAndPanels.menusTitles = [
-      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]
-        .menusTitles,
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusTitles,
     ];
     nextMenusAndPanels.menusInitOpen = [
-      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]
-        .menusInitOpen,
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusInitOpen,
     ];
 
     if (suppressMenus.length > 0) {
