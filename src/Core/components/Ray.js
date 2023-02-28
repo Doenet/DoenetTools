@@ -3,13 +3,17 @@ import me from 'math-expressions';
 import { convertValueToMathExpression } from '../utils/math';
 
 export default class Ray extends GraphicalComponent {
-  static componentType = "ray";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveRay: this.moveRay.bind(this),
-    rayClicked: this.rayClicked.bind(this),
-    rayFocused: this.rayFocused.bind(this),
-  };
+    Object.assign(this.actions, {
+      moveRay: this.moveRay.bind(this),
+      rayClicked: this.rayClicked.bind(this),
+      rayFocused: this.rayFocused.bind(this),
+    });
+
+  }
+  static componentType = "ray";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

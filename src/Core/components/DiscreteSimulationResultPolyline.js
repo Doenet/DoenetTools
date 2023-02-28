@@ -2,13 +2,17 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 
 export default class DiscreteSimulationResultPolyline extends GraphicalComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      movePolyline: this.movePolyline.bind(this),
+      finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
+    });
+
+  }
   static componentType = "discreteSimulationResultPolyline";
   static rendererType = "polyline";
-
-  actions = {
-    movePolyline: this.movePolyline.bind(this),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
-  };
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

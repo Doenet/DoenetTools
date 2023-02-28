@@ -2,6 +2,23 @@ import BlockComponent from './abstract/BlockComponent';
 import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size';
 
 export default class Video extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVideoStarted: this.recordVideoStarted.bind(this),
+      recordVideoWatched: this.recordVideoWatched.bind(this),
+      recordVideoPaused: this.recordVideoPaused.bind(this),
+      recordVideoSkipped: this.recordVideoSkipped.bind(this),
+      recordVideoCompleted: this.recordVideoCompleted.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+      recordVideoReady: this.recordVideoReady.bind(this),
+      playVideo: this.playVideo.bind(this),
+      pauseVideo: this.pauseVideo.bind(this),
+      setTime: this.setTime.bind(this),
+    });
+
+  }
   static componentType = "video";
 
   static createAttributesObject() {
@@ -551,19 +568,6 @@ export default class Video extends BlockComponent {
       }],
       overrideReadOnly: true,
     })
-  }
-
-  actions = {
-    recordVideoStarted: this.recordVideoStarted.bind(this),
-    recordVideoWatched: this.recordVideoWatched.bind(this),
-    recordVideoPaused: this.recordVideoPaused.bind(this),
-    recordVideoSkipped: this.recordVideoSkipped.bind(this),
-    recordVideoCompleted: this.recordVideoCompleted.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-    recordVideoReady: this.recordVideoReady.bind(this),
-    playVideo: this.playVideo.bind(this),
-    pauseVideo: this.pauseVideo.bind(this),
-    setTime: this.setTime.bind(this),
   }
 
 }

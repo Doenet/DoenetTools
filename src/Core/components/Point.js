@@ -5,6 +5,17 @@ import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Point extends GraphicalComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      movePoint: this.movePoint.bind(this),
+      switchPoint: this.switchPoint.bind(this),
+      pointClicked: this.pointClicked.bind(this),
+      pointFocused: this.pointFocused.bind(this),
+    });
+
+  }
   static componentType = "point";
 
 
@@ -1246,13 +1257,5 @@ export default class Point extends GraphicalComponent {
     this.coreFunctions.resolveAction({ actionId });
 
   }
-
-
-  actions = {
-    movePoint: this.movePoint.bind(this),
-    switchPoint: this.switchPoint.bind(this),
-    pointClicked: this.pointClicked.bind(this),
-    pointFocused: this.pointFocused.bind(this),
-  };
 
 }

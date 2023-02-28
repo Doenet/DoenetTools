@@ -101,6 +101,8 @@ export default React.memo(function Vector(props) {
     let jsxPointAttributes = Object.assign({}, jsxVectorAttributes);
     Object.assign(jsxPointAttributes, {
       withLabel: false,
+      fixed: false,
+      highlight: true,
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
@@ -110,15 +112,13 @@ export default React.memo(function Vector(props) {
 
     // create invisible points at endpoints
     let tailPointAttributes = Object.assign({}, jsxPointAttributes);
-    tailPointAttributes.visible = tailDraggable.current;
-    tailPointAttributes.fixed = !tailDraggable.current;
-    tailPointAttributes.highlight = tailDraggable.current;
+    let tailVisible = tailDraggable.current && !SVs.hidden;
+    tailPointAttributes.visible = tailVisible;
     let newPoint1JXG = board.create('point', endpoints[0], tailPointAttributes);
 
     let headPointAttributes = Object.assign({}, jsxPointAttributes);
-    headPointAttributes.visible = headDraggable.current;
-    headPointAttributes.fixed = !headDraggable.current;
-    headPointAttributes.highlight = headDraggable.current;
+    let headVisible = headDraggable.current && !SVs.hidden;
+    headPointAttributes.visible = headVisible;
     let newPoint2JXG = board.create('point', endpoints[1], headPointAttributes);
 
 
@@ -503,49 +503,22 @@ export default React.memo(function Vector(props) {
       vectorJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
       vectorJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
 
-      let visible = !SVs.hidden;
+      let visible = !SVs.hidden && validPoints;
+
+      let tailVisible = tailDraggable.current && visible;
+      let headVisible = headDraggable.current && visible;
 
       vectorJXG.current.visProp.fixed = fixed.current;
       vectorJXG.current.visProp.highlight = !fixed.current;
 
+      vectorJXG.current.visProp["visible"] = visible;
+      vectorJXG.current.visPropCalc["visible"] = visible;
 
-      if (validPoints) {
-        vectorJXG.current.visProp["visible"] = visible;
-        vectorJXG.current.visPropCalc["visible"] = visible;
-        // vectorJXG.current.setAttribute({visible: visible})
+      point1JXG.current.visProp["visible"] = tailVisible;
+      point1JXG.current.visPropCalc["visible"] = tailVisible;
 
-        if (tailDraggable.current) {
-          point1JXG.current.visProp["visible"] = visible;
-          point1JXG.current.visPropCalc["visible"] = visible;
-          point1JXG.current.visProp["fixed"] = false;
-        } else {
-          point1JXG.current.visProp["visible"] = false;
-          point1JXG.current.visPropCalc["visible"] = false;
-          point1JXG.current.visProp["fixed"] = true;
-        }
-
-        if (headDraggable.current) {
-          point2JXG.current.visProp["visible"] = visible;
-          point2JXG.current.visPropCalc["visible"] = visible;
-          point2JXG.current.visProp["fixed"] = false;
-        } else {
-          point2JXG.current.visProp["visible"] = false;
-          point2JXG.current.visPropCalc["visible"] = false;
-          point2JXG.current.visProp["fixed"] = true;
-        }
-      }
-      else {
-        vectorJXG.current.visProp["visible"] = false;
-        vectorJXG.current.visPropCalc["visible"] = false;
-        // vectorJXG.current.setAttribute({visible: false})
-
-        point1JXG.current.visProp["visible"] = false;
-        point1JXG.current.visPropCalc["visible"] = false;
-
-        point2JXG.current.visProp["visible"] = false;
-        point2JXG.current.visPropCalc["visible"] = false;
-
-      }
+      point2JXG.current.visProp["visible"] = headVisible;
+      point2JXG.current.visPropCalc["visible"] = headVisible;
 
       if (sourceOfUpdate.sourceInformation &&
         name in sourceOfUpdate.sourceInformation

@@ -7,18 +7,21 @@ import me from 'math-expressions';
 import { returnBezierFunctions } from '../utils/function';
 
 export default class Curve extends GraphicalComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveControlVector: this.moveControlVector.bind(this),
+      moveThroughPoint: this.moveThroughPoint.bind(this),
+      changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
+      switchCurve: this.switchCurve.bind(this),
+      curveClicked: this.curveClicked.bind(this),
+      curveFocused: this.curveFocused.bind(this),
+    });
+
+  }
   static componentType = "curve";
   static rendererType = "curve";
-
-
-  actions = {
-    moveControlVector: this.moveControlVector.bind(this),
-    moveThroughPoint: this.moveThroughPoint.bind(this),
-    changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
-    switchCurve: this.switchCurve.bind(this),
-    curveClicked: this.curveClicked.bind(this),
-    curveFocused: this.curveFocused.bind(this),
-  };
 
   static primaryStateVariableForDefinition = "fShadow";
 

@@ -130,19 +130,22 @@ export default React.memo(function LineSegment(props) {
       }
     }
 
+    let endpointsFixed = !SVs.endpointsDraggable || SVs.fixed;
+    let endpointsVisible = !endpointsFixed && !SVs.hidden;
+
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
     Object.assign(jsxPointAttributes, {
       withLabel: false,
+      fixed: false,
+      highlight: true,
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 8,
       showInfoBox: SVs.showCoordsWhenDragging,
+      visible: endpointsVisible
     });
-    if (fixed.current) {
-      jsxPointAttributes.visible = false;
-    }
 
 
     let endpoints = [
@@ -515,7 +518,7 @@ export default React.memo(function LineSegment(props) {
       lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
       lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
 
-      let visible = !SVs.hidden;
+      let visible = !SVs.hidden && validCoords;
 
       if (validCoords) {
         let actuallyChangedVisibility = lineSegmentJXG.current.visProp["visible"] !== visible;
@@ -533,6 +536,14 @@ export default React.memo(function LineSegment(props) {
         lineSegmentJXG.current.visPropCalc["visible"] = false;
         // lineSegmentJXG.current.setAttribute({visible: false})
       }
+
+      let endpointsFixed = !SVs.endpointsDraggable || SVs.fixed;
+      let endpointsVisible = !endpointsFixed && visible;
+
+      point1JXG.current.visProp["visible"] = endpointsVisible;
+      point1JXG.current.visPropCalc["visible"] = endpointsVisible;
+      point2JXG.current.visProp["visible"] = endpointsVisible;
+      point2JXG.current.visPropCalc["visible"] = endpointsVisible;
 
       lineSegmentJXG.current.visProp.fixed = fixed.current;
       lineSegmentJXG.current.visProp.highlight = !fixed.current;

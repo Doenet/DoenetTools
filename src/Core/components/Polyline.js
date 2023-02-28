@@ -2,14 +2,18 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 
 export default class Polyline extends GraphicalComponent {
-  static componentType = "polyline";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    movePolyline: this.movePolyline.bind(this),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
-    polylineClicked: this.polylineClicked.bind(this),
-    polylineFocused: this.polylineFocused.bind(this),
-  };
+    Object.assign(this.actions, {
+      movePolyline: this.movePolyline.bind(this),
+      finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
+      polylineClicked: this.polylineClicked.bind(this),
+      polylineFocused: this.polylineFocused.bind(this),
+    });
+
+  }
+  static componentType = "polyline";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -20,6 +24,10 @@ export default class Polyline extends GraphicalComponent {
       defaultValue: true,
       public: true,
       forRenderer: true,
+    };
+
+    attributes.verticesDraggable = {
+      createComponentOfType: "boolean",
     };
 
     attributes.vertices = {
@@ -83,6 +91,40 @@ export default class Polyline extends GraphicalComponent {
         return { setValue: { styleDescriptionWithNoun } };
       }
     }
+
+    stateVariableDefinitions.verticesDraggable = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean"
+      },
+      hasEssential: true,
+      forRenderer: true,
+      returnDependencies: () => ({
+        verticesDraggableAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "verticesDraggable",
+          variableNames: ["value"]
+        },
+        draggable: {
+          dependencyType: "stateVariable",
+          variableName: "draggable"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.verticesDraggableAttr) {
+          return {
+            setValue: { verticesDraggable: dependencyValues.verticesDraggableAttr.stateValues.value }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              verticesDraggable: { defaultValue: dependencyValues.draggable }
+            }
+          }
+        }
+      }
+    }
+
 
     stateVariableDefinitions.nVertices = {
       public: true,
@@ -321,11 +363,6 @@ export default class Polyline extends GraphicalComponent {
         // console.log(dependencyValuesByKey);
 
 
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.vertices) {
           let [pointInd, dim] = arrayKey.split(",");
@@ -531,6 +568,20 @@ export default class Polyline extends GraphicalComponent {
 
 
   async movePolyline({ pointCoords, transient, sourceInformation, actionId }) {
+
+    let nVerticesMoved = Object.keys(pointCoords).length;
+
+    if (nVerticesMoved === 1) {
+      // single vertex dragged
+      if (!await this.stateValues.verticesDraggable) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    } else {
+      // whole polyline dragged
+      if (!await this.stateValues.draggable) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    }
 
     let vertexComponents = {};
     for (let ind in pointCoords) {

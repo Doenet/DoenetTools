@@ -4,6 +4,14 @@ import { setUpVariantSeedAndRng } from '../utils/variants';
 
 
 export default class RenderDoenetML extends CompositeComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      updateComponents: this.updateComponents.bind(this)
+    });
+
+  }
   static componentType = "renderDoenetML";
 
   static assignNamesToReplacements = true;
@@ -320,9 +328,5 @@ export default class RenderDoenetML extends CompositeComponent {
       // },
     });
   }
-
-  actions = {
-    updateComponents: this.updateComponents.bind(this)
-  };
 
 }

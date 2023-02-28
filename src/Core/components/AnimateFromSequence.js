@@ -4,6 +4,19 @@ import me from 'math-expressions';
 import { nanoid } from 'nanoid';
 
 export default class AnimateFromSequence extends BaseComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      changedAnimationOn: this.changedAnimationOn.bind(this),
+      advanceAnimation: this.advanceAnimation.bind(this),
+      startAnimation: this.startAnimation.bind(this),
+      stopAnimation: this.stopAnimation.bind(this),
+      toggleAnimation: this.toggleAnimation.bind(this),
+    });
+
+  }
+
   static componentType = "animateFromSequence";
   static rendererType = undefined;
 
@@ -778,14 +791,6 @@ export default class AnimateFromSequence extends BaseComponent {
       actionId,
     })
   }
-
-  actions = {
-    changedAnimationOn: this.changedAnimationOn.bind(this),
-    advanceAnimation: this.advanceAnimation.bind(this),
-    startAnimation: this.startAnimation.bind(this),
-    stopAnimation: this.stopAnimation.bind(this),
-    toggleAnimation: this.toggleAnimation.bind(this),
-  };
 
 
   async getUpdateInstructionsToSetTargetsToValue(value) {

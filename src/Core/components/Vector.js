@@ -4,13 +4,17 @@ import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
-  static componentType = "vector";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveVector: this.moveVector.bind(this),
-    vectorClicked: this.vectorClicked.bind(this),
-    vectorFocused: this.vectorFocused.bind(this),
+    Object.assign(this.actions, {
+      moveVector: this.moveVector.bind(this),
+      vectorClicked: this.vectorClicked.bind(this),
+      vectorFocused: this.vectorFocused.bind(this),
+    });
+
   }
+  static componentType = "vector";
 
   static primaryStateVariableForDefinition = "displacementShadow";
 
@@ -1691,6 +1695,94 @@ export default class Vector extends GraphicalComponent {
     }
 
 
+    stateVariableDefinitions.magnitude = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+        displacement: {
+          dependencyType: "stateVariable",
+          variableName: "displacement"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let magnitude2 = 0;
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let disp = dependencyValues.displacement[dim].evaluate_to_constant();
+          if (!Number.isFinite(disp)) {
+            all_numeric = false;
+            break;
+          }
+          magnitude2 += disp * disp;
+        }
+
+        if (all_numeric) {
+          return { setValue: { magnitude: me.fromAst(Math.sqrt(magnitude2)) } };
+        }
+
+        magnitude2 = ['+'];
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          magnitude2.push(['^', dependencyValues.displacement[dim], 2])
+        }
+
+        return {
+          setValue: {
+            magnitude:
+              me.fromAst(['apply', 'sqrt', magnitude2])
+          }
+        }
+
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let dir = [];
+        let dir_length2 = 0;
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let disp = dependencyValues.displacement[dim].evaluate_to_constant();
+          if (!Number.isFinite(disp)) {
+            all_numeric = false;
+            break;
+          }
+          dir.push(disp);
+          dir_length2 += disp * disp;
+        }
+
+        if (!all_numeric) {
+          return { success: false }
+        }
+
+        // make dir be unit length
+        let dir_length = Math.sqrt(dir_length2);
+        dir = dir.map(x => x / dir_length);
+
+        let desiredMagnitude = desiredStateVariableValues.magnitude.evaluate_to_constant();
+
+        if (!Number.isFinite(desiredMagnitude) || desiredMagnitude < 0) {
+          return { success: false }
+        }
+
+        let desiredDisplacement = [];
+
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          desiredDisplacement.push(me.fromAst(dir[dim] * desiredMagnitude));
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "displacement",
+            desiredValue: desiredDisplacement
+          }]
+        }
+
+      }
+    }
 
     stateVariableDefinitions.numericalEndpoints = {
       forRenderer: true,

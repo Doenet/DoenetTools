@@ -44,6 +44,7 @@ export default class Core {
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
     this.activityVariantIndex = activityVariantIndex;
+    this.doenetML = doenetML;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -71,6 +72,8 @@ export default class Core {
       requestAnimationFrame: this.requestAnimationFrame.bind(this),
       cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
       recordSolutionView: this.recordSolutionView.bind(this),
+      requestComponentDoenetML: this.requestComponentDoenetML.bind(this),
+      copyToClipboard: this.copyToClipboard.bind(this),
     }
 
     this.updateInfo = {
@@ -9337,7 +9340,29 @@ export default class Core {
                   }
                 }
               } else {
-                Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
+                if (depStateVarObj.nDimensions === 1) {
+                  Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
+                } else {
+                  // need to convert multidimensional array (newInstruction.desiredValue)
+                  // to an object with multidimesional arrayKeys
+                  // where each array key is a concatenation of the array indices, joined by commas
+
+                  let convert_md_array = (array, n_dim) => {
+                    if (n_dim === 1) {
+                      return Object.assign({}, array)
+                    } else {
+                      let new_obj = {}
+                      for (let ind in array) {
+                        let sub_obj = convert_md_array(array[ind], n_dim - 1);
+                        for (let key in sub_obj) {
+                          new_obj[`${ind},${key}`] = sub_obj[key]
+                        }
+                      }
+                      return new_obj;
+                    }
+                  }
+                  Object.assign(arrayInstructionInProgress.desiredValue, convert_md_array(newInstruction.desiredValue, depStateVarObj.nDimensions))
+                }
               }
 
 
@@ -10355,6 +10380,55 @@ export default class Core {
     }
   }
 
+  requestComponentDoenetML(componentName) {
+
+    let component = this.components[componentName];
+
+    if (!component) {
+      return null;
+    }
+
+    let range = component.doenetMLrange;
+
+    if (!range) {
+      return null;
+    }
+
+    let startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
+    let endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd + 1;
+
+    let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);
+
+    let lines = componentDoenetML.split("\n");
+
+    // min number of spaces that begin a line (ignoring first and any lines that are all whitespace)
+    let minSpaces = lines.slice(1).reduce((a, c) => Math.min(a, c.trim().length > 1 ? c.search(/\S|$/) : Infinity), Infinity)
+
+    if (Number.isFinite(minSpaces) && minSpaces > 0) {
+      lines = lines.map(s => {
+        let nStrip = Math.min(minSpaces, s.search(/\S|$/));
+        return s.slice(nStrip);
+      });
+      componentDoenetML = lines.join("\n");
+    }
+    componentDoenetML += "\n";
+
+    return componentDoenetML;
+
+
+  }
+
+  copyToClipboard(text, actionId) {
+    if (typeof text !== "string") {
+      this.resolveAction({ actionId });
+    } else {
+      postMessage({
+        messageType: "copyToClipboard",
+        coreId: this.coreId,
+        args: { text, actionId }
+      })
+    }
+  }
 }
 
 

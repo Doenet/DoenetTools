@@ -4,6 +4,14 @@ import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 export class M extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveMath: this.moveMath.bind(this),
+    });
+
+  }
   static componentType = "m";
   static rendererType = "math";
 
@@ -357,11 +365,6 @@ export class M extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveMath: this.moveMath.bind(this),
-  };
 
 }
 

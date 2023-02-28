@@ -3,6 +3,17 @@ import BlockComponent from './abstract/BlockComponent';
 import me from 'math-expressions';
 import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size';
 export default class Graph extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      changeAxisLimits: this.changeAxisLimits.bind(this),
+      addChildren: this.addChildren.bind(this),
+      deleteChildren: this.deleteChildren.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "graph";
   static renderChildren = true;
 
@@ -1502,12 +1513,5 @@ export default class Graph extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    changeAxisLimits: this.changeAxisLimits.bind(this),
-    addChildren: this.addChildren.bind(this),
-    deleteChildren: this.deleteChildren.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 }

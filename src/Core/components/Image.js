@@ -4,6 +4,17 @@ import me from 'math-expressions';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 export default class Image extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveImage: this.moveImage.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+      imageClicked: this.imageClicked.bind(this),
+      imageFocused: this.imageFocused.bind(this),
+    });
+
+  }
   static componentType = "image";
 
   static createAttributesObject() {
@@ -550,13 +561,6 @@ export default class Image extends BlockComponent {
 
     this.coreFunctions.resolveAction({ actionId });
 
-  }
-
-  actions = {
-    moveImage: this.moveImage.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-    imageClicked: this.imageClicked.bind(this),
-    imageFocused: this.imageFocused.bind(this),
   }
 
 }

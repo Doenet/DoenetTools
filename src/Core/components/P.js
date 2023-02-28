@@ -1,6 +1,14 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class P extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "p";
   static renderChildren = true;
 
@@ -63,10 +71,6 @@ export default class P extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

@@ -7,10 +7,9 @@ export default class Choiceinput extends Input {
   constructor(args) {
     super(args);
 
-
-    this.actions = {
+    Object.assign(this.actions, {
       updateSelectedIndices: this.updateSelectedIndices.bind(this),
-    }
+    });
 
     this.externalActions = {};
 

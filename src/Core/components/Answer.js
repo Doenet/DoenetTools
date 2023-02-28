@@ -8,6 +8,14 @@ import stringify from 'json-stringify-deterministic';
 import me from "math-expressions";
 
 export default class Answer extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      submitAnswer: this.submitAnswer.bind(this)
+    });
+
+  }
   static componentType = "answer";
 
   static renderChildren = true;
@@ -1721,10 +1729,6 @@ export default class Answer extends InlineComponent {
 
     return stateVariableDefinitions;
   }
-
-  actions = {
-    submitAnswer: this.submitAnswer.bind(this)
-  };
 
 
   async submitAnswer({ actionId }) {

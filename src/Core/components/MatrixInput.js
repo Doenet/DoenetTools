@@ -9,10 +9,10 @@ export class MatrixInput extends Input {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateNumRows: this.updateNumRows.bind(this),
       updateNumColumns: this.updateNumColumns.bind(this)
-    };
+    });
 
     this.externalActions = {};
 
@@ -2232,10 +2232,10 @@ export default class MatrixComponentInput extends BaseComponent {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateRawValue: this.updateRawValue.bind(this),
       updateValue: this.updateValue.bind(this)
-    };
+    });
 
   }
   static componentType = "matrixComponentInput";
