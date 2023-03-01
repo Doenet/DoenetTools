@@ -88,7 +88,6 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
     "@babel/plugin-syntax-class-properties": "^7.12.13",
-    "@esbuild/linux-arm64": "^0.17.10",
     "@lezer/generator": "^0.15.2",
     "@rollup/plugin-alias": "^3.1.9",
     "@rollup/plugin-commonjs": "^22.0.0",
