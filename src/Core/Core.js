@@ -4801,13 +4801,19 @@ export default class Core {
         args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
 
         // only include array keys that exist
+        // unless given a Javascript array
         let newDesiredStateVariableValues = {};
         for (let vName in args.desiredStateVariableValues) {
-          newDesiredStateVariableValues[vName] = {}
-          for (let key in args.desiredStateVariableValues[vName]) {
-            if (args.arrayKeys.includes(key)) {
-              newDesiredStateVariableValues[vName][key] = args.desiredStateVariableValues[vName][key];
+          if (Array.isArray(args.desiredStateVariableValues[vName])) {
+            newDesiredStateVariableValues[vName] = args.desiredStateVariableValues[vName];
+          } else {
+            newDesiredStateVariableValues[vName] = {}
 
+            for (let key in args.desiredStateVariableValues[vName]) {
+              if (args.arrayKeys.includes(key)) {
+                newDesiredStateVariableValues[vName][key] = args.desiredStateVariableValues[vName][key];
+
+              }
             }
           }
         }
@@ -8470,11 +8476,6 @@ export default class Core {
 
     await this.processStateVariableTriggers();
 
-    // it is possible that components were added back to componentNamesToUpdateRenderers
-    // while processing the renderer instructions
-    // so delete any names that were just addressed
-    componentNamesToUpdate.forEach(cName => this.updateInfo.componentsToUpdateRenderers.delete(cName));
-
     // TODO: when should we actually warn of unmatchedChildren
     // It shouldn't be just on update, but also on initial construction!
     // Also, should be more than a console.warn
@@ -9355,7 +9356,7 @@ export default class Core {
                   }
                 }
               } else {
-                if (depStateVarObj.nDimensions === 1) {
+                if (depStateVarObj.nDimensions === 1 || !Array.isArray(newInstruction.desiredValue)) {
                   Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
                 } else {
                   // need to convert multidimensional array (newInstruction.desiredValue)

@@ -1214,7 +1214,7 @@ describe('Curve Tag Tests', function () {
           throughPoint: ps[1]
         }
       });
-      
+
       stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_curve1'].stateValues.throughPoints)[1]).eqls(ps[1]);
       expect((stateVariables['/_curve2'].stateValues.throughPoints)[1]).eqls(psflipped[1]);
