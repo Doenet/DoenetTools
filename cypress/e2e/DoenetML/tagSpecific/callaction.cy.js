@@ -1285,7 +1285,7 @@ describe('CallAction Tag Tests', function () {
 
   })
 
-  it('action triggered when mouse down', () => {
+  it('action triggered when object focused', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1337,7 +1337,7 @@ describe('CallAction Tag Tests', function () {
 
     cy.window().then(async (win) => {
       await win.callAction1({
-        actionName: "mouseDownOnPoint",
+        actionName: "pointFocused",
         componentName: "/P",
       });
 
@@ -1382,7 +1382,7 @@ describe('CallAction Tag Tests', function () {
 
     cy.window().then(async (win) => {
       await win.callAction1({
-        actionName: "mouseDownOnPoint",
+        actionName: "pointFocused",
         componentName: "/P",
       });
 

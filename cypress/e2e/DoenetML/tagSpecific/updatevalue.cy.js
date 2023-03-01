@@ -826,7 +826,7 @@ describe('UpdateValue Tag Tests', function () {
     });
   })
 
-  it('update triggered when mouse down', () => {
+  it('update triggered when object focused', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -861,7 +861,7 @@ describe('UpdateValue Tag Tests', function () {
 
     cy.window().then(async (win) => {
       await win.callAction1({
-        actionName: "mouseDownOnPoint",
+        actionName: "pointFocused",
         componentName: "/P",
       });
       cy.get('#\\/x').should('contain.text', '3x')
@@ -883,7 +883,7 @@ describe('UpdateValue Tag Tests', function () {
 
     cy.window().then(async (win) => {
       await win.callAction1({
-        actionName: "mouseDownOnPoint",
+        actionName: "pointFocused",
         componentName: "/P",
       });
       cy.get('#\\/x').should('contain.text', '9x')
