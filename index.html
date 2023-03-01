@@ -5,12 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doenet</title>
     <link rel="shortcut icon" href="/favicon.ico" />
-<script type="text/javascript" charset="UTF-8"
- src="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraphcore.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraph.css" />
-<script src="https://www.youtube.com/iframe_api"></script>
-<script type="text/javascript" src="/media/geogebra/scripts/deployggb.js"></script>
-<!-- <link rel="stylesheet" type="text/css" href="/src/css/handsontable.full.css" /> -->
+    <script
+      type="text/javascript"
+      charset="UTF-8"
+      src="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraphcore.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraph.css"
+    />
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script
+      type="text/javascript"
+      src="/src/media/geogebra/scripts/deployggb.js"
+    ></script>
+    <!-- <link rel="stylesheet" type="text/css" href="/src/css/handsontable.full.css" /> -->
 
     <!-- <link
   rel="stylesheet"
@@ -22,18 +32,19 @@
         font-family: 'Open Sans';
         font-style: normal;
         font-weight: 300;
-        src:
-          url('../../media/fonts/files/open-sans-v18-latin-light.woff2') format('woff2'),
-          url('../../media/fonts/files/open-sans-v18-latin-light.woff') format('woff');
+        src: url('./fonts/files/open-sans-v18-latin-light.woff2')
+            format('woff2'),
+          url('./fonts/files/open-sans-v18-latin-light.woff') format('woff');
       }
 
       @font-face {
         font-family: 'Open Sans';
         font-style: italic;
         font-weight: 300;
-        src:
-          url('../../media/fonts/files/open-sans-v18-latin-light-italic.woff2') format('woff2'),
-          url('../../media/fonts/files/open-sans-v18-latin-light-italic.woff') format('woff');
+        src: url('./fonts/files/open-sans-v18-latin-light-italic.woff2')
+            format('woff2'),
+          url('./fonts/files/open-sans-v18-latin-light-italic.woff')
+            format('woff');
       }
 
       /* Regular fonts */
@@ -41,18 +52,18 @@
         font-family: 'Open Sans';
         font-style: normal;
         font-weight: normal;
-        src:
-          url('../../media/fonts/files/open-sans-v18-latin-regular.woff2') format('woff2'),
-          url('../../media/fonts/files/open-sans-v18-latin-regular.woff') format('woff');
+        src: url('./fonts/files/open-sans-v18-latin-regular.woff2')
+            format('woff2'),
+          url('./fonts/files/open-sans-v18-latin-regular.woff') format('woff');
       }
-    
+
       @font-face {
         font-family: 'Open Sans';
         font-style: italic;
         font-weight: normal;
-        src:
-          url('../../media/fonts/files/open-sans-v18-latin-italic.woff2') format('woff2'),
-          url('../../media/fonts/files/open-sans-v18-latin-italic.woff') format('woff');
+        src: url('./fonts/files/open-sans-v18-latin-italic.woff2')
+            format('woff2'),
+          url('./fonts/files/open-sans-v18-latin-italic.woff') format('woff');
       }
 
       /* Bold fonts */
@@ -60,20 +71,17 @@
         font-family: 'Open Sans';
         font-style: normal;
         font-weight: 700;
-        src: url('../../media/fonts/files/open-sans-v18-latin-700.woff2')
-            format('woff2'),
-          url('../../media/fonts/files/open-sans-v18-latin-700.woff')
-            format('woff');
+        src: url('./fonts/files/open-sans-v18-latin-700.woff2') format('woff2'),
+          url('./fonts/files/open-sans-v18-latin-700.woff') format('woff');
       }
 
       @font-face {
         font-family: 'Open Sans';
         font-style: italic;
         font-weight: 700;
-        src: url('../../media/fonts/files/open-sans-v18-latin-700italic.woff2')
+        src: url('./fonts/files/open-sans-v18-latin-700italic.woff2')
             format('woff2'),
-          url('../../media/fonts/files/open-sans-v18-latin-700italic.woff')
-            format('woff');
+          url('./fonts/files/open-sans-v18-latin-700italic.woff') format('woff');
       }
       html {
         font-family: 'Open Sans' !important;
@@ -94,7 +102,7 @@
         --lightGreen: #a6f19f;
         --lightYellow: #f5ed85;
         --whiteBlankLink: #6d4445;
-        --mainYellow: #94610A;
+        --mainYellow: #94610a;
         --mainPurple: #4a03d9;
       }
 
@@ -102,7 +110,7 @@
         font-family: 'Open Sans' !important;
         --menuWidth: 220px;
         --mainBlue: #1a5a99;
-        --lightBlue: hsl(209,54%,82%);
+        --lightBlue: hsl(209, 54%, 82%);
         --solidLightBlue: #1a5a99;
         --mainGray: #a9a9a9;
         --donutBody: #eea177;
@@ -116,7 +124,7 @@
         --canvastext: white;
         --lightGreen: #a6f19f;
         --lightYellow: #f5ed85;
-        --whiteBlankLink: #A9ABE5;
+        --whiteBlankLink: #a9abe5;
         --mainYellow: #efab34;
         --mainPurple: #4a03d9;
       }
@@ -124,6 +132,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.js"></script>
+    <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>
