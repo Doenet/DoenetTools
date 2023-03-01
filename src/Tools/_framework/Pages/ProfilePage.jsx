@@ -93,7 +93,7 @@ const Main = styled.main`
   margin-top: 40px;
   /* padding: 20px; */
   overflow-y: scroll;
-  height: calc(100vh - 40px);
+  height: 100vh;
   margin: 0;
 `;
 
