@@ -127,7 +127,6 @@ function Crumb({setRef,i,label=null,onClick}){
     tabIndex="0" 
     onClick={onClick}     
     onKeyDown={(e) => { if(e.key === "Enter"){onClick()}}}
-    aria-label={label}
   ><CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
   </BreadcrumbItem>)
 
@@ -304,7 +303,6 @@ export function BreadCrumb({crumbs=[],offset=0}){
     tabIndex="0" 
     onClick={()=>{setMenuVisible((was)=>!was)}}
     onKeyDown={(e) => {if(e.key === "Enter"){setMenuVisible((was)=>!was);}}}
-    aria-label="..."
   >...</BreadcrumbSpan>
   </BreadcrumbItem>}
 
