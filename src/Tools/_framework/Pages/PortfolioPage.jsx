@@ -62,6 +62,7 @@ function Heading(props) {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100px',
+    position: 'relative'
   }}>
     <h1 style={{
       lineHeight: '0.1em',
@@ -69,6 +70,11 @@ function Heading(props) {
     <h4 style={{
       lineHeight: '0.1em',
     }}> {props.subheading} </h4>
+    <div style={{
+      position: "absolute",
+      bottom: "16px",
+      right: "10px"
+  }}><Button value="Add Activity"/></div>
   </div>
 }
 
@@ -126,12 +132,12 @@ const TopSpace = styled.div`
   margin-top: 40px;
 `
 
-export default function ProfilePage(props) {
-   const loaderData = useLoaderData();
+export default function PortfolioPage(props) {
+  //  const loaderData = useLoaderData();
+  //  const carouselData = loaderData?.carouselData;
   let navigate = useNavigate();
   let checkingCookie = useRef(false);
   const [signedIn, setSignedIn] = useState(null);
-   const carouselData = loaderData?.carouselData;
 
      //Only ask once
   if (!checkingCookie.current) {
@@ -164,7 +170,7 @@ export default function ProfilePage(props) {
   <Main>
     <TopSpace />
     <SignInSection>
-      Sign in to see your profile
+      Sign in to see your portfolio
       {signInButton}
     </SignInSection>
     </Main>

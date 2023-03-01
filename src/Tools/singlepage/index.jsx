@@ -15,7 +15,7 @@ import {
 import { RecoilRoot } from 'recoil';
 import HomePage from "../_framework/Pages/HomePage";
 import CommunityPage from "../_framework/Pages/CommunityPage";
-import ProfilePage from "../_framework/Pages/ProfilePage";
+import PortfolioPage from "../_framework/Pages/PortfolioPage";
 
 import ToolRoot from '../_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
@@ -83,7 +83,7 @@ const router = createBrowserRouter([
   },
   {
     path: "portfolio",
-    element: <ProfilePage />,
+    element: <PortfolioPage />,
   },
   {
     path: "*",
