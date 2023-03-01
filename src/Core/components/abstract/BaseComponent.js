@@ -68,6 +68,14 @@ export default class BaseComponent {
       this.variants = serializedComponent.variants;
     }
 
+    if (serializedComponent.range) {
+      this.doenetMLrange = serializedComponent.range;
+    }
+
+    this.actions = {
+      copyDoenetMLToClipboard: this.copyDoenetMLToClipboard.bind(this),
+    }
+
   }
 
   static componentType = "_base";
@@ -1193,6 +1201,18 @@ export default class BaseComponent {
     }
 
     return { success: true, desiredVariant }
+
+  }
+
+  async copyDoenetMLToClipboard({ actionId }) {
+
+    let doenetML = this.coreFunctions.requestComponentDoenetML(this.componentName)
+
+    if (!doenetML) {
+      this.coreFunctions.resolveAction({ actionId });
+    } else {
+      this.coreFunctions.copyToClipboard(doenetML, actionId);
+    }
 
   }
 

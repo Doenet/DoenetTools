@@ -4,10 +4,10 @@ export default class Textinput extends Input {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateImmediateValue: this.updateImmediateValue.bind(this),
       updateValue: this.updateValue.bind(this)
-    };
+    });
 
 
     this.externalActions = {};

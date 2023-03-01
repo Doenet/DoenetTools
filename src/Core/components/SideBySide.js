@@ -2,6 +2,14 @@ import BlockComponent from './abstract/BlockComponent';
 import me from 'math-expressions';
 
 export class SideBySide extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "sideBySide";
   static renderChildren = true;
 
@@ -1044,15 +1052,19 @@ export class SideBySide extends BlockComponent {
     this.coreFunctions.resolveAction({ actionId });
   }
 
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  }
-
 }
 
 
 
 export class SbsGroup extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "sbsGroup";
   static rendererType = "containerBlock";
   static renderChildren = true;
@@ -2002,14 +2014,18 @@ export class SbsGroup extends BlockComponent {
     this.coreFunctions.resolveAction({ actionId });
   }
 
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  }
-
 }
 
 
 export class Stack extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "stack";
   static rendererType = "containerBlock";
   static renderChildren = true;
@@ -2033,10 +2049,6 @@ export class Stack extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

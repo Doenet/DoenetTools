@@ -1,8 +1,17 @@
-import { roundForDisplay } from '../utils/math';
+import { roundForDisplay, vectorOperators } from '../utils/math';
 import BlockComponent from './abstract/BlockComponent';
 
 
 export default class DiscreteSimulationResultList extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      onChange: this.onChange.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "DiscreteSimulationResultList";
   static rendererType = "spreadsheet";
 
@@ -201,7 +210,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
         if (dependencyValues.allIterates.length > 0 &&
           Array.isArray(dependencyValues.allIterates[0].tree) &&
-          ["vector", "tuple"].includes(dependencyValues.allIterates[0].tree[0])
+          vectorOperators.includes(dependencyValues.allIterates[0].tree[0])
         ) {
           nComponents = dependencyValues.allIterates[0].tree.length - 1;
           haveVector = true;
@@ -386,11 +395,6 @@ export default class DiscreteSimulationResultList extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    onChange: this.onChange.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 
 }

@@ -192,6 +192,8 @@ export default function PageViewer(props) {
           setErrMsg(e.data.args.errMsg);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
+        } else if (e.data.messageType === "copyToClipboard") {
+          copyToClipboard(e.data.args);
         } else if (e.data.messageType === "terminated") {
           terminateCoreAndAnimations();
         }
@@ -881,6 +883,11 @@ export default function PageViewer(props) {
 
   }
 
+  async function copyToClipboard({ text, actionId }) {
+    await navigator.clipboard.writeText(text);
+
+    resolveAction({ actionId });
+  }
 
 
   if (errMsg !== null) {

@@ -8,9 +8,9 @@ export default class Slider extends BaseComponent {
     super(args);
     this.changeValue = this.changeValue.bind(this);
 
-    this.actions = {
+    Object.assign(this.actions, {
       changeValue: this.changeValue
-    };
+    });
   }
   static componentType = "slider";
 

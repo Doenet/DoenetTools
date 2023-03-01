@@ -1,6 +1,14 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Table extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "table";
   static renderChildren = true;
 
@@ -138,10 +146,6 @@ export default class Table extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

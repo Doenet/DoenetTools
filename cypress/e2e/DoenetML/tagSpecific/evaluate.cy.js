@@ -2056,8 +2056,8 @@ describe('Evaluate Tag Tests', function () {
       expect(stateVariables['/result7d'].stateValues.value).eqls(['/', ['^', '＿', 2], ['^', '＿', 3]]);
     })
 
-    cy.log(`change inputs`);
-    cy.get('#\\/input1 textarea').type('{end}{leftArrow}{backspace}{backspace}{backspace}-3,5', { force: true })
+    cy.log(`change inputs, use altvector`);
+    cy.get('#\\/input1 textarea').type('{ctrl+home}{shift+end}{backspace}\\langle -3,5\\rangle{enter}', { force: true })
     cy.get('#\\/input2Orig textarea').type('{ctrl+home}{shift+end}{backspace}-3,5', { force: true })
     cy.get('#\\/input4a textarea').type('{end}{backspace}-3', { force: true })
     cy.get('#\\/input4b textarea').type('{end}{backspace}5', { force: true }).blur()
@@ -2226,7 +2226,7 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/input1 textarea').type("{end}{backspace}pi{enter}", { force: true });
     cy.get('#\\/input2 textarea').type("{end}{backspace}2pi{enter}", { force: true });
 
-    cy.get('#\\/result_symbolic').should('contain.text','(sin(π+2π),cos(π−2π))')
+    cy.get('#\\/result_symbolic').should('contain.text', '(sin(π+2π),cos(π−2π))')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(sin(π+2π),cos(π−2π))')
     })
@@ -2268,7 +2268,7 @@ describe('Evaluate Tag Tests', function () {
     cy.log('change variable')
     cy.get('#\\/variable1 textarea').type("{end}{backspace}u{enter}", { force: true });
     cy.get('#\\/variable2 textarea').type("{end}{backspace}v{enter}", { force: true });
-    cy.get('#\\/result_symbolic').should('contain.text','(sin(x+y),cos(x−y))')
+    cy.get('#\\/result_symbolic').should('contain.text', '(sin(x+y),cos(x−y))')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(sin(x+y),cos(x−y))')
     })
@@ -2314,7 +2314,7 @@ describe('Evaluate Tag Tests', function () {
 
     cy.log('change formula to use new variables')
     cy.get('#\\/formula textarea').type("{end}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}u-v{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}u+v{enter}", { force: true });
-    cy.get('#\\/result_symbolic').should('contain.text','(sin(π+2π),cos(π−2π))')
+    cy.get('#\\/result_symbolic').should('contain.text', '(sin(π+2π),cos(π−2π))')
 
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(sin(π+2π),cos(π−2π))')

@@ -1,7 +1,9 @@
 import me from 'math-expressions';
 import { deepCompare } from './deepFunctions';
-import { normalizeMathExpression } from './math';
+import { normalizeMathExpression, vectorOperators } from './math';
 import periodicSetEquality from './periodicSetEquality';
+
+const nonTupleVectorOperators = ["vector", "altvector"];
 
 export default function checkEquality({
   object1, object2, isUnordered = false, partialMatches = false,
@@ -304,7 +306,7 @@ export default function checkEquality({
       // a list of length 1
       // make object1 act like a list of the one element
       object1 = [object1.tree];
-    } else if (object1_operator === "vector") {
+    } else if (nonTupleVectorOperators.includes(object1_operator)) {
       // change object1 to array of elements
       object1 = object1.tree.slice(1);
 
@@ -313,7 +315,7 @@ export default function checkEquality({
         || object2_operator === "set"
       ) {
         return { fraction_equal: 0 };
-      } else if (object2_operator === "tuple" || object2_operator === "vector") {
+      } else if (vectorOperators.includes(object2_operator)) {
         // since we can convert tuple to vector
         // change object2 to array of selements
         object2 = object2.tree.slice(1);
@@ -322,7 +324,7 @@ export default function checkEquality({
         // make object2 array of the one element
         object2 = [object2.tree];
       }
-    } else if (object2_operator === "vector") {
+    } else if (nonTupleVectorOperators.includes(object2_operator)) {
       // change object2 to array of elements
       object2 = object2.tree.slice(1);
 

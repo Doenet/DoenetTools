@@ -3,6 +3,14 @@ import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 
 export default class Text extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveText: this.moveText.bind(this),
+    });
+
+  }
   static componentType = "text";
 
   static includeBlankStringChildren = true;
@@ -268,11 +276,6 @@ export default class Text extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveText: this.moveText.bind(this),
-  };
 
 
 }
