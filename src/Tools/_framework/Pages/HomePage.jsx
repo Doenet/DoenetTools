@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import './homepage.css';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
@@ -211,6 +210,23 @@ const Branding = styled.span`
   font-size: 16px;
 `
 
+const MenuItem = styled.div`
+  padding: 8px;
+  color: ${props => props.active ? "var(--mainBlue)" : "black"};
+  border-bottom: ${props => props.active ? "2px solid var(--mainBlue)" : null};
+  cursor: pointer;
+`
+
+const BarMenu = styled.div`
+  margin: 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  column-gap: 20px;
+`
+
+
 export default function HomePage(props) {
    const loaderData = useLoaderData();
   let navigate = useNavigate();
@@ -267,7 +283,11 @@ export default function HomePage(props) {
     <Branding>
     <RouterLogo /><p>Doenet</p>
     </Branding>
-  <div>menus</div>
+  <BarMenu>
+    <MenuItem active={true}>Home</MenuItem>
+    <MenuItem onClick={() => navigate('/community')}>Community</MenuItem>
+    {signedIn ? <MenuItem onClick={() => navigate('/portfolio')}>Portfolio</MenuItem> : null }
+  </BarMenu>
   <SignInButtonContainer>{signInButton}</SignInButtonContainer>
 </Header>
 <Main>

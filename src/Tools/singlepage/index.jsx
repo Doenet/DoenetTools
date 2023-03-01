@@ -13,7 +13,9 @@ import {
   Link,
 } from "react-router-dom";
 import { RecoilRoot } from 'recoil';
-import HomePage from "../_framework/ToolPanels/HomePage";
+import HomePage from "../_framework/Pages/HomePage";
+import CommunityPage from "../_framework/Pages/CommunityPage";
+import ProfilePage from "../_framework/Pages/ProfilePage";
 
 import ToolRoot from '../_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
@@ -31,6 +33,13 @@ import DarkmodeController from '../_framework/DarkmodeController';
 <Link to="other2">other2</Link>
 </div>
 </div> */}
+//Future Routes:
+// doenet.org/ REDIRECT TO HOME
+// doenet.org/public/home  
+// doenet.org/public/community
+// doenet.org/public/portfolio
+// doenet.org/*
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -50,16 +59,31 @@ const router = createBrowserRouter([
         </MathJaxContext>
       </DarkmodeController>
   </RecoilRoot>
-     
     ),
   },
   {
     path: "community",
-    element: <div>community</div>,
+    loader: async ({request}) => {
+      const resp = await fetch('/api/getHPCarouselData.php',{signal: request.signal});
+      const dataArray = await resp.json();
+      return dataArray;
+    },
+    element: (<RecoilRoot>
+      <DarkmodeController>
+        <MathJaxContext
+          version={2}
+          config={mathjaxConfig}
+          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+        >
+          <CommunityPage />
+        </MathJaxContext>
+      </DarkmodeController>
+  </RecoilRoot>
+    ),
   },
   {
-    path: "profile",
-    element: <div>profile</div>,
+    path: "portfolio",
+    element: <ProfilePage />,
   },
   {
     path: "*",
