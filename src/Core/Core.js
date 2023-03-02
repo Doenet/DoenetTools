@@ -74,6 +74,7 @@ export default class Core {
       recordSolutionView: this.recordSolutionView.bind(this),
       requestComponentDoenetML: this.requestComponentDoenetML.bind(this),
       copyToClipboard: this.copyToClipboard.bind(this),
+      navigateToTarget: this.navigateToTarget.bind(this),
     }
 
     this.updateInfo = {
@@ -10444,6 +10445,14 @@ export default class Core {
         args: { text, actionId }
       })
     }
+  }
+
+  navigateToTarget(args) {
+    postMessage({
+      messageType: "navigateToTarget",
+      coreId: this.coreId,
+      args
+    })
   }
 }
 
