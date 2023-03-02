@@ -1,4 +1,4 @@
-FROM node:17-stretch
+FROM node:19.7
 RUN apt-get update && \
     apt-get -y install \
     apt-transport-https \
