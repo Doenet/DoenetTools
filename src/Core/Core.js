@@ -10397,7 +10397,7 @@ export default class Core {
     }
   }
 
-  requestComponentDoenetML(componentName) {
+  requestComponentDoenetML(componentName, displayOnlyChildren) {
 
     let component = this.components[componentName];
 
@@ -10411,10 +10411,31 @@ export default class Core {
       return null;
     }
 
-    let startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
-    let endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd + 1;
+    let startInd, endInd;
+
+    if (displayOnlyChildren) {
+      if (range.selfCloseBegin !== undefined) {
+        return "";
+      }
+      startInd = range.openEnd + 1;
+      endInd = range.closeBegin;
+
+    } else {
+      startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
+      endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd + 1;
+    }
 
     let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);
+
+    if (displayOnlyChildren) {
+      // remove any leading linebreak
+      // or any trailing linebreak (possibility followed by spaces or tabs)
+      // to remove spacing due to just having the children on different lines from the enclosing parent tags
+      if (componentDoenetML[0] === "\n") {
+        componentDoenetML = componentDoenetML.slice(1)
+      }
+      componentDoenetML = componentDoenetML.replace(/\n[ \t]*$(?!\n)/, '')
+    }
 
     let lines = componentDoenetML.split("\n");
 
