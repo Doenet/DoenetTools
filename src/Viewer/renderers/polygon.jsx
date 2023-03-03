@@ -179,6 +179,10 @@ export default React.memo(function Polygon(props) {
         vertex.off('down');
       }
     }
+    polygonJXG.current.off('drag');
+    polygonJXG.current.off('up');
+    polygonJXG.current.off('down');
+    polygonJXG.current.off('hit');
     board.removeObject(polygonJXG.current);
     polygonJXG.current = null;
   }

@@ -87,7 +87,7 @@ export default React.memo(function Ref(props) {
         url = `tool=editor&${url}`;
       }
       url = `/public?${url}`
-    } else if(pageToolView.page === "placementexam") {
+    } else if (pageToolView.page === "placementexam") {
       url = `?tool=exam&${url}`
     } else {
       url = `?tool=assignment&${url}`
@@ -146,7 +146,6 @@ export default React.memo(function Ref(props) {
       if (externalUri || url === "#") {
         // for some reason, if url = "#", the <Link>, below, causes a refresh
         // as it removes the # from the url.  So we use a <a> directly in this case.
-        console.log('first case');
         return <a style={{
           color: 'var(--mainBlue)',
           borderRadius: '5px'
@@ -157,7 +156,6 @@ export default React.memo(function Ref(props) {
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = { fromLink: true }
         Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer?.[scrollAttribute], enumerable: true });
-        console.log('second case');
         return <Link
           style={{
             color: 'var(--mainBlue)',
