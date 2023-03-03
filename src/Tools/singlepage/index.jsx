@@ -16,6 +16,7 @@ import { RecoilRoot } from 'recoil';
 import HomePage from "../_framework/Pages/HomePage";
 import CommunityPage from "../_framework/Pages/CommunityPage";
 import PortfolioPage from "../_framework/Pages/PortfolioPage";
+import PortfolioAddActivityPage from "../_framework/Pages/PortfolioAddActivityPage";
 
 import ToolRoot from '../_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
@@ -39,6 +40,8 @@ import DarkmodeController from '../_framework/DarkmodeController';
 // doenet.org/public/community
 // doenet.org/public/portfolio
 // doenet.org/*
+// Subpath so loader is directly on the carousel subpath.  
+//The rest of the page works, just not that part.
 
 const router = createBrowserRouter([
   {
@@ -84,6 +87,15 @@ const router = createBrowserRouter([
   {
     path: "portfolio",
     element: <PortfolioPage />,
+  },
+  {
+    path: "portfolio/addActivity",
+    element: <PortfolioAddActivityPage />,
+  },
+  {
+    path: "portfolio/addActivity/submitAddActivity",
+    action:,
+    element: <div>Submitting!</div>,
   },
   {
     path: "*",

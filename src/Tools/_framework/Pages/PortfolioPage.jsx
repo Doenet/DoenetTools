@@ -56,6 +56,8 @@ const SectionHeading = styled.div`
 
 
 function Heading(props) {
+  let navigate = useNavigate();
+
   return <div style={{
     display: 'flex',
     flexDirection: 'column',
@@ -74,7 +76,7 @@ function Heading(props) {
       position: "absolute",
       bottom: "16px",
       right: "10px"
-  }}><Button value="Add Activity"/></div>
+  }}><Button value="Add Activity" onClick={() => navigate('addActivity')}/></div>
   </div>
 }
 
