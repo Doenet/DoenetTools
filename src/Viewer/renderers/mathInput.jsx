@@ -96,14 +96,18 @@ export default function MathInput(props) {
 
       return;
     }
-    if (text.split(' ')[0] == 'cmd') {
-      mathField.cmd(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'write') {
-      mathField.write(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'keystroke') {
-      mathField.keystroke(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'type') {
-      mathField.typedText(text.split(' ')[1]);
+    const splitCommand = text.split(' ');
+    const command = splitCommand[0];
+    const input = text.substring(command.length + 1);
+
+    if (command == 'cmd') {
+      mathField.cmd(input);
+    } else if (command == 'write') {
+      mathField.write(input);
+    } else if (command == 'keystroke') {
+      mathField.keystroke(input);
+    } else if (command == 'type') {
+      mathField.typedText(input);
     }
   };
 
