@@ -76,7 +76,7 @@ export default function checkEquality({
     }
   }
 
-  let normalize = function (x) {
+  let normalize = function (x, forNumeric = false) {
     if (!(x instanceof me.class)) {
       x = me.fromAst(x);
     }
@@ -87,20 +87,26 @@ export default function checkEquality({
       x = me.fromAst(setStringsInTreeToLowerCase(x.tree));
     }
 
-    if (simplify === "none") {
+    let effectiveSimplify = simplify, effectiveExpand = expand;
+    if (forNumeric) {
+      effectiveSimplify = "full";
+      effectiveExpand = true;
+    }
+
+    if (effectiveSimplify === "none") {
       if (allowedErrorInNumbers > 0) {
         // only if allowing rounding, do we replace constants with floats
         x = x.constants_to_floats();
       }
-    } else if (simplify === "numberspreserveorder") {
+    } else if (effectiveSimplify === "numberspreserveorder") {
       x = x.evaluate_numbers({ max_digits: Infinity, skip_ordering: true });
-    } else if (simplify === "number") {
+    } else if (effectiveSimplify === "number") {
       x = x.evaluate_numbers({ max_digits: Infinity });
     } else {
       x = x.evaluate_numbers({ max_digits: Infinity, evaluate_functions: true });
     }
     return normalizeMathExpression({
-      value: x, simplify: simplify, expand: expand
+      value: x, simplify: effectiveSimplify, expand: effectiveExpand
     });
   }
 
@@ -110,8 +116,14 @@ export default function checkEquality({
     if (symbolicEquality) {
       check_equality = function (a, b) {
 
-        let expr_a = normalize(a);
-        let expr_b = normalize(b);
+        let expr_a = a;
+        let expr_b = b;
+        if (!(a instanceof me.class)) {
+          expr_a = me.fromAst(a);
+        }
+        if (!(b instanceof me.class)) {
+          expr_b = me.fromAst(b);
+        }
 
         if (nSignErrorsMatched > 0) {
           // We have to make a deep copy
@@ -262,6 +274,11 @@ export default function checkEquality({
   let matchByExactPositionsOnRecursion = false;
 
   if (haveMathExpressions) {
+
+    // normalize at the beginning so that expand vectors, etc.
+    object1 = normalize(object1, !symbolicEquality);
+    object2 = normalize(object2, !symbolicEquality);
+
     // if can convert same type of math-expression
     // change object1 and object2 to array of asts
     // otherwise return that are unequal

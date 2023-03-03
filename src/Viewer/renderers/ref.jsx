@@ -72,7 +72,6 @@ export default React.memo(function Ref(props) {
     search, id
   });
 
-
   if (SVs.createButton) {
     if (targetForATag === "_blank") {
       return <span id={id}><a name={id} />
