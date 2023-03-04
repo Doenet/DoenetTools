@@ -82,6 +82,7 @@ import Map from './components/Map';
 import Sources from './components/Sources';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
+import Pegboard from './components/Pegboard';
 import Constraints from './components/Constraints';
 import ConstrainToGrid from './components/ConstrainToGrid';
 import ConstrainToGraph from './components/ConstrainToGraph';
@@ -258,6 +259,7 @@ const componentTypeArray = [
   Markers,
   Panel,
   Map, Sources,
+  Pegboard,
   Constraints,
   ConstrainToGrid,
   ConstrainToGraph,
