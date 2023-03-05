@@ -22,6 +22,10 @@ import ToolRoot from '../_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
 import { mathjaxConfig } from '../../Core/utils/math';
 import DarkmodeController from '../_framework/DarkmodeController';
+import SiteHeader from "../_framework/Paths/SiteHeader";
+import Community from "../_framework/Paths/Community";
+import Portfolio from "../_framework/Paths/Portfolio";
+import Home from "../_framework/Paths/Home";
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 {/* <div>
 <h1>Home</h1>
@@ -46,57 +50,79 @@ import DarkmodeController from '../_framework/DarkmodeController';
 const router = createBrowserRouter([
   {
     path: "/",
-    loader: async ({request}) => {
-      const resp = await fetch('/api/getHPCarouselData.php',{signal: request.signal});
-      const dataArray = await resp.json();
-      return dataArray;
-    },
-    element: (<RecoilRoot>
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <HomePage />
-        </MathJaxContext>
-      </DarkmodeController>
-  </RecoilRoot>
-    ),
+    element: <SiteHeader />,
+    children: [
+      {
+        index:true,
+        element:<Home />,
+
+      },
+      {
+        children: [ {
+        path: "community",
+        element: <Community />
+      },
+      {
+        path: "portfolio",
+        element: <Portfolio />
+      },
+    ],
+      }
+      
+    ]
   },
-  {
-    path: "community",
-    loader: async ({request}) => {
-      const resp = await fetch('/api/getHPCarouselData.php',{signal: request.signal});
-      const dataArray = await resp.json();
-      return dataArray;
-    },
-    element: (<RecoilRoot>
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <CommunityPage />
-        </MathJaxContext>
-      </DarkmodeController>
-  </RecoilRoot>
-    ),
-  },
-  {
-    path: "portfolio",
-    element: <PortfolioPage />,
-  },
-  {
-    path: "portfolio/addActivity",
-    element: <PortfolioAddActivityPage />,
-  },
-  {
-    path: "portfolio/addActivity/submitAddActivity",
-    action:,
-    element: <div>Submitting!</div>,
-  },
+  // {
+  //   path: "/",
+  //   loader: async ({request}) => {
+  //     const resp = await fetch('/api/getHPCarouselData.php',{signal: request.signal});
+  //     const dataArray = await resp.json();
+  //     return dataArray;
+  //   },
+  //   element: (<RecoilRoot>
+  //     <DarkmodeController>
+  //       <MathJaxContext
+  //         version={2}
+  //         config={mathjaxConfig}
+  //         onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+  //       >
+  //         <HomePage />
+  //       </MathJaxContext>
+  //     </DarkmodeController>
+  // </RecoilRoot>
+  //   ),
+  // },
+  // {
+  //   path: "community",
+  //   loader: async ({request}) => {
+  //     const resp = await fetch('/api/getHPCarouselData.php',{signal: request.signal});
+  //     const dataArray = await resp.json();
+  //     return dataArray;
+  //   },
+  //   element: (<RecoilRoot>
+  //     <DarkmodeController>
+  //       <MathJaxContext
+  //         version={2}
+  //         config={mathjaxConfig}
+  //         onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+  //       >
+  //         <CommunityPage />
+  //       </MathJaxContext>
+  //     </DarkmodeController>
+  // </RecoilRoot>
+  //   ),
+  // },
+  // {
+  //   path: "portfolio",
+  //   element: <PortfolioPage />,
+  // },
+  // {
+  //   path: "portfolio/addActivity",
+  //   element: <PortfolioAddActivityPage />,
+  // },
+  // {
+  //   path: "portfolio/addActivity/submitAddActivity",
+  //   element: <div>Submitting!</div>,
+  // },
   {
     path: "*",
     errorElement: <div>Error!</div>,
