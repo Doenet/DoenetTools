@@ -3418,6 +3418,9 @@ export default class Core {
       let copyComponentType = stateDef.public && stateDef.shadowingInstructions.hasVariableComponentType;
 
       if (stateDef.isArray) {
+
+        let overrideVarNameWith = differentStateVariablesInTarget[varInd];
+
         stateDef.returnArrayDependenciesByKey = function ({ arrayKeys }) {
           let dependenciesByKey = {};
 
@@ -3426,7 +3429,7 @@ export default class Core {
               targetVariable: {
                 dependencyType: "stateVariable",
                 componentName: targetComponent.componentName,
-                variableName: this.arrayVarNameFromArrayKey(key),
+                variableName: overrideVarNameWith || this.arrayVarNameFromArrayKey(key),
               }
             };
           }
