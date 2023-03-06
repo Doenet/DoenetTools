@@ -14,17 +14,16 @@ date_default_timezone_set('UTC');
 $jwtArray = include 'jwtArray.php';
 $requestorUserId = $jwtArray['userId'];
 
-
 $success = true;
 $message = '';
 
 if (!isset($_GET['userId'])) {
     $success = false;
     $message = 'Internal Error: missing userId';
-}elseif (!isset($_GET['score'])) {
+} elseif (!isset($_GET['score'])) {
     $success = false;
     $message = 'Internal Error: missing score';
-}elseif (!isset($_GET['doenetId'])) {
+} elseif (!isset($_GET['doenetId'])) {
     $success = false;
     $message = 'Internal Error: missing doenetId';
 }
@@ -69,40 +68,37 @@ if ($success) {
     }
 }
 
-
 if ($success) {
     $creditOverride = $score / $totalPointsOrPercent;
 
-        // if we don't have a record for this user on the user_assignment table then we need to insert not update
-        $result = $conn->query(
-            "SELECT creditOverride
+    // if we don't have a record for this user on the user_assignment table then we need to insert not update
+    $result = $conn->query(
+        "SELECT creditOverride
             FROM user_assignment
             WHERE doenetId = '$doenetId'
             AND userId = '$userId'"
-        );
+    );
 
-        $need_insert = true;
-        if ($result->num_rows > 0) {
-            $need_insert = false;
-        }
+    $need_insert = true;
+    if ($result->num_rows > 0) {
+        $need_insert = false;
+    }
 
-
-        if ($need_insert) {
-            // insert creditOverride in user_assigment
-            $sql = "INSERT INTO user_assignment (doenetId,userId,creditOverride)
+    if ($need_insert) {
+        // insert creditOverride in user_assigment
+        $sql = "INSERT INTO user_assignment (doenetId,userId,credit,creditOverride)
               VALUES
-              ('$doenetId','$userId','$creditOverride')
+              ('$doenetId','$userId','$creditOverride','$creditOverride')
               ";
-        } else {
-            // update creditOverride in user_assigment
-            $sql = "UPDATE user_assignment
-              SET creditOverride='$creditOverride'
+    } else {
+        // update creditOverride in user_assigment
+        $sql = "UPDATE user_assignment
+              SET credit='$creditOverride', creditOverride='$creditOverride'
               WHERE userId = '$userId'
               AND doenetId = '$doenetId'
               ";
-        }
-        $result = $conn->query($sql);
-
+    }
+    $result = $conn->query($sql);
 }
 
 $response_arr = [
