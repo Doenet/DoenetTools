@@ -5,6 +5,14 @@ import { setUpVariantSeedAndRng } from '../utils/variants';
 import CompositeComponent from './abstract/CompositeComponent';
 
 export default class SampleRandomNumbers extends CompositeComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      resample: this.resample.bind(this),
+    });
+
+  }
   static componentType = "sampleRandomNumbers";
 
   static assignNamesToReplacements = true;
@@ -632,10 +640,5 @@ export default class SampleRandomNumbers extends CompositeComponent {
     });
 
   }
-
-
-  actions = {
-    resample: this.resample.bind(this),
-  };
 
 }

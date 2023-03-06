@@ -4,6 +4,15 @@ import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggering
 import InlineComponent from './abstract/InlineComponent';
 
 export default class CallAction extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      callAction: this.callAction.bind(this),
+      callActionIfTriggerNewlyTrue: this.callActionIfTriggerNewlyTrue.bind(this),
+    });
+
+  }
   static componentType = "callAction";
 
   static acceptTarget = true;
@@ -197,9 +206,4 @@ export default class CallAction extends InlineComponent {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
-
-  actions = {
-    callAction: this.callAction.bind(this),
-    callActionIfTriggerNewlyTrue: this.callActionIfTriggerNewlyTrue.bind(this),
-  };
 }

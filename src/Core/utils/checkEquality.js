@@ -1,7 +1,9 @@
 import me from 'math-expressions';
 import { deepCompare } from './deepFunctions';
-import { normalizeMathExpression } from './math';
+import { normalizeMathExpression, vectorOperators } from './math';
 import periodicSetEquality from './periodicSetEquality';
+
+const nonTupleVectorOperators = ["vector", "altvector"];
 
 export default function checkEquality({
   object1, object2, isUnordered = false, partialMatches = false,
@@ -74,7 +76,7 @@ export default function checkEquality({
     }
   }
 
-  let normalize = function (x) {
+  let normalize = function (x, forNumeric = false) {
     if (!(x instanceof me.class)) {
       x = me.fromAst(x);
     }
@@ -85,20 +87,26 @@ export default function checkEquality({
       x = me.fromAst(setStringsInTreeToLowerCase(x.tree));
     }
 
-    if (simplify === "none") {
+    let effectiveSimplify = simplify, effectiveExpand = expand;
+    if (forNumeric) {
+      effectiveSimplify = "full";
+      effectiveExpand = true;
+    }
+
+    if (effectiveSimplify === "none") {
       if (allowedErrorInNumbers > 0) {
         // only if allowing rounding, do we replace constants with floats
         x = x.constants_to_floats();
       }
-    } else if (simplify === "numberspreserveorder") {
+    } else if (effectiveSimplify === "numberspreserveorder") {
       x = x.evaluate_numbers({ max_digits: Infinity, skip_ordering: true });
-    } else if (simplify === "number") {
+    } else if (effectiveSimplify === "number") {
       x = x.evaluate_numbers({ max_digits: Infinity });
     } else {
       x = x.evaluate_numbers({ max_digits: Infinity, evaluate_functions: true });
     }
     return normalizeMathExpression({
-      value: x, simplify: simplify, expand: expand
+      value: x, simplify: effectiveSimplify, expand: effectiveExpand
     });
   }
 
@@ -108,8 +116,14 @@ export default function checkEquality({
     if (symbolicEquality) {
       check_equality = function (a, b) {
 
-        let expr_a = normalize(a);
-        let expr_b = normalize(b);
+        let expr_a = a;
+        let expr_b = b;
+        if (!(a instanceof me.class)) {
+          expr_a = me.fromAst(a);
+        }
+        if (!(b instanceof me.class)) {
+          expr_b = me.fromAst(b);
+        }
 
         if (nSignErrorsMatched > 0) {
           // We have to make a deep copy
@@ -260,6 +274,11 @@ export default function checkEquality({
   let matchByExactPositionsOnRecursion = false;
 
   if (haveMathExpressions) {
+
+    // normalize at the beginning so that expand vectors, etc.
+    object1 = normalize(object1, !symbolicEquality);
+    object2 = normalize(object2, !symbolicEquality);
+
     // if can convert same type of math-expression
     // change object1 and object2 to array of asts
     // otherwise return that are unequal
@@ -304,7 +323,7 @@ export default function checkEquality({
       // a list of length 1
       // make object1 act like a list of the one element
       object1 = [object1.tree];
-    } else if (object1_operator === "vector") {
+    } else if (nonTupleVectorOperators.includes(object1_operator)) {
       // change object1 to array of elements
       object1 = object1.tree.slice(1);
 
@@ -313,7 +332,7 @@ export default function checkEquality({
         || object2_operator === "set"
       ) {
         return { fraction_equal: 0 };
-      } else if (object2_operator === "tuple" || object2_operator === "vector") {
+      } else if (vectorOperators.includes(object2_operator)) {
         // since we can convert tuple to vector
         // change object2 to array of selements
         object2 = object2.tree.slice(1);
@@ -322,7 +341,7 @@ export default function checkEquality({
         // make object2 array of the one element
         object2 = [object2.tree];
       }
-    } else if (object2_operator === "vector") {
+    } else if (nonTupleVectorOperators.includes(object2_operator)) {
       // change object2 to array of elements
       object2 = object2.tree.slice(1);
 

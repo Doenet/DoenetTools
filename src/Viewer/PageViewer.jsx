@@ -5,13 +5,16 @@ import { serializedComponentsReplacer, serializedComponentsReviver } from '../Co
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererState } from './renderers/useDoenetRenderer';
-import { atom, atomFamily, useRecoilCallback } from 'recoil';
+import { atom, atomFamily, useRecoilCallback, useRecoilValue } from 'recoil';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import axios from 'axios';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
+import { itemByDoenetId } from '../_reactComponents/Course/CourseActions';
+
 import cssesc from 'cssesc';
 
 const rendererUpdatesToIgnore = atomFamily({
@@ -140,6 +143,13 @@ export default function PageViewer(props) {
 
   const previousLocationKeys = useRef([]);
 
+  const pageToolView = useRecoilValue(pageToolViewAtom);
+  const itemInCourse = useRecoilValue(itemByDoenetId(props.doenetId));
+  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
+
+  let navigate = useNavigate();
+
+
   let location = useLocation();
   let hash = location.hash;
 
@@ -192,6 +202,10 @@ export default function PageViewer(props) {
           setErrMsg(e.data.args.errMsg);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
+        } else if (e.data.messageType === "copyToClipboard") {
+          copyToClipboard(e.data.args);
+        } else if (e.data.messageType === "navigateToTarget") {
+          navigateToTarget(e.data.args);
         } else if (e.data.messageType === "terminated") {
           terminateCoreAndAnimations();
         }
@@ -881,7 +895,50 @@ export default function PageViewer(props) {
 
   }
 
+  async function copyToClipboard({ text, actionId }) {
+    await navigator.clipboard.writeText(text);
 
+    resolveAction({ actionId });
+  }
+
+
+  async function navigateToTarget({ cid, doenetId, variantIndex, edit, hash, page, uri, targetName, actionId, componentName, effectiveName }) {
+
+    let id = prefixForIds + effectiveName;
+    let { targetForATag, url, haveValidTarget, externalUri } = getURLFromRef({
+      cid, doenetId, variantIndex, edit, hash, page,
+      givenUri: uri,
+      targetName,
+      pageToolView,
+      inCourse: Object.keys(itemInCourse).length > 0,
+      search: location.search,
+      id
+    });
+
+
+    if (haveValidTarget) {
+
+      if (targetForATag === "_blank") {
+        window.open(url, targetForATag);
+      } else {
+
+        // TODO: when fix regular ref navigation to scroll back to previous scroll position
+        // when click the back button
+        // add that ability to this navigation as well
+
+        // let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
+        // let stateObj = { fromLink: true }
+        // Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer?.[scrollAttribute], enumerable: true });
+
+        navigate(url)
+      }
+
+
+    }
+
+
+    resolveAction({ actionId });
+  }
 
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
@@ -1055,4 +1112,84 @@ class ErrorBoundary extends React.Component {
     }
     return this.props.children;
   }
+}
+
+
+export function getURLFromRef({
+  cid, doenetId, variantIndex,
+  edit, hash, page,
+  givenUri,
+  targetName = "",
+  pageToolView = {},
+  inCourse = false,
+  search = "",
+  id = ""
+}) {
+
+  let url = "";
+  let targetForATag = "_blank";
+  let haveValidTarget = false;
+  let externalUri = false;
+  if (cid || doenetId) {
+    if (cid) {
+      url = `cid=${cid}`;
+    } else {
+      url = `doenetId=${doenetId}`;
+    }
+    if (variantIndex) {
+      url += `&variant=${variantIndex}`;
+    }
+
+    let usePublic = false;
+    if (pageToolView.page === "public") {
+      usePublic = true;
+    } else if (!inCourse) {
+      usePublic = true;
+    }
+    if (usePublic) {
+      if (edit === true || edit === null && pageToolView.page === "public" && pageToolView.tool === "editor") {
+        url = `tool=editor&${url}`;
+      }
+      url = `/public?${url}`;
+    } else if (pageToolView.page === "placementexam") {
+      url = `?tool=exam&${url}`;
+    } else {
+      url = `?tool=assignment&${url}`;
+    }
+
+    haveValidTarget = true;
+
+    if (hash) {
+      url += hash;
+    } else {
+      if (page) {
+        url += `#page${page}`;
+        if (targetName) {
+          url += targetName;
+        }
+      } else if (targetName) {
+        url += '#' + targetName;
+      }
+    }
+  } else if (givenUri) {
+    url = givenUri;
+    if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
+      haveValidTarget = true;
+      externalUri = true;
+    }
+  } else {
+    url += search;
+
+    if (page) {
+      url += `#page${page}`;
+    } else {
+      let firstSlash = id.indexOf("/");
+      let prefix = id.substring(0, firstSlash);
+      url += "#" + prefix;
+    }
+    url += targetName;
+    targetForATag = null;
+    haveValidTarget = true;
+  }
+  return { targetForATag, url, haveValidTarget, externalUri };
 }

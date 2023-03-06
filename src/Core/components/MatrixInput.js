@@ -1,7 +1,7 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
 import { deepClone, deepCompare } from '../utils/deepFunctions';
-import { convertValueToMathExpression, getFromLatex, normalizeLatexString, roundForDisplay, stripLatex } from '../utils/math';
+import { convertValueToMathExpression, getFromLatex, normalizeLatexString, roundForDisplay, stripLatex, vectorOperators } from '../utils/math';
 import CompositeComponent from './abstract/CompositeComponent';
 import BaseComponent from './abstract/BaseComponent';
 
@@ -9,10 +9,10 @@ export class MatrixInput extends Input {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateNumRows: this.updateNumRows.bind(this),
       updateNumColumns: this.updateNumColumns.bind(this)
-    };
+    });
 
     this.externalActions = {};
 
@@ -338,7 +338,7 @@ export class MatrixInput extends Input {
             let operator = originalTree[0];
             if (operator === "matrix") {
               numRows = originalTree[1][1];
-            } else if (operator === "vector" || operator == "tuple") {
+            } else if (vectorOperators.includes(operator)) {
               numRows = originalTree.length - 1;
             }
 
@@ -366,7 +366,7 @@ export class MatrixInput extends Input {
           let originalTree = dependencyValues.valueOriginal.tree;
           let defaultEntryTree = (await stateValues.defaultEntry).tree;
           if (await stateValues.numColumns === 1 && Array.isArray(originalTree)
-            && (originalTree[0] === "vector" || originalTree[0] === "tuple")
+            && vectorOperators.includes(originalTree[0])
           ) {
             // original value was a vector
             // so we keep it a vector
@@ -483,7 +483,7 @@ export class MatrixInput extends Input {
             if (operator === "matrix") {
               numColumns = originalTree[1][2];
             } else if (Array.isArray(originalTree[1])
-              && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+              && vectorOperators.includes(originalTree[1][0])
               && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
             ) {
               numColumns = originalTree[1].length - 1;
@@ -514,7 +514,7 @@ export class MatrixInput extends Input {
           let operator = originalTree[0];
 
           if (Array.isArray(originalTree[1])
-            && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+            && vectorOperators.includes(originalTree[1][0])
             && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
           ) {
 
@@ -627,7 +627,7 @@ export class MatrixInput extends Input {
 
             return { setValue: { accumulatedComponents } }
 
-          } else if (operator === "vector" || operator === "tuple") {
+          } else if (vectorOperators.includes(operator)) {
             // treat vector/tuple as first column in matrix
 
             for (let [rowInd, comp] of originalTree.slice(1).entries()) {
@@ -641,7 +641,7 @@ export class MatrixInput extends Input {
             return { setValue: { accumulatedComponents } }
 
           } else if (Array.isArray(originalTree[1])
-            && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+            && vectorOperators.includes(originalTree[1][0])
             && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
           ) {
             // treat transpose of vector/tuple as first row in matrix
@@ -796,7 +796,7 @@ export class MatrixInput extends Input {
             return { setValue: { componentValues } }
 
 
-          } else if (operator === "vector" || operator === "tuple") {
+          } else if (vectorOperators.includes(operator)) {
 
             // treat vector/tuple as first column in matrix
 
@@ -830,7 +830,7 @@ export class MatrixInput extends Input {
             return { setValue: { componentValues } }
 
           } else if (Array.isArray(originalTree[1])
-            && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+            && vectorOperators.includes(originalTree[1][0])
             && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
           ) {
 
@@ -921,12 +921,12 @@ export class MatrixInput extends Input {
         if (Array.isArray(originalTree)) {
 
           let operator = originalTree[0];
-          if (operator === "vector" || operator === "tuple") {
+          if (vectorOperators.includes(operator)) {
             originalIsColumnVector = true;
           } else if (operator === "matrix") {
             originalIsMatrix = true;
           } else if (Array.isArray(originalTree[1])
-            && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+            && vectorOperators.includes(originalTree[1][0])
             && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
           ) {
             originalIsRowVector = true;
@@ -1194,7 +1194,7 @@ export class MatrixInput extends Input {
             return { setValue: { componentImmediateValues } }
 
 
-          } else if (operator === "vector" || operator === "tuple") {
+          } else if (vectorOperators.includes(operator)) {
 
             // treat vector/tuple as first column in matrix
 
@@ -1228,7 +1228,7 @@ export class MatrixInput extends Input {
             return { setValue: { componentImmediateValues } }
 
           } else if (Array.isArray(originalTree[1])
-            && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+            && vectorOperators.includes(originalTree[1][0])
             && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
           ) {
 
@@ -1319,12 +1319,12 @@ export class MatrixInput extends Input {
         if (Array.isArray(originalTree)) {
 
           let operator = originalTree[0];
-          if (operator === "vector" || operator === "tuple") {
+          if (vectorOperators.includes(operator)) {
             originalIsColumnVector = true;
           } else if (operator === "matrix") {
             originalIsMatrix = true;
           } else if (Array.isArray(originalTree[1])
-            && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+            && vectorOperators.includes(originalTree[1][0])
             && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
           ) {
             originalIsRowVector = true;
@@ -1601,7 +1601,7 @@ export class MatrixInput extends Input {
             if (Array.isArray(originalTree)) {
 
               let operator = originalTree[0];
-              if (operator === "vector" || operator === "tuple") {
+              if (vectorOperators.includes(operator)) {
                 // if original value was a vector, then keep it as a vector
                 let desiredValue = me.fromAst([operator, ...desiredTree[2].slice(1).map(x => x[1])])
                 return {
@@ -1619,7 +1619,7 @@ export class MatrixInput extends Input {
               let operator = originalTree[0];
 
               if (Array.isArray(originalTree[1])
-                && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+                && vectorOperators.includes(originalTree[1][0])
                 && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
               ) {
                 // if original value was the transpose of a vector, 
@@ -1716,7 +1716,7 @@ export class MatrixInput extends Input {
             if (Array.isArray(originalTree)) {
 
               let operator = originalTree[0];
-              if (operator === "vector" || operator === "tuple") {
+              if (vectorOperators.includes(operator)) {
                 // if original immediateValue was a vector, then keep it as a vector
                 let desiredValue = me.fromAst([operator, ...desiredTree[2].slice(1).map(x => x[1])])
                 return {
@@ -1734,7 +1734,7 @@ export class MatrixInput extends Input {
               let operator = originalTree[0];
 
               if (Array.isArray(originalTree[1])
-                && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
+                && vectorOperators.includes(originalTree[1][0])
                 && ((operator === "^" && originalTree[2] === "T") || operator === "prime")
               ) {
                 // if original immediateValue was the transpose of a vector, 
@@ -2232,10 +2232,10 @@ export default class MatrixComponentInput extends BaseComponent {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateRawValue: this.updateRawValue.bind(this),
       updateValue: this.updateValue.bind(this)
-    };
+    });
 
   }
   static componentType = "matrixComponentInput";

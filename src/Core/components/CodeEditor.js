@@ -1,6 +1,17 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class CodeEditor extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      updateImmediateValue: this.updateImmediateValue.bind(this),
+      updateValue: this.updateValue.bind(this),
+      updateComponents: this.updateComponents.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "codeEditor";
 
   static variableForPlainMacro = "value";
@@ -429,12 +440,5 @@ export default class CodeEditor extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    updateImmediateValue: this.updateImmediateValue.bind(this),
-    updateValue: this.updateValue.bind(this),
-    updateComponents: this.updateComponents.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 }

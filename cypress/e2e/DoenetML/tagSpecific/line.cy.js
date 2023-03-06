@@ -769,7 +769,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_line1'].stateValues.equation).eqls([ "/", "＿", 2 ]);
+      expect(stateVariables['/_line1'].stateValues.equation).eqls(["/", "＿", 2]);
       expect(stateVariables['/_line1'].stateValues.coeff0).eq("\uff3f");
       expect(stateVariables['/_line1'].stateValues.coeffvar1).eq("\uff3f");
       expect(stateVariables['/_line1'].stateValues.coeffvar2).eq("\uff3f");
@@ -784,7 +784,7 @@ describe('Line Tag Tests', function () {
       expect(stateVariables['/_line3'].stateValues.coeffvar1).eq("\uff3f");
       expect(stateVariables['/_line3'].stateValues.coeffvar2).eq("\uff3f");
 
-      expect(stateVariables['/_line4'].stateValues.equation).eqls([ "/", "＿", 2 ]);
+      expect(stateVariables['/_line4'].stateValues.equation).eqls(["/", "＿", 2]);
       expect(stateVariables['/_line4'].stateValues.coeff0).eq("\uff3f");
       expect(stateVariables['/_line4'].stateValues.coeffvar1).eq("\uff3f");
       expect(stateVariables['/_line4'].stateValues.coeffvar2).eq("\uff3f");

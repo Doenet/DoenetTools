@@ -9,17 +9,6 @@ export default class Rectangle extends Polygon {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    attributes.draggable = {
-      createComponentOfType: "boolean",
-      createStateVariable: "draggable",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
-    };
-
-    attributes.vertices = {
-      createComponentOfType: "_pointListComponent",
-    }
     attributes.center = {
       createComponentOfType: "point"
     }

@@ -45,15 +45,17 @@ export default React.memo(function Polygon(props) {
     }
 
     let fixed = !SVs.draggable || SVs.fixed;
+    let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
 
     jsxPointAttributes.current = {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      visible: !fixed && !SVs.hidden,
+      visible: !verticesFixed && !SVs.hidden,
       withLabel: false,
       layer: 10 * SVs.layer + 9,
+      highlight: true,
     };
 
     let jsxBorderAttributes = {
@@ -177,6 +179,10 @@ export default React.memo(function Polygon(props) {
         vertex.off('down');
       }
     }
+    polygonJXG.current.off('drag');
+    polygonJXG.current.off('up');
+    polygonJXG.current.off('down');
+    polygonJXG.current.off('hit');
     board.removeObject(polygonJXG.current);
     polygonJXG.current = null;
   }
@@ -312,7 +318,8 @@ export default React.memo(function Polygon(props) {
       }
 
       let fixed = !SVs.draggable || SVs.fixed;
-      let verticesVisible = !fixed && !SVs.hidden;
+      let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
+      let verticesVisible = !verticesFixed && !SVs.hidden;
 
       for (let i = 0; i < SVs.nVertices; i++) {
         polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalVertices[i]]);

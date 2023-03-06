@@ -2244,4 +2244,50 @@ describe('Angle Tag Tests', function () {
 
   })
 
+  it('emphasize right angle', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <graph>
+    <angle name="a1" through="(-5,0) (0,0) (0,-5)" />
+    <angle name="a2" through="(5,0) (0,0) (0,-5)" emphasizeRightAngle="false" />
+    <angle name="a3" through="(5,0) (0,0) (0,5)" emphasizeRightAngle="$bi3" />
+  </graph>
+
+  <p>Emphasize right angle 1: <booleanInput name="bi1" bindValueTo="$a1.emphasizeRightAngle" /></p>
+  <p>Emphasize right angle 2: <booleanInput name="bi2" bindValueTo="$a2.emphasizeRightAngle" /></p>
+  <p>Emphasize right angle 3: <booleanInput name="bi3" /></p>
+
+  <p name="emphasize">Emphasize right angle: $a1.emphasizeRightAngle, $a2.emphasizeRightAngle, $a3.emphasizeRightAngle</p>
+  
+  `}, "*");
+    });
+
+    // TODO: How to check renderer itself?
+
+    cy.get('#\\/emphasize').should("have.text", "Emphasize right angle: true, false, false");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/a1'].stateValues.emphasizeRightAngle).eq(true);
+      expect(stateVariables['/a2'].stateValues.emphasizeRightAngle).eq(false);
+      expect(stateVariables['/a3'].stateValues.emphasizeRightAngle).eq(false);
+    })
+
+    cy.get('#\\/bi1').click();
+    cy.get('#\\/bi2').click();
+    cy.get('#\\/bi3').click();
+
+
+    cy.get('#\\/emphasize').should("have.text", "Emphasize right angle: false, true, true");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/a1'].stateValues.emphasizeRightAngle).eq(false);
+      expect(stateVariables['/a2'].stateValues.emphasizeRightAngle).eq(true);
+      expect(stateVariables['/a3'].stateValues.emphasizeRightAngle).eq(true);
+    })
+
+  })
+
 });

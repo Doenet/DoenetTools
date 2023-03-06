@@ -5,9 +5,9 @@ export default class BooleanInput extends Input {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateBoolean: this.updateBoolean.bind(this)
-    };
+    });
 
     this.externalActions = {};
 

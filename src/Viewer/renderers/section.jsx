@@ -56,8 +56,8 @@ export default React.memo(function Section(props) {
   // is just asking for trouble
   if (SVs.titleChildName) {
     for (let [ind, child] of children.entries()) {
-      //child might be a string
-      if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
+      //child might be null or a string
+      if (child?.props?.componentInstructions.componentName === SVs.titleChildName) {
         title = children[ind];
         children.splice(ind, 1); // remove title
         break;

@@ -18288,7 +18288,7 @@ describe('Answer Tag Tests', function () {
       </choiceInput>
     
     </sideBySide>
-    <copy prop='selectedValue' target='choice1' />
+    <copy prop='selectedValue' target='choice1' assignNames="sv" />
     
     <answer>
       <award><when><copy prop='selectedValue' target='choice1' /> = 4</when></award>
@@ -18304,6 +18304,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Select correct answer")
     cy.get('#\\/choice1').select(`4`);
+    cy.get('#\\/sv').should('have.text', '4');
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -18319,6 +18320,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Select incorrect answer and submit")
     cy.get('#\\/choice1').select(`3`);
+    cy.get('#\\/sv').should('have.text', '3');
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
@@ -21959,6 +21961,50 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/ti_submit').click();
     cy.get('#\\/ti_correct').should('be.visible');
+
+
+  });
+
+  it('a function defined by formula uses formula for a response', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Type the function <m>f(x) = <function name="correctFunction">x^2</function></m></p>
+  <p><m>f(x) = </m><mathInput name="userFormula"/></p>
+  
+  <answer>
+    <award>
+      <when>$userFormula = $correctFunction</when>
+    </award>
+  </answer>
+
+  <p>Submitted responses: <copy prop="submittedResponses" source="_answer1" assignNames="sr1 sr2" /></p>
+
+  `}, "*");
+    });
+
+
+    cy.get("#\\/_p1").should("contain.text", "Type the function");
+
+
+    cy.get("#\\/userFormula textarea").type("x^2{enter}", { force: true });
+
+    cy.get("#\\/_answer1_submit").click();
+
+    cy.get("#\\/_answer1_correct").should("be.visible");
+
+    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "x2");
+    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
+
+    cy.get("#\\/userFormula textarea").type("{home}3{enter}", { force: true });
+
+    cy.get("#\\/_answer1_submit").click();
+
+    cy.get("#\\/_answer1_incorrect").should("be.visible");
+
+    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "3x2");
+    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
 
 
   });

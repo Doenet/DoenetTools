@@ -816,19 +816,11 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
   let operands = logicTree.slice(1);
 
   if (["and", "not", "or"].includes(operator)) {
-    if (operator === "apply") {
-      return [operator, operands[0], ...operands.slice(1).map(x => splitSymbolsIfMath({
-        logicTree: x,
-        nonMathCodes, foundNonMath,
-        init
-      }))]
-    } else {
-      return [operator, ...operands.map(x => splitSymbolsIfMath({
-        logicTree: x,
-        nonMathCodes, foundNonMath,
-        init
-      }))]
-    }
+    return [operator, ...operands.map(x => splitSymbolsIfMath({
+      logicTree: x,
+      nonMathCodes, foundNonMath,
+      init
+    }))]
   }
 
   if (operands.some(x => nonMathCodes.includes(x))) {
@@ -836,11 +828,79 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
   }
 
   if (operator === "apply") {
-    return [operator, operands[0], ...operands.slice(1).map(x => splitSymbolsIfMath({
+
+    operands = [operands[0], ...operands.slice(1).map(x => splitSymbolsIfMath({
       logicTree: x,
       nonMathCodes, foundNonMath,
       init: false
-    }))]
+    }))];
+
+    // look for int
+    let foundInt = false;
+    if (operands[0] === "int") {
+      foundInt = true;
+    } else if (Array.isArray(operands[0])) {
+      if (operands[0][0] === "^") {
+        if (operands[0][1] === "int") {
+          foundInt = true;
+        } else if (Array.isArray(operands[0][1])) {
+          if (operands[0][1][0] === "_" && operands[0][1][1] === "int") {
+            foundInt = true;
+          }
+        }
+      } else if (operands[0][0] === "_") {
+        if (operands[0][1] === "int") {
+          foundInt = true;
+        }
+      }
+    }
+
+    if (foundInt) {
+
+
+      // round trip from tree -> math-expression -> tree to flatten tree
+      operands = me.fromAst([operator, ...operands]).tree.slice(1);
+
+      let integrand = operands[1];
+      if (Array.isArray(integrand) && integrand[0] === "*") {
+        // look for consecutive factors of "d" followed by a string
+
+        let ds = [];
+        for (let i = 0; i < integrand.length - 1; i++) {
+          let factor1 = integrand[i];
+          if (factor1 === "d") {
+            let factor2 = integrand[i + 1];
+            integrand.splice(i, 2);
+            ds.push(["d", factor2]);
+            i--;
+          }
+        }
+        integrand.push(...ds);
+
+      }
+    }
+    return [operator, ...operands];
+  } else if (operator === "angle") {
+    let newOperands = [];
+    for (let op of operands) {
+      if (typeof op === "string" && !foundNonMath) {
+        let splitResult = fromTextSplit(op).tree;
+        if (splitResult[0] === "*") {
+          newOperands.push(...splitResult.slice(1))
+        } else {
+          newOperands.push(splitResult)
+        }
+      } else {
+        newOperands.push(
+          splitSymbolsIfMath({
+            logicTree: op,
+            nonMathCodes, foundNonMath,
+            init: false
+          })
+        )
+      }
+    }
+    return [operator, ...newOperands];
   } else {
     return [operator, ...operands.map(x => splitSymbolsIfMath({
       logicTree: x,

@@ -6,8 +6,17 @@ import { nanoid } from 'nanoid';
 export default class AnimateFromSequence extends BaseComponent {
   constructor(args) {
     super(args);
-    this.advanceAnimation = this.advanceAnimation.bind(this);
+
+    Object.assign(this.actions, {
+      changedAnimationOn: this.changedAnimationOn.bind(this),
+      advanceAnimation: this.advanceAnimation.bind(this),
+      startAnimation: this.startAnimation.bind(this),
+      stopAnimation: this.stopAnimation.bind(this),
+      toggleAnimation: this.toggleAnimation.bind(this),
+    });
+
   }
+
   static componentType = "animateFromSequence";
   static rendererType = undefined;
 
@@ -205,7 +214,7 @@ export default class AnimateFromSequence extends BaseComponent {
           }
         } else {
           // if not number, just try to find in sequence
-          let desiredValue = stateVariablesToUpdate.value;
+          let desiredValue = desiredStateVariableValues.value;
           let index = dependencyValues.possibleValues.indexOf(desiredValue);
           if (index === -1) {
             return { success: false };
@@ -659,10 +668,12 @@ export default class AnimateFromSequence extends BaseComponent {
 
   async advanceAnimation({ previousAnimationId, actionId }) {
 
+    let animationOn = await this.stateValues.animationOn;
+
     // especially given delays in posting messages,
     // it's possible that advanceAnimation is called from
     // a animationId that was supposed to have been canceled
-    if (previousAnimationId === this.canceledAnimationId) {
+    if (previousAnimationId === this.canceledAnimationId || !animationOn) {
       this.coreFunctions.resolveAction({ actionId });
       return;
     }
@@ -780,14 +791,6 @@ export default class AnimateFromSequence extends BaseComponent {
       actionId,
     })
   }
-
-  actions = {
-    changedAnimationOn: this.changedAnimationOn.bind(this),
-    advanceAnimation: this.advanceAnimation.bind(this),
-    startAnimation: this.startAnimation.bind(this),
-    stopAnimation: this.stopAnimation.bind(this),
-    toggleAnimation: this.toggleAnimation.bind(this),
-  };
 
 
   async getUpdateInstructionsToSetTargetsToValue(value) {

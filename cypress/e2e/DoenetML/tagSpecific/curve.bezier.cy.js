@@ -10601,7 +10601,7 @@ describe('Curve Tag Bezier Tests', function () {
         componentName: "/c",
         args: {
           controlVectorInds: [1, 0],
-          controlVector: [3,-5]
+          controlVector: [3, -5]
         }
       })
       await win.callAction1({
@@ -10609,7 +10609,7 @@ describe('Curve Tag Bezier Tests', function () {
         componentName: "/c",
         args: {
           controlVectorInds: [1, 1],
-          controlVector: [2,-4]
+          controlVector: [2, -4]
         }
       })
       await win.callAction1({
@@ -10617,7 +10617,7 @@ describe('Curve Tag Bezier Tests', function () {
         componentName: "/c",
         args: {
           controlVectorInds: [2, 0],
-          controlVector: [-2,-6]
+          controlVector: [-2, -6]
         }
       })
     })
