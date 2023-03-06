@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Styles, Table, studentData, attemptData, assignmentData } from "./Gradebook"
+import { Styles, Table, studentData, attemptData, assignmentData, overviewData } from "./Gradebook"
 
 import {
     useSetRecoilState,
@@ -42,7 +42,7 @@ export default function GradebookStudentAssignmentView(){
     let assignments = useRecoilValueLoadable(assignmentData);
     let { canViewAndModifyGrades} = useRecoilValue(effectivePermissionsByCourseId(courseId));
     const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
-
+    let overview = useRecoilValueLoadable(overviewData);
 
   
     const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent)
@@ -205,11 +205,16 @@ export default function GradebookStudentAssignmentView(){
     
                 creditRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
                 scoreRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 100 * totalPointsOrPercent)/100 : ""
-        
             }
+            let credit = overview.contents?.[userId]?.assignments?.[doenetId];
 
-            creditRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
-            scoreRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * totalPointsOrPercent * 100)/100   : "0"
+            let score = totalPointsOrPercent * credit;
+            let percentage = Math.round(credit * 1000) / 10 + '%';
+
+            scoreRow["total"] = score
+            creditRow["total"] = percentage
+            // creditRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
+            // scoreRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * totalPointsOrPercent * 100)/100   : "0"
         }
 
         
