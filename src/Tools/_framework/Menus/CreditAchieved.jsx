@@ -39,11 +39,10 @@ function FinalScore({ score }) {
   let userId = useRecoilValue(searchParamAtomFamily('userId'));
   let { canViewAndModifyGrades } = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const [creditAchieved, setCreditAchieved] = useRecoilState(creditAchievedAtom);
-  let startScore = creditAchieved?.creditForAssignment * creditAchieved?.totalPointsOrPercent;
 
 
   const [editMode, setEditMode] = useState(false);
-  const [scoreState, setScore] = useState(startScore);
+  const [scoreState, setScore] = useState(score);
   const setOverview = useSetRecoilState(overviewData);
 
   if (editMode) {
