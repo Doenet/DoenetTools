@@ -29,44 +29,17 @@ export default React.memo(function List(props) {
   if (SVs.item) {
     return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility} requireContentsSize={false}><><a name={id} /><li id={id}>{children}</li></></VisibilitySensor>;
   } else if (SVs.numbered) {
-    let list_style = styleTypeByLevel[SVs.level]?.numbered;
-    if (!list_style) {
-      list_style = "decimal";
-    }
+    let list_style = styleTypeByLevel.numbered[(SVs.level - 1) % styleTypeByLevel.numbered.length];
     return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ol id={id} style={{ listStyleType: list_style }}><a name={id} />{children}</ol></></VisibilitySensor>;
   } else {
-    let list_style = styleTypeByLevel[SVs.level]?.unnumbered;
-    if (!list_style) {
-      list_style = "disc";
-    }
+    let list_style = styleTypeByLevel.unnumbered[(SVs.level - 1) % styleTypeByLevel.unnumbered.length];
     return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ul id={id} style={{ listStyleType: list_style }}><a name={id} />{children}</ul></></VisibilitySensor>;
   }
 
 })
 
 const styleTypeByLevel = {
-  1: {
-    numbered: 'decimal',
-    unnumbered: 'disc',
-  },
-  2: {
-    numbered: "lower-alpha",
-    unnumbered: 'circle',
-  },
-  3: {
-    numbered: "lower-roman",
-    unnumbered: 'square',
-  },
-  4: {
-    numbered: "upper-alpha",
-    unnumbered: 'disc',
-  },
-  5: {
-    numbered: "upper-roman",
-    unnumbered: 'circle',
-  },
-  6: {
-    numbered: "decimal",
-    unnumbered: 'square',
-  },
+  numbered: ["decimal", "lower-alpha", "lower-roman", "upper-alpha", "upper-roman"],
+  unnumbered: ["disc", "circle", "square"],
+
 }
