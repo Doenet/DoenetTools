@@ -45,8 +45,7 @@ if ($success) {
         $result = $conn->query(
             "SELECT 
                 a.doenetId, 
-                ua.credit,
-                ua.creditOverride, 
+                ua.credit, 
                 ua.userId
             FROM assignment AS a
             INNER JOIN user_assignment AS ua
@@ -61,8 +60,7 @@ if ($success) {
         $result = $conn->query(
             "SELECT 
                 a.doenetId, 
-                ua.credit,
-                ua.creditOverride,
+                ua.credit, 
                 ua.userId
             FROM assignment AS a
             INNER JOIN user_assignment AS ua
@@ -83,7 +81,6 @@ if ($success) {
             $row['doenetId'],
             $row['credit'],
             $row['userId'],
-            $row['creditOverride'],
         ]);
     }
 }

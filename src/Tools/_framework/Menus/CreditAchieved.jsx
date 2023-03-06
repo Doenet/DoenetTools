@@ -38,37 +38,36 @@ function FinalScore({ score }) {
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   let userId = useRecoilValue(searchParamAtomFamily('userId'));
   let { canViewAndModifyGrades } = useRecoilValue(effectivePermissionsByCourseId(courseId));
-  const { totalPointsOrPercent } = useRecoilValue(creditAchievedAtom);
   const [creditAchieved, setCreditAchieved] = useRecoilState(creditAchievedAtom);
-  let currentScore = score;
-  if (creditAchieved?.creditOverride) {
-    currentScore = Math.round(creditAchieved.creditOverride * totalPointsOrPercent * 100) / 100;
-  }
+  let startScore = creditAchieved?.creditForAssignment * creditAchieved?.totalPointsOrPercent;
+
+
   const [editMode, setEditMode] = useState(false);
-  const [scoreState, setScore] = useState(currentScore);
+  const [scoreState, setScore] = useState(startScore);
   const setOverview = useSetRecoilState(overviewData);
 
   if (editMode) {
     return <div style={{ display: "flex", flexDirection: "column", rowGap: "4px" }}>
       <div>Final Score:</div>
-      <ScoreContainer>Original Final Score: <ScoreOnRight data-test="Original Final Score">{score}</ScoreOnRight></ScoreContainer>
+      {/* <ScoreContainer>Original Final Score: <ScoreOnRight data-test="Original Final Score">{score}</ScoreOnRight></ScoreContainer> */}
       <Textfield width="menu" value={scoreState} onChange={(e) => { setScore(e.target.value) }} />
       <Button value="Update" onClick={async () => {
         if (isNaN(scoreState) || scoreState == "") {
           addToast("Final Score needs to be a number.", toastType.ERROR);
         } else {
-          let creditOverride = Number(scoreState) / totalPointsOrPercent;
           const { data } = await axios.get(`/api/saveActivityOverrideGrades.php`, { params: { score: scoreState, doenetId, userId } });
+          
+          let creditOverride = Number(scoreState) / creditAchieved?.totalPointsOrPercent;
 
           if (data.success) {
 
             setEditMode(false);
             setCreditAchieved((prev) => {
               let next = { ...prev }
-              next.creditOverride = creditOverride;
+              next.creditForAssignment = creditOverride;
               return next;
             })
-            setOverview({ doenetId, userId, creditOverride: `${creditOverride}` })
+            setOverview({ doenetId, userId, credit: `${creditOverride}` })
           }
         }
 
@@ -77,10 +76,10 @@ function FinalScore({ score }) {
   }
 
   if (canViewAndModifyGrades == 1) {
-    return <ScoreContainer><ButtonGroup>Final Score <Button value="Edit" onClick={() => setEditMode(true)} />: <ScoreOnRight data-test="Final Score">{currentScore}</ScoreOnRight></ButtonGroup> </ScoreContainer>
+    return <ScoreContainer><ButtonGroup>Final Score <Button value="Edit" onClick={() => setEditMode(true)} />: <ScoreOnRight data-test="Final Score">{score}</ScoreOnRight></ButtonGroup> </ScoreContainer>
 
   }
-  return <ScoreContainer>Final Score: <ScoreOnRight data-test="Final Score">{currentScore}</ScoreOnRight></ScoreContainer>
+  return <ScoreContainer>Final Score: <ScoreOnRight data-test="Final Score">{score}</ScoreOnRight></ScoreContainer>
 
 }
 
@@ -124,7 +123,6 @@ export default function CreditAchieved() {
           newObj.creditForAssignment = creditForAssignment;
           newObj.creditForAttempt = creditForAttempt;
           newObj.totalPointsOrPercent = totalPointsOrPercent;
-          newObj.creditOverride = creditOverride;
           return newObj;
         })
       }
