@@ -329,7 +329,7 @@ export default function MathInput(props) {
             latex={rendererValue.current}
             config={{
               autoCommands:
-                'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity',
+                'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity forall exists',
               autoOperatorNames:
                 'arg deg det dim exp gcd hom ker lg lim ln log max min' +
                 ' Pr' +
