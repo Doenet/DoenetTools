@@ -78,9 +78,12 @@ export default React.memo(function Polyline(props) {
       lineCap: "butt"
     };
 
+    let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
 
     jsxPointAttributes.current = Object.assign({}, jsxPolylineAttributes);
     Object.assign(jsxPointAttributes.current, {
+      fixed: false,
+      highlight: true,
       withLabel: false,
       fillColor: 'none',
       strokeColor: 'none',
@@ -88,7 +91,7 @@ export default React.memo(function Polyline(props) {
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 9,
     });
-    if (fixed || SVs.hidden || !validCoords) {
+    if (verticesFixed || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
     }
     jsxPolylineAttributes.label = {
@@ -123,6 +126,9 @@ export default React.memo(function Polyline(props) {
         draggedPoint.current = null;
         pointerAtDown.current = [e.x, e.y];
         downOnPoint.current = i;
+        callAction({
+          action: actions.mouseDownOnPolyline
+        });
       });
     }
 
@@ -135,6 +141,12 @@ export default React.memo(function Polyline(props) {
 
       pointsAtDown.current = newPolylineJXG.points.map(x => [...x.scrCoords])
 
+      if (downOnPoint.current === null) {
+        // Note: counting on fact that down on polyline itself will trigger after down on points
+        callAction({
+          action: actions.mouseDownOnPolyline
+        });
+      }
     });
 
     previousNVertices.current = SVs.nVertices;
@@ -343,7 +355,8 @@ export default React.memo(function Polyline(props) {
         polylineJXG.current.visPropCalc["visible"] = visible;
         // polylineJXG.current.setAttribute({visible: visible})
 
-        let pointsVisible = visible && !fixed;
+        let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
+        let pointsVisible = visible && !verticesFixed;
 
         for (let i = 0; i < SVs.nVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = pointsVisible;

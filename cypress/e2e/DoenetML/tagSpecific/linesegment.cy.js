@@ -3362,6 +3362,10 @@ describe('LineSegment Tag Tests', function () {
       <linesegment name="l" endpoints="$A $B" />
     </graph>
     <copy prop="length" target="l" assignNames="length" />
+    <point name="Ap" copySource="A" />
+    <point name="Bp" copySource="B" />
+    <mathinput name="milength" bindValueTo="$length" />
+    <p><booleaninput name="bi"/><boolean copySource="bi" name="bi2" /></p>
     `}, "*");
     });
 
@@ -3372,7 +3376,9 @@ describe('LineSegment Tag Tests', function () {
     let t2x = 7, t2y = -2;
     let len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
 
-    cy.get('#\\/length').should('contain.text', String(Math.round(len*10**9)/10**9))
+    cy.get('#\\/length').should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
+    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(3,4)');
+    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3391,17 +3397,47 @@ describe('LineSegment Tag Tests', function () {
       })
 
       cy.get('#\\/length').should('contain.text', String(len))
+      cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,3)');
+      cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−2)');
 
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(Math.abs(stateVariables['/l'].stateValues.length)).eq(len);
+      expect(stateVariables['/l'].stateValues.length).eq(len);
+    })
+
+
+    cy.get('#\\/milength textarea').type("{end}{backspace}10{enter}", { force: true });
+
+    cy.get('#\\/length').should('contain.text', '10')
+    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.length).eq(10);
+    })
+
+
+    cy.log("ignore requested negative length");
+    cy.get('#\\/milength textarea').type("{end}{backspace}{backspace}-3{enter}", { force: true });
+    cy.get("#\\/bi").click();
+    cy.get('#\\/bi2').should('have.text', 'true');  // so know that core has responded to both requests
+
+    cy.get('#\\/length').should('contain.text', '10')
+    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.length).eq(10);
     })
 
 
     cy.window().then(async (win) => {
 
+      t1y = 5.5;
       t2x = -9;
       t2y = 5;
       len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
@@ -3411,13 +3447,33 @@ describe('LineSegment Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/length').should('contain.text', String(Math.round(len*10**8)/10**8))
-
+      cy.get('#\\/length').should('contain.text', String(Math.round(len * 10 ** 8) / 10 ** 8))
+      cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+      cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(−9,5)');
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/l'].stateValues.length).eq(len);
+    })
+  });
+
+  it('lineSegment symbolic length', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <linesegment name="l" endpoints="(x,y) (u,v)" />
+    <copy prop="length" source="l" assignNames="length" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/l'].stateValues.length).equals(me.fromText('sqrt((x-u)^2+(y-v)^2)'))).eq(true);
     })
   });
 
@@ -3467,6 +3523,408 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/pPos').should('have.text', 'Position: lowerleft')
 
   });
+
+  it('draggable, endpoints draggable', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <graph>
+    <linesegment endpoints="(1,3) (5,7)" name="p" draggable="$draggable" endpointsDraggable="$endpointsDraggable" />
+  </graph>
+  <p>To wait: <booleaninput name="bi" /> <boolean copySource="bi" name="bi2" /></p>
+  <p>draggable: <booleaninput name="draggable" /> <boolean copySource="p.draggable" name="d2" /></p>
+  <p>endpoints draggable: <booleaninput name="endpointsDraggable" /> <boolean copySource="p.endpointsDraggable" name="ed2" /></p>
+  <p name="pendpt">all endpoints: $p.endpoints</p>
+  `}, "*");
+    });
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/ed2").should('have.text', 'false')
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([5, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(false);
+    })
+
+    cy.log('cannot move single endpoint')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point1coords: [4, 7]
+        }
+      })
+    })
+
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'true')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/ed2").should('have.text', 'false')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([5, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(false);
+    })
+
+
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point2coords: [4, 7]
+        }
+      })
+    })
+
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'false')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/ed2").should('have.text', 'false')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([5, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(false);
+    })
+
+
+
+    cy.log('cannot move both endpoints')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point1coords: [4, 7],
+          point2coords: [8, 10]
+        }
+      })
+    })
+
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'true')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/ed2").should('have.text', 'false')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([5, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(false);
+    })
+
+
+    cy.log('only endpoints draggable')
+
+    cy.get('#\\/endpointsDraggable').click()
+    cy.get('#\\/ed2').should('have.text', 'true')
+
+
+    cy.log('can move single endpoint')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point1coords: [4, 7],
+        }
+      })
+    })
+
+
+    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(4,7)')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/ed2").should('have.text', 'true')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([4, 7]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([5, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(true);
+    })
+
+
+
+    cy.log('cannot move both endpoints')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          pointCoords: [[3, 8], [8, 10], [1, 9]]
+        }
+      })
+    })
+
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'false')
+
+    cy.get("#\\/d2").should('have.text', 'false')
+    cy.get("#\\/ed2").should('have.text', 'true')
+
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([4, 7]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([5, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(false);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(true);
+    })
+
+
+
+    cy.log('endpoints and line segment draggable')
+
+    cy.get('#\\/draggable').click()
+    cy.get('#\\/d2').should('have.text', 'true')
+
+
+    cy.log('can move first endpoint')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point1coords: [-3, 2]
+        }
+      })
+    })
+
+
+    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(−3,2)')
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/ed2").should('have.text', 'true')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(−3,2)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([-3, 2]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([5, 7]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(true);
+    })
+
+
+    cy.log('can move second endpoint')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point2coords: [-9, 0]
+        }
+      })
+    })
+
+
+    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(−9,0)')
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/ed2").should('have.text', 'true')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(−3,2)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(−9,0)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([-3, 2]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([-9, 0]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(true);
+    })
+
+
+    cy.log('can move both endpoints')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point1coords: [3, 8],
+          point2coords: [8, 10],
+        }
+      })
+    })
+
+
+    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(3,8)')
+
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/ed2").should('have.text', 'true')
+
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(8,10)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([3, 8]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([8, 10]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(true);
+    })
+
+
+    cy.log('polygon but not endpoints draggable')
+
+    cy.get('#\\/endpointsDraggable').click()
+    cy.get('#\\/ed2').should('have.text', 'false')
+
+
+    cy.log('cannot move first endpoint')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point1coords: [9, 3]
+        }
+      })
+    })
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'true')
+
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/ed2").should('have.text', 'false')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(8,10)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([3, 8]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([8, 10]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(false);
+    })
+
+
+    cy.log('cannot move second endpoint')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point2coords: [9, 3]
+        }
+      })
+    })
+
+    // wait for core to process click
+    cy.get('#\\/bi').click()
+    cy.get('#\\/bi2').should('have.text', 'false')
+
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/ed2").should('have.text', 'false')
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(8,10)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([3, 8]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([8, 10]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(false);
+    })
+
+
+
+    cy.log('can move both endpoints')
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/p",
+        args: {
+          point1coords: [-4, 1],
+          point2coords: [9, -4],
+        }
+      })
+    })
+
+
+    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(−4,1)')
+
+
+    cy.get("#\\/d2").should('have.text', 'true')
+    cy.get("#\\/ed2").should('have.text', 'false')
+
+
+    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(−4,1)')
+    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(9,−4)')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/p'].stateValues.endpoints)[0]).eqls([-4, 1]);
+      expect((stateVariables['/p'].stateValues.endpoints)[1]).eqls([9, -4]);
+      expect(stateVariables['/p'].stateValues.draggable).eq(true);
+      expect(stateVariables['/p'].stateValues.endpointsDraggable).eq(false);
+    })
+
+
+
+  })
 
 
 });

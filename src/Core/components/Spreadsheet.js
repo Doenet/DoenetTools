@@ -1,11 +1,20 @@
 import { normalizeIndex } from '../utils/table';
 import BlockComponent from './abstract/BlockComponent';
-import { textToAst } from '../utils/math';
+import { textToAst, vectorOperators } from '../utils/math';
 import me from 'math-expressions';
 import { HyperFormula } from 'hyperformula';
 
 
 export default class Spreadsheet extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      onChange: this.onChange.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "spreadsheet";
 
   static createAttributesObject() {
@@ -1161,9 +1170,7 @@ export default class Spreadsheet extends BlockComponent {
             continue;
           }
 
-          if (Array.isArray(cellME.tree) && (
-            cellME.tree[0] === "tuple" || cellME.tree[0] === "vector"
-          )) {
+          if (Array.isArray(cellME.tree) && vectorOperators.includes(cellME.tree[0])) {
             pointsInCells[arrayKey] = cellME;
           } else {
             pointsInCells[arrayKey] = null;
@@ -1245,12 +1252,6 @@ export default class Spreadsheet extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    onChange: this.onChange.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
-
 
 
 }

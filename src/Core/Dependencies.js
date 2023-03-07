@@ -6358,7 +6358,7 @@ class PrimaryShadowDependency extends Dependency {
     if (!primaryShadowDependencies.includes(this)) {
       primaryShadowDependencies.push(this);
     }
-    
+
     if (!component.primaryShadow) {
       return {
         success: true,
@@ -6897,6 +6897,58 @@ class CountAmongSiblingsDependency extends Dependency {
 dependencyTypeArray.push(CountAmongSiblingsDependency);
 
 
+class AttributeTargetComponentNamesDependency extends StateVariableDependency {
+  static dependencyType = "attributeTargetComponentNames";
+
+  setUpParameters() {
+
+    this.attributeName = this.definition.attributeName;
+
+    if (this.definition.parentName) {
+      this.componentName = this.definition.parentName;
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+  }
+
+  async getValue() {
+
+    let value = null;
+    let changes = {};
+
+    if (this.componentIdentitiesChanged) {
+      changes.componentIdentitiesChanged = true;
+      this.componentIdentitiesChanged = false;
+    }
+
+    if (this.downstreamComponentNames.length === 1) {
+      let parent = this.dependencyHandler.components[this.componentName];
+
+      if (parent) {
+        value = parent.attributes[this.attributeName];
+        if (value) {
+          value = value.targetComponentNames;
+        } else {
+          value = null;
+        }
+      }
+
+    }
+
+    // if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
+
+    return { value, changes }
+  }
+
+}
+
+dependencyTypeArray.push(AttributeTargetComponentNamesDependency);
+
+
 class TargetComponentDependency extends Dependency {
   static dependencyType = "targetComponent";
 
@@ -6992,53 +7044,6 @@ class TargetComponentDependency extends Dependency {
 }
 
 dependencyTypeArray.push(TargetComponentDependency);
-
-
-
-class ExpandTargetNameDependency extends Dependency {
-  static dependencyType = "expandTargetName";
-
-  setUpParameters() {
-
-    this.parentName = this.upstreamComponentName;
-
-    this.target = this.definition.target;
-
-  }
-
-  async getValue() {
-
-    let parent = this.dependencyHandler._components[this.parentName];
-    let parentCreatesNewNamespace = parent.attributes.newNamespace?.primitive;
-
-    let namespaceStack = this.parentName.split('/').map(x => ({ namespace: x }))
-
-    if (!parentCreatesNewNamespace) {
-      namespaceStack = namespaceStack.slice(0, namespaceStack.length - 1)
-    }
-
-    let targetComponentName;
-
-    try {
-      targetComponentName = convertComponentTarget({
-        target: this.target,
-        namespaceStack,
-      })
-    } catch (e) {
-      targetComponentName = null;
-    }
-
-    return {
-      value: targetComponentName,
-      changes: {}
-    }
-  }
-
-
-}
-
-dependencyTypeArray.push(ExpandTargetNameDependency);
-
 
 class ValueDependency extends Dependency {
   static dependencyType = "value";
@@ -7256,6 +7261,97 @@ class SerializedChildrenDependency extends Dependency {
 }
 
 dependencyTypeArray.push(SerializedChildrenDependency);
+
+
+class DoenetMLDependency extends Dependency {
+  static dependencyType = "doenetML";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    this.displayOnlyChildren = this.definition.displayOnlyChildren;
+
+  }
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    return {
+      success: true,
+      downstreamComponentNames: [this.componentName],
+      downstreamComponentTypes: [component.componentType],
+    }
+
+  }
+
+  async getValue() {
+
+    let doenetML = this.dependencyHandler.core.requestComponentDoenetML(this.componentName, this.displayOnlyChildren)
+
+    return {
+      value: doenetML,
+      changes: {}
+    }
+  }
+
+  deleteFromUpdateTriggers() {
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+  }
+}
+
+dependencyTypeArray.push(DoenetMLDependency);
 
 
 class VariantsDependency extends Dependency {

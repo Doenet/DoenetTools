@@ -3,13 +3,18 @@ import me from 'math-expressions';
 import { returnNVariables, convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Line extends GraphicalComponent {
-  static componentType = "line";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveLine: this.moveLine.bind(this),
-    switchLine: this.switchLine.bind(this),
-    lineClicked: this.lineClicked.bind(this)
-  };
+    Object.assign(this.actions, {
+      moveLine: this.moveLine.bind(this),
+      switchLine: this.switchLine.bind(this),
+      lineClicked: this.lineClicked.bind(this),
+      mouseDownOnLine: this.mouseDownOnLine.bind(this),
+    });
+
+  }
+  static componentType = "line";
 
 
   static createAttributesObject() {
@@ -1682,6 +1687,17 @@ export default class Line extends GraphicalComponent {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnLine({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
       componentName: this.componentName,
     })
 

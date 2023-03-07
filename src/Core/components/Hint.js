@@ -1,6 +1,16 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Hint extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      revealHint: this.revealHint.bind(this),
+      closeHint: this.closeHint.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "hint";
   static renderChildren = true;
 
@@ -204,12 +214,6 @@ export default class Hint extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    revealHint: this.revealHint.bind(this),
-    closeHint: this.closeHint.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

@@ -623,13 +623,14 @@ describe('Math Tag Tests', function () {
     <p>Create vectors: <math createvectors="true">(1,2,3),(4,5),[6,7],(8,9],[10,11)</math></p>
     <p>Create intervals: <math createintervals="true">(1,2,3),(4,5),[6,7],(8,9],[10,11)</math></p>
     <p>Create vectors and intervals: <math createvectors createintervals>(1,2,3),(4,5),[6,7],(8,9],[10,11)</math></p>
+    <p>Alt vectors: <math>⟨1,2,3⟩,⟨4,5⟩,[6,7],(8,9],[10,11)</math></p>
     `}, "*");
 
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.log('Look same in browser')
+    cy.log('Look same in browser (except alt-vector)')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2,3),(4,5),[6,7],(8,9],[10,11)')
     });
@@ -641,6 +642,9 @@ describe('Math Tag Tests', function () {
     });
     cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2,3),(4,5),[6,7],(8,9],[10,11)')
+    });
+    cy.get('#\\/_math5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('⟨1,2,3⟩,⟨4,5⟩,[6,7],(8,9],[10,11)')
     });
 
     cy.log('Different internal values')
@@ -671,6 +675,13 @@ describe('Math Tag Tests', function () {
         ["vector", 1, 2, 3],
         ["vector", 4, 5],
         ["interval", ["tuple", 6, 7], ["tuple", true, true]],
+        ["interval", ["tuple", 8, 9], ["tuple", false, true]],
+        ["interval", ["tuple", 10, 11], ["tuple", true, false]],
+      ]);
+      expect(stateVariables['/_math5'].stateValues.value).eqls(["list",
+        ["altvector", 1, 2, 3],
+        ["altvector", 4, 5],
+        ["array", 6, 7],
         ["interval", ["tuple", 8, 9], ["tuple", false, true]],
         ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
@@ -1906,32 +1917,32 @@ describe('Math Tag Tests', function () {
   <p><text>a</text></p>
   <p><math format="latex" name="m1">xyz</math></p>
   <p><math format="latex" name="m2" splitSymbols="false">xyz</math></p>
-  <p><math format="latex" name="m2a" >\\var{xyz}</math></p>
-  <p><math format="latex" name="m2b" splitSymbols="false" >\\var{xyz}</math></p>
+  <p><math format="latex" name="m2a" >\\operatorname{xyz}</math></p>
+  <p><math format="latex" name="m2b" splitSymbols="false" >\\operatorname{xyz}</math></p>
   <p><math format="latex" name="m3" splitSymbols="true">xyz</math></p>
   <p><math format="latex" name="m4" simplify>xyx</math></p>
   <p><math format="latex" name="m5" simplify splitSymbols="false">xyx</math></p>
-  <p><math format="latex" name="m5a" simplify>\\var{xyx}</math></p>
-  <p><math format="latex" name="m5b" simplify splitSymbols="false">\\var{xyx}</math></p>
+  <p><math format="latex" name="m5a" simplify>\\operatorname{xyx}</math></p>
+  <p><math format="latex" name="m5b" simplify splitSymbols="false">\\operatorname{xyx}</math></p>
   <p><math format="latex" name="m6" simplify splitSymbols="true">xyx</math></p>
   <p><math format="latex" name="m7">xy_uv</math></p>
   <p><math format="latex" name="m8">x2_2x</math></p>
-  <p><math format="latex" name="m8a">\\var{x2}_2x</math></p>
+  <p><math format="latex" name="m8a">\\operatorname{x2}_2x</math></p>
   <p><math format="latex" name="m9">2x_x2</math></p>
-  <p><math format="latex" name="m9a">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m9a">2x_\\operatorname{x2}</math></p>
   <p><math format="latex" name="m9b">2x_{x2}</math></p>
   <p><math format="latex" name="m10">xy uv x2y 2x x2</math></p>
-  <p><math format="latex" name="m10a">xy uv \\var{x2y} 2x \\var{x2}</math></p>
+  <p><math format="latex" name="m10a">xy uv \\operatorname{x2y} 2x \\operatorname{x2}</math></p>
   <p><math format="latex" name="m11" splitSymbols="false">xy_uv</math></p>
-  <p><math format="latex" name="m11a">\\var{xy}_\\var{uv}</math></p>
-  <p><math format="latex" name="m11b" splitSymbols="false">\\var{xy}_\\var{uv}</math></p>
+  <p><math format="latex" name="m11a">\\operatorname{xy}_\\operatorname{uv}</math></p>
+  <p><math format="latex" name="m11b" splitSymbols="false">\\operatorname{xy}_\\operatorname{uv}</math></p>
   <p><math format="latex" name="m12" splitSymbols="false">x2_2x</math></p>
-  <p><math format="latex" name="m12a" splitSymbols="false">\\var{x2}_2x</math></p>
+  <p><math format="latex" name="m12a" splitSymbols="false">\\operatorname{x2}_2x</math></p>
   <p><math format="latex" name="m13" splitSymbols="false">2x_x2</math></p>
-  <p><math format="latex" name="m13a" splitSymbols="false">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m13a" splitSymbols="false">2x_\\operatorname{x2}</math></p>
   <p><math format="latex" name="m14" splitSymbols="false">xy uv x2y 2x x2</math></p>
-  <p><math format="latex" name="m14a">\\var{xy} \\var{uv} x2y 2x x2</math></p>
-  <p><math format="latex" name="m14b" splitSymbols="false">\\var{xy} \\var{uv} x2y 2x x2</math></p>
+  <p><math format="latex" name="m14a">\\operatorname{xy} \\operatorname{uv} x2y 2x x2</math></p>
+  <p><math format="latex" name="m14b" splitSymbols="false">\\operatorname{xy} \\operatorname{uv} x2y 2x x2</math></p>
   <p><math format="latex" name="m15">3^x2</math></p>
   <p><math format="latex" name="m15a" splitSymbols="false">3^x2</math></p>
   `}, "*");
@@ -2316,6 +2327,19 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/mx4_2 textarea').type('{end}{backspace}g{enter}', { force: true })
     cy.get("#\\/x4").should('contain.text', 'g');
     check_values(["d", "e", "f", "g"], "list")
+
+    cy.log('change to 3D alt vector')
+    cy.get('#\\/m textarea').type("{ctrl+home}{shift+end}{backspace}\\langle a,b,c\\rangle {enter}", { force: true })
+    cy.get("#\\/z").should('contain.text', 'c');
+
+    check_values(["a", "b", "c"], "altvector")
+
+    cy.log('change xyz 3')
+    cy.get('#\\/mx_3 textarea').type('{end}{backspace}j{enter}', { force: true })
+    cy.get('#\\/my_3 textarea').type('{end}{backspace}k{enter}', { force: true })
+    cy.get('#\\/mz_3 textarea').type('{end}{backspace}l{enter}', { force: true })
+    cy.get("#\\/z").should('contain.text', 'l');
+    check_values(["j", "k", "l"], "altvector")
 
 
   });
@@ -3285,27 +3309,49 @@ describe('Math Tag Tests', function () {
   <p><text>a</text></p>
   <p>Tuple2: <math name="tuple2">(a,b)</math></p>
   <p>Vector2: <math name="vector2" createVectors>(c,d)</math></p>
+  <p>Alt vector2: <math name="altvector2">⟨p,q⟩</math></p>
   <p>Interval: <math name="interval" createIntervals>(e,f)</math></p>
   <p>Tuple3: <math name="tuple3">(g,h,i)</math></p>
   <p>Vector3: <math name="vector3" createVectors>(j,k,l)</math></p>
+  <p>Alt vector3: <math name="altvector3">⟨r,s,t⟩</math></p>
   <p><math name="t2t2sum">$tuple2+$tuple2</math></p>
   <p><math name="t2t2sumSimp" simplify>$tuple2+$tuple2</math></p>
   <p><math name="v2v2sum">$vector2+$vector2</math></p>
   <p><math name="v2v2sumSimp" simplify>$vector2+$vector2</math></p>
+  <p><math name="a2a2sum">$altvector2+$altvector2</math></p>
+  <p><math name="a2a2sumSimp" simplify>$altvector2+$altvector2</math></p>
   <p><math name="iisum">$interval+$interval</math></p>
   <p><math name="iisumSimp" simplify>$interval+$interval</math></p>
   <p><math name="t2v2sum">$tuple2+$vector2</math></p>
   <p><math name="t2v2sumSimp" simplify>$tuple2+$vector2</math></p>
   <p><math name="v2t2sum">$vector2+$tuple2</math></p>
   <p><math name="v2t2sumSimp" simplify>$vector2+$tuple2</math></p>
+  <p><math name="t2a2sum">$tuple2+$altvector2</math></p>
+  <p><math name="t2a2sumSimp" simplify>$tuple2+$altvector2</math></p>
+  <p><math name="a2t2sum">$altvector2+$tuple2</math></p>
+  <p><math name="a2t2sumSimp" simplify>$altvector2+$tuple2</math></p>
+  <p><math name="v2a2sum">$vector2+$altvector2</math></p>
+  <p><math name="v2a2sumSimp" simplify>$vector2+$altvector2</math></p>
+  <p><math name="a2v2sum">$altvector2+$vector2</math></p>
+  <p><math name="a2v2sumSimp" simplify>$altvector2+$vector2</math></p>
   <p><math name="t2v2diff">$tuple2-$vector2</math></p>
   <p><math name="t2v2diffSimp" simplify>$tuple2-$vector2</math></p>
   <p><math name="v2t2diff">$vector2-$tuple2</math></p>
   <p><math name="v2t2diffSimp" simplify>$vector2-$tuple2</math></p>
+  <p><math name="t2a2diff">$tuple2-$altvector2</math></p>
+  <p><math name="t2a2diffSimp" simplify>$tuple2-$altvector2</math></p>
+  <p><math name="a2t2diff">$altvector2-$tuple2</math></p>
+  <p><math name="a2t2diffSimp" simplify>$altvector2-$tuple2</math></p>
+  <p><math name="v2a2diff">$vector2-$altvector2</math></p>
+  <p><math name="v2a2diffSimp" simplify>$vector2-$altvector2</math></p>
+  <p><math name="a2v2diff">$altvector2-$vector2</math></p>
+  <p><math name="a2v2diffSimp" simplify>$altvector2-$vector2</math></p>
   <p><math name="t2isum">$tuple2+$interval</math></p>
   <p><math name="t2isumSimp" simplify>$tuple2+$interval</math></p>
   <p><math name="v2isum">$vector2+$interval</math></p>
   <p><math name="v2isumSimp" simplify>$vector2+$interval</math></p>
+  <p><math name="a2isum">$altvector2+$interval</math></p>
+  <p><math name="a2isumSimp" simplify>$altvector2+$interval</math></p>
   <p><math name="st2mul">m$tuple2</math></p>
   <p><math name="st2mulSimp" simplify>m$tuple2</math></p>
   <p><math name="st2mulExp" expand>m$tuple2</math></p>
@@ -3318,6 +3364,12 @@ describe('Math Tag Tests', function () {
   <p><math name="v2smul">$vector2 m</math></p>
   <p><math name="v2smulSimp" simplify>$vector2 m</math></p>
   <p><math name="v2smulExp" expand>$vector2 m</math></p>
+  <p><math name="sa2mul">m$altvector2</math></p>
+  <p><math name="sa2mulSimp" simplify>m$altvector2</math></p>
+  <p><math name="sa2mulExp" expand>m$altvector2</math></p>
+  <p><math name="a2smul">$altvector2 m</math></p>
+  <p><math name="a2smulSimp" simplify>$altvector2 m</math></p>
+  <p><math name="a2smulExp" expand>$altvector2 m</math></p>
   <p><math name="simul">m$interval</math></p>
   <p><math name="simulSimp" simplify>m$interval</math></p>
   <p><math name="simulExp" expand>m$interval</math></p>
@@ -3327,19 +3379,43 @@ describe('Math Tag Tests', function () {
   <p><math name="st2v2ssum">m$tuple2+$vector2*n</math></p>
   <p><math name="st2v2ssumSimp" simplify>m$tuple2+$vector2*n</math></p>
   <p><math name="st2v2ssumExp" expand>m$tuple2+$vector2*n</math></p>
+  <p><math name="st2a2ssum">m$tuple2+$altvector2*n</math></p>
+  <p><math name="st2a2ssumSimp" simplify>m$tuple2+$altvector2*n</math></p>
+  <p><math name="st2a2ssumExp" expand>m$tuple2+$altvector2*n</math></p>
+  <p><math name="sv2a2ssum">m$vector2+$altvector2*n</math></p>
+  <p><math name="sv2a2ssumSimp" simplify>m$vector2+$altvector2*n</math></p>
+  <p><math name="sv2a2ssumExp" expand>m$vector2+$altvector2*n</math></p>
 
   <p><math name="t3t3sum">$tuple3+$tuple3</math></p>
   <p><math name="t3t3sumSimp" simplify>$tuple3+$tuple3</math></p>
   <p><math name="v3v3sum">$vector3+$vector3</math></p>
   <p><math name="v3v3sumSimp" simplify>$vector3+$vector3</math></p>
+  <p><math name="a3a3sum">$altvector3+$altvector3</math></p>
+  <p><math name="a3a3sumSimp" simplify>$altvector3+$altvector3</math></p>
   <p><math name="t3v3sum">$tuple3+$vector3</math></p>
   <p><math name="t3v3sumSimp" simplify>$tuple3+$vector3</math></p>
   <p><math name="v3t3sum">$vector3+$tuple3</math></p>
   <p><math name="v3t3sumSimp" simplify>$vector3+$tuple3</math></p>
+  <p><math name="t3a3sum">$tuple3+$altvector3</math></p>
+  <p><math name="t3a3sumSimp" simplify>$tuple3+$altvector3</math></p>
+  <p><math name="a3t3sum">$altvector3+$tuple3</math></p>
+  <p><math name="a3t3sumSimp" simplify>$altvector3+$tuple3</math></p>
+  <p><math name="v3a3sum">$vector3+$altvector3</math></p>
+  <p><math name="v3a3sumSimp" simplify>$vector3+$altvector3</math></p>
+  <p><math name="a3v3sum">$altvector3+$vector3</math></p>
+  <p><math name="a3v3sumSimp" simplify>$altvector3+$vector3</math></p>
   <p><math name="t3v3diff">$tuple3-$vector3</math></p>
   <p><math name="t3v3diffSimp" simplify>$tuple3-$vector3</math></p>
   <p><math name="v3t3diff">$vector3-$tuple3</math></p>
   <p><math name="v3t3diffSimp" simplify>$vector3-$tuple3</math></p>
+  <p><math name="t3a3diff">$tuple3-$altvector3</math></p>
+  <p><math name="t3a3diffSimp" simplify>$tuple3-$altvector3</math></p>
+  <p><math name="a3t3diff">$altvector3-$tuple3</math></p>
+  <p><math name="a3t3diffSimp" simplify>$altvector3-$tuple3</math></p>
+  <p><math name="v3a3diff">$vector3-$altvector3</math></p>
+  <p><math name="v3a3diffSimp" simplify>$vector3-$altvector3</math></p>
+  <p><math name="a3v3diff">$altvector3-$vector3</math></p>
+  <p><math name="a3v3diffSimp" simplify>$altvector3-$vector3</math></p>
   <p><math name="st3mul">m$tuple3</math></p>
   <p><math name="st3mulSimp" simplify>m$tuple3</math></p>
   <p><math name="st3mulExp" expand>m$tuple3</math></p>
@@ -3352,9 +3428,21 @@ describe('Math Tag Tests', function () {
   <p><math name="v3smul">$vector3 m</math></p>
   <p><math name="v3smulSimp" simplify>$vector3 m</math></p>
   <p><math name="v3smulExp" expand>$vector3 m</math></p>
+  <p><math name="sa3mul">m$altvector3</math></p>
+  <p><math name="sa3mulSimp" simplify>m$altvector3</math></p>
+  <p><math name="sa3mulExp" expand>m$altvector3</math></p>
+  <p><math name="a3smul">$altvector3 m</math></p>
+  <p><math name="a3smulSimp" simplify>$altvector3 m</math></p>
+  <p><math name="a3smulExp" expand>$altvector3 m</math></p>
   <p><math name="st3v3ssum">m$tuple3+$vector3*n</math></p>
   <p><math name="st3v3ssumSimp" simplify>m$tuple3+$vector3*n</math></p>
   <p><math name="st3v3ssumExp" expand>m$tuple3+$vector3*n</math></p>
+  <p><math name="st3a3ssum">m$tuple3+$altvector3*n</math></p>
+  <p><math name="st3a3ssumSimp" simplify>m$tuple3+$altvector3*n</math></p>
+  <p><math name="st3a3ssumExp" expand>m$tuple3+$altvector3*n</math></p>
+  <p><math name="sv3a3ssum">m$vector3+$altvector3*n</math></p>
+  <p><math name="sv3a3ssumSimp" simplify>m$vector3+$altvector3*n</math></p>
+  <p><math name="sv3a3ssumExp" expand>m$vector3+$altvector3*n</math></p>
   `}, "*");
     });
 
@@ -3364,20 +3452,40 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/t2t2sumSimp .mjx-mrow').eq(0).should('have.text', '(2a,2b)');
     cy.get('#\\/v2v2sum .mjx-mrow').eq(0).should('have.text', '(c,d)+(c,d)');
     cy.get('#\\/v2v2sumSimp .mjx-mrow').eq(0).should('have.text', '(2c,2d)');
+    cy.get('#\\/a2a2sum .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩+⟨p,q⟩');
+    cy.get('#\\/a2a2sumSimp .mjx-mrow').eq(0).should('have.text', '⟨2p,2q⟩');
     cy.get('#\\/iisum .mjx-mrow').eq(0).should('have.text', '(e,f)+(e,f)');
     cy.get('#\\/iisumSimp .mjx-mrow').eq(0).should('have.text', '2(e,f)');
     cy.get('#\\/t2v2sum .mjx-mrow').eq(0).should('have.text', '(a,b)+(c,d)');
     cy.get('#\\/t2v2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+c,b+d)');
     cy.get('#\\/v2t2sum .mjx-mrow').eq(0).should('have.text', '(c,d)+(a,b)');
     cy.get('#\\/v2t2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+c,b+d)');
+    cy.get('#\\/t2a2sum .mjx-mrow').eq(0).should('have.text', '(a,b)+⟨p,q⟩');
+    cy.get('#\\/t2a2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+p,b+q)');
+    cy.get('#\\/a2t2sum .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩+(a,b)');
+    cy.get('#\\/a2t2sumSimp .mjx-mrow').eq(0).should('have.text', '(a+p,b+q)');
+    cy.get('#\\/v2a2sum .mjx-mrow').eq(0).should('have.text', '(c,d)+⟨p,q⟩');
+    cy.get('#\\/v2a2sumSimp .mjx-mrow').eq(0).should('have.text', '(c+p,d+q)');
+    cy.get('#\\/a2v2sum .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩+(c,d)');
+    cy.get('#\\/a2v2sumSimp .mjx-mrow').eq(0).should('have.text', '(c+p,d+q)');
     cy.get('#\\/t2v2diff .mjx-mrow').eq(0).should('have.text', '(a,b)−(c,d)');
     cy.get('#\\/t2v2diffSimp .mjx-mrow').eq(0).should('have.text', '(a−c,b−d)');
     cy.get('#\\/v2t2diff .mjx-mrow').eq(0).should('have.text', '(c,d)−(a,b)');
     cy.get('#\\/v2t2diffSimp .mjx-mrow').eq(0).should('have.text', '(−a+c,−b+d)');
+    cy.get('#\\/t2a2diff .mjx-mrow').eq(0).should('have.text', '(a,b)−⟨p,q⟩');
+    cy.get('#\\/t2a2diffSimp .mjx-mrow').eq(0).should('have.text', '(a−p,b−q)');
+    cy.get('#\\/a2t2diff .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩−(a,b)');
+    cy.get('#\\/a2t2diffSimp .mjx-mrow').eq(0).should('have.text', '(−a+p,−b+q)');
+    cy.get('#\\/v2a2diff .mjx-mrow').eq(0).should('have.text', '(c,d)−⟨p,q⟩');
+    cy.get('#\\/v2a2diffSimp .mjx-mrow').eq(0).should('have.text', '(c−p,d−q)');
+    cy.get('#\\/a2v2diff .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩−(c,d)');
+    cy.get('#\\/a2v2diffSimp .mjx-mrow').eq(0).should('have.text', '(−c+p,−d+q)');
     cy.get('#\\/t2isum .mjx-mrow').eq(0).should('have.text', '(a,b)+(e,f)');
     cy.get('#\\/t2isumSimp .mjx-mrow').eq(0).should('have.text', '(e,f)+(a,b)');
     cy.get('#\\/v2isum .mjx-mrow').eq(0).should('have.text', '(c,d)+(e,f)');
     cy.get('#\\/v2isumSimp .mjx-mrow').eq(0).should('have.text', '(e,f)+(c,d)');
+    cy.get('#\\/a2isum .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩+(e,f)');
+    cy.get('#\\/a2isumSimp .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩+(e,f)');
     cy.get('#\\/st2mul .mjx-mrow').eq(0).should('have.text', 'm(a,b)');
     cy.get('#\\/st2mulSimp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
     cy.get('#\\/st2mulExp .mjx-mrow').eq(0).should('have.text', '(am,bm)');
@@ -3390,6 +3498,12 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/v2smul .mjx-mrow').eq(0).should('have.text', '(c,d)m');
     cy.get('#\\/v2smulSimp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
     cy.get('#\\/v2smulExp .mjx-mrow').eq(0).should('have.text', '(cm,dm)');
+    cy.get('#\\/sa2mul .mjx-mrow').eq(0).should('have.text', 'm⟨p,q⟩');
+    cy.get('#\\/sa2mulSimp .mjx-mrow').eq(0).should('have.text', '⟨mp,mq⟩');
+    cy.get('#\\/sa2mulExp .mjx-mrow').eq(0).should('have.text', '⟨mp,mq⟩');
+    cy.get('#\\/a2smul .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩m');
+    cy.get('#\\/a2smulSimp .mjx-mrow').eq(0).should('have.text', '⟨mp,mq⟩');
+    cy.get('#\\/a2smulExp .mjx-mrow').eq(0).should('have.text', '⟨mp,mq⟩');
     cy.get('#\\/simul .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
     cy.get('#\\/simulSimp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
     cy.get('#\\/simulExp .mjx-mrow').eq(0).should('have.text', 'm(e,f)');
@@ -3399,19 +3513,43 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/st2v2ssum .mjx-mrow').eq(0).should('have.text', 'm(a,b)+(c,d)n');
     cy.get('#\\/st2v2ssumSimp .mjx-mrow').eq(0).should('have.text', '(am+cn,bm+dn)');
     cy.get('#\\/st2v2ssumExp .mjx-mrow').eq(0).should('have.text', '(am+cn,bm+dn)');
+    cy.get('#\\/st2a2ssum .mjx-mrow').eq(0).should('have.text', 'm(a,b)+⟨p,q⟩n');
+    cy.get('#\\/st2a2ssumSimp .mjx-mrow').eq(0).should('have.text', '(am+np,bm+nq)');
+    cy.get('#\\/st2a2ssumExp .mjx-mrow').eq(0).should('have.text', '(am+np,bm+nq)');
+    cy.get('#\\/sv2a2ssum .mjx-mrow').eq(0).should('have.text', 'm(c,d)+⟨p,q⟩n');
+    cy.get('#\\/sv2a2ssumSimp .mjx-mrow').eq(0).should('have.text', '(cm+np,dm+nq)');
+    cy.get('#\\/sv2a2ssumExp .mjx-mrow').eq(0).should('have.text', '(cm+np,dm+nq)');
 
     cy.get('#\\/t3t3sum .mjx-mrow').eq(0).should('have.text', '(g,h,i)+(g,h,i)');
     cy.get('#\\/t3t3sumSimp .mjx-mrow').eq(0).should('have.text', '(2g,2h,2i)');
     cy.get('#\\/v3v3sum .mjx-mrow').eq(0).should('have.text', '(j,k,l)+(j,k,l)');
     cy.get('#\\/v3v3sumSimp .mjx-mrow').eq(0).should('have.text', '(2j,2k,2l)');
+    cy.get('#\\/a3a3sum .mjx-mrow').eq(0).should('have.text', '⟨r,s,t⟩+⟨r,s,t⟩');
+    cy.get('#\\/a3a3sumSimp .mjx-mrow').eq(0).should('have.text', '⟨2r,2s,2t⟩');
     cy.get('#\\/t3v3sum .mjx-mrow').eq(0).should('have.text', '(g,h,i)+(j,k,l)');
     cy.get('#\\/t3v3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+j,h+k,i+l)');
     cy.get('#\\/v3t3sum .mjx-mrow').eq(0).should('have.text', '(j,k,l)+(g,h,i)');
     cy.get('#\\/v3t3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+j,h+k,i+l)');
+    cy.get('#\\/t3a3sum .mjx-mrow').eq(0).should('have.text', '(g,h,i)+⟨r,s,t⟩');
+    cy.get('#\\/t3a3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+r,h+s,i+t)');
+    cy.get('#\\/a3t3sum .mjx-mrow').eq(0).should('have.text', '⟨r,s,t⟩+(g,h,i)');
+    cy.get('#\\/a3t3sumSimp .mjx-mrow').eq(0).should('have.text', '(g+r,h+s,i+t)');
+    cy.get('#\\/v3a3sum .mjx-mrow').eq(0).should('have.text', '(j,k,l)+⟨r,s,t⟩');
+    cy.get('#\\/v3a3sumSimp .mjx-mrow').eq(0).should('have.text', '(j+r,k+s,l+t)');
+    cy.get('#\\/a3v3sum .mjx-mrow').eq(0).should('have.text', '⟨r,s,t⟩+(j,k,l)');
+    cy.get('#\\/a3v3sumSimp .mjx-mrow').eq(0).should('have.text', '(j+r,k+s,l+t)');
     cy.get('#\\/t3v3diff .mjx-mrow').eq(0).should('have.text', '(g,h,i)−(j,k,l)');
     cy.get('#\\/t3v3diffSimp .mjx-mrow').eq(0).should('have.text', '(g−j,h−k,i−l)');
     cy.get('#\\/v3t3diff .mjx-mrow').eq(0).should('have.text', '(j,k,l)−(g,h,i)');
     cy.get('#\\/v3t3diffSimp .mjx-mrow').eq(0).should('have.text', '(−g+j,−h+k,−i+l)');
+    cy.get('#\\/t3a3diff .mjx-mrow').eq(0).should('have.text', '(g,h,i)−⟨r,s,t⟩');
+    cy.get('#\\/t3a3diffSimp .mjx-mrow').eq(0).should('have.text', '(g−r,h−s,i−t)');
+    cy.get('#\\/a3t3diff .mjx-mrow').eq(0).should('have.text', '⟨r,s,t⟩−(g,h,i)');
+    cy.get('#\\/a3t3diffSimp .mjx-mrow').eq(0).should('have.text', '(−g+r,−h+s,−i+t)');
+    cy.get('#\\/v3a3diff .mjx-mrow').eq(0).should('have.text', '(j,k,l)−⟨r,s,t⟩');
+    cy.get('#\\/v3a3diffSimp .mjx-mrow').eq(0).should('have.text', '(j−r,k−s,l−t)');
+    cy.get('#\\/a3v3diff .mjx-mrow').eq(0).should('have.text', '⟨r,s,t⟩−(j,k,l)');
+    cy.get('#\\/a3v3diffSimp .mjx-mrow').eq(0).should('have.text', '(−j+r,−k+s,−l+t)');
     cy.get('#\\/st3mul .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)');
     cy.get('#\\/st3mulSimp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
     cy.get('#\\/st3mulExp .mjx-mrow').eq(0).should('have.text', '(gm,hm,im)');
@@ -3424,9 +3562,21 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/v3smul .mjx-mrow').eq(0).should('have.text', '(j,k,l)m');
     cy.get('#\\/v3smulSimp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
     cy.get('#\\/v3smulExp .mjx-mrow').eq(0).should('have.text', '(jm,km,lm)');
+    cy.get('#\\/sa3mul .mjx-mrow').eq(0).should('have.text', 'm⟨r,s,t⟩');
+    cy.get('#\\/sa3mulSimp .mjx-mrow').eq(0).should('have.text', '⟨mr,ms,mt⟩');
+    cy.get('#\\/sa3mulExp .mjx-mrow').eq(0).should('have.text', '⟨mr,ms,mt⟩');
+    cy.get('#\\/a3smul .mjx-mrow').eq(0).should('have.text', '⟨r,s,t⟩m');
+    cy.get('#\\/a3smulSimp .mjx-mrow').eq(0).should('have.text', '⟨mr,ms,mt⟩');
+    cy.get('#\\/a3smulExp .mjx-mrow').eq(0).should('have.text', '⟨mr,ms,mt⟩');
     cy.get('#\\/st3v3ssum .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)+(j,k,l)n');
     cy.get('#\\/st3v3ssumSimp .mjx-mrow').eq(0).should('have.text', '(gm+jn,hm+kn,im+ln)');
     cy.get('#\\/st3v3ssumExp .mjx-mrow').eq(0).should('have.text', '(gm+jn,hm+kn,im+ln)');
+    cy.get('#\\/st3a3ssum .mjx-mrow').eq(0).should('have.text', 'm(g,h,i)+⟨r,s,t⟩n');
+    cy.get('#\\/st3a3ssumSimp .mjx-mrow').eq(0).should('have.text', '(gm+nr,hm+ns,im+nt)');
+    cy.get('#\\/st3a3ssumExp .mjx-mrow').eq(0).should('have.text', '(gm+nr,hm+ns,im+nt)');
+    cy.get('#\\/sv3a3ssum .mjx-mrow').eq(0).should('have.text', 'm(j,k,l)+⟨r,s,t⟩n');
+    cy.get('#\\/sv3a3ssumSimp .mjx-mrow').eq(0).should('have.text', '(jm+nr,km+ns,lm+nt)');
+    cy.get('#\\/sv3a3ssumExp .mjx-mrow').eq(0).should('have.text', '(jm+nr,km+ns,lm+nt)');
 
   });
 
@@ -3600,6 +3750,47 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('matrix-vector multiplication', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>matrix22: <math name="matrix22" format="latex">\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}</math></p>
+  <p>tuple2: <math name="tuple2">(e,f)</math></p>
+  <p>vector2: <math createVectors name="vector2">(g,h)</math></p>
+  <p>alt vector2: <math name="altvector2">⟨p,q⟩</math></p>
+  <p><math name="m22t2">$matrix22$tuple2</math></p>
+  <p><math name="m22t2Exp" expand>$matrix22$tuple2</math></p>
+  <p><math name="t2m22">$tuple2$matrix22</math></p>
+  <p><math name="t2m22Exp" expand>$tuple2$matrix22</math></p>
+  <p><math name="m22v2">$matrix22$vector2</math></p>
+  <p><math name="m22v2Exp" expand>$matrix22$vector2</math></p>
+  <p><math name="v2m22">$vector2$matrix22</math></p>
+  <p><math name="v2m22Exp" expand>$vector2$matrix22</math></p>
+  <p><math name="m22a2">$matrix22$altvector2</math></p>
+  <p><math name="m22a2Exp" expand>$matrix22$altvector2</math></p>
+  <p><math name="a2m22">$altvector2$matrix22</math></p>
+  <p><math name="a2m22Exp" expand>$altvector2$matrix22</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m22t2 .mjx-mrow').eq(0).should('have.text', '[abcd](e,f)');
+    cy.get('#\\/m22t2Exp .mjx-mrow').eq(0).should('have.text', '(ae+bf,ce+df)');
+    cy.get('#\\/t2m22 .mjx-mrow').eq(0).should('have.text', '(e,f)[abcd]');
+    cy.get('#\\/t2m22Exp .mjx-mrow').eq(0).should('have.text', '(e,f)[abcd]');
+    cy.get('#\\/m22v2 .mjx-mrow').eq(0).should('have.text', '[abcd](g,h)');
+    cy.get('#\\/m22v2Exp .mjx-mrow').eq(0).should('have.text', '(ag+bh,cg+dh)');
+    cy.get('#\\/v2m22 .mjx-mrow').eq(0).should('have.text', '(g,h)[abcd]');
+    cy.get('#\\/v2m22Exp .mjx-mrow').eq(0).should('have.text', '(g,h)[abcd]');
+    cy.get('#\\/m22a2 .mjx-mrow').eq(0).should('have.text', '[abcd]⟨p,q⟩');
+    cy.get('#\\/m22a2Exp .mjx-mrow').eq(0).should('have.text', '⟨ap+bq,cp+dq⟩');
+    cy.get('#\\/a2m22 .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩[abcd]');
+    cy.get('#\\/a2m22Exp .mjx-mrow').eq(0).should('have.text', '⟨p,q⟩[abcd]');
+
+  });
+
   it('matrix and vector state variables', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3622,6 +3813,9 @@ describe('Math Tag Tests', function () {
   <math name="v7" createVectors>(1,2)</math>
   <math name="v8" createVectors>(1,2)'</math>
   <math name="v9" createVectors>(1,2)^T</math>
+  <math name="v10">⟨1,2⟩</math>
+  <math name="v11">⟨1,2⟩'</math>
+  <math name="v12">⟨1,2⟩^T</math>
   </p>
   <p>N dimensions:
     <integer copySource="v1.nDimensions" name="v1nd" />
@@ -3633,6 +3827,9 @@ describe('Math Tag Tests', function () {
     <integer copySource="v7.nDimensions" name="v7nd" />
     <integer copySource="v8.nDimensions" name="v8nd" />
     <integer copySource="v9.nDimensions" name="v9nd" />
+    <integer copySource="v10.nDimensions" name="v10nd" />
+    <integer copySource="v11.nDimensions" name="v11nd" />
+    <integer copySource="v12.nDimensions" name="v12nd" />
   </p>
   <p>Vectors:
     <vector copySource="v1.vector" name="v1v" />
@@ -3644,6 +3841,9 @@ describe('Math Tag Tests', function () {
     <vector copySource="v7.vector" name="v7v" />
     <vector copySource="v8.vector" name="v8v" />
     <vector copySource="v9.vector" name="v9v" />
+    <vector copySource="v10.vector" name="v10v" />
+    <vector copySource="v11.vector" name="v11v" />
+    <vector copySource="v12.vector" name="v12v" />
   </p>
   <p>Vectors as math:
     <math copySource="v1.vector" name="v1vm" />
@@ -3655,6 +3855,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.vector" name="v7vm" />
     <math copySource="v8.vector" name="v8vm" />
     <math copySource="v9.vector" name="v9vm" />
+    <math copySource="v10.vector" name="v10vm" />
+    <math copySource="v11.vector" name="v11vm" />
+    <math copySource="v12.vector" name="v12vm" />
   </p>
   <p>Vector x components:
     <math copySource="v1.x" name="v1x" />
@@ -3666,6 +3869,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.x" name="v7x" />
     <math copySource="v8.x" name="v8x" />
     <math copySource="v9.x" name="v9x" />
+    <math copySource="v10.x" name="v10x" />
+    <math copySource="v11.x" name="v11x" />
+    <math copySource="v12.x" name="v12x" />
   </p>
   <p>Vector y components:
     <math copySource="v1.y" name="v1y" />
@@ -3677,6 +3883,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.y" name="v7y" />
     <math copySource="v8.y" name="v8y" />
     <math copySource="v9.y" name="v9y" />
+    <math copySource="v10.y" name="v10y" />
+    <math copySource="v11.y" name="v11y" />
+    <math copySource="v12.y" name="v12y" />
   </p>
   <p>Vector x components b:
     <math copySource="v1.vector[1]" name="v1xb" />
@@ -3688,6 +3897,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.vector[1]" name="v7xb" />
     <math copySource="v8.vector[1]" name="v8xb" />
     <math copySource="v9.vector[1]" name="v9xb" />
+    <math copySource="v10.vector[1]" name="v10xb" />
+    <math copySource="v11.vector[1]" name="v11xb" />
+    <math copySource="v12.vector[1]" name="v12xb" />
   </p>
   <p>Vector y components b:
     <math copySource="v1.vector[2]" name="v1yb" />
@@ -3699,6 +3911,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.vector[2]" name="v7yb" />
     <math copySource="v8.vector[2]" name="v8yb" />
     <math copySource="v9.vector[2]" name="v9yb" />
+    <math copySource="v10.vector[2]" name="v10yb" />
+    <math copySource="v11.vector[2]" name="v11yb" />
+    <math copySource="v12.vector[2]" name="v12yb" />
   </p>
   <p>Matrix size:
     <numberList copySource="v1.matrixSize" name="v1ms" />
@@ -3710,6 +3925,9 @@ describe('Math Tag Tests', function () {
     <numberList copySource="v7.matrixSize" name="v7ms" />
     <numberList copySource="v8.matrixSize" name="v8ms" />
     <numberList copySource="v9.matrixSize" name="v9ms" />
+    <numberList copySource="v10.matrixSize" name="v10ms" />
+    <numberList copySource="v11.matrixSize" name="v11ms" />
+    <numberList copySource="v12.matrixSize" name="v12ms" />
   </p>
   <p>N rows:
     <integer copySource="v1.nRows" name="v1nr" />
@@ -3721,6 +3939,9 @@ describe('Math Tag Tests', function () {
     <integer copySource="v7.nRows" name="v7nr" />
     <integer copySource="v8.nRows" name="v8nr" />
     <integer copySource="v9.nRows" name="v9nr" />
+    <integer copySource="v10.nRows" name="v10nr" />
+    <integer copySource="v11.nRows" name="v11nr" />
+    <integer copySource="v12.nRows" name="v12nr" />
   </p>
   <p>N columns:
     <integer copySource="v1.nColumns" name="v1nc" />
@@ -3732,6 +3953,9 @@ describe('Math Tag Tests', function () {
     <integer copySource="v7.nColumns" name="v7nc" />
     <integer copySource="v8.nColumns" name="v8nc" />
     <integer copySource="v9.nColumns" name="v9nc" />
+    <integer copySource="v10.nColumns" name="v10nc" />
+    <integer copySource="v11.nColumns" name="v11nc" />
+    <integer copySource="v12.nColumns" name="v12nc" />
   </p>
   <p>Matrices:
     <matrix copySource="v1.matrix" name="v1m" />
@@ -3743,6 +3967,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.matrix" name="v7m" />
     <matrix copySource="v8.matrix" name="v8m" />
     <matrix copySource="v9.matrix" name="v9m" />
+    <matrix copySource="v10.matrix" name="v10m" />
+    <matrix copySource="v11.matrix" name="v11m" />
+    <matrix copySource="v12.matrix" name="v12m" />
   </p>
   <p>Matrices as math:
     <math copySource="v1.matrix" name="v1mm" />
@@ -3754,6 +3981,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.matrix" name="v7mm" />
     <math copySource="v8.matrix" name="v8mm" />
     <math copySource="v9.matrix" name="v9mm" />
+    <math copySource="v10.matrix" name="v10mm" />
+    <math copySource="v11.matrix" name="v11mm" />
+    <math copySource="v12.matrix" name="v12mm" />
   </p>
   <p>Row 1:
     <matrix copySource="v1.matrix[1]" name="v1r1" />
@@ -3765,6 +3995,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.matrix[1]" name="v7r1" />
     <matrix copySource="v8.matrix[1]" name="v8r1" />
     <matrix copySource="v9.matrix[1]" name="v9r1" />
+    <matrix copySource="v10.matrix[1]" name="v10r1" />
+    <matrix copySource="v11.matrix[1]" name="v11r1" />
+    <matrix copySource="v12.matrix[1]" name="v12r1" />
   </p>
   <p>Row 1 b:
     <matrix copySource="v1.row1" name="v1r1b" />
@@ -3776,6 +4009,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.row1" name="v7r1b" />
     <matrix copySource="v8.row1" name="v8r1b" />
     <matrix copySource="v9.row1" name="v9r1b" />
+    <matrix copySource="v10.row1" name="v10r1b" />
+    <matrix copySource="v11.row1" name="v11r1b" />
+    <matrix copySource="v12.row1" name="v12r1b" />
   </p>
   <p>Row 1 c:
     <matrix copySource="v1.rows[1]" name="v1r1c" />
@@ -3787,6 +4023,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.rows[1]" name="v7r1c" />
     <matrix copySource="v8.rows[1]" name="v8r1c" />
     <matrix copySource="v9.rows[1]" name="v9r1c" />
+    <matrix copySource="v10.rows[1]" name="v10r1c" />
+    <matrix copySource="v11.rows[1]" name="v11r1c" />
+    <matrix copySource="v12.rows[1]" name="v12r1c" />
   </p>
   <p>Row 2:
     <matrix copySource="v1.matrix[2]" name="v1r2" />
@@ -3798,6 +4037,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.matrix[2]" name="v7r2" />
     <matrix copySource="v8.matrix[2]" name="v8r2" />
     <matrix copySource="v9.matrix[2]" name="v9r2" />
+    <matrix copySource="v10.matrix[2]" name="v10r2" />
+    <matrix copySource="v11.matrix[2]" name="v11r2" />
+    <matrix copySource="v12.matrix[2]" name="v12r2" />
   </p>
   <p>Row 2 b:
     <matrix copySource="v1.row2" name="v1r2b" />
@@ -3809,6 +4051,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.row2" name="v7r2b" />
     <matrix copySource="v8.row2" name="v8r2b" />
     <matrix copySource="v9.row2" name="v9r2b" />
+    <matrix copySource="v10.row2" name="v10r2b" />
+    <matrix copySource="v11.row2" name="v11r2b" />
+    <matrix copySource="v12.row2" name="v12r2b" />
   </p>
   <p>Row 2 c:
     <matrix copySource="v1.rows[2]" name="v1r2c" />
@@ -3820,6 +4065,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.rows[2]" name="v7r2c" />
     <matrix copySource="v8.rows[2]" name="v8r2c" />
     <matrix copySource="v9.rows[2]" name="v9r2c" />
+    <matrix copySource="v10.rows[2]" name="v10r2c" />
+    <matrix copySource="v11.rows[2]" name="v11r2c" />
+    <matrix copySource="v12.rows[2]" name="v12r2c" />
   </p>
   <p>Column 1:
     <matrix copySource="v1.columns[1]" name="v1c1" />
@@ -3831,6 +4079,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.columns[1]" name="v7c1" />
     <matrix copySource="v8.columns[1]" name="v8c1" />
     <matrix copySource="v9.columns[1]" name="v9c1" />
+    <matrix copySource="v10.columns[1]" name="v10c1" />
+    <matrix copySource="v11.columns[1]" name="v11c1" />
+    <matrix copySource="v12.columns[1]" name="v12c1" />
   </p>
   <p>Column 1 b:
     <matrix copySource="v1.column1" name="v1c1b" />
@@ -3842,6 +4093,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.column1" name="v7c1b" />
     <matrix copySource="v8.column1" name="v8c1b" />
     <matrix copySource="v9.column1" name="v9c1b" />
+    <matrix copySource="v10.column1" name="v10c1b" />
+    <matrix copySource="v11.column1" name="v11c1b" />
+    <matrix copySource="v12.column1" name="v12c1b" />
   </p>
   <p>Column 2:
     <matrix copySource="v1.columns[2]" name="v1c2" />
@@ -3853,6 +4107,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.columns[2]" name="v7c2" />
     <matrix copySource="v8.columns[2]" name="v8c2" />
     <matrix copySource="v9.columns[2]" name="v9c2" />
+    <matrix copySource="v10.columns[2]" name="v10c2" />
+    <matrix copySource="v11.columns[2]" name="v11c2" />
+    <matrix copySource="v12.columns[2]" name="v12c2" />
   </p>
   <p>Column 2 b:
     <matrix copySource="v1.column2" name="v1c2b" />
@@ -3864,6 +4121,9 @@ describe('Math Tag Tests', function () {
     <matrix copySource="v7.column2" name="v7c2b" />
     <matrix copySource="v8.column2" name="v8c2b" />
     <matrix copySource="v9.column2" name="v9c2b" />
+    <matrix copySource="v10.column2" name="v10c2b" />
+    <matrix copySource="v11.column2" name="v11c2b" />
+    <matrix copySource="v12.column2" name="v12c2b" />
   </p>
 
   <p>Matrix entry 12:
@@ -3876,6 +4136,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.matrix[1][2]" name="v7me12" />
     <math copySource="v8.matrix[1][2]" name="v8me12" />
     <math copySource="v9.matrix[1][2]" name="v9me12" />
+    <math copySource="v10.matrix[1][2]" name="v10me12" />
+    <math copySource="v11.matrix[1][2]" name="v11me12" />
+    <math copySource="v12.matrix[1][2]" name="v12me12" />
   </p>
   <p>Matrix entry 12 b:
     <math copySource="v1.rows[1][2]" name="v1me12b" />
@@ -3887,6 +4150,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.rows[1][2]" name="v7me12b" />
     <math copySource="v8.rows[1][2]" name="v8me12b" />
     <math copySource="v9.rows[1][2]" name="v9me12b" />
+    <math copySource="v10.rows[1][2]" name="v10me12b" />
+    <math copySource="v11.rows[1][2]" name="v11me12b" />
+    <math copySource="v12.rows[1][2]" name="v12me12b" />
   </p>
   <p>Matrix entry 12 c:
     <math copySource="v1.columns[2][1]" name="v1me12c" />
@@ -3898,6 +4164,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.columns[2][1]" name="v7me12c" />
     <math copySource="v8.columns[2][1]" name="v8me12c" />
     <math copySource="v9.columns[2][1]" name="v9me12c" />
+    <math copySource="v10.columns[2][1]" name="v10me12c" />
+    <math copySource="v11.columns[2][1]" name="v11me12c" />
+    <math copySource="v12.columns[2][1]" name="v12me12c" />
   </p>
   <p>Matrix entry 12 d:
     <math copySource="v1.row1[2]" name="v1me12d" />
@@ -3909,6 +4178,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.row1[2]" name="v7me12d" />
     <math copySource="v8.row1[2]" name="v8me12d" />
     <math copySource="v9.row1[2]" name="v9me12d" />
+    <math copySource="v10.row1[2]" name="v10me12d" />
+    <math copySource="v11.row1[2]" name="v11me12d" />
+    <math copySource="v12.row1[2]" name="v12me12d" />
   </p>
   <p>Matrix entry 12 e:
     <math copySource="v1.column2[1]" name="v1me12e" />
@@ -3920,6 +4192,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.column2[1]" name="v7me12e" />
     <math copySource="v8.column2[1]" name="v8me12e" />
     <math copySource="v9.column2[1]" name="v9me12e" />
+    <math copySource="v10.column2[1]" name="v10me12e" />
+    <math copySource="v11.column2[1]" name="v11me12e" />
+    <math copySource="v12.column2[1]" name="v12me12e" />
   </p>
   <p>Matrix entry 12 f:
     <math copySource="v1.matrixEntry1_2" name="v1me12f" />
@@ -3931,6 +4206,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.matrixEntry1_2" name="v7me12f" />
     <math copySource="v8.matrixEntry1_2" name="v8me12f" />
     <math copySource="v9.matrixEntry1_2" name="v9me12f" />
+    <math copySource="v10.matrixEntry1_2" name="v10me12f" />
+    <math copySource="v11.matrixEntry1_2" name="v11me12f" />
+    <math copySource="v12.matrixEntry1_2" name="v12me12f" />
   </p>
   <p>Matrix entry 21:
     <math copySource="v1.matrix[2][1]" name="v1me21" />
@@ -3942,6 +4220,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.matrix[2][1]" name="v7me21" />
     <math copySource="v8.matrix[2][1]" name="v8me21" />
     <math copySource="v9.matrix[2][1]" name="v9me21" />
+    <math copySource="v10.matrix[2][1]" name="v10me21" />
+    <math copySource="v11.matrix[2][1]" name="v11me21" />
+    <math copySource="v12.matrix[2][1]" name="v12me21" />
   </p>
   <p>Matrix entry 21 b:
     <math copySource="v1.rows[2][1]" name="v1me21b" />
@@ -3953,6 +4234,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.rows[2][1]" name="v7me21b" />
     <math copySource="v8.rows[2][1]" name="v8me21b" />
     <math copySource="v9.rows[2][1]" name="v9me21b" />
+    <math copySource="v10.rows[2][1]" name="v10me21b" />
+    <math copySource="v11.rows[2][1]" name="v11me21b" />
+    <math copySource="v12.rows[2][1]" name="v12me21b" />
   </p>
   <p>Matrix entry 21 c:
     <math copySource="v1.columns[1][2]" name="v1me21c" />
@@ -3964,6 +4248,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.columns[1][2]" name="v7me21c" />
     <math copySource="v8.columns[1][2]" name="v8me21c" />
     <math copySource="v9.columns[1][2]" name="v9me21c" />
+    <math copySource="v10.columns[1][2]" name="v10me21c" />
+    <math copySource="v11.columns[1][2]" name="v11me21c" />
+    <math copySource="v12.columns[1][2]" name="v12me21c" />
   </p>
   <p>Matrix entry 21 d:
     <math copySource="v1.row2[1]" name="v1me21d" />
@@ -3975,6 +4262,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.row2[1]" name="v7me21d" />
     <math copySource="v8.row2[1]" name="v8me21d" />
     <math copySource="v9.row2[1]" name="v9me21d" />
+    <math copySource="v10.row2[1]" name="v10me21d" />
+    <math copySource="v11.row2[1]" name="v11me21d" />
+    <math copySource="v12.row2[1]" name="v12me21d" />
   </p>
   <p>Matrix entry 21 e:
     <math copySource="v1.column1[2]" name="v1me21e" />
@@ -3986,6 +4276,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.column1[2]" name="v7me21e" />
     <math copySource="v8.column1[2]" name="v8me21e" />
     <math copySource="v9.column1[2]" name="v9me21e" />
+    <math copySource="v10.column1[2]" name="v10me21e" />
+    <math copySource="v11.column1[2]" name="v11me21e" />
+    <math copySource="v12.column1[2]" name="v12me21e" />
   </p>
   <p>Matrix entry 21 f:
     <math copySource="v1.matrixEntry2_1" name="v1me21f" />
@@ -3997,6 +4290,9 @@ describe('Math Tag Tests', function () {
     <math copySource="v7.matrixEntry2_1" name="v7me21f" />
     <math copySource="v8.matrixEntry2_1" name="v8me21f" />
     <math copySource="v9.matrixEntry2_1" name="v9me21f" />
+    <math copySource="v10.matrixEntry2_1" name="v10me21f" />
+    <math copySource="v11.matrixEntry2_1" name="v11me21f" />
+    <math copySource="v12.matrixEntry2_1" name="v12me21f" />
   </p>
 
   <p>Graph vectors</p>
@@ -4010,6 +4306,9 @@ describe('Math Tag Tests', function () {
     <vector copySource="v7.vector" name="v7vb" />
     <vector copySource="v8.vector" name="v8vb" />
     <vector copySource="v9.vector" name="v9vb" />
+    <vector copySource="v10.vector" name="v10vb" />
+    <vector copySource="v11.vector" name="v11vb" />
+    <vector copySource="v12.vector" name="v12vb" />
   </graph>
 
   <p>Change matrices</p>
@@ -4022,6 +4321,9 @@ describe('Math Tag Tests', function () {
   <p><matrixInput name="mi7" showSizeControls="false" bindValueTo="$v7.matrix" /></p>
   <p><matrixInput name="mi8" showSizeControls="false" bindValueTo="$v8.matrix" /></p>
   <p><matrixInput name="mi9" showSizeControls="false" bindValueTo="$v9.matrix" /></p>
+  <p><matrixInput name="mi10" showSizeControls="false" bindValueTo="$v10.matrix" /></p>
+  <p><matrixInput name="mi11" showSizeControls="false" bindValueTo="$v11.matrix" /></p>
+  <p><matrixInput name="mi12" showSizeControls="false" bindValueTo="$v12.matrix" /></p>
 
   `}, "*");
     });
@@ -4037,6 +4339,9 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/v7 .mjx-mrow').eq(0).should('have.text', "(1,2)");
     cy.get('#\\/v8 .mjx-mrow').eq(0).should('have.text', "(1,2)′");
     cy.get('#\\/v9 .mjx-mrow').eq(0).should('have.text', "(1,2)T");
+    cy.get('#\\/v10 .mjx-mrow').eq(0).should('have.text', "⟨1,2⟩");
+    cy.get('#\\/v11 .mjx-mrow').eq(0).should('have.text', "⟨1,2⟩′");
+    cy.get('#\\/v12 .mjx-mrow').eq(0).should('have.text', "⟨1,2⟩T");
 
     cy.get("#\\/v1nd").should('have.text', '2')
     cy.get("#\\/v2nd").should('have.text', '2')
@@ -4047,6 +4352,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7nd").should('have.text', '2')
     cy.get("#\\/v8nd").should('have.text', '2')
     cy.get("#\\/v9nd").should('have.text', '2')
+    cy.get("#\\/v10nd").should('have.text', '2')
+    cy.get("#\\/v11nd").should('have.text', '2')
+    cy.get("#\\/v12nd").should('have.text', '2')
 
     cy.get("#\\/v1v .mjx-mrow").eq(0).should('have.text', '(1,2)')
     cy.get("#\\/v2v .mjx-mrow").eq(0).should('have.text', '(1,2)')
@@ -4057,6 +4365,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7v .mjx-mrow").eq(0).should('have.text', '(1,2)')
     cy.get("#\\/v8v .mjx-mrow").eq(0).should('have.text', '(1,2)')
     cy.get("#\\/v9v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v10v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v11v .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v12v .mjx-mrow").eq(0).should('have.text', '(1,2)')
 
     cy.get("#\\/v1vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
     cy.get("#\\/v2vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
@@ -4067,6 +4378,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
     cy.get("#\\/v8vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
     cy.get("#\\/v9vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v10vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v11vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
+    cy.get("#\\/v12vm .mjx-mrow").eq(0).should('have.text', '(1,2)')
 
     cy.get("#\\/v1x .mjx-mrow").eq(0).should('have.text', '1')
     cy.get("#\\/v2x .mjx-mrow").eq(0).should('have.text', '1')
@@ -4077,6 +4391,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7x .mjx-mrow").eq(0).should('have.text', '1')
     cy.get("#\\/v8x .mjx-mrow").eq(0).should('have.text', '1')
     cy.get("#\\/v9x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v10x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v11x .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v12x .mjx-mrow").eq(0).should('have.text', '1')
 
     cy.get("#\\/v1xb .mjx-mrow").eq(0).should('have.text', '1')
     cy.get("#\\/v2xb .mjx-mrow").eq(0).should('have.text', '1')
@@ -4087,6 +4404,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7xb .mjx-mrow").eq(0).should('have.text', '1')
     cy.get("#\\/v8xb .mjx-mrow").eq(0).should('have.text', '1')
     cy.get("#\\/v9xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v10xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v11xb .mjx-mrow").eq(0).should('have.text', '1')
+    cy.get("#\\/v12xb .mjx-mrow").eq(0).should('have.text', '1')
 
     cy.get("#\\/v1y .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2y .mjx-mrow").eq(0).should('have.text', '2')
@@ -4097,6 +4417,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7y .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8y .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11y .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12y .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1yb .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2yb .mjx-mrow").eq(0).should('have.text', '2')
@@ -4107,6 +4430,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7yb .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8yb .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11yb .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12yb .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1ms").should('have.text', '2, 1')
     cy.get("#\\/v2ms").should('have.text', '1, 2')
@@ -4117,6 +4443,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7ms").should('have.text', '2, 1')
     cy.get("#\\/v8ms").should('have.text', '1, 2')
     cy.get("#\\/v9ms").should('have.text', '1, 2')
+    cy.get("#\\/v10ms").should('have.text', '2, 1')
+    cy.get("#\\/v11ms").should('have.text', '1, 2')
+    cy.get("#\\/v12ms").should('have.text', '1, 2')
 
     cy.get("#\\/v1nr").should('have.text', '2')
     cy.get("#\\/v2nr").should('have.text', '1')
@@ -4127,6 +4456,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7nr").should('have.text', '2')
     cy.get("#\\/v8nr").should('have.text', '1')
     cy.get("#\\/v9nr").should('have.text', '1')
+    cy.get("#\\/v10nr").should('have.text', '2')
+    cy.get("#\\/v11nr").should('have.text', '1')
+    cy.get("#\\/v12nr").should('have.text', '1')
 
     cy.get("#\\/v1nc").should('have.text', '1')
     cy.get("#\\/v2nc").should('have.text', '2')
@@ -4137,6 +4469,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7nc").should('have.text', '1')
     cy.get("#\\/v8nc").should('have.text', '2')
     cy.get("#\\/v9nc").should('have.text', '2')
+    cy.get("#\\/v10nc").should('have.text', '1')
+    cy.get("#\\/v11nc").should('have.text', '2')
+    cy.get("#\\/v12nc").should('have.text', '2')
 
     cy.get("#\\/v1m .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v2m .mjx-mrow").eq(0).should('have.text', '[12]')
@@ -4147,6 +4482,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7m .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v8m .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v9m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v10m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v11m .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v12m .mjx-mrow").eq(0).should('have.text', '[12]')
 
     cy.get("#\\/v1mm .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v2mm .mjx-mrow").eq(0).should('have.text', '[12]')
@@ -4157,6 +4495,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7mm .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v8mm .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v9mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v10mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v11mm .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v12mm .mjx-mrow").eq(0).should('have.text', '[12]')
 
     cy.get("#\\/v1r1 .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v2r1 .mjx-mrow").eq(0).should('have.text', '[12]')
@@ -4167,6 +4508,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7r1 .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v8r1 .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v9r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v10r1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v11r1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v12r1 .mjx-mrow").eq(0).should('have.text', '[12]')
 
     cy.get("#\\/v1r1b .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v2r1b .mjx-mrow").eq(0).should('have.text', '[12]')
@@ -4177,6 +4521,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7r1b .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v8r1b .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v9r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v10r1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v11r1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v12r1b .mjx-mrow").eq(0).should('have.text', '[12]')
 
     cy.get("#\\/v1r1c .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v2r1c .mjx-mrow").eq(0).should('have.text', '[12]')
@@ -4187,6 +4534,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7r1c .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v8r1c .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v9r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v10r1c .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v11r1c .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v12r1c .mjx-mrow").eq(0).should('have.text', '[12]')
 
     cy.get("#\\/v1r2 .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v2r2 .mjx-mrow").eq(0).should('have.text', '[]')
@@ -4197,6 +4547,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7r2 .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v8r2 .mjx-mrow").eq(0).should('have.text', '[]')
     cy.get("#\\/v9r2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v10r2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v11r2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v12r2 .mjx-mrow").eq(0).should('have.text', '[]')
 
     cy.get("#\\/v1r2b .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v2r2b .mjx-mrow").eq(0).should('have.text', '[]')
@@ -4207,6 +4560,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7r2b .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v8r2b .mjx-mrow").eq(0).should('have.text', '[]')
     cy.get("#\\/v9r2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v10r2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v11r2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v12r2b .mjx-mrow").eq(0).should('have.text', '[]')
 
     cy.get("#\\/v1r2c .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v2r2c .mjx-mrow").eq(0).should('have.text', '[]')
@@ -4217,6 +4573,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7r2c .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v8r2c .mjx-mrow").eq(0).should('have.text', '[]')
     cy.get("#\\/v9r2c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v10r2c .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v11r2c .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v12r2c .mjx-mrow").eq(0).should('have.text', '[]')
 
     cy.get("#\\/v1c1 .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v2c1 .mjx-mrow").eq(0).should('have.text', '[1]')
@@ -4227,6 +4586,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7c1 .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v8c1 .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v9c1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v10c1 .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v11c1 .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v12c1 .mjx-mrow").eq(0).should('have.text', '[1]')
 
     cy.get("#\\/v1c1b .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v2c1b .mjx-mrow").eq(0).should('have.text', '[1]')
@@ -4237,6 +4599,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7c1b .mjx-mrow").eq(0).should('have.text', '[12]')
     cy.get("#\\/v8c1b .mjx-mrow").eq(0).should('have.text', '[1]')
     cy.get("#\\/v9c1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v10c1b .mjx-mrow").eq(0).should('have.text', '[12]')
+    cy.get("#\\/v11c1b .mjx-mrow").eq(0).should('have.text', '[1]')
+    cy.get("#\\/v12c1b .mjx-mrow").eq(0).should('have.text', '[1]')
 
     cy.get("#\\/v1c2 .mjx-mrow").eq(0).should('have.text', '[]')
     cy.get("#\\/v2c2 .mjx-mrow").eq(0).should('have.text', '[2]')
@@ -4247,6 +4612,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7c2 .mjx-mrow").eq(0).should('have.text', '[]')
     cy.get("#\\/v8c2 .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v9c2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v10c2 .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v11c2 .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v12c2 .mjx-mrow").eq(0).should('have.text', '[2]')
 
     cy.get("#\\/v1c2b .mjx-mrow").eq(0).should('have.text', '[]')
     cy.get("#\\/v2c2b .mjx-mrow").eq(0).should('have.text', '[2]')
@@ -4257,6 +4625,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7c2b .mjx-mrow").eq(0).should('have.text', '[]')
     cy.get("#\\/v8c2b .mjx-mrow").eq(0).should('have.text', '[2]')
     cy.get("#\\/v9c2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v10c2b .mjx-mrow").eq(0).should('have.text', '[]')
+    cy.get("#\\/v11c2b .mjx-mrow").eq(0).should('have.text', '[2]')
+    cy.get("#\\/v12c2b .mjx-mrow").eq(0).should('have.text', '[2]')
 
     cy.get("#\\/v1me12 .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v2me12 .mjx-mrow").eq(0).should('have.text', '2')
@@ -4267,6 +4638,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me12 .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v8me12 .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10me12 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v11me12 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12me12 .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1me12b .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v2me12b .mjx-mrow").eq(0).should('have.text', '2')
@@ -4277,6 +4651,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me12b .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v8me12b .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10me12b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v11me12b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12me12b .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1me12c .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v2me12c .mjx-mrow").eq(0).should('have.text', '2')
@@ -4287,6 +4664,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me12c .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v8me12c .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10me12c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v11me12c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12me12c .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1me12d .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v2me12d .mjx-mrow").eq(0).should('have.text', '2')
@@ -4297,6 +4677,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me12d .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v8me12d .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10me12d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v11me12d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12me12d .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1me12e .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v2me12e .mjx-mrow").eq(0).should('have.text', '2')
@@ -4307,6 +4690,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me12e .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v8me12e .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10me12e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v11me12e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12me12e .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1me12f .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v2me12f .mjx-mrow").eq(0).should('have.text', '2')
@@ -4317,6 +4703,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me12f .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v8me12f .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v9me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v10me12f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v11me12f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v12me12f .mjx-mrow").eq(0).should('have.text', '2')
 
     cy.get("#\\/v1me21 .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
@@ -4327,6 +4716,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me21 .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v9me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v10me21 .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v12me21 .mjx-mrow").eq(0).should('have.text', '\uff3f')
 
     cy.get("#\\/v1me21b .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
@@ -4337,6 +4729,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me21b .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v9me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v10me21b .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v12me21b .mjx-mrow").eq(0).should('have.text', '\uff3f')
 
     cy.get("#\\/v1me21c .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
@@ -4347,6 +4742,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me21c .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v9me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v10me21c .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v12me21c .mjx-mrow").eq(0).should('have.text', '\uff3f')
 
     cy.get("#\\/v1me21d .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
@@ -4357,6 +4755,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me21d .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v9me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v10me21d .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v12me21d .mjx-mrow").eq(0).should('have.text', '\uff3f')
 
     cy.get("#\\/v1me21e .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
@@ -4367,6 +4768,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me21e .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v9me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v10me21e .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v12me21e .mjx-mrow").eq(0).should('have.text', '\uff3f')
 
     cy.get("#\\/v1me21f .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v2me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
@@ -4377,6 +4781,9 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/v7me21f .mjx-mrow").eq(0).should('have.text', '2')
     cy.get("#\\/v8me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
     cy.get("#\\/v9me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v10me21f .mjx-mrow").eq(0).should('have.text', '2')
+    cy.get("#\\/v11me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/v12me21f .mjx-mrow").eq(0).should('have.text', '\uff3f')
 
 
     cy.log('move vectors')
@@ -4446,10 +4853,31 @@ describe('Math Tag Tests', function () {
           headcoords: [2, 9]
         }
       })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v10vb",
+        args: {
+          headcoords: [2, 10]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v11vb",
+        args: {
+          headcoords: [2, 11]
+        }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v12vb",
+        args: {
+          headcoords: [2, 12]
+        }
+      })
 
     })
 
-    cy.get('#\\/v9 .mjx-mrow').should('contain.text', "(2,9)T");
+    cy.get('#\\/v12 .mjx-mrow').should('contain.text', "⟨2,12⟩T");
 
     cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', "[21]");
     cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', "[22]");
@@ -4460,6 +4888,9 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/v7 .mjx-mrow').eq(0).should('have.text', "(2,7)");
     cy.get('#\\/v8 .mjx-mrow').eq(0).should('have.text', "(2,8)′");
     cy.get('#\\/v9 .mjx-mrow').eq(0).should('have.text', "(2,9)T");
+    cy.get('#\\/v10 .mjx-mrow').eq(0).should('have.text', "⟨2,10⟩");
+    cy.get('#\\/v11 .mjx-mrow').eq(0).should('have.text', "⟨2,11⟩′");
+    cy.get('#\\/v12 .mjx-mrow').eq(0).should('have.text', "⟨2,12⟩T");
 
 
     cy.log('change from matrix inputs')
@@ -4482,9 +4913,15 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/mi8_component_0_1 textarea').type("{end}{backspace}-8{enter}", { force: true })
     cy.get('#\\/mi9_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
     cy.get('#\\/mi9_component_0_1 textarea').type("{end}{backspace}-9{enter}", { force: true })
+    cy.get('#\\/mi10_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi10_component_1_0 textarea').type("{end}{backspace}{backspace}-10{enter}", { force: true })
+    cy.get('#\\/mi11_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi11_component_0_1 textarea').type("{end}{backspace}{backspace}-11{enter}", { force: true })
+    cy.get('#\\/mi12_component_0_0 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/mi12_component_0_1 textarea').type("{end}{backspace}{backspace}-12{enter}", { force: true })
 
 
-    cy.get('#\\/v9 .mjx-mrow').should('contain.text', "(3,−9)T");
+    cy.get('#\\/v12 .mjx-mrow').should('contain.text', "⟨3,−12⟩T");
 
     cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', "[3−1]");
     cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', "[3−2]");
@@ -4495,6 +4932,9 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/v7 .mjx-mrow').eq(0).should('have.text', "(3,−7)");
     cy.get('#\\/v8 .mjx-mrow').eq(0).should('have.text', "(3,−8)′");
     cy.get('#\\/v9 .mjx-mrow').eq(0).should('have.text', "(3,−9)T");
+    cy.get('#\\/v10 .mjx-mrow').eq(0).should('have.text', "⟨3,−10⟩");
+    cy.get('#\\/v11 .mjx-mrow').eq(0).should('have.text', "⟨3,−11⟩′");
+    cy.get('#\\/v12 .mjx-mrow').eq(0).should('have.text', "⟨3,−12⟩T");
 
   });
 
@@ -4785,7 +5225,7 @@ describe('Math Tag Tests', function () {
     cy.get("#\\/m1r2c .mjx-mrow").eq(0).should('have.text', '[34]')
     cy.get("#\\/m2r2c .mjx-mrow").eq(0).should('have.text', '[34]')
     cy.get("#\\/m3r2c .mjx-mrow").eq(0).should('have.text', '[34]')
-    
+
     cy.get("#\\/m1r3 .mjx-mrow").eq(0).should('have.text', '[56]')
     cy.get("#\\/m2r3 .mjx-mrow").eq(0).should('have.text', '[56]')
     cy.get("#\\/m3r3 .mjx-mrow").eq(0).should('have.text', '[56]')
@@ -5243,13 +5683,201 @@ describe('Math Tag Tests', function () {
 
 
     cy.log("change content of math")
-    cy.get('#\\/content1 textarea').type("{end}+5{enter}", {force: true})
-    cy.get('#\\/content2 textarea').type("{end}-a{enter}", {force: true})
+    cy.get('#\\/content1 textarea').type("{end}+5{enter}", { force: true })
+    cy.get('#\\/content2 textarea').type("{end}-a{enter}", { force: true })
 
     cy.get("#\\/pContent2 .mjx-mrow").should('contain.text', 'e−x2−a')
 
     cy.get("#\\/pContent1 .mjx-mrow").eq(0).should('have.text', 'x23+5')
     cy.get("#\\/pContent2 .mjx-mrow").eq(0).should('have.text', 'e−x2−a')
+
+  })
+
+  it('vec', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">\\vec{a}</math>
+    <math>vec a</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', '→a')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', '→a')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["vec", "a"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["vec", "a"]);
+    });
+
+  })
+
+  it('line segment', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">\\overline{AB}</math>
+    <math>linesegment(A,B)</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', '¯¯¯¯¯¯¯¯AB')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', '¯¯¯¯¯¯¯¯AB')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["linesegment", "A", "B"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["linesegment", "A", "B"]);
+    });
+
+  })
+
+  it('perp', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">v \\perp u</math>
+    <math>v perp u</math>
+    <math format="latex">v^\\perp</math>
+    <math>v^perp</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', 'v⊥u')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', 'v⊥u')
+    cy.get("#\\/_math3 .mjx-mrow").eq(0).should('have.text', 'v⊥')
+    cy.get("#\\/_math4 .mjx-mrow").eq(0).should('have.text', 'v⊥')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["perp", "v", "u"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["perp", "v", "u"]);
+      expect(stateVariables['/_math3'].stateValues.value).eqls(["^", "v", "perp"]);
+      expect(stateVariables['/_math4'].stateValues.value).eqls(["^", "v", "perp"]);
+    });
+
+
+  })
+
+  it('parallel', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math format="latex">v \\parallel u</math>
+    <math>v parallel u</math>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/_math1 .mjx-mrow").eq(0).should('have.text', 'v∥u')
+    cy.get("#\\/_math2 .mjx-mrow").eq(0).should('have.text', 'v∥u')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["parallel", "v", "u"]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls(["parallel", "v", "u"]);
+    });
+
+
+  })
+
+  it('basic units', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>
+    <math name="dol5">$5</math>
+    <math name="perc25">25%</math>
+    <math name="deg60">60 deg</math>
+    <math name="dol5b" format="latex">\\$5</math>
+    <math name="perc25b" format="latex">25\\%</math>
+    <math name="deg60b" format="latex">60^{\\circ}</math>
+    <math name="dol5c" format="latex">$5</math>
+    <math name="perc25c" format="latex">25%</math>
+    <math name="sin90deg">sin(90 deg)</math>
+  </p>
+  <p>
+    <number name="ndol5">$5</number>
+    <number name="nperc25">25%</number>
+    <number name="ndeg60">60 deg</number>
+    <number name="nsin90deg">sin(90 deg)</number>
+  </p>
+  ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/dol5 .mjx-mrow").eq(0).should('have.text', '$5')
+    cy.get("#\\/perc25 .mjx-mrow").eq(0).should('have.text', '25%')
+    cy.get("#\\/deg60 .mjx-mrow").eq(0).should('have.text', '60∘')
+    cy.get("#\\/dol5b .mjx-mrow").eq(0).should('have.text', '$5')
+    cy.get("#\\/perc25b .mjx-mrow").eq(0).should('have.text', '25%')
+    cy.get("#\\/deg60b .mjx-mrow").eq(0).should('have.text', '60∘')
+    cy.get("#\\/dol5c .mjx-mrow").eq(0).should('have.text', '$5')
+    cy.get("#\\/perc25c .mjx-mrow").eq(0).should('have.text', '25%')
+    cy.get("#\\/sin90deg .mjx-mrow").eq(0).should('have.text', 'sin(90∘)')
+
+    cy.get("#\\/ndol5").should('have.text', '5')
+    cy.get("#\\/nperc25").should('have.text', '0.25')
+    cy.get("#\\/ndeg60").invoke('text').then(text => {
+      expect(parseFloat(text)).closeTo(Math.PI / 3, 1E-6)
+    });
+    cy.get("#\\/nsin90deg").should('have.text', '1')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/dol5'].stateValues.value).eqls(["unit", "$", 5]);
+      expect(stateVariables['/perc25'].stateValues.value).eqls(["unit", 25, "%"]);
+      expect(stateVariables['/deg60'].stateValues.value).eqls(["unit", 60, "deg"]);
+      expect(stateVariables['/dol5b'].stateValues.value).eqls(["unit", "$", 5]);
+      expect(stateVariables['/perc25b'].stateValues.value).eqls(["unit", 25, "%"]);
+      expect(stateVariables['/deg60b'].stateValues.value).eqls(["unit", 60, "deg"]);
+      expect(stateVariables['/dol5c'].stateValues.value).eqls(["unit", "$", 5]);
+      expect(stateVariables['/perc25c'].stateValues.value).eqls(["unit", 25, "%"]);
+      expect(stateVariables['/ndol5'].stateValues.value).eq(5);
+      expect(stateVariables['/nperc25'].stateValues.value).eq(.25);
+      expect(stateVariables['/ndeg60'].stateValues.value).closeTo(Math.PI / 3, 1E-14);
+      expect(stateVariables['/nsin90deg'].stateValues.value).eq(1);
+    });
+
+
+  })
+
+  it('some support for integral', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>
+    <math name="indefint">int f(x) dx</math>
+    <math name="defint">int_a^b f(x) dx</math>
+    <math name="indefintb" format="latex">\\int f(x) dx</math>
+    <math name="defintb" format="latex">\\int_a^b f(x) dx</math>
+  </p>
+  ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/indefint .mjx-mrow").eq(0).should('have.text', '∫f(x)dx')
+    cy.get("#\\/defint .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
+    cy.get("#\\/indefintb .mjx-mrow").eq(0).should('have.text', '∫f(x)dx')
+    cy.get("#\\/defintb .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
+
 
   })
 

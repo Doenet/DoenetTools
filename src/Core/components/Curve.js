@@ -7,17 +7,21 @@ import me from 'math-expressions';
 import { returnBezierFunctions } from '../utils/function';
 
 export default class Curve extends GraphicalComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveControlVector: this.moveControlVector.bind(this),
+      moveThroughPoint: this.moveThroughPoint.bind(this),
+      changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
+      switchCurve: this.switchCurve.bind(this),
+      curveClicked: this.curveClicked.bind(this),
+      mouseDownOnCurve: this.mouseDownOnCurve.bind(this),
+    });
+
+  }
   static componentType = "curve";
   static rendererType = "curve";
-
-
-  actions = {
-    moveControlVector: this.moveControlVector.bind(this),
-    moveThroughPoint: this.moveThroughPoint.bind(this),
-    changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
-    switchCurve: this.switchCurve.bind(this),
-    curveClicked: this.curveClicked.bind(this)
-  };
 
   static primaryStateVariableForDefinition = "fShadow";
 
@@ -576,6 +580,29 @@ export default class Curve extends GraphicalComponent {
           parMin = -10;
         }
         return { setValue: { parMin } }
+      }
+    }
+
+    stateVariableDefinitions.domainForFunctions = {
+      returnDependencies: () => ({
+        parMin: {
+          dependencyType: "stateVariable",
+          variableName: "parMin"
+        },
+        parMax: {
+          dependencyType: "stateVariable",
+          variableName: "parMax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        // closed interval [parMin, parMax]
+        let interval = me.fromAst(["interval",
+          ["tuple", dependencyValues.parMin, dependencyValues.parMax],
+          ["tuple", true, true],
+        ])
+        return {
+          setValue: { domainForFunctions: [interval] }
+        }
       }
     }
 
@@ -2262,7 +2289,20 @@ export default class Curve extends GraphicalComponent {
         variableName: "fDefinitions",
         isArray: true,
         forRenderer: true,
+        entryPrefixes: ["fDefinition"],
       }],
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "function",
+        addStateVariablesShadowingStateVariables: {
+          fDefinitions: {
+            stateVariableToShadow: "fDefinitions",
+          },
+          domain: {
+            stateVariableToShadow: "domainForFunctions",
+          }
+        },
+      },
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -2344,22 +2384,32 @@ export default class Curve extends GraphicalComponent {
 
         if (globalDependencyValues.curveType === "bezier") {
 
+          let bezierArguments = {
+            functionType: "bezier",
+            nThroughPoints: globalDependencyValues.nThroughPoints,
+            numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
+            splineCoeffs: globalDependencyValues.splineCoeffs,
+            extrapolateForward: globalDependencyValues.extrapolateForward,
+            extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
+            extrapolateBackward: globalDependencyValues.extrapolateBackward,
+            extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
+          }
+
+          let fs = {};
+          let fDefinitions = {};
+          bezierArguments.component = 0;
+          fs[0] = returnBezierFunctions(bezierArguments);
+          fDefinitions[0] = bezierArguments;
+
+          bezierArguments = { ...bezierArguments };
+          bezierArguments.component = 1;
+          fs[1] = returnBezierFunctions(bezierArguments);
+          fDefinitions[1] = bezierArguments;
+
           return {
             setValue: {
-              fs: returnBezierFunctions(globalDependencyValues),
-              fDefinitions: {
-                0: {
-                  functionType: "bezier",
-                  nThroughPoints: globalDependencyValues.nThroughPoints,
-                  numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
-                  splineCoeffs: globalDependencyValues.splineCoeffs,
-                  extrapolateForward: globalDependencyValues.extrapolateForward,
-                  extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
-                  extrapolateBackward: globalDependencyValues.extrapolateBackward,
-                  extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
-                },
-                1: null,
-              }
+              fs,
+              fDefinitions
             }
           }
         }
@@ -3280,6 +3330,17 @@ export default class Curve extends GraphicalComponent {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnCurve({ actionId, name }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
       componentName: name,  // use name rather than this.componentName to get original name if adapted
     })
 

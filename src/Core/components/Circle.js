@@ -4,14 +4,19 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 
 export default class Circle extends Curve {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveCircle: this.moveCircle.bind(this),
+      circleClicked: this.circleClicked.bind(this),
+      mouseDownOnCircle: this.mouseDownOnCircle.bind(this),
+    });
+
+  }
   static componentType = "circle";
   static rendererType = "circle";
   static representsClosedPath = true;
-
-  actions = {
-    moveCircle: this.moveCircle.bind(this),
-    circleClicked: this.circleClicked.bind(this),
-  };
 
 
   static createAttributesObject() {
@@ -2411,6 +2416,17 @@ export default class Circle extends Curve {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnCircle({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
       componentName: this.componentName,
     })
 

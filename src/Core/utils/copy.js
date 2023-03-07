@@ -64,7 +64,7 @@ export function postProcessCopy({ serializedComponents, componentName,
           if (init) {
             downDep[component.originalName][0].firstLevelReplacement = true;
           }
-          if(markAsPrimaryShadow) {
+          if (markAsPrimaryShadow) {
             downDep[component.originalName][0].isPrimaryShadow = true;
           }
           if (component.state) {
@@ -401,7 +401,7 @@ export async function verifyReplacementsMatchSpecifiedType({ component,
 
     // if the only discrepancy is the components are the wrong type,
     // with number of sources matching the number of components
-    // then wrap that each replacement with a blank component we are creating,
+    // then wrap each replacement with a blank component we are creating,
     // i.e., add each current replacement as the child of a new component
 
     let wrapExistingReplacements = replacementTypes.length === requiredLength
@@ -410,8 +410,21 @@ export async function verifyReplacementsMatchSpecifiedType({ component,
     // let uniqueIdentifiersUsed;
     let originalReplacements;
 
+    if (wrapExistingReplacements && replacementChanges) {
+      // if we have replacement changes, we can wrap only if we are replacing all components
+      // in a single add
+      if (replacementChanges.length === 1 && replacementChanges[0].numberReplacementsToReplace === requiredLength) {
+        originalReplacements = replacementChanges[0].serializedReplacements;
+      } else {
+        wrapExistingReplacements = false;
+      }
+    }
+
+
     if (wrapExistingReplacements) {
-      originalReplacements = replacements;
+      if (!originalReplacements) {
+        originalReplacements = replacements;
+      }
     } else {
       // since clearing out all replacements, reset all workspace variables
       workspace.numReplacementsBySource = [];

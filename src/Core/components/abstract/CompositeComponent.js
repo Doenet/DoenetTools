@@ -55,10 +55,15 @@ export default class CompositeComponent extends BaseComponent {
     return stateVariableDefinitions;
   }
 
+  // This function is called by Core.js in expandCompositeComponent
+  // See that invocation for documentation
   static createSerializedReplacements() {
     return { replacements: [] }
   }
 
+
+  // This function is called by Core.js in updateCompositeReplacements
+  // See that invocation for documentation
   static calculateReplacementChanges() {
     return [];
   }
@@ -85,6 +90,29 @@ export default class CompositeComponent extends BaseComponent {
   //   return serializedState;
 
   // }
+
+
+  // The array replacements contains the components that are substituted for the composite
+  // and become the children of the composite's parent instead of the composite itself.
+  // Note: components do not set this variable directly.
+  // Instead, core will create the replacements array based on the information given by 
+  // the static function createSerializedReplacements.
+  // Core will also change the replacements array based on the instructions returned by
+  // the static function calculateReplacementChanges.
+  replacements = [];
+
+
+  // The integer replacementsToWithhold is the number of replacements at the end of the replacements array
+  // that are ignored when inserting replacements as children to composite's parent.
+  // It is used so that when a composite reduces the number of replacements, we don't need to delete the components,
+  // but we can just withhold them and reveal them when the number of replacement is increased again.
+  // For example, if the number of replacements in a sequence is controlled dynamically by a slider,
+  // the sequence withholds replacements when the number is reduced.
+  // Note: components do not set this variable directly.
+  // Instead, core will change the replacementsToWithhold based on the instructions returned by
+  // the static function calculateReplacementChanges.
+  replacementsToWithhold = 0;
+
 
   get allPotentialRendererTypes() {
 

@@ -1,13 +1,18 @@
 import Polyline from './Polyline';
 
 export default class Polygon extends Polyline {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      movePolygon: this.movePolygon.bind(this),
+      polygonClicked: this.polygonClicked.bind(this),
+      mouseDownOnPolygon: this.mouseDownOnPolygon.bind(this),
+    });
+
+  }
   static componentType = "polygon";
   static representsClosedPath = true;
-
-  actions = {
-    movePolygon: this.movePolygon.bind(this),
-    polygonClicked: this.polygonClicked.bind(this)
-  };
 
   get movePolygon() {
     return this.movePolyline;
@@ -15,6 +20,10 @@ export default class Polygon extends Polyline {
 
   get polygonClicked() {
     return this.polylineClicked;
+  }
+
+  get mouseDownOnPolygon() {
+    return this.mouseDownOnPolyline;
   }
 
   static createAttributesObject() {

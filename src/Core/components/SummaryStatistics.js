@@ -3,15 +3,21 @@ import me from 'math-expressions';
 import { roundForDisplay } from '../utils/math';
 
 export default class SummaryStatistics extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "summaryStatistics";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
     attributes.source = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "source",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
     attributes.column = {
@@ -155,17 +161,19 @@ export default class SummaryStatistics extends BlockComponent {
     };
 
     stateVariableDefinitions.sourceName = {
-      stateVariablesDeterminingDependencies: ["source"],
-      returnDependencies: ({stateValues}) => ({
-        sourceName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.source
+      returnDependencies: () => ({
+        source: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "source"
         }
       }),
       definition({ dependencyValues }) {
-        let sourceName = null;
-        if (dependencyValues.sourceName) {
-          sourceName = dependencyValues.sourceName
+        let sourceName;
+
+        if (dependencyValues.source?.length === 1) {
+          sourceName = dependencyValues.source[0].absoluteName;
+        } else {
+          sourceName = null;
         }
         return { setValue: { sourceName } }
       }
@@ -182,7 +190,7 @@ export default class SummaryStatistics extends BlockComponent {
         },
         forRenderer: true,
       }],
-      returnDependencies({stateValues}) {
+      returnDependencies({ stateValues }) {
         return {
           dataFrame: {
             dependencyType: "stateVariable",
@@ -684,10 +692,6 @@ export default class SummaryStatistics extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

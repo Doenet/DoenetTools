@@ -4437,6 +4437,26 @@ describe('Match partial validation tests', function () {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
+    cy.log("Submit first as altvector")
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 1,2\\rangle{enter}", { force: true, delay: 0 })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+
+    cy.log("Submit both as alt vectors")
+    cy.get('#\\/mi textarea').type("{end},\\langle 3,4\\rangle{enter}", { force: true, delay: 0 })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
 
 
   });
@@ -4502,7 +4522,27 @@ describe('Match partial validation tests', function () {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
+    cy.log("Submit first as altvector")
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 1,2\\rangle{enter}", { force: true, delay: 0 })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
 
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+
+
+    cy.log("Submit both as altvectors")
+    cy.get('#\\/mi textarea').type("{end},\\langle 3,4\\rangle{enter}", { force: true, delay: 0 })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
 
   });
 

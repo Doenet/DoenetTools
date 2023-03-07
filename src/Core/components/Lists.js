@@ -2,6 +2,14 @@ import BlockComponent from './abstract/BlockComponent';
 import BaseComponent from './abstract/BaseComponent';
 
 export class Ol extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "ol";
   static rendererType = "list";
   static renderChildren = true;
@@ -15,6 +23,11 @@ export class Ol extends BlockComponent {
       public: true,
       forRenderer: true
     };
+
+    attributes.level = {
+      createComponentOfType: "integer",
+    }
+
     return attributes;
   }
 
@@ -38,6 +51,31 @@ export class Ol extends BlockComponent {
       definition: () => ({ setValue: { numbered: true } })
     }
 
+    stateVariableDefinitions.level = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        ancestorLevel: {
+          dependencyType: "ancestor",
+          componentType: "ol",
+          variableNames: ["level"]
+        },
+        levelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "level",
+          variableNames: ["value"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        let level = dependencyValues.levelAttr?.stateValues.value;
+
+        if (!(level > 0)) {
+          level = (dependencyValues.ancestorLevel?.stateValues.level || 0) + 1;
+        }
+
+        return { setValue: { level } }
+      }
+    }
+
     return stateVariableDefinitions;
 
   }
@@ -52,10 +90,6 @@ export class Ol extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }
@@ -83,6 +117,14 @@ export class Ul extends Ol {
 
 
 export class Li extends BaseComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "li";
   static rendererType = "list";
   static renderChildren = true;
@@ -123,10 +165,6 @@ export class Li extends BaseComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

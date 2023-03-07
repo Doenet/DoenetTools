@@ -116,19 +116,22 @@ export default React.memo(function LineSegment(props) {
       }
     }
 
+    let endpointsFixed = !SVs.endpointsDraggable || SVs.fixed;
+    let endpointsVisible = !endpointsFixed && !SVs.hidden;
+
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
     Object.assign(jsxPointAttributes, {
       withLabel: false,
+      fixed: false,
+      highlight: true,
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 8,
       showInfoBox: SVs.showCoordsWhenDragging,
+      visible: endpointsVisible
     });
-    if (!SVs.draggable || SVs.fixed) {
-      jsxPointAttributes.visible = false;
-    }
 
 
     let endpoints = [
@@ -197,11 +200,17 @@ export default React.memo(function LineSegment(props) {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 1;
+      callAction({
+        action: actions.mouseDownOnLineSegment
+      });
     });
     point2JXG.current.on('down', (e) => {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 2;
+      callAction({
+        action: actions.mouseDownOnLineSegment
+      });
     });
     lineSegmentJXG.current.on('down', function (e) {
       draggedPoint.current = null;
@@ -210,6 +219,12 @@ export default React.memo(function LineSegment(props) {
         [...point1JXG.current.coords.scrCoords],
         [...point2JXG.current.coords.scrCoords]
       ]
+      if (downOnPoint.current === null) {
+        // Note: counting on fact that down on line segment itself will trigger after down on points
+        callAction({
+          action: actions.mouseDownOnLineSegment
+        });
+      }
     });
 
     previousLabelPosition.current = SVs.labelPosition;
@@ -339,7 +354,7 @@ export default React.memo(function LineSegment(props) {
       lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
       lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
 
-      let visible = !SVs.hidden;
+      let visible = !SVs.hidden && validCoords;
 
       if (validCoords) {
         let actuallyChangedVisibility = lineSegmentJXG.current.visProp["visible"] !== visible;
@@ -359,6 +374,13 @@ export default React.memo(function LineSegment(props) {
       }
 
       let fixed = !SVs.draggable || SVs.fixed;
+      let endpointsFixed = !SVs.endpointsDraggable || SVs.fixed;
+      let endpointsVisible = !endpointsFixed && visible;
+
+      point1JXG.current.visProp["visible"] = endpointsVisible;
+      point1JXG.current.visPropCalc["visible"] = endpointsVisible;
+      point2JXG.current.visProp["visible"] = endpointsVisible;
+      point2JXG.current.visPropCalc["visible"] = endpointsVisible;
 
       lineSegmentJXG.current.visProp.fixed = fixed;
       lineSegmentJXG.current.visProp.highlight = !fixed;

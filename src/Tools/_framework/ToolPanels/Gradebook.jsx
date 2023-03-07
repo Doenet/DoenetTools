@@ -286,6 +286,23 @@ export const overviewData = selector({
 
     return overview;
   },
+  set: ({ set }, { doenetId, userId, credit }) => {
+    set(overviewDataQuery, (prev) => {
+      let next = [];
+      for (let userActivityArr of prev) {
+        if (userActivityArr[0] == doenetId &&
+          userActivityArr[2] == userId
+        ) {
+          let newArr = [...userActivityArr];
+          newArr[1] = credit;
+          next.push(newArr)
+        } else {
+          next.push(userActivityArr);
+        }
+      }
+      return next;
+    })
+  }
 });
 
 export const attemptDataQuery = atomFamily({

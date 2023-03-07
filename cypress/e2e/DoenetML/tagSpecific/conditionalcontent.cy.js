@@ -434,6 +434,48 @@ describe('Conditional Content Tag Tests', function () {
 
   });
 
+  it('correctly withhold replacements when shadowing', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <p>Hide greeting:
+    <booleanInput name="hide" />
+    </p>
+    
+    <p name="p">Greeting is hidden: $hide. Greeting: <conditionalContent condition="not $hide">Hello!</conditionalContent></p>
+    
+    <p>Show copy:
+      <booleanInput name="show_copy" />
+    </p>
+    <conditionalContent condition="$show_copy" assignNames="(p2)">
+      $p
+    </conditionalContent>
+    
+  `}, "*");
+    });
+
+    cy.get('#\\/p').should('have.text', 'Greeting is hidden: false. Greeting: Hello!');
+    cy.get('#\\/p2').should('not.exist');
+
+    cy.get('#\\/hide').click();
+
+    cy.get('#\\/p').should('have.text', 'Greeting is hidden: true. Greeting: ');
+    cy.get('#\\/p2').should('not.exist');
+
+
+    cy.get('#\\/show_copy').click();
+    cy.get('#\\/p2').should('have.text', 'Greeting is hidden: true. Greeting: ');
+
+
+    cy.get('#\\/hide').click();
+
+    cy.get('#\\/p').should('have.text', 'Greeting is hidden: false. Greeting: Hello!');
+    cy.get('#\\/p2').should('have.text', 'Greeting is hidden: false. Greeting: Hello!');
+
+
+
+  })
+
 
   // tests with cases or else
 

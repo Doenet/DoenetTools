@@ -155,9 +155,10 @@ export default React.memo(function Curve(props) {
       ], curveAttributes);
 
     } else if (SVs.curveType === "bezier") {
-      let fs = createFunctionFromDefinition(SVs.fDefinitions[0]);
+      let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(SVs.fDefinitions[1]);
       newCurveJXG = board.create('curve', [
-        fs[0], fs[1],
+        f1, f2,
         SVs.parMin, SVs.parMax
       ], curveAttributes);
 
@@ -204,7 +205,14 @@ export default React.memo(function Curve(props) {
     if (SVs.curveType === "bezier") {
 
       board.on('up', upBoard);
-      newCurveJXG.on('down', downOther);
+      newCurveJXG.on('down', () => {
+        downOther();
+        callAction({
+          action: actions.mouseDownOnCurve,
+          args: { name }   // send name so get original name if adapted
+        });
+
+      });
 
       segmentAttributes.current = {
         visible: false,
@@ -271,6 +279,10 @@ export default React.memo(function Curve(props) {
     } else {
       newCurveJXG.on('down', function (e) {
         updateSinceDown.current = false;
+        callAction({
+          action: actions.mouseDownOnCurve,
+          args: { name }   // send name so get original name if adapted
+        });
       });
     }
     return newCurveJXG;
@@ -279,6 +291,7 @@ export default React.memo(function Curve(props) {
   function deleteCurveJXG() {
     board.off('up', upBoard);
     curveJXG.current.off('down');
+    curveJXG.current.off('up');
     board.removeObject(curveJXG.current);
     curveJXG.current = null;
     deleteControls();
@@ -634,9 +647,8 @@ export default React.memo(function Curve(props) {
         curveJXG.current.maxX = () => SVs.parMax;
 
       } else if (SVs.curveType === "bezier") {
-        let fs = createFunctionFromDefinition(SVs.fDefinitions[0]);
-        curveJXG.current.X = fs[0];
-        curveJXG.current.Y = fs[1];
+        curveJXG.current.X = createFunctionFromDefinition(SVs.fDefinitions[0]);
+        curveJXG.current.Y = createFunctionFromDefinition(SVs.fDefinitions[1]);
         curveJXG.current.minX = () => SVs.parMin;
         curveJXG.current.maxX = () => SVs.parMax;
 

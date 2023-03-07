@@ -1,8 +1,8 @@
 import me from 'math-expressions';
-import { convertValueToMathExpression, normalizeMathExpression } from './math';
+import { convertValueToMathExpression, normalizeMathExpression, vectorOperators } from './math';
 
 
-export function createFunctionFromDefinition(fDefinition, component = 0) {
+export function createFunctionFromDefinition(fDefinition) {
 
   if (fDefinition.functionType === "formula") {
     return returnNumericalFunctionFromFormula({
@@ -10,7 +10,7 @@ export function createFunctionFromDefinition(fDefinition, component = 0) {
       nInputs: fDefinition.nInputs,
       variables: fDefinition.variables.map(x => me.fromAst(x)),
       domain: fDefinition.domain,
-      component
+      component: fDefinition.component,
     })
   } else if (fDefinition.functionType === "bezier") {
     return returnBezierFunctions({
@@ -21,6 +21,7 @@ export function createFunctionFromDefinition(fDefinition, component = 0) {
       extrapolateForwardCoeffs: fDefinition.extrapolateForwardCoeffs,
       extrapolateBackward: fDefinition.extrapolateBackward,
       extrapolateBackwardCoeffs: fDefinition.extrapolateBackwardCoeffs,
+      component: fDefinition.component,
     })
   } else if (fDefinition.functionType === "interpolated") {
     return returnInterpolatedFunction({
@@ -36,7 +37,7 @@ export function createFunctionFromDefinition(fDefinition, component = 0) {
       operatorComposesWithOriginal: fDefinition.operatorComposesWithOriginal,
       originalFDefinition: fDefinition.originalFDefinition,
       nOutputs: fDefinition.nOutputs,
-      component,
+      component: fDefinition.component,
     })
   } else if (fDefinition.functionType === "ODESolution") {
     return returnODESolutionFunction({
@@ -60,7 +61,7 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
   component = Number(component);
 
   let formulaIsVectorValued = Array.isArray(formula.tree) &&
-    ["tuple", "vector"].includes(formula.tree[0]);
+    vectorOperators.includes(formula.tree[0]);
 
   if (formulaIsVectorValued) {
     try {
@@ -105,8 +106,8 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
     }
 
     return function (x, overrideDomain = false) {
-      if(overrideDomain) {
-        if(isNaN(x)) {
+      if (overrideDomain) {
+        if (isNaN(x)) {
           return NaN;
         }
       } else if (!(x >= minx) || !(x <= maxx) || (openMin && x === minx) || (openMax && x === maxx)) {
@@ -146,7 +147,7 @@ export function returnSymbolicFunctionFromFormula(dependencyValues, arrayKey) {
   let formula = dependencyValues.formula;
 
   let formulaIsVectorValued = Array.isArray(formula.tree) &&
-    ["tuple", "vector"].includes(formula.tree[0]);
+    vectorOperators.includes(formula.tree[0]);
 
   if (formulaIsVectorValued) {
     try {
@@ -194,67 +195,57 @@ export function returnBezierFunctions({ nThroughPoints, numericalThroughPoints,
   splineCoeffs,
   extrapolateForward, extrapolateForwardCoeffs,
   extrapolateBackward, extrapolateBackwardCoeffs,
+  component,
 }) {
 
   if (nThroughPoints < 1) {
-    let fs = {};
-    for (let dim = 0; dim < 2; dim++) {
-      fs[dim] = () => NaN;
-    }
-    return fs;
+    return () => NaN;
   }
-
 
   let len = nThroughPoints - 1;
 
-  let fs = {};
+  let firstPointX = numericalThroughPoints[0][component];
+  let lastPointX = numericalThroughPoints[len][component];
 
-
-  for (let dim = 0; dim < 2; dim++) {
-    let firstPointX = numericalThroughPoints[0][dim];
-    let lastPointX = numericalThroughPoints[len][dim];
-
-    let cs = splineCoeffs.map(x => x[dim])
-    let cB;
-    if (extrapolateBackward) {
-      cB = extrapolateBackwardCoeffs[dim];
-    }
-    let cF;
-    if (extrapolateForward) {
-      cF = extrapolateForwardCoeffs[dim];
-    }
-
-    fs[dim] = function (t) {
-      if (isNaN(t)) {
-        return NaN;
-      }
-
-      if (t < 0) {
-        if (extrapolateBackward) {
-          return (cB[2] * t + cB[1]) * t + cB[0];
-        } else {
-          return firstPointX;
-        }
-      }
-
-      if (t >= len) {
-        if (extrapolateForward) {
-          t -= len;
-          return (cF[2] * t + cF[1]) * t + cF[0];
-        } else {
-          return lastPointX;
-        }
-      }
-
-      let z = Math.floor(t);
-      t -= z;
-      let c = cs[z];
-      return (((c[3] * t + c[2]) * t + c[1]) * t + c[0]);
-    }
-
+  let cs = splineCoeffs.map(x => x[component])
+  let cB;
+  if (extrapolateBackward) {
+    cB = extrapolateBackwardCoeffs[component];
+  }
+  let cF;
+  if (extrapolateForward) {
+    cF = extrapolateForwardCoeffs[component];
   }
 
-  return fs;
+  return function (t) {
+    if (isNaN(t)) {
+      return NaN;
+    }
+
+    if (t < 0) {
+      if (extrapolateBackward) {
+        return (cB[2] * t + cB[1]) * t + cB[0];
+      } else {
+        return NaN;
+      }
+    }
+
+    if (t >= len) {
+      if (extrapolateForward) {
+        t -= len;
+        return (cF[2] * t + cF[1]) * t + cF[0];
+      } else if (t === len) {
+        return lastPointX;
+      } else {
+        return NaN;
+      }
+    }
+
+    let z = Math.floor(t);
+    t -= z;
+    let c = cs[z];
+    return (((c[3] * t + c[2]) * t + c[1]) * t + c[0]);
+  }
 
 
 }
@@ -298,8 +289,8 @@ export function returnInterpolatedFunction({ xs, coeffs, interpolationPoints, do
 
   return function (x, overrideDomain = false) {
 
-    if(overrideDomain) {
-      if(isNaN(x)) {
+    if (overrideDomain) {
+      if (isNaN(x)) {
         return NaN;
       }
     } else if (!(x >= minx) || !(x <= maxx) || (openMin && x === minx) || (openMax && x === maxx)) {

@@ -3,6 +3,14 @@ import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 import me from 'math-expressions';
 
 export default class Label extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveLabel: this.moveLabel.bind(this),
+    });
+
+  }
   static componentType = "label";
   static renderChildren = true;
   static rendererType = "label";
@@ -17,10 +25,7 @@ export default class Label extends InlineComponent {
     let attributes = super.createAttributesObject();
 
     attributes.forObject = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "forObject",
-      defaultValue: null,
-      public: true,
+      createTargetComponentNames: true,
     }
 
     attributes.draggable = {
@@ -367,15 +372,22 @@ export default class Label extends InlineComponent {
     }
 
     stateVariableDefinitions.forObjectComponentName = {
-      stateVariablesDeterminingDependencies: ["forObject"],
-      returnDependencies: ({ stateValues }) => ({
-        forObjectComponentName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.forObject
+      returnDependencies: () => ({
+        forObject: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "forObject"
         }
       }),
       definition({ dependencyValues }) {
-        return { setValue: { forObjectComponentName: dependencyValues.forObjectComponentName } }
+        let forObjectComponentName;
+
+        if (dependencyValues.forObject?.length === 1) {
+          forObjectComponentName = dependencyValues.forObject[0].absoluteName;
+        } else {
+          forObjectComponentName = null;
+        }
+
+        return { setValue: { forObjectComponentName } }
       }
 
     }
@@ -483,10 +495,5 @@ export default class Label extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveLabel: this.moveLabel.bind(this),
-  };
 
 }

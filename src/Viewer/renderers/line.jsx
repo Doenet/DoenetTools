@@ -174,6 +174,9 @@ export default React.memo(function Line(props) {
         [...newLineJXG.point1.coords.scrCoords],
         [...newLineJXG.point2.coords.scrCoords]
       ]
+      callAction({
+        action: actions.mouseDownOnLine
+      });
 
     })
 

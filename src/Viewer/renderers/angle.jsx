@@ -55,7 +55,8 @@ export default React.memo(function Angle(props) {
       radius: SVs.numericalRadius,
       fillColor: SVs.selectedStyle.fillColor,
       strokeColor: SVs.selectedStyle.lineColor,
-      highlight: false
+      highlight: false,
+      orthoType: SVs.emphasizeRightAngle ? "square" : "sector",
     };
 
     jsxAngleAttributes.label = {
@@ -149,6 +150,8 @@ export default React.memo(function Angle(props) {
         angleJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
       }
+
+      angleJXG.current.visProp.orthotype = SVs.emphasizeRightAngle ? "square" : "sector";
 
       angleJXG.current.needsUpdate = true;
       angleJXG.current.update();

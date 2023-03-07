@@ -4,6 +4,15 @@ import me from 'math-expressions';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 export default class Image extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveImage: this.moveImage.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "image";
 
   static createAttributesObject() {
@@ -105,6 +114,14 @@ export default class Image extends BlockComponent {
       forRenderer: true,
       toLowerCase: true,
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
+    }
+
+    attributes.rotate = {
+      createComponentOfType: "number",
+      createStateVariable: "rotate",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true,
     }
 
     attributes.styleNumber.defaultValue = 0;
@@ -520,11 +537,6 @@ export default class Image extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    moveImage: this.moveImage.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }
