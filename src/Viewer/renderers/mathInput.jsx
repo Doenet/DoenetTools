@@ -96,14 +96,18 @@ export default function MathInput(props) {
 
       return;
     }
-    if (text.split(' ')[0] == 'cmd') {
-      mathField.cmd(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'write') {
-      mathField.write(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'keystroke') {
-      mathField.keystroke(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'type') {
-      mathField.typedText(text.split(' ')[1]);
+    const splitCommand = text.split(' ');
+    const command = splitCommand[0];
+    const input = text.substring(command.length + 1);
+
+    if (command == 'cmd') {
+      mathField.cmd(input);
+    } else if (command == 'write') {
+      mathField.write(input);
+    } else if (command == 'keystroke') {
+      mathField.keystroke(input);
+    } else if (command == 'type') {
+      mathField.typedText(input);
     }
   };
 
@@ -346,6 +350,14 @@ export default function MathInput(props) {
               substituteTextarea: function () {
                 textareaRef.current = document.createElement('textarea');
                 textareaRef.current.disabled = SVs.disabled;
+                textareaRef.current.addEventListener("focusout", (e) => {
+                  let keyboard = document.getElementById("keyboard");
+                  if (keyboard.contains(e.relatedTarget)) {
+                    e.target.focus();
+                  } else {
+                    // remove focus
+                  }
+                }, false);
                 return textareaRef.current;
               }
             }} //more commands go here
