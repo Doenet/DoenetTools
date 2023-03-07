@@ -200,6 +200,13 @@ export default class Answer extends InlineComponent {
       public: true,
     }
 
+    attributes.expanded = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expanded",
+      defaultValue: false,
+      public: true,
+    }
+
     // temporary attribute until fix toast
     attributes.suppressToast = {
       createComponentOfType: "boolean",
