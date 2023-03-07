@@ -30,11 +30,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(-2);
-      expect(fs[0](2)).eq(-4);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(-2);
+      expect(f1(2)).eq(-4);
+      expect(f2(2)).eq(-4);
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
@@ -45,11 +46,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(4);
-      expect(fs[0](2)).eq(8);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(4);
+      expect(f1(2)).eq(8);
+      expect(f2(2)).eq(-4);
     })
 
   });
@@ -79,11 +81,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
       expect(stateVariables['/_curve1'].stateValues.label).eq("Hi \\((-1,2), (2, -2), (2(-2), -4), (5,6)\\)");
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(-2);
-      expect(fs[0](2)).eq(-4);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(-2);
+      expect(f1(2)).eq(-4);
+      expect(f2(2)).eq(-4);
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
@@ -95,11 +98,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
       expect(stateVariables['/_curve1'].stateValues.label).eq("Hi \\((-1,2), (2, 4), (2(4), -4), (5,6)\\)");
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(4);
-      expect(fs[0](2)).eq(8);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(4);
+      expect(f1(2)).eq(8);
+      expect(f2(2)).eq(-4);
     })
 
   });
@@ -130,11 +134,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(-2);
-      expect(fs[0](2)).eq(-4);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(-2);
+      expect(f1(2)).eq(-4);
+      expect(f2(2)).eq(-4);
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
@@ -145,11 +150,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(4);
-      expect(fs[0](2)).eq(8);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(4);
+      expect(f1(2)).eq(8);
+      expect(f2(2)).eq(-4);
     })
 
     cy.window().then(async (win) => {
@@ -163,11 +169,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(5);
-      expect(fs[1](1)).eq(7);
-      expect(fs[0](2)).eq(14);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(5);
+      expect(f2(1)).eq(7);
+      expect(f1(2)).eq(14);
+      expect(f2(2)).eq(-4);
     })
 
   });
@@ -198,11 +205,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("uniform");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.4);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(-2);
-      expect(fs[0](2)).eq(-4);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(-2);
+      expect(f1(2)).eq(-4);
+      expect(f2(2)).eq(-4);
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
@@ -213,11 +221,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("uniform");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.4);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(2);
-      expect(fs[1](1)).eq(4);
-      expect(fs[0](2)).eq(8);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(2);
+      expect(f2(1)).eq(4);
+      expect(f1(2)).eq(8);
+      expect(f2(2)).eq(-4);
     })
 
     cy.window().then(async (win) => {
@@ -231,11 +240,12 @@ describe('Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("uniform");
       expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.4);
-      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
-      expect(fs[0](1)).eq(5);
-      expect(fs[1](1)).eq(7);
-      expect(fs[0](2)).eq(14);
-      expect(fs[1](2)).eq(-4);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(1)).eq(5);
+      expect(f2(1)).eq(7);
+      expect(f1(2)).eq(14);
+      expect(f2(2)).eq(-4);
     })
 
   });
