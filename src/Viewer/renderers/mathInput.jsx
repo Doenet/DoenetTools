@@ -350,6 +350,14 @@ export default function MathInput(props) {
               substituteTextarea: function () {
                 textareaRef.current = document.createElement('textarea');
                 textareaRef.current.disabled = SVs.disabled;
+                textareaRef.current.addEventListener("focusout", (e) => {
+                  let keyboard = document.getElementById("keyboard");
+                  if (keyboard.contains(e.relatedTarget)) {
+                    e.target.focus();
+                  } else {
+                    // remove focus
+                  }
+                }, false);
                 return textareaRef.current;
               }
             }} //more commands go here

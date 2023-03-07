@@ -35,12 +35,20 @@ const Panel = styled.div`
   justify-content: center;
 `;
 
-const ContainerSection = styled.div`
+const SubSection = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: no-wrap;
   /* flex-basis: 27%; */
   flex-grow: 1;
+`;
+
+const ContainerSection = styled.div`
+  display: grid;
+  flex-direction: row;
+  flex-wrap: no-wrap;
+  /* flex-basis: 27%; */
+  /* flex-grow: 1; */
 `;
 
 const ControlSection = styled.div`
@@ -940,8 +948,7 @@ export default function VirtualKeyboard() {
           <MathJax dynamic>\((\)</MathJax>
         </Button>
         <Button onClick={() => {
-          callback('type )');
-          // callback('keystroke Right');
+          callback('cmd )');
         }}>
           <MathJax dynamic>\()\)</MathJax>
         </Button>
@@ -1051,19 +1058,19 @@ export default function VirtualKeyboard() {
               <ToggleButton value="f(x)" />
               <ToggleButton value="ABC" />
               <ToggleButton value="αβγ" />
-              <ToggleButton value="#&¬" />
+              <ToggleButton value="$%∞" />
             </ToggleButtonGroup>
           </ToggleButtonSection>
           {toggleFn === 0
-            ? (<ContainerSection>{sectionXYZ}{section123}</ContainerSection>)
+            ? (<SubSection>{sectionXYZ}{section123}</SubSection>)
             : toggleFn === 1
-            ? (<ContainerSection>{sectionTrig1}{sectionFx}</ContainerSection>)
+            ? (<SubSection>{sectionTrig1}{sectionFx}</SubSection>)
             : toggleFn === 2
               ? (toggleABCCase ? sectionUpperABC : sectionLowerABC)
             : toggleFn === 3
               ? (toggleGreekCase ? sectionUpperGreek : sectionLowerGreek)
             : toggleFn === 4
-              ? (<ContainerSection>{sectionSymbols1}{sectionSymbols2}</ContainerSection>)
+              ? (<SubSection>{sectionSymbols1}{sectionSymbols2}</SubSection>)
             : null}
         </ContainerSection>
         {/* <VerticalDivider height="230px" marginTop="10px" /> */}
