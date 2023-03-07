@@ -196,6 +196,14 @@ export default class Graph extends BlockComponent {
       defaultValue: false,
       public: true,
     };
+
+    attributes.showBorder = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showBorder",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
     return attributes;
   }
 

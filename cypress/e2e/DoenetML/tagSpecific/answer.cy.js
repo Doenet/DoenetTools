@@ -1110,7 +1110,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Pressing enter does not submit")
-      cy.get(textinputAnchor).type(`{enter}`);
+      cy.get(textinputAnchor).type(`{enter}`).blur();
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there \n');
