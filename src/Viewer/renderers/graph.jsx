@@ -148,7 +148,11 @@ export default React.memo(function Graph(props) {
     outerStyle = { display: "flex", justifyContent: SVs.horizontalAlign };
   }
 
-  divStyle.border = "2px solid var(--canvastext)";
+  if (SVs.showBorder) {
+    divStyle.border = "2px solid var(--canvastext)";
+  } else {
+    divStyle.border = "none";
+  }
   divStyle.marginBottom = "12px";
   divStyle.marginTop = "12px";
   divStyle.backgroundColor = "var(--canvas)";
