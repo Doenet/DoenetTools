@@ -1054,6 +1054,174 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('answer sugar from one string, set to text, expanded', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer type="text" expanded>hello there</answer></p>
+  <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', '');
+      cy.get('#\\/cr1').should('have.text', '')
+      cy.get('#\\/sr1').should('have.text', '')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect(stateVariables[textinputName].stateValues.value).eq('');
+      });
+
+      cy.log("Type correct answer in")
+      cy.get(textinputAnchor).type(` hello there `).blur();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', ' hello there ');
+      cy.get('#\\/cr1').should('have.text', ' hello there ')
+      cy.get('#\\/sr1').should('have.text', '')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect(stateVariables[textinputName].stateValues.value).eq(' hello there ');
+      });
+
+
+      cy.log("Pressing enter does not submit")
+      cy.get(textinputAnchor).type(`{enter}`);
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', ' hello there \n');
+      cy.get('#\\/cr1').should('have.text', ' hello there \n')
+      cy.get('#\\/sr1').should('have.text', '')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there \n']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect(stateVariables[textinputName].stateValues.value).eq(' hello there \n');
+      });
+
+
+      cy.log("Submit answer")
+      cy.get(textinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', ' hello there \n');
+      cy.get('#\\/cr1').should('have.text', ' hello there \n')
+      cy.get('#\\/sr1').should('have.text', ' hello there \n')
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there \n']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there \n']);
+        expect(stateVariables[textinputName].stateValues.value).eq(' hello there \n');
+      });
+
+      cy.log("Enter wrong answer")
+      cy.get(textinputAnchor).clear().type(`hellothere`).blur();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hellothere');
+      cy.get('#\\/cr1').should('have.text', 'hellothere')
+      cy.get('#\\/sr1').should('have.text', ' hello there \n')
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hellothere']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there \n']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hellothere');
+      });
+
+      cy.log("Submit answer")
+      cy.get(textinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hellothere');
+      cy.get('#\\/cr1').should('have.text', 'hellothere')
+      cy.get('#\\/sr1').should('have.text', 'hellothere')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hellothere']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hellothere']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hellothere');
+      });
+
+
+      cy.log("Enter another correct answer")
+      cy.get(textinputAnchor).clear().type(`hello  there`).blur();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hello  there');
+      cy.get('#\\/cr1').should('have.text', 'hello  there')
+      cy.get('#\\/sr1').should('have.text', 'hellothere')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hellothere']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hello  there');
+      });
+
+      cy.log("Submit answer")
+      cy.get(textinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hello  there');
+      cy.get('#\\/cr1').should('have.text', 'hello  there')
+      cy.get('#\\/sr1').should('have.text', 'hello  there')
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hello  there');
+      });
+    })
+
+  });
+
   it('answer sugar from one macro, set to text', () => {
     cy.window().then(async (win) => {
       win.postMessage({
