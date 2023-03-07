@@ -1173,7 +1173,7 @@ export function getURLFromRef({
     }
   } else if (givenUri) {
     url = givenUri;
-    if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
+    if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://" || url.substring(0, 7) === "mailto:") {
       haveValidTarget = true;
       externalUri = true;
     }
