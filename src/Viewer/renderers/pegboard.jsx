@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
+import me from 'math-expressions';
 
 export default React.memo(function Pegboard(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -28,8 +29,8 @@ export default React.memo(function Pegboard(props) {
     fixed: true,
     withlabel: false,
     layer: 10 * SVs.layer,
-    fillColor: "var(--canvastext)",
-    strokeColor: "var(--canvastext)",
+    fillColor: "darkgray",
+    strokeColor: "darkgray",
     size: 0.1,
     face: "circle",
     highlight: false,
@@ -57,10 +58,11 @@ export default React.memo(function Pegboard(props) {
     let yind1 = (ymin - yoffset.current) / dy.current;
     let yind2 = (ymax - yoffset.current) / dy.current;
 
-    let minXind = Math.floor(Math.min(xind1, xind2));
-    let maxXind = Math.ceil(Math.max(xind1, xind2));
-    let minYind = Math.floor(Math.min(yind1, yind2));
-    let maxYind = Math.ceil(Math.max(yind1, yind2));
+    // Note: use round from mathjs so that it rounds -0.5 to -1, not 0.
+    let minXind = me.math.round(Math.min(xind1, xind2) + 1);
+    let maxXind = me.math.round(Math.max(xind1, xind2) - 1);
+    let minYind = me.math.round(Math.min(yind1, yind2) + 1);
+    let maxYind = me.math.round(Math.max(yind1, yind2) - 1);
 
     previousBounds.current = [minXind, maxXind, minYind, maxYind];
 
@@ -91,10 +93,11 @@ export default React.memo(function Pegboard(props) {
       let yind1 = (ymin - yoffset.current) / dy.current;
       let yind2 = (ymax - yoffset.current) / dy.current;
 
-      let minXind = Math.floor(Math.min(xind1, xind2));
-      let maxXind = Math.ceil(Math.max(xind1, xind2));
-      let minYind = Math.floor(Math.min(yind1, yind2));
-      let maxYind = Math.ceil(Math.max(yind1, yind2));
+      // Note: use round from mathjs so that it rounds -0.5 to -1, not 0.
+      let minXind = me.math.round(Math.min(xind1, xind2) + 1);
+      let maxXind = me.math.round(Math.max(xind1, xind2) - 1);
+      let minYind = me.math.round(Math.min(yind1, yind2) + 1);
+      let maxYind = me.math.round(Math.max(yind1, yind2) - 1);
 
       let [prevXmin, prevXmax, prevYmin, prevYmax] = previousBounds.current;
 
@@ -200,10 +203,11 @@ export default React.memo(function Pegboard(props) {
       let yind1 = (ymin - yoffset.current) / dy.current;
       let yind2 = (ymax - yoffset.current) / dy.current;
 
-      let minXind = Math.floor(Math.min(xind1, xind2));
-      let maxXind = Math.ceil(Math.max(xind1, xind2));
-      let minYind = Math.floor(Math.min(yind1, yind2));
-      let maxYind = Math.ceil(Math.max(yind1, yind2));
+      // Note: use round from mathjs so that it rounds -0.5 to -1, not 0.
+      let minXind = me.math.round(Math.min(xind1, xind2) + 1);
+      let maxXind = me.math.round(Math.max(xind1, xind2) - 1);
+      let minYind = me.math.round(Math.min(yind1, yind2) + 1);
+      let maxYind = me.math.round(Math.max(yind1, yind2) - 1);
 
       recalculatePegboard(minXind, maxXind, minYind, maxYind)
 
