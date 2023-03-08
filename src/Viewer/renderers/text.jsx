@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { BoardContext } from './graph';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
@@ -25,6 +25,20 @@ export default React.memo(function Text(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+
+  useEffect(() => {
+    //On unmount
+    return () => {
+      if (textJXG.current !== null) {
+        textJXG.current.off('drag');
+        textJXG.current.off('down');
+        textJXG.current.off('up');
+        board?.removeObject(textJXG.current);
+        textJXG.current = null;
+      }
+
+    }
+  }, [])
 
   function createTextJXG() {
 

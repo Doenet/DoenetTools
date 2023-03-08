@@ -155,9 +155,10 @@ export default React.memo(function Curve(props) {
       ], curveAttributes);
 
     } else if (SVs.curveType === "bezier") {
-      let fs = createFunctionFromDefinition(SVs.fDefinitions[0]);
+      let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(SVs.fDefinitions[1]);
       newCurveJXG = board.create('curve', [
-        fs[0], fs[1],
+        f1, f2,
         SVs.parMin, SVs.parMax
       ], curveAttributes);
 
@@ -646,9 +647,8 @@ export default React.memo(function Curve(props) {
         curveJXG.current.maxX = () => SVs.parMax;
 
       } else if (SVs.curveType === "bezier") {
-        let fs = createFunctionFromDefinition(SVs.fDefinitions[0]);
-        curveJXG.current.X = fs[0];
-        curveJXG.current.Y = fs[1];
+        curveJXG.current.X = createFunctionFromDefinition(SVs.fDefinitions[0]);
+        curveJXG.current.Y = createFunctionFromDefinition(SVs.fDefinitions[1]);
         curveJXG.current.minX = () => SVs.parMin;
         curveJXG.current.maxX = () => SVs.parMax;
 

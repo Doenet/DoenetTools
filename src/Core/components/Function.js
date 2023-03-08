@@ -1563,137 +1563,183 @@ export default class Function extends InlineComponent {
       }
     };
 
-    stateVariableDefinitions.fDefinition = {
+    stateVariableDefinitions.fDefinitions = {
+      isArray: true,
+      entryPrefixes: ["fDefinition"],
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
-      returnDependencies({ stateValues }) {
+      returnArraySizeDependencies: () => ({
+        nOutputs: {
+          dependencyType: "stateVariable",
+          variableName: "nOutputs"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nOutputs];
+      },
+      returnArrayDependenciesByKey({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
           return {
-            xs: {
-              dependencyType: "stateVariable",
-              variableName: "xs"
-            },
-            coeffs: {
-              dependencyType: "stateVariable",
-              variableName: "coeffs"
-            },
-            interpolationPoints: {
-              dependencyType: "stateVariable",
-              variableName: "interpolationPoints"
-            },
-            isInterpolatedFunction: {
-              dependencyType: "stateVariable",
-              variableName: "isInterpolatedFunction"
-            },
-            domain: {
-              dependencyType: "stateVariable",
-              variableName: "domain"
+            globalDependencies: {
+              xs: {
+                dependencyType: "stateVariable",
+                variableName: "xs"
+              },
+              coeffs: {
+                dependencyType: "stateVariable",
+                variableName: "coeffs"
+              },
+              interpolationPoints: {
+                dependencyType: "stateVariable",
+                variableName: "interpolationPoints"
+              },
+              isInterpolatedFunction: {
+                dependencyType: "stateVariable",
+                variableName: "isInterpolatedFunction"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
+              }
             }
           }
         } else {
           return {
-            formula: {
-              dependencyType: "stateVariable",
-              variableName: "formula",
-            },
-            variables: {
-              dependencyType: "stateVariable",
-              variableName: "variables",
-            },
-            nInputs: {
-              dependencyType: "stateVariable",
-              variableName: "nInputs",
-            },
-            nOutputs: {
-              dependencyType: "stateVariable",
-              variableName: "nOutputs",
-            },
-            functionChild: {
-              dependencyType: "child",
-              childGroups: ["functions"],
-              variableNames: ["fDefinition"],
-            },
-            isInterpolatedFunction: {
-              dependencyType: "stateVariable",
-              variableName: "isInterpolatedFunction"
-            },
-            symbolicfShadow: {
-              dependencyType: "stateVariable",
-              variableName: "symbolicfShadow"
-            },
-            numericalfShadow: {
-              dependencyType: "stateVariable",
-              variableName: "numericalfShadow"
-            },
-            domain: {
-              dependencyType: "stateVariable",
-              variableName: "domain"
+            globalDependencies: {
+              formula: {
+                dependencyType: "stateVariable",
+                variableName: "formula",
+              },
+              variables: {
+                dependencyType: "stateVariable",
+                variableName: "variables",
+              },
+              nInputs: {
+                dependencyType: "stateVariable",
+                variableName: "nInputs",
+              },
+              nOutputs: {
+                dependencyType: "stateVariable",
+                variableName: "nOutputs",
+              },
+              functionChild: {
+                dependencyType: "child",
+                childGroups: ["functions"],
+                variableNames: ["fDefinitions"],
+              },
+              isInterpolatedFunction: {
+                dependencyType: "stateVariable",
+                variableName: "isInterpolatedFunction"
+              },
+              symbolicfShadow: {
+                dependencyType: "stateVariable",
+                variableName: "symbolicfShadow"
+              },
+              numericalfShadow: {
+                dependencyType: "stateVariable",
+                variableName: "numericalfShadow"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
+              }
             }
           }
         }
       },
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.isInterpolatedFunction) {
-          return {
-            setValue: {
-              fDefinition: {
+      arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys }) {
+        if (globalDependencyValues.isInterpolatedFunction) {
+
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            if (arrayKey === "0") {
+              fDefinitions[arrayKey] = {
                 functionType: "interpolated",
-                xs: dependencyValues.xs,
-                coeffs: dependencyValues.coeffs,
-                interpolationPoints: dependencyValues.interpolationPoints,
-                domain: dependencyValues.domain,
+                xs: globalDependencyValues.xs,
+                coeffs: globalDependencyValues.coeffs,
+                interpolationPoints: globalDependencyValues.interpolationPoints,
+                domain: globalDependencyValues.domain,
               }
+            } else {
+              fDefinitions[arrayKey] = {};
             }
+
+          }
+          return {
+            setValue: { fDefinitions }
           }
 
         } else if (!usedDefault.formula && (
-          dependencyValues.formula.tree !== '\uff3f'
-          || dependencyValues.functionChild.length === 0
+          globalDependencyValues.formula.tree !== '\uff3f'
+          || globalDependencyValues.functionChild.length === 0
         )) {
-          return {
-            setValue: {
-              fDefinition: {
-                functionType: "formula",
-                formula: dependencyValues.formula.tree,
-                variables: dependencyValues.variables.map(x => x.tree),
-                nInputs: dependencyValues.nInputs,
-                nOutputs: dependencyValues.nOutputs,
-                domain: dependencyValues.domain,
-              }
-            }
-          }
-        } else if (dependencyValues.functionChild.length > 0) {
-          return {
-            setValue: {
-              fDefinition: dependencyValues.functionChild[0].stateValues.fDefinition
-            }
-          }
-        } else if (dependencyValues.numericalfShadow) {
-          // TODO: ??
-          return {
-            setValue: { fDefinition: {} }
-          }
 
-        } else if (dependencyValues.symbolicfShadow) {
-          // TODO: ??
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            fDefinitions[arrayKey] = {
+              functionType: "formula",
+              formula: globalDependencyValues.formula.tree,
+              variables: globalDependencyValues.variables.map(x => x.tree),
+              nInputs: globalDependencyValues.nInputs,
+              nOutputs: globalDependencyValues.nOutputs,
+              domain: globalDependencyValues.domain,
+              component: arrayKey,
+            }
+          }
           return {
-            setValue: { fDefinition: {} }
+            setValue: { fDefinitions }
+          }
+        } else if (globalDependencyValues.functionChild.length > 0) {
+
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            fDefinitions[arrayKey] = globalDependencyValues.functionChild[0].stateValues.fDefinitions[arrayKey];
+          }
+          return {
+            setValue: { fDefinitions }
+          }
+        } else if (globalDependencyValues.numericalfShadow) {
+          // TODO: ??
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            fDefinitions[arrayKey] = {}
+          }
+          return {
+            setValue: { fDefinitions }
+          }
+        } else if (globalDependencyValues.symbolicfShadow) {
+          // TODO: ??
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            fDefinitions[arrayKey] = {}
+          }
+          return {
+            setValue: { fDefinitions }
           }
         } else {
-          return {
-            setValue: {
-              fDefinition: {
-                functionType: "formula",
-                formula: dependencyValues.formula.tree,
-                variables: dependencyValues.variables.map(x => x.tree),
-                nInputs: dependencyValues.nInputs,
-                nOutputs: dependencyValues.nOutputs,
-                domain: dependencyValues.domain,
-              }
+
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            fDefinitions[arrayKey] = {
+              functionType: "formula",
+              formula: globalDependencyValues.formula.tree,
+              variables: globalDependencyValues.variables.map(x => x.tree),
+              nInputs: globalDependencyValues.nInputs,
+              nOutputs: globalDependencyValues.nOutputs,
+              domain: globalDependencyValues.domain,
+              component: arrayKey,
             }
+          }
+          return {
+            setValue: { fDefinitions }
           }
         }
       }
     }
+
+    stateVariableDefinitions.fDefinition = {
+      isAlias: true,
+      targetVariableName: "fDefinition1"
+    };
 
 
     stateVariableDefinitions.fs = {

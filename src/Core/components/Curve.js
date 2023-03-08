@@ -583,6 +583,29 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.domainForFunctions = {
+      returnDependencies: () => ({
+        parMin: {
+          dependencyType: "stateVariable",
+          variableName: "parMin"
+        },
+        parMax: {
+          dependencyType: "stateVariable",
+          variableName: "parMax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        // closed interval [parMin, parMax]
+        let interval = me.fromAst(["interval",
+          ["tuple", dependencyValues.parMin, dependencyValues.parMax],
+          ["tuple", true, true],
+        ])
+        return {
+          setValue: { domainForFunctions: [interval] }
+        }
+      }
+    }
+
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
         through: {
@@ -2266,7 +2289,20 @@ export default class Curve extends GraphicalComponent {
         variableName: "fDefinitions",
         isArray: true,
         forRenderer: true,
+        entryPrefixes: ["fDefinition"],
       }],
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "function",
+        addStateVariablesShadowingStateVariables: {
+          fDefinitions: {
+            stateVariableToShadow: "fDefinitions",
+          },
+          domain: {
+            stateVariableToShadow: "domainForFunctions",
+          }
+        },
+      },
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -2348,22 +2384,32 @@ export default class Curve extends GraphicalComponent {
 
         if (globalDependencyValues.curveType === "bezier") {
 
+          let bezierArguments = {
+            functionType: "bezier",
+            nThroughPoints: globalDependencyValues.nThroughPoints,
+            numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
+            splineCoeffs: globalDependencyValues.splineCoeffs,
+            extrapolateForward: globalDependencyValues.extrapolateForward,
+            extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
+            extrapolateBackward: globalDependencyValues.extrapolateBackward,
+            extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
+          }
+
+          let fs = {};
+          let fDefinitions = {};
+          bezierArguments.component = 0;
+          fs[0] = returnBezierFunctions(bezierArguments);
+          fDefinitions[0] = bezierArguments;
+
+          bezierArguments = { ...bezierArguments };
+          bezierArguments.component = 1;
+          fs[1] = returnBezierFunctions(bezierArguments);
+          fDefinitions[1] = bezierArguments;
+
           return {
             setValue: {
-              fs: returnBezierFunctions(globalDependencyValues),
-              fDefinitions: {
-                0: {
-                  functionType: "bezier",
-                  nThroughPoints: globalDependencyValues.nThroughPoints,
-                  numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
-                  splineCoeffs: globalDependencyValues.splineCoeffs,
-                  extrapolateForward: globalDependencyValues.extrapolateForward,
-                  extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
-                  extrapolateBackward: globalDependencyValues.extrapolateBackward,
-                  extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
-                },
-                1: null,
-              }
+              fs,
+              fDefinitions
             }
           }
         }

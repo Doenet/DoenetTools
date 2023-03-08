@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { BoardContext } from './graph';
 import useDoenetRender from './useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
@@ -25,6 +25,20 @@ export default React.memo(function Label(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+
+  useEffect(() => {
+    //On unmount
+    return () => {
+      if (labelJXG.current !== null) {
+        labelJXG.current.off('drag');
+        labelJXG.current.off('down');
+        labelJXG.current.off('up');
+        board?.removeObject(labelJXG.current);
+        labelJXG.current = null;
+      }
+
+    }
+  }, [])
 
   function createLabelJXG() {
 
@@ -206,10 +220,12 @@ export default React.memo(function Label(props) {
     if (SVs.hasLatex) {
       setTimeout(() => {
 
-        labelJXG.current.needsUpdate = true;
-        labelJXG.current.setText(SVs.value)
-        labelJXG.current.update();
-        board.updateRenderer();
+        if (labelJXG.current) {
+          labelJXG.current.needsUpdate = true;
+          labelJXG.current.setText(SVs.value)
+          labelJXG.current.update();
+          board?.updateRenderer();
+        }
 
       }, 1000)
     }

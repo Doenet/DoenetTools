@@ -60,6 +60,7 @@ export default class Textinput extends Input {
       defaultValue: false,
       forRenderer: true,
       public: true,
+      fallBackToParentStateVariable: "expanded",
     };
     attributes.width = {
       createComponentOfType: "_componentSize",

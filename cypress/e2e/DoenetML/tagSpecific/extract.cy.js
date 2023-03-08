@@ -1551,7 +1551,7 @@ describe('Extract Tag Tests', function () {
     cy.log(`check properties`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/e1'].stateValues.value).eqls(["/", 1,2])
+      expect(stateVariables['/e1'].stateValues.value).eqls(["/", 1, 2])
       expect(stateVariables['/e2'].stateValues.value).eq(0.75);
     })
 

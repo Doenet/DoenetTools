@@ -148,7 +148,11 @@ export default React.memo(function Graph(props) {
     outerStyle = { display: "flex", justifyContent: SVs.horizontalAlign };
   }
 
-  divStyle.border = "2px solid var(--canvastext)";
+  if (SVs.showBorder) {
+    divStyle.border = "2px solid var(--canvastext)";
+  } else {
+    divStyle.border = "none";
+  }
   divStyle.marginBottom = "12px";
   divStyle.marginTop = "12px";
   divStyle.backgroundColor = "var(--canvas)";
@@ -228,12 +232,12 @@ export default React.memo(function Graph(props) {
     let displayXAxisChanged = SVs.displayXAxis ? !Boolean(xaxis.current) : Boolean(xaxis.current);
     let displayYAxisChanged = SVs.displayYAxis ? !Boolean(yaxis.current) : Boolean(yaxis.current);
 
-    if(displayYAxisChanged && !displayXAxisChanged && SVs.displayXAxis) {
+    if (displayYAxisChanged && !displayXAxisChanged && SVs.displayXAxis) {
       board.removeObject(xaxis.current);
       xaxis.current = null;
     }
 
-    if(displayXAxisChanged && !displayYAxisChanged && SVs.displayYAxis) {
+    if (displayXAxisChanged && !displayYAxisChanged && SVs.displayYAxis) {
       board.removeObject(yaxis.current);
       yaxis.current = null;
     }
@@ -370,7 +374,7 @@ export default React.memo(function Graph(props) {
   );
 
   function createYAxis(theBoard) {
-    let yaxisOptions = {};
+    let yaxisOptions = { highlight: false, fixed: true };
     if (SVs.ylabel) {
       let position = 'rt';
       let offset = [-10, -5];
@@ -405,11 +409,11 @@ export default React.memo(function Graph(props) {
       ticksDistance: 2,
       label: {
         offset: [12, -2],
-        layer: 2
+        layer: 2,
+        strokeColor: "var(--canvastext)"
       },
       // minorTicks: 4,
       precision: 4,
-      strokeColor: "var(--canvastext)",
       drawLabels: SVs.displayYAxisTickLabels
     };
     if (SVs.yTickScaleFactor !== null) {
@@ -532,7 +536,7 @@ export default React.memo(function Graph(props) {
   }
 
   function createXAxis(theBoard) {
-    let xaxisOptions = {};
+    let xaxisOptions = { highlight: false, fixed: true };
     if (SVs.xlabel) {
       let position = 'rt';
       let offset = [5, 10];
@@ -562,10 +566,10 @@ export default React.memo(function Graph(props) {
       label: {
         offset: [-5, -15],
         layer: 2,
+        strokeColor: "var(--canvastext)"
       },
       // minorTicks: 4,
       precision: 4,
-      strokeColor: 'var(--canvastext)',
       drawLabels: SVs.displayXAxisTickLabels
     };
     if (SVs.xTickScaleFactor !== null) {

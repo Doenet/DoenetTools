@@ -1944,4 +1944,68 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('pegboard', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph>
+      <pegboard />
+    </graph>
+    
+    <graph>
+      <pegboard dx="3" dy="2" xoffset="1" yoffset="-1" />
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_pegboard1"].stateValues.dx).eq(1);
+      expect(stateVariables["/_pegboard1"].stateValues.dy).eq(1);
+      expect(stateVariables["/_pegboard1"].stateValues.xoffset).eq(0);
+      expect(stateVariables["/_pegboard1"].stateValues.yoffset).eq(0);
+      expect(stateVariables["/_pegboard2"].stateValues.dx).eq(3);
+      expect(stateVariables["/_pegboard2"].stateValues.dy).eq(2);
+      expect(stateVariables["/_pegboard2"].stateValues.xoffset).eq(1);
+      expect(stateVariables["/_pegboard2"].stateValues.yoffset).eq(-1);
+    })
+
+
+
+  });
+
+  it('show border', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph>
+    </graph>
+    
+    <graph showBorder>
+    </graph>
+    
+    <graph showBorder="false">
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.showBorder).eq(true);
+      expect(stateVariables["/_graph2"].stateValues.showBorder).eq(true);
+      expect(stateVariables["/_graph3"].stateValues.showBorder).eq(false);
+    })
+
+  });
+
 });

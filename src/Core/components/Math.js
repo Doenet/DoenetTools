@@ -2134,7 +2134,10 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
       // if don't have any string or math children,
       // set expressionWithCodes to be null,
       // which will indicate that value should use valueShadow
-      return { setValue: { expressionWithCodes: null } }
+      return {
+        setValue: { expressionWithCodes: null },
+        setEssentialValue: { expressionWithCodes: null }
+      }
     }
   }
 

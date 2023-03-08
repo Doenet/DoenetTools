@@ -2071,10 +2071,10 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('floor(2.1x)')
+        expect(text.trim()).equal('⌊2.1x⌋')
       });
       cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('ceil(−3.2y)')
+        expect(text.trim()).equal('⌈−3.2y⌉')
       });
 
       cy.window().then(async (win) => {

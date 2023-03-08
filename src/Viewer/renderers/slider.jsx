@@ -26,7 +26,7 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: black; // black?
+  background-color: var(--canvastext); 
   height: 2px;
   width: ${props => props.width};
   user-select: none;
@@ -61,7 +61,7 @@ const Tick = styled.div`
 const Label = styled.p`
     position: absolute;
     left: ${props => props.x};
-    color: black;
+    color: var(--canvastext); 
     font-size: 12px;
     top: 1px;
     user-select: none;
