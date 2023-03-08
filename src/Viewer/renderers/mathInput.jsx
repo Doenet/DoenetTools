@@ -352,7 +352,7 @@ export default function MathInput(props) {
                 textareaRef.current.disabled = SVs.disabled;
                 textareaRef.current.addEventListener("focusout", (e) => {
                   let keyboard = document.getElementById("keyboard");
-                  if (keyboard.contains(e.relatedTarget)) {
+                  if (keyboard?.contains(e.relatedTarget)) {
                     e.target.focus();
                   } else {
                     // remove focus
