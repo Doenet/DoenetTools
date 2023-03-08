@@ -238,7 +238,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
     }
 
     if (page.children.length > 0) {
-      let pageDoenetML = activityDefDoenetML.slice(page.range.openEnd + 1, page.range.closeBegin);
+      let pageDoenetML = activityDefDoenetML.slice(page.range.openEnd, page.range.closeBegin);
 
       if (page.children[0].componentType?.toLowerCase() !== "document") {
         // add <docoument> around page

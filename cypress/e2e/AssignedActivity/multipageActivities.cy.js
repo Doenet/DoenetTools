@@ -1544,6 +1544,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100);
 
     cy.signin({ userId: studentUserId })
 
