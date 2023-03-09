@@ -1,40 +1,15 @@
-// import React, { useEffect, useRef } from 'react';
-// import { useOutletContext } from 'react-router';
-
-
-// export default function Home(props){
-//   let context = useOutletContext();
-//   const videoEl = useRef(null);
-
-//   const attemptPlay = () => {
-//     videoEl &&
-//       videoEl.current &&
-//       videoEl.current.play().catch(error => {
-//         console.error("Error attempting to play", error);
-//       });
-//   };
-
-//   useEffect(() => {
-//     attemptPlay();
-//   }, []);
-
-//   if (context.signedIn == null){ return null;}
-
-//   return <div>Home</div>
-// }
-
-
-import React, { useEffect, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
+// import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 // import PageViewer from '../../../Viewer/PageViewer';
-import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-// import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
+// import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
+// import { useRecoilState, useSetRecoilState } from 'recoil';
+import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 // import RouterLogo from '../RouterLogo';
 
+const HomeIntroVideo = lazy(() => import('./HomeIntroVideo'));
 
 const SectionText = styled.div`
   text-align: center;
@@ -70,16 +45,6 @@ const H4responsive = styled.h4`
   line-height: 0.1em;
   @media (max-width: 800px) {
   font-size: .6em;
-  }
-`
-
-const HPVideo = styled.video`
-  height: 350px;
-  @media (max-width: 780px) {
-  height: 240px;
-  }
-  @media (max-width: 450px) {
-  height: 180px;
   }
 `
 
@@ -252,76 +217,40 @@ const BarMenu = styled.div`
   column-gap: 20px;
 `
 
+export async function loader(){
+  const response = await fetch('/api/getHPCarouselData.php');
+  const data = await response.json();
+  return data;
+}
 
-export default function HomePage(props) {
+export function Home(props) {
    const loaderData = useLoaderData();
+   const favorites = loaderData?.carouselData?.[3];
   let navigate = useNavigate();
-  let checkingCookie = useRef(false);
-  const [signedIn, setSignedIn] = useState(null);
-   const favorites = loaderData?.carouselData[3];
 
-     //Only ask once
-  if (!checkingCookie.current) {
-    checkingCookie.current = true;
-    checkIfUserClearedOut().then(({ cookieRemoved }) => {
-      setSignedIn(!cookieRemoved);
-    })
-  }
+  // const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
+  // const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
-  const videoEl = useRef(null);
-
-  const attemptPlay = () => {
-    videoEl &&
-      videoEl.current &&
-      videoEl.current.play().catch(error => {
-        console.error("Error attempting to play", error);
-      });
-  };
-
-  useEffect(() => {
-    attemptPlay();
-  }, []);
-
-  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
-    setVariantPanel({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
-    });
-  }
+  // function variantCallback(generatedVariantInfo, allPossibleVariants) {
+  //   // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+  //   const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
+  //   setVariantPanel({
+  //     index: cleanGeneratedVariant.index,
+  //     allPossibleVariants,
+  //   });
+  //   setVariantInfo({
+  //     index: cleanGeneratedVariant.index,
+  //   });
+  // }
 
 
-    let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
-  if (!signedIn) {
-    signInButton = <Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" />
-  }
+  //   let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
+  // if (!signedIn) {
+  //   signInButton = <Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" />
+  // }
 
-  //  console.log("favorites",favorites)
   return <>
 <Main>
-<HeaderSection>
-      <img style={{
-        width: '143px'
-      }} alt="Doenet logo showing donut in front of a cloud" src='/media/Doenet_Logo_Frontpage.png' />
-
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100px',
-      }}>
-        <H1responsive>The Distributed Open Education Network</H1responsive>
-        <H4responsive>The free and open data-driven education technology platform</H4responsive>
-      </div>
-    </HeaderSection>
     <Heading heading="Create Content" subheading="Quickly create interactive activities" />
     <CreateContentSection>
 
@@ -330,25 +259,15 @@ export default function HomePage(props) {
         <h4 style={{ width: '340px', color: 'white', lineHeight: '1em' }}>DoenetML is the markup language we've created to let you focus on the meaning of the elements you wish to create.</h4>
         <Button value="See Inside" onClick={() => window.open('https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0', '_blank')} />
       </div>
-
-      <HPVideo
-        // height='420px'
-        fluid='false'
-        // src='/media/homepagevideo2.mp4'
-        // loop
-        muted
-        playsInline
-        alt="Demonstration video on making DoenetML content"
-        ref={videoEl}
-        // autoplay
-        controls
-      ><source src="/media/homepagevideo.mp4" type="video/mp4" /></HPVideo>
+      <Suspense fallback={'Loading...'} >  {/* Does this lazy loading do anything? */}
+      <HomeIntroVideo />
+      </Suspense>
     </CreateContentSection>
 
     <Heading heading="Explore" subheading="Interact with our existing content" />
 
     <CarouselSection>
-      {/* <Carousel title="Doenet Team Favorites" data={favorites} /> */}
+      <Carousel title="Doenet Team Favorites" data={favorites} />
     </CarouselSection>
 
     <Heading heading="Learn" subheading="Designed for the In-Person Classroom" />
@@ -378,6 +297,7 @@ export default function HomePage(props) {
           background: 'white',
           padding: '20px 0px 20px 0px'
         }}>
+          <div>Doenet Example Here</div>
           {/* <PageViewer
             key={`HPpageViewer`}
             doenetML={doenetML}
