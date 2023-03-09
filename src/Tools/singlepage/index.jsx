@@ -13,16 +13,16 @@ import {
   Link,
   Outlet,
 } from "react-router-dom";
-// import { RecoilRoot } from 'recoil';
+import { RecoilRoot } from 'recoil';
 // import HomePage from "../_framework/Pages/HomePage";
 // import CommunityPage from "../_framework/Pages/CommunityPage";
 // import PortfolioPage from "../_framework/Pages/PortfolioPage";
 // import PortfolioAddActivityPage from "../_framework/Pages/PortfolioAddActivityPage";
 
-// import ToolRoot from '../_framework/NewToolRoot';
-// import { MathJaxContext } from 'better-react-mathjax';
-// import { mathjaxConfig } from '../../Core/utils/math';
-// import DarkmodeController from '../_framework/DarkmodeController';
+import ToolRoot from '../_framework/NewToolRoot';
+import { MathJaxContext } from 'better-react-mathjax';
+import { mathjaxConfig } from '../../Core/utils/math';
+import DarkmodeController from '../_framework/DarkmodeController';
 import SiteHeader from "../_framework/Paths/SiteHeader";
 import Community from "../_framework/Paths/Community";
 import Portfolio from "../_framework/Paths/Portfolio";
@@ -45,30 +45,44 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: caroselLoader,
-        element:<Home />,
+        element: <RecoilRoot>
+        <DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <Home />
+          </MathJaxContext>
+        </DarkmodeController>
+      </RecoilRoot>,
       },
       {
         path: "community",
         element: <h1>community</h1>
       },
+      {
+        path: "portfolio",
+        element: <h1>portfolio</h1>
+      },
      
     ]
   },
-  // {
-  //   path: "*",
-  //   errorElement: <div>Error!</div>,
-  //   element: <RecoilRoot>
-  //           <DarkmodeController>
-  //             <MathJaxContext
-  //               version={2}
-  //               config={mathjaxConfig}
-  //               onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-  //             >
-  //               <ToolRoot />
-  //             </MathJaxContext>
-  //           </DarkmodeController>
-  //   </RecoilRoot>,
-  // },
+  {
+    path: "*",
+    errorElement: <div>Error!</div>,
+    element: <RecoilRoot>
+            <DarkmodeController>
+              <MathJaxContext
+                version={2}
+                config={mathjaxConfig}
+                onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+              >
+                <ToolRoot />
+              </MathJaxContext>
+            </DarkmodeController>
+    </RecoilRoot>,
+  },
 ]);
 
 ReactDOM.render(<RouterProvider router={router} />,

@@ -1,11 +1,11 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { useLoaderData, useNavigate } from 'react-router';
+import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 // import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-// import PageViewer from '../../../Viewer/PageViewer';
-// import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
-// import { useRecoilState, useSetRecoilState } from 'recoil';
+import PageViewer from '../../../Viewer/PageViewer';
+import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 // import RouterLogo from '../RouterLogo';
 
@@ -226,22 +226,22 @@ export async function loader(){
 export function Home(props) {
    const loaderData = useLoaderData();
    const favorites = loaderData?.carouselData?.[3];
-  let navigate = useNavigate();
+  // let navigate = useNavigate();
 
-  // const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  // const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
-  // function variantCallback(generatedVariantInfo, allPossibleVariants) {
-  //   // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-  //   const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
-  //   setVariantPanel({
-  //     index: cleanGeneratedVariant.index,
-  //     allPossibleVariants,
-  //   });
-  //   setVariantInfo({
-  //     index: cleanGeneratedVariant.index,
-  //   });
-  // }
+  function variantCallback(generatedVariantInfo, allPossibleVariants) {
+    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
+    setVariantPanel({
+      index: cleanGeneratedVariant.index,
+      allPossibleVariants,
+    });
+    setVariantInfo({
+      index: cleanGeneratedVariant.index,
+    });
+  }
 
 
   //   let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
@@ -297,8 +297,7 @@ export function Home(props) {
           background: 'white',
           padding: '20px 0px 20px 0px'
         }}>
-          <div>Doenet Example Here</div>
-          {/* <PageViewer
+          <PageViewer
             key={`HPpageViewer`}
             doenetML={doenetML}
             flags={{
@@ -320,7 +319,7 @@ export function Home(props) {
 
             // setIsInErrorState={setIsInErrorState}
             pageIsActive={true}
-          /> */}
+          />
         </div>
       </div>
 
