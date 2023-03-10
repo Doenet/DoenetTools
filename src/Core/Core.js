@@ -10449,7 +10449,7 @@ export default class Core {
 
     } else {
       startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
-      endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd + 1;
+      endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd;
     }
 
     let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);

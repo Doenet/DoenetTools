@@ -150,7 +150,7 @@ export function parseAndCompile(inText) {
         cursor.parent();
       }
 
-      let range = { selfCloseBegin: tagBegin, selfCloseEnd: cursor.to + 2 };
+      let range = { selfCloseBegin: tagBegin, selfCloseEnd: cursor.to + 3 };
 
       // console.log(">>>toReturn", {componentType :  tagName, props : attrs, children : []});
 
