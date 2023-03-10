@@ -8,82 +8,6 @@ import RouterLogo from '../RouterLogo';
 
 
 
-
-// const PublicSection = styled.div`
-//       display: flex;
-//       flex-direction: column;
-//       padding: 0px 10px 60px 10px;
-//       margin: 0px;
-//       row-gap: 30px;
-//       justify-content: center;
-//       align-items: center;
-//       text-align: center;
-//       background: var(--lightBlue);
-// `
-
-// const PrivateSection = styled.div`
-//       display: flex;
-//       flex-direction: column;
-//       padding: 0px 10px 60px 10px;
-//       margin: 0px;
-//       row-gap: 30px;
-//       justify-content: center;
-//       align-items: center;
-//       text-align: center;
-//       background: var(--mainGray);
-// `
-
-// const SignInSection = styled.div`
-//       display: flex;
-//       flex-direction: column;
-//       row-gap: 10px;
-//       margin: 0px;
-//       justify-content: center;
-//       align-items: center;
-//       text-align: center;
-//       background: var(--mainGray);
-//       height: calc(100% - 40px);
-// `
-
-// const SectionHeading = styled.div`
-//   display: flex;
-//   margin: 0px;
-//   justify-content: center;
-//   align-items: center;
-//   text-align: center;
-//   height: 100px;
-//   font-size: 18pt;
-// `
-
-// export default function SiteHeader(){
-//   return <div>Site Header<Outlet /></div>
-// }
-
-// function Heading(props) {
-//   let navigate = useNavigate();
-
-//   return <div style={{
-//     display: 'flex',
-//     flexDirection: 'column',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     height: '100px',
-//     position: 'relative'
-//   }}>
-//     <h1 style={{
-//       lineHeight: '0.1em',
-//     }}>{props.heading}</h1>
-//     <h4 style={{
-//       lineHeight: '0.1em',
-//     }}> {props.subheading} </h4>
-//     <div style={{
-//       position: "absolute",
-//       bottom: "16px",
-//       right: "10px"
-//   }}><Button value="Add Activity" onClick={() => navigate('addActivity')}/></div>
-//   </div>
-// }
-
 const SignInButtonContainer = styled.div`
   margin: auto 10px auto 0px;
 `
@@ -98,14 +22,16 @@ const Header = styled.header`
   margin: 0;
   display: flex;
   justify-content: space-between;
-
+  border-bottom: 1px solid var(--mainGray);
+`;
+const HeaderLine = styled.header`
+  background-color: var(--mainGray);
+  height: 1px;
+  width: 100%;
+  margin: 0;
 `;
 
 const Main = styled.main`
-  margin-top: 40px;
-  /* padding: 20px; */
-  overflow-y: scroll;
-  height: 100vh;
   margin: 0;
 `;
 
@@ -119,15 +45,6 @@ const Branding = styled.span`
   font-size: 16px;
 `
 
-// const MenuItem = styled.NavLink`
-//   padding: 8px;
-//   color: "var(--mainBlue)";
-//   border-bottom: "2px solid var(--mainBlue)";
-//   cursor: pointer;
-// `
-
-/* border-bottom: 2px solid var(--mainBlue); */
-
 const MenuItem = styled(NavLink)`
   padding: 8px;
   color: black;
@@ -138,27 +55,6 @@ const MenuItem = styled(NavLink)`
     border-bottom: 2px solid var(--mainBlue);
   }
 `;
-
-// const activeClassName = 'nav-item-active';
-
-// const MenuItem = styled(NavLink)`
-//   padding: 8px;
-//   color: black;
-//   cursor: pointer;
-
-//   &.${activeClassName} {
-//     color: var(--mainBlue);
-//     border-bottom: 2px solid var(--mainBlue);
-//   }
-// `;
-
-
-// const MenuItem = styled.div`
-  // padding: 8px;
-  // color: ${props => props.active ? "var(--mainBlue)" : "black"};
-  // border-bottom: ${props => props.active ? "2px solid var(--mainBlue)" : null};
-  // cursor: pointer;
-// `
 
 const BarMenu = styled.div`
   margin: 0px;
@@ -225,6 +121,7 @@ export default function SiteHeader(props) {
   </Header>
   <Main>
       <TopSpace />
+      {/* <HeaderLine /> */}
       <Outlet context={{signedIn}}/>
   </Main>
   </>
@@ -276,6 +173,7 @@ export default function SiteHeader(props) {
 </Header>
 <Main>
   <TopSpace />
+  {/* <HeaderLine /> */}
   <Outlet context={{signedIn}}/>
 </Main>
 </>

@@ -59,12 +59,6 @@ const CarouselSection = styled.div`
       text-align: center;
       background: var(--mainGray);
       height: 300px;
-      /* @media (max-width: 800px) {
-        height: 500px;
-      }
-      @media (max-width: 500px) {
-        height: 1000px;
-      } */
 `
 
 const CreateContentSection = styled.div`
