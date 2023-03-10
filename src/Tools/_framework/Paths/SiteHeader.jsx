@@ -24,12 +24,6 @@ const Header = styled.header`
   justify-content: space-between;
   border-bottom: 1px solid var(--mainGray);
 `;
-const HeaderLine = styled.header`
-  background-color: var(--mainGray);
-  height: 1px;
-  width: 100%;
-  margin: 0;
-`;
 
 const Main = styled.main`
   margin: 0;
@@ -173,7 +167,6 @@ export default function SiteHeader(props) {
 </Header>
 <Main>
   <TopSpace />
-  {/* <HeaderLine /> */}
   <Outlet context={{signedIn}}/>
 </Main>
 </>

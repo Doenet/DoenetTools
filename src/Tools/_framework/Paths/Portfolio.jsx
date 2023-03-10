@@ -9,7 +9,7 @@ const SecondHeader = styled.header`
   color: #000;
   height: 80px;
   position: fixed;
-  top: 44;
+  top: 4;
   width: 100%;
   margin: 0;
   display: flex;
