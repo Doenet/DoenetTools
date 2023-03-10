@@ -50,7 +50,8 @@ export default function Community(props){
   let context = useOutletContext();
   const loaderData = useLoaderData();
   const carouselData = loaderData?.carouselData;
-  
+
+  //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null){ return null;}
   
   return <>

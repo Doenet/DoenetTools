@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { useLoaderData } from 'react-router';
+import { useLoaderData, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 // import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
@@ -217,10 +217,10 @@ export async function loader(){
   return data;
 }
 
-export function Home(props) {
+export function Home() {
+  let context = useOutletContext();
    const loaderData = useLoaderData();
    const favorites = loaderData?.carouselData?.[3];
-  // let navigate = useNavigate();
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -237,11 +237,8 @@ export function Home(props) {
     });
   }
 
-
-  //   let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
-  // if (!signedIn) {
-  //   signInButton = <Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" />
-  // }
+//Don't do more processing if we don't know if we are signed in or not
+if (context.signedIn == null){ return null;}
 
   return <>
 <Main>

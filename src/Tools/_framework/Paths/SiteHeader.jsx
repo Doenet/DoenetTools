@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Outlet, useLoaderData, useNavigate } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -12,23 +12,6 @@ const SignInButtonContainer = styled.div`
   margin: auto 10px auto 0px;
 `
 
-const Header = styled.header`
-  background-color: #fff;
-  color: #000;
-  height: 40px;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--mainGray);
-`;
-
-const Main = styled.main`
-  margin: 0;
-`;
-
 const Branding = styled.span`
   margin: 4px 0px 4px 10px;
   display: flex;
@@ -39,7 +22,7 @@ const Branding = styled.span`
   font-size: 16px;
 `
 
-const MenuItem = styled(NavLink)`
+const StyledMenuItem = styled(NavLink)`
   padding: 8px;
   color: black;
   cursor: pointer;
@@ -58,15 +41,44 @@ const BarMenu = styled.div`
   font-size: 16px;
   column-gap: 20px;
 `
-const TopSpace = styled.div`
-  margin-top: 40px;
+
+const TopContainer = styled.div`
+  display: grid;
+  grid-template-rows: 40px auto;
 `
 
+const HeaderContainer = styled.header`
+  grid-row: 1 / 2;
+  background-color: #fff;
+  color: #000;
+  height: 40px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--mainGray);
+`;
+
+//Minimal container.  The idea is the Outlet should provide its own layout.
+const ContentContainer = styled.main`
+  grid-row: 2 / 3;
+  margin: 0;
+`;
+
+function MenuItem({to,children}){
+  return <StyledMenuItem to={to} className={({ isActive, isPending }) =>
+  (location.pathname === '/' || isActive)
+    ? "active"
+    : isPending
+    ? "pending"
+    : ""
+}>{children}</StyledMenuItem>
+}
 
 
 export default function SiteHeader(props) {
-  //  const loaderData = useLoaderData();
-  //  const carouselData = loaderData?.carouselData;
   let navigate = useNavigate();
   let checkingCookie = useRef(false);
   const [signedIn, setSignedIn] = useState(null);
@@ -79,95 +91,29 @@ export default function SiteHeader(props) {
     })
   }
   
-  // location.pathname === '/' || isActive
-  console.log(location.pathname === '/')
+  let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
+    if (!signedIn) {
+      signInButton = <Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" />
+    }
 
-
-    let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
-  if (!signedIn) {
-    signInButton = <Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" />
-  }
-
-  if (signedIn == false){
-    return <>
-    <Header>
-      <Branding>
+  return (<>
+  <TopContainer>
+    <HeaderContainer>
+    <Branding>
       <RouterLogo /><p>Doenet</p>
       </Branding>
-    <BarMenu>
-    <MenuItem to="home" className={({ isActive, isPending }) =>
-                      (location.pathname === '/' || isActive)
-                        ? "active"
-                        : isPending
-                        ? "pending"
-                        : ""
-                    }>Home</MenuItem>
-<MenuItem to="community" className={({ isActive, isPending }) =>
-  isActive
-    ? "active"
-    : isPending
-    ? "pending"
-    : ""
-}>Community</MenuItem>
-  
-    </BarMenu>
-    <SignInButtonContainer>{signInButton}</SignInButtonContainer>
-  </Header>
-  <Main>
-      <TopSpace />
-      {/* <HeaderLine /> */}
+      <BarMenu>
+        <MenuItem to="/">Home</MenuItem>
+        <MenuItem to="community">Community</MenuItem>
+        {signedIn ? <MenuItem to="portfolio">Portfolio</MenuItem> : null}
+      </BarMenu>
+      <SignInButtonContainer>{signInButton}</SignInButtonContainer>
+    </HeaderContainer>
+
+    <ContentContainer>
       <Outlet context={{signedIn}}/>
-  </Main>
-  </>
-  }
-  //  console.log("favorites",favorites)
-  return <>
-  <Header>
-    <Branding>
-    <RouterLogo /><p>Doenet</p>
-    </Branding>
-  <BarMenu>
+    </ContentContainer>
+  </TopContainer>
+  </>)
 
-  <MenuItem to="/" className={({ isActive, isPending }) =>
-                        isActive
-                        ? "active"
-                        : isPending
-                        ? "pending"
-                        : ""
-                    }>Home</MenuItem>
-
-
-  {/* {location.pathname === '/' ? <MenuItem to="home" className="active">Home</MenuItem>:
-  <MenuItem to="home" className={({ isActive, isPending }) =>
-                        isActive
-                        ? "active"
-                        : isPending
-                        ? "pending"
-                        : ""
-                    }>Home</MenuItem>
-  } */}
-<MenuItem to="community" className={({ isActive, isPending }) =>
-  isActive
-    ? "active"
-    : isPending
-    ? "pending"
-    : ""
-}>Community</MenuItem> 
-<MenuItem to="portfolio" className={({ isActive, isPending }) =>
-  isActive
-    ? "active"
-    : isPending
-    ? "pending"
-    : ""
-}>Portfolio</MenuItem> 
-  
-
-  </BarMenu>
-  <SignInButtonContainer>{signInButton}</SignInButtonContainer>
-</Header>
-<Main>
-  <TopSpace />
-  <Outlet context={{signedIn}}/>
-</Main>
-</>
 }

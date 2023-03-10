@@ -52,9 +52,8 @@ const PrivateActivitiesSection = styled.div`
       justify-content: center;
       align-items: center;
       text-align: center;
-      background: grey;
       min-height: 100vh;
-      /* background: var(--mainGrey); */
+      background: var(--mainGray);
 `
 const PrivateActivityCardsContainer = styled.div`
       display: flex;
@@ -69,7 +68,8 @@ const PrivateActivityCardsContainer = styled.div`
 export default function Portfolio(){
   let context = useOutletContext();
 
-  if (context.signedIn == null){ return null;}
+  //Don't do more processing if we don't know if we are signed in or not
+  if (context.signedIn == null){ return null;} 
 
   return <>
   <SecondHeader>
