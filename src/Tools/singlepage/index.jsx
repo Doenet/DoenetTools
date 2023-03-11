@@ -18,7 +18,7 @@ import SiteHeader from "../_framework/Paths/SiteHeader";
 import Community from "../_framework/Paths/Community";
 import Portfolio from "../_framework/Paths/Portfolio";
 import {loader as caroselLoader, Home} from "../_framework/Paths/Home";
-import PortfolioActivitySettings from "../_framework/Paths/PortfolioActivitySettings";
+import {loader as portfolioActivitySettingsLoader, PortfolioActivitySettings} from "../_framework/Paths/PortfolioActivitySettings";
 import { action as portfolioAction } from "../_framework/Paths/Portfolio";
 
 const router = createBrowserRouter([
@@ -55,7 +55,8 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: "/portfolio/settings",
+    path: "/portfolio/:doenetId/settings",
+    loader: portfolioActivitySettingsLoader,
     element: <PortfolioActivitySettings />,
   },
   {

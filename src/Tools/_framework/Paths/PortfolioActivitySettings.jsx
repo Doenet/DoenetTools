@@ -4,6 +4,14 @@ import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 
+export async function loader({ params }){
+  console.log({doenetId:params.doenetId})
+  const response = await fetch(`/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`);
+  const data = await response.json();
+  console.log("data",data)
+  return data.activityData;
+}
+
 const MainGrid = styled.div`
   display:grid;
   grid-template-rows: auto 10px [slot1-start] 40px [slot1-end] 20px [slot2-start] min-content [slot2-end] 20px [slot3-start] 40px [slot3-end] 10px auto;
@@ -62,7 +70,7 @@ const Td = styled.td`
     padding:10px;
 `
 
-export default function PortfolioActivitySettings(){
+export function PortfolioActivitySettings(){
   const navigate = useNavigate();
   return <>
   <MainGrid>
