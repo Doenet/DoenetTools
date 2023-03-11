@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
@@ -35,7 +36,7 @@ const Slot3 = styled.div`
   /* background: greenyellow; */
 `
 
-const SideBySideButtons = styled.div`
+const SideBySide = styled.div`
   display: flex;
   column-gap: 20px;
 `
@@ -62,7 +63,7 @@ const Td = styled.td`
 `
 
 export default function PortfolioActivitySettings(){
-
+  const navigate = useNavigate();
   return <>
   <MainGrid>
   <Slot1>
@@ -78,8 +79,8 @@ export default function PortfolioActivitySettings(){
     </thead>
     <tbody>
       <tr>
-        <Td>Image</Td>
-        <Td>Image bg here</Td>
+        <Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide></Td>
+        <Td><input name="imagePath" style={{width:"390px"}} type="text" placeholder='This will be an image preview'/></Td>
       </tr>
       <tr>
         <Td>Activity Title</Td>
@@ -91,15 +92,16 @@ export default function PortfolioActivitySettings(){
         </tr>
       <tr>
         <Td>Public</Td>
+        <Td></Td>
       </tr>
     </tbody>
   </Table>
   </Slot2>
   <Slot3>  
-    <SideBySideButtons>
-    <Button alert value="Cancel" onClick={() => navigate('/portfolio')}/>
+    <SideBySide>
+    <Button alert value="Cancel" onClick={() => navigate(-1)}/>
     <Button value="Create" onClick={() => navigate('submitAddActivity')}/>
-    </SideBySideButtons>
+    </SideBySide>
   </Slot3>
   </MainGrid>
   </>
