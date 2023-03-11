@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useOutletContext } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
@@ -67,6 +67,7 @@ const PrivateActivityCardsContainer = styled.div`
 
 export default function Portfolio(){
   let context = useOutletContext();
+  const navigate = useNavigate();
 
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null){ return null;} 
@@ -79,7 +80,7 @@ export default function Portfolio(){
     <h4 style={{
       lineHeight: '0.1em'
     }}>Portfolio</h4>
-    <div style={{position:"absolute", top:'48px',right:"10px"}}><Button value="Add Activity"/></div>
+    <div style={{position:"absolute", top:'48px',right:"10px"}}><Button onClick={()=>navigate("settings")} value="Add Activity"/></div>
     
   </SecondHeader>
   <TopSpace />

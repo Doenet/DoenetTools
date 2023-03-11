@@ -18,6 +18,7 @@ import SiteHeader from "../_framework/Paths/SiteHeader";
 import Community from "../_framework/Paths/Community";
 import Portfolio from "../_framework/Paths/Portfolio";
 import {loader as caroselLoader, Home} from "../_framework/Paths/Home";
+import PortfolioActivitySettings from "../_framework/Paths/PortfolioActivitySettings";
 
 const router = createBrowserRouter([
   {
@@ -27,7 +28,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: caroselLoader,
-        element: <RecoilRoot>
+        element: (<RecoilRoot>
         <DarkmodeController>
           <MathJaxContext
             version={2}
@@ -37,24 +38,28 @@ const router = createBrowserRouter([
             <Home />
           </MathJaxContext>
         </DarkmodeController>
-      </RecoilRoot>,
+      </RecoilRoot>),
       },
       {
         path: "community",
         loader: caroselLoader,
-        element: <Community />
+        element: <Community />,
       },
       {
         path: "portfolio",
-        element: <Portfolio />
+        element: <Portfolio />,
       },
      
     ]
   },
   {
+    path: "/portfolio/settings",
+    element: <PortfolioActivitySettings />,
+  },
+  {
     path: "*",
     errorElement: <div>Error!</div>,
-    element: <RecoilRoot>
+    element: (<RecoilRoot>
             <DarkmodeController>
               <MathJaxContext
                 version={2}
@@ -64,7 +69,7 @@ const router = createBrowserRouter([
                 <ToolRoot />
               </MathJaxContext>
             </DarkmodeController>
-    </RecoilRoot>,
+    </RecoilRoot>),
   },
 ]);
 
