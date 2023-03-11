@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router';
+import React from 'react';
+import { redirect, Form, useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
@@ -64,10 +64,28 @@ const PrivateActivityCardsContainer = styled.div`
       align-items: center;
       text-align: center;
 `
+// export async function action({request}) {
+// const formData = await request.formData();
+// console.log("Called Action!!!",formData)
+
+export async function action() {
+  let response = await fetch("/api/getNextDoenetId.php");
+
+      if (response.ok) {
+        let { doenetId } = await response.json();
+        console.log("doenetId",doenetId)
+        return redirect('settings') //Should use doenetId next for loader
+      }else{
+        throw Error(response.message)
+      }
+}
+// const contact = await createContact();
+// return redirect(`/contacts/${contact.id}/edit`);
+// return { contact };
 
 export default function Portfolio(){
   let context = useOutletContext();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null){ return null;} 
@@ -80,7 +98,14 @@ export default function Portfolio(){
     <h4 style={{
       lineHeight: '0.1em'
     }}>Portfolio</h4>
-    <div style={{position:"absolute", top:'48px',right:"10px"}}><Button onClick={()=>navigate("settings")} value="Add Activity"/></div>
+    <div style={{position:"absolute", top:'48px',right:"10px"}}>
+      <Form id="add_activity" method="post">
+      <Button value="Add Activity"/>
+      </Form>
+      {/* <button type="submit">Add Activity</button> */}
+      {/* <Button onClick={()=>navigate("settings")} value="Add Activity"/> */}
+      {/* <button method="post" type="submit">Add Activity</button> */}
+      </div>
     
   </SecondHeader>
   <TopSpace />
