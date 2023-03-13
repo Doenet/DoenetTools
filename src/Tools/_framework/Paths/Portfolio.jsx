@@ -74,7 +74,7 @@ export async function action() {
       if (response.ok) {
         let { doenetId } = await response.json();
         console.log("doenetId",doenetId)
-        return redirect('settings') //Should use doenetId next for loader
+        return redirect(`${doenetId}/settings`) //Should use doenetId next for loader
       }else{
         throw Error(response.message)
       }
@@ -102,9 +102,6 @@ export default function Portfolio(){
       <Form id="add_activity" method="post">
       <Button value="Add Activity"/>
       </Form>
-      {/* <button type="submit">Add Activity</button> */}
-      {/* <Button onClick={()=>navigate("settings")} value="Add Activity"/> */}
-      {/* <button method="post" type="submit">Add Activity</button> */}
       </div>
     
   </SecondHeader>

@@ -1,14 +1,31 @@
+import axios from 'axios';
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { redirect, useLoaderData, useNavigate } from 'react-router';
+import { Form } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
+export async function action({ request, params }) {
+  const formData = await request.formData();
+  let updates = Object.fromEntries(formData);
+  let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
+    ...updates, doenetId:params.doenetId
+  })
+  // console.log("Create action!",updates,params.doenetId,response)
+
+      // if (response.ok) {
+      //   // let { doenetId } = await response.json();
+
+        return redirect("/portfolio") 
+      // }else{
+      //   throw Error(response.message)
+      // }
+}
 
 export async function loader({ params }){
-  console.log({doenetId:params.doenetId})
   const response = await fetch(`/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`);
   const data = await response.json();
-  console.log("data",data)
+  console.log("loader",data)
   return data.activityData;
 }
 
@@ -71,8 +88,11 @@ const Td = styled.td`
 `
 
 export function PortfolioActivitySettings(){
+  let data = useLoaderData();
+  // console.log("DATA",data)
   const navigate = useNavigate();
   return <>
+    <Form id="portfolioActivitySettings" method="post">
   <MainGrid>
   <Slot1>
     <div><h1>Add Activity</h1></div>
@@ -88,18 +108,18 @@ export function PortfolioActivitySettings(){
     <tbody>
       <tr>
         <Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide></Td>
-        <Td><input name="imagePath" style={{width:"390px"}} type="text" placeholder='This will be an image preview'/></Td>
+        <Td><input name="imagePath" style={{width:"390px"}} type="text" placeholder='This will be an image preview' defaultValue={data.imagePath}/></Td>
       </tr>
       <tr>
-        <Td>Activity Title</Td>
-        <Td><input name="title" style={{width:"390px"}} type="text" placeholder='Activity 1'/></Td>
+        <Td>Activity Label</Td>
+        <Td><input name="label" style={{width:"390px"}} type="text" placeholder='Activity 1' defaultValue={data.label}/></Td>
         </tr>
       <tr>
         <Td>Learning Outcomes</Td>
-        <Td><textarea style={{width:"390px",resize: "vertical"}} placeholder='Description of Learning Outcomes'/></Td>
+        <Td><textarea name="learningOutcomes" style={{width:"390px",resize: "vertical"}} placeholder='Description of Learning Outcomes' defaultValue={data.learningOutcomes}/></Td>
         </tr>
       <tr>
-        <Td>Public</Td>
+        <Td>Public <input name="public" type="checkbox" defaultChecked={data.public} /></Td>
         <Td></Td>
       </tr>
     </tbody>
@@ -108,10 +128,11 @@ export function PortfolioActivitySettings(){
   <Slot3>  
     <SideBySide>
     <Button alert value="Cancel" onClick={() => navigate(-1)}/>
-    <Button value="Create" onClick={() => navigate('submitAddActivity')}/>
+    <Button type="submit" value="Create" />
     </SideBySide>
   </Slot3>
   </MainGrid>
+  </Form>
   </>
 }
 
