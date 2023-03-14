@@ -17,8 +17,8 @@ export default class P extends BlockComponent {
   static returnChildGroups() {
 
     return [{
-      group: "inlines",
-      componentTypes: ["_inline"]
+      group: "inlinesAndLists",
+      componentTypes: ["_inline", "ol", "ul"]
     }]
 
   }
@@ -35,7 +35,7 @@ export default class P extends BlockComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childGroups: ["inlines"],
+          childGroups: ["inlinesAndLists"],
           variableNames: ["text"],
           variablesOptional: true,
         }

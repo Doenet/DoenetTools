@@ -28,6 +28,18 @@ export class Ol extends BlockComponent {
       createComponentOfType: "integer",
     }
 
+    attributes.marker = {
+      createComponentOfType: "text",
+      createStateVariable: "marker",
+      defaultValue: null,
+      forRenderer: true,
+    }
+
+    // Silently ignore this for now
+    attributes.cols = {
+      createComponentOfType: "number",
+    }
+
     return attributes;
   }
 

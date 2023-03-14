@@ -299,6 +299,12 @@ export default class BaseComponent {
         createStateVariable: "newNamespace",
         defaultValue: false,
         public: true,
+      },
+      permid: {
+        createPrimitiveOfType: "string",
+        createStateVariable: "permid",
+        defaultValue: "",
+        public: true,
       }
     };
   }

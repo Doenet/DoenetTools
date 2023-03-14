@@ -1,7 +1,6 @@
 import BlockComponent from './abstract/BlockComponent';
-import InlineComponent from './abstract/InlineComponent';
 
-export class Div extends BlockComponent {
+export default class BlockQuote extends BlockComponent {
   constructor(args) {
     super(args);
 
@@ -10,11 +9,9 @@ export class Div extends BlockComponent {
     });
 
   }
-  static componentType = "div";
-  static rendererType = "containerBlock";
+  static componentType = "blockQuote";
+  static rendererType = "blockQuote";
   static renderChildren = true;
-
-  static includeBlankStringChildren = true;
 
   static returnChildGroups() {
 
@@ -38,24 +35,3 @@ export class Div extends BlockComponent {
   }
 
 }
-
-
-export class Span extends InlineComponent {
-  static componentType = "span";
-  static rendererType = "containerInline";
-  static renderChildren = true;
-
-  static includeBlankStringChildren = true;
-
-  static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
-  }
-
-
-}
-

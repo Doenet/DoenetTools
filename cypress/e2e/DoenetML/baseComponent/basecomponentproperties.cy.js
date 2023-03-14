@@ -538,4 +538,25 @@ describe('base component property Tests', function () {
 
   })
 
+  it('accept permid attribute', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <section permid="s">
+      <title>Hello</title>
+      <p permid="p">Hi</p>
+    </section>
+
+    <p permid="pids">Permids: $_section1.permid, $_p1.permid, $_p2.permid</p>
+
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_p1').should('have.text', 'Hi');
+
+    cy.get('#\\/_p2').should('have.text', 'Permids: s, p, pids');
+
+  })
+
 })

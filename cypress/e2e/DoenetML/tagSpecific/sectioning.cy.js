@@ -2224,34 +2224,34 @@ describe('Sectioning Tag Tests', function () {
 
     cy.get('#\\/sec1_title').should('have.text', 'Section 1');
     cy.get('#\\/prob11_title').should('have.text', 'Problem 1');
-    cy.get('#\\/exer11_title').should('have.text', 'Exercise 1');
-    cy.get('#\\/exam11_title').should('have.text', 'Example 1');
-    cy.get('#\\/prob12_title').should('have.text', 'Problem 2');
-    cy.get('#\\/exer12_title').should('have.text', 'Exercise 2');
-    cy.get('#\\/exam12_title').should('have.text', 'Example 2');
-    cy.get('#\\/prob13_title').should('have.text', 'Problem 1.3');
-    cy.get('#\\/exer13_title').should('have.text', 'Exercise 1.3');
-    cy.get('#\\/exam13_title').should('have.text', 'Example 1.3');
+    cy.get('#\\/exer11_title').should('have.text', 'Exercise 2');
+    cy.get('#\\/exam11_title').should('have.text', 'Example 3');
+    cy.get('#\\/prob12_title').should('have.text', 'Problem 4');
+    cy.get('#\\/exer12_title').should('have.text', 'Exercise 5');
+    cy.get('#\\/exam12_title').should('have.text', 'Example 6');
+    cy.get('#\\/prob13_title').should('have.text', 'Problem 1.7');
+    cy.get('#\\/exer13_title').should('have.text', 'Exercise 1.8');
+    cy.get('#\\/exam13_title').should('have.text', 'Example 1.9');
 
     cy.get('#\\/titleProb11').should('have.text', 'Problem 1');
-    cy.get('#\\/titleExer11').should('have.text', 'Exercise 1');
-    cy.get('#\\/titleExam11').should('have.text', 'Example 1');
-    cy.get('#\\/titleProb12').should('have.text', 'Problem 2');
-    cy.get('#\\/titleExer12').should('have.text', 'Exercise 2');
-    cy.get('#\\/titleExam12').should('have.text', 'Example 2');
-    cy.get('#\\/titleProb13').should('have.text', 'Problem 1.3');
-    cy.get('#\\/titleExer13').should('have.text', 'Exercise 1.3');
-    cy.get('#\\/titleExam13').should('have.text', 'Example 1.3');
+    cy.get('#\\/titleExer11').should('have.text', 'Exercise 2');
+    cy.get('#\\/titleExam11').should('have.text', 'Example 3');
+    cy.get('#\\/titleProb12').should('have.text', 'Problem 4');
+    cy.get('#\\/titleExer12').should('have.text', 'Exercise 5');
+    cy.get('#\\/titleExam12').should('have.text', 'Example 6');
+    cy.get('#\\/titleProb13').should('have.text', 'Problem 1.7');
+    cy.get('#\\/titleExer13').should('have.text', 'Exercise 1.8');
+    cy.get('#\\/titleExam13').should('have.text', 'Example 1.9');
 
     cy.get('#\\/sectionNumberProb11').should('have.text', '1');
-    cy.get('#\\/sectionNumberExer11').should('have.text', '1');
-    cy.get('#\\/sectionNumberExam11').should('have.text', '1');
-    cy.get('#\\/sectionNumberProb12').should('have.text', '2');
-    cy.get('#\\/sectionNumberExer12').should('have.text', '2');
-    cy.get('#\\/sectionNumberExam12').should('have.text', '2');
-    cy.get('#\\/sectionNumberProb13').should('have.text', '1.3');
-    cy.get('#\\/sectionNumberExer13').should('have.text', '1.3');
-    cy.get('#\\/sectionNumberExam13').should('have.text', '1.3');
+    cy.get('#\\/sectionNumberExer11').should('have.text', '2');
+    cy.get('#\\/sectionNumberExam11').should('have.text', '3');
+    cy.get('#\\/sectionNumberProb12').should('have.text', '4');
+    cy.get('#\\/sectionNumberExer12').should('have.text', '5');
+    cy.get('#\\/sectionNumberExam12').should('have.text', '6');
+    cy.get('#\\/sectionNumberProb13').should('have.text', '1.7');
+    cy.get('#\\/sectionNumberExer13').should('have.text', '1.8');
+    cy.get('#\\/sectionNumberExam13').should('have.text', '1.9');
 
   });
 
@@ -2286,5 +2286,670 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
+  it('Exercise with statement, hint, givenanswer, and solution', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+    <exercise name="exer">
+      <title>An exercise</title>
+      <statement>The exercise</statement>
+      <hint>
+        <p>Try harder</p>
+      </hint>
+      <givenAnswer>
+        <p>The correct answer</p>
+      </givenAnswer>
+      <solution>
+        <p>Here's how you do it.</p>
+      </solution>
+    </exercise>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'An exercise');
+
+    cy.get('#\\/_statement1').should('have.text', 'The exercise');
+
+    cy.get('#\\/_hint1 [data-test=hint-heading]').should('contain.text', 'Hint')
+    cy.get('#\\/_hint1').should('not.contain.text', 'Try harder')
+    cy.get('#\\/_givenanswer1').should('contain.text', 'Answer')
+    cy.get('#\\/_givenanswer1').should('not.contain.text', 'The correct answer')
+    cy.get('#\\/_solution1').should('contain.text', 'Solution')
+    cy.get('#\\/_solution1').should('not.contain.text', "Here's how you do it.")
+
+    cy.get('#\\/_hint1 [data-test=hint-heading]').click()
+    cy.get('#\\/_hint1').should('contain.text', 'Try harder')
+    cy.get('#\\/_givenanswer1').should('not.contain.text', 'The correct answer')
+    cy.get('#\\/_solution1').should('not.contain.text', "Here's how you do it.")
+
+    cy.get("#\\/_givenanswer1_button").click();
+    cy.get('#\\/_givenanswer1').should('contain.text', 'The correct answer')
+    cy.get('#\\/_hint1').should('contain.text', 'Try harder')
+    cy.get('#\\/_solution1').should('not.contain.text', "Here's how you do it.")
+
+    cy.get("#\\/_solution1_button").click();
+    cy.get('#\\/_solution1').should('contain.text', "Here's how you do it.")
+    cy.get('#\\/_hint1').should('contain.text', 'Try harder')
+    cy.get('#\\/_givenanswer1').should('contain.text', 'The correct answer')
+
+  });
+
+  it('Section with introduction, subsections and conclusion', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <introduction>
+    <p>First this</p>
+    <p>Then that</p>
+    <text>Hello</text> <text>World</text>
+  </introduction>
+  <subsection>
+    <title>Point 1</title>
+    <p>Make the first point</p>
+  </subsection>
+  <subsection>
+    <title>Point 2</title>
+    <p>Make the second point</p>
+  </subsection>
+  <conclusion>
+    Wrap <text>it</text> <text>up</text>!
+  </conclusion>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_introduction1').should('have.text', '\n    First this\n    Then that\n    Hello World\n  ');
+
+    cy.get('#\\/_subsection1').should('have.text', ' Point 1\n    \n    Make the first point\n   ');
+    cy.get('#\\/_subsection2').should('have.text', ' Point 2\n    \n    Make the second point\n   ');
+
+    cy.get('#\\/_conclusion1').should('have.text', '\n    Wrap it up!\n  ');
+
+
+  });
+
+  it('Assemblage', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <assemblage>
+    <title>Good stuff</title>
+    <text>Hello</text> <text>World</text>
+  </assemblage>
+  <p>Is assemblage boxed? $_assemblage1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+    cy.get('#\\/_title2').should('have.text', 'Good stuff');
+
+    cy.get('#\\/_assemblage1').should('contain.text', 'Hello World');
+
+    cy.get('#\\/_p1').should('have.text', 'Is assemblage boxed? true')
+
+  });
+
+  it('Objectives', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <objectives>
+    <text>Hello</text> <text>World</text>
+  </objectives>
+  <p>Is objectives boxed? $_objectives1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_objectives1_title').should('have.text', 'Objectives 1');
+    cy.get('#\\/_objectives1').should('contain.text', 'Hello World');
+
+    cy.get('#\\/_p1').should('have.text', 'Is objectives boxed? true')
+
+  });
+
+  it('Activity', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <activity>
+    <text>Hello</text> <text>World</text>
+  </activity>
+  <p>Is activity boxed? $_activity1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_activity1_title').should('have.text', 'Activity 1');
+    cy.get('#\\/_activity1').should('contain.text', 'Hello World');
+
+    cy.get('#\\/_p1').should('have.text', 'Is activity boxed? false')
+
+  });
+
+  it('Exploration', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <exploration>
+    <text>Hello</text> <text>World</text>
+  </exploration>
+  <p>Is exploration boxed? $_exploration1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_exploration1_title').should('have.text', 'Exploration 1');
+
+    cy.get('#\\/_p1').should('have.text', 'Is exploration boxed? false')
+
+  });
+
+  it('Exercises', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<exercises>
+  <title>Exercises</title>
+  <exercise>
+    <text>Hello</text> <text>World</text>
+  </exercise>
+  <exercise>
+    A second one
+  </exercise>
+</exercises>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'Exercises');
+
+    cy.get('#\\/_exercise1_title').should('have.text', 'Exercise 1');
+    cy.get('#\\/_exercise1').should('contain.text', 'Hello World');
+
+    cy.get('#\\/_exercise2_title').should('have.text', 'Exercise 2');
+    cy.get('#\\/_exercise2').should('contain.text', 'A second one');
+
+
+  });
+
+  it('Definition', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <definition>
+    <text>Hello</text> <text>World</text>
+  </definition>
+  <p>Is definition boxed? $_definition1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_definition1_title').should('have.text', 'Definition 1');
+    cy.get('#\\/_definition1').should('contain.text', 'Hello World');
+
+    cy.get('#\\/_p1').should('have.text', 'Is definition boxed? false')
+
+  });
+
+  it('Note', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <note>
+    <text>Hello</text> <text>World</text>
+  </note>
+  <p>Is note boxed? $_note1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_note1_title').should('have.text', 'Note 1');
+    cy.get('#\\/_note1').should('contain.text', 'Hello World');
+
+    cy.get('#\\/_p1').should('have.text', 'Is note boxed? false')
+
+  });
+
+  it('Question', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <question>
+    <text>Hello</text> <text>World</text>
+  </question>
+  <p>Is question boxed? $_question1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_question1_title').should('have.text', 'Question 1');
+    cy.get('#\\/_question1').should('contain.text', 'Hello World');
+
+    cy.get('#\\/_p1').should('have.text', 'Is question boxed? false')
+
+  });
+
+  it('Theorem-like elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <theorem>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </theorem>
+  <algorithm>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </algorithm>
+  <claim>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </claim>
+  <corollary>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </corollary>
+  <fact>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </fact>
+  <identity>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </identity>
+  <lemma>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </lemma>
+  <proposition>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </proposition>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_theorem1_title').should('have.text', 'Theorem 1');
+    cy.get('#\\/_statement1').should('have.text', 'The statement');
+    cy.get('#\\/_proof1_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof1_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof1').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof1_title').click();
+    cy.get('#\\/_proof1').should('contain.text', 'The proof')
+
+    cy.get('#\\/_algorithm1_title').should('have.text', 'Algorithm 2');
+    cy.get('#\\/_statement2').should('have.text', 'The statement');
+    cy.get('#\\/_proof2_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof2').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof2_title').click();
+    cy.get('#\\/_proof2').should('contain.text', 'The proof')
+
+    cy.get('#\\/_claim1_title').should('have.text', 'Claim 3');
+    cy.get('#\\/_statement3').should('have.text', 'The statement');
+    cy.get('#\\/_proof3_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof3').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof3_title').click();
+    cy.get('#\\/_proof3').should('contain.text', 'The proof')
+
+    cy.get('#\\/_corollary1_title').should('have.text', 'Corollary 4');
+    cy.get('#\\/_statement4').should('have.text', 'The statement');
+    cy.get('#\\/_proof4_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof4').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof4_title').click();
+    cy.get('#\\/_proof4').should('contain.text', 'The proof')
+
+    cy.get('#\\/_fact1_title').should('have.text', 'Fact 5');
+    cy.get('#\\/_statement5').should('have.text', 'The statement');
+    cy.get('#\\/_proof5_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof5').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof5_title').click();
+    cy.get('#\\/_proof5').should('contain.text', 'The proof')
+
+    cy.get('#\\/_identity1_title').should('have.text', 'Identity 6');
+    cy.get('#\\/_statement6').should('have.text', 'The statement');
+    cy.get('#\\/_proof6_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof6').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof6_title').click();
+    cy.get('#\\/_proof6').should('contain.text', 'The proof')
+
+    cy.get('#\\/_lemma1_title').should('have.text', 'Lemma 7');
+    cy.get('#\\/_statement7').should('have.text', 'The statement');
+    cy.get('#\\/_proof7_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof7').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof7_title').click();
+    cy.get('#\\/_proof7').should('contain.text', 'The proof')
+
+    cy.get('#\\/_proposition1_title').should('have.text', 'Proposition 8');
+    cy.get('#\\/_statement8').should('have.text', 'The statement');
+    cy.get('#\\/_proof8_title').should('contain.text', 'Proof')
+    cy.get('#\\/_proof8').should('not.contain.text', 'The proof')
+    cy.get('#\\/_proof8_title').click();
+    cy.get('#\\/_proof8').should('contain.text', 'The proof')
+
+  });
+
+  it('Axiom-like elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <axiom>
+    <statement>The statement</statement>
+  </axiom>
+  <assumption>
+    <statement>The statement</statement>
+  </assumption>
+  <conjecture>
+    <statement>The statement</statement>
+  </conjecture>
+  <heuristic>
+    <statement>The statement</statement>
+  </heuristic>
+  <hypothesis>
+    <statement>The statement</statement>
+  </hypothesis>
+  <principle>
+    <statement>The statement</statement>
+  </principle>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_axiom1_title').should('have.text', 'Axiom 1');
+    cy.get('#\\/_statement1').should('have.text', 'The statement');
+
+    cy.get('#\\/_assumption1_title').should('have.text', 'Assumption 2');
+    cy.get('#\\/_statement2').should('have.text', 'The statement');
+
+    cy.get('#\\/_conjecture1_title').should('have.text', 'Conjecture 3');
+    cy.get('#\\/_statement3').should('have.text', 'The statement');
+
+    cy.get('#\\/_heuristic1_title').should('have.text', 'Heuristic 4');
+    cy.get('#\\/_statement4').should('have.text', 'The statement');
+
+    cy.get('#\\/_hypothesis1_title').should('have.text', 'Hypothesis 5');
+    cy.get('#\\/_statement5').should('have.text', 'The statement');
+
+    cy.get('#\\/_principle1_title').should('have.text', 'Principle 6');
+    cy.get('#\\/_statement6').should('have.text', 'The statement');
+
+  });
+
+  it('Aside-like elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <aside>
+    Hello.
+  </aside>
+  <historical>
+    Hello.
+  </historical>
+  <biographical>
+    Hello.
+  </biographical>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_aside1_title').should('contain.text', 'Aside 1');
+    cy.get('#\\/_aside1').should('not.contain.text', 'Hello.');
+    cy.get('#\\/_aside1_title').click();
+    cy.get('#\\/_aside1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_historical1_title').should('contain.text', 'Historical 2');
+    cy.get('#\\/_historical1').should('not.contain.text', 'Hello.');
+    cy.get('#\\/_historical1_title').click();
+    cy.get('#\\/_historical1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_biographical1_title').should('contain.text', 'Biographical 3');
+    cy.get('#\\/_biographical1').should('not.contain.text', 'Hello.');
+    cy.get('#\\/_biographical1_title').click();
+    cy.get('#\\/_biographical1').should('contain.text', 'Hello.');
+
+  });
+
+  it('Remark-like elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <remark>
+    Hello.
+  </remark>
+  <convention>
+    Hello.
+  </convention>
+  <note>
+    Hello.
+  </note>
+  <observation>
+    Hello.
+  </observation>
+  <warning>
+    Hello.
+  </warning>
+  <insight>
+    Hello.
+  </insight>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_remark1_title').should('have.text', 'Remark 1');
+    cy.get('#\\/_remark1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_convention1_title').should('have.text', 'Convention 2');
+    cy.get('#\\/_convention1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_note1_title').should('have.text', 'Note 3');
+    cy.get('#\\/_note1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_observation1_title').should('have.text', 'Observation 4');
+    cy.get('#\\/_observation1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_warning1_title').should('have.text', 'Warning 5');
+    cy.get('#\\/_warning1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_insight1_title').should('have.text', 'Insight 6');
+    cy.get('#\\/_insight1').should('contain.text', 'Hello.');
+
+  });
+
+  it('Project-like elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <project>
+    Hello.
+  </project>
+  <activity>
+    Hello.
+  </activity>
+  <exploration>
+    Hello.
+  </exploration>
+  <investigation>
+    Hello.
+  </investigation>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_project1_title').should('have.text', 'Project 1');
+    cy.get('#\\/_project1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_activity1_title').should('have.text', 'Activity 2');
+    cy.get('#\\/_activity1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_exploration1_title').should('have.text', 'Exploration 3');
+    cy.get('#\\/_exploration1').should('contain.text', 'Hello.');
+
+    cy.get('#\\/_investigation1_title').should('have.text', 'Investigation 4');
+    cy.get('#\\/_investigation1').should('contain.text', 'Hello.');
+
+  });
+
+  it('Goal-like elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <objectives>
+    <ul>
+      <li>First</li>
+      <li>Second</li>
+    </ul>
+  </objectives>
+  <outcomes>
+    <ul>
+      <li>First</li>
+      <li>Second</li>
+    </ul>
+  </outcomes>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'A section');
+
+    cy.get('#\\/_objectives1_title').should('have.text', 'Objectives 1');
+    cy.get('#\\/_objectives1').should('contain.text', 'FirstSecond');
+
+    cy.get('#\\/_outcomes1_title').should('have.text', 'Outcomes 2');
+    cy.get('#\\/_outcomes1').should('contain.text', 'FirstSecond');
+
+  });
+
+  it('Sections number independently of other sectioning elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <objectives>
+    <ul>
+      <li>First</li>
+      <li>Second</li>
+    </ul>
+  </objectives>
+  <exploration>
+    An exploration
+  </exploration>
+  <subsection>
+
+  </subsection>
+  <section>
+
+  </section>
+  <activity>
+    Final activity
+  </activity>
+  <outcomes>
+    <ul>
+      <li>First</li>
+      <li>Second</li>
+    </ul>
+  </outcomes>
+</section>
+
+    `}, "*");
+    });
+
+    // Note: not sure if this is how we want numbering to work long term,
+    // but this test at least documents how it is working now.
+
+    cy.get('#\\/_section1_title').should('have.text', 'Section 1');
+
+    cy.get('#\\/_objectives1_title').should('have.text', 'Objectives 1');
+    cy.get('#\\/_exploration1_title').should('have.text', 'Exploration 2');
+    cy.get('#\\/_subsection1_title').should('have.text', 'Section 1.1');
+    cy.get('#\\/_section2_title').should('have.text', 'Section 1.2');
+    cy.get('#\\/_activity1_title').should('have.text', 'Activity 3');
+    cy.get('#\\/_outcomes1_title').should('have.text', 'Outcomes 4');
+
+  });
 
 });

@@ -97,9 +97,16 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
     }
 
-    attributes.includeAutoNameNumberIfNoTitle = {
+    attributes.includeAutoNameIfNoTitle = {
       createComponentOfType: "boolean",
-      createStateVariable: "includeAutoNameNumberIfNoTitle",
+      createStateVariable: "includeAutoNameIfNoTitle",
+      defaultValue: true,
+      public: true,
+    }
+
+    attributes.includeAutoNumberIfNoTitle = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeAutoNumberIfNoTitle",
       defaultValue: true,
       public: true,
     }
@@ -151,7 +158,22 @@ export default class SectioningComponent extends BlockComponent {
     let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
 
+    stateVariableDefinitions.componentTypeForEnumeration = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: { componentTypeForEnumeration: "_sectioningComponent" }
+      })
+    }
+
+    stateVariableDefinitions.excludeComponentTypesForEnumeration = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: { excludeComponentTypesForEnumeration: [] }
+      })
+    }
+
     stateVariableDefinitions.enumeration = {
+      stateVariablesDeterminingDependencies: ["componentTypeForEnumeration", "excludeComponentTypesForEnumeration"],
       additionalStateVariablesDefined: [{
         variableName: "sectionNumber",
         public: true,
@@ -159,9 +181,12 @@ export default class SectioningComponent extends BlockComponent {
           createComponentOfType: "text",
         },
       }],
-      returnDependencies: () => ({
+      returnDependencies: ({ stateValues }) => ({
         countAmongSiblings: {
-          dependencyType: "countAmongSiblingsOfSameType"
+          dependencyType: "countAmongSiblings",
+          componentType: stateValues.componentTypeForEnumeration,
+          includeInheritedComponentTypes: true,
+          excludeComponentTypes: stateValues.excludeComponentTypesForEnumeration
         },
         sectionAncestor: {
           dependencyType: "ancestor",
@@ -190,7 +215,7 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.sectionName = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { sectionName: "Section" } })
+      definition: () => ({ setValue: { sectionName: this.name } })
     }
 
 
@@ -285,9 +310,13 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "value",
           value: sharedParameters.prerender
         },
-        includeAutoNameNumberIfNoTitle: {
+        includeAutoNameIfNoTitle: {
           dependencyType: "stateVariable",
-          variableName: "includeAutoNameNumberIfNoTitle"
+          variableName: "includeAutoNameIfNoTitle"
+        },
+        includeAutoNumberIfNoTitle: {
+          dependencyType: "stateVariable",
+          variableName: "includeAutoNumberIfNoTitle"
         },
       }),
       definition({ dependencyValues }) {
@@ -297,10 +326,10 @@ export default class SectioningComponent extends BlockComponent {
 
         const haveTitleChild = dependencyValues.titleChild.length > 0;
 
-        let includeAutoNumber = (dependencyValues.includeAutoNumber || (!haveTitleChild && dependencyValues.includeAutoNameNumberIfNoTitle))
+        let includeAutoNumber = (dependencyValues.includeAutoNumber || (!haveTitleChild && dependencyValues.includeAutoNumberIfNoTitle))
           && !dependencyValues.prerender;
 
-        let includeAutoName = dependencyValues.includeAutoName || (!haveTitleChild && dependencyValues.includeAutoNameNumberIfNoTitle);
+        let includeAutoName = dependencyValues.includeAutoName || (!haveTitleChild && dependencyValues.includeAutoNameIfNoTitle);
 
         if (includeAutoNumber) {
           if (includeAutoName) {

@@ -22,6 +22,7 @@ import * as Divisions from './components/Divisions';
 import * as Verbatim from './components/Verbatim';
 import * as Paginator from './components/Paginator';
 import * as MatrixInput from './components/MatrixInput';
+import * as Solutions from './components/Solutions';
 
 import Document from './components/Document';
 import Text from './components/Text';
@@ -124,7 +125,6 @@ import Image from './components/Image';
 import Video from './components/Video';
 import Embed from './components/Embed';
 import Hint from './components/Hint';
-import Solution from './components/Solution';
 import IntComma from './components/IntComma';
 import Pluralize from './components/Pluralize';
 import Feedback from './components/Feedback';
@@ -166,6 +166,7 @@ import MatchesPattern from './components/MatchesPattern';
 import Matrix from './components/Matrix';
 import EigenDecomposition from './components/linearAlgebra/EigenDecomposition';
 import Latex from './components/Latex';
+import BlockQuote from './components/BlockQuote';
 
 
 //Extended
@@ -212,6 +213,7 @@ const componentTypeArray = [
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
   ...Object.values(MatrixInput),
+  ...Object.values(Solutions),
   Document,
   Text, TextList,
   RandomizedTextList,
@@ -289,7 +291,7 @@ const componentTypeArray = [
   Image,
   Video,
   Embed,
-  Hint, Solution,
+  Hint,
   IntComma,
   Pluralize,
   Feedback,
@@ -331,6 +333,7 @@ const componentTypeArray = [
   Matrix,
   EigenDecomposition,
   Latex,
+  BlockQuote,
 
   BaseComponent,
   InlineComponent,
