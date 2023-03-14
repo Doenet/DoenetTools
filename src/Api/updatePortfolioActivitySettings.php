@@ -35,6 +35,10 @@ if ($success) {
     $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
     $imagePath = mysqli_real_escape_string($conn, $_POST['imagePath']);
     $public = mysqli_real_escape_string($conn, $_POST['public']);
+    $isPublic = '0';
+    if ($public) {
+        $isPublic = '1';
+    }
     $learningOutcomes = mysqli_real_escape_string(
         $conn,
         $_POST['learningOutcomes']
@@ -62,7 +66,6 @@ if ($success) {
         ";
         $result = $conn->query($sql);
 
-        $sqlresp = $sql;
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $portfolioCourseId = $row['courseId'];
@@ -117,11 +120,6 @@ if ($success) {
         $next = $row['sortOrder'] ?: '';
         $sortOrder = SortOrder\getSortOrder($prev, $next);
 
-        $isPublic = '0';
-        if ($public) {
-            $isPublic = '1';
-        }
-
         $sql = "
         INSERT INTO course_content
         (type,courseId,doenetId,parentDoenetId,label,creationDate,isPublic,
@@ -132,31 +130,58 @@ if ($success) {
         ";
         $conn->query($sql);
     } else {
-        //Test if we are updating content or it's a hacker
-        //     $sql = "
-        // SELECT doenetId
-        // FROM next_doenetId
-        // WHERE doenetId = '$doenetId'
-        // AND userId = '$userId'
-        // ";
-        // $result = $conn->query($sql);
+        //Test if the user has permission to update
+        $sql = "
+        SELECT courseId
+        FROM course_content
+        WHERE doenetId = '$doenetId'
+        ";
+        $result = $conn->query($sql);
+        $courseId = '';
 
-        // if ($result->num_rows > 0) {
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $courseId = $row['courseId'];
+            $permissions = permissionsAndSettingsForOneCourseFunction(
+                $conn,
+                $userId,
+                $courseId
+            );
+            if ($permissions['canEditContent'] != '1') {
+                $success = false;
+                $message = 'You need permission to edit content.';
+            }
+        } else {
+            $success = false;
+            $message = "Error: doenetId doesn't match.";
+        }
+
+        if ($success) {
+            $sql = "
+                UPDATE course_content
+                SET label = '$label', 
+                imagePath = '$imagePath',
+                isPublic = '$isPublic',
+                learningOutcomes = '$learningOutcomes'
+                WHERE doenetId = '$doenetId'
+                AND courseId = '$courseId'
+                ";
+            $conn->query($sql);
+        }
     }
 
     //Remove from next_doenetId to keep table small
-    // $sql = "
-    //   DELETE FROM next_doenetId
-    //   WHERE doenetId = '$doenetId'
-    //   AND userId = '$userId'
-    //   ";
-    // $conn->query($sql);
+    $sql = "
+      DELETE FROM next_doenetId
+      WHERE doenetId = '$doenetId'
+      AND userId = '$userId'
+      ";
+    $conn->query($sql);
 }
 
 $response_arr = [
     'success' => $success,
     'message' => $message,
-    'sqlresp' => $sqlresp,
 ];
 
 // set response code - 200 OK

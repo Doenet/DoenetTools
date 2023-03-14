@@ -25,7 +25,7 @@ export async function action({ request, params }) {
 export async function loader({ params }){
   const response = await fetch(`/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`);
   const data = await response.json();
-  console.log("loader",data)
+  // console.log("loader",data)
   return data.activityData;
 }
 
@@ -89,13 +89,13 @@ const Td = styled.td`
 
 export function PortfolioActivitySettings(){
   let data = useLoaderData();
-  // console.log("DATA",data)
   const navigate = useNavigate();
+
   return <>
     <Form id="portfolioActivitySettings" method="post">
   <MainGrid>
   <Slot1>
-    <div><h1>Add Activity</h1></div>
+    <div>{data.isNew ? <h1>Add Activity</h1> : <h1>Activity Settings</h1>}</div>
   </Slot1>
   <Slot2>
   <Table>
@@ -126,10 +126,18 @@ export function PortfolioActivitySettings(){
   </Table>
   </Slot2>
   <Slot3>  
-    <SideBySide>
-    <Button alert value="Cancel" onClick={() => navigate(-1)}/>
-    <Button type="submit" value="Create" />
-    </SideBySide>
+    
+    {data.isNew ? <SideBySide>
+      <Button alert value="Cancel" onClick={() => navigate(-1)}/>
+      <Button type="submit" value="Create" />
+      </SideBySide>
+      :
+      <SideBySide>
+      <Button alert value="Cancel" onClick={() => navigate(-1)}/>
+      <Button type="submit" value="Update" />
+      </SideBySide>
+    }
+    
   </Slot3>
   </MainGrid>
   </Form>
