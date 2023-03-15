@@ -53,7 +53,6 @@ if ($success) {
             'isNew' => false,
         ];
     } else {
-        $activityData['isNew'] = true;
         //It's a new activity or a hack
         //So test if it's a hack
         $sql = "

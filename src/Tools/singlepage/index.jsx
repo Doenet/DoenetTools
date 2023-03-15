@@ -14,8 +14,8 @@ import ToolRoot from '../_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
 import { mathjaxConfig } from '../../Core/utils/math';
 import DarkmodeController from '../_framework/DarkmodeController';
-import SiteHeader from "../_framework/Paths/SiteHeader";
 import Community from "../_framework/Paths/Community";
+import {loader as siteLoader, SiteHeader} from "../_framework/Paths/SiteHeader";
 import {loader as caroselLoader, Home} from "../_framework/Paths/Home";
 import {loader as portfolioActivitySettingsLoader, action as portfolioActivitySettingsAction, PortfolioActivitySettings} from "../_framework/Paths/PortfolioActivitySettings";
 import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "../_framework/Paths/Portfolio";
@@ -23,6 +23,7 @@ import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "
 const router = createBrowserRouter([
   {
     path: "/",
+    loader: siteLoader,
     element: <SiteHeader />,
     children: [
       {
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
         element: <Community />,
       },
       {
-        path: "portfolio",
+        path: "portfolio/:courseId",
         loader: portfolioLoader,
         action: portfolioAction,
         element: <Portfolio />,

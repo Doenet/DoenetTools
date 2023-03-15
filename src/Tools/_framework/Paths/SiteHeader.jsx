@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router';
+import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -7,6 +7,25 @@ import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import RouterLogo from '../RouterLogo';
 
 
+export async function loader(){
+  //Check if signedIn
+  const profileInfo = await checkIfUserClearedOut();
+  let signedIn = true;
+  if (profileInfo.cookieRemoved){
+    signedIn = false;
+  }
+  let portfolioCourseId = null;
+  if (signedIn){
+    //Check on portfolio courseId
+    const response = await fetch('/api/getPorfolioCourseId.php');
+    const data = await response.json();
+    portfolioCourseId = data.portfolioCourseId;
+    if (data.portfolioCourseId == ""){
+      portfolioCourseId = "not_created";
+    }
+  }
+  return {signedIn,portfolioCourseId}
+}
 
 const SignInButtonContainer = styled.div`
   margin: auto 10px auto 0px;
@@ -78,21 +97,14 @@ function MenuItem({to,children}){
 }
 
 
-export default function SiteHeader(props) {
+export function SiteHeader(props) {
   let navigate = useNavigate();
-  let checkingCookie = useRef(false);
-  const [signedIn, setSignedIn] = useState(null);
+  let data = useLoaderData();
+  console.log("site header data",data)
 
-     //Only ask once
-  if (!checkingCookie.current) {
-    checkingCookie.current = true;
-    checkIfUserClearedOut().then(({ cookieRemoved }) => {
-      setSignedIn(!cookieRemoved);
-    })
-  }
   
   let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
-    if (!signedIn) {
+    if (!data.signedIn) {
       signInButton = <Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" />
     }
 
@@ -101,17 +113,17 @@ export default function SiteHeader(props) {
     <HeaderContainer>
     <Branding>
       <RouterLogo /><p>Doenet</p>
-      </Branding>
+    </Branding>
       <BarMenu>
         <MenuItem to="/">Home</MenuItem>
         <MenuItem to="community">Community</MenuItem>
-        {signedIn ? <MenuItem to="portfolio">Portfolio</MenuItem> : null}
+        {data.signedIn ? <MenuItem to={`portfolio/${data.portfolioCourseId}`}>Portfolio</MenuItem> : null}
       </BarMenu>
       <SignInButtonContainer>{signInButton}</SignInButtonContainer>
     </HeaderContainer>
 
     <ContentContainer>
-      <Outlet context={{signedIn}}/>
+      <Outlet context={{signedIn:data.signedIn}}/>
     </ContentContainer>
   </TopContainer>
   </>)

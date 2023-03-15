@@ -15,7 +15,15 @@ export async function action() {
       }
 }
 
-export async function loader(){
+export async function loader({params}){
+
+  //If we didn't create the course yet for this user then create it
+  if (params.courseId == "not_created"){
+    const response = await fetch('/api/createPortfolioCourse.php');
+    const data = await response.json();
+    return redirect(`/portfolio/${data.portfolioCourseId}`)
+  }
+
   const response = await fetch('/api/getPortfolio.php');
   const data = await response.json();
   return {publicActivities:data.publicActivities,
