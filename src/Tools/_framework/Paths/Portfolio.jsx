@@ -8,8 +8,7 @@ export async function action() {
 
       if (response.ok) {
         let { doenetId } = await response.json();
-        console.log("doenetId",doenetId)
-        return redirect(`${doenetId}/settings`) //Should use doenetId next for loader
+        return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
       }else{
         throw Error(response.message)
       }
@@ -174,7 +173,6 @@ function Card({ doenetId,imagePath,label }) {
 export function Portfolio(){
   let context = useOutletContext();
   let data = useLoaderData();
-  console.log("data",data)
   // const navigate = useNavigate();
 
   //Don't do more processing if we don't know if we are signed in or not

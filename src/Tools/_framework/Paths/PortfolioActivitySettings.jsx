@@ -16,7 +16,7 @@ export async function action({ request, params }) {
       // if (response.ok) {
       //   // let { doenetId } = await response.json();
 
-        return redirect("/portfolio") 
+        return redirect(`/portfolio/${params.doenetId}`) 
       // }else{
       //   throw Error(response.message)
       // }
@@ -25,7 +25,7 @@ export async function action({ request, params }) {
 export async function loader({ params }){
   const response = await fetch(`/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`);
   const data = await response.json();
-  // console.log("loader",data)
+  console.log("loader",data)
   return data.activityData;
 }
 
@@ -119,7 +119,7 @@ export function PortfolioActivitySettings(){
         <Td><textarea name="learningOutcomes" style={{width:"390px",resize: "vertical"}} placeholder='Description of Learning Outcomes' defaultValue={data.learningOutcomes}/></Td>
         </tr>
       <tr>
-        <Td>Public <input name="public" type="checkbox" defaultChecked={data.public} /></Td>
+        <Td>Public <input name="public" type="checkbox" defaultChecked={data.public == '1'} /></Td>
         <Td></Td>
       </tr>
     </tbody>

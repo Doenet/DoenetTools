@@ -100,8 +100,6 @@ function MenuItem({to,children}){
 export function SiteHeader(props) {
   let navigate = useNavigate();
   let data = useLoaderData();
-  console.log("site header data",data)
-
   
   let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
     if (!data.signedIn) {
