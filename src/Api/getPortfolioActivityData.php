@@ -22,7 +22,7 @@ if ($userId == '') {
 
 $activityData = [
     'doenetId' => $doenetId,
-    'imagePath' => '',
+    'imagePath' => '/media/activity_default.jpg',
     'label' => '',
     'learningOutcomes' => '',
     'public' => false, //default to private

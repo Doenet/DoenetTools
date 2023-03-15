@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { redirect, useLoaderData, useNavigate } from 'react-router';
 import { Form } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import { useDropzone } from 'react-dropzone';
+
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -86,10 +88,104 @@ const Td = styled.td`
     padding:10px;
 `
 
+  const Image = styled.img`
+    max-width: 238px;
+    max-height: 122px;
+  `
+  const CardTop = styled.div`
+    height: 124px;
+    width: 240px;
+    background: black;
+    overflow: hidden;
+    margin: 10px;
+    border: 2px solid #949494;
+    border-radius: 6px;
+  `
+
+function ImagePreview({defaultValue}){
+  return <CardTop>
+      <Image alt="preview" src={defaultValue} />
+    </CardTop>
+}
+
 export function PortfolioActivitySettings(){
   let data = useLoaderData();
   const navigate = useNavigate();
+  let numberOfFilesUploading = useRef(0);
 
+  let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
+  let [imagePath,setImagePath] = useState(data.imagePath);
+
+  const onDrop = useCallback((files) => {
+    let success = true;
+    let sizeOfUpload = 0;
+    const file = files[0];
+    if (files.length > 1){
+      success = false;
+    }
+
+
+    //Only upload one batch at a time
+    if (numberOfFilesUploading.current > 0){
+      console.log("Already uploading files.  Please wait before sending more.")
+      // addToast(`Already uploading files.  Please wait before sending more.`, toastType.ERROR);
+      success = false;
+    }
+
+    //If any settings aren't right then abort
+    if (!success){ return; }
+
+    numberOfFilesUploading.current = files.length;
+    
+ 
+    let initialFileInfo = {fileName:file.name,size:file.size,progressPercent:0}
+    setUploadProgress((was)=>[...was,initialFileInfo])
+
+
+
+    //Upload files
+      const reader = new FileReader();
+      reader.readAsDataURL(file);  //This one could be used with image source to preview image
+  
+      reader.onabort = () => {};
+      reader.onerror = () => {};
+      reader.onload = () => {
+
+        const uploadData = new FormData();
+        uploadData.append('file',file);
+        uploadData.append('doenetId',data.doenetId);
+          axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
+        const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
+            if (totalLength !== null) {
+                // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
+            // console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
+            let progressPercent = Math.round( (progressEvent.loaded * 100) / totalLength );
+            setUploadProgress((was)=>{
+              let newArray = [...was];
+              newArray[0].progressPercent = progressPercent;
+              return newArray;
+            })
+            }
+      }}).then(({data})=>{
+        // console.log("data",file.name,fileIndex,data)
+        console.log("RESPONSE data>",data)
+
+        //uploads are finished clear it out
+        numberOfFilesUploading.current = 0;
+        setUploadProgress([]);
+        let {success, fileName, cid, asFileName, width, height, msg, userQuotaBytesAvailable} = data;
+
+        if (success){
+          setImagePath(`/media/${cid}.jpg`)
+         
+        }
+        
+      })
+      };
+
+  }, [data.doenetId]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return <>
     <Form id="portfolioActivitySettings" method="post">
   <MainGrid>
@@ -105,10 +201,37 @@ export function PortfolioActivitySettings(){
       </tr>
     </thead>
     <tbody>
+    {/* <tr key="drop" {...getRootProps()}>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+             <Td colSpan="2"> <p style={{height:"130px"}}>Drop the files here</p></Td>
+            ) : (
+              <><Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide>
+        <div>Upload will be resized</div>
+        <div>max width 238px, max height 122 px</div>
+        </Td>
+        <Td>
+          <ImagePreview defaultValue={data.imagePath}/>
+        </Td></>
+            )}
+          </tr> */}
       <tr>
-        <Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide></Td>
-        <Td><input name="imagePath" style={{width:"390px"}} type="text" placeholder='This will be an image preview' defaultValue={data.imagePath}/></Td>
+        <Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide>
+        <div>Upload will be resized</div>
+        <div>max width 238px, max height 122 px</div>
+        </Td>
+        <Td>
+        <div key="drop" {...getRootProps()}>
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <p style={{height: "124px"}}>Drop the files here</p>
+        ) : (
+              <ImagePreview defaultValue={imagePath}/>
+        )}
+        </div>
+        </Td>
       </tr>
+          {/* <input name="imagePath" style={{width:"390px"}} type="text" placeholder='This will be an image preview' defaultValue={data.imagePath}/> */}
       <tr>
         <Td>Activity Label</Td>
         <Td><input name="label" style={{width:"390px"}} type="text" placeholder='Activity 1' defaultValue={data.label}/></Td>
@@ -139,6 +262,7 @@ export function PortfolioActivitySettings(){
     
   </Slot3>
   </MainGrid>
+  <input type="hidden" name="imagePath" value={imagePath}></input>
   </Form>
   </>
 }

@@ -50,6 +50,7 @@
     "@use-gesture/react": "^10.2.22",
     "axios": "^0.27.2",
     "better-react-mathjax": "^1.0.3",
+    "browser-image-resizer": "^2.4.1",
     "compromise": "^13.11.4",
     "compromise-numbers": "^1.4.0",
     "cookie": "^0.4.1",
