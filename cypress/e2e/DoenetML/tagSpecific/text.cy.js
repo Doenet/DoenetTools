@@ -76,22 +76,22 @@ describe('Text Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-    <p name="orig">Pick a number from 1 <ndash/> 2 <mdash/> no, maybe from<nbsp/>3<ellipsis /></p>
+    <p name="orig">Pick a <lsq/>number<rsq/> from 1 <ndash/> 2 <mdash/> no, <lq/>maybe<rq/> from<nbsp/>3<ellipsis /></p>
 
     <p name="textOnly"><copy prop="text" target="orig" assignNames="t" /></p>
 
-    <p name="insideText"><text name="t2">Pick a number from 1 <ndash/> 2 <mdash/> no, maybe from<nbsp/>3<ellipsis /></text></p>
+    <p name="insideText"><text name="t2">Pick a <lsq/>number<rsq/> from 1 <ndash/> 2 <mdash/> no, <lq/>maybe<rq/> from<nbsp/>3<ellipsis /></text></p>
     `}, "*");
     });
 
-    cy.get('#\\/orig').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
-    cy.get('#\\/textOnly').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
-    cy.get('#\\/insideText').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
+    cy.get('#\\/orig').should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
+    cy.get('#\\/textOnly').should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
+    cy.get('#\\/insideText').should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/t'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
-      expect(stateVariables['/t2'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
+      expect(stateVariables['/t'].stateValues.value).eq(`Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…`)
+      expect(stateVariables['/t2'].stateValues.value).eq(`Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…`)
     })
 
 
