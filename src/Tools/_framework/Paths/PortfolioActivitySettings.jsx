@@ -11,12 +11,12 @@ export async function action({ request, params }) {
   let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
     ...updates, doenetId:params.doenetId
   })
-  // console.log("Create action!",updates,params.doenetId,response)
+  const portfolioCourseId = response.data.portfolioCourseId;
 
       // if (response.ok) {
       //   // let { doenetId } = await response.json();
 
-        return redirect(`/portfolio/${params.doenetId}`) 
+        return redirect(`/portfolio/${portfolioCourseId}`) 
       // }else{
       //   throw Error(response.message)
       // }

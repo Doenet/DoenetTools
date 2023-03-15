@@ -182,6 +182,7 @@ if ($success) {
 $response_arr = [
     'success' => $success,
     'message' => $message,
+    'portfolioCourseId' => $portfolioCourseId,
 ];
 
 // set response code - 200 OK
