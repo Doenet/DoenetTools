@@ -25,7 +25,6 @@ export async function action({ request, params }) {
 export async function loader({ params }){
   const response = await fetch(`/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`);
   const data = await response.json();
-  console.log("loader",data)
   return data.activityData;
 }
 

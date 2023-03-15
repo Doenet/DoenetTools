@@ -30,14 +30,13 @@ export async function loader({params}){
 }
 
 const SecondHeader = styled.header`
+  grid-row: 1/2;
   background-color: #fff;
-  /* background-color: lightskyblue; */
   color: #000;
   height: 80px;
   position: fixed;
-  top: 4;
   width: 100%;
-  margin: 0;
+  margin-top: 1px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -46,63 +45,47 @@ const SecondHeader = styled.header`
   display: relative;
 `;
 
-const TopSpace = styled.div`
-  margin-top: 80px;
-`
-
 const PublicActivitiesSection = styled.div`
-      display: flex;
-      flex-direction: column;
-      padding: 10px 10px 10px 10px;
-      margin: 0px;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: var(--lightBlue);
+    grid-row: 2/3;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 10px 10px;
+    margin: 0px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--lightBlue);
 `
-const PublicActivityCardsContainer = styled.div`
-      display: flex;
-      /* flex-direction: column; */
-      padding: 10px 10px 10px 10px;
-      margin: 0px;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-`
-
+const CardsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 10px 10px 10px;
+  margin: 0px;
+  width: calc(100vw - 40px);
+  `
 const PrivateActivitiesSection = styled.div`
-      display: flex;
-      flex-direction: column;
-      padding: 10px 10px 10px 10px;
-      margin: 0px;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      min-height: 100vh;
-      background: var(--mainGray);
+  grid-row: 3/4;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 10px 10px 10px;
+  margin: 0px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: var(--mainGray);
 `
-const PrivateActivityCardsContainer = styled.div`
-      display: flex;
-      /* flex-direction: column; */
-      padding: 10px 10px 10px 10px;
-      margin: 0px;
-      /* justify-content: center; */
-      align-items: center;
-      text-align: center;
-`
-
 
 function Card({ doenetId,imagePath,label }) {
   const cardStyle = {
     display: 'flex',
     flexDirection: 'column',
     height: '180px',
+    width: "240px",
     backgroundColor: 'black',
     overflow: 'hidden',
     margin: '10px',
     border: "2px solid #949494",
     borderRadius: "6px",
-    width: "240px"
   };
 
   const topStyle = {
@@ -147,9 +130,9 @@ function Card({ doenetId,imagePath,label }) {
 
   const linkStyle = {
     textDecoration: 'none',
-    userSelect: 'none',
     cursor: 'pointer',
-    flexGrow: '1',
+    // userSelect: 'none',
+    // flexGrow: '1',
     // maxWidth: '240px',
   }
   
@@ -165,10 +148,15 @@ function Card({ doenetId,imagePath,label }) {
           <span style={textStyle}>{label}</span>
         </div>
       </div>
-     </a>
+      </a>
   );
 }
 
+const PortfolioGrid = styled.div`
+  display: grid;
+  grid-template-rows: 80px min-content min-content;
+  height: 100vh;
+`
 
 export function Portfolio(){
   let context = useOutletContext();
@@ -179,6 +167,7 @@ export function Portfolio(){
   if (context.signedIn == null){ return null;} 
 
   return <>
+  <PortfolioGrid >
   <SecondHeader>
   <h1 style={{
       lineHeight: '0.1em'
@@ -193,30 +182,28 @@ export function Portfolio(){
       </div>
     
   </SecondHeader>
-  <TopSpace />
   <PublicActivitiesSection>
     <h2>Public</h2>
-    <PublicActivityCardsContainer>
-      
+    <CardsContainer>
       {data.publicActivities.length < 1 ? <div>No Public Activities</div>  :
     <>{data.publicActivities.map((activity)=>{
       return <Card key={`Card${activity.doenetId}`} {...activity} />
     })}</>
      }
-    </PublicActivityCardsContainer>
+    </CardsContainer>
   </PublicActivitiesSection>
 
   <PrivateActivitiesSection>
     <h2>Private</h2>
-    <PrivateActivityCardsContainer>
+    <CardsContainer>
       {data.privateActivities.length < 1 ? <div>No Private Activities</div>  :
     <>{data.privateActivities.map((activity)=>{
       return <Card key={`Card${activity.doenetId}`} {...activity} />
     })}</>
-     }
-    </PrivateActivityCardsContainer>
+     } 
+    </CardsContainer>
   </PrivateActivitiesSection>
-   
+  </PortfolioGrid>
   </>
 }
 
