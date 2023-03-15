@@ -113,30 +113,50 @@ export function PortfolioActivitySettings(){
   const navigate = useNavigate();
   let numberOfFilesUploading = useRef(0);
 
-  let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let [imagePath,setImagePath] = useState(data.imagePath);
 
-  const onDrop = useCallback((files) => {
+  const onDrop = useCallback(async (files) => {
     let success = true;
-    let sizeOfUpload = 0;
     const file = files[0];
     if (files.length > 1){
       success = false;
+      //Should we just grab the first one and ignore the rest
+      console.log("Only one file upload allowed!")  
     }
 
 
     //Only upload one batch at a time
     if (numberOfFilesUploading.current > 0){
       console.log("Already uploading files.  Please wait before sending more.")
-      // addToast(`Already uploading files.  Please wait before sending more.`, toastType.ERROR);
       success = false;
     }
 
     //If any settings aren't right then abort
     if (!success){ return; }
 
-    numberOfFilesUploading.current = files.length;
-    
+    numberOfFilesUploading.current = 1;
+
+    let image = await window.BrowserImageResizer.readAndCompressImage(
+      file,
+      {
+        quality: 0.9,
+        maxWidth: 238,
+        maxHeight: 122,
+        debug: true
+      }
+    );
+    // const convertToBase64 = (blob) => {
+    //   return new Promise((resolve) => {
+    //     var reader = new FileReader();
+    //     reader.onload = function () {
+    //       resolve(reader.result);
+    //     };
+    //     reader.readAsDataURL(blob);
+    //   });
+    // };
+    // let base64Image = await convertToBase64(image);
+    // console.log("image",image)
+    // console.log("base64Image",base64Image)
  
     let initialFileInfo = {fileName:file.name,size:file.size,progressPercent:0}
     setUploadProgress((was)=>[...was,initialFileInfo])
@@ -145,39 +165,26 @@ export function PortfolioActivitySettings(){
 
     //Upload files
       const reader = new FileReader();
-      reader.readAsDataURL(file);  //This one could be used with image source to preview image
+      reader.readAsDataURL(image);  //This one could be used with image source to preview image
   
       reader.onabort = () => {};
       reader.onerror = () => {};
       reader.onload = () => {
 
         const uploadData = new FormData();
-        uploadData.append('file',file);
+        // uploadData.append('file',file);
+        uploadData.append('file',image);
         uploadData.append('doenetId',data.doenetId);
-          axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
-        const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
-            if (totalLength !== null) {
-                // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
-            // console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
-            let progressPercent = Math.round( (progressEvent.loaded * 100) / totalLength );
-            setUploadProgress((was)=>{
-              let newArray = [...was];
-              newArray[0].progressPercent = progressPercent;
-              return newArray;
-            })
-            }
-      }}).then(({data})=>{
-        // console.log("data",file.name,fileIndex,data)
+            axios.post('/api/upload.php',uploadData).then(({data})=>{
         console.log("RESPONSE data>",data)
 
         //uploads are finished clear it out
         numberOfFilesUploading.current = 0;
         setUploadProgress([]);
-        let {success, fileName, cid, asFileName, width, height, msg, userQuotaBytesAvailable} = data;
+        let {success, cid} = data;
 
         if (success){
           setImagePath(`/media/${cid}.jpg`)
-         
         }
         
       })
