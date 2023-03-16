@@ -24,14 +24,16 @@ services:
     volumes:
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       - /var/run/docker.sock:/var/run/docker.sock
+      - /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock
       # mount local files
       - ./:/home/node/workspace
       - node_modules:/home/node/workspace/node_modules
-      - ~/.ssh:/home/node/.ssh
+      - ~/.ssh:/.ssh
     networks:
       - dev_net
     environment:
       - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
+      - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     cap_add:
       - SYS_PTRACE
