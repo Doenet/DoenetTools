@@ -2,9 +2,8 @@
   "name": "doenet_tools",
   "version": "0.0.1",
   "scripts": {
-    "start": "vite",
     "start:ci": "docker compose up -d",
-    "start:dev": "npm install --omit=optional && npx vite",
+    "start:dev": "vite",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
     "build": "docker compose run --rm dev npx snowpack build --config snowpack.deploy.config.js",
     "build:ci": "snowpack build --out dist_ci --no-watch",
