@@ -641,7 +641,7 @@ export default class ODESystem extends InlineComponent {
       shadowingInstructions: {
         createComponentOfType: "function",
         addStateVariablesShadowingStateVariables: {
-          fDefinition: {
+          fDefinitions: {
             stateVariableToShadow: "numericalSolutionFDefinitions",
           }
         },

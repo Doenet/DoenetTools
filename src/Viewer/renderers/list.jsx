@@ -29,10 +29,17 @@ export default React.memo(function List(props) {
   if (SVs.item) {
     return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility} requireContentsSize={false}><><a name={id} /><li id={id}>{children}</li></></VisibilitySensor>;
   } else if (SVs.numbered) {
-    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ol id={id}><a name={id} />{children}</ol></></VisibilitySensor>;
+    let list_style = styleTypeByLevel.numbered[(SVs.level - 1) % styleTypeByLevel.numbered.length];
+    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ol id={id} style={{ listStyleType: list_style }}><a name={id} />{children}</ol></></VisibilitySensor>;
   } else {
-    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ul id={id}><a name={id} />{children}</ul></></VisibilitySensor>;
+    let list_style = styleTypeByLevel.unnumbered[(SVs.level - 1) % styleTypeByLevel.unnumbered.length];
+    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ul id={id} style={{ listStyleType: list_style }}><a name={id} />{children}</ul></></VisibilitySensor>;
   }
 
 })
 
+const styleTypeByLevel = {
+  numbered: ["decimal", "lower-alpha", "lower-roman", "upper-alpha", "upper-roman"],
+  unnumbered: ["disc", "circle", "square"],
+
+}

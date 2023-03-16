@@ -74,6 +74,7 @@ export default class Core {
       recordSolutionView: this.recordSolutionView.bind(this),
       requestComponentDoenetML: this.requestComponentDoenetML.bind(this),
       copyToClipboard: this.copyToClipboard.bind(this),
+      navigateToTarget: this.navigateToTarget.bind(this),
     }
 
     this.updateInfo = {
@@ -3417,6 +3418,9 @@ export default class Core {
       let copyComponentType = stateDef.public && stateDef.shadowingInstructions.hasVariableComponentType;
 
       if (stateDef.isArray) {
+
+        let overrideVarNameWith = differentStateVariablesInTarget[varInd];
+
         stateDef.returnArrayDependenciesByKey = function ({ arrayKeys }) {
           let dependenciesByKey = {};
 
@@ -3425,7 +3429,7 @@ export default class Core {
               targetVariable: {
                 dependencyType: "stateVariable",
                 componentName: targetComponent.componentName,
-                variableName: this.arrayVarNameFromArrayKey(key),
+                variableName: overrideVarNameWith || this.arrayVarNameFromArrayKey(key),
               }
             };
           }
@@ -4801,13 +4805,19 @@ export default class Core {
         args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
 
         // only include array keys that exist
+        // unless given a Javascript array
         let newDesiredStateVariableValues = {};
         for (let vName in args.desiredStateVariableValues) {
-          newDesiredStateVariableValues[vName] = {}
-          for (let key in args.desiredStateVariableValues[vName]) {
-            if (args.arrayKeys.includes(key)) {
-              newDesiredStateVariableValues[vName][key] = args.desiredStateVariableValues[vName][key];
+          if (Array.isArray(args.desiredStateVariableValues[vName])) {
+            newDesiredStateVariableValues[vName] = args.desiredStateVariableValues[vName];
+          } else {
+            newDesiredStateVariableValues[vName] = {}
 
+            for (let key in args.desiredStateVariableValues[vName]) {
+              if (args.arrayKeys.includes(key)) {
+                newDesiredStateVariableValues[vName][key] = args.desiredStateVariableValues[vName][key];
+
+              }
             }
           }
         }
@@ -8470,11 +8480,6 @@ export default class Core {
 
     await this.processStateVariableTriggers();
 
-    // it is possible that components were added back to componentNamesToUpdateRenderers
-    // while processing the renderer instructions
-    // so delete any names that were just addressed
-    componentNamesToUpdate.forEach(cName => this.updateInfo.componentsToUpdateRenderers.delete(cName));
-
     // TODO: when should we actually warn of unmatchedChildren
     // It shouldn't be just on update, but also on initial construction!
     // Also, should be more than a console.warn
@@ -9355,7 +9360,7 @@ export default class Core {
                   }
                 }
               } else {
-                if (depStateVarObj.nDimensions === 1) {
+                if (depStateVarObj.nDimensions === 1 || !Array.isArray(newInstruction.desiredValue)) {
                   Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
                 } else {
                   // need to convert multidimensional array (newInstruction.desiredValue)
@@ -10395,7 +10400,7 @@ export default class Core {
     }
   }
 
-  requestComponentDoenetML(componentName) {
+  requestComponentDoenetML(componentName, displayOnlyChildren) {
 
     let component = this.components[componentName];
 
@@ -10409,10 +10414,31 @@ export default class Core {
       return null;
     }
 
-    let startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
-    let endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd + 1;
+    let startInd, endInd;
+
+    if (displayOnlyChildren) {
+      if (range.selfCloseBegin !== undefined) {
+        return "";
+      }
+      startInd = range.openEnd + 1;
+      endInd = range.closeBegin;
+
+    } else {
+      startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
+      endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd + 1;
+    }
 
     let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);
+
+    if (displayOnlyChildren) {
+      // remove any leading linebreak
+      // or any trailing linebreak (possibility followed by spaces or tabs)
+      // to remove spacing due to just having the children on different lines from the enclosing parent tags
+      if (componentDoenetML[0] === "\n") {
+        componentDoenetML = componentDoenetML.slice(1)
+      }
+      componentDoenetML = componentDoenetML.replace(/\n[ \t]*$(?!\n)/, '')
+    }
 
     let lines = componentDoenetML.split("\n");
 
@@ -10443,6 +10469,14 @@ export default class Core {
         args: { text, actionId }
       })
     }
+  }
+
+  navigateToTarget(args) {
+    postMessage({
+      messageType: "navigateToTarget",
+      coreId: this.coreId,
+      args
+    })
   }
 }
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
-import { scrollableContainerAtom } from '../PageViewer';
+import { getURLFromRef, scrollableContainerAtom } from '../PageViewer';
 import useDoenetRender from './useDoenetRenderer';
 import styled from 'styled-components';
 
@@ -62,72 +62,15 @@ export default React.memo(function Ref(props) {
     linkContent = SVs.linkText;
   }
 
-  let url = "";
-  let targetForATag = "_blank";
-  let haveValidTarget = false;
-  let externalUri = false;
-  if (SVs.cid || SVs.doenetId) {
-    if (SVs.cid) {
-      url = `cid=${SVs.cid}`
-    } else {
-      url = `doenetId=${SVs.doenetId}`
-    }
-    if (SVs.variantIndex) {
-      url += `&variant=${SVs.variantIndex}`;
-    }
-
-    let usePublic = false;
-    if (pageToolView.page === "public") {
-      usePublic = true;
-    } else if (Object.keys(itemInCourse).length === 0) {
-      usePublic = true;
-    }
-    if (usePublic) {
-      if (SVs.edit === true || SVs.edit === null && pageToolView.page === "public" && pageToolView.tool === "editor") {
-        url = `tool=editor&${url}`;
-      }
-      url = `/public?${url}`
-    } else if(pageToolView.page === "placementexam") {
-      url = `?tool=exam&${url}`
-    } else {
-      url = `?tool=assignment&${url}`
-    }
-
-    haveValidTarget = true;
-
-    if (SVs.hash) {
-      url += SVs.hash;
-    } else {
-      if (SVs.page) {
-        url += `#page${SVs.page}`
-        if (SVs.targetName) {
-          url += SVs.targetName;
-        }
-      } else if (SVs.targetName) {
-        url += '#' + SVs.targetName;
-      }
-    }
-  } else if (SVs.uri) {
-    url = SVs.uri;
-    if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
-      haveValidTarget = true;
-      externalUri = true;
-    }
-  } else {
-    url += search;
-
-    if (SVs.page) {
-      url += `#page${SVs.page}`
-    } else {
-      let firstSlash = id.indexOf("/");
-      let prefix = id.substring(0, firstSlash);
-      url += "#" + prefix;
-    }
-    url += SVs.targetName;
-    targetForATag = null;
-    haveValidTarget = true;
-  }
-
+  let { targetForATag, url, haveValidTarget, externalUri } = getURLFromRef({
+    cid: SVs.cid, doenetId: SVs.doenetId, variantIndex: SVs.variantIndex,
+    edit: SVs.edit, hash: SVs.hash, page: SVs.page,
+    givenUri: SVs.uri,
+    targetName: SVs.targetName,
+    pageToolView,
+    inCourse: Object.keys(itemInCourse).length > 0,
+    search, id
+  });
 
   if (SVs.createButton) {
     if (targetForATag === "_blank") {
@@ -146,7 +89,6 @@ export default React.memo(function Ref(props) {
       if (externalUri || url === "#") {
         // for some reason, if url = "#", the <Link>, below, causes a refresh
         // as it removes the # from the url.  So we use a <a> directly in this case.
-        console.log('first case');
         return <a style={{
           color: 'var(--mainBlue)',
           borderRadius: '5px'
@@ -157,7 +99,6 @@ export default React.memo(function Ref(props) {
         let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
         let stateObj = { fromLink: true }
         Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer?.[scrollAttribute], enumerable: true });
-        console.log('second case');
         return <Link
           style={{
             color: 'var(--mainBlue)',

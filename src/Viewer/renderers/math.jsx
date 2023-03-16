@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { BoardContext } from './graph';
 import useDoenetRender from './useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
@@ -25,6 +25,20 @@ export default React.memo(function MathComponent(props) {
 
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
+
+  useEffect(() => {
+    //On unmount
+    return () => {
+      if (mathJXG.current !== null) {
+        mathJXG.current.off('drag');
+        mathJXG.current.off('down');
+        mathJXG.current.off('up');
+        board?.removeObject(mathJXG.current);
+        mathJXG.current = null;
+      }
+
+    }
+  }, [])
 
 
   function createMathJXG() {
@@ -225,10 +239,12 @@ export default React.memo(function MathComponent(props) {
     // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
     setTimeout(() => {
 
-      mathJXG.current.needsUpdate = true;
-      mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
-      mathJXG.current.update();
-      board.updateRenderer();
+      if (mathJXG.current) {
+        mathJXG.current.needsUpdate = true;
+        mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
+        mathJXG.current.update();
+        board.updateRenderer();
+      }
 
     }, 1000)
   }

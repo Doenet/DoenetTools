@@ -506,89 +506,108 @@ export default class FunctionOperator extends Function {
       }
     }
 
-
-    stateVariableDefinitions.fDefinition = {
-      returnDependencies: () => ({
-        operatorBasedOnFormula: {
-          dependencyType: "stateVariable",
-          variableName: "operatorBasedOnFormula"
-        },
-        formula: {
-          dependencyType: "stateVariable",
-          variableName: "formula"
-        },
-        variables: {
-          dependencyType: "stateVariable",
-          variableName: "variables",
-        },
-        nInputs: {
-          dependencyType: "stateVariable",
-          variableName: "nInputs",
-        },
+    stateVariableDefinitions.fDefinitions = {
+      isArray: true,
+      entryPrefixes: ["fDefinition"],
+      returnArraySizeDependencies: () => ({
         nOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["fDefinition"]
-        },
-        mathChild: {
-          dependencyType: "child",
-          childGroups: ["maths"],
-          variableNames: ["value"],
-        },
-        numericalFunctionOperator: {
-          dependencyType: "stateVariable",
-          variableName: "numericalFunctionOperator"
-        },
-        numericalFunctionOperatorArguments: {
-          dependencyType: "stateVariable",
-          variableName: "numericalFunctionOperatorArguments"
-        },
-        operatorComposesWithOriginal: {
-          dependencyType: "stateVariable",
-          variableName: "operatorComposesWithOriginal"
-        },
-        domain: {
-          dependencyType: "stateVariable",
-          variableName: "domain"
+          variableName: "nOutputs"
         }
       }),
-      definition({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nOutputs];
+      },
+      returnArrayDependenciesByKey: () => ({
+        globalDependencies: {
+          operatorBasedOnFormula: {
+            dependencyType: "stateVariable",
+            variableName: "operatorBasedOnFormula"
+          },
+          formula: {
+            dependencyType: "stateVariable",
+            variableName: "formula"
+          },
+          variables: {
+            dependencyType: "stateVariable",
+            variableName: "variables",
+          },
+          nInputs: {
+            dependencyType: "stateVariable",
+            variableName: "nInputs",
+          },
+          nOutputs: {
+            dependencyType: "stateVariable",
+            variableName: "nOutputs",
+          },
+          functionChild: {
+            dependencyType: "child",
+            childGroups: ["functions"],
+            variableNames: ["fDefinitions"]
+          },
+          mathChild: {
+            dependencyType: "child",
+            childGroups: ["maths"],
+            variableNames: ["value"],
+          },
+          numericalFunctionOperator: {
+            dependencyType: "stateVariable",
+            variableName: "numericalFunctionOperator"
+          },
+          numericalFunctionOperatorArguments: {
+            dependencyType: "stateVariable",
+            variableName: "numericalFunctionOperatorArguments"
+          },
+          operatorComposesWithOriginal: {
+            dependencyType: "stateVariable",
+            variableName: "operatorComposesWithOriginal"
+          },
+          domain: {
+            dependencyType: "stateVariable",
+            variableName: "domain"
+          }
+        }
+      }),
+
+      arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys, arraySize }) {
 
         // TODO: correctly handle nOutputs > 1
 
-        if (dependencyValues.operatorBasedOnFormula) {
-          return {
-            setValue: {
-              fDefinition: {
-                functionType: "formula",
-                formula: dependencyValues.formula.tree,
-                variables: dependencyValues.variables.map(x => x.tree),
-                nInputs: dependencyValues.nInputs,
-                nOutputs: dependencyValues.nOutputs,
-                domain: dependencyValues.domain,
-              }
+        if (globalDependencyValues.operatorBasedOnFormula) {
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            fDefinitions[arrayKey] = {
+              functionType: "formula",
+              formula: globalDependencyValues.formula.tree,
+              variables: globalDependencyValues.variables.map(x => x.tree),
+              nInputs: globalDependencyValues.nInputs,
+              nOutputs: globalDependencyValues.nOutputs,
+              domain: globalDependencyValues.domain,
+              component: arrayKey,
             }
           }
+          return {
+            setValue: { fDefinitions }
+          }
 
-        } else if (dependencyValues.operatorComposesWithOriginal) {
+        } else if (globalDependencyValues.operatorComposesWithOriginal) {
 
-          if (dependencyValues.functionChild.length === 0) {
-            if (dependencyValues.mathChild.length === 0) {
-              return {
-                setValue: {
-                  fDefinition: {
-                    functionType: "formula",
-                    formula: '\uff3f',
-                    variables: dependencyValues.variables.map(x => x.tree),
-                    nInputs: dependencyValues.nInputs,
-                    nOutputs: dependencyValues.nOutputs,
-                    domain: dependencyValues.domain,
-                  }
+          if (globalDependencyValues.functionChild.length === 0) {
+            if (globalDependencyValues.mathChild.length === 0) {
+
+              let fDefinitions = {};
+              for (let arrayKey of arrayKeys) {
+                fDefinitions[arrayKey] = {
+                  functionType: "formula",
+                  formula: '\uff3f',
+                  variables: globalDependencyValues.variables.map(x => x.tree),
+                  nInputs: globalDependencyValues.nInputs,
+                  nOutputs: globalDependencyValues.nOutputs,
+                  domain: globalDependencyValues.domain,
                 }
+              }
+              return {
+                setValue: { fDefinitions }
               }
             } else {
 
@@ -599,36 +618,41 @@ export default class FunctionOperator extends Function {
             }
           } else {
 
-            return {
-              setValue: {
-                fDefinition: {
-                  functionType: "functionOperator",
-                  componentType,
-                  nOutputs: dependencyValues.nOutputs,
-                  functionOperatorArguments: dependencyValues.numericalFunctionOperatorArguments,
-                  operatorComposesWithOriginal: true,
-                  originalFDefinition: dependencyValues.functionChild[0].stateValues.fDefinition,
-                }
+            let fDefinitions = {};
+            for (let arrayKey of arrayKeys) {
+              fDefinitions[arrayKey] = {
+                functionType: "functionOperator",
+                componentType,
+                nOutputs: globalDependencyValues.nOutputs,
+                functionOperatorArguments: globalDependencyValues.numericalFunctionOperatorArguments,
+                operatorComposesWithOriginal: true,
+                originalFDefinition: globalDependencyValues.functionChild[0].stateValues.fDefinitions[arrayKey],
               }
+            }
+            return {
+              setValue: { fDefinitions }
             }
 
           }
 
         } else {
 
-          if (dependencyValues.functionChild.length === 0) {
-            if (dependencyValues.mathChild.length === 0) {
-              return {
-                setValue: {
-                  fDefinition: {
-                    functionType: "formula",
-                    formula: '\uff3f',
-                    variables: dependencyValues.variables.map(x => x.tree),
-                    nInputs: dependencyValues.nInputs,
-                    nOutputs: dependencyValues.nOutputs,
-                    domain: dependencyValues.domain,
-                  }
+          if (globalDependencyValues.functionChild.length === 0) {
+            if (globalDependencyValues.mathChild.length === 0) {
+
+              let fDefinitions = {};
+              for (let arrayKey of arrayKeys) {
+                fDefinitions[arrayKey] = {
+                  functionType: "formula",
+                  formula: '\uff3f',
+                  variables: globalDependencyValues.variables.map(x => x.tree),
+                  nInputs: globalDependencyValues.nInputs,
+                  nOutputs: globalDependencyValues.nOutputs,
+                  domain: globalDependencyValues.domain,
                 }
+              }
+              return {
+                setValue: { fDefinitions }
               }
             } else {
 
@@ -638,22 +662,23 @@ export default class FunctionOperator extends Function {
 
             }
           } else {
-
-            return {
-              setValue: {
-                fDefinition: {
-                  functionType: "functionOperator",
-                  componentType,
-                  nOutputs: dependencyValues.nOutputs,
-                  functionOperatorArguments: dependencyValues.numericalFunctionOperatorArguments,
-                  operatorComposesWithOriginal: false,
-                  originalFDefinition: dependencyValues.functionChild[0].stateValues.fDefinition,
-                }
+            let fDefinitions = {};
+            for (let arrayKey of arrayKeys) {
+              fDefinitions[arrayKey] = {
+                functionType: "functionOperator",
+                componentType,
+                nOutputs: globalDependencyValues.nOutputs,
+                functionOperatorArguments: globalDependencyValues.numericalFunctionOperatorArguments,
+                operatorComposesWithOriginal: false,
+                originalFDefinition: globalDependencyValues.functionChild[0].stateValues.fDefinitions[arrayKey],
               }
             }
+            return {
+              setValue: { fDefinitions }
+            }
           }
-        }
 
+        }
       }
     }
 

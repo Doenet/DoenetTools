@@ -184,7 +184,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/top').should('contain.text', 'top 1')
-    cy.get('#page2\\/top').should('contain.text', 'top 2') 
+    cy.get('#page2\\/top').should('contain.text', 'top 2')
 
     cy.url().should('match', /#page1$/)
 
@@ -1544,6 +1544,7 @@ describe('Multipage activity tests', function () {
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100);
 
     cy.signin({ userId: studentUserId })
 
@@ -2350,7 +2351,7 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500);  // wait for update
-    
+
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -2559,5 +2560,83 @@ describe('Multipage activity tests', function () {
 
   })
 
+  it('Change pages with navigateToTarget action and choiceinput', () => {
+    const doenetML1 = `
+    <setup>
+      <ref page="1" name="refpage1" />
+      <ref page="2" name="refpage2" />
+      <ref page="3" name="refpage3" />
+    </setup>
+
+    <p>Page 1</p>
+
+    <choiceinput inline name="moveToPage">
+      <choice>Page 1</choice>
+      <choice>Page 2</choice>
+      <choice>Page 3</choice>
+    </choiceinput>
+
+    <callAction triggerWhen="$moveToPage.selectedIndex=1" target="refpage1" actionName="navigateToTarget" />
+    <callAction triggerWhen="$moveToPage.selectedIndex=2" target="refpage2" actionName="navigateToTarget" />
+    <callAction triggerWhen="$moveToPage.selectedIndex=3" target="refpage3" actionName="navigateToTarget" />
+    `
+
+    const doenetML2 = `Page 2`
+    const doenetML3 = `Page 3`
+
+    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, pageDoenetId3, doenetML1, doenetML2, doenetML3 });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#page1').should('contain.text', 'Page 1')
+
+    cy.url().should('match', /#page1$/)
+
+
+    cy.get(`#page1\\/moveToPage`).select('2');
+
+    cy.get('#page2').should('contain.text', 'Page 2')
+
+    cy.url().should('match', /#page2$/)
+
+
+    cy.get('[data-test=previous]').click();
+
+    cy.get('#page1').should('contain.text', 'Page 1')
+
+    cy.url().should('match', /#page1$/)
+
+
+    cy.get(`#page1\\/moveToPage`).select('3');
+
+    cy.get('#page3').should('contain.text', 'Page 3')
+
+    cy.url().should('match', /#page3$/)
+
+
+    cy.get('[data-test=previous]').click();
+
+    cy.get('#page2').should('contain.text', 'Page 2')
+
+    cy.url().should('match', /#page2$/)
+
+
+    cy.get('[data-test=previous]').click();
+
+    cy.get('#page1').should('contain.text', 'Page 1')
+
+    cy.url().should('match', /#page1$/)
+
+
+
+  })
 
 })

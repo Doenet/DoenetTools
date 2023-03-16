@@ -26,7 +26,6 @@ export function parseAndCompile(inText) {
       let tagName = inText.substring(cursor.from, cursor.to);
 
       let tagOpenBegin = cursor.from;
-      let tagOpenEnd = cursor.to;
 
       let attrs = {};
       while (cursor.nextSibling()) {
@@ -41,7 +40,7 @@ export function parseAndCompile(inText) {
           // eslint-disable-next-line no-empty
           while (cursor.parent()) { }
 
-          throw Error(`Invalid DoenetML at positions ${errorBegin} to ${errorEnd}. Error in opening <${tagName}> tag.  Found ${inText.slice(tagOpenBegin-1, errorEnd)}`)
+          throw Error(`Invalid DoenetML at positions ${errorBegin} to ${errorEnd}. Error in opening <${tagName}> tag.  Found ${inText.slice(tagOpenBegin - 1, errorEnd)}`)
         }
 
         //Attributes always have exactly two children, an AttributeName and an Attribute Value
@@ -50,7 +49,7 @@ export function parseAndCompile(inText) {
         let attrName = inText.substring(cursor.from, cursor.to);
         //skip the name and equals sign
         if (cursor.nextSibling() === false) {
-          if(attrName in attrs) {
+          if (attrName in attrs) {
             throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
           }
           attrs[attrName] = true;
@@ -59,7 +58,7 @@ export function parseAndCompile(inText) {
           //boundry fuddling to ignore the quotes
           let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
 
-          if(attrName in attrs) {
+          if (attrName in attrs) {
             throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
           }
           attrs[attrName] = attrValue;
@@ -70,6 +69,8 @@ export function parseAndCompile(inText) {
 
       //get back to the level of OpenTag in order to parse tag body
       cursor.parent();
+
+      let tagOpenEnd = cursor.to;
 
       let element = { componentType: tagName, props: { ...attrs }, children: [] }
       // now we go through all of the other non-terminals in this row until we get to the closing tag,
@@ -93,8 +94,8 @@ export function parseAndCompile(inText) {
         } else if (cursor.name === "Comment") {
           //ignore comments
           continue;
-        }  else if (cursor.name === "MismatchedCloseTag") {
-            throw Error(`Invalid DoenetML at position ${cursor.from}. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(cursor.from, cursor.to)}.`)
+        } else if (cursor.name === "MismatchedCloseTag") {
+          throw Error(`Invalid DoenetML at position ${cursor.from}. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(cursor.from, cursor.to)}.`)
         } else {
           // console.log(`error is at position ${cursor.from}, ${cursor.to}`)
           // console.log(`error part: ${inText.slice(cursor.from, cursor.to)}`)
@@ -131,13 +132,13 @@ export function parseAndCompile(inText) {
         let attrName = inText.substring(cursor.from, cursor.to);
 
         if (cursor.nextSibling() === false) {
-          if(attrName in attrs) {
+          if (attrName in attrs) {
             throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
           }
           attrs[attrName] = true;
         } else {
           cursor.nextSibling();
-          if(attrName in attrs) {
+          if (attrName in attrs) {
             throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
           }
 
@@ -178,7 +179,7 @@ export function parseAndCompile(inText) {
       throw Error(`Invalid DoenetML at positions ${tc.node.from} to ${tc.node.to}.  Found ${inText.substring(tc.node.from, tc.node.to)}`)
     }
   }
-  if(!inText) {
+  if (!inText) {
     return [];
   }
   let tc = parse(inText);

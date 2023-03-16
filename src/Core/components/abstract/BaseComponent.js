@@ -633,6 +633,28 @@ export default class BaseComponent {
       }
     }
 
+
+    stateVariableDefinitions.doenetML = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        doenetML: {
+          dependencyType: "doenetML"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let doenetML = dependencyValues.doenetML;
+        if (!doenetML) {
+          doenetML = "";
+        }
+        return { setValue: { doenetML } }
+      }
+
+    }
+
+
     return stateVariableDefinitions;
   }
 
@@ -1206,7 +1228,7 @@ export default class BaseComponent {
 
   async copyDoenetMLToClipboard({ actionId }) {
 
-    let doenetML = this.coreFunctions.requestComponentDoenetML(this.componentName)
+    let doenetML = await this.stateValues.doenetML;
 
     if (!doenetML) {
       this.coreFunctions.resolveAction({ actionId });
