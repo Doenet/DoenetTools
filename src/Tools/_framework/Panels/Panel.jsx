@@ -156,7 +156,7 @@ export default function DragPanel({
         }),
         rubberband: true,
         axis: direction.drag[0],
-        initial: () => [
+        from: () => [
           dir.get() * direction.drag[1],
           dir.get() * direction.drag[1],
         ],
