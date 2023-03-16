@@ -54,7 +54,7 @@ export default React.memo(function Vector(props) {
 
     }
 
-    let layer = 10 * SVs.layer + 7;
+    let layer = 10 * SVs.layer + 5;
     let fixed = !SVs.draggable || SVs.fixed;
 
     //things to be passed to JSXGraph as attributes
@@ -358,7 +358,7 @@ export default React.memo(function Vector(props) {
       }
 
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + 5;
       let layerChanged = vectorJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

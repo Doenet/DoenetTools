@@ -54,7 +54,7 @@ export default React.memo(function Ray(props) {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + 5,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -228,7 +228,7 @@ export default React.memo(function Ray(props) {
       rayJXG.current.visProp.fixed = fixed;
       rayJXG.current.visProp.highlight = !fixed;
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + 5;
       let layerChanged = rayJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

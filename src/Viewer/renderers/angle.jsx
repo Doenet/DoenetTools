@@ -51,7 +51,7 @@ export default React.memo(function Angle(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,//SVs.draggable !== true,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + 5,
       radius: SVs.numericalRadius,
       fillColor: SVs.selectedStyle.fillColor,
       strokeColor: SVs.selectedStyle.lineColor,

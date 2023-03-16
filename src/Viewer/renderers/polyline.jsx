@@ -65,7 +65,7 @@ export default React.memo(function Polyline(props) {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + 5,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -89,7 +89,7 @@ export default React.memo(function Polyline(props) {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + 7,
     });
     if (verticesFixed || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
@@ -301,7 +301,7 @@ export default React.memo(function Polyline(props) {
       polylineJXG.current.visProp.fixed = fixed;
       polylineJXG.current.visProp.highlight = !fixed;
 
-      let polylineLayer = 10 * SVs.layer + 7;
+      let polylineLayer = 10 * SVs.layer + 5;
       let layerChanged = polylineJXG.current.visProp.layer !== polylineLayer;
 
       if (layerChanged) {

@@ -58,7 +58,7 @@ export default React.memo(function LineSegment(props) {
       visible: !SVs.hidden,
       withlabel,
       fixed,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
@@ -128,7 +128,7 @@ export default React.memo(function LineSegment(props) {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      layer: 10 * SVs.layer + 8,
+      layer: 10 * SVs.layer + 6,
       showInfoBox: SVs.showCoordsWhenDragging,
       visible: endpointsVisible
     });
@@ -405,7 +405,7 @@ export default React.memo(function LineSegment(props) {
       lineSegmentJXG.current.visProp.fixed = fixed;
       lineSegmentJXG.current.visProp.highlight = !fixed;
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + 5;
       let layerChanged = lineSegmentJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

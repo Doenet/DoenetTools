@@ -314,6 +314,7 @@ export default React.memo(function Point(props) {
 
       if (layerChanged) {
         pointJXG.current.setAttribute({ layer });
+        shadowPointJXG.current.setAttribute({ layer: layer - 1 });
       }
 
       let fixed = !SVs.draggable || SVs.fixed;

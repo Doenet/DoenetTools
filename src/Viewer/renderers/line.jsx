@@ -57,7 +57,7 @@ export default React.memo(function Line(props) {
       visible: !SVs.hidden,
       withlabel,
       fixed,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
@@ -271,7 +271,7 @@ export default React.memo(function Line(props) {
       lineJXG.current.visProp.fixed = fixed;
       lineJXG.current.visProp.highlight = !fixed;
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + 5;
       let layerChanged = lineJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

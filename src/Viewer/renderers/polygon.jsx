@@ -54,14 +54,14 @@ export default React.memo(function Polygon(props) {
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       visible: !verticesFixed && !SVs.hidden,
       withLabel: false,
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + 7,
       highlight: true,
     };
 
     let jsxBorderAttributes = {
       highlight: false,
       visible: !SVs.hidden,
-      layer: 10 * SVs.layer + 8,
+      layer: 10 * SVs.layer + 6,
       fixed: true,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -79,7 +79,7 @@ export default React.memo(function Polygon(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + 5,
 
       //specific to polygon
       fillColor,
@@ -354,7 +354,7 @@ export default React.memo(function Polygon(props) {
       polygonJXG.current.visPropCalc["visible"] = visibleNow;
       // polygonJXG.current.setAttribute({visible: visibleNow})
 
-      let polygonLayer = 10 * SVs.layer + 7;
+      let polygonLayer = 10 * SVs.layer + 5;
       let layerChanged = polygonJXG.current.visProp.layer !== polygonLayer;
 
       if (layerChanged) {
