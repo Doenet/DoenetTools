@@ -158,9 +158,6 @@ export function PortfolioActivitySettings(){
     // console.log("image",image)
     // console.log("base64Image",base64Image)
  
-    let initialFileInfo = {fileName:file.name,size:file.size,progressPercent:0}
-    setUploadProgress((was)=>[...was,initialFileInfo])
-
 
 
     //Upload files
@@ -180,7 +177,6 @@ export function PortfolioActivitySettings(){
 
         //uploads are finished clear it out
         numberOfFilesUploading.current = 0;
-        setUploadProgress([]);
         let {success, cid} = data;
 
         if (success){
@@ -222,7 +218,13 @@ export function PortfolioActivitySettings(){
         </Td></>
             )}
           </tr> */}
-      <tr>
+          <tr key="drop" {...getRootProps()} >
+            <Td colSpan={2}>
+            <input {...getInputProps()} />
+            {isDragActive ? <p>Drop here to upload</p> : <p>Preview of Image</p> }
+            </Td>
+          </tr>
+      {/* <tr>
         <Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide>
         <div>Upload will be resized</div>
         <div>max width 238px, max height 122 px</div>
@@ -237,7 +239,7 @@ export function PortfolioActivitySettings(){
         )}
         </div>
         </Td>
-      </tr>
+      </tr> */}
           {/* <input name="imagePath" style={{width:"390px"}} type="text" placeholder='This will be an image preview' defaultValue={data.imagePath}/> */}
       <tr>
         <Td>Activity Label</Td>

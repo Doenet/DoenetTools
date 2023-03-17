@@ -18,6 +18,7 @@ export async function loader(){
   if (signedIn){
     //Check on portfolio courseId
     const response = await fetch('/api/getPorfolioCourseId.php');
+
     const data = await response.json();
     portfolioCourseId = data.portfolioCourseId;
     if (data.portfolioCourseId == ""){
