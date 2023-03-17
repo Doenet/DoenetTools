@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
@@ -8,7 +8,8 @@ import { MathJaxContext } from 'better-react-mathjax';
 import { mathjaxConfig } from '../../Core/utils/math';
 import DarkmodeController from '../_framework/DarkmodeController';
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'));
+root.render(
   <RecoilRoot>
     <Router>
       <Routes>
@@ -28,6 +29,5 @@ ReactDOM.render(
         />
       </Routes>
     </Router>
-  </RecoilRoot>,
-  document.getElementById('root'),
+  </RecoilRoot>
 );
