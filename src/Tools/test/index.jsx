@@ -1,10 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import DoenetTest from './DoenetTest.jsx';
 import { RecoilRoot } from 'recoil';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-ReactDOM.render(
+
+const root = createRoot(document.getElementById('root'));
+root.render(
   <RecoilRoot>
     <Router>
       <Routes>
@@ -15,6 +17,5 @@ ReactDOM.render(
           } />
       </Routes>
     </Router>
-  </RecoilRoot>,
-  document.getElementById('root'),
+  </RecoilRoot>
 );
