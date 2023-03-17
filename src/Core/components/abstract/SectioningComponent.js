@@ -777,7 +777,7 @@ export default class SectioningComponent extends BlockComponent {
   }
 
 
-  async submitAllAnswers({ actionId }) {
+  async submitAllAnswers({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -790,11 +790,17 @@ export default class SectioningComponent extends BlockComponent {
       }
 
     })
-    for (let answer of await this.stateValues.answerDescendants) {
+    let nAnswers = await this.stateValues.answerDescendants;
+    for (let [ind, answer] of await this.stateValues.answerDescendants.entries()) {
       if (!await answer.stateValues.justSubmitted) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
-          actionName: "submitAnswer"
+          actionName: "submitAnswer",
+          args: {
+            actionId,
+            sourceInformation,
+            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1
+          }
         })
       }
     }
@@ -803,7 +809,7 @@ export default class SectioningComponent extends BlockComponent {
 
   }
 
-  async revealSection({ actionId }) {
+  async revealSection({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -814,6 +820,8 @@ export default class SectioningComponent extends BlockComponent {
       }],
       overrideReadOnly: true,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "viewed",
         object: {
@@ -824,7 +832,7 @@ export default class SectioningComponent extends BlockComponent {
     })
   }
 
-  async closeSection({ actionId }) {
+  async closeSection({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -835,6 +843,8 @@ export default class SectioningComponent extends BlockComponent {
       }],
       overrideReadOnly: true,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "closed",
         object: {

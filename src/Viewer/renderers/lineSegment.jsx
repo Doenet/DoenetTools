@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 export default React.memo(function LineSegment(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   LineSegment.ignoreActionsWithoutCore = true;
 
@@ -250,6 +250,7 @@ export default React.memo(function LineSegment(props) {
             point1coords: pointCoords.current,
             transient: true,
             skippable: true,
+            sourceDetails: { endpoint: i },
           }
         })
       } else if (i == 2) {
@@ -260,8 +261,10 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current,
             transient: true,
             skippable: true,
+            sourceDetails: { endpoint: i },
           }
         })
+
       } else {
         calculatePointPositions(e);
         callAction({
@@ -278,6 +281,11 @@ export default React.memo(function LineSegment(props) {
 
     lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
     lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
+    if (i == 1) {
+      board.updateInfobox(lineSegmentJXG.current.point1)
+    } else if (i == 2) {
+      board.updateInfobox(lineSegmentJXG.current.point2)
+    }
 
   }
 
@@ -353,6 +361,18 @@ export default React.memo(function LineSegment(props) {
 
       lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
       lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
+
+      if (sourceOfUpdate.sourceInformation &&
+        name in sourceOfUpdate.sourceInformation
+      ) {
+        let ind = sourceOfUpdate.sourceInformation[name].endpoint;
+        if (ind === 1) {
+          board.updateInfobox(lineSegmentJXG.current.point1)
+        } else if (ind === 2) {
+          board.updateInfobox(lineSegmentJXG.current.point2)
+        }
+      }
+
 
       let visible = !SVs.hidden && validCoords;
 

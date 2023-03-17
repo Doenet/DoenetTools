@@ -2335,7 +2335,9 @@ export default class Circle extends Curve {
   }
 
 
-  async moveCircle({ center, radius, throughAngles, transient, actionId }) {
+  async moveCircle({ center, radius, throughAngles, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let instructions = [];
 
@@ -2392,11 +2394,15 @@ export default class Circle extends Curve {
         updateInstructions: instructions,
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -2412,22 +2418,28 @@ export default class Circle extends Curve {
 
   }
 
-  async circleClicked({ actionId }) {
+  async circleClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnCircle({ actionId }) {
+  async mouseDownOnCircle({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "down",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

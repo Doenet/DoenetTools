@@ -626,7 +626,7 @@ export default class Document extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  async submitAllAnswers({ actionId }) {
+  async submitAllAnswers({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -637,11 +637,17 @@ export default class Document extends BaseComponent {
     });
 
 
-    for (let answer of await this.stateValues.answerDescendants) {
+    let nAnswers = await this.stateValues.answerDescendants;
+    for (let [ind, answer] of await this.stateValues.answerDescendants.entries()) {
       if (!await answer.stateValues.justSubmitted) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
-          actionName: "submitAnswer"
+          actionName: "submitAnswer",
+          args: {
+            actionId,
+            sourceInformation,
+            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1
+          }
         })
       }
     }

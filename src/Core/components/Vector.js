@@ -2031,7 +2031,9 @@ export default class Vector extends GraphicalComponent {
     stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
   }];
 
-  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {
+  async moveVector({ tailcoords, headcoords, transient, skippable, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     if (tailcoords !== undefined) {
       if (headcoords !== undefined) {
@@ -2076,7 +2078,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "displacement",
           value: displacement.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
 
       } else {
@@ -2086,7 +2088,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "tail",
           value: tailcoords.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       }
 
@@ -2102,7 +2104,7 @@ export default class Vector extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "displacement",
             value: displacement.map(x => me.fromAst(x)),
-            sourceInformation
+            sourceDetails
           })
         }
       }
@@ -2117,7 +2119,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "head",
           value: headcoords.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       } else {
         // if not based on head
@@ -2132,7 +2134,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "displacement",
           value: displacement.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       }
 
@@ -2149,7 +2151,7 @@ export default class Vector extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "displacement",
             value: displacement.map(x => me.fromAst(x)),
-            sourceInformation
+            sourceDetails
           })
         }
       }
@@ -2163,11 +2165,15 @@ export default class Vector extends GraphicalComponent {
         transient,
         skippable,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -2184,22 +2190,28 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async vectorClicked({ actionId }) {
+  async vectorClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnVector({ actionId }) {
+  async mouseDownOnVector({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "down",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

@@ -450,7 +450,9 @@ export default class Label extends InlineComponent {
   static adapters = ["text"];
 
 
-  async moveLabel({ x, y, z, transient, actionId }) {
+  async moveLabel({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = ["vector"];
     if (x !== undefined) {
       components[1] = x;
@@ -471,6 +473,8 @@ export default class Label extends InlineComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -481,6 +485,8 @@ export default class Label extends InlineComponent {
           value: me.fromAst(components),
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

@@ -640,7 +640,9 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  async moveLineSegment({ point1coords, point2coords, transient, actionId }) {
+  async moveLineSegment({ point1coords, point2coords, transient, actionId, sourceDetails,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
 
     if (point1coords === undefined || point2coords === undefined) {
@@ -674,10 +676,13 @@ export default class LineSegment extends GraphicalComponent {
           componentName: this.componentName,
           updateType: "updateValue",
           stateVariable: "endpoints",
-          value: newComponents
+          value: newComponents,
+          sourceDetails,
         }],
         transient: true,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -685,9 +690,12 @@ export default class LineSegment extends GraphicalComponent {
           componentName: this.componentName,
           updateType: "updateValue",
           stateVariable: "endpoints",
-          value: newComponents
+          value: newComponents,
+          sourceDetails,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -705,22 +713,28 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  async lineSegmentClicked({ actionId }) {
+  async lineSegmentClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnLineSegment({ actionId }) {
+  async mouseDownOnLineSegment({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "down",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

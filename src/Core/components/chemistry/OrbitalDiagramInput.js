@@ -244,7 +244,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addRow({ actionId }) {
+  async addRow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
@@ -286,6 +286,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -301,7 +303,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async removeRow({ actionId }) {
+  async removeRow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
@@ -332,6 +334,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
         value: 0,
       }],
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -346,7 +350,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addBox({ actionId }) {
+  async addBox({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
@@ -385,6 +389,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -399,7 +405,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async removeBox({ actionId }) {
+  async removeBox({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
@@ -437,6 +443,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -453,7 +461,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addUpArrow({ actionId }) {
+  async addUpArrow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
@@ -486,6 +494,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -500,7 +510,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addDownArrow({ actionId }) {
+  async addDownArrow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
@@ -532,6 +542,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -546,7 +558,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async removeArrow({ actionId }) {
+  async removeArrow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
@@ -579,6 +591,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -593,7 +607,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async updateRowText({ newValue, actionId }) {
+  async updateRowText({ newValue, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
@@ -617,6 +631,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -631,7 +647,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async selectRow({ index, actionId }) {
+  async selectRow({ index, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -641,6 +657,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
         value: index,
       }],
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -655,7 +673,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async selectBox({ index, actionId }) {
+  async selectBox({ index, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -665,6 +683,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
         value: index,
       }],
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {

@@ -211,7 +211,7 @@ export default React.memo(function Polyline(props) {
             pointCoords: pointCoords.current,
             transient: true,
             skippable: true,
-            sourceInformation: { vertex: i }
+            sourceDetails: { vertex: i }
           }
         })
         pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
@@ -235,7 +235,7 @@ export default React.memo(function Polyline(props) {
           action: actions.movePolyline,
           args: {
             pointCoords: pointCoords.current,
-            sourceInformation: { vertex: i }
+            sourceDetails: { vertex: i }
           }
         })
       }

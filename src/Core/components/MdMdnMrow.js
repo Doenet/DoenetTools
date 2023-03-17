@@ -293,7 +293,9 @@ export class Md extends InlineComponent {
   }
 
 
-  async moveMath({ x, y, z, transient, actionId }) {
+  async moveMath({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = ["vector"];
     if (x !== undefined) {
       components[1] = x;
@@ -314,6 +316,8 @@ export class Md extends InlineComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -324,6 +328,8 @@ export class Md extends InlineComponent {
           value: me.fromAst(components),
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
