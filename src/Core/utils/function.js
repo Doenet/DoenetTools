@@ -9,7 +9,7 @@ export function createFunctionFromDefinition(fDefinition) {
       formula: me.fromAst(fDefinition.formula),
       nInputs: fDefinition.nInputs,
       variables: fDefinition.variables.map(x => me.fromAst(x)),
-      domain: fDefinition.domain,
+      domain: fDefinition.domain ? fDefinition.domain.map(x => me.fromAst(x)) : null,
       component: fDefinition.component,
     })
   } else if (fDefinition.functionType === "bezier") {
@@ -28,7 +28,7 @@ export function createFunctionFromDefinition(fDefinition) {
       xs: fDefinition.xs,
       coeffs: fDefinition.coeffs,
       interpolationPoints: fDefinition.interpolationPoints,
-      domain: fDefinition.domain
+      domain: fDefinition.domain ? fDefinition.domain.map(x => me.fromAst(x)) : null,
     });
   } else if (fDefinition.functionType === "functionOperator") {
     return returnFunctionOperatorFunction({
@@ -49,6 +49,13 @@ export function createFunctionFromDefinition(fDefinition) {
       numericalRHSfDefinitions: fDefinition.numericalRHSfDefinitions,
       maxIterations: fDefinition.maxIterations,
       component: fDefinition.component,
+    })
+  } else if (fDefinition.functionType === "piecewise") {
+    return returnPiecewiseNumericalFunctionFromChildren({
+      numericalFsOfChildren: fDefinition.fDefinitionsOfChildren.map(fDef => createFunctionFromDefinition(fDef)),
+      domainsOfChildren: fDefinition.domainsOfChildren,
+      domain: fDefinition.domain ? fDefinition.domain.map(x => me.fromAst(x)) : null,
+      component: fDefinition.component
     })
   } else {
     // otherwise, return the NaN function
@@ -138,6 +145,70 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
       return NaN;
     }
   }
+
+}
+
+export function returnPiecewiseNumericalFunctionFromChildren({
+  numericalFsOfChildren, domainsOfChildren, domain, component = 0
+}) {
+
+  component = Number(component);
+
+  if (component !== 0) {
+    return () => NaN;
+  }
+
+  let minx = -Infinity, maxx = Infinity;
+  let openMin = false, openMax = false;
+  if (domain !== null) {
+    let domain0 = domain[0];
+    if (domain0 !== undefined) {
+      try {
+        minx = me.fromAst(domain0.tree[1][1]).evaluate_to_constant();
+        if (!Number.isFinite(minx)) {
+          minx = -Infinity;
+        } else {
+          openMin = !domain0.tree[2][1];
+        }
+        maxx = me.fromAst(domain0.tree[1][2]).evaluate_to_constant();
+        if (!Number.isFinite(maxx)) {
+          maxx = Infinity;
+        } else {
+          openMax = !domain0.tree[2][2];
+        }
+      } catch (e) { }
+    }
+  }
+
+
+  return function (x, overrideDomain = false) {
+
+    if (overrideDomain) {
+      if (isNaN(x)) {
+        return NaN;
+      }
+    } else if (!(x >= minx) || !(x <= maxx) || (openMin && x === minx) || (openMax && x === maxx)) {
+      return NaN;
+    }
+
+    for (let [ind, childDomain] of domainsOfChildren.entries()) {
+      let childMinX = childDomain[0][0];
+      let childMaxX = childDomain[0][1];
+      let childMinXClosed = childDomain[1][0];
+      let childMaxXClosed = childDomain[1][1];
+      if ((x > childMinX || (childMinXClosed && x === childMinX))
+        && (x < childMaxX || (childMaxXClosed && x === childMaxX))
+      ) {
+        return numericalFsOfChildren[ind](x);
+      }
+    }
+
+    return NaN;
+
+  }
+
+
+
 
 }
 
