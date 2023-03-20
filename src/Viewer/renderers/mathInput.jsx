@@ -8,9 +8,8 @@ import {
   faTimes,
   faCloud,
 } from '@fortawesome/free-solid-svg-icons';
-import mathquill from 'react-mathquill';
-mathquill.addStyles(); // Styling for react-mathquill input field
-let EditableMathField = mathquill.EditableMathField;
+import {addStyles, EditableMathField} from 'react-mathquill';
+addStyles(); // Styling for react-mathquill input field
 import {
   focusedMathField,
   focusedMathFieldReturn,
