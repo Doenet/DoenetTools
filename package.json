@@ -2,6 +2,7 @@
   "name": "doenet_tools",
   "version": "0.0.1",
   "scripts": {
+    "dev": "vite",
     "start:ci": "docker compose up -d",
     "start:dev": "vite",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
@@ -52,7 +53,7 @@
     "copy-to-clipboard": "^3.3.2",
     "crypto-js": "^3.3.0",
     "cssesc": "^3.0.0",
-    "csv-parse": "^4.16.3",
+    "csv-parse": "^5.3.6",
     "esm-seedrandom": "^3.0.5",
     "handsontable": "^12.1.2",
     "hi-base32": "^0.5.1",
@@ -82,8 +83,7 @@
     "recoil": "^0.7.4",
     "socket.io": "^4.5.0",
     "socket.io-client": "^4.5.0",
-    "styled-components": "5.3.3",
-    "vite-plugin-mpa": "^1.1.4"
+    "styled-components": "5.3.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
@@ -112,7 +112,9 @@
     "rollup-plugin-polyfill-node": "^0.9.0",
     "rollup-plugin-terser": "^7.0.2",
     "snowpack-plugin-raw-file-loader": "^1.0.9",
-    "vite": "^4.1.4"
+    "vite": "^4.1.4",
+    "vite-plugin-mpa": "^1.1.4",
+    "vite-plugin-node-polyfills": "^0.7.0"
   },
   "optionalDependencies": {
     "cypress": "^10.11.0",
