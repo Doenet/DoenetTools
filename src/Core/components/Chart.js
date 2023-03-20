@@ -680,7 +680,9 @@ export default class Chart extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId }) {
+  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let updateInstructions = [];
 
@@ -720,6 +722,8 @@ export default class Chart extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {

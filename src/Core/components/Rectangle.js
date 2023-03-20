@@ -1152,7 +1152,9 @@ export default class Rectangle extends Polygon {
     return stateVariableDefinitions;
   }
 
-  async movePolygon({ pointCoords, transient, sourceInformation, actionId }) {
+  async movePolygon({ pointCoords, transient, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
     let updateInstructions = [];
 
     let vertexComponents = {};
@@ -1166,7 +1168,7 @@ export default class Rectangle extends Polygon {
       componentName: this.componentName,
       stateVariable: "vertices",
       value: vertexComponents,
-      sourceInformation
+      sourceDetails
     });
 
     if (Object.keys(pointCoords).length === 1) {
@@ -1252,12 +1254,16 @@ export default class Rectangle extends Polygon {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
-        actionId
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

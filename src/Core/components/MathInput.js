@@ -609,7 +609,7 @@ export default class MathInput extends Input {
   }
 
 
-  async updateRawValue({ rawRendererValue, actionId }) {
+  async updateRawValue({ rawRendererValue, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     if (!await this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
@@ -626,13 +626,16 @@ export default class MathInput extends Input {
         }],
         transient: true,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  async updateValue({ actionId }) {
+  async updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+
     if (!await this.stateValues.disabled) {
       let immediateValue = await this.stateValues.immediateValue;
 
@@ -712,14 +715,24 @@ export default class MathInput extends Input {
           }
         }
 
+        // TODO: we should should skip renderer updates here,
+        // but doing so triggers a bug in the resolveItem logic
+        // in an esoteric complicated case (factoringOldAlgorithm.cy.js, factor x^2-1).
+        // We could chase down this bug, but a better long term
+        // solution is to completely remove resolve blockers.
         await this.coreFunctions.performUpdate({
           updateInstructions,
           actionId,
+          sourceInformation,
+          skipRendererUpdate: false,
           event,
         });
 
         return await this.coreFunctions.triggerChainedActions({
           componentName: this.componentName,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
         });
 
       } else {

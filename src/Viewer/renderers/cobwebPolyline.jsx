@@ -104,7 +104,7 @@ export default React.memo(function CobwebPolyline(props) {
       highlight: false
     }
     if (SVs.labelHasLatex) {
-      jsxPolylineAttributes.label.useMathJax = true 
+      jsxPolylineAttributes.label.useMathJax = true
     }
 
     jsxPointAttributes.current = {
@@ -200,7 +200,7 @@ export default React.memo(function CobwebPolyline(props) {
         pointCoords: pointCoords.current,
         transient: true,
         skippable: true,
-        sourceInformation: { vertex: i }
+        sourceDetails: { vertex: i }
       }
     })
 
@@ -219,7 +219,7 @@ export default React.memo(function CobwebPolyline(props) {
       action: actions.movePolyline,
       args: {
         pointCoords: pointCoords.current,
-        sourceInformation: { vertex: i }
+        sourceDetails: { vertex: i }
       }
     })
   }

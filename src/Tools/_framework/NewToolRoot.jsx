@@ -492,6 +492,34 @@ let navigationObj = {
       hasNoMenuPanel: true,
     }
   },
+  portfolio: {
+    editor: {
+      //singleFile
+      pageName: 'PortfolioEditor',
+      menuPanelCap: 'EditorInfoCap',
+      currentMainPanel: 'EditorViewer',
+      currentMenus: [
+        // 'PageVariant',
+        // 'PageLink',
+        // 'AssignmentSettingsMenu',
+        'SupportingFilesMenu',
+      ],
+      menusTitles: [
+        // 'Page Variant',
+        // 'Page Link',
+        // 'Assignment Settings',
+        'Supporting Files',
+      ],
+      menusInitOpen: [false, false],
+      supportPanelOptions: ['DoenetMLEditor'],
+      supportPanelTitles: ['DoenetML Editor'],
+      supportPanelIndex: 0,
+      headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
+      // onLeave: 'EditorLeave',
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+      waitForMenuSuppression: true,
+    },
+  },
   exam: {
     default: {
       defaultTool: 'chooseLearner',
@@ -535,8 +563,6 @@ let navigationObj = {
       waitForMenuSuppression: true,
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
-
-
     courseChooser: {
       //allCourses
       pageName: 'Course',

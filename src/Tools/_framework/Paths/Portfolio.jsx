@@ -1,14 +1,17 @@
+import axios from 'axios';
 import React from 'react';
 import { redirect, Form, useOutletContext, useLoaderData } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 export async function action() {
-  let response = await fetch("/api/getNextDoenetId.php");
-
+  //Create a portfilio activity and redirect to the editor for it
+  let response = await fetch("/api/createPortfolioActivity.php");
+console.log("response",response)
       if (response.ok) {
-        let { doenetId } = await response.json();
-        return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
+        let { doenetId, pageDoenetId } = await response.json();
+        return redirect(`/portfolio?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
+        // return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
       }else{
         throw Error(response.message)
       }
@@ -176,7 +179,7 @@ export function Portfolio(){
       lineHeight: '0.1em'
     }}>Portfolio</h4>
     <div style={{position:"absolute", top:'48px',right:"10px"}}>
-      <Form id="add_activity" method="post">
+      <Form method="post">
       <Button value="Add Activity"/>
       </Form>
       </div>

@@ -2055,7 +2055,9 @@ export default class MathComponent extends InlineComponent {
   ];
 
 
-  async moveMath({ x, y, z, transient, actionId }) {
+  async moveMath({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = ["vector"];
     if (x !== undefined) {
       components[1] = x;
@@ -2076,6 +2078,8 @@ export default class MathComponent extends InlineComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -2086,6 +2090,8 @@ export default class MathComponent extends InlineComponent {
           value: me.fromAst(components),
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

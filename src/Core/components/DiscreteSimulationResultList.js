@@ -351,7 +351,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   }
 
 
-  async onChange({ changes, source, actionId, }) {
+  async onChange({ changes, source, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     if (changes) {
       let cellChanges = {};
@@ -368,6 +370,8 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           value: cellChanges,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

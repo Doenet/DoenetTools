@@ -3224,7 +3224,9 @@ export default class Curve extends GraphicalComponent {
 
 
 
-  async moveControlVector({ controlVector, controlVectorInds, transient, actionId, }) {
+  async moveControlVector({ controlVector, controlVectorInds, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let desiredVector = {
       [controlVectorInds + ",0"]: me.fromAst(controlVector[0]),
@@ -3238,10 +3240,12 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "controlVectors",
           value: desiredVector,
-          sourceInformation: { controlVectorMoved: controlVectorInds }
+          sourceDetails: { controlVectorMoved: controlVectorInds }
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -3250,9 +3254,11 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "controlVectors",
           value: desiredVector,
-          sourceInformation: { controlVectorMoved: controlVectorInds }
+          sourceDetails: { controlVectorMoved: controlVectorInds }
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -3267,7 +3273,9 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async moveThroughPoint({ throughPoint, throughPointInd, transient, actionId, }) {
+  async moveThroughPoint({ throughPoint, throughPointInd, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let desiredPoint = {
       [throughPointInd + ",0"]: me.fromAst(throughPoint[0]),
@@ -3281,10 +3289,12 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "throughPoints",
           value: desiredPoint,
-          sourceInformation: { throughPointMoved: throughPointInd }
+          sourceDetails: { throughPointMoved: throughPointInd }
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -3293,9 +3303,11 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "throughPoints",
           value: desiredPoint,
-          sourceInformation: { throughPointMoved: throughPointInd }
+          sourceDetails: { throughPointMoved: throughPointInd }
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -3310,7 +3322,9 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async changeVectorControlDirection({ direction, throughPointInd, actionId, }) {
+  async changeVectorControlDirection({ direction, throughPointInd, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -3319,6 +3333,8 @@ export default class Curve extends GraphicalComponent {
         value: { [throughPointInd]: direction },
       }],
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
   }
 
@@ -3326,22 +3342,28 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async curveClicked({ actionId, name }) {
+  async curveClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnCurve({ actionId, name }) {
+  async mouseDownOnCurve({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "down",
       componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

@@ -78,6 +78,5 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.render(<RouterProvider router={router} />,
-  document.getElementById('root')
-);
+const root = createRoot(document.getElementById('root'));
+root.render(<RouterProvider router={router} />);

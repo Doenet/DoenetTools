@@ -162,7 +162,7 @@ export default class Hint extends BlockComponent {
 
   }
 
-  async revealHint({ actionId }) {
+  async revealHint({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -173,6 +173,8 @@ export default class Hint extends BlockComponent {
       }],
       overrideReadOnly: true,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "viewed",
         object: {
@@ -183,7 +185,7 @@ export default class Hint extends BlockComponent {
     });
   }
 
-  async closeHint({ actionId }) {
+  async closeHint({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -194,6 +196,8 @@ export default class Hint extends BlockComponent {
       }],
       overrideReadOnly: true,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "closed",
         object: {

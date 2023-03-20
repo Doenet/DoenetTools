@@ -79,7 +79,7 @@ export default class triggerSet extends InlineComponent {
   }
 
 
-  async triggerActions({ actionId }) {
+  async triggerActions({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     for (let child of await this.stateValues.updateValueAndActionsToTrigger) {
 
@@ -90,6 +90,7 @@ export default class triggerSet extends InlineComponent {
         await this.coreFunctions.performAction({
           componentName: child.componentName,
           actionName: "updateValue",
+          args: { actionId, sourceInformation, skipRendererUpdate: true }
         })
       } else if (this.componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,
@@ -98,6 +99,7 @@ export default class triggerSet extends InlineComponent {
         await this.coreFunctions.performAction({
           componentName: child.componentName,
           actionName: "callAction",
+          args: { actionId, sourceInformation, skipRendererUpdate: true }
         })
       }
     }
@@ -106,6 +108,9 @@ export default class triggerSet extends InlineComponent {
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
   }
@@ -114,7 +119,7 @@ export default class triggerSet extends InlineComponent {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false) {
-      return await this.triggerActions({ actionId });
+      return await this.triggerActions({ actionId, skipRendererUpdate: true });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }

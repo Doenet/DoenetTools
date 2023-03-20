@@ -567,7 +567,9 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  async movePolyline({ pointCoords, transient, sourceInformation, actionId }) {
+  async movePolyline({ pointCoords, transient, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     let nVerticesMoved = Object.keys(pointCoords).length;
 
@@ -596,10 +598,12 @@ export default class Polyline extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "vertices",
           value: vertexComponents,
-          sourceInformation
+          sourceDetails
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
 
@@ -609,9 +613,11 @@ export default class Polyline extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "vertices",
           value: vertexComponents,
-          sourceInformation
+          sourceDetails
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -627,34 +633,41 @@ export default class Polyline extends GraphicalComponent {
 
   }
 
-  async finalizePolylinePosition() {
+  async finalizePolylinePosition({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     // trigger a movePolyline 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
     return await this.actions.movePolyline({
       pointCoords: await this.stateValues.numericalVertices,
-      transient: false
+      transient: false,
+      actionId, sourceInformation, skipRendererUpdate
     });
   }
 
 
-  async polylineClicked({ actionId }) {
+  async polylineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnPolyline({ actionId }) {
+  async mouseDownOnPolyline({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "down",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
