@@ -1758,7 +1758,7 @@ export default class Answer extends InlineComponent {
   }
 
 
-  async submitAnswer({ actionId }) {
+  async submitAnswer({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
     if (numberOfAttemptsLeft < 1) {
@@ -1897,6 +1897,8 @@ export default class Answer extends InlineComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions: instructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate: true,
       event: {
         verb: "submitted",
         object: {
@@ -1915,6 +1917,9 @@ export default class Answer extends InlineComponent {
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
 
 

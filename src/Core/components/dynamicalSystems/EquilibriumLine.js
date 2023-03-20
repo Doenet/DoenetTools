@@ -60,7 +60,7 @@ export default class EquilibriumLine extends Line {
 
   };
 
-  async switchLine({ actionId }) {
+  async switchLine({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -70,6 +70,8 @@ export default class EquilibriumLine extends Line {
           value: !this.stateValues.stable,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

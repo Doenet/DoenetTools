@@ -531,7 +531,7 @@ export default class Core {
       }
 
 
-      await this.processStateVariableTriggers();
+      await this.processStateVariableTriggers(true);
 
     } else {
       if (parent === undefined) {
@@ -589,7 +589,7 @@ export default class Core {
         });
       }
 
-      await this.processStateVariableTriggers();
+      await this.processStateVariableTriggers(true);
 
     }
 
@@ -903,11 +903,13 @@ export default class Core {
     return deletedComponentNames;
   }
 
-  async processStateVariableTriggers() {
+  async processStateVariableTriggers(updateRenderersIfTriggered = false) {
 
     // TODO: can we make this more efficient by only checking components that changed?
     // componentsToUpdateRenderers is close, but it includes only rendered components
     // and we could have components with triggers that are not rendered
+
+    let triggeredAction = false;
 
     for (let componentName in this.stateVariableChangeTriggers) {
       let component = this._components[componentName];
@@ -926,13 +928,19 @@ export default class Core {
               actionName: triggerInstructions.action,
               args: {
                 stateValues: { [stateVariable]: value },
-                previousValues: { [stateVariable]: previousValue }
-              }
+                previousValues: { [stateVariable]: previousValue },
+                skipRendererUpdate: true,
+              },
             })
+            triggeredAction = true;
           }
         }
 
       }
+    }
+
+    if (triggeredAction && updateRenderersIfTriggered) {
+      this.updateAllChangedRenderers();
     }
 
   }
@@ -8239,7 +8247,7 @@ export default class Core {
     }
   }
 
-  async triggerChainedActions({ componentName, triggeringAction }) {
+  async triggerChainedActions({ componentName, triggeringAction, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
       await this.checkForActionChaining({
@@ -8257,8 +8265,19 @@ export default class Core {
 
     if (this.actionsChangedToActions[id]) {
       for (let chainedActionInstructions of this.actionsChangedToActions[id]) {
+        chainedActionInstructions = { ...chainedActionInstructions };
+        if (chainedActionInstructions.args) {
+          chainedActionInstructions.args = { ...chainedActionInstructions.args }
+        } else {
+          chainedActionInstructions.args = {};
+        }
+        chainedActionInstructions.args.skipRendererUpdate = true;
         await this.performAction(chainedActionInstructions);
       }
+    }
+
+    if (!skipRendererUpdate) {
+      await this.updateAllChangedRenderers(sourceInformation, actionId);
     }
   }
 
@@ -8282,8 +8301,8 @@ export default class Core {
           componentSourceInformation = sourceInformation[instruction.componentName] = {};
         }
 
-        if (instruction.sourceInformation) {
-          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        if (instruction.sourceDetails) {
+          Object.assign(componentSourceInformation, instruction.sourceDetails);
         }
       }
 
@@ -8337,13 +8356,13 @@ export default class Core {
 
   async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
     doNotSave = false, canSkipUpdatingRenderer = false,
+    skipRendererUpdate = false, sourceInformation = {},
     suppressToast = false  // temporary
   }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
       if (!canSkipUpdatingRenderer) {
-        let sourceInformation = {};
 
         for (let instruction of updateInstructions) {
 
@@ -8352,8 +8371,8 @@ export default class Core {
             componentSourceInformation = sourceInformation[instruction.componentName] = {};
           }
 
-          if (instruction.sourceInformation) {
-            Object.assign(componentSourceInformation, instruction.sourceInformation);
+          if (instruction.sourceDetails) {
+            Object.assign(componentSourceInformation, instruction.sourceDetails);
           }
         }
 
@@ -8370,7 +8389,6 @@ export default class Core {
 
     let newStateVariableValues = {};
     let newStateVariableValuesProcessed = [];
-    let sourceInformation = {};
     let workspace = {};
     let recordItemSubmissions = [];
 
@@ -8382,8 +8400,8 @@ export default class Core {
           componentSourceInformation = sourceInformation[instruction.componentName] = {};
         }
 
-        if (instruction.sourceInformation) {
-          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        if (instruction.sourceDetails) {
+          Object.assign(componentSourceInformation, instruction.sourceDetails);
         }
       }
 
@@ -8449,36 +8467,11 @@ export default class Core {
       updateInstructions.forEach(comp => { if (comp.componentName) { this.updateInfo.componentsToUpdateRenderers.add(comp.componentName) } });
     }
 
-    let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
-    this.updateInfo.componentsToUpdateRenderers.clear();
-
-    await this.updateRendererInstructions({
-      componentNamesToUpdate,
-      sourceOfUpdate: { sourceInformation, local: true },
-      actionId,
-    });
-
-
-
-    // updating renderer instructions could trigger more composite updates
-    // (presumably from deriving child results)
-    // if so, make replacement changes and update renderer instructions again
-    // TODO: should we check for child results earlier so we don't have to check them
-    // when updating renderer instructions?
-    if (this.updateInfo.compositesToUpdateReplacements.size > 0) {
-      await this.replacementChangesFromCompositesToUpdate();
-
-      let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
-      this.updateInfo.componentsToUpdateRenderers.clear();
-
-      await this.updateRendererInstructions({
-        componentNamesToUpdate,
-        sourceOfUpdate: { sourceInformation, local: true },
-        actionId,
-      });
-    }
-
     await this.processStateVariableTriggers();
+
+    if (!skipRendererUpdate) {
+      await this.updateAllChangedRenderers(sourceInformation, actionId);
+    }
 
     // TODO: when should we actually warn of unmatchedChildren
     // It shouldn't be just on update, but also on initial construction!
@@ -8599,6 +8592,37 @@ export default class Core {
     }
 
 
+  }
+
+  async updateAllChangedRenderers(sourceInformation = {}, actionId) {
+
+    let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+    this.updateInfo.componentsToUpdateRenderers.clear();
+
+    await this.updateRendererInstructions({
+      componentNamesToUpdate,
+      sourceOfUpdate: { sourceInformation, local: true },
+      actionId,
+    });
+
+
+    // updating renderer instructions could trigger more composite updates
+    // (presumably from deriving child results)
+    // if so, make replacement changes and update renderer instructions again
+    // TODO: should we check for child results earlier so we don't have to check them
+    // when updating renderer instructions?
+    if (this.updateInfo.compositesToUpdateReplacements.size > 0) {
+      await this.replacementChangesFromCompositesToUpdate();
+
+      let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+      this.updateInfo.componentsToUpdateRenderers.clear();
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate,
+        sourceOfUpdate: { sourceInformation, local: true },
+        actionId,
+      });
+    }
   }
 
   requestRecordEvent(event) {
@@ -9173,7 +9197,7 @@ export default class Core {
     inverseDefinitionArgs.stateValues = component.stateValues;
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
     inverseDefinitionArgs.shadowedVariable = instruction.shadowedVariable;
-    inverseDefinitionArgs.sourceInformation = instruction.sourceInformation;
+    inverseDefinitionArgs.sourceDetails = instruction.sourceDetails;
 
 
     let stateVariableForWorkspace = stateVariable;

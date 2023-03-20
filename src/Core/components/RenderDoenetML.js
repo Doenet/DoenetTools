@@ -304,7 +304,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
   }
 
-  async updateComponents({ actionId }) {
+  async updateComponents({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
@@ -315,6 +315,8 @@ export default class RenderDoenetML extends CompositeComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       // event: {
       //   verb: "selected",
       //   object: {

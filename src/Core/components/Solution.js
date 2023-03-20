@@ -219,7 +219,7 @@ export default class Solution extends BlockComponent {
   }
 
 
-  async revealSolution({ actionId }) {
+  async revealSolution({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let { allowView, message, scoredComponent } = await this.coreFunctions.recordSolutionView();
 
@@ -256,14 +256,17 @@ export default class Solution extends BlockComponent {
     }
 
     return await this.coreFunctions.performUpdate({
-      updateInstructions, actionId,
+      updateInstructions,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event,
       overrideReadOnly: true,
     })
 
   }
 
-  async closeSolution({ actionId }) {
+  async closeSolution({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -274,6 +277,8 @@ export default class Solution extends BlockComponent {
       }],
       overrideReadOnly: true,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "closed",
         object: {

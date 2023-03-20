@@ -60,7 +60,7 @@ export default class EquilibriumCurve extends Curve {
 
   };
 
-  async switchCurve({ actionId }) {
+  async switchCurve({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -70,6 +70,8 @@ export default class EquilibriumCurve extends Curve {
           value: !this.stateValues.stable,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

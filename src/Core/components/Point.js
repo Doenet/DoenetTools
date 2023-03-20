@@ -1183,7 +1183,9 @@ export default class Point extends GraphicalComponent {
     stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
   }];
 
-  async movePoint({ x, y, z, transient, actionId }) {
+  async movePoint({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -1204,6 +1206,8 @@ export default class Point extends GraphicalComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1214,6 +1218,8 @@ export default class Point extends GraphicalComponent {
           value: components,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -1234,11 +1240,14 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  async pointClicked({ actionId }) {
+  async pointClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
@@ -1246,11 +1255,14 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  async mouseDownOnPoint({ actionId }) {
+  async mouseDownOnPoint({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "down",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

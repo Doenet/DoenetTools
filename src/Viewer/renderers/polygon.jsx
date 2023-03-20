@@ -217,7 +217,7 @@ export default React.memo(function Polygon(props) {
             pointCoords: pointCoords.current,
             transient: true,
             skippable: true,
-            sourceInformation: { vertex: i }
+            sourceDetails: { vertex: i }
           }
         })
         polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
@@ -240,7 +240,7 @@ export default React.memo(function Polygon(props) {
           action: actions.movePolygon,
           args: {
             pointCoords: pointCoords.current,
-            sourceInformation: { vertex: i }
+            sourceDetails: { vertex: i }
           }
         })
 

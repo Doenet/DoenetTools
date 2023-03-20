@@ -237,7 +237,7 @@ export default React.memo(function Vector(props) {
         }
 
         if (i === 0 || i === 1) {
-          instructions.sourceInformation = { vertex: i };
+          instructions.sourceDetails = { vertex: i };
         }
 
         callAction({

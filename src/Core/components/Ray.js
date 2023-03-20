@@ -1355,7 +1355,9 @@ export default class Ray extends GraphicalComponent {
   }
 
 
-  async moveRay({ endpointcoords, throughcoords, transient, skippable, sourceInformation, actionId }) {
+  async moveRay({ endpointcoords, throughcoords, transient, skippable, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     let updateInstructions = [];
 
@@ -1381,7 +1383,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "direction",
           value: direction.map(x => me.fromAst(x)),
-          sourceInformation
         })
 
       } else {
@@ -1391,7 +1392,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "endpoint",
           value: endpointcoords.map(x => me.fromAst(x)),
-          sourceInformation
         })
       }
 
@@ -1407,7 +1407,6 @@ export default class Ray extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "direction",
             value: direction.map(x => me.fromAst(x)),
-            sourceInformation
           })
         }
       }
@@ -1422,7 +1421,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "through",
           value: throughcoords.map(x => me.fromAst(x)),
-          sourceInformation
         })
       } else {
         // if not based on through
@@ -1437,7 +1435,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "direction",
           value: direction.map(x => me.fromAst(x)),
-          sourceInformation
         })
       }
 
@@ -1454,7 +1451,6 @@ export default class Ray extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "direction",
             value: direction.map(x => me.fromAst(x)),
-            sourceInformation
           })
         }
       }
@@ -1467,11 +1463,15 @@ export default class Ray extends GraphicalComponent {
         transient,
         skippable,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -1488,22 +1488,28 @@ export default class Ray extends GraphicalComponent {
 
   }
 
-  async rayClicked({ actionId }) {
+  async rayClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnRay({ actionId }) {
+  async mouseDownOnRay({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "down",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
