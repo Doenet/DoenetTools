@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { BoardContext } from './graph';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
 

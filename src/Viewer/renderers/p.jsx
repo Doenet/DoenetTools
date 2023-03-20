@@ -1,5 +1,5 @@
 import React from 'react';
-import useDoenetRenderer from './useDoenetRenderer';
+import useDoenetRenderer from '../useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import { useEffect } from 'react';
 

@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
-import { rendererState } from './useDoenetRenderer';
+import { rendererState } from '../useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 

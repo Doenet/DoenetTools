@@ -4,7 +4,7 @@ import { useToast, toastType } from '@Toast';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-import { rendererState } from './renderers/useDoenetRenderer';
+import { rendererState } from './useDoenetRenderer';
 import { atom, atomFamily, useRecoilCallback, useRecoilValue } from 'recoil';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
@@ -415,7 +415,7 @@ export default function PageViewer(props) {
     // console.log(">>>core.rendererTypesInDocument",core.rendererTypesInDocument);  
     for (let rendererClassName of coreInfo.current.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
-      renderPromises.push(import(`./renderers/${rendererClassName}.js`));
+      renderPromises.push(import(`./renderers/${rendererClassName}.jsx`));
     }
 
     let documentComponentInstructions = coreInfo.current.documentToRender;
@@ -813,7 +813,7 @@ export default function PageViewer(props) {
     }
     // console.log(`send message to create core ${pageNumber}`)
 
-    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : '/viewer/core.js', { type: 'module' });
+    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : './src/Viewer/core.js', { type: 'module' });
 
     coreWorker.current.postMessage({
       messageType: "createCore",

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 // import me from 'math-expressions';
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 
 export default React.memo(function PaginatorControls(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props,false);

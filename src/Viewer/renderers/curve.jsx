@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext } from './graph';
 
 

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 import {
@@ -19,7 +19,7 @@ import {
 } from '../../Tools/_framework/Footers/MathInputSelector';
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { rendererState } from './useDoenetRenderer';
+import { rendererState } from '../useDoenetRenderer';
 import './mathInput.css';
 
 // Moved most of checkWorkStyle styling into Button

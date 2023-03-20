@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
 import { getURLFromRef, scrollableContainerAtom } from '../PageViewer';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import styled from 'styled-components';
 
 // const LinkStyling = styled.a`

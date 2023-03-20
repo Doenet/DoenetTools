@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb as lightOff } from '@fortawesome/free-solid-svg-icons';
 import { faLightbulb as lightOn } from '@fortawesome/free-regular-svg-icons';

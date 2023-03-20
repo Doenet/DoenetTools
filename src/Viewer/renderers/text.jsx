@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { BoardContext } from './graph';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
 
 export default React.memo(function Text(props) {
