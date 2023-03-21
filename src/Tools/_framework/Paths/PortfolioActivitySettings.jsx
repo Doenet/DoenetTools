@@ -173,7 +173,7 @@ export function PortfolioActivitySettings(){
         uploadData.append('file',image);
         uploadData.append('doenetId',data.doenetId);
             axios.post('/api/upload.php',uploadData).then(({data})=>{
-        console.log("RESPONSE data>",data)
+        // console.log("RESPONSE data>",data)
 
         //uploads are finished clear it out
         numberOfFilesUploading.current = 0;

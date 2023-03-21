@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import React from 'react';
 import { redirect, Form, useOutletContext, useLoaderData } from 'react-router-dom';
 import styled from 'styled-components';
@@ -7,7 +7,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 export async function action() {
   //Create a portfilio activity and redirect to the editor for it
   let response = await fetch("/api/createPortfolioActivity.php");
-console.log("response",response)
+
       if (response.ok) {
         let { doenetId, pageDoenetId } = await response.json();
         return redirect(`/portfolio?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
