@@ -72,7 +72,7 @@ const PrivateActivitiesSection = styled.div`
   flex-direction: column;
   padding: 10px 10px 10px 10px;
   margin: 0px;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   background: var(--mainGray);
@@ -158,7 +158,8 @@ function Card({ doenetId,imagePath,label, pageDoenetId }) {
 
 const PortfolioGrid = styled.div`
   display: grid;
-  grid-template-rows: 80px min-content min-content;
+  grid-template-rows: 80px min-content auto;
+  /* grid-template-rows: 80px min-content min-content; */
   height: 100vh;
 `
 
