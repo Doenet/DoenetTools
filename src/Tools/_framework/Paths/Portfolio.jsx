@@ -10,7 +10,7 @@ export async function action() {
 
       if (response.ok) {
         let { doenetId, pageDoenetId } = await response.json();
-        return redirect(`/portfolio?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
+        return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
         // return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
       }else{
         throw Error(response.message)
@@ -78,7 +78,7 @@ const PrivateActivitiesSection = styled.div`
   background: var(--mainGray);
 `
 
-function Card({ doenetId,imagePath,label }) {
+function Card({ doenetId,imagePath,label, pageDoenetId }) {
   const cardStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -139,7 +139,8 @@ function Card({ doenetId,imagePath,label }) {
     // maxWidth: '240px',
   }
   
-  const activityLink = `/portfolio/${doenetId}/editor`;
+  // const activityLink = `/portfolio/${doenetId}/editor`;
+  const activityLink = `/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
   return (
     <a style={linkStyle} href={activityLink} target="_blank">

@@ -24,12 +24,15 @@ $privateActivities = [];
 //Assume we are updating the activity and need the current settings
 if ($success) {
     $sql = "
-    SELECT doenetId,
-    imagePath,
-    label,
-    isPublic
-    FROM course_content
-    WHERE courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    SELECT cc.doenetId,
+    cc.imagePath,
+    cc.label,
+    cc.isPublic,
+    p.doenetId AS 'pageDoenetId'
+    FROM course_content AS cc
+    LEFT JOIN pages AS p
+    ON p.containingDoenetId = cc.doenetId
+    WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
     ";
     $result = $conn->query($sql);
 
@@ -40,6 +43,7 @@ if ($success) {
                 'imagePath' => $row['imagePath'],
                 'label' => $row['label'],
                 'public' => $row['isPublic'],
+                'pageDoenetId' => $row['pageDoenetId'],
             ];
             if ($row['isPublic'] == '1') {
                 array_push($publicActivities, $activity);

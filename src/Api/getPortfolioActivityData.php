@@ -20,6 +20,19 @@ if ($userId == '') {
     $message = 'Error: You need to sign in';
 }
 
+$sql = "
+SELECT doenetId
+FROM pages
+WHERE containingDoenetId = '$doenetId'
+";
+$result = $conn->query($sql);
+$pageDoenetId = '';
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $pageDoenetId = $row['doenetId'];
+}
+
 $activityData = [
     'doenetId' => $doenetId,
     'imagePath' => '/media/activity_default.jpg',
@@ -27,6 +40,7 @@ $activityData = [
     'learningOutcomes' => '',
     'public' => false, //default to private
     'isNew' => true,
+    'pageDoenetId' => $pageDoenetId,
 ];
 
 //Assume we are updating the activity and need the current settings
@@ -51,6 +65,7 @@ if ($success) {
             'learningOutcomes' => $row['learningOutcomes'],
             'public' => $row['isPublic'],
             'isNew' => false,
+            'pageDoenetId' => $pageDoenetId,
         ];
     } else {
         //It's a new activity or a hack

@@ -15,12 +15,16 @@ export async function action({ request, params }) {
   let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
     ...updates, doenetId:params.doenetId
   })
-  const portfolioCourseId = response.data.portfolioCourseId;
+  // const portfolioCourseId = response.data.portfolioCourseId;
 
       // if (response.ok) {
       //   // let { doenetId } = await response.json();
-
-        return redirect(`/portfolio/${portfolioCourseId}`) 
+      // if (updates._source == "_source")
+        return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
+        // return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
+// }else{
+//   return redirect(`/portfolio/${portfolioCourseId}`) 
+// }
       // }else{
       //   throw Error(response.message)
       // }
@@ -276,6 +280,9 @@ export function PortfolioActivitySettings(){
   </Slot3>
   </MainGrid>
   <input type="hidden" name="imagePath" value={imagePath}></input>
+  <input type="hidden" name="doenetId" value={data.doenetId}></input>
+  <input type="hidden" name="pageDoenetId" value={data.pageDoenetId}></input>
+  {/* <input type="hidden" name="_source" value="portfolio activity settings"></input> */}
   </Form>
   </>
 }
