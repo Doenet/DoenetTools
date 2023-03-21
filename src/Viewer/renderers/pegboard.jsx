@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BASE_LAYER_OFFSET, BoardContext } from './graph';
 import me from 'math-expressions';
 
 export default React.memo(function Pegboard(props) {
@@ -28,7 +28,7 @@ export default React.memo(function Pegboard(props) {
     visible: !SVs.hidden,
     fixed: true,
     withlabel: false,
-    layer: 10 * SVs.layer,
+    layer: 10 * SVs.layer + BASE_LAYER_OFFSET,
     fillColor: "darkgray",
     strokeColor: "darkgray",
     size: 0.1,
@@ -38,7 +38,7 @@ export default React.memo(function Pegboard(props) {
   });
 
   jsxPointAttributes.current.visible = !SVs.hidden;
-  jsxPointAttributes.current.layer = 10 * SVs.layer;
+  jsxPointAttributes.current.layer = 10 * SVs.layer + BASE_LAYER_OFFSET;
 
   useEffect(() => {
     //On unmount
@@ -210,6 +210,21 @@ export default React.memo(function Pegboard(props) {
       let maxYind = me.math.round(Math.max(yind1, yind2) - 1);
 
       recalculatePegboard(minXind, maxXind, minYind, maxYind)
+
+      let firstPeg = pegboardJXG.current[0]?.[0];
+      if (firstPeg) {
+        let layer = 10 * SVs.layer + BASE_LAYER_OFFSET;
+        let layerChanged = firstPeg.visProp.layer !== layer;
+
+        if (layerChanged) {
+          for (let row of pegboardJXG.current) {
+            for (let peg of row) {
+              peg.setAttribute({ layer });
+
+            }
+          }
+        }
+      }
 
     }
   }

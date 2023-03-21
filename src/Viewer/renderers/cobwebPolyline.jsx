@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
 
 
@@ -51,7 +51,7 @@ export default React.memo(function CobwebPolyline(props) {
       visible: !SVs.hidden,
       withLabel: false,
       fixed: true,
-      layer: 10 * SVs.layer + 5,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: 'green',
       highlightStrokeColor: 'green',
       strokeWidth: 3,
@@ -66,7 +66,7 @@ export default React.memo(function CobwebPolyline(props) {
       visible: !SVs.hidden,
       withLabel: false,
       fixed: true,
-      layer: 10 * SVs.layer + 5,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: 'gray',
       highlightStrokeColor: 'gray',
       strokeWidth: 2,
@@ -86,13 +86,12 @@ export default React.memo(function CobwebPolyline(props) {
       }
     }
 
-    //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
-      layer: 10 * SVs.layer + 5,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: SVs.selectedStyle.lineColor,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
@@ -112,7 +111,7 @@ export default React.memo(function CobwebPolyline(props) {
       visible: !SVs.hidden && validCoords && SVs.draggable,
       withLabel: true,
       name: "A",
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
       fillColor: SVs.selectedStyle.markerColor,
       strokeColor: SVs.selectedStyle.markerColor,
       size: SVs.selectedStyle.markerSize,

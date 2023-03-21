@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { BoardContext } from './graph';
+import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
 
@@ -48,7 +48,7 @@ export default React.memo(function Text(props) {
     let jsxTextAttributes = {
       visible: !SVs.hidden,
       fixed,
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
       highlight: !fixed
     };
 
@@ -256,7 +256,7 @@ export default React.memo(function Text(props) {
         textJXG.current.visPropCalc["visible"] = false;
       }
 
-      let layer = 10 * SVs.layer + 9;
+      let layer = 10 * SVs.layer + TEXT_LAYER_OFFSET;
       let layerChanged = textJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
