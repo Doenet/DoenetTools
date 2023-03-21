@@ -23,7 +23,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     loader: siteLoader,
-    element: <SiteHeader />,
+    element: <RecoilRoot><SiteHeader /></RecoilRoot>,
     children: [
       {
         path: "/",
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
     path: "/portfolio/:doenetId/settings",
     loader: portfolioActivitySettingsLoader,
     action: portfolioActivitySettingsAction,
-    element: <PortfolioActivitySettings />,
+    element: <RecoilRoot><PortfolioActivitySettings /></RecoilRoot>,
   },
   {
     path: "*",
