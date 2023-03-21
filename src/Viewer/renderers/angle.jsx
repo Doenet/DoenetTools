@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BoardContext, LINE_LAYER_OFFSET } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
@@ -51,7 +51,7 @@ export default React.memo(function Angle(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,//SVs.draggable !== true,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       radius: SVs.numericalRadius,
       fillColor: SVs.selectedStyle.fillColor,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -135,6 +135,13 @@ export default React.memo(function Angle(props) {
       angleJXG.current.point3.coords.setCoordinates(JXG.COORDS_BY_USER, through[2]);
 
       angleJXG.current.setAttribute({ radius: SVs.numericalRadius, visible: !SVs.hidden });
+
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
+      let layerChanged = angleJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        angleJXG.current.setAttribute({ layer });
+      }
 
       if (angleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
         angleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
