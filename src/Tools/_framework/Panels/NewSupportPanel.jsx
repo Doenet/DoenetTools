@@ -1,11 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
+  useRecoilState,
    useRecoilValue,
 } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useNavigate } from 'react-router';
-import { searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 // import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
 const SupportWrapper = styled.div`
@@ -31,6 +32,10 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
   // console.log(">>>===SupportPanel")
   const navigate = useNavigate();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
+  //NEED THE ROOT PATH BEFORE THE ?
+  const recoilPageToolView = useRecoilValue(pageToolViewAtom);
+  /* const recoilTool = useRecoilValue(searchParamAtomFamily('source')); */
+  /* console.log("recoilPageToolView",recoilPageToolView?.page) */
   /* const courseId = useRecoilValue(courseIdAtom) */
 
   
@@ -54,7 +59,7 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
     return (
       <>
       <ControlsWrapper $hide={hide} aria-label="complementary controls" data-test="Support Panel Controls">
-        <Button value="Settings" onClick={()=>navigate(`/portfolio/${doenetId}/settings`)}/>
+        {recoilPageToolView?.page == 'portfolio' ? <Button value="Settings" onClick={()=>navigate(`/portfolio/${doenetId}/settings`)}/> : null }
         <Button value="Documentation" onClick={()=>window.open("/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q")}/>
       </ControlsWrapper>
     <SupportWrapper  $hide={hide} role="complementary" data-test="Support Panel">{children}</SupportWrapper>
