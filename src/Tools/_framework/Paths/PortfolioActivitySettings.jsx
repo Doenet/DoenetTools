@@ -5,6 +5,8 @@ import { Form } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useDropzone } from 'react-dropzone';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileImage } from '@fortawesome/free-solid-svg-icons';
 
 
 export async function action({ request, params }) {
@@ -108,6 +110,27 @@ function ImagePreview({defaultValue}){
     </CardTop>
 }
 
+const DropPad = styled.div`
+  border: 2px dashed #949494;
+  height: 144px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+`
+
+const DropText = styled.div`
+  color: #949494;
+  font-size: 24pt;
+`
+
+const DropIcon = styled.div`
+  color: #949494;
+  font-size: 30pt;
+`
+
 export function PortfolioActivitySettings(){
   let data = useLoaderData();
   const navigate = useNavigate();
@@ -204,43 +227,24 @@ export function PortfolioActivitySettings(){
       </tr>
     </thead>
     <tbody>
-    {/* <tr key="drop" {...getRootProps()}>
-            <input {...getInputProps()} />
-            {isDragActive ? (
-             <Td colSpan="2"> <p style={{height:"130px"}}>Drop the files here</p></Td>
-            ) : (
-              <><Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide>
-        <div>Upload will be resized</div>
-        <div>max width 238px, max height 122 px</div>
-        </Td>
-        <Td>
-          <ImagePreview defaultValue={data.imagePath}/>
-        </Td></>
-            )}
-          </tr> */}
-          <tr key="drop" {...getRootProps()} >
-            <Td colSpan={2}>
-            <input {...getInputProps()} />
-            {isDragActive ? <p>Drop here to upload</p> : <p>Preview of Image</p> }
-            </Td>
-          </tr>
-      {/* <tr>
-        <Td><SideBySide>Image <Button value="Upload" onClick={() => alert('upload')}/></SideBySide>
-        <div>Upload will be resized</div>
-        <div>max width 238px, max height 122 px</div>
-        </Td>
-        <Td>
-        <div key="drop" {...getRootProps()}>
+
+      <tr key="drop" {...getRootProps()} >
+        {isDragActive ? (<Td colSpan={2}>
         <input {...getInputProps()} />
-        {isDragActive ? (
-          <p style={{height: "124px"}}>Drop the files here</p>
-        ) : (
-              <ImagePreview defaultValue={imagePath}/>
-        )}
-        </div>
-        </Td>
-      </tr> */}
-          {/* <input name="imagePath" style={{width:"390px"}} type="text" placeholder='This will be an image preview' defaultValue={data.imagePath}/> */}
+          <DropPad>
+            <DropIcon>
+              <FontAwesomeIcon icon={faFileImage} />
+            </DropIcon>
+            <DropText>Drop Image Here</DropText>
+          </DropPad>
+          </Td> )
+          : 
+          (<><Td><input {...getInputProps()} /><SideBySide>Image <Button value="Upload" onClick={(e) => e.preventDefault()}/></SideBySide>
+          <div>Upload will be resized</div>
+          <div>max width 238px, max height 122 px</div></Td>
+          <Td><input {...getInputProps()} /><ImagePreview defaultValue={imagePath}/></Td></>)}
+      </tr>
+
       <tr>
         <Td>Activity Label</Td>
         <Td><input name="label" style={{width:"390px"}} type="text" placeholder='Activity 1' defaultValue={data.label}/></Td>
