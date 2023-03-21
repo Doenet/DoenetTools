@@ -18,6 +18,7 @@ import {loader as siteLoader, SiteHeader} from "../_framework/Paths/SiteHeader";
 import {loader as caroselLoader, Home} from "../_framework/Paths/Home";
 import {loader as portfolioActivitySettingsLoader, action as portfolioActivitySettingsAction, PortfolioActivitySettings} from "../_framework/Paths/PortfolioActivitySettings";
 import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "../_framework/Paths/Portfolio";
+import { loader as portfolioEditorMenuCapLoader } from "../_framework/MenuPanelCaps/PortfilioEditorInfoCap";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,22 @@ const router = createBrowserRouter([
     loader: portfolioActivitySettingsLoader,
     action: portfolioActivitySettingsAction,
     element: <RecoilRoot><PortfolioActivitySettings /></RecoilRoot>,
+  },
+  {
+    path: "/portfolioeditor",
+    loader: portfolioEditorMenuCapLoader,
+    // errorElement: <div>Error!</div>,
+    element: (<RecoilRoot>
+            <DarkmodeController>
+              <MathJaxContext
+                version={2}
+                config={mathjaxConfig}
+                onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+              >
+                <ToolRoot />
+              </MathJaxContext>
+            </DarkmodeController>
+    </RecoilRoot>),
   },
   {
     path: "*",

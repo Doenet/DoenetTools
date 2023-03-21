@@ -59,7 +59,7 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
     return (
       <>
       <ControlsWrapper $hide={hide} aria-label="complementary controls" data-test="Support Panel Controls">
-        {recoilPageToolView?.page == 'portfolio' ? <Button value="Settings" onClick={()=>navigate(`/portfolio/${doenetId}/settings`)}/> : null }
+        {recoilPageToolView?.page == 'portfolioeditor' ? <Button value="Settings" onClick={()=>navigate(`/portfolio/${doenetId}/settings`)}/> : null }
         <Button value="Documentation" onClick={()=>window.open("/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q")}/>
       </ControlsWrapper>
     <SupportWrapper  $hide={hide} role="complementary" data-test="Support Panel">{children}</SupportWrapper>

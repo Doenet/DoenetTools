@@ -493,7 +493,7 @@ let navigationObj = {
       hasNoMenuPanel: true,
     }
   },
-  portfolio: {
+  portfolioeditor: {
     editor: {
       //singleFile
       pageName: 'PortfolioEditor',
