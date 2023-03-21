@@ -813,7 +813,9 @@ export default function PageViewer(props) {
     }
     // console.log(`send message to create core ${pageNumber}`)
 
-    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : './src/Viewer/core.js', { type: 'module' });
+    const bundledURl = new URL('./core.js', import.meta.url);
+    const unbunledURL = new URL('../Core/CoreWorker.js', import.meta.url);
+    coreWorker.current = new Worker(props.unbundledCore ? unbunledURL : bundledURl, { type: 'module' });
 
     coreWorker.current.postMessage({
       messageType: "createCore",
@@ -1084,8 +1086,8 @@ export async function renderersloadComponent(promises, rendererClassNames) {
       let module = await promise;
       rendererClasses[rendererClassNames[index]] = module.default;
     } catch (error) {
-      console.log(error)
-      throw Error(`Error: loading ${rendererClassNames[index]} failed.`)
+      console.log('here:', error)
+      throw Error(`loading ${rendererClassNames[index]} failed.`)
     }
 
   }
