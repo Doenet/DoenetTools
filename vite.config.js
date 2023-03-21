@@ -37,7 +37,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: './viteBuild',
+    outDir: './dist_local',
     rollupOptions: {
       plugins: [nodePolyfills()],
       // input: ['index.html', 'src/Core/Core.js'],
