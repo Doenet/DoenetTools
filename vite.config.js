@@ -1,29 +1,33 @@
-import { defineConfig } from 'vite';
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import react from '@vitejs/plugin-react';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   appType: 'mpa',
   plugins: [react()],
-  // define: {
-  //   // Some libraries use the global object, even though it doesn't exist in the browser.
-  //   // Alternatively, we could add `<script>window.global = window;</script>` to index.html.
-  //   // https://github.com/vitejs/vite/discussions/5912
-  //   global: {},
-  // },
   resolve: {
     alias: [
-      { find: '@Toast', replacement: './src/Tools/_framework/Toast' },
-      { find: '@Tool', replacement: './src/Tools/_framework/Tool' },
+      { find: 'csv-parse', replacement: 'csv-parse/browser/esm' },
+      { find: '@Toast', replacement: '/src/Tools/_framework/Toast' },
+      { find: '@Tool', replacement: '/src/Tools/_framework/Tool' },
       { find: 'solid-svg', replacement: '@fortawesome/free-solid-svg-icons' },
     ],
   },
   optimizeDeps: {
-    esbuildOptions: {
-      // Node.js global to browser globalThis
-      define: {
-        global: 'globalThis',
-      },
+    // Node.js global to browser globalThis
+    define: {
+      global: 'globalThis',
     },
+    // Enable esbuild polyfill plugins
+    plugins: [
+      NodeGlobalsPolyfillPlugin({
+        process: true,
+        buffer: true,
+      }),
+      NodeModulesPolyfillPlugin(),
+    ],
   },
   server: {
     proxy: {
@@ -35,11 +39,12 @@ export default defineConfig({
   build: {
     outDir: './viteBuild',
     rollupOptions: {
-      input: ['index.html', 'src/Core/Core.js'],
-      output: [
-        {},
-        { file: './src/Viewer/core.js', format: 'iife', name: 'Core' },
-      ],
+      plugins: [nodePolyfills()],
+      // input: ['index.html', 'src/Core/Core.js'],
+      // output: [
+      //   {},
+      //   { file: './src/Viewer/core.js', format: 'iife', name: 'Core' },
+      // ],
     },
     commonjsOptions: {
       transformMixedEsModules: true,
