@@ -105,6 +105,27 @@ if ($success) {
         ";
 
     $conn->query($sql);
+
+    $sql = "
+          INSERT INTO pages (courseId,containingDoenetId,doenetId) 
+            VALUES('$portfolioCourseId','$doenetId','$pageDoenetId');
+          ";
+    $conn->query($sql);
+    //Create blank file for page
+    $filename = "../media/byPageId/$pageDoenetId.doenet";
+    $dirname = dirname($filename);
+    if (!is_dir($dirname)) {
+        mkdir($dirname, 0755, true);
+    }
+
+    $newfile = fopen($filename, 'w');
+    if ($newfile === false) {
+        $success = false;
+        $message = 'Unable to open file!';
+    } else {
+        // don't write anything to file so that it is a blank file
+        fclose($newfile);
+    }
 }
 
 $response_arr = [
