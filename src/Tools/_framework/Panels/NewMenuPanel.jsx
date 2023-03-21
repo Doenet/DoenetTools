@@ -272,6 +272,7 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
     DriveInfoCap:lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
     DataCap:lazy(() => import('../MenuPanelCaps/DataCap')),
     EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
+    PortfilioEditorInfoCap:lazy(() => import('../MenuPanelCaps/PortfilioEditorInfoCap')),
     AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
     DraftActivityCap:lazy(() => import('../MenuPanelCaps/DraftActivityCap')),
     ContentInfoCap:lazy(() => import('../MenuPanelCaps/ContentInfoCap')),

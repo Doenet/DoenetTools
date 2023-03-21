@@ -62,7 +62,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    errorElement: <div>Error!</div>,
+    // errorElement: <div>Error!</div>,
     element: (<RecoilRoot>
             <DarkmodeController>
               <MathJaxContext
