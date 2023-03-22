@@ -21,15 +21,15 @@ RUN apt-get update && \
     docbook2x
 
 RUN wget https://github.com/git/git/archive/refs/tags/v2.40.0.tar.gz \
-    && tar -zxf v2.40.0.tar.gz \
-    && cd git-2.40.0
+    && tar -zxf v2.40.0.tar.gz 
 
+WORKDIR /git-2.40.0
 RUN make configure
 RUN ./configure --prefix=/usr
-RUN make NO_GETTEXT=YesPlease all doc info
+RUN make all doc info
 RUN make install install-doc install-html install-info 
-RUN cd ..
 
+WORKDIR /
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
 RUN echo \
