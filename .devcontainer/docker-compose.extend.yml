@@ -18,7 +18,7 @@ services:
     # build:
     #   context: .
     #   dockerfile: .devcontainer/Dockerfile
-    image: lyanthropos/doenet_dev:2.0
+    image: lyanthropos/doenet_dev
     ports:
       - 80:80
     volumes:
