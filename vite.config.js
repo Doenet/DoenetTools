@@ -41,11 +41,6 @@ export default defineConfig({
     outDir: './dist_local',
     rollupOptions: {
       plugins: [nodePolyfills()],
-      // input: ['index.html', 'src/Core/Core.js'],
-      // output: [
-      //   {},
-      //   { file: './src/Viewer/core.js', format: 'iife', name: 'Core' },
-      // ],
     },
     commonjsOptions: {
       transformMixedEsModules: true,
