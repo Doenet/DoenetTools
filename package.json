@@ -10,7 +10,7 @@
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
     "build:clean": "snowpack build --clean --reload --config snowpack.deploy.config.js",
     "build:core": "rollup -c",
-    "buildx:dev": "docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 -f doenet_docker/snowpack/Dockerfile -t lyanthropos/doenet_dev:latest -t lyanthropos/doenet_dev:2.0 . --push",
+    "buildx:dev": "docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 -f doenet_docker/dev/Dockerfile -t lyanthropos/doenet_dev:latest -t lyanthropos/doenet_dev:2.1 . --push",
     "buildx:php": "docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 -f doenet_docker/php/Dockerfile -t lyanthropos/doenet_php:dev . --push",
     "buildx:apache": "docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 -f doenet_docker/apache/Dockerfile -t lyanthropos/doenet_apache:dev . --push",
     "buildx:mysql": "docker buildx build --platform linux/amd64 -f doenet_docker/mysql/Dockerfile -t lyanthropos/doenet_mysql:dev . --push",
