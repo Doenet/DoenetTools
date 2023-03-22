@@ -98,7 +98,7 @@ $response_arr = array(
 );
 
 // set response code - 200 OK
-http_response_code(200);
+http_response_code($response_arr['success'] ? 200 : 400);
 
 // make it json format
 echo json_encode($response_arr);
