@@ -7,6 +7,14 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   appType: 'mpa',
   plugins: [react()],
+  assetsInclude: ['**/*.doenet'],
+  server: {
+    proxy: {
+      '/api': 'http://apache',
+      '/cyapi': 'http://apache',
+      '/media': 'http://apache',
+    },
+  },
   resolve: {
     alias: [
       { find: 'csv-parse', replacement: 'csv-parse/browser/esm' },
@@ -28,13 +36,6 @@ export default defineConfig({
       }),
       NodeModulesPolyfillPlugin(),
     ],
-  },
-  server: {
-    proxy: {
-      '/api': 'http://apache',
-      '/cyapi': 'http://apache',
-      '/media': 'http://apache',
-    },
   },
   build: {
     outDir: './dist_local',
