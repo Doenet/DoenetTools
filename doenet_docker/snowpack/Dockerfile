@@ -1,4 +1,4 @@
-FROM node:19.7
+FROM node:19.8-bullseye
 RUN apt-get update && \
     apt-get -y install \
     apt-transport-https \
@@ -22,7 +22,7 @@ RUN rm -rf /var/lib/apt/lists/* &&\
 
 RUN mkdir -p /home/node/workspace/node_modules && chown -R node:node /home/node/workspace
 WORKDIR /home/node/workspace
-COPY --chown=node:node package*.json snowpack.config.js ./
+COPY --chown=node:node package*.json vite.config.js ./
 USER node
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "dev"]
