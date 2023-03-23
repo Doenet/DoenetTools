@@ -1,4 +1,7 @@
 FROM node:19.8-bullseye
+
+RUN echo "deb http://deb.debian.org/debian bullseye-backports main" >/etc/apt/sources.list.d/bullseye-backports.list
+
 RUN apt-get update && \
     apt-get -y install \
     # for docker from source
@@ -7,27 +10,8 @@ RUN apt-get update && \
     curl \
     gnupg \
     lsb-release \
-    # for git from source
-    make \
-    libssl-dev \
-    libghc-zlib-dev \
-    libcurl4-gnutls-dev \
-    libexpat1-dev \
-    gettext \
-    unzip \
-    install-info \
-    asciidoc \
-    xmlto \
-    docbook2x
-
-RUN wget https://github.com/git/git/archive/refs/tags/v2.40.0.tar.gz \
-    && tar -zxf v2.40.0.tar.gz 
-
-WORKDIR /git-2.40.0
-RUN make configure
-RUN ./configure --prefix=/usr
-RUN make all doc info
-RUN make install install-doc install-html install-info 
+    #update git to support ssh signing
+    git/bullseye-backports
 
 WORKDIR /
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
