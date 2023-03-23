@@ -1,233 +1,125 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { useLoaderData, useOutletContext } from 'react-router';
+import React from 'react';
+import { useLoaderData, useNavigate, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-// import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-// import RouterLogo from '../RouterLogo';
+import { Link } from 'react-router-dom';
 
-export async function loader(){
+export async function loader({params}){
   //Check if signedIn
   const profileInfo = await checkIfUserClearedOut();
   let signedIn = true;
   if (profileInfo.cookieRemoved){
     signedIn = false;
   }
-  // const response = await fetch('/api/getHPCarouselData.php');
-  // const data = await response.json();
+  const response = await fetch(`/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`);
+  const data = await response.json();
+
+  const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
+  const doenetML = await doenetMLResponse.text();
+
   // return data;
-  return {doenetML:"<graph />",signedIn}
+  return {
+    doenetML,
+    signedIn,
+    label:data.label, 
+    fullName: data.firstName + ' ' + data.lastName,
+    avatarInitials: data.firstName.charAt(0) + data.lastName.charAt(0),
+    courseId:data.courseId,
+    doenetId:params.doenetId,
+    pageDoenetId:data.pageDoenetId,
+  }
 }
 
-const HomeIntroVideo = lazy(() => import('./HomeIntroVideo'));
-
-const SectionText = styled.div`
-  text-align: center;
-  max-width: 800px;
-  display: inline-block;
-  margin-left:3em;
-  margin-right:3em;`;
-
-const Footer = styled.div`
-  background-color: var(--mainGray);
-  color: var(--canvastext);
-  font-size: 14px;
-  padding: 20px 40px;
-  text-align: center;
-`;
-
-const LinkStyling = styled.a`
-  color: var(--mainBlue);
-  border-radius: 5px;
-  &: focus {
-    outline: 2px solid var(--mainBlue);
-  }
-`;
-
-const H1responsive = styled.h1`
-  line-height: 0.1em;
-  @media (max-width: 800px) {
-  font-size: 1.1em;
-  }
-`
-
-const H4responsive = styled.h4`
-  line-height: 0.1em;
-  @media (max-width: 800px) {
-  font-size: .6em;
-  }
-`
-
-const CarouselSection = styled.div`
-      display: flex;
-      flex-direction: column;
-      padding: 60px 10px 60px 10px;
-      margin: 0px;
-      row-gap: 45px;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: var(--mainGray);
-      height: 300px;
-`
-
-const CreateContentSection = styled.div`
-  display: flex;
-  column-gap: 20px;
-  justify-content: center;
-  align-items: center;
-  height: 500px;
-  background: #0e1111;
-  @media (max-width: 1024px) {
-        /* height: 300px; */
-        flex-direction: column;
-        row-gap: 20px;
-        height: 600px;
-      }
-`
-
-let doenetML = `
-<example>
-<setup>
-<number name="num_lines">2</number>
-<math name="left0">x^2+4x-3</math>
-<math name="right0">2x^2+4x-7</math>
-<math name="left1">x^2-3</math>
-<math name="right1">2x^2-7</math>
-</setup>
-
-<p>Simplify the equation <m>$left0 = $right0</m>, explaining each step in the box at the right.</p>
-
-
-
-<map name="map">
-<template newNamespace>
-<setup>
-  <conditionalContent assignNames="(left_prefill right_prefill text_prefill)">
-    <case condition="$i=1">$(../left0) $(../right0) <text>original expression</text></case>
-    <case condition="$i=2">$(../left1) $(../right1) <text>subtracted 4x from both sides</text></case>
-    <else>$(../map[$i-1]/left) $(../map[$i-1]/right) <text></text></else>
-  </conditionalContent>
-</setup>
-
-<sideBySide widths="50% 40% 10%">
-  <div>
-    <mathInput name="left" prefill="$left_prefill"/>
-    <m>=</m> <mathInput name="right" prefill="$right_prefill"/>
-  </div>
-  <div><textinput width="250px" height="35px" expanded prefill="$text_prefill" /></div>
-  <div>
-    <updateValue target="../num_lines" newValue="$(../num_lines)+1" 
-         type="number" hide="$(../num_lines) > $i">
-      <label>+</label>
-    </updateValue><nbsp/>
-    <updateValue target="../num_lines" newValue="$(../num_lines)-1" 
-         type="number" hide="$(../num_lines) > $i" disabled="$i=1">
-      <label>-</label>
-    </updateValue>
-  </div>
-</sideBySide>
-</template>
-<sources alias="v" indexAlias="i"><sequence from="1" to="$num_lines" /></sources>
-</map>
-
-
-
-<hint>
-<title>Hint on showing simplification steps</title>
-<p>To perform a simplification step, click the <c>+</c> button, which will copy your work to a new line. Modify the expression and explain the step in the box to the right.  You can remove a line by clicking the <c>-</c> button.  Your work will be hand-graded after the due date.</p>
-</hint>
-  
-</example>
-`
-function Heading(props) {
-  return <div style={{
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100px',
-  }}>
-    <h1 style={{
-      lineHeight: '0.1em',
-    }}>{props.heading}</h1>
-    <h4 style={{
-      lineHeight: '0.1em',
-    }}> {props.subheading} </h4>
-  </div>
-}
-
-const SignInButtonContainer = styled.div`
-  margin: auto 10px auto 0px;
+const PageContainer = styled.div`
+  display: grid;
+  grid-template-rows: 100px auto;
+  height: 100%;
+  width: 100%;
+  /* background: var(--solidLightBlue); */
 `
 
 const Header = styled.header`
-  background-color: #fff;
-  color: #000;
-  height: 40px;
+  grid-row: 1 / 2;
+  display: flex;
   position: fixed;
-  top: 0;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  height: 100px;
   width: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: space-between;
-
-`;
-
-const Main = styled.main`
-  margin-top: 40px;
-  /* padding: 20px; */
-  overflow-y: scroll;
-  height: 100vh;
-  margin: 0;
-`;
-
-const HeaderSection = styled.div`
-    margin-top: 40px;
-    display: flex;
-    background: var(--mainGray);
-    justify-content: center;
-    align-items: center;
-    height: 175px;
-    /* position: relative; */
-    @media (max-width: 500px) {
-        height: 300px;
-        flex-direction: column-reverse;
-      }
+  background: var(--mainGray);
+  z-index: 100;
 `
-const Branding = styled.span`
-  margin: 4px 0px 4px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 110px;
-  cursor: default;
-  font-size: 16px;
+// background: var(--canvas);
+const ViewerOutsideContainer = styled.div`
+  grid-row: 2 / 3;
+  display: grid;
+  grid-template-columns: auto min-content auto;
+  min-height: calc(100vh - 100px);
+  background: var(--solidLightBlue);  //Gutter color
+  `
+
+const ViewerInsideContainer = styled.div`
+  grid-column: 2 / 3;
+  width: 850px;
+  max-width: 850px;
+  min-width: 600px;
+  min-height: calc(100vh - 100px);
+  background: var(--canvas);
+  border: 1px solid #949494; //Viewer Outline
+  margin: 20px 0px 20px 0px;  //Only need when there is an outline
+  padding: 20px 5px 20px 5px;
+  @media (max-width: 850px) {
+    width: 100vw;
+  }
 `
 
-const MenuItem = styled.div`
-  padding: 8px;
-  color: ${props => props.active ? "var(--mainBlue)" : "black"};
-  border-bottom: ${props => props.active ? "2px solid var(--mainBlue)" : null};
-  cursor: pointer;
-`
-
-const BarMenu = styled.div`
-  margin: 0px;
+const HeaderContent = styled.div`
+  max-width: 800px;
+  width: 100%;
+  height: 80px;
+  margin: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 16px;
-  column-gap: 20px;
+
+`
+const HeaderSectionLeft = styled.div`
+  margin: 5px;
+  height: 30px;
+`
+const HeaderSectionRight = styled.div`
+  margin: 5px;
+  height: 30px;
+  display: flex;
+  justify-content: flex-end;
+`
+const Label = styled.span`
+  font-size: 1.4em;
+  font-weight: bold;
 `
 
-
+const AvatarLink = styled(Link)`
+  text-decoration: none;
+  color: black;
+`
 
 export function PortfolioActivityViewer() {
-  const { doenetML, signedIn } = useLoaderData();
+  const { 
+    doenetML,
+    signedIn, 
+    label, 
+    fullName, 
+    avatarInitials, 
+    courseId,
+    doenetId,
+    pageDoenetId, 
+  } = useLoaderData();
+  const navigate = useNavigate();
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -245,12 +137,23 @@ export function PortfolioActivityViewer() {
   }
 
   return (<>
+  <PageContainer>
 
-        <div style={{
-          background: 'white',
-          padding: '20px 0px 20px 0px'
-        }}>
-          <PageViewer
+  <Header>
+    <HeaderContent>
+    <div>
+      <HeaderSectionLeft><Label>{label}</Label></HeaderSectionLeft>
+      <HeaderSectionLeft><AvatarLink to={`/portfolio/${courseId}/public`}>({avatarInitials}) By {fullName}</AvatarLink></HeaderSectionLeft>
+      </div>
+      <div>
+      <HeaderSectionRight><Button value="See Inside" onClick={()=>navigate(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)} /></HeaderSectionRight>
+      {signedIn ? <HeaderSectionRight><Button value="Remix" /></HeaderSectionRight> : null}
+      </div>
+    </HeaderContent>
+  </Header>
+  <ViewerOutsideContainer>
+  <ViewerInsideContainer>
+  <PageViewer
             key={`HPpageViewer`}
             doenetML={doenetML}
             flags={{
@@ -273,9 +176,10 @@ export function PortfolioActivityViewer() {
             // setIsInErrorState={setIsInErrorState}
             pageIsActive={true}
           />
-          </div>
-
-
+        
+  </ViewerInsideContainer>
+  </ViewerOutsideContainer>
+  </PageContainer>
 </>)
 }
 
