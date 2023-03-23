@@ -19,6 +19,8 @@ import {loader as caroselLoader, Home} from "../_framework/Paths/Home";
 import {loader as portfolioActivitySettingsLoader, action as portfolioActivitySettingsAction, PortfolioActivitySettings} from "../_framework/Paths/PortfolioActivitySettings";
 import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "../_framework/Paths/Portfolio";
 import { loader as portfolioEditorMenuCapLoader } from "../_framework/MenuPanelCaps/PortfilioEditorInfoCap";
+import { loader as publicPortfolioLoader, PublicPortfolio } from "../_framework/Paths/PublicPortfolio";
+import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "../_framework/Paths/PortfolioActivityViewer";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +56,27 @@ const router = createBrowserRouter([
       },
      
     ]
+  },
+  {
+    path: "portfolio/:courseId/public",
+    loader: publicPortfolioLoader,
+    element: <PublicPortfolio />,
+  },
+  {
+    path: "/portfolio/:doenetId/viewer",
+    loader: portfolioActivityViewerLoader,
+    // action: portfolioActivitySettingsAction,
+    element: (<RecoilRoot>
+      <DarkmodeController>
+        <MathJaxContext
+          version={2}
+          config={mathjaxConfig}
+          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+        >
+          <PortfolioActivityViewer />
+        </MathJaxContext>
+      </DarkmodeController>
+</RecoilRoot>),
   },
   {
     path: "/portfolio/:doenetId/settings",

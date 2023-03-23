@@ -19,36 +19,19 @@ $message = '';
 // }
 
 $publicActivities = [];
-$privateActivities = [];
 $fullName = '';
-$notMe = false;
 
+$courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
+
+//Assume we are updating the activity and need the current settings
 if ($success) {
-    $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
-
     $sql = "
-    SELECT courseId
-    FROM course
-    WHERE portfolioCourseForUserId='$userId'
-    ";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        if ($courseId != $row['courseId']) {
-            $notMe = true;
-        }
-    } else {
-        $notMe = true; //If not signed it then it's definitly not you
-    }
-}
-
-if ($success && !$notMe) {
-    $sql = "
-    SELECT firstName,
-    lastName
-    FROM user
-    WHERE userId='$userId'
+    SELECT u.firstName,
+    u.lastName
+    FROM user AS u
+    LEFT JOIN course AS c
+    ON u.userId = c.portfolioCourseForUserId
+    WHERE c.courseId = '$courseId'
     ";
     $result = $conn->query($sql);
 
@@ -61,12 +44,12 @@ if ($success && !$notMe) {
     SELECT cc.doenetId,
     cc.imagePath,
     cc.label,
-    cc.isPublic,
     p.doenetId AS 'pageDoenetId'
     FROM course_content AS cc
     LEFT JOIN pages AS p
     ON p.containingDoenetId = cc.doenetId
-    WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    WHERE cc.courseId = '$courseId'
+    AND cc.isPublic = '1'
     ";
     $result = $conn->query($sql);
 
@@ -76,14 +59,9 @@ if ($success && !$notMe) {
                 'doenetId' => $row['doenetId'],
                 'imagePath' => $row['imagePath'],
                 'label' => $row['label'],
-                'public' => $row['isPublic'],
                 'pageDoenetId' => $row['pageDoenetId'],
             ];
-            if ($row['isPublic'] == '1') {
-                array_push($publicActivities, $activity);
-            } else {
-                array_push($privateActivities, $activity);
-            }
+            array_push($publicActivities, $activity);
         }
     }
 }
@@ -92,9 +70,7 @@ $response_arr = [
     'success' => $success,
     'message' => $message,
     'publicActivities' => $publicActivities,
-    'privateActivities' => $privateActivities,
     'fullName' => $fullName,
-    'notMe' => $notMe,
 ];
 
 http_response_code(200);

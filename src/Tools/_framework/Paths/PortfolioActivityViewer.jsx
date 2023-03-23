@@ -6,13 +6,20 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
+import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 // import RouterLogo from '../RouterLogo';
 
 export async function loader(){
-  const response = await fetch('/api/getHPCarouselData.php');
-  const data = await response.json();
-  return data;
+  //Check if signedIn
+  const profileInfo = await checkIfUserClearedOut();
+  let signedIn = true;
+  if (profileInfo.cookieRemoved){
+    signedIn = false;
+  }
+  // const response = await fetch('/api/getHPCarouselData.php');
+  // const data = await response.json();
+  // return data;
+  return {doenetML:"<graph />",signedIn}
 }
 
 const HomeIntroVideo = lazy(() => import('./HomeIntroVideo'));
@@ -217,10 +224,10 @@ const BarMenu = styled.div`
   column-gap: 20px;
 `
 
-export function Home() {
-  let context = useOutletContext();
-   const loaderData = useLoaderData();
-   const favorites = loaderData?.carouselData?.[3];
+
+
+export function PortfolioActivityViewer() {
+  const { doenetML, signedIn } = useLoaderData();
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -237,53 +244,8 @@ export function Home() {
     });
   }
 
-//Don't do more processing if we don't know if we are signed in or not
-if (context.signedIn == null){ return null;}
+  return (<>
 
-  return <>
-<Main>
-    <Heading heading="Create Content" subheading="Quickly create interactive activities" />
-    <CreateContentSection>
-
-      <div>
-        <h1 style={{ color: 'white' }}>Introducing DoenetML</h1>
-        <h4 style={{ width: '340px', color: 'white', lineHeight: '1em' }}>DoenetML is the markup language we've created to let you focus on the meaning of the elements you wish to create.</h4>
-        <Button value="See Inside" onClick={() => window.open('https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0', '_blank')} />
-      </div>
-      <Suspense fallback={'Loading...'} >  {/* Does this lazy loading do anything? */}
-      <HomeIntroVideo />
-      </Suspense>
-    </CreateContentSection>
-
-    <Heading heading="Explore" subheading="Interact with our existing content" />
-
-    <CarouselSection>
-      <Carousel title="Doenet Team Favorites" data={favorites} />
-    </CarouselSection>
-
-    <Heading heading="Learn" subheading="Designed for the In-Person Classroom" />
-
-    <div style={{
-      padding: '20px 10px 60px 10px',
-      margin: '0px',
-      justifyContent: 'center',
-      alignItems: 'center',
-      textAlign: 'center',
-      background: 'var(--lightBlue)'
-
-    }}>
-      <div style={{
-        textAlign: 'Left',
-        maxWidth: '800px',
-        display: 'inline-block',
-        marginLeft: '3em',
-        marginRight: '3em',
-      }}>
-        <h3>Immediate feedback in class</h3>
-        <p>One benefit of using Doenet during in-class activities is the immediate feedback
-          students receive even before an instructor can come by their group.</p>
-        <h3>Open-ended response </h3>
-        <p>Try our open-ended response example! (<a target="_blank" href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL">See source</a>)</p>
         <div style={{
           background: 'white',
           padding: '20px 0px 20px 0px'
@@ -311,59 +273,10 @@ if (context.signedIn == null){ return null;}
             // setIsInErrorState={setIsInErrorState}
             pageIsActive={true}
           />
-        </div>
-      </div>
+          </div>
 
-    </div>
-    <Footer>
-      <SectionText>
-        <div>
-          <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
-          <div style={{ marginBottom: '10px' }}>
-            <LinkStyling href="mailto:info@doenet.org">info@doenet.org</LinkStyling>
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <LinkStyling href="https://github.com/Doenet/">GitHub</LinkStyling>
-          </div>
-          <div style={{ marginBottom: '40px' }}>
 
-            <LinkStyling href="https://discord.gg/PUduwtKJ5h">Discord Server</LinkStyling>
-          </div>
-          <p>
-            <LinkStyling
-              rel="license"
-              href="http://creativecommons.org/licenses/by/4.0/"
-            >
-              <img
-                alt="Creative Commons License"
-                style={{ borderWidth: 0 }}
-                src="https://i.creativecommons.org/l/by/4.0/88x31.png"
-              />
-            </LinkStyling>
-            <br />
-            This work is licensed under a{' '}
-            <LinkStyling
-              rel="license"
-              href="http://creativecommons.org/licenses/by/4.0/"
-            >
-              Creative Commons Attribution 4.0 International License
-            </LinkStyling>
-            .
-          </p>
-          <p>
-            Doenet is a collaborative project involving the University of
-            Minnesota, the Ohio State University, and Cornell University, with
-            support from the National Science Foundation (DUE-1915294,
-            DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
-            or recommendations expressed in this material are those of the
-            author(s) and do not necessarily reflect the views of the National
-            Science Foundation.{' '}
-          </p>
-        </div>
-      </SectionText>
-    </Footer>
-</Main>
-</>
+</>)
 }
 
 

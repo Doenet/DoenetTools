@@ -4,42 +4,30 @@ import { redirect, Form, useOutletContext, useLoaderData } from 'react-router-do
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
-export async function action() {
-  //Create a portfilio activity and redirect to the editor for it
-  let response = await fetch("/api/createPortfolioActivity.php");
+// export async function action() {
+//   //Create a portfilio activity and redirect to the editor for it
+//   let response = await fetch("/api/createPortfolioActivity.php");
 
-      if (response.ok) {
-        let { doenetId, pageDoenetId } = await response.json();
-        return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
-        // return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
-      }else{
-        throw Error(response.message)
-      }
-}
+//       if (response.ok) {
+//         let { doenetId, pageDoenetId } = await response.json();
+//         return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
+//         // return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
+//       }else{
+//         throw Error(response.message)
+//       }
+// }
 
 export async function loader({params}){
-
-  //If we didn't create the course yet for this user then create it
-  if (params.courseId == "not_created"){
-    const response = await fetch('/api/createPortfolioCourse.php');
-    const data = await response.json();
-    return redirect(`/portfolio/${data.portfolioCourseId}`)
-  }
-
-  const response = await fetch(`/api/getPortfolio.php?courseId=${params.courseId}`);
+  const response = await fetch(`/api/getPublicPortfolio.php?courseId=${params.courseId}`);
   const data = await response.json();
-  if (data.notMe){
-    return redirect(`/portfolio/${params.courseId}/public`);
-  }
-  
+
   return {
     fullName:data.fullName,
-    publicActivities:data.publicActivities,
-    privateActivities:data.privateActivities,
+    publicActivities:data.publicActivities
   };
 }
 
-const SecondHeader = styled.header`
+const Header = styled.header`
   grid-row: 1/2;
   background-color: #fff;
   color: #000;
@@ -61,7 +49,8 @@ const PublicActivitiesSection = styled.div`
     flex-direction: column;
     padding: 10px 10px 10px 10px;
     margin: 0px;
-    justify-content: center;
+    justify-content: flex-start;
+
     align-items: center;
     text-align: center;
     background: var(--lightBlue);
@@ -73,17 +62,6 @@ const CardsContainer = styled.div`
   margin: 0px;
   width: calc(100vw - 40px);
   `
-const PrivateActivitiesSection = styled.div`
-  grid-row: 3/4;
-  display: flex;
-  flex-direction: column;
-  padding: 10px 10px 10px 10px;
-  margin: 0px;
-  justify-content: flex-start;
-  align-items: center;
-  text-align: center;
-  background: var(--mainGray);
-`
 
 function Card({ doenetId,imagePath,label, pageDoenetId }) {
   const cardStyle = {
@@ -146,8 +124,8 @@ function Card({ doenetId,imagePath,label, pageDoenetId }) {
     // maxWidth: '240px',
   }
   
-  // const activityLink = `/portfolio/${doenetId}/editor`;
-  const activityLink = `/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
+  const activityLink = `/portfolio/${doenetId}/viewer`;
+  // const activityLink = `/portfolio/${doenetId}/${pageDoenetId}/viewer`;
 
   return (
     <a style={linkStyle} href={activityLink} target="_blank">
@@ -165,22 +143,20 @@ function Card({ doenetId,imagePath,label, pageDoenetId }) {
 
 const PortfolioGrid = styled.div`
   display: grid;
-  grid-template-rows: 80px min-content auto;
-  /* grid-template-rows: 80px min-content min-content; */
+  grid-template-rows: 80px auto;
   height: 100vh;
 `
 
-export function Portfolio(){
-  let context = useOutletContext();
+export function PublicPortfolio(){
   let data = useLoaderData();
   // const navigate = useNavigate();
+  console.log("data",data)
 
-  //Don't do more processing if we don't know if we are signed in or not
-  if (context.signedIn == null){ return null;} 
+
 
   return <>
   <PortfolioGrid >
-  <SecondHeader>
+  <Header>
   <h1 style={{
       lineHeight: '0.1em'
     }}>{data.fullName}</h1>
@@ -188,14 +164,10 @@ export function Portfolio(){
       lineHeight: '0.1em'
     }}>Portfolio</h4>
     <div style={{position:"absolute", top:'48px',right:"10px"}}>
-      <Form method="post">
-      <Button value="Add Activity"/>
-      </Form>
       </div>
     
-  </SecondHeader>
+  </Header>
   <PublicActivitiesSection>
-    <h2>Public</h2>
     <CardsContainer>
       {data.publicActivities.length < 1 ? <div>No Public Activities</div>  :
     <>{data.publicActivities.map((activity)=>{
@@ -205,16 +177,6 @@ export function Portfolio(){
     </CardsContainer>
   </PublicActivitiesSection>
 
-  <PrivateActivitiesSection>
-    <h2>Private</h2>
-    <CardsContainer>
-      {data.privateActivities.length < 1 ? <div>No Private Activities</div>  :
-    <>{data.privateActivities.map((activity)=>{
-      return <Card key={`Card${activity.doenetId}`} {...activity} />
-    })}</>
-     } 
-    </CardsContainer>
-  </PrivateActivitiesSection>
   </PortfolioGrid>
   </>
 }
