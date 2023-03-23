@@ -7,6 +7,7 @@ import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoi
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import { Link } from 'react-router-dom';
+import { Avatar } from '@chakra-ui/react';
 
 export async function loader({params}){
   //Check if signedIn
@@ -135,6 +136,7 @@ export function PortfolioActivityViewer() {
       index: cleanGeneratedVariant.index,
     });
   }
+  //({avatarInitials})
 
   return (<>
   <PageContainer>
@@ -143,7 +145,8 @@ export function PortfolioActivityViewer() {
     <HeaderContent>
     <div>
       <HeaderSectionLeft><Label>{label}</Label></HeaderSectionLeft>
-      <HeaderSectionLeft><AvatarLink to={`/portfolio/${courseId}/public`}>({avatarInitials}) By {fullName}</AvatarLink></HeaderSectionLeft>
+      <HeaderSectionLeft><AvatarLink to={`/portfolio/${courseId}/public`}> 
+    <Avatar size='sm' name={fullName} /> By {fullName}</AvatarLink></HeaderSectionLeft>
       </div>
       <div>
       <HeaderSectionRight><Button value="See Inside" onClick={()=>navigate(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)} /></HeaderSectionRight>
