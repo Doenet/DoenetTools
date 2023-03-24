@@ -53,7 +53,9 @@ const router = createBrowserRouter([
         path: "portfolio/:courseId",
         loader: portfolioLoader,
         action: portfolioAction,
-        element: <Portfolio />,
+        element: (<ChakraProvider>
+          <Portfolio />
+        </ChakraProvider>),
       },
      
     ]

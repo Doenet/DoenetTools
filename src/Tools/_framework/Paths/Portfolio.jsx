@@ -1,6 +1,7 @@
 // import axios from 'axios';
+import { Avatar, Box, Image, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React from 'react';
-import { redirect, Form, useOutletContext, useLoaderData } from 'react-router-dom';
+import { redirect, Form, useOutletContext, useLoaderData, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
@@ -85,81 +86,98 @@ const PrivateActivitiesSection = styled.div`
   background: var(--mainGray);
 `
 
-function Card({ doenetId,imagePath,label, pageDoenetId }) {
-  const cardStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '180px',
-    width: "240px",
-    backgroundColor: 'black',
-    overflow: 'hidden',
-    margin: '10px',
-    border: "2px solid #949494",
-    borderRadius: "6px",
-  };
-
-  const topStyle = {
-    height: '128px',
-    // minWidth: '200px',
-  };
-
-  const imgStyle = {
-    height: 'auto',
-    maxWidth: '100%',
-    // maxHeight: '50px',
-    maxHeight: '110px',
-    objectFit: 'cover',
-  };
-
-  const bottomStyle = {
-    height: '54px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    padding: '2px',
-    color: 'black',
-    background: 'white',
-    // whiteSpace: 'normal',
-    // overflow: 'hidden',
-    // textOverflow: 'ellipsis',
-    // display: '-webkit-box',
-    // WebkitLineClamp: 2,
-    // WebkitBoxOrient: 'vertical',
-  };
-
-  const textStyle = {
-    fontSize: '.8em',
-    display: 'inline',
-    WebkitLineClamp: 2,
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    // display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    wordWrap: 'break-word',
-  }
-
-  const linkStyle = {
-    textDecoration: 'none',
-    cursor: 'pointer',
-    // userSelect: 'none',
-    // flexGrow: '1',
-    // maxWidth: '240px',
-  }
-  
+function Card({ doenetId,imagePath,label, pageDoenetId, fullName, isPublic }) {
+ 
   // const activityLink = `/portfolio/${doenetId}/editor`;
   const activityLink = `/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
+
+
   return (
-    <a style={linkStyle} href={activityLink} target="_blank">
-      <div style={cardStyle}>
-        <div style={topStyle}>
-          <img src={imagePath} alt="Card" style={imgStyle} />
-        </div>
-        <div style={bottomStyle}>
-          <span style={textStyle}>{label}</span>
-        </div>
-      </div>
-      </a>
+    // <a style={{
+    //   textDecoration: 'none',
+    //   cursor: 'pointer'
+    // }} href={activityLink} target="_blank" rel="noreferrer">
+      <Box 
+      display="flex" 
+      flexDirection="column"
+      height="240px"
+      width="240px"
+      background="black"
+      overflow="hidden"
+      margin="10px"
+      border="2px solid #949494"
+      borderRadius= "6px"
+      >
+        <Box 
+        position="relative"
+        height="175px">
+          <Link to={activityLink}>
+          <Image 
+            width="100%"
+            height="100%"
+            objectFit="cover"
+            src={imagePath} 
+            alt="Activity Card"
+          />
+          </Link>
+          <Box 
+          position="absolute"
+          right="2px"
+          top="2px"
+          >
+            <Menu>
+              <MenuButton>
+              {/* <MenuButton as={Button} > */}
+                :
+              </MenuButton>
+              <MenuList>
+                {isPublic ? <MenuItem>Make Private</MenuItem> : <MenuItem>Make Public</MenuItem> }
+                <MenuItem>Delete</MenuItem>
+                <MenuItem>Settings</MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
+        {/* <Icon as="GoKebabVertical" /> */}
+        </Box>
+        <Box
+         height="65px"
+         display="flex"
+         justifyContent="flex-start"
+         padding="2px"
+         color="black"
+         background="white"
+        >
+          <Box 
+          width="50px"
+          display="flex"
+          alignContent="center"
+          justifyContent="center"
+          alignItems="center"
+          position="relative"
+          >
+            <Avatar name={fullName} />
+            <Box
+            position="absolute"
+            width="100px"
+            left="24px"
+            bottom="0px"
+            >
+              <small>{fullName}</small>
+            </Box>
+          </Box>
+          <Box
+          marginLeft="6px"
+          overflow="hidden"
+          isTruncated
+          noOfLines={1}
+          >
+
+          {label}
+          </Box>
+        </Box>
+      </Box>
+    // </a>
   );
 }
 
@@ -199,7 +217,7 @@ export function Portfolio(){
     <CardsContainer>
       {data.publicActivities.length < 1 ? <div>No Public Activities</div>  :
     <>{data.publicActivities.map((activity)=>{
-      return <Card key={`Card${activity.doenetId}`} {...activity} />
+      return <Card key={`Card${activity.doenetId}`} {...activity} fullName={data.fullName} isPublic={true} />
     })}</>
      }
     </CardsContainer>
@@ -210,7 +228,7 @@ export function Portfolio(){
     <CardsContainer>
       {data.privateActivities.length < 1 ? <div>No Private Activities</div>  :
     <>{data.privateActivities.map((activity)=>{
-      return <Card key={`Card${activity.doenetId}`} {...activity} />
+      return <Card key={`Card${activity.doenetId}`} {...activity} fullName={data.fullName} isPublic={false} />
     })}</>
      } 
     </CardsContainer>
