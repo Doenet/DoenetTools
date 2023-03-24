@@ -10,17 +10,29 @@ import { faFileImage } from '@fortawesome/free-solid-svg-icons';
 
 
 export async function action({ request, params }) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const referrer = urlParams.get('referrer');
+
   const formData = await request.formData();
   let updates = Object.fromEntries(formData);
   let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
     ...updates, doenetId:params.doenetId
   })
-  // const portfolioCourseId = response.data.portfolioCourseId;
+
+  if (referrer == "portfolioeditor"){
+    return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
+  }else{
+    const portfolioCourseId = response.data.portfolioCourseId;
+    return redirect(`/portfolio/${portfolioCourseId}`) 
+  }
+  
+  
 
       // if (response.ok) {
       //   // let { doenetId } = await response.json();
       // if (updates._source == "_source")
-        return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
+        // return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
         // return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
 // }else{
 //   return redirect(`/portfolio/${portfolioCourseId}`) 
