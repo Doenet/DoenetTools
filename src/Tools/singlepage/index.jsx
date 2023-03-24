@@ -21,6 +21,7 @@ import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "
 import { loader as portfolioEditorMenuCapLoader } from "../_framework/MenuPanelCaps/PortfilioEditorInfoCap";
 import { loader as publicPortfolioLoader, PublicPortfolio } from "../_framework/Paths/PublicPortfolio";
 import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "../_framework/Paths/PortfolioActivityViewer";
+import { ChakraProvider } from "@chakra-ui/react";
 
 const router = createBrowserRouter([
   {
@@ -73,7 +74,9 @@ const router = createBrowserRouter([
           config={mathjaxConfig}
           onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
         >
+          <ChakraProvider>
           <PortfolioActivityViewer />
+          </ChakraProvider>
         </MathJaxContext>
       </DarkmodeController>
 </RecoilRoot>),

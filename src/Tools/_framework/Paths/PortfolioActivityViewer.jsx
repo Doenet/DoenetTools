@@ -99,14 +99,26 @@ const HeaderSectionRight = styled.div`
   display: flex;
   justify-content: flex-end;
 `
-const Label = styled.span`
+const Label = styled.div`
   font-size: 1.4em;
   font-weight: bold;
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const AvatarLink = styled(Link)`
   text-decoration: none;
   color: black;
+  position: relative;
+`
+
+const Byline = styled.small`
+  position: absolute;
+  left: 36px;
+  top: 8px; 
+  width: 400px;
 `
 
 export function PortfolioActivityViewer() {
@@ -146,7 +158,7 @@ export function PortfolioActivityViewer() {
     <div>
       <HeaderSectionLeft><Label>{label}</Label></HeaderSectionLeft>
       <HeaderSectionLeft><AvatarLink to={`/portfolio/${courseId}/public`}> 
-    <Avatar size='sm' name={fullName} /> By {fullName}</AvatarLink></HeaderSectionLeft>
+    <Avatar size='sm' name={fullName} /> <Byline>By {fullName}</Byline></AvatarLink></HeaderSectionLeft>
       </div>
       <div>
       <HeaderSectionRight><Button value="See Inside" onClick={()=>navigate(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)} /></HeaderSectionRight>
