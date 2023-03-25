@@ -229,7 +229,7 @@ export function PortfolioActivitySettings(){
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return <>
-    <Form id="portfolioActivitySettings" method="post">
+    <Form method="post">
   <MainGrid>
   <Slot1>
     <div>{data.isNew ? <h1>Add Activity</h1> : <h1>Activity Settings</h1>}</div>

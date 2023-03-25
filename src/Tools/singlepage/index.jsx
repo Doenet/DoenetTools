@@ -23,11 +23,12 @@ import { loader as publicPortfolioLoader, PublicPortfolio } from "../_framework/
 import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "../_framework/Paths/PortfolioActivityViewer";
 import { ChakraProvider } from "@chakra-ui/react";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
     loader: siteLoader,
-    element: <RecoilRoot><SiteHeader /></RecoilRoot>,
+    element: <RecoilRoot><ChakraProvider><SiteHeader /></ChakraProvider></RecoilRoot>,
     children: [
       {
         path: "/",
@@ -120,6 +121,7 @@ const router = createBrowserRouter([
             </DarkmodeController>
     </RecoilRoot>),
   },
+
 ]);
 
 const root = createRoot(document.getElementById('root'));

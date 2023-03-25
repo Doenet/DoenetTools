@@ -67,6 +67,7 @@ if ($success && !$notMe) {
     LEFT JOIN pages AS p
     ON p.containingDoenetId = cc.doenetId
     WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    AND cc.isDeleted = '0'
     ";
     $result = $conn->query($sql);
 

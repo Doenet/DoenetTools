@@ -1,21 +1,56 @@
 // import axios from 'axios';
-import { Avatar, Box, Image, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+import { Avatar, Box, Image, Menu, MenuButton, MenuItem, MenuList, Icon } from '@chakra-ui/react';
 import React from 'react';
-import { redirect, Form, useOutletContext, useLoaderData, Link } from 'react-router-dom';
+import { redirect, Form, useOutletContext, useLoaderData, Link, useFetcher } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import { GoKebabVertical } from 'react-icons/go';
 
-export async function action() {
-  //Create a portfilio activity and redirect to the editor for it
-  let response = await fetch("/api/createPortfolioActivity.php");
+export async function action({request}) {
+  const formData = await request.formData();
+  let formObj = Object.fromEntries(formData);
+  console.log("formObj",formObj)
 
-      if (response.ok) {
-        let { doenetId, pageDoenetId } = await response.json();
-        return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
-        // return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
-      }else{
-        throw Error(response.message)
-      }
+  if (formObj?._action == "Add Activity"){
+      //Create a portfilio activity and redirect to the editor for it
+      let response = await fetch("/api/createPortfolioActivity.php");
+    
+          if (response.ok) {
+            let { doenetId, pageDoenetId } = await response.json();
+            return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
+          }else{
+            throw Error(response.message)
+          }
+  }else if (formObj?._action == "Delete"){
+    let response = await fetch(`/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`);
+    
+        if (response.ok) {
+          let respObj = await response.json();
+          return true;
+        }else{
+          throw Error(response.message)
+        }
+  }else if (formObj?._action == "Make Public"){
+    let response = await fetch(`/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`);
+    
+        if (response.ok) {
+          let respObj = await response.json();
+          return true;
+        }else{
+          throw Error(response.message)
+        }
+  }else if (formObj?._action == "Make Private"){
+    let response = await fetch(`/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`);
+    
+        if (response.ok) {
+          let respObj = await response.json();
+          return true;
+        }else{
+          throw Error(response.message)
+        }
+  }
+
+  throw Error(`Action "${formObj?._action}" not defined or not handled.`)
 }
 
 export async function loader({params}){
@@ -86,18 +121,14 @@ const PrivateActivitiesSection = styled.div`
   background: var(--mainGray);
 `
 
-function Card({ doenetId,imagePath,label, pageDoenetId, fullName, isPublic }) {
- 
+function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) {
+  const fetcher = useFetcher();
   // const activityLink = `/portfolio/${doenetId}/editor`;
   const activityLink = `/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
 
 
   return (
-    // <a style={{
-    //   textDecoration: 'none',
-    //   cursor: 'pointer'
-    // }} href={activityLink} target="_blank" rel="noreferrer">
       <Box 
       display="flex" 
       flexDirection="column"
@@ -123,18 +154,35 @@ function Card({ doenetId,imagePath,label, pageDoenetId, fullName, isPublic }) {
           </Link>
           <Box 
           position="absolute"
-          right="2px"
-          top="2px"
+          right="1px"
+          top="4px"
           >
             <Menu>
               <MenuButton>
               {/* <MenuButton as={Button} > */}
-                :
+                <Icon 
+                color="#949494"
+                as={GoKebabVertical} 
+                boxSize={6}
+                /> 
               </MenuButton>
               <MenuList>
-                {isPublic ? <MenuItem>Make Private</MenuItem> : <MenuItem>Make Public</MenuItem> }
-                <MenuItem>Delete</MenuItem>
-                <MenuItem>Settings</MenuItem>
+                {isPublic ? 
+                <MenuItem
+                onClick={() => {
+                  fetcher.submit({_action:"Make Private", doenetId}, { method: "post" });
+                }}
+                >Make Private</MenuItem> 
+                : 
+                <MenuItem
+                onClick={() => {
+                  fetcher.submit({_action:"Make Public", doenetId}, { method: "post" });
+                }}
+                >Make Public</MenuItem> }
+                <MenuItem onClick={() => {
+                  fetcher.submit({_action:"Delete", doenetId}, { method: "post" });
+                }}>Delete</MenuItem>
+                <MenuItem as={Link} to={`/portfolio/${doenetId}/settings`}>Settings</MenuItem>
               </MenuList>
             </Menu>
           </Box>
@@ -177,7 +225,6 @@ function Card({ doenetId,imagePath,label, pageDoenetId, fullName, isPublic }) {
           </Box>
         </Box>
       </Box>
-    // </a>
   );
 }
 
@@ -208,6 +255,7 @@ export function Portfolio(){
     <div style={{position:"absolute", top:'48px',right:"10px"}}>
       <Form method="post">
       <Button value="Add Activity"/>
+      <input type="hidden" name="_action" value="Add Activity" />
       </Form>
       </div>
     
