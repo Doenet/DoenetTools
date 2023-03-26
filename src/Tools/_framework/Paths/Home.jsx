@@ -7,6 +7,7 @@ import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
+import { Text } from '@chakra-ui/react';
 // import RouterLogo from '../RouterLogo';
 
 export async function loader(){
@@ -144,12 +145,20 @@ function Heading(props) {
     alignItems: 'center',
     height: '100px',
   }}>
-    <h1 style={{
+    <Text 
+    fontSize="24px"
+    fontWeight="700"
+    >{props.heading}</Text>
+    <Text
+    fontSize="16px"
+    fontWeight="700"
+    >{props.subheading}</Text>
+    {/* <h1 style={{
       lineHeight: '0.1em',
     }}>{props.heading}</h1>
     <h4 style={{
       lineHeight: '0.1em',
-    }}> {props.subheading} </h4>
+    }}> {props.subheading} </h4> */}
   </div>
 }
 

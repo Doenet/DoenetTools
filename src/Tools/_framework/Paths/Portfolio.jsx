@@ -1,5 +1,5 @@
 // import axios from 'axios';
-import { Avatar, Box, Image, Menu, MenuButton, MenuItem, MenuList, Icon } from '@chakra-ui/react';
+import { Avatar, Box, Image, Menu, MenuButton, MenuItem, MenuList, Icon, Text } from '@chakra-ui/react';
 import React from 'react';
 import { redirect, Form, useOutletContext, useLoaderData, Link, useFetcher } from 'react-router-dom';
 import styled from 'styled-components';
@@ -207,21 +207,20 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) 
             <Box
             position="absolute"
             width="100px"
-            left="16px"
+            left="8px"
             bottom="0px"
             >
-              <small>{fullName}</small>
+              <Text fontSize='10px'>{fullName}</Text>
             </Box>
           </Box>
-          <Box
-          marginLeft="6px"
-          overflow="hidden"
-          isTruncated
-          noOfLines={1}
-          >
-
-          {label}
+          <Box>
+          <Text 
+          fontSize='sm' 
+          lineHeight='1' 
+          noOfLines={2}
+          >{label}</Text>
           </Box>
+          
         </Box>
       </Box>
   );
@@ -257,12 +256,14 @@ export function Portfolio(){
   textAlign="center"
   zIndex="1200"
   >
-  <h1 style={{
-      lineHeight: '0.1em'
-    }}>{data.fullName}</h1>
-    <h4 style={{
-      lineHeight: '0.1em'
-    }}>Portfolio</h4>
+    <Text 
+    fontSize="24px"
+    fontWeight="700"
+    >{data.fullName}</Text>
+    <Text
+    fontSize="16px"
+    fontWeight="700"
+    >Portfolio</Text>
     <div style={{position:"absolute", top:'48px',right:"10px"}}>
       <Form method="post">
       <Button value="Add Activity"/>
@@ -272,7 +273,10 @@ export function Portfolio(){
     
   </Box>
   <PublicActivitiesSection>
-    <h2>Public</h2>
+  <Text
+    fontSize="20px"
+    fontWeight="700"
+    >Public</Text>
     <CardsContainer>
       {data.publicActivities.length < 1 ? <div>No Public Activities</div>  :
     <>{data.publicActivities.map((activity)=>{
@@ -283,7 +287,10 @@ export function Portfolio(){
   </PublicActivitiesSection>
 
   <PrivateActivitiesSection>
-    <h2>Private</h2>
+  <Text
+    fontSize="20px"
+    fontWeight="700"
+    >Private</Text>
     <CardsContainer>
       {data.privateActivities.length < 1 ? <div>No Private Activities</div>  :
     <>{data.privateActivities.map((activity)=>{

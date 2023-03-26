@@ -21,14 +21,27 @@ import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "
 import { loader as portfolioEditorMenuCapLoader } from "../_framework/MenuPanelCaps/PortfilioEditorInfoCap";
 import { loader as publicPortfolioLoader, PublicPortfolio } from "../_framework/Paths/PublicPortfolio";
 import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "../_framework/Paths/PortfolioActivityViewer";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+
+import '@fontsource/jost';
+
+const theme = extendTheme({
+  fonts: {
+    body: "Jost",
+  },
+  textStyles: {
+    primary: {
+      fontFamily: "Jost",
+    },
+  },
+});
 
 
 const router = createBrowserRouter([
   {
     path: "/",
     loader: siteLoader,
-    element: <RecoilRoot><ChakraProvider><SiteHeader /></ChakraProvider></RecoilRoot>,
+    element: <RecoilRoot><ChakraProvider theme={theme}><SiteHeader /></ChakraProvider></RecoilRoot>,
     children: [
       {
         path: "/",
@@ -54,7 +67,7 @@ const router = createBrowserRouter([
         path: "portfolio/:courseId",
         loader: portfolioLoader,
         action: portfolioAction,
-        element: (<ChakraProvider>
+        element: (<ChakraProvider theme={theme}>
           <Portfolio />
         </ChakraProvider>),
       },
@@ -64,7 +77,7 @@ const router = createBrowserRouter([
   {
     path: "portfolio/:courseId/public",
     loader: publicPortfolioLoader,
-    element: (<ChakraProvider>
+    element: (<ChakraProvider theme={theme}>
       <PublicPortfolio />
     </ChakraProvider>),
   },
@@ -79,7 +92,7 @@ const router = createBrowserRouter([
           config={mathjaxConfig}
           onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
         >
-          <ChakraProvider>
+          <ChakraProvider theme={theme}>
           <PortfolioActivityViewer />
           </ChakraProvider>
         </MathJaxContext>

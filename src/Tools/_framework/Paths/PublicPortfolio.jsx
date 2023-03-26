@@ -1,5 +1,5 @@
 // import axios from 'axios';
-import { Avatar, Box, Image } from '@chakra-ui/react';
+import { Avatar, Box, Image, Text } from '@chakra-ui/react';
 import React from 'react';
 import { redirect, Form, useOutletContext, useLoaderData, Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -27,22 +27,6 @@ export async function loader({params}){
     publicActivities:data.publicActivities
   };
 }
-
-const Header = styled.header`
-  grid-row: 1/2;
-  background-color: #fff;
-  color: #000;
-  height: 80px;
-  position: fixed;
-  width: 100%;
-  margin-top: 1px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  display: relative;
-`;
 
 const PublicActivitiesSection = styled.div`
     grid-row: 2/3;
@@ -112,20 +96,18 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName }) {
             <Box
             position="absolute"
             width="100px"
-            left="16px"
+            left="8px"
             bottom="0px"
             >
-              <small>{fullName}</small>
+              <Text fontSize='10px'>{fullName}</Text>
             </Box>
           </Box>
-          <Box
-          marginLeft="6px"
-          overflow="hidden"
-          isTruncated
-          noOfLines={1}
-          >
-
-          {label}
+          <Box>
+          <Text 
+          fontSize='sm' 
+          lineHeight='1' 
+          noOfLines={2}
+          >{label}</Text>
           </Box>
         </Box>
       </Box>
@@ -163,15 +145,14 @@ export function PublicPortfolio(){
   textAlign="center"
   zIndex="1200"
   >
-  <h1 style={{
-      lineHeight: '0.1em'
-    }}>{data.fullName}</h1>
-    <h4 style={{
-      lineHeight: '0.1em'
-    }}>Portfolio</h4>
-    <div style={{position:"absolute", top:'48px',right:"10px"}}>
-      </div>
-    
+    <Text 
+    fontSize="24px"
+    fontWeight="700"
+    >{data.fullName}</Text>
+    <Text
+    fontSize="16px"
+    fontWeight="700"
+    >Portfolio</Text>
   </Box>
   <PublicActivitiesSection>
     <CardsContainer>
