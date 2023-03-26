@@ -53,6 +53,7 @@ if ($success) {
     FROM course_content 
     WHERE doenetId = '$doenetId'
     ";
+    $temp = $sql;
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -76,7 +77,6 @@ if ($success) {
         $message = 'You need permission to edita a portfolio activity.';
     }
 }
-
 //Assume we are updating the activity and need the current settings
 if ($success) {
     $sql = "
@@ -112,6 +112,7 @@ $response_arr = [
     'success' => $success,
     'message' => $message,
     'activityData' => $activityData,
+    'temp' => $temp,
 ];
 
 http_response_code(200);

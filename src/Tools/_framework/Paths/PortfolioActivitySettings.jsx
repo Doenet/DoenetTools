@@ -7,15 +7,17 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImage } from '@fortawesome/free-solid-svg-icons';
+import { Box, Image } from '@chakra-ui/react';
 
 
 export async function action({ request, params }) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const referrer = urlParams.get('referrer');
-
+  
   const formData = await request.formData();
   let updates = Object.fromEntries(formData);
+  console.log("update settings updates",updates)
   let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
     ...updates, doenetId:params.doenetId
   })
@@ -106,26 +108,6 @@ const Td = styled.td`
     padding:10px;
 `
 
-  const Image = styled.img`
-    max-width: 238px;
-    max-height: 122px;
-  `
-  const CardTop = styled.div`
-    height: 124px;
-    width: 240px;
-    background: black;
-    overflow: hidden;
-    margin: 10px;
-    border: 2px solid #949494;
-    border-radius: 6px;
-  `
-
-function ImagePreview({defaultValue}){
-  return <CardTop>
-      <Image alt="preview" src={defaultValue} />
-    </CardTop>
-}
-
 const DropPad = styled.div`
   border: 2px dashed #949494;
   height: 144px;
@@ -179,8 +161,8 @@ export function PortfolioActivitySettings(){
       file,
       {
         quality: 0.9,
-        maxWidth: 238,
-        maxHeight: 122,
+        maxWidth: 176,
+        maxHeight: 127,
         debug: true
       }
     );
@@ -217,7 +199,6 @@ export function PortfolioActivitySettings(){
         //uploads are finished clear it out
         numberOfFilesUploading.current = 0;
         let {success, cid} = data;
-
         if (success){
           setImagePath(`/media/${cid}.jpg`)
         }
@@ -257,8 +238,25 @@ export function PortfolioActivitySettings(){
           : 
           (<><Td><input {...getInputProps()} /><SideBySide>Image <Button value="Upload" onClick={(e) => e.preventDefault()}/></SideBySide>
           <div>Upload will be resized</div>
-          <div>max width 238px, max height 122 px</div></Td>
-          <Td><input {...getInputProps()} /><ImagePreview defaultValue={imagePath}/></Td></>)}
+          <div>max width 176px, max height 127 px</div></Td>
+          <Td><input {...getInputProps()} />
+          <Box 
+            height="130px"
+            width="180px"
+            background="black"
+            overflow="hidden"
+            border="2px solid #949494"
+            borderRadius= "6px"
+            > 
+              <Image 
+              width="100%"
+              height="100%"
+              objectFit="contain"
+              src={imagePath} 
+              alt="Activity Card"
+              />
+            </Box>
+          </Td></>)}
       </tr>
 
       <tr>

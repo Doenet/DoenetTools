@@ -9,7 +9,6 @@ import { GoKebabVertical } from 'react-icons/go';
 export async function action({request}) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  console.log("formObj",formObj)
 
   if (formObj?._action == "Add Activity"){
       //Create a portfilio activity and redirect to the editor for it
@@ -132,8 +131,8 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) 
       <Box 
       display="flex" 
       flexDirection="column"
-      height="240px"
-      width="240px"
+      height="180px"
+      width="180px"
       background="black"
       overflow="hidden"
       margin="10px"
@@ -142,12 +141,12 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) 
       >
         <Box 
         position="relative"
-        height="175px">
+        height="130px">
           <Link to={activityLink}>
           <Image 
             width="100%"
             height="100%"
-            objectFit="cover"
+            objectFit="contain"
             src={imagePath} 
             alt="Activity Card"
           />
@@ -186,10 +185,9 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) 
               </MenuList>
             </Menu>
           </Box>
-        {/* <Icon as="GoKebabVertical" /> */}
         </Box>
         <Box
-         height="65px"
+         height="50px"
          display="flex"
          justifyContent="flex-start"
          padding="2px"
@@ -197,18 +195,18 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) 
          background="white"
         >
           <Box 
-          width="50px"
+          width="40px"
           display="flex"
           alignContent="center"
           justifyContent="center"
           alignItems="center"
           position="relative"
           >
-            <Avatar name={fullName} />
+            <Avatar size="sm" name={fullName} />
             <Box
             position="absolute"
             width="100px"
-            left="24px"
+            left="16px"
             bottom="0px"
             >
               <small>{fullName}</small>

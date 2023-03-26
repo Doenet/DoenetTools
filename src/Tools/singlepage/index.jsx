@@ -64,7 +64,9 @@ const router = createBrowserRouter([
   {
     path: "portfolio/:courseId/public",
     loader: publicPortfolioLoader,
-    element: <PublicPortfolio />,
+    element: (<ChakraProvider>
+      <PublicPortfolio />
+    </ChakraProvider>),
   },
   {
     path: "/portfolio/:doenetId/viewer",

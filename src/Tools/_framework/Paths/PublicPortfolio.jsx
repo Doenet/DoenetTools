@@ -1,8 +1,9 @@
 // import axios from 'axios';
+import { Avatar, Box, Image } from '@chakra-ui/react';
 import React from 'react';
-import { redirect, Form, useOutletContext, useLoaderData } from 'react-router-dom';
+import { redirect, Form, useOutletContext, useLoaderData, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+// import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 // export async function action() {
 //   //Create a portfilio activity and redirect to the editor for it
@@ -63,83 +64,74 @@ const CardsContainer = styled.div`
   width: calc(100vw - 40px);
   `
 
-function Card({ doenetId,imagePath,label, pageDoenetId }) {
-  const cardStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '180px',
-    width: "240px",
-    backgroundColor: 'black',
-    overflow: 'hidden',
-    margin: '10px',
-    border: "2px solid #949494",
-    borderRadius: "6px",
-  };
+function Card({ doenetId, imagePath, label, pageDoenetId, fullName }) {
 
-  const topStyle = {
-    height: '128px',
-    // minWidth: '200px',
-  };
-
-  const imgStyle = {
-    height: 'auto',
-    maxWidth: '100%',
-    // maxHeight: '50px',
-    maxHeight: '110px',
-    objectFit: 'cover',
-  };
-
-  const bottomStyle = {
-    height: '54px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    padding: '2px',
-    color: 'black',
-    background: 'white',
-    // whiteSpace: 'normal',
-    // overflow: 'hidden',
-    // textOverflow: 'ellipsis',
-    // display: '-webkit-box',
-    // WebkitLineClamp: 2,
-    // WebkitBoxOrient: 'vertical',
-  };
-
-  const textStyle = {
-    fontSize: '.8em',
-    display: 'inline',
-    WebkitLineClamp: 2,
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    // display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    wordWrap: 'break-word',
-  }
-
-  const linkStyle = {
-    textDecoration: 'none',
-    cursor: 'pointer',
-    // userSelect: 'none',
-    // flexGrow: '1',
-    // maxWidth: '240px',
-  }
-  
   const activityLink = `/portfolio/${doenetId}/viewer`;
-  // const activityLink = `/portfolio/${doenetId}/${pageDoenetId}/viewer`;
 
   return (
-    <a style={linkStyle} href={activityLink} target="_blank">
-      <div style={cardStyle}>
-        <div style={topStyle}>
-          <img src={imagePath} alt="Card" style={imgStyle} />
-        </div>
-        <div style={bottomStyle}>
-          <span style={textStyle}>{label}</span>
-        </div>
-      </div>
-      </a>
+      <Box 
+      display="flex" 
+      flexDirection="column"
+      height="180px"
+      width="180px"
+      background="black"
+      overflow="hidden"
+      margin="10px"
+      border="2px solid #949494"
+      borderRadius= "6px"
+      >
+        <Box 
+        height="130px">
+          <Link to={activityLink}>
+          <Image 
+            width="100%"
+            height="100%"
+            objectFit="contain"
+            src={imagePath} 
+            alt="Activity Card"
+          />
+          </Link>
+        </Box>
+        <Box
+         height="50px"
+         display="flex"
+         justifyContent="flex-start"
+         padding="2px"
+         color="black"
+         background="white"
+        >
+          <Box 
+          width="40px"
+          display="flex"
+          alignContent="center"
+          justifyContent="center"
+          alignItems="center"
+          position="relative"
+          >
+            <Avatar size="sm" name={fullName} />
+            <Box
+            position="absolute"
+            width="100px"
+            left="16px"
+            bottom="0px"
+            >
+              <small>{fullName}</small>
+            </Box>
+          </Box>
+          <Box
+          marginLeft="6px"
+          overflow="hidden"
+          isTruncated
+          noOfLines={1}
+          >
+
+          {label}
+          </Box>
+        </Box>
+      </Box>
   );
 }
+
 
 const PortfolioGrid = styled.div`
   display: grid;
@@ -150,7 +142,7 @@ const PortfolioGrid = styled.div`
 export function PublicPortfolio(){
   let data = useLoaderData();
   // const navigate = useNavigate();
-  console.log("data",data)
+  // console.log("data",data)
 
 
 
@@ -171,7 +163,7 @@ export function PublicPortfolio(){
     <CardsContainer>
       {data.publicActivities.length < 1 ? <div>No Public Activities</div>  :
     <>{data.publicActivities.map((activity)=>{
-      return <Card key={`Card${activity.doenetId}`} {...activity} />
+      return <Card key={`Card${activity.doenetId}`} {...activity} fullName={data.fullName} />
     })}</>
      }
     </CardsContainer>
