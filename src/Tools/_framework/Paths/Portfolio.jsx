@@ -88,6 +88,7 @@ const SecondHeader = styled.header`
   align-items: center;
   text-align: center;
   display: relative;
+  z-index: 100;
 `;
 
 const PublicActivitiesSection = styled.div`
@@ -243,7 +244,19 @@ export function Portfolio(){
 
   return <>
   <PortfolioGrid >
-  <SecondHeader>
+  <Box gridRow="1/2"
+  backgroundColor="#fff"
+  color="#000"
+  height="80px"
+  position="fixed"
+  width="100%"
+  display="flex"
+  flexDirection="column"
+  justifyContent="center"
+  alignItems="center"
+  textAlign="center"
+  zIndex="100"
+  >
   <h1 style={{
       lineHeight: '0.1em'
     }}>{data.fullName}</h1>
@@ -257,7 +270,7 @@ export function Portfolio(){
       </Form>
       </div>
     
-  </SecondHeader>
+  </Box>
   <PublicActivitiesSection>
     <h2>Public</h2>
     <CardsContainer>

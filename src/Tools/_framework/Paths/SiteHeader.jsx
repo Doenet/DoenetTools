@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import React, { useRef, useState } from 'react';
 import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
@@ -79,6 +80,7 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid var(--mainGray);
+
 `;
 
 //Minimal container.  The idea is the Outlet should provide its own layout.
@@ -109,7 +111,21 @@ export function SiteHeader(props) {
 
   return (<>
   <TopContainer>
-    <HeaderContainer>
+    <Box 
+    as="header"
+    gridRow="1 / 2"
+    backgroundColor="#fff"
+    color="#000"
+    height="40px"
+    position="fixed"
+    top="0"
+    width="100%"
+    margin="0"
+    display="flex"
+    justifyContent="space-between"
+    borderBottom="1px solid var(--mainGray)"
+    zIndex="100"
+    >
     <Branding>
       <RouterLogo /><p>Doenet</p>
     </Branding>
@@ -119,7 +135,7 @@ export function SiteHeader(props) {
         {data.signedIn ? <MenuItem to={`portfolio/${data.portfolioCourseId}`}>Portfolio</MenuItem> : null}
       </BarMenu>
       <SignInButtonContainer>{signInButton}</SignInButtonContainer>
-    </HeaderContainer>
+    </Box>
 
     <ContentContainer>
       <Outlet context={{signedIn:data.signedIn}}/>

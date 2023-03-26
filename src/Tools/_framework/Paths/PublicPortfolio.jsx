@@ -148,7 +148,21 @@ export function PublicPortfolio(){
 
   return <>
   <PortfolioGrid >
-  <Header>
+  <Box
+  as="header"
+  gridRow="1/2"
+  backgroundColor="#fff"
+  color="#000"
+  height="80px"
+  position="fixed"
+  width="100%"
+  display="flex"
+  flexDirection="column"
+  justifyContent="center"
+  alignItems="center"
+  textAlign="center"
+  zIndex="100"
+  >
   <h1 style={{
       lineHeight: '0.1em'
     }}>{data.fullName}</h1>
@@ -158,7 +172,7 @@ export function PublicPortfolio(){
     <div style={{position:"absolute", top:'48px',right:"10px"}}>
       </div>
     
-  </Header>
+  </Box>
   <PublicActivitiesSection>
     <CardsContainer>
       {data.publicActivities.length < 1 ? <div>No Public Activities</div>  :
