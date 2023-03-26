@@ -255,7 +255,7 @@ export function Portfolio(){
   justifyContent="center"
   alignItems="center"
   textAlign="center"
-  zIndex="100"
+  zIndex="1200"
   >
   <h1 style={{
       lineHeight: '0.1em'

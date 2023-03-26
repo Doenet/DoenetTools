@@ -124,7 +124,7 @@ export function SiteHeader(props) {
     display="flex"
     justifyContent="space-between"
     borderBottom="1px solid var(--mainGray)"
-    zIndex="100"
+    zIndex="1200"
     >
     <Branding>
       <RouterLogo /><p>Doenet</p>
