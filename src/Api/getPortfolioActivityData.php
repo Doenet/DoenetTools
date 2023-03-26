@@ -6,6 +6,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
@@ -43,6 +44,39 @@ $activityData = [
     'pageDoenetId' => $pageDoenetId,
 ];
 
+$courseId = '';
+
+//What is the courseId of the doenetId
+if ($success) {
+    $sql = "
+    SELECT courseId 
+    FROM course_content 
+    WHERE doenetId = '$doenetId'
+    ";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $courseId = $row['courseId'];
+    } else {
+        $success = false;
+        $message = "Sorry! The activity doesn't have an associated portfolio.";
+    }
+}
+
+//Test if they have the permission to edit it
+if ($success) {
+    $permissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $userId,
+        $courseId
+    );
+    if ($permissions['canModifyActivitySettings'] == '0') {
+        $success = false;
+        $message = 'You need permission to edita a portfolio activity.';
+    }
+}
+
 //Assume we are updating the activity and need the current settings
 if ($success) {
     $sql = "
@@ -68,21 +102,9 @@ if ($success) {
             'pageDoenetId' => $pageDoenetId,
         ];
     } else {
-        //It's a new activity or a hack
-        //So test if it's a hack
-        $sql = "
-        SELECT doenetId 
-        FROM next_doenetId
-        WHERE userId='$userId'
-        AND doenetId='$doenetId'
-        ";
-        $result = $conn->query($sql);
-        if ($result->num_rows <= 0) {
-            //It's a Hack
-            $success = false;
-            $message =
-                'Error: You need to click add activity before navigating here';
-        }
+        $success = false;
+        $message =
+            'Error: You need to click add activity before navigating here';
     }
 }
 

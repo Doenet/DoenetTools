@@ -25,7 +25,7 @@ export async function action({request}) {
     let response = await fetch(`/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`);
     
         if (response.ok) {
-          let respObj = await response.json();
+          // let respObj = await response.json();
           return true;
         }else{
           throw Error(response.message)
@@ -34,7 +34,7 @@ export async function action({request}) {
     let response = await fetch(`/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`);
     
         if (response.ok) {
-          let respObj = await response.json();
+          // let respObj = await response.json();
           return true;
         }else{
           throw Error(response.message)
@@ -43,7 +43,7 @@ export async function action({request}) {
     let response = await fetch(`/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`);
     
         if (response.ok) {
-          let respObj = await response.json();
+          // let respObj = await response.json();
           return true;
         }else{
           throw Error(response.message)
