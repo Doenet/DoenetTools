@@ -5,6 +5,8 @@ import { redirect, Form, useOutletContext, useLoaderData, Link, useFetcher } fro
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { GoKebabVertical } from 'react-icons/go';
+import { itemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { useSetRecoilState } from 'recoil';
 
 export async function action({request}) {
   const formData = await request.formData();
@@ -121,8 +123,12 @@ const PrivateActivitiesSection = styled.div`
   background: var(--mainGray);
 `
 
-function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) {
+function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic, courseId = "n2bEhi8v3mgfNnjIeMyK0" }) {
   const fetcher = useFetcher();
+  //TODO: find the courseId
+  const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
+
   // const activityLink = `/portfolio/${doenetId}/editor`;
   const activityLink = `/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
@@ -176,7 +182,32 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic }) 
                 : 
                 <MenuItem
                 onClick={() => {
-                  fetcher.submit({_action:"Make Public", doenetId}, { method: "post" });
+                  //THINGS WE NEED FROM THE DB 
+                  //- Version of DoenetML
+                  //Eventually we want the content too (multipage)
+
+                  setItemByDoenetId({
+                    version:"0.1.0",
+                    isSinglePage:true,
+                    content:[pageDoenetId],
+                  })
+
+                  compileActivity({
+                    activityDoenetId: doenetId,
+                    isAssigned: true,
+                    courseId,
+                    // successCallback: () => {
+                    //   addToast('Activity Assigned.', toastType.INFO);
+                    // },
+                  });
+                  updateAssignItem({
+                    doenetId,
+                    isAssigned: true,
+                    successCallback: () => {
+                      fetcher.submit({_action:"Make Public", doenetId}, { method: "post" });
+                      //addToast(assignActivityToast, toastType.INFO);
+                    },
+                  });
                 }}
                 >Make Public</MenuItem> }
                 <MenuItem onClick={() => {

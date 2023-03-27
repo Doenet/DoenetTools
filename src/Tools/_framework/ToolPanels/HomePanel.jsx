@@ -469,7 +469,7 @@ export default function HomePanel(props) {
       <div>
         <h1 style={{ color: 'white' }}>Introducing DoenetML</h1>
         <h4 style={{ width: '340px', color: 'white', lineHeight: '1em' }}>DoenetML is the markup language we've created to let you focus on the meaning of the elements you wish to create.</h4>
-        <Button value="See Inside" onClick={() => window.open('https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0', '_blank')} />
+        <Button value="See Inside" onClick={() => window.open('/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0', '_blank')} />
       </div>
 
       <HPVideo

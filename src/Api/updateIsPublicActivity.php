@@ -58,7 +58,8 @@ if ($success) {
 if ($success) {
     $sql = "
         UPDATE course_content
-        SET isPublic = '$isPublic'
+        SET isPublic = '$isPublic',
+        userCanViewSource = '1'
         WHERE doenetId = '$doenetId'
         ";
     $conn->query($sql);

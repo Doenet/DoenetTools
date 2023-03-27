@@ -161,7 +161,7 @@ export function PortfolioActivityViewer() {
     <Avatar size='sm' name={fullName} /> <Byline>By {fullName}</Byline></AvatarLink></HeaderSectionLeft>
       </div>
       <div>
-      <HeaderSectionRight><Button value="See Inside" onClick={()=>navigate(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)} /></HeaderSectionRight>
+      <HeaderSectionRight><Button value="See Inside" onClick={()=>navigate(`/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)} /></HeaderSectionRight>
       {signedIn ? <HeaderSectionRight><Button value="Remix" /></HeaderSectionRight> : null}
       </div>
     </HeaderContent>
