@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { BoardContext } from './graph';
+import { BoardContext, IMAGE_LAYER_OFFSET } from './graph';
 import { retrieveMediaForCid } from '../../Core/utils/retrieveMedia';
 import useDoenetRender from '../useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
@@ -72,7 +72,7 @@ export default React.memo(function Image(props) {
     let jsxImageAttributes = {
       visible: !SVs.hidden,
       fixed,
-      layer: 10 * SVs.layer + 0,
+      layer: 10 * SVs.layer + IMAGE_LAYER_OFFSET,
       highlight: !fixed,
     };
 
@@ -293,7 +293,7 @@ export default React.memo(function Image(props) {
         imageJXG.current.visPropCalc["visible"] = false;
       }
 
-      let layer = 10 * SVs.layer + 0;
+      let layer = 10 * SVs.layer + IMAGE_LAYER_OFFSET;
       let layerChanged = imageJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

@@ -52,6 +52,7 @@
     "crypto-js": "^3.3.0",
     "cssesc": "^3.0.0",
     "csv-parse": "^5.3.6",
+    "cypress-parallel": "^0.12.0",
     "esm-seedrandom": "^3.0.5",
     "handsontable": "^12.1.2",
     "hi-base32": "^0.5.1",

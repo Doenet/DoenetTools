@@ -323,7 +323,7 @@ export default class CodeEditor extends BlockComponent {
   }
 
 
-  updateImmediateValue({ text, actionId }) {
+  updateImmediateValue({ text, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     if (!this.stateValues.disabled) {
       return this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -335,14 +335,16 @@ export default class CodeEditor extends BlockComponent {
           updateType: "setComponentNeedingUpdateValue",
           componentName: this.componentName,
         }],
-        actionId
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       })
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  updateValue({ actionId }) {
+  updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     //Only update when value is out of date
     if (!this.stateValues.disabled &&
       this.stateValues.immediateValue !== this.stateValues.value
@@ -391,10 +393,15 @@ export default class CodeEditor extends BlockComponent {
       return this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate: true,
         event
       }).then(() => {
         this.coreFunctions.triggerChainedActions({
           componentName: this.componentName,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate
         })
         if (this.attributes.staticName &&
           this.definingChildren.length === 2 &&
@@ -402,6 +409,7 @@ export default class CodeEditor extends BlockComponent {
           this.coreFunctions.performAction({
             componentName: this.definingChildren[1].componentName,
             actionName: "updateComponents",
+            args: { sourceInformation, skipRendererUpdate }
           });
         }
       });

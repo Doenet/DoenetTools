@@ -1102,7 +1102,7 @@ export default class Choiceinput extends Input {
 
   }
 
-  async updateSelectedIndices({ selectedIndices, actionId }) {
+  async updateSelectedIndices({ selectedIndices, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
@@ -1136,11 +1136,16 @@ export default class Choiceinput extends Input {
       await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate: true,
         event,
       });
 
       return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
 
     } else {

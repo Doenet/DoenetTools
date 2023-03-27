@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from '../useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BoardContext, LINE_LAYER_OFFSET } from './graph';
 
 export default React.memo(function Circle(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
@@ -55,7 +55,7 @@ export default React.memo(function Circle(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
-      layer: 10 * SVs.layer + 5,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
@@ -232,7 +232,7 @@ export default React.memo(function Circle(props) {
       circleJXG.current.visProp.fixed = fixed;
       circleJXG.current.visProp.highlight = !fixed;
 
-      let layer = 10 * SVs.layer + 5;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = circleJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

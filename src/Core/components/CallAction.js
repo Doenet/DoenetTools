@@ -149,13 +149,13 @@ export default class CallAction extends InlineComponent {
   }
 
 
-  async callAction({ actionId }) {
+  async callAction({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     let targetName = await this.stateValues.targetName;
     let actionName = await this.stateValues.actionName;
     if (targetName !== null && actionName !== null) {
 
-      let args = {};
+      let args = { sourceInformation, skipRendererUpdate: true };
       if (this.serializedChildren.length > 0) {
         args.serializedComponents = deepClone(this.serializedChildren);
       }
@@ -186,6 +186,9 @@ export default class CallAction extends InlineComponent {
 
       await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
 
 

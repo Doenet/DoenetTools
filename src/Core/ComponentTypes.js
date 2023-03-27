@@ -48,6 +48,7 @@ import Polyline from './components/Polyline';
 import Polygon from './components/Polygon';
 import Triangle from './components/Triangle';
 import Rectangle from './components/Rectangle';
+import RegularPolygon from './components/RegularPolygon';
 import Circle from './components/Circle';
 import Parabola from './components/Parabola';
 import Curve from './components/Curve';
@@ -228,6 +229,7 @@ const componentTypeArray = [
   Polygon,
   Triangle,
   Rectangle,
+  RegularPolygon,
   Circle,
   Parabola,
   Curve,

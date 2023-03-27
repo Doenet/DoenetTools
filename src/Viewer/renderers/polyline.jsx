@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from '../useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
 
 
 export default React.memo(function Polyline(props) {
@@ -65,7 +65,7 @@ export default React.memo(function Polyline(props) {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -89,7 +89,7 @@ export default React.memo(function Polyline(props) {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
     });
     if (verticesFixed || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
@@ -211,7 +211,7 @@ export default React.memo(function Polyline(props) {
             pointCoords: pointCoords.current,
             transient: true,
             skippable: true,
-            sourceInformation: { vertex: i }
+            sourceDetails: { vertex: i }
           }
         })
         pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
@@ -235,7 +235,7 @@ export default React.memo(function Polyline(props) {
           action: actions.movePolyline,
           args: {
             pointCoords: pointCoords.current,
-            sourceInformation: { vertex: i }
+            sourceDetails: { vertex: i }
           }
         })
       }
@@ -301,12 +301,13 @@ export default React.memo(function Polyline(props) {
       polylineJXG.current.visProp.fixed = fixed;
       polylineJXG.current.visProp.highlight = !fixed;
 
-      let polylineLayer = 10 * SVs.layer + 7;
+      let polylineLayer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = polylineJXG.current.visProp.layer !== polylineLayer;
+      let pointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
 
       if (layerChanged) {
         polylineJXG.current.setAttribute({ layer: polylineLayer });
-        jsxPointAttributes.current.layer = polylineLayer + 2;
+        jsxPointAttributes.current.layer = pointLayer;
       }
 
 
@@ -418,7 +419,7 @@ export default React.memo(function Polyline(props) {
       polylineJXG.current.update().updateVisibility();
       for (let i = 0; i < SVs.nVertices; i++) {
         if (layerChanged) {
-          pointsJXG.current[i].setAttribute({ layer: polylineLayer + 2 });
+          pointsJXG.current[i].setAttribute({ layer: pointLayer });
         }
         pointsJXG.current[i].needsUpdate = true;
         pointsJXG.current[i].update();

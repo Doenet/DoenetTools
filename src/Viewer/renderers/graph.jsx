@@ -775,3 +775,17 @@ export default React.memo(function Graph(props) {
   }
 
 })
+
+// ticks labels: layer 2 overall 
+
+
+// NOTE: there can be at most 10 different layer offsets,
+// given that the DoenetML layer is multiplied by 10 and added to these offsets
+let tempCounter = 0;
+export const BASE_LAYER_OFFSET = tempCounter++;
+export const IMAGE_LAYER_OFFSET = tempCounter++;
+export const LINE_LAYER_OFFSET = tempCounter++;
+export const VERTEX_LAYER_OFFSET = tempCounter++;
+export const CONTROL_POINT_LAYER_OFFSET = tempCounter++;
+export const POINT_LAYER_OFFSET = tempCounter++;
+export const TEXT_LAYER_OFFSET = tempCounter++;

@@ -125,7 +125,7 @@ describe('CobwebPolyline Tag Tests', function () {
         componentName: "/graph1/cobweb",
         args: {
           pointCoords: { 0: [1, 0] },
-          sourceInformation: { vertex: 0 }
+          sourceDetails: { vertex: 0 }
         }
       })
 
@@ -163,7 +163,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 1: [3, 4] },
-            sourceInformation: { vertex: 1 }
+            sourceDetails: { vertex: 1 }
           }
         })
       })
@@ -207,7 +207,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 1: [1, 1] },
-            sourceInformation: { vertex: 1 }
+            sourceDetails: { vertex: 1 }
           }
         })
       })
@@ -248,7 +248,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 1: [1, 1.6] },
-            sourceInformation: { vertex: 1 }
+            sourceDetails: { vertex: 1 }
           }
         })
       })
@@ -336,7 +336,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 2: [1.6, 1.6] },
-            sourceInformation: { vertex: 2 }
+            sourceDetails: { vertex: 2 }
           }
         })
       })
@@ -392,7 +392,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 3: [1, 2] },
-            sourceInformation: { vertex: 3 }
+            sourceDetails: { vertex: 3 }
           }
         })
       })
@@ -454,7 +454,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 3: [1.6, 2.4] },
-            sourceInformation: { vertex: 3 }
+            sourceDetails: { vertex: 3 }
           }
         })
       })
@@ -611,7 +611,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 4: [2.4, 2.4] },
-            sourceInformation: { vertex: 4 }
+            sourceDetails: { vertex: 4 }
           }
         })
       })
@@ -680,7 +680,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 5: [-1, 3] },
-            sourceInformation: { vertex: 5 }
+            sourceDetails: { vertex: 5 }
           }
         })
       })
@@ -756,7 +756,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 5: [2.4, 3] },
-            sourceInformation: { vertex: 5 }
+            sourceDetails: { vertex: 5 }
           }
         })
       })
@@ -832,7 +832,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 6: [3, 1] },
-            sourceInformation: { vertex: 6 }
+            sourceDetails: { vertex: 6 }
           }
         })
       })
@@ -914,7 +914,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 6: [3, 3] },
-            sourceInformation: { vertex: 6 }
+            sourceDetails: { vertex: 6 }
           }
         })
       })
@@ -996,7 +996,7 @@ describe('CobwebPolyline Tag Tests', function () {
           componentName: "/graph1/cobweb",
           args: {
             pointCoords: { 7: [3, 3] },
-            sourceInformation: { vertex: 7 }
+            sourceDetails: { vertex: 7 }
           }
         })
       })

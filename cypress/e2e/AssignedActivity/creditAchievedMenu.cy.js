@@ -41,13 +41,13 @@ describe('Credit achieved menu tests', function () {
   <p>Enter x: <answer name="ans">x</answer></p>
 </problem>`
 
-    cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId, doenetML});
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
@@ -60,7 +60,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
 
-    cy.get('#\\/ans textarea').type("x{enter}", {force: true})
+    cy.get('#\\/ans textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
 
     cy.get('[data-test="New Attempt"]').click();
@@ -77,27 +77,29 @@ describe('Credit achieved menu tests', function () {
   <p>Enter x: <answer name="ans">x</answer></p>
 </problem>`
 
-const doenetML2 = `
+    const doenetML2 = `
 <problem>
   <p>No questions here</p>
 </problem>`;
 
-const doenetML3 = `
+    const doenetML3 = `
 <problem>
 <p>Enter y: <answer name="ans">y</answer></p>
 </problem>`
 
-const doenetML4 = `<p>No questions here, either</p>`;
+    const doenetML4 = `<p>No questions here, either</p>`;
 
-    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, 
+    cy.createMultipageActivity({
+      courseId, doenetId, parentDoenetId: courseId,
       pageDoenetId1: pageDoenetId, pageDoenetId2, pageDoenetId3, pageDoenetId4,
-       doenetML1, doenetML2, doenetML3, doenetML4 });
+      doenetML1, doenetML2, doenetML3, doenetML4
+    });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
@@ -113,8 +115,8 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
-    
-    cy.get('#page1\\/ans textarea').type("x{enter}", {force: true})
+
+    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -141,7 +143,7 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '50%')
 
-    cy.get('#page3\\/ans textarea').type("y{enter}", {force: true})
+    cy.get('#page3\\/ans textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -169,37 +171,39 @@ const doenetML4 = `<p>No questions here, either</p>`;
   <lorem generateParagraphs="12" />
 </problem>`
 
-const doenetML2 = `
+    const doenetML2 = `
 <problem>
   <p>No questions here</p>
   <lorem generateParagraphs="12" />
 </problem>`;
 
-const doenetML3 = `
+    const doenetML3 = `
 <problem>
   <p>Enter y: <answer name="ans">y</answer></p>
   <lorem generateParagraphs="12" />
 </problem>`
 
-const doenetML4 = `
+    const doenetML4 = `
 <p>No questions here, either</p>
 <lorem generateParagraphs="12" />
 `;
 
-    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, 
+    cy.createMultipageActivity({
+      courseId, doenetId, parentDoenetId: courseId,
       pageDoenetId1: pageDoenetId, pageDoenetId2, pageDoenetId3, pageDoenetId4,
-       doenetML1, doenetML2, doenetML3, doenetML4 });
+      doenetML1, doenetML2, doenetML3, doenetML4
+    });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-
+    cy.wait(100);
     cy.get('[data-test="Paginate"').click();
     cy.wait(100) //TODO: need the UI to let us know this was successful
 
@@ -214,8 +218,8 @@ const doenetML4 = `
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
-    
-    cy.get('#page1\\/ans textarea').type("x{enter}", {force: true})
+
+    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -242,7 +246,7 @@ const doenetML4 = `
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '50%')
 
-    cy.get('#page3\\/ans textarea').type("y{enter}", {force: true})
+    cy.get('#page3\\/ans textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -270,28 +274,30 @@ const doenetML4 = `
   <p>Enter x: <answer name="ans">x</answer></p>
 </problem>`
 
-const doenetML2 = `
+    const doenetML2 = `
 <problem>
   <p>No questions here</p>
 </problem>`;
 
-const doenetML3 = `
+    const doenetML3 = `
 <problem>
 <p>Enter y: <answer name="ans">y</answer></p>
 </problem>`
 
-const doenetML4 = `<p>No questions here, either</p>`;
+    const doenetML4 = `<p>No questions here, either</p>`;
 
-    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, 
+    cy.createMultipageActivity({
+      courseId, doenetId, parentDoenetId: courseId,
       pageDoenetId1: pageDoenetId, pageDoenetId2, pageDoenetId3, pageDoenetId4,
-       doenetML1, doenetML2, doenetML3, doenetML4 });
+      doenetML1, doenetML2, doenetML3, doenetML4
+    });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
 
-    cy.get('[data-test="Item Weights"]').clear().type("2 0 1 0", {force: true}).blur()
+    cy.get('[data-test="Item Weights"]').clear().type("2 0 1 0", { force: true }).blur()
     cy.wait(100) //TODO: need the UI to let us know this was successful
 
     cy.get('[data-test="Assign Activity"]').click();
@@ -310,8 +316,8 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
-    
-    cy.get('#page1\\/ans textarea').type("x{enter}", {force: true})
+
+    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -338,7 +344,7 @@ const doenetML4 = `<p>No questions here, either</p>`;
     cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '66.7%')
 
-    cy.get('#page3\\/ans textarea').type("y{enter}", {force: true})
+    cy.get('#page3\\/ans textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
@@ -365,26 +371,28 @@ const doenetML4 = `<p>No questions here, either</p>`;
   <p>Enter x: <answer name="ans">x</answer></p>
 </problem>`
 
-const doenetML2 = `
+    const doenetML2 = `
 <problem>
   <p>Enter y: <answer name="ans">y</answer></p>
 </problem>`;
 
-const doenetML3 = `
+    const doenetML3 = `
 <problem>
   <p>Enter z: <answer name="ans">z</answer></p>
 </problem>`
 
 
-    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, 
+    cy.createMultipageActivity({
+      courseId, doenetId, parentDoenetId: courseId,
       pageDoenetId1: pageDoenetId, pageDoenetId2, pageDoenetId3,
-       doenetML1, doenetML2, doenetML3 });
+      doenetML1, doenetML2, doenetML3
+    });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
@@ -403,8 +411,8 @@ const doenetML3 = `
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
-    
-    cy.get('#page1\\/ans textarea').type("x{enter}", {force: true})
+
+    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -419,7 +427,7 @@ const doenetML3 = `
     cy.url().should('match', /#page3$/)
 
 
-    cy.get('#page3\\/ans textarea').type("z{enter}", {force: true})
+    cy.get('#page3\\/ans textarea').type("z{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -434,7 +442,7 @@ const doenetML3 = `
 
     cy.url().should('match', /#page2$/)
 
-    cy.get('#page2\\/ans textarea').type("y{enter}", {force: true})
+    cy.get('#page2\\/ans textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -459,31 +467,34 @@ const doenetML3 = `
   <lorem generateParagraphs="6" />
 </problem>`
 
-const doenetML2 = `
+    const doenetML2 = `
 <problem>
   <p>Enter y: <answer name="ans">y</answer></p>
   <lorem generateParagraphs="6" />
   </problem>`;
 
-const doenetML3 = `
+    const doenetML3 = `
 <problem>
   <p>Enter z: <answer name="ans">z</answer></p>
   <lorem generateParagraphs="6" />
 </problem>`
 
 
-    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, 
+    cy.createMultipageActivity({
+      courseId, doenetId, parentDoenetId: courseId,
       pageDoenetId1: pageDoenetId, pageDoenetId2, pageDoenetId3,
-       doenetML1, doenetML2, doenetML3 });
+      doenetML1, doenetML2, doenetML3
+    });
 
     cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
+    cy.wait(100)
     cy.get('[data-test="Paginate"').click();
     cy.wait(100) //TODO: need the UI to let us know this was successful
 
@@ -508,8 +519,8 @@ const doenetML3 = `
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
-    
-    cy.get('#page1\\/ans textarea').type("x{enter}", {force: true})
+
+    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -523,7 +534,7 @@ const doenetML3 = `
     cy.url().should('match', /#page3$/)
 
 
-    cy.get('#page3\\/ans textarea').type("z{enter}", {force: true})
+    cy.get('#page3\\/ans textarea').type("z{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -536,7 +547,7 @@ const doenetML3 = `
 
     cy.url().should('match', /#page2$/)
 
-    cy.get('#page2\\/ans textarea').type("y{enter}", {force: true})
+    cy.get('#page2\\/ans textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')

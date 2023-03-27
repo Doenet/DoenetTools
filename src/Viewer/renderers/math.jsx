@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { BoardContext } from './graph';
+import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
@@ -49,7 +49,7 @@ export default React.memo(function MathComponent(props) {
     let jsxMathAttributes = {
       visible: !SVs.hidden,
       fixed,
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
       highlight: !fixed,
       useMathJax: true,
       parse: false,
@@ -310,7 +310,7 @@ export default React.memo(function MathComponent(props) {
         mathJXG.current.visPropCalc["visible"] = false;
       }
 
-      let layer = 10 * SVs.layer + 9;
+      let layer = 10 * SVs.layer + TEXT_LAYER_OFFSET;
       let layerChanged = mathJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
