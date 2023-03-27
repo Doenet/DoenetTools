@@ -1,0 +1,1 @@
+import{aw as s,bn as t,a as d,F as i,j as m}from"./index-e32334a0.js";const c=s.memo(function(e){let{name:l,id:n,SVs:a,children:r}=t(e);return a.hidden?null:d(i,{children:[m("a",{name:n}),"“",r,"”"]})});export{c as default};
