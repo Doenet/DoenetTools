@@ -1,1 +1,0 @@
-import{R as a,l as i,r as s,j as e}from"./index-b4c9ab18.js";import{t as d,u as l}from"./EditorViewerRecoil-18753b37.js";import{C as u}from"./CodeMirror-ad1c77fe.js";function x(m){const t=a(d),o=i(l);let r=s.useRef(null);return e("div",{children:e(u,{editorRef:r,setInternalValue:o,onBeforeChange:n=>{t(n)}},"codemirror")})}export{x as default};

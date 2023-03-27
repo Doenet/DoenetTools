@@ -483,7 +483,7 @@ export default function HomePanel(props) {
         ref={videoEl}
         // autoplay
         controls
-      ><source src="/media/homepagevideo.mp4" type="video/mp4" /></HPVideo>
+      ><source src="/homepagevideo.mp4" type="video/mp4" /></HPVideo>
     </CreateContentSection>
 
     <Heading heading="Explore" subheading="Interact with our existing content" />

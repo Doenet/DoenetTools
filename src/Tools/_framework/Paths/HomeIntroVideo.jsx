@@ -39,6 +39,6 @@ export default function HomeIntroVideo(){
   ref={videoEl}
   // autoplay
   controls
-><source src="/media/homepagevideo.mp4" type="video/mp4" /></HPVideo> 
+><source src="/homepagevideo.mp4" type="video/mp4" /></HPVideo> 
 }
 
