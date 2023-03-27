@@ -17,7 +17,6 @@ export async function action({ request, params }) {
   
   const formData = await request.formData();
   let updates = Object.fromEntries(formData);
-  console.log("update settings updates",updates)
   let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
     ...updates, doenetId:params.doenetId
   })
@@ -48,6 +47,11 @@ export async function loader({ params }){
   const response = await fetch(`/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`);
   const data = await response.json();
   return data.activityData;
+}
+
+export async function ErrorBoundry(whatdoIget){
+  console.log("whatdoIget",whatdoIget)
+  return <p>Error</p>
 }
 
 const MainGrid = styled.div`

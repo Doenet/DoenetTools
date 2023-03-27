@@ -27,7 +27,8 @@ if (!array_key_exists('doenetId', $_POST)) {
 } elseif (!array_key_exists('imagePath', $_POST)) {
     $success = false;
     $message = 'Missing imagePath';
-}
+} 
+
 
 $portfolioCourseId = '';
 
@@ -35,15 +36,31 @@ $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 $label = mysqli_real_escape_string($conn, $_POST['label']);
 $imagePath = mysqli_real_escape_string($conn, $_POST['imagePath']);
 $public = mysqli_real_escape_string($conn, $_POST['public']);
+$learningOutcomes = mysqli_real_escape_string(
+    $conn,
+    $_POST['learningOutcomes']
+);
 
 $isPublic = '0';
 if ($public) {
     $isPublic = '1';
 }
-$learningOutcomes = mysqli_real_escape_string(
-    $conn,
-    $_POST['learningOutcomes']
-);
+
+//TODO: Make this a handler function fail(message,code);
+
+if (trim($label) == ''){
+    http_response_code(400);
+
+    echo json_encode([
+        'success' => false,
+        'message' => "Label can't be blank.",
+    ]);
+
+    $conn->close();
+    exit();
+}
+
+
 
 $sql = "
 SELECT courseId
@@ -88,6 +105,8 @@ $response_arr = [
     'message' => $message,
     'portfolioCourseId' => $portfolioCourseId,
 ];
+
+
 
 // set response code - 200 OK
 http_response_code(200);

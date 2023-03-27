@@ -16,7 +16,10 @@ import DarkmodeController from './Tools/_framework/DarkmodeController';
 import Community from "./Tools/_framework/Paths/Community";
 import {loader as siteLoader, SiteHeader} from "./Tools/_framework/Paths/SiteHeader";
 import {loader as caroselLoader, Home} from "./Tools/_framework/Paths/Home";
-import {loader as portfolioActivitySettingsLoader, action as portfolioActivitySettingsAction, PortfolioActivitySettings} from "./Tools/_framework/Paths/PortfolioActivitySettings";
+import {loader as portfolioActivitySettingsLoader, 
+  action as portfolioActivitySettingsAction, 
+  ErrorBoundry as portfolioActivitySettingsError,
+  PortfolioActivitySettings} from "./Tools/_framework/Paths/PortfolioActivitySettings";
 import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "./Tools/_framework/Paths/Portfolio";
 import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuPanelCaps/PortfilioEditorInfoCap";
 import { loader as publicPortfolioLoader, PublicPortfolio } from "./Tools/_framework/Paths/PublicPortfolio";
@@ -103,6 +106,7 @@ const router = createBrowserRouter([
     path: "/portfolio/:doenetId/settings",
     loader: portfolioActivitySettingsLoader,
     action: portfolioActivitySettingsAction,
+    ErrorBoundary: portfolioActivitySettingsError,
     element: <RecoilRoot><PortfolioActivitySettings /></RecoilRoot>,
   },
   {
