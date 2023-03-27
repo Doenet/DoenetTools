@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext, LINE_LAYER_OFFSET } from './graph';
 
 export default React.memo(function Circle(props) {

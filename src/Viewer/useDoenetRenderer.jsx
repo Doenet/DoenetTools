@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { atomFamily, useRecoilValue, useSetRecoilState } from 'recoil';
 // import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
-import { renderersloadComponent } from '../PageViewer';
+import { renderersloadComponent } from './PageViewer';
 
 export const rendererState = atomFamily({
   key: 'rendererState',
@@ -62,7 +62,7 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
         setRenderersToLoad((old) => {
           let rendererPromises = { ...old };
           if (!(childInstructions.rendererType in rendererPromises)) {
-            rendererPromises[childInstructions.rendererType] = import(`./${childInstructions.rendererType}.js`);
+            rendererPromises[childInstructions.rendererType] = import(`./renderers/${childInstructions.rendererType}.js`);
           }
           return rendererPromises;
         })

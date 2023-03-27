@@ -4,7 +4,7 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Section(props) {

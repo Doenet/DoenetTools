@@ -9,18 +9,18 @@ import { RecoilRoot } from 'recoil';
 import { createRoot } from "react-dom/client";
 
 
-import ToolRoot from '../_framework/NewToolRoot';
+import ToolRoot from './Tools/_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
-import { mathjaxConfig } from '../../Core/utils/math';
-import DarkmodeController from '../_framework/DarkmodeController';
-import Community from "../_framework/Paths/Community";
-import {loader as siteLoader, SiteHeader} from "../_framework/Paths/SiteHeader";
-import {loader as caroselLoader, Home} from "../_framework/Paths/Home";
-import {loader as portfolioActivitySettingsLoader, action as portfolioActivitySettingsAction, PortfolioActivitySettings} from "../_framework/Paths/PortfolioActivitySettings";
-import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "../_framework/Paths/Portfolio";
-import { loader as portfolioEditorMenuCapLoader } from "../_framework/MenuPanelCaps/PortfilioEditorInfoCap";
-import { loader as publicPortfolioLoader, PublicPortfolio } from "../_framework/Paths/PublicPortfolio";
-import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "../_framework/Paths/PortfolioActivityViewer";
+import { mathjaxConfig } from './Core/utils/math';
+import DarkmodeController from './Tools/_framework/DarkmodeController';
+import Community from "./Tools/_framework/Paths/Community";
+import {loader as siteLoader, SiteHeader} from "./Tools/_framework/Paths/SiteHeader";
+import {loader as caroselLoader, Home} from "./Tools/_framework/Paths/Home";
+import {loader as portfolioActivitySettingsLoader, action as portfolioActivitySettingsAction, PortfolioActivitySettings} from "./Tools/_framework/Paths/PortfolioActivitySettings";
+import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "./Tools/_framework/Paths/Portfolio";
+import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuPanelCaps/PortfilioEditorInfoCap";
+import { loader as publicPortfolioLoader, PublicPortfolio } from "./Tools/_framework/Paths/PublicPortfolio";
+import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "./Tools/_framework/Paths/PortfolioActivityViewer";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import '@fontsource/jost';

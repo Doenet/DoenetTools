@@ -1,6 +1,6 @@
 import { MathJax } from 'better-react-mathjax';
 import React, { useEffect } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 
 export default React.memo(function Number(props) {
   let { name, id, SVs } = useDoenetRender(props);

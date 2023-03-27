@@ -1849,7 +1849,7 @@ export default function Attempt() {
 
   //ROUTER SECTION
   return (
-    <Router>
+    <Router basename='/src/Tools'>
       <Routes>
         <Route path="/uiDocs" element={<Layout />}>
           <Route index element={<Home />} />

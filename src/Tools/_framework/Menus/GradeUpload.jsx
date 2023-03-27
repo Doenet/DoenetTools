@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import parse from 'csv-parse';
+import {parse} from 'csv-parse';
 import { useSetRecoilState } from 'recoil';
 import {
   processGradesAtom,

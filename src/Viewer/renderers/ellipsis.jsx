@@ -1,5 +1,5 @@
 import React from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 
 export default React.memo(function Ellipsis(props) {
   let {name, id, SVs} = useDoenetRender(props);

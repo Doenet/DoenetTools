@@ -3,7 +3,7 @@ WORKDIR /build
 COPY ./doenet_docker/php/composer.json .
 RUN composer install --ignore-platform-reqs
 
-FROM php:5.4-fpm
+FROM php:7.4-fpm
 RUN  apt-get update -y && \
      apt-get dist-upgrade -y
 RUN apt-get install -y p7zip \
