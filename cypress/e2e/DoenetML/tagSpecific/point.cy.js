@@ -14336,4 +14336,41 @@ describe('Point Tag Tests', function () {
 
   });
 
+  it('handle invalid layer', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P" layer="$l">(3,4)</point>
+    </graph>
+    <mathinput name="l" />
+    <number copysource="P.layer" name="l2" /> 
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get("#\\/l2").should('have.text', '0')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.layer).eq(0);
+
+    })
+
+
+    cy.get("#\\/l textarea").type("1{enter}", { force: true });
+    cy.get("#\\/l2").should('have.text', '1')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.layer).eq(1);
+
+    })
+
+  });
+
 })

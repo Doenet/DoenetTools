@@ -32,7 +32,8 @@ export default class GraphicalComponent extends BaseComponent {
       createStateVariable: "layer",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
+      attributesForCreatedComponent: { valueOnNaN: 0 },
     };
     return attributes;
 

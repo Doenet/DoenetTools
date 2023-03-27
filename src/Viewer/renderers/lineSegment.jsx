@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
 
 export default React.memo(function LineSegment(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -58,7 +58,7 @@ export default React.memo(function LineSegment(props) {
       visible: !SVs.hidden,
       withlabel,
       fixed,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
@@ -128,7 +128,7 @@ export default React.memo(function LineSegment(props) {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      layer: 10 * SVs.layer + 8,
+      layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
       showInfoBox: SVs.showCoordsWhenDragging,
       visible: endpointsVisible
     });
@@ -405,13 +405,13 @@ export default React.memo(function LineSegment(props) {
       lineSegmentJXG.current.visProp.fixed = fixed;
       lineSegmentJXG.current.visProp.highlight = !fixed;
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = lineSegmentJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
         lineSegmentJXG.current.setAttribute({ layer });
-        point1JXG.current.setAttribute({ layer: layer + 1 });
-        point2JXG.current.setAttribute({ layer: layer + 1 });
+        point1JXG.current.setAttribute({ layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET });
+        point2JXG.current.setAttribute({ layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET });
       }
 
       if (lineSegmentJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {

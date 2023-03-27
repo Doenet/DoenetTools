@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
 
 
 export default React.memo(function Polygon(props) {
@@ -54,14 +54,14 @@ export default React.memo(function Polygon(props) {
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       visible: !verticesFixed && !SVs.hidden,
       withLabel: false,
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
       highlight: true,
     };
 
     let jsxBorderAttributes = {
       highlight: false,
       visible: !SVs.hidden,
-      layer: 10 * SVs.layer + 8,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: true,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -79,7 +79,7 @@ export default React.memo(function Polygon(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
 
       //specific to polygon
       fillColor,
@@ -354,10 +354,13 @@ export default React.memo(function Polygon(props) {
       polygonJXG.current.visPropCalc["visible"] = visibleNow;
       // polygonJXG.current.setAttribute({visible: visibleNow})
 
-      let polygonLayer = 10 * SVs.layer + 7;
+      let polygonLayer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = polygonJXG.current.visProp.layer !== polygonLayer;
+      let borderLayer, pointLayer;
 
       if (layerChanged) {
+        borderLayer = 10 * SVs.layer + LINE_LAYER_OFFSET;
+        pointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
         polygonJXG.current.setAttribute({ layer: polygonLayer });
       }
 
@@ -396,7 +399,7 @@ export default React.memo(function Polygon(props) {
         border.visPropCalc.visible = visibleNow;
 
         if (layerChanged) {
-          border.setAttribute({ layer: polygonLayer + 1 });
+          border.setAttribute({ layer: borderLayer });
         }
 
         if (border.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
@@ -421,9 +424,9 @@ export default React.memo(function Polygon(props) {
       }
 
       if (layerChanged) {
-        jsxPointAttributes.current.layer = polygonLayer + 2;
+        jsxPointAttributes.current.layer = pointLayer;
         for (let vertex of polygonJXG.current.vertices) {
-          vertex.setAttribute({ layer: polygonLayer + 2 });
+          vertex.setAttribute({ layer: pointLayer });
           vertex.needsUpdate = true;
           vertex.update();
         }

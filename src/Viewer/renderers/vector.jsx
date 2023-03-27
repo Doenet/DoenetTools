@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
@@ -54,7 +54,8 @@ export default React.memo(function Vector(props) {
 
     }
 
-    let layer = 10 * SVs.layer + 7;
+    let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
+    let pointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
     let fixed = !SVs.draggable || SVs.fixed;
 
     //things to be passed to JSXGraph as attributes
@@ -90,7 +91,7 @@ export default React.memo(function Vector(props) {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      layer: layer + 1,
+      layer: pointLayer,
     });
 
     // create invisible points at endpoints
@@ -358,13 +359,14 @@ export default React.memo(function Vector(props) {
       }
 
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = vectorJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
+        let pointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
         vectorJXG.current.setAttribute({ layer });
-        point1JXG.current.setAttribute({ layer: layer + 1 });
-        point2JXG.current.setAttribute({ layer: layer + 1 });
+        point1JXG.current.setAttribute({ layer: pointLayer });
+        point2JXG.current.setAttribute({ layer: pointLayer });
       }
 
       if (vectorJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
