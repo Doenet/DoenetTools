@@ -70,28 +70,12 @@ export async function loader({params}){
   }
   
   return {
+    courseId:params.courseId,
     fullName:data.fullName,
     publicActivities:data.publicActivities,
     privateActivities:data.privateActivities,
   };
 }
-
-const SecondHeader = styled.header`
-  grid-row: 1/2;
-  background-color: #fff;
-  color: #000;
-  height: 80px;
-  position: fixed;
-  width: 100%;
-  margin-top: 1px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  display: relative;
-  z-index: 100;
-`;
 
 const PublicActivitiesSection = styled.div`
     grid-row: 2/3;
@@ -123,7 +107,17 @@ const PrivateActivitiesSection = styled.div`
   background: var(--mainGray);
 `
 
-function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic, courseId = "n2bEhi8v3mgfNnjIeMyK0" }) {
+function Card({ 
+  doenetId, 
+  imagePath, 
+  label, 
+  pageDoenetId, 
+  fullName, 
+  isPublic, 
+  courseId,
+  version,
+  content
+ }) {
   const fetcher = useFetcher();
   //TODO: find the courseId
   const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
@@ -187,9 +181,9 @@ function Card({ doenetId, imagePath, label, pageDoenetId, fullName, isPublic, co
                   //Eventually we want the content too (multipage)
 
                   setItemByDoenetId({
-                    version:"0.1.0",
+                    version,
                     isSinglePage:true,
-                    content:[pageDoenetId],
+                    content,
                   })
 
                   compileActivity({
@@ -311,7 +305,13 @@ export function Portfolio(){
     <CardsContainer>
       {data.publicActivities.length < 1 ? <div>No Public Activities</div>  :
     <>{data.publicActivities.map((activity)=>{
-      return <Card key={`Card${activity.doenetId}`} {...activity} fullName={data.fullName} isPublic={true} />
+      return <Card 
+      key={`Card${activity.doenetId}`} 
+      {...activity} 
+      fullName={data.fullName} 
+      isPublic={true} 
+      courseId={data.courseId} 
+      />
     })}</>
      }
     </CardsContainer>
@@ -325,7 +325,13 @@ export function Portfolio(){
     <CardsContainer>
       {data.privateActivities.length < 1 ? <div>No Private Activities</div>  :
     <>{data.privateActivities.map((activity)=>{
-      return <Card key={`Card${activity.doenetId}`} {...activity} fullName={data.fullName} isPublic={false} />
+      return <Card 
+      key={`Card${activity.doenetId}`} 
+      {...activity} 
+      fullName={data.fullName} 
+      isPublic={false} 
+      courseId={data.courseId} 
+      />
     })}</>
      } 
     </CardsContainer>
