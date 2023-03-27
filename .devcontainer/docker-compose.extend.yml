@@ -50,8 +50,12 @@ services:
       - vendor:/usr/local/apache2/htdocs/api/vendor
     restart: on-failure
   apache:
+    ports:
+      - 8080:80
+    build:
+      context: ./
+      dockerfile: ./doenet_docker/apache/Dockerfile
     volumes:
-      - ./dist_local:/usr/local/apache2/htdocs/
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
   mysql:
