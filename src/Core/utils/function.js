@@ -53,7 +53,7 @@ export function createFunctionFromDefinition(fDefinition) {
   } else if (fDefinition.functionType === "piecewise") {
     return returnPiecewiseNumericalFunctionFromChildren({
       numericalFsOfChildren: fDefinition.fDefinitionsOfChildren.map(fDef => createFunctionFromDefinition(fDef)),
-      domainsOfChildren: fDefinition.domainsOfChildren,
+      numericalDomainsOfChildren: fDefinition.numericalDomainsOfChildren,
       domain: fDefinition.domain ? fDefinition.domain.map(x => me.fromAst(x)) : null,
       component: fDefinition.component
     })
@@ -149,7 +149,7 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
 }
 
 export function returnPiecewiseNumericalFunctionFromChildren({
-  numericalFsOfChildren, domainsOfChildren, domain, component = 0
+  numericalFsOfChildren, numericalDomainsOfChildren, domain, component = 0
 }) {
 
   component = Number(component);
@@ -191,7 +191,7 @@ export function returnPiecewiseNumericalFunctionFromChildren({
       return NaN;
     }
 
-    for (let [ind, childDomain] of domainsOfChildren.entries()) {
+    for (let [ind, childDomain] of numericalDomainsOfChildren.entries()) {
       let childMinX = childDomain[0][0];
       let childMaxX = childDomain[0][1];
       let childMinXClosed = childDomain[1][0];

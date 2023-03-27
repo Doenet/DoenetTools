@@ -84,7 +84,7 @@ export default class PiecewiseFunction extends Function {
       }
     }
 
-    stateVariableDefinitions.domainsOfChildren = {
+    stateVariableDefinitions.numericalDomainsOfChildren = {
       returnDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -93,11 +93,11 @@ export default class PiecewiseFunction extends Function {
         },
       }),
       definition({ dependencyValues }) {
-        let domainsOfChildren = []
+        let numericalDomainsOfChildren = [];
 
         // We can compute the domain of a function child only if it is real-valued.
         // Otherwise, we assume the domain is all real numbers
-        for (let functionChild of dependencyValues.functionChildren) {
+        for (let [ind, functionChild] of dependencyValues.functionChildren.entries()) {
           let fDomain = functionChild.stateValues.domain?.[0];
           if (fDomain) {
             // if fDomain exists, then it must be an interval, i.e., its tree must be of the form
@@ -109,25 +109,24 @@ export default class PiecewiseFunction extends Function {
             let intervalMinIsClosed = fDomain.tree[2][1];
             let intervalMaxIsClosed = fDomain.tree[2][2];
 
-            if (!Number.isFinite(intervalMin)) {
-              intervalMin = -Infinity;
-              intervalMinIsClosed = false;
+            if (!Number.isFinite(intervalMin) && intervalMin !== -Infinity) {
+              numericalDomainsOfChildren.push(null);
+            } else if (!Number.isFinite(intervalMax) && intervalMax !== Infinity) {
+              numericalDomainsOfChildren.push(null);
+            } else if (intervalMax < intervalMin) {
+              numericalDomainsOfChildren.push(null);
+            } else if (intervalMax === intervalMin && !(intervalMinIsClosed && intervalMaxIsClosed)) {
+              numericalDomainsOfChildren.push(null);
+            } else {
+              numericalDomainsOfChildren.push([[intervalMin, intervalMax], [intervalMinIsClosed, intervalMaxIsClosed]])
             }
-
-            if (!Number.isFinite(intervalMax)) {
-              intervalMax = Infinity;
-              intervalMaxIsClosed = false;
-            }
-
-            domainsOfChildren.push([[intervalMin, intervalMax], [intervalMinIsClosed, intervalMaxIsClosed]])
-
 
           } else {
-            domainsOfChildren.push([[-Infinity, Infinity], [false, false]])
+            numericalDomainsOfChildren.push([[-Infinity, Infinity], [false, false]])
           }
 
         }
-        return { setValue: { domainsOfChildren } }
+        return { setValue: { numericalDomainsOfChildren } }
       }
     }
 
@@ -138,12 +137,13 @@ export default class PiecewiseFunction extends Function {
           attributeName: "domain",
           variableNames: ["intervals"]
         },
-        domainsOfChildren: {
+        numericalDomainsOfChildren: {
           dependencyType: "stateVariable",
-          variableName: "domainsOfChildren"
+          variableName: "numericalDomainsOfChildren"
         },
       }),
       definition({ dependencyValues }) {
+
         if (dependencyValues.domainAttr !== null) {
           let domain = dependencyValues.domainAttr.stateValues.intervals[0];
 
@@ -154,39 +154,47 @@ export default class PiecewiseFunction extends Function {
             return { setValue: { domain: null } }
           }
 
-        } else if (dependencyValues.domainsOfChildren.length > 0) {
+        }
 
-          let minD = Infinity;
-          let maxD = -Infinity;
-          let minDIsClosed = false;
-          let maxDIsClosed = false;
+        let foundChildDomain = false;
+        let minD = Infinity;
+        let maxD = -Infinity;
+        let minDIsClosed = false;
+        let maxDIsClosed = false;
+
+        if (dependencyValues.numericalDomainsOfChildren.length > 0) {
 
           // Since a domain currently has to be an interval, any missing intervals are filled in
-          for (let childDomain of dependencyValues.domainsOfChildren) {
+          for (let childDomain of dependencyValues.numericalDomainsOfChildren) {
+            if (childDomain) {
 
-            let intervalMin = childDomain[0][0];
-            let intervalMax = childDomain[0][1];
+              foundChildDomain = true;
 
-            let intervalMinIsClosed = childDomain[1][0];
-            let intervalMaxIsClosed = childDomain[1][1];
+              let intervalMin = childDomain[0][0];
+              let intervalMax = childDomain[0][1];
+
+              let intervalMinIsClosed = childDomain[1][0];
+              let intervalMaxIsClosed = childDomain[1][1];
 
 
-            if (intervalMin < minD) {
-              minD = intervalMin;
-              minDIsClosed = intervalMinIsClosed;
-            } else if (intervalMin === minD && intervalMinIsClosed) {
-              minDIsClosed = true;
+              if (intervalMin < minD) {
+                minD = intervalMin;
+                minDIsClosed = intervalMinIsClosed;
+              } else if (intervalMin === minD && intervalMinIsClosed) {
+                minDIsClosed = true;
+              }
+
+              if (intervalMax > maxD) {
+                maxD = intervalMax;
+                maxDIsClosed = intervalMaxIsClosed;
+              } else if (intervalMax === maxD && intervalMaxIsClosed) {
+                maxDIsClosed = true;
+              }
             }
-
-            if (intervalMax > maxD) {
-              maxD = intervalMax;
-              maxDIsClosed = intervalMaxIsClosed;
-            } else if (intervalMax === maxD && intervalMaxIsClosed) {
-              maxDIsClosed = true;
-            }
-
           }
+        }
 
+        if (foundChildDomain) {
 
           let domain = [me.fromAst(["interval",
             ["tuple", minD, maxD],
@@ -276,9 +284,9 @@ export default class PiecewiseFunction extends Function {
               childGroups: ["functions"],
               variableNames: ["numericalfs"],
             },
-            domainsOfChildren: {
+            numericalDomainsOfChildren: {
               dependencyType: "stateVariable",
-              variableName: "domainsOfChildren"
+              variableName: "numericalDomainsOfChildren"
             },
             numericalfShadow: {
               dependencyType: "stateVariable",
@@ -296,12 +304,16 @@ export default class PiecewiseFunction extends Function {
           let numericalfs = {};
           for (let arrayKey of arrayKeys) {
 
-            let numericalFsOfChildren = globalDependencyValues.functionChildren.map(
-              functionChild => functionChild.stateValues.numericalfs[arrayKey]
-            );
+            let numericalFsOfChildren = globalDependencyValues.functionChildren
+              .filter((_, i) => globalDependencyValues.numericalDomainsOfChildren[i])
+              .map(
+                functionChild => functionChild.stateValues.numericalfs[arrayKey]
+              );
+
+            let numericalDomainsOfChildren = globalDependencyValues.numericalDomainsOfChildren.filter(x => x);
             numericalfs[arrayKey] = returnPiecewiseNumericalFunctionFromChildren({
               numericalFsOfChildren,
-              domainsOfChildren: globalDependencyValues.domainsOfChildren,
+              numericalDomainsOfChildren,
               domain: globalDependencyValues.domain,
               component: arrayKey
             })
@@ -374,9 +386,9 @@ export default class PiecewiseFunction extends Function {
               childGroups: ["functions"],
               variableNames: ["fDefinitions"],
             },
-            domainsOfChildren: {
+            numericalDomainsOfChildren: {
               dependencyType: "stateVariable",
-              variableName: "domainsOfChildren"
+              variableName: "numericalDomainsOfChildren"
             },
             numericalfShadow: {
               dependencyType: "stateVariable",
@@ -395,13 +407,18 @@ export default class PiecewiseFunction extends Function {
           let fDefinitions = {};
           for (let arrayKey of arrayKeys) {
 
-            let fDefinitionsOfChildren = globalDependencyValues.functionChildren.map(
-              functionChild => functionChild.stateValues.fDefinitions[arrayKey]
-            );
+            let fDefinitionsOfChildren = globalDependencyValues.functionChildren
+              .filter((_, i) => globalDependencyValues.numericalDomainsOfChildren[i])
+              .map(
+                functionChild => functionChild.stateValues.fDefinitions[arrayKey]
+              );
+
+            let numericalDomainsOfChildren = globalDependencyValues.numericalDomainsOfChildren.filter(x => x);
+
             fDefinitions[arrayKey] = {
               functionType: "piecewise",
               fDefinitionsOfChildren,
-              domainsOfChildren: globalDependencyValues.domainsOfChildren,
+              numericalDomainsOfChildren,
               domain: globalDependencyValues.domain,
               component: arrayKey
             }
@@ -443,11 +460,7 @@ export default class PiecewiseFunction extends Function {
         functionChildren: {
           dependencyType: "child",
           childGroups: ["functions"],
-          variableNames: ["formula", "variable"],
-        },
-        domainsOfChildren: {
-          dependencyType: "stateVariable",
-          variableName: "domainsOfChildren"
+          variableNames: ["formula", "variable", "domain"],
         },
         displayDigits: {
           dependencyType: "stateVariable",
@@ -470,77 +483,121 @@ export default class PiecewiseFunction extends Function {
 
         let functionVariable = dependencyValues.variable;
 
-        let params = {};
+        let toLatexParams = {};
         if (dependencyValues.padZeros) {
           if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
             if (Number.isFinite(dependencyValues.displayDecimals)) {
-              params.padToDecimals = dependencyValues.displayDecimals;
+              toLatexParams.padToDecimals = dependencyValues.displayDecimals;
             }
           } else if (dependencyValues.displayDigits >= 1) {
-            params.padToDigits = dependencyValues.displayDigits;
+            toLatexParams.padToDigits = dependencyValues.displayDigits;
           }
         }
-        let childrenLatex = dependencyValues.functionChildren.map(functionChild => {
+
+        let me_infinity = me.fromAst(Infinity);
+        let me_minus_infinity = me.fromAst(-Infinity);
+
+        let childrenLatex = [];
+
+        for (let [ind, functionChild] of dependencyValues.functionChildren.entries()) {
 
           let formula = functionChild.stateValues.formula.subscripts_to_strings();
           let variable = functionChild.stateValues.variable.subscripts_to_strings();
 
           formula = formula.substitute({ [variable]: functionVariable }).strings_to_subscripts();
 
-          return roundForDisplay({
+          let formulaLatex = roundForDisplay({
             value: formula,
             dependencyValues, usedDefault
-          }).toLatex(params)
-        });
+          }).toLatex(toLatexParams);
 
-        let childConditions = [];
+          let fDomain = functionChild.stateValues.domain?.[0];
+          let intervalMin, intervalMax;
+          let intervalMinIsClosed, intervalMaxIsClosed;
 
-        for (let [ind, childDomain] of dependencyValues.domainsOfChildren.entries()) {
-          let minx = childDomain[0][0];
-          let maxx = childDomain[0][1];
+          if (fDomain) {
+            // if fDomain exists, then it must be an interval, i.e., its tree must be of the form
+            // ["interval", ["tuple", 1,2], ["tuple", true, false]]
+            // where the above represents the interval [1,2)
 
-          if (Number.isFinite(minx)) {
-            if (Number.isFinite(maxx)) {
-              let intervalString = "";
-              if (childDomain[1][0]) {
-                intervalString += "[";
-              } else {
-                intervalString += "("
-              };
-              intervalString += `${minx}, ${maxx}`;
-              if (childDomain[1][1]) {
-                intervalString += "]";
-              } else {
-                intervalString += ")"
-              };
-
-              childConditions.push(`\\text{if } ${functionVariable} \\in ${intervalString}`);
-            } else {
-              // only minx
-              let operator = childDomain[1][0] ? "\\ge" : ">";
-
-              childConditions.push(`\\text{if } ${functionVariable} ${operator} ${minx}`);
-
-            }
-          } else if (Number.isFinite(maxx)) {
-            // only maxx
-            let operator = childDomain[1][1] ? "\\le" : "<";
-
-            childConditions.push(`\\text{if } ${functionVariable} ${operator} ${maxx}`);
+            intervalMin = me.fromAst(fDomain.tree[1][1]).simplify();
+            intervalMax = me.fromAst(fDomain.tree[1][2]).simplify();
+            intervalMinIsClosed = fDomain.tree[2][1];
+            intervalMaxIsClosed = fDomain.tree[2][2];
           } else {
+            intervalMin = me_minus_infinity;
+            intervalMax = me_infinity;
+          }
 
-            if (ind === 0) {
-              // first child has no conditions, so just return latex for first child
-              return { setValue: { latex: childrenLatex[0] } }
+
+          if (intervalMin.equals(me_minus_infinity)) {
+            if (intervalMax.equals(me_infinity)) {
+              if (ind === 0) {
+                // first child has no conditions, so just return latex for first child
+                return { setValue: { latex: formulaLatex } }
+              }
+
+              childrenLatex.push(`${formulaLatex} & \\text{otherwise}`);
+              break;
+            } else {
+
+              // only maxx
+              let operator = intervalMaxIsClosed ? "\\le" : "<";
+              let maxxLatex = roundForDisplay({
+                value: intervalMax,
+                dependencyValues, usedDefault
+              }).toLatex(toLatexParams);
+              childrenLatex.push(`${formulaLatex} & \\text{if } ${functionVariable} ${operator} ${maxxLatex}`);
             }
 
-            childConditions.push(`\\text{otherwise}`);
-            break;
+          } else if (intervalMax.equals(me_infinity)) {
+            // only minx
+            let operator = intervalMinIsClosed ? "\\ge" : ">";
+
+            let minxLatex = roundForDisplay({
+              value: intervalMin,
+              dependencyValues, usedDefault
+            }).toLatex(toLatexParams);
+            childrenLatex.push(`${formulaLatex} & \\text{if } ${functionVariable} ${operator} ${minxLatex}`);
+
+          } else if (intervalMax.equals(intervalMin) && intervalMinIsClosed && intervalMaxIsClosed) {
+
+            // single point
+            let maxxLatex = roundForDisplay({
+              value: intervalMax,
+              dependencyValues, usedDefault
+            }).toLatex(toLatexParams);
+            childrenLatex.push(`${formulaLatex} & \\text{if } ${functionVariable} = ${maxxLatex}`);
+
+          } else {
+            // unequal minx and maxx
+            let domainString = "{" + roundForDisplay({
+              value: intervalMin,
+              dependencyValues, usedDefault
+            }).toLatex(toLatexParams) + "}";
+            if (intervalMinIsClosed) {
+              domainString += " \\le ";
+            } else {
+              domainString += " < "
+            };
+            domainString += functionVariable;
+            if (intervalMaxIsClosed) {
+              domainString += " \\le ";
+            } else {
+              domainString += " < "
+            };
+            domainString += roundForDisplay({
+              value: intervalMax,
+              dependencyValues, usedDefault
+            }).toLatex(toLatexParams);
+
+            childrenLatex.push(`${formulaLatex} & \\text{if } ${domainString}`);
+
           }
 
         }
 
-        let latex = childConditions.map((cond, i) => `${childrenLatex[i]} & ${cond}`).join("\\\\\n    ")
+        let latex = childrenLatex.join("\\\\\n    ")
 
         latex = `\\begin{cases}\n    ${latex}\n\\end{cases}`;
 
@@ -558,9 +615,9 @@ export default class PiecewiseFunction extends Function {
             childGroups: ["functions"],
             variableNames: ["allMinima"]
           },
-          domainsOfChildren: {
+          numericalDomainsOfChildren: {
             dependencyType: "stateVariable",
-            variableName: "domainsOfChildren"
+            variableName: "numericalDomainsOfChildren"
           },
           numericalf: {
             dependencyType: "stateVariable",
@@ -579,7 +636,11 @@ export default class PiecewiseFunction extends Function {
 
         let f = dependencyValues.numericalf;
 
-        for (let [ind, childDomain] of dependencyValues.domainsOfChildren.entries()) {
+        for (let [ind, childDomain] of dependencyValues.numericalDomainsOfChildren.entries()) {
+
+          if (!childDomain) {
+            continue;
+          }
 
           let minx = childDomain[0][0];
           let maxx = childDomain[0][1];
@@ -633,9 +694,9 @@ export default class PiecewiseFunction extends Function {
             childGroups: ["functions"],
             variableNames: ["allMaxima"]
           },
-          domainsOfChildren: {
+          numericalDomainsOfChildren: {
             dependencyType: "stateVariable",
-            variableName: "domainsOfChildren"
+            variableName: "numericalDomainsOfChildren"
           },
           numericalf: {
             dependencyType: "stateVariable",
@@ -654,7 +715,11 @@ export default class PiecewiseFunction extends Function {
 
         let f = dependencyValues.numericalf;
 
-        for (let [ind, childDomain] of dependencyValues.domainsOfChildren.entries()) {
+        for (let [ind, childDomain] of dependencyValues.numericalDomainsOfChildren.entries()) {
+
+          if (!childDomain) {
+            continue;
+          }
 
           let minx = childDomain[0][0];
           let maxx = childDomain[0][1];

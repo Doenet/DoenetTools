@@ -73,7 +73,7 @@ describe('Piecewise Function Tag Tests', function () {
     cy.get('#\\/mef2 .mjx-mrow').eq(0).should('have.text', 'f2(x)={0if\u00a0x≤01otherwise')
     cy.get('#\\/meg .mjx-mrow').eq(0).should('have.text', 'g(x)={1if\u00a0x≥00otherwise')
     cy.get('#\\/meg2 .mjx-mrow').eq(0).should('have.text', 'g2(x)={0if\u00a0x<01otherwise')
-    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x∈[0,0]1if\u00a0x>00otherwise')
+    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x=01if\u00a0x>00otherwise')
     cy.get('#\\/meh2 .mjx-mrow').eq(0).should('have.text', 'h2(x)=⎧⎪⎨⎪⎩1if\u00a0x>00if\u00a0x<012otherwise')
 
     let fs = ["f", "f2"];
@@ -174,7 +174,7 @@ describe('Piecewise Function Tag Tests', function () {
     cy.get('#\\/mef2 .mjx-mrow').eq(0).should('have.text', 'f2(x)={0if\u00a0x≤01otherwise')
     cy.get('#\\/meg .mjx-mrow').eq(0).should('have.text', 'g(x)={1if\u00a0x≥00otherwise')
     cy.get('#\\/meg2 .mjx-mrow').eq(0).should('have.text', 'g2(x)={0if\u00a0x<01otherwise')
-    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x∈[0,0]1if\u00a0x>00otherwise')
+    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x=01if\u00a0x>00otherwise')
     cy.get('#\\/meh2 .mjx-mrow').eq(0).should('have.text', 'h2(x)=⎧⎪⎨⎪⎩1if\u00a0x>00if\u00a0x<012otherwise')
 
     let fs = ["f", "f2"];
@@ -253,7 +253,7 @@ describe('Piecewise Function Tag Tests', function () {
 
     cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(t)={tif\u00a0t>02−tif\u00a0t≤0')
     cy.get('#\\/meg .mjx-mrow').eq(0).should('have.text', 'g(q)={qif\u00a0q>02−qif\u00a0q<0')
-    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(s)={sif\u00a0s∈[0,10)2−sif\u00a0s∈[−10,0)')
+    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(s)={sif\u00a00≤s<102−sif\u00a0−10≤s<0')
     cy.get('#\\/mek .mjx-mrow').eq(0).should('have.text', 'k(s)={uif\u00a0u>02−uif\u00a0u<0')
 
     cy.window().then(async (win) => {
@@ -740,5 +740,89 @@ describe('Piecewise Function Tag Tests', function () {
 
   });
 
+  it.only('ignore function pieces with non-numerical domain when evaluating numerically', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <graph>
+    <piecewisefunction name="f">
+      <function domain="(s,t)">x</function>
+      <function domain="[1,q)">x^2/10</function>
+      <function domain="(z,5)">x^3/100</function>
+      <function domain="[8,10]">x^4/1000</function>
+      <function domain="(20,-10)">x^5/10000</function>
+    </piecewisefunction>
+    </graph>
+    <me name="mef">f(x)=$f</me>
+    <p name="p7">$$f(7)</p>
+    <p name="p8">$$f(8)</p>
+    <p name="p9">$$f(9)</p>
+    <p name="p10">$$f(10)</p>
+    <p name="p11">$$f(11)</p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(x)=⎧⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎨⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎩xif\u00a0s<x<tx210if\u00a01≤x<qx3100if\u00a0z<x<5x41000if\u00a08≤x≤10x510000if\u00a020<x<−10')
+
+    cy.get('#\\/p7 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get('#\\/p8 .mjx-mrow').eq(0).should('have.text', '4.096')
+    cy.get('#\\/p9 .mjx-mrow').eq(0).should('have.text', '6.561')
+    cy.get('#\\/p10 .mjx-mrow').eq(0).should('have.text', '10')
+    cy.get('#\\/p11 .mjx-mrow').eq(0).should('have.text', 'NaN')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f = createFunctionFromDefinition(stateVariables["/f"].stateValues.fDefinitions[0]);
+      for (let i = -10; i <= 15; i++) {
+        if (i >= 8 && i <= 10) {
+          expect(f(i)).closeTo(i ** 4 / 1000, 1E-14)
+        } else {
+          expect(f(i)).eqls(NaN);
+        }
+
+      }
+    })
+
+  });
+
+  it('use single point notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <graph>
+    <piecewisefunction name="f">
+      <function domain="[1, sin(pi/2)]">x</function>
+      <function domain="[sqrt(4), 2]">x^2/10</function>
+      <function domain="(sin(5pi/2),3)">x^3/100</function>
+    </piecewisefunction>
+    </graph>
+    <me name="mef">f(x)=$f</me>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(x)=⎧⎪\n⎪⎨⎪\n⎪⎩xif\u00a0x=1x210if\u00a0x=2x3100if\u00a01<x<3')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f = createFunctionFromDefinition(stateVariables["/f"].stateValues.fDefinitions[0]);
+      expect(f(0)).eqls(NaN);
+      expect(f(0.999)).eqls(NaN);
+      expect(f(1)).eq(1);
+      expect(f(1.0001)).closeTo(1.0001 ** 3 / 100, 1E-14);
+      expect(f(1.9999)).closeTo(1.9999 ** 3 / 100, 1E-14);
+      expect(f(2)).eq(4 / 10);
+      expect(f(2.0001)).closeTo(2.0001 ** 3 / 100, 1E-14);
+      expect(f(2.9999)).closeTo(2.9999 ** 3 / 100, 1E-14);
+      expect(f(3)).eqls(NaN);
+      expect(f(4)).eqls(NaN);
+
+    })
+
+  });
 
 })
