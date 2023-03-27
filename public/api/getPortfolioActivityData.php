@@ -36,7 +36,7 @@ if ($result->num_rows > 0) {
 
 $activityData = [
     'doenetId' => $doenetId,
-    'imagePath' => '/media/activity_default.jpg',
+    'imagePath' => '/activity_default.jpg',
     'label' => '',
     'learningOutcomes' => '',
     'public' => false, //default to private

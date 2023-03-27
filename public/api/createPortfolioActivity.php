@@ -77,7 +77,7 @@ if ($success) {
         '{"type":"activity","version": "0.1.0","isSinglePage": true,"content":["' .
         $pageDoenetId .
         '"],"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
-    $imagePath = '/media/activity_default.jpg';
+    $imagePath = '/activity_default.jpg';
     $learningOutcomes = '';
     $isPublic = '0';
 
