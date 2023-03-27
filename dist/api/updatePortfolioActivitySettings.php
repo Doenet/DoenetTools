@@ -48,17 +48,17 @@ if ($public) {
 
 //TODO: Make this a handler function fail(message,code);
 
-if (trim($label) == ''){
-    http_response_code(400);
+// if (trim($label) == ''){
+//     http_response_code(400);
 
-    echo json_encode([
-        'success' => false,
-        'message' => "Label can't be blank.",
-    ]);
+//     echo json_encode([
+//         'success' => false,
+//         'message' => "Label can't be blank.",
+//     ]);
 
-    $conn->close();
-    exit();
-}
+//     $conn->close();
+//     exit();
+// }
 
 
 
