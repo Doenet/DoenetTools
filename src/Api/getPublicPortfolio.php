@@ -50,6 +50,7 @@ if ($success) {
     ON p.containingDoenetId = cc.doenetId
     WHERE cc.courseId = '$courseId'
     AND cc.isPublic = '1'
+    AND cc.isDeleted = '0'
     ";
     $result = $conn->query($sql);
 
