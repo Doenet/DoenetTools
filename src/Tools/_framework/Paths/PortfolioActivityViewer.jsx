@@ -19,10 +19,11 @@ export async function loader({params}){
   const response = await fetch(`/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`);
   const data = await response.json();
 
+  console.log('data',data)
+  //TODO: replace this with assigned cid code
   const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
   const doenetML = await doenetMLResponse.text();
 
-  // return data;
   return {
     doenetML,
     signedIn,
@@ -162,7 +163,7 @@ export function PortfolioActivityViewer() {
       </div>
       <div>
       <HeaderSectionRight><Button value="See Inside" onClick={()=>navigate(`/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)} /></HeaderSectionRight>
-      {signedIn ? <HeaderSectionRight><Button value="Remix" /></HeaderSectionRight> : null}
+      {signedIn ? <HeaderSectionRight><Button value="Remix" onClick={()=>{}} /></HeaderSectionRight> : null}
       </div>
     </HeaderContent>
   </Header>
