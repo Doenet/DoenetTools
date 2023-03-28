@@ -281,12 +281,12 @@ export function PortfolioActivitySettings(){
   <Slot3>  
     
     {data.isNew ? <SideBySide>
-      <Button alert value="Cancel" onClick={() => navigate(-1)}/>
+      <Button alert value="Cancel" onClick={(e) => {e.preventDefault(); navigate(-1)}}/>
       <Button type="submit" value="Create" />
       </SideBySide>
       :
       <SideBySide>
-      <Button alert value="Cancel" onClick={() => navigate(-1)}/>
+      <Button alert value="Cancel" onClick={(e) => {e.preventDefault(); navigate(-1)}}/>
       <Button type="submit" value="Update" />
       </SideBySide>
     }
