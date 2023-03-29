@@ -19,9 +19,17 @@ export async function loader({params}){
   const response = await fetch(`/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`);
   const data = await response.json();
 
-  console.log('data',data)
-  //TODO: replace this with assigned cid code
-  const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
+  // const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
+  // const doenetML = await doenetMLResponse.text();
+
+  const cidResponse = await fetch(`/media/${data.json.assignedCid}.doenet`);
+  const activityML = await cidResponse.text();
+  
+  //Find the first page's doenetML
+  const regex = /<page\scid="(\w*)"\s\/>/;
+  const pageIds = activityML.match(regex);
+
+  const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
   const doenetML = await doenetMLResponse.text();
 
   return {
@@ -29,7 +37,6 @@ export async function loader({params}){
     signedIn,
     label:data.label, 
     fullName: data.firstName + ' ' + data.lastName,
-    avatarInitials: data.firstName.charAt(0) + data.lastName.charAt(0),
     courseId:data.courseId,
     doenetId:params.doenetId,
     pageDoenetId:data.pageDoenetId,
@@ -128,11 +135,11 @@ export function PortfolioActivityViewer() {
     signedIn, 
     label, 
     fullName, 
-    avatarInitials, 
     courseId,
     doenetId,
     pageDoenetId, 
   } = useLoaderData();
+
   const navigate = useNavigate();
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
@@ -149,7 +156,6 @@ export function PortfolioActivityViewer() {
       index: cleanGeneratedVariant.index,
     });
   }
-  //({avatarInitials})
 
   return (<>
   <PageContainer>
@@ -172,6 +178,7 @@ export function PortfolioActivityViewer() {
   <PageViewer
             key={`HPpageViewer`}
             doenetML={doenetML}
+            // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
             flags={{
               showCorrectness: true,
               solutionDisplayMode: true,

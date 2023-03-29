@@ -17,6 +17,7 @@ $message = '';
 $sql = "
 SELECT cc.label,
 cc.courseId,
+CAST(cc.jsonDefinition as CHAR) AS json,
 p.doenetId AS 'pageDoenetId'
 FROM course_content AS cc
 LEFT JOIN pages AS p
@@ -28,12 +29,14 @@ $result = $conn->query($sql);
 $label = '';
 $courseId = '';
 $pageDoenetId = '';
+$json = '';
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $label = $row['label'];
     $courseId = $row['courseId'];
     $pageDoenetId = $row['pageDoenetId'];
+    $json = json_decode($row["json"], true);
 }
 
 $sql = "
@@ -60,6 +63,7 @@ $response_arr = [
     'lastName' => $lastName,
     'courseId' => $courseId,
     'pageDoenetId' => $pageDoenetId,
+    'json' => $json,
 ];
 
 http_response_code(200);
