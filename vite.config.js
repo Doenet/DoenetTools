@@ -9,6 +9,7 @@ export default defineConfig({
   plugins: [react()],
   assetsInclude: ['**/*.doenet'],
   server: {
+    port: 8000,
     proxy: {
       '/api': 'http://apache',
       '/cyapi': 'http://apache',
@@ -20,6 +21,7 @@ export default defineConfig({
       { find: 'csv-parse', replacement: 'csv-parse/browser/esm' },
       { find: '@Toast', replacement: '/src/Tools/_framework/Toast' },
       { find: '@Tool', replacement: '/src/Tools/_framework/Tool' },
+      { find: '@ToolRoot', replacement: '/src/Tools/_framework/NewToolRoot'},
       { find: 'solid-svg', replacement: '@fortawesome/free-solid-svg-icons' },
     ],
   },
