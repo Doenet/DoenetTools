@@ -2,9 +2,11 @@ import { Box } from '@chakra-ui/react';
 import React, { useRef, useState } from 'react';
 import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
+import { pageToolViewAtom } from '../NewToolRoot';
 import RouterLogo from '../RouterLogo';
 
 
@@ -103,8 +105,17 @@ function MenuItem({to,children}){
 export function SiteHeader(props) {
   let navigate = useNavigate();
   let data = useLoaderData();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   
-  let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() => navigate('/course')} value="Go to Course" />
+  let signInButton = <Button dataTest="Nav to course" size="medium" onClick={() =>{
+    setPageToolView({
+      page: 'course',
+      tool: '',
+      view: '',
+      params:{},
+    });
+    navigate('/course');
+  } } value="Go to Course" />
     if (!data.signedIn) {
       signInButton = <Button dataTest="Nav to signin" onClick={() => navigate('/SignIn')} size="medium" value="Sign In" />
     }

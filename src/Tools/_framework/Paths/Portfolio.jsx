@@ -7,6 +7,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { GoKebabVertical } from 'react-icons/go';
 import { itemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { useSetRecoilState } from 'recoil';
+import { pageToolViewAtom } from '../NewToolRoot';
 
 export async function action({request}) {
   const formData = await request.formData();
@@ -122,6 +123,8 @@ function Card({
   //TODO: find the courseId
   const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
   const { compileActivity, updateAssignItem } = useCourse(courseId);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
 
   // const activityLink = `/portfolio/${doenetId}/editor`;
   const activityLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
@@ -143,7 +146,14 @@ function Card({
         <Box 
         position="relative"
         height="130px">
-          <Link to={activityLink}>
+          <Link to={activityLink} onClick={()=>{
+            setPageToolView({
+              page: 'portfolioeditor',
+              tool: 'editor',
+              view: '',
+              params:{},
+            });
+          }}>
           <Image 
             width="100%"
             height="100%"
@@ -261,6 +271,7 @@ const PortfolioGrid = styled.div`
 export function Portfolio(){
   let context = useOutletContext();
   let data = useLoaderData();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   // const navigate = useNavigate();
 
   //Don't do more processing if we don't know if we are signed in or not
@@ -291,7 +302,14 @@ export function Portfolio(){
     >Portfolio</Text>
     <div style={{position:"absolute", top:'48px',right:"10px"}}>
       <Form method="post">
-      <Button value="Add Activity"/>
+      <Button value="Add Activity" onClick={()=>{
+           setPageToolView({
+             page: 'portfolioeditor',
+             tool: 'editor',
+             view: '',
+             params:{},
+           });
+      }}/>
       <input type="hidden" name="_action" value="Add Activity" />
       </Form>
       </div>
