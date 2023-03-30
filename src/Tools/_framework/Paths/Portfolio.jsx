@@ -18,7 +18,7 @@ export async function action({request}) {
     
           if (response.ok) {
             let { doenetId, pageDoenetId } = await response.json();
-            return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
+            return redirect(`/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
           }else{
             throw Error(response.message)
           }

@@ -22,7 +22,7 @@ export async function action({ request, params }) {
   })
 
   if (referrer == "portfolioeditor"){
-    return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
+    return redirect(`/portfolioeditor/${updates.doenetId}?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
   }else{
     const portfolioCourseId = response.data.portfolioCourseId;
     return redirect(`/portfolio/${portfolioCourseId}`) 

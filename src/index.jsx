@@ -44,27 +44,27 @@ const router = createBrowserRouter([
   {
     path: "/",
     loader: siteLoader,
-    element: <RecoilRoot><ChakraProvider theme={theme}><SiteHeader /></ChakraProvider></RecoilRoot>,
+    element: <ChakraProvider theme={theme}><SiteHeader /></ChakraProvider>,
     children: [
       {
         path: "/",
         loader: caroselLoader,
-        element: (<RecoilRoot>
+        element: (
         <DarkmodeController>
           <MathJaxContext
             version={2}
             config={mathjaxConfig}
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
-            <Home />
+            <ChakraProvider theme={theme}><Home /></ChakraProvider>
           </MathJaxContext>
         </DarkmodeController>
-      </RecoilRoot>),
+      ),
       },
       {
         path: "community",
         loader: caroselLoader,
-        element: <Community />,
+        element: <ChakraProvider theme={theme}><Community /></ChakraProvider>,
       },
       {
         path: "portfolio/:courseId",
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
     path: "/portfolio/:doenetId/viewer",
     loader: portfolioActivityViewerLoader,
     // action: portfolioActivitySettingsAction,
-    element: (<RecoilRoot>
+    element: (
       <DarkmodeController>
         <MathJaxContext
           version={2}
@@ -100,21 +100,20 @@ const router = createBrowserRouter([
           </ChakraProvider>
         </MathJaxContext>
       </DarkmodeController>
-</RecoilRoot>),
+),
   },
   {
     path: "/portfolio/:doenetId/settings",
     loader: portfolioActivitySettingsLoader,
     action: portfolioActivitySettingsAction,
     ErrorBoundary: portfolioActivitySettingsError,
-    element: <RecoilRoot><PortfolioActivitySettings /></RecoilRoot>,
+    element: <PortfolioActivitySettings />,
   },
   {
     path: "/portfolioeditor/:doenetId",
     loader: portfolioEditorMenuCapLoader,
     // errorElement: <div>Error!</div>,
     element: (
-                <RecoilRoot>
                   <DarkmodeController>
                     <MathJaxContext
                       version={2}
@@ -124,14 +123,12 @@ const router = createBrowserRouter([
                       <ToolRoot />
                     </MathJaxContext>
                   </DarkmodeController>
-                </RecoilRoot>
-              
               ),
   },
   {
     path: "*",
     // errorElement: <div>Error!</div>,
-    element: (<RecoilRoot>
+    element: (
             <DarkmodeController>
               <MathJaxContext
                 version={2}
@@ -140,11 +137,10 @@ const router = createBrowserRouter([
               >
                 <ToolRoot />
               </MathJaxContext>
-            </DarkmodeController>
-    </RecoilRoot>),
+            </DarkmodeController>),
   },
 
 ]);
 
 const root = createRoot(document.getElementById('root'));
-root.render(<RouterProvider router={router} />);
+root.render(<RecoilRoot><RouterProvider router={router} /></RecoilRoot>);
