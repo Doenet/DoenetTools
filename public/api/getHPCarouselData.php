@@ -16,7 +16,7 @@ $sql = "
 	SELECT section,
 	position,
 	imagePath,
-	text,
+	label,
 	link
 	FROM homepage_carousel
   ORDER BY section,position
@@ -29,8 +29,8 @@ if ($result->num_rows > 0) {
 
         array_push($carouselData[$section], [
             'imagePath' => $row['imagePath'],
-            'text' => $row['text'],
-            'link' => $row['link'],
+            'label' => $row['label'],
+            'activityLink' => $row['link'],
         ]);
     }
 }

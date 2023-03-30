@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
+import { Text } from '@chakra-ui/react';
 import { useLoaderData, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
@@ -11,12 +12,14 @@ function Heading(props) {
     alignItems: 'center',
     height: '100px',
   }}>
-    <h1 style={{
-      lineHeight: '0.1em',
-    }}>{props.heading}</h1>
-    <h4 style={{
-      lineHeight: '0.1em',
-    }}> {props.subheading} </h4>
+    <Text 
+    fontSize="24px"
+    fontWeight="700"
+    >{props.heading}</Text>
+    <Text
+    fontSize="16px"
+    fontWeight="700"
+    >{props.subheading}</Text>
   </div>
 }
 
@@ -61,6 +64,7 @@ export default function Community(props){
     </SearchBarContainer> 
     </SearchBarSection>
   <Heading heading="Community Public Content" />
+  
   <CarouselSection>
   <Carousel title="College Math" data={carouselData[0]} />
   <Carousel title="Science & Engineering" data={carouselData[1]} />

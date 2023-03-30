@@ -22,16 +22,15 @@ import {
   faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
-import useMeasure from 'react-use-measure' //Temporary
 import { Avatar, Box, Image, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
 
-function Card({ doenetId, imagePath, label, fullName }) {
+function Card({ activityLink, doenetId, imagePath, label, fullName }) {
 
-  const activityLink = `/portfolio/${doenetId}/viewer`;
+  // const activityLink = `/portfolio/${doenetId}/viewer`;
 
   return (
       <Box 

@@ -41,20 +41,6 @@ const LinkStyling = styled.a`
   }
 `;
 
-const H1responsive = styled.h1`
-  line-height: 0.1em;
-  @media (max-width: 800px) {
-  font-size: 1.1em;
-  }
-`
-
-const H4responsive = styled.h4`
-  line-height: 0.1em;
-  @media (max-width: 800px) {
-  font-size: .6em;
-  }
-`
-
 const CarouselSection = styled.div`
       display: flex;
       flex-direction: column;
@@ -153,31 +139,9 @@ function Heading(props) {
     fontSize="16px"
     fontWeight="700"
     >{props.subheading}</Text>
-    {/* <h1 style={{
-      lineHeight: '0.1em',
-    }}>{props.heading}</h1>
-    <h4 style={{
-      lineHeight: '0.1em',
-    }}> {props.subheading} </h4> */}
   </div>
 }
 
-const SignInButtonContainer = styled.div`
-  margin: auto 10px auto 0px;
-`
-
-const Header = styled.header`
-  background-color: #fff;
-  color: #000;
-  height: 40px;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: space-between;
-
-`;
 
 const Main = styled.main`
   margin-top: 40px;
@@ -186,45 +150,6 @@ const Main = styled.main`
   height: 100vh;
   margin: 0;
 `;
-
-const HeaderSection = styled.div`
-    margin-top: 40px;
-    display: flex;
-    background: var(--mainGray);
-    justify-content: center;
-    align-items: center;
-    height: 175px;
-    /* position: relative; */
-    @media (max-width: 500px) {
-        height: 300px;
-        flex-direction: column-reverse;
-      }
-`
-const Branding = styled.span`
-  margin: 4px 0px 4px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 110px;
-  cursor: default;
-  font-size: 16px;
-`
-
-const MenuItem = styled.div`
-  padding: 8px;
-  color: ${props => props.active ? "var(--mainBlue)" : "black"};
-  border-bottom: ${props => props.active ? "2px solid var(--mainBlue)" : null};
-  cursor: pointer;
-`
-
-const BarMenu = styled.div`
-  margin: 0px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  column-gap: 20px;
-`
 
 export function Home() {
   let context = useOutletContext();
