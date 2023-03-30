@@ -8,6 +8,8 @@ import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImage } from '@fortawesome/free-solid-svg-icons';
 import { Box, Image } from '@chakra-ui/react';
+import { useSetRecoilState } from 'recoil';
+import { pageToolViewAtom } from '../NewToolRoot';
 
 
 export async function action({ request, params }) {
@@ -137,6 +139,8 @@ export function PortfolioActivitySettings(){
   let data = useLoaderData();
   const navigate = useNavigate();
   let numberOfFilesUploading = useRef(0);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
 
   let [imagePath,setImagePath] = useState(data.imagePath);
 
@@ -217,7 +221,7 @@ export function PortfolioActivitySettings(){
     <Form method="post">
   <MainGrid>
   <Slot1>
-    <div>{data.isNew ? <h1>Add Activity</h1> : <h1>Activity Settings</h1>}</div>
+    <div><h1>Activity Settings</h1></div>
   </Slot1>
   <Slot2>
   <Table>
@@ -279,18 +283,28 @@ export function PortfolioActivitySettings(){
   </Table>
   </Slot2>
   <Slot3>  
-    
-    {data.isNew ? <SideBySide>
-      <Button alert value="Cancel" onClick={(e) => {e.preventDefault(); navigate(-1)}}/>
-      <Button type="submit" value="Create" />
-      </SideBySide>
-      :
-      <SideBySide>
-      <Button alert value="Cancel" onClick={(e) => {e.preventDefault(); navigate(-1)}}/>
-      <Button type="submit" value="Update" />
-      </SideBySide>
-    }
-    
+    <SideBySide>
+    <Button alert value="Cancel" onClick={(e) => {
+      e.preventDefault();
+      //Assume that they came from the editor to orient Tool Root
+      setPageToolView({
+        page: 'portfolioeditor',
+        tool: 'editor',
+        view: '',
+        params:{},
+      });
+       navigate(-1);
+      }}/>
+    <Button type="submit" value="Update" onClick={()=>{
+      //Assume that they came from the editor to orient Tool Root
+      setPageToolView({
+        page: 'portfolioeditor',
+        tool: 'editor',
+        view: '',
+        params:{},
+      });
+    }} />
+    </SideBySide>
   </Slot3>
   </MainGrid>
   <input type="hidden" name="imagePath" value={imagePath}></input>

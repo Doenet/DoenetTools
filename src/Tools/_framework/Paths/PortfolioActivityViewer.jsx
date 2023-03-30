@@ -8,6 +8,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import { Link } from 'react-router-dom';
 import { Avatar } from '@chakra-ui/react';
+import { pageToolViewAtom } from '../NewToolRoot';
 
 export async function loader({params}){
   //Check if signedIn
@@ -141,6 +142,8 @@ export function PortfolioActivityViewer() {
   } = useLoaderData();
 
   const navigate = useNavigate();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -168,7 +171,16 @@ export function PortfolioActivityViewer() {
     <Avatar size='sm' name={fullName} /> <Byline>By {fullName}</Byline></AvatarLink></HeaderSectionLeft>
       </div>
       <div>
-      <HeaderSectionRight><Button value="See Inside" onClick={()=>navigate(`/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)} /></HeaderSectionRight>
+      <HeaderSectionRight><Button value="See Inside" onClick={()=>{
+        setPageToolView({
+          page: 'public',
+          tool: 'editor',
+          view: '',
+          params:{},
+        });
+        navigate(`/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
+      }
+      } /></HeaderSectionRight>
       {signedIn ? <HeaderSectionRight><Button value="Remix" onClick={()=>{}} /></HeaderSectionRight> : null}
       </div>
     </HeaderContent>
