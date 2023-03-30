@@ -1,1 +1,0 @@
-import{z as e,a as l,j as t,B as n,A as s}from"./index-0510454e.js";import{B as a}from"./ButtonGroup-6ae9cd9f.js";function c(o){const r=e();return l("div",{style:o.style,children:[t("div",{children:"Enter Enrollment code"}),t(a,{vertical:!0,children:t(n,{onClick:()=>r("Stub Enrolled in Course!",s.SUCCESS),value:"Enroll",children:"Enroll"})})]})}export{c as default};

@@ -53,7 +53,6 @@ if ($success) {
     FROM course_content 
     WHERE doenetId = '$doenetId'
     ";
-    $temp = $sql;
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -100,6 +99,7 @@ if ($success) {
             'public' => $row['isPublic'],
             'isNew' => false,
             'pageDoenetId' => $pageDoenetId,
+            'courseId' => $courseId,
         ];
     } else {
         $success = false;
@@ -112,7 +112,6 @@ $response_arr = [
     'success' => $success,
     'message' => $message,
     'activityData' => $activityData,
-    'temp' => $temp,
 ];
 
 http_response_code(200);
