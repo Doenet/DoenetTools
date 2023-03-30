@@ -990,7 +990,8 @@ function RootController(props) {
   let isURLChange = false;
   if (locationStr !== lastLocationStr.current) {
     isURLChange = true;
-    nextPageToolView.page = location.pathname.replaceAll('/', '').toLowerCase();
+    // nextPageToolView.page = location.pathname.replaceAll('/', '').toLowerCase();
+    nextPageToolView.page = location.pathname.split('/')[1].toLowerCase(); //Needed this for portfolio editor
     if (nextPageToolView.page === '') {
       nextPageToolView.page = 'home';
       const url = window.location.origin + window.location.pathname + 'home';

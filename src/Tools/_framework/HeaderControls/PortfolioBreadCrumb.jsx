@@ -1,17 +1,12 @@
 import React, { Suspense } from 'react';
-import { useNavigate } from 'react-router';
-import { useRecoilValue } from 'recoil';
-import { courseIdAtom, itemByDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { useLoaderData, useNavigate } from 'react-router';
 import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
-import { searchParamAtomFamily } from '../NewToolRoot';
 
 
 export default function PortfolioBreadCrumb() {
   const navigate = useNavigate();
-  const courseId = useRecoilValue(courseIdAtom);
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const activityObj = useRecoilValue(itemByDoenetId(doenetId));
-  let { label } = activityObj;
+  let data = useLoaderData();
+  const { label, courseId } = data;
 
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>

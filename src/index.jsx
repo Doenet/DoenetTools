@@ -110,20 +110,23 @@ const router = createBrowserRouter([
     element: <RecoilRoot><PortfolioActivitySettings /></RecoilRoot>,
   },
   {
-    path: "/portfolioeditor",
+    path: "/portfolioeditor/:doenetId",
     loader: portfolioEditorMenuCapLoader,
     // errorElement: <div>Error!</div>,
-    element: (<RecoilRoot>
-            <DarkmodeController>
-              <MathJaxContext
-                version={2}
-                config={mathjaxConfig}
-                onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-              >
-                <ToolRoot />
-              </MathJaxContext>
-            </DarkmodeController>
-    </RecoilRoot>),
+    element: (
+                <RecoilRoot>
+                  <DarkmodeController>
+                    <MathJaxContext
+                      version={2}
+                      config={mathjaxConfig}
+                      onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+                    >
+                      <ToolRoot />
+                    </MathJaxContext>
+                  </DarkmodeController>
+                </RecoilRoot>
+              
+              ),
   },
   {
     path: "*",

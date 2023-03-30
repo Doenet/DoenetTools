@@ -124,7 +124,7 @@ function Card({
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   // const activityLink = `/portfolio/${doenetId}/editor`;
-  const activityLink = `/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
+  const activityLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
 
 

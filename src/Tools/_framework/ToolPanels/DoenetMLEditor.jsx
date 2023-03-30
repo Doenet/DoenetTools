@@ -9,10 +9,13 @@ import CodeMirror from '../CodeMirror';
 import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 import { useSaveDraft } from '../../../_utils/hooks/useSaveDraft'
 import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
+import { useLoaderData } from 'react-router';
 
 
 export default function DoenetMLEditor() {
   // console.log(">>>===DoenetMLEditor")
+  let data = useLoaderData();
+  const loaderPageId = data?.pageDoenetId;
 
   // const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
@@ -25,6 +28,9 @@ export default function DoenetMLEditor() {
   if (paramlinkPageId){
     readOnly = true;
     effectivePageId = paramlinkPageId
+  }
+  if (loaderPageId){
+    effectivePageId = loaderPageId;
   }
   const courseId = useRecoilValue(courseIdAtom)
   
@@ -67,7 +73,6 @@ export default function DoenetMLEditor() {
       timeout.current = null;
     }
   }, [viewerDoenetML])
-
 
   if (effectivePageId !== initializedPageId) {
     //DoenetML is changing to another PageId

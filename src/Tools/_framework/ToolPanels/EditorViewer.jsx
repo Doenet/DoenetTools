@@ -11,7 +11,7 @@ import { profileAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToo
 import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 import { editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 import axios from 'axios';
-import { useLocation } from 'react-router';
+import { useLoaderData, useLocation } from 'react-router';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 
 export const useUpdateViewer = () => {
@@ -35,6 +35,9 @@ export default function EditorViewer() {
   // let refreshCount = useRef(1);
   // console.log(">>>>===EditorViewer",refreshCount.current)
   // refreshCount.current++;
+  let data = useLoaderData();
+  const loaderDoenetId = data?.doenetId;
+  const loaderPageId = data?.pageDoenetId;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const paramlinkPageId = useRecoilValue(searchParamAtomFamily('linkPageId'))
@@ -44,6 +47,10 @@ export default function EditorViewer() {
   if (paramlinkPageId) {
     effectivePageId = paramlinkPageId;
     effectiveDoenetId = paramlinkPageId;
+  }
+  if (loaderDoenetId){
+    effectivePageId = loaderPageId;
+    effectiveDoenetId = loaderDoenetId;
   }
   const courseId = useRecoilValue(courseIdAtom)
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
@@ -103,7 +110,6 @@ export default function EditorViewer() {
     //   response = response.data;
     // }
     // const doenetML = response;
-    // console.log("initDoenetML doenetML",doenetML)
 
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML)

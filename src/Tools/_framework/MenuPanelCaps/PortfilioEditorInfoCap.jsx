@@ -2,18 +2,8 @@ import { Box, Image } from '@chakra-ui/react';
 import React from 'react';
 import { useLoaderData } from 'react-router';
 
-export async function loader(){
-  // export async function loader({params}){
-    // let params = new URL(document.location).searchParams;
-    // let search = new URL(document.location).search;
-    // console.log("search",search)
-    // let doenetId = params.get("doenetId"); 
-    let afterDoenetId = document.location.href?.split('&doenetId=')[1];
-    let doenetId = afterDoenetId?.split('&pageId=')[0];
-    //Somehow it still has the url which got us here
-    if (doenetId == undefined){
-      doenetId = document.location.href?.split('/')[4];
-    }
+  export async function loader({params}){
+    const doenetId = params.doenetId;
     const response = await fetch(`/api/getPortfolioActivityData.php?doenetId=${doenetId}`);
     const data = await response.json();
     
