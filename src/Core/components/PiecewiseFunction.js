@@ -230,7 +230,8 @@ export default class PiecewiseFunction extends Function {
     delete stateVariableDefinitions.prescribedExtrema;
     delete stateVariableDefinitions.interpolationPoints;
     delete stateVariableDefinitions.xs;
-
+    delete stateVariableDefinitions.mathChildName;
+    delete stateVariableDefinitions.mathChildCreatedBySugar;
 
 
 

@@ -740,12 +740,12 @@ describe('Piecewise Function Tag Tests', function () {
 
   });
 
-  it.only('ignore function pieces with non-numerical domain when evaluating numerically', () => {
+  it('ignore function pieces with non-numerical domain when evaluating numerically', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <graph>
-    <piecewisefunction name="f">
+    <piecewisefunction name="f" symbolic="false">
       <function domain="(s,t)">x</function>
       <function domain="[1,q)">x^2/10</function>
       <function domain="(z,5)">x^3/100</function>

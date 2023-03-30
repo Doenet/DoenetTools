@@ -5981,10 +5981,10 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="f1">x^2</function>
+    <function name="f1" symbolic="false">x^2</function>
     <copy target="f1" symbolic assignNames="f2" />
     <copy target="f2" symbolic="false" assignNames="f3" />
-    <function name="g1" symbolic>x^2</function>
+    <function name="g1">x^2</function>
     <copy target="g1" symbolic="false" assignNames="g2" />
     <copy target="g2" symbolic assignNames="g3" />
 

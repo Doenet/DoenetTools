@@ -46,7 +46,7 @@ export default class MathComponent extends InlineComponent {
       defaultValue: "none",
       public: true,
       toLowerCase: true,
-      valueTransformations: { "true": "full", "false": "none" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     attributes.expand = {
