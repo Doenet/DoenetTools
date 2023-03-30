@@ -340,10 +340,7 @@ export default class PiecewiseFunction extends Function {
           for (let arrayKey of arrayKeys) {
             if (arrayKey === "0") {
               numericalfs[arrayKey] = function (x) {
-                let val = dependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
-                if (val === null) {
-                  val = NaN
-                }
+                let val = globalDependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
                 return val;
               }
             } else {

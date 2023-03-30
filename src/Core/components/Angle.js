@@ -598,20 +598,20 @@ export default class Angle extends GraphicalComponent {
         }
 
         let ps = [];
-        let foundNull = false;
+        let foundNaN = false;
         for (let i = 0; i < 3; i++) {
           ps.push([
             dependencyValues.points[i][0].evaluate_to_constant(),
             dependencyValues.points[i][1].evaluate_to_constant(),
           ]);
-          if (ps[i][0] === null || ps[i][1] === null) {
-            foundNull = true;
+          if (Number.isNaN(ps[i][0]) || Number.isNaN(ps[i][1])) {
+            foundNaN = true;
           }
         }
 
         let radians;
 
-        if (foundNull) {
+        if (foundNaN) {
           return { setValue: { radians: me.fromAst('\uff3f'), swapPointOrder } }
         } else {
           radians = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
@@ -771,9 +771,6 @@ export default class Angle extends GraphicalComponent {
           let numericalP = [];
           for (let ind = 0; ind < 2; ind++) {
             let val = point[ind].evaluate_to_constant();
-            if (!Number.isFinite(val)) {
-              val = NaN;
-            }
             numericalP.push(val);
           }
           numericalPoints[arrayKey] = numericalP;
@@ -793,9 +790,6 @@ export default class Angle extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         let numericalRadius = dependencyValues.radius.evaluate_to_constant();
-        if (!Number.isFinite(numericalRadius)) {
-          numericalRadius = NaN;
-        }
         return { setValue: { numericalRadius } }
       }
     }

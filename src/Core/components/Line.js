@@ -989,9 +989,6 @@ export default class Line extends GraphicalComponent {
                 let val = desiredStateVariableValues.points[arrayKey];
                 if (val instanceof me.class) {
                   val = val.evaluate_to_constant();
-                  if (val === null) {
-                    val = NaN;
-                  }
                 }
 
                 if (!workspace.desiredPoint1) {
@@ -1003,9 +1000,6 @@ export default class Line extends GraphicalComponent {
                 let oDim = dim === "0" ? "1" : "0";
                 if (workspace.desiredPoint1[oDim] === undefined) {
                   let oVal = (await stateValues.points)[1][oDim].evaluate_to_constant();
-                  if (oVal === null) {
-                    oVal = NaN;
-                  }
                   workspace.desiredPoint1[oDim] = oVal;
                 }
 
@@ -1340,9 +1334,6 @@ export default class Line extends GraphicalComponent {
           let numericalP = [];
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = point[ind].evaluate_to_constant();
-            if (!Number.isFinite(val)) {
-              val = NaN;
-            }
             numericalP.push(val);
           }
           numericalPoints[arrayKey] = numericalP;
@@ -1372,20 +1363,8 @@ export default class Line extends GraphicalComponent {
       definition: function ({ dependencyValues }) {
 
         let numericalCoeff0 = dependencyValues.coeff0.evaluate_to_constant();
-        if (!Number.isFinite(numericalCoeff0)) {
-          numericalCoeff0 = NaN;
-        }
-
-
         let numericalCoeffvar1 = dependencyValues.coeffvar1.evaluate_to_constant();
-        if (!Number.isFinite(numericalCoeffvar1)) {
-          numericalCoeffvar1 = NaN;
-        }
-
         let numericalCoeffvar2 = dependencyValues.coeffvar2.evaluate_to_constant();
-        if (!Number.isFinite(numericalCoeffvar2)) {
-          numericalCoeffvar2 = NaN;
-        }
 
         return { setValue: { numericalCoeff0, numericalCoeffvar1, numericalCoeffvar2 } }
       }

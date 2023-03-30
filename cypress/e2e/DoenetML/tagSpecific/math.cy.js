@@ -5693,6 +5693,48 @@ describe('Math Tag Tests', function () {
 
   })
 
+  it('math in graph, handle bad anchor coordinates', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph >
+      <math anchor="$anchorCoords1" name="math1">x^2</math>
+    </graph>
+    
+
+    <p name="pAnchor1">Anchor 1 coordinates: $math1.anchor</p>
+    <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="x" /></p>
+    
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'x')
+
+
+    cy.log("give good anchor coords")
+
+    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', '(6,7)')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+
+    cy.log("give bad anchor coords again")
+
+    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', 'q')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'q')
+
+
+  });
+
   it('vec', () => {
     cy.window().then(async (win) => {
       win.postMessage({

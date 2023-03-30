@@ -548,11 +548,11 @@ describe('SelectFromSequence Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     let allowedCombinations = [
-      [1,2,2], [1,2,3], [1,3,2], [1,3,3],
-      [2,1,2], [2,1,3], [3,1,2], [3,1,3],
-      [2,2,1], [2,3,1], [3,2,1], [3,3,1],
-      [2,2,2], [2,2,3], [2,3,2], [3,2,2],
-      [3,3,2], [3,2,3], [2,3,3], [3,3,3]
+      [1, 2, 2], [1, 2, 3], [1, 3, 2], [1, 3, 3],
+      [2, 1, 2], [2, 1, 3], [3, 1, 2], [3, 1, 3],
+      [2, 2, 1], [2, 3, 1], [3, 2, 1], [3, 3, 1],
+      [2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2],
+      [3, 3, 2], [3, 2, 3], [2, 3, 3], [3, 3, 3]
     ];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -598,11 +598,11 @@ describe('SelectFromSequence Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     let allowedCombinations = [
-      [1,2,2], [1,2,3], [1,3,2], [1,3,3],
-      [2,1,2], [2,1,3], [3,1,2], [3,1,3],
-      [2,2,1], [2,3,1], [3,2,1], [3,3,1],
-      [2,2,2], [2,2,3], [2,3,2], [3,2,2],
-      [3,3,2], [3,2,3], [2,3,3], [3,3,3]
+      [1, 2, 2], [1, 2, 3], [1, 3, 2], [1, 3, 3],
+      [2, 1, 2], [2, 1, 3], [3, 1, 2], [3, 1, 3],
+      [2, 2, 1], [2, 3, 1], [3, 2, 1], [3, 3, 1],
+      [2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2],
+      [3, 3, 2], [3, 2, 3], [2, 3, 3], [3, 3, 3]
     ];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -656,10 +656,10 @@ describe('SelectFromSequence Tag Tests', function () {
         let num3 = stateVariables[stateVariables['/sample' + ind].replacements[2].componentName].stateValues.value;
         let num4 = stateVariables[stateVariables['/sample' + ind].replacements[3].componentName].stateValues.value;
 
-        expect([1,2,3].includes(num1)).eq(true);
-        expect([0,2,3].includes(num2)).eq(true);
-        expect([0,1,3].includes(num3)).eq(true);
-        expect([0,1,2].includes(num4)).eq(true);
+        expect([1, 2, 3].includes(num1)).eq(true);
+        expect([0, 2, 3].includes(num2)).eq(true);
+        expect([0, 1, 3].includes(num3)).eq(true);
+        expect([0, 1, 2].includes(num4)).eq(true);
 
       }
     })
@@ -704,9 +704,9 @@ describe('SelectFromSequence Tag Tests', function () {
         let num2 = stateVariables[stateVariables['/sample' + ind].replacements[1].componentName].stateValues.value;
         let num3 = stateVariables[stateVariables['/sample' + ind].replacements[2].componentName].stateValues.value;
 
-        expect([2,3].includes(num1)).eq(true);
-        expect([1,3].includes(num2)).eq(true);
-        expect([1,2].includes(num3)).eq(true);
+        expect([2, 3].includes(num1)).eq(true);
+        expect([1, 3].includes(num2)).eq(true);
+        expect([1, 2].includes(num3)).eq(true);
 
       }
     })
@@ -728,7 +728,7 @@ describe('SelectFromSequence Tag Tests', function () {
   it('select 10 numbers from 1 to 10, without replacement, exclude positions of each number', () => {
     // make sure that exclude combinations does not enumerate all combinations excluded
     // to count them
-    
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -750,12 +750,12 @@ describe('SelectFromSequence Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
 
-    let allNumbers = [1,2,3,4,5,6,7,8,9,10]
+    let allNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 10; ind++) {
 
-        for(let j=0; j< 10; j++) {
+        for (let j = 0; j < 10; j++) {
           let num = stateVariables[stateVariables['/sample' + ind].replacements[j].componentName].stateValues.value;
 
           let validNums = [...allNumbers];

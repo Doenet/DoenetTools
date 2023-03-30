@@ -756,7 +756,7 @@ export function evaluateLogic({ logicTree,
 
   // since have inequality, all operands must be numbers
   let numberOperands = mathOperands.map(x => x.simplify().evaluate_to_constant());
-  if (numberOperands.some(x => (x === null || Number.isNaN(x)))) {
+  if (numberOperands.some(x => Number.isNaN(x))) {
     return 0;
   }
 

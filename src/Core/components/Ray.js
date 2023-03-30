@@ -1227,9 +1227,6 @@ export default class Ray extends GraphicalComponent {
         let numericalEndpoint = [];
         for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
           let val = endpoint[ind].evaluate_to_constant();
-          if (!Number.isFinite(val)) {
-            val = NaN;
-          }
           numericalEndpoint.push(val);
         }
 
@@ -1263,9 +1260,6 @@ export default class Ray extends GraphicalComponent {
         let numericalThroughpoint = [];
         for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
           let val = through[ind].evaluate_to_constant();
-          if (!Number.isFinite(val)) {
-            val = NaN;
-          }
           numericalThroughpoint.push(val);
         }
 

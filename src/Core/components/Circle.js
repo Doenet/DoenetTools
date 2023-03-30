@@ -700,9 +700,6 @@ export default class Circle extends Curve {
           let prescribedX = dependencyValuesByKey[arrayKey].prescribedCenterX;
           if (prescribedX) {
             numericalPrescribedCenter[arrayKey] = prescribedX.evaluate_to_constant();
-            if (!Number.isFinite(numericalPrescribedCenter[arrayKey])) {
-              numericalPrescribedCenter[arrayKey] = NaN;
-            }
           } else {
             numericalPrescribedCenter[arrayKey] = NaN;
           }
@@ -1120,17 +1117,7 @@ export default class Circle extends Curve {
           if (dependencyValues.nThroughPoints === 0) {
             let r = dependencyValues.essentialRadius;
             if (r instanceof me.class) {
-              try {
-                r = r.evaluate_to_constant();
-              }
-              catch (e) {
-              }
-              if (!Number.isFinite(r)) {
-                r = NaN;
-              }
-            }
-            return {
-              setValue: { numericalRadius: r }
+              r = r.evaluate_to_constant();
             }
             return {
               setValue: { numericalRadius: r }
@@ -1161,17 +1148,7 @@ export default class Circle extends Curve {
         if (dependencyValues.nThroughPoints < 2) {
           let r = dependencyValues.essentialRadius;
           if (r instanceof me.class) {
-            try {
-              r = r.evaluate_to_constant();
-            }
-            catch (e) {
-            }
-            if (!Number.isFinite(r)) {
-              r = NaN;
-            }
-          }
-          return {
-            setValue: { numericalRadius: r }
+            r = r.evaluate_to_constant();
           }
           return {
             setValue: { numericalRadius: r }
@@ -1437,14 +1414,7 @@ export default class Circle extends Curve {
               let value = dependencyValuesByKey[arrayKey].essentialCenterX;
 
               if (value instanceof me.class) {
-                try {
-                  value = value.evaluate_to_constant();
-                }
-                catch (e) {
-                }
-                if (!Number.isFinite(value)) {
-                  value = NaN;
-                }
+                value = value.evaluate_to_constant();
               }
               numericalCenter[arrayKey] = value;
             }
@@ -1525,14 +1495,7 @@ export default class Circle extends Curve {
             let value = dependencyValuesByKey[arrayKey].essentialCenterX;
 
             if (value instanceof me.class) {
-              try {
-                value = value.evaluate_to_constant();
-              }
-              catch (e) {
-              }
-              if (!Number.isFinite(value)) {
-                value = NaN;
-              }
+              value = value.evaluate_to_constant();
             }
             numericalCenter[arrayKey] = value;
           }

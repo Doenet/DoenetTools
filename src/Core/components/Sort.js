@@ -179,8 +179,7 @@ export default class Sort extends CompositeComponent {
             baseComponentType: "math"
           })) {
             let numericalValue = component.stateValues.value.evaluate_to_constant();
-            if (numericalValue === null) {
-              numericalValue = NaN;
+            if (Number.isNaN(numericalValue)) {
               allAreNumeric = false;
             }
             allValues.push({
@@ -197,8 +196,7 @@ export default class Sort extends CompositeComponent {
             let textValue = "";
             if (compValue) {
               numericalValue = compValue.evaluate_to_constant();
-              if (numericalValue === null) {
-                numericalValue = NaN;
+              if (Number.isNaN(numericalValue)) {
                 allAreNumeric = false;
               }
               textValue = compValue.toString();
@@ -223,8 +221,7 @@ export default class Sort extends CompositeComponent {
             }
             if (compValue) {
               numericalValue = compValue.evaluate_to_constant();
-              if (numericalValue === null) {
-                numericalValue = NaN;
+              if (Number.isNaN(numericalValue)) {
                 allAreNumeric = false;
               }
               textValue = compValue.toString();
