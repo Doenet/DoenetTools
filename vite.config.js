@@ -3,10 +3,15 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import react from '@vitejs/plugin-react';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
+import plainText from 'vite-plugin-plain-text';
 
 export default defineConfig({
   appType: 'mpa',
-  plugins: [react()],
+  plugins: [
+    react(),
+    plainText(/\/testActivityDefinition\.doenet/),
+    plainText(/\/testCode\.doenet/),
+  ],
   assetsInclude: ['**/*.doenet'],
   server: {
     port: 8000,
@@ -21,7 +26,7 @@ export default defineConfig({
       { find: 'csv-parse', replacement: 'csv-parse/browser/esm' },
       { find: '@Toast', replacement: '/src/Tools/_framework/Toast' },
       { find: '@Tool', replacement: '/src/Tools/_framework/Tool' },
-      { find: '@ToolRoot', replacement: '/src/Tools/_framework/NewToolRoot'},
+      { find: '@ToolRoot', replacement: '/src/Tools/_framework/NewToolRoot' },
       { find: 'solid-svg', replacement: '@fortawesome/free-solid-svg-icons' },
     ],
   },

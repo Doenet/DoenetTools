@@ -113,7 +113,8 @@
     "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-terser": "^7.0.2",
     "vite": "^4.2.1",
-    "vite-plugin-mpa": "^1.1.4"
+    "vite-plugin-mpa": "^1.1.4",
+    "vite-plugin-plain-text": "^1.4.2"
   },
   "optionalDependencies": {
     "cypress": "^10.11.0",
