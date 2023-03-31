@@ -78,7 +78,7 @@ if ($success) {
         $pageDoenetId .
         '"],"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
     $imagePath = '/activity_default.jpg';
-    $learningOutcomes = '';
+    // $learningOutcomes = '';
     $isPublic = '0';
 
     $sql = "SELECT sortOrder
@@ -98,11 +98,19 @@ if ($success) {
     $sql = "
         INSERT INTO course_content
         (type,courseId,doenetId,parentDoenetId,label,creationDate,isPublic,
-        sortOrder,jsonDefinition,imagePath,learningOutcomes)
+        sortOrder,jsonDefinition,imagePath)
         VALUES
         ('activity','$portfolioCourseId','$doenetId','$portfolioCourseId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isPublic',
-        '$sortOrder','$jsonDefinition','$imagePath','$learningOutcomes')
+        '$sortOrder','$jsonDefinition','$imagePath')
         ";
+        // $sql = "
+        // INSERT INTO course_content
+        // (type,courseId,doenetId,parentDoenetId,label,creationDate,isPublic,
+        // sortOrder,jsonDefinition,imagePath,learningOutcomes)
+        // VALUES
+        // ('activity','$portfolioCourseId','$doenetId','$portfolioCourseId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isPublic',
+        // '$sortOrder','$jsonDefinition','$imagePath','$learningOutcomes')
+        // ";
 
     $conn->query($sql);
 

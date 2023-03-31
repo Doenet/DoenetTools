@@ -36,10 +36,10 @@ $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 $label = mysqli_real_escape_string($conn, $_POST['label']);
 $imagePath = mysqli_real_escape_string($conn, $_POST['imagePath']);
 $public = mysqli_real_escape_string($conn, $_POST['public']);
-$learningOutcomes = mysqli_real_escape_string(
-    $conn,
-    $_POST['learningOutcomes']
-);
+// $learningOutcomes = mysqli_real_escape_string(
+//     $conn,
+//     $_POST['learningOutcomes']
+// );
 
 $isPublic = '0';
 if ($public) {
@@ -88,12 +88,20 @@ if ($result->num_rows > 0) {
 }
 
 if ($success) {
+    // $sql = "
+    //     UPDATE course_content
+    //     SET label = '$label', 
+    //     imagePath = '$imagePath',
+    //     isPublic = '$isPublic',
+    //     learningOutcomes = '$learningOutcomes'
+    //     WHERE doenetId = '$doenetId'
+    //     AND courseId = '$portfolioCourseId'
+    //     ";
     $sql = "
         UPDATE course_content
         SET label = '$label', 
         imagePath = '$imagePath',
-        isPublic = '$isPublic',
-        learningOutcomes = '$learningOutcomes'
+        isPublic = '$isPublic'
         WHERE doenetId = '$doenetId'
         AND courseId = '$portfolioCourseId'
         ";
