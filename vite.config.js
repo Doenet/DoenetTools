@@ -12,7 +12,6 @@ export default defineConfig({
     plainText(/\/testActivityDefinition\.doenet/),
     plainText(/\/testCode\.doenet/),
   ],
-  assetsInclude: ['**/*.doenet'],
   server: {
     port: 8000,
     proxy: {
