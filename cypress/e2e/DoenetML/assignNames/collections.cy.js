@@ -14,7 +14,7 @@ describe('Collection assignName Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('name points and coords off a graph', () => {

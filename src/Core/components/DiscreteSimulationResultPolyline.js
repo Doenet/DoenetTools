@@ -56,8 +56,20 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let curveDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -71,7 +83,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           curveDescription += " ";
         }
 
-        curveDescription += dependencyValues.selectedStyle.lineColorWord
+        curveDescription += lineColorWord
 
         return { setValue: { styleDescription: curveDescription } };
       }

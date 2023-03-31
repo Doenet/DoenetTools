@@ -13,7 +13,7 @@ describe('Basic copy assignName Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('recursively copying and assigning names to text', () => {

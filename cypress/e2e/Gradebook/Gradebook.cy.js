@@ -57,7 +57,7 @@ describe('Gradebook tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, pageDoenetId3, doenetML1, doenetML2, doenetML3, shufflePages: true, shuffleDoenetId });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -73,7 +73,7 @@ describe('Gradebook tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -137,7 +137,7 @@ describe('Gradebook tests', function () {
     cy.get('[data-test="Crumb 2"]').click();
     cy.get('.navigationRow').should('have.length', 1);
 
-    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`).then(() => {
+    cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`).then(() => {
       // put inside a "then" just so that pageOrder and ns have their new values
 
       cy.get('#page3\\/_title1').should('have.text', `Option ${pageOrder[2]}`)
@@ -165,7 +165,7 @@ describe('Gradebook tests', function () {
 
     cy.signin({ userId });
 
-    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`).then(() => {
+    cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`).then(() => {
       // put inside a "then" just so that pageOrder and ns have their new values
 
       cy.get('#page3\\/_title1').should('have.text', `Option ${pageOrder[2]}`)

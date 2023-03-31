@@ -13,7 +13,7 @@ describe('Endpoint Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('endpoint change open', () => {
@@ -142,7 +142,7 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/D"].stateValues.open).eq(true);
     })
 
-    
+
     cy.log('cannot switch B via action')
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -164,7 +164,7 @@ describe('Endpoint Tag Tests', function () {
     })
 
 
-    
+
     cy.log('cannot switch C via second action')
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -185,7 +185,7 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/D"].stateValues.open).eq(true);
     })
 
-   
+
     cy.log('switch D via second action')
     cy.window().then(async (win) => {
       await win.callAction1({

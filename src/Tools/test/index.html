@@ -75,7 +75,7 @@
       url('/fonts/files/open-sans-v18-latin-700italic.woff2') format('woff2'),
       url('/fonts/files/open-sans-v18-latin-700italic.woff') format('woff');
   }
-  html {
+      html {
         font-family: 'Open Sans' !important;
         --menuWidth: 220px;
         --mainBlue: #1a5a99;
@@ -94,7 +94,30 @@
         --lightGreen: #a6f19f;
         --lightYellow: #f5ed85;
         --whiteBlankLink: #6d4445;
-        --mainYellow: #94610A;
+        --mainYellow: #94610a;
+        --mainPurple: #4a03d9;
+      }
+
+      [data-theme='dark'] {
+        font-family: 'Open Sans' !important;
+        --menuWidth: 220px;
+        --mainBlue: #1a5a99;
+        --lightBlue: hsl(209, 54%, 82%);
+        --solidLightBlue: #1a5a99;
+        --mainGray: #a9a9a9;
+        --donutBody: #eea177;
+        --donutTopping: #6d4445;
+        --mainBorder: 2px solid white;
+        --mainBorderRadius: 5px;
+        --mainRed: #c1292e;
+        --lightRed: hsl(0, 54%, 82%);
+        --mainGreen: #459152;
+        --canvas: #121212;
+        --canvastext: white;
+        --lightGreen: #a6f19f;
+        --lightYellow: #f5ed85;
+        --whiteBlankLink: #a9abe5;
+        --mainYellow: #efab34;
         --mainPurple: #4a03d9;
       }
   
@@ -103,6 +126,13 @@
 <body>
     <div id="root">
     </div>
+    <script>
+      /**
+       * this is a hack for react-mathqill
+       * error: global is not defined
+       */
+      var global = global || window;
+    </script>
     <script type="module" src="./index.jsx"></script>
 </body>
 </html>

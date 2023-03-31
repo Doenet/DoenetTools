@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
 import PageViewer from '../../Viewer/PageViewer.jsx';
-import {plainText as testActivityDefinition } from './testActivityDefinition.doenet';
-import {plainText as testCodeDoenetML } from './testCode.doenet';
+import { plainText as testActivityDefinition } from './testActivityDefinition.doenet';
+import { plainText as testCodeDoenetML } from './testCode.doenet';
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from '../../Core/utils/math.js';
+import { useRecoilState } from 'recoil';
+import { darkModeAtom } from '../_framework/DarkmodeController.jsx';
 
 function Test() {
   // console.log("===Test")
@@ -52,6 +54,8 @@ function Test() {
   const [readOnly, setReadOnly] = useState(testSettings.readOnly);
   const [showFeedback, setShowFeedback] = useState(testSettings.showFeedback);
   const [showHints, setShowHints] = useState(testSettings.showHints);
+
+  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
 
   const [bundledCore, setBundledCore] = useState(testSettings.bundledCore);
   const [allowLoadState, setAllowLoadState] = useState(testSettings.allowLoadState);
@@ -238,6 +242,14 @@ function Test() {
       </div>
       <hr />
       <div>
+        <label> <input id="testRunner_darkmode" type='checkbox' checked={darkModeToggle === 'dark'} onChange={
+          () => {
+            setDarkModeToggle(darkModeToggle === 'dark' ? 'light' : 'dark')
+          }
+        } />Dark Mode</label>
+      </div>
+      <hr />
+      <div>
         <label> <input type='checkbox' checked={bundledCore} onChange={
           () => {
             testSettings.bundledCore = !testSettings.bundledCore;
@@ -308,7 +320,7 @@ function Test() {
 
 
   return (
-    <>
+    <div style={{ backgroundColor: "var(--canvas)", color: "var(--canvastext)" }}>
       <MathJaxContext
         version={2}
         config={mathjaxConfig}
@@ -321,7 +333,7 @@ function Test() {
         </div>
         {viewer}
       </MathJaxContext>
-    </>
+    </div>
   )
 }
 
