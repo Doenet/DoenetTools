@@ -4591,6 +4591,178 @@ describe('Evaluate Tag Tests', function () {
 
   })
 
+  it('evaluate functions based on interpolated function', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>f: <function maxima="(5,4)" name="f">x^2</function></p>
+  <p>fa: <function name="fa">$$f(x)</function></p>
+  <p>fxp1: <function name="fxp1">$$f(x+1)</function></p>
+  <p>fp1: <function name="fp1">$$f(x)+1</function></p>
+  <p>fp1a: <function name="fp1a">$$f(x)+<math>1</math></function></p>
+  <p>fxp1p1: <function name="fxp1p1">$$f(x+1)+1</function></p>
+
+  <p><evaluate function="$f" input="3" name="f0" /></p>
+  <p><evaluate function="$f" input="4" name="f1" /></p>
+  <p><evaluate function="$f" input="5" name="f2" /></p>
+  <p><evaluate function="$f" input="6" name="f3" /></p>
+
+  <p><evaluate function="$fa" input="3" name="fa0" /></p>
+  <p><evaluate function="$fa" input="4" name="fa1" /></p>
+  <p><evaluate function="$fa" input="5" name="fa2" /></p>
+  <p><evaluate function="$fa" input="6" name="fa3" /></p>
+
+  <p><evaluate function="$fxp1" input="3" name="fxp10" /></p>
+  <p><evaluate function="$fxp1" input="4" name="fxp11" /></p>
+  <p><evaluate function="$fxp1" input="5" name="fxp12" /></p>
+  <p><evaluate function="$fxp1" input="6" name="fxp13" /></p>
+
+  <p><evaluate function="$fp1" input="3" name="fp10" /></p>
+  <p><evaluate function="$fp1" input="4" name="fp11" /></p>
+  <p><evaluate function="$fp1" input="5" name="fp12" /></p>
+  <p><evaluate function="$fp1" input="6" name="fp13" /></p>
+
+  <p><evaluate function="$fp1a" input="3" name="fp1a0" /></p>
+  <p><evaluate function="$fp1a" input="4" name="fp1a1" /></p>
+  <p><evaluate function="$fp1a" input="5" name="fp1a2" /></p>
+  <p><evaluate function="$fp1a" input="6" name="fp1a3" /></p>
+
+  <p><evaluate function="$fxp1p1" input="3" name="fxp1p10" /></p>
+  <p><evaluate function="$fxp1p1" input="4" name="fxp1p11" /></p>
+  <p><evaluate function="$fxp1p1" input="5" name="fxp1p12" /></p>
+  <p><evaluate function="$fxp1p1" input="6" name="fxp1p13" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/f2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/f3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+
+    cy.get('#\\/fa0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/fa1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/fa2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fa3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+
+    cy.get('#\\/fxp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/fxp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/fxp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/fp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+
+    cy.get('#\\/fp1a0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fp1a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fp1a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp1a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+
+    cy.get('#\\/fxp1p10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp1p11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fxp1p12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp1p13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+
+    cy.log('test creating function from definition')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let fa = createFunctionFromDefinition(stateVariables['/fa'].stateValues.fDefinitions[0]);
+      let fxp1 = createFunctionFromDefinition(stateVariables['/fxp1'].stateValues.fDefinitions[0]);
+      let fp1 = createFunctionFromDefinition(stateVariables['/fp1'].stateValues.fDefinitions[0]);
+      let fp1a = createFunctionFromDefinition(stateVariables['/fp1a'].stateValues.fDefinitions[0]);
+      let fxp1p1 = createFunctionFromDefinition(stateVariables['/fxp1p1'].stateValues.fDefinitions[0]);
+
+
+      expect(f(3)).eqls(0);
+      expect(f(4)).eqls(3);
+      expect(f(5)).eqls(4);
+      expect(f(6)).eqls(3);
+
+      expect(fa(3)).eqls(0);
+      expect(fa(4)).eqls(3);
+      expect(fa(5)).eqls(4);
+      expect(fa(6)).eqls(3);
+
+      expect(fxp1(3)).eqls(3);
+      expect(fxp1(4)).eqls(4);
+      expect(fxp1(5)).eqls(3);
+      expect(fxp1(6)).eqls(0);
+
+      expect(fp1(3)).eqls(1);
+      expect(fp1(4)).eqls(4);
+      expect(fp1(5)).eqls(5);
+      expect(fp1(6)).eqls(4);
+
+      expect(fp1a(3)).eqls(1);
+      expect(fp1a(4)).eqls(4);
+      expect(fp1a(5)).eqls(5);
+      expect(fp1a(6)).eqls(4);
+
+      expect(fxp1p1(3)).eqls(4);
+      expect(fxp1p1(4)).eqls(5);
+      expect(fxp1p1(5)).eqls(4);
+      expect(fxp1p1(6)).eqls(1);
+
+
+    })
+  })
+
 
 })
 
