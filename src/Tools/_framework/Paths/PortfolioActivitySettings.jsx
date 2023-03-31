@@ -30,7 +30,6 @@ export async function action({ request, params }) {
     return redirect(`/portfolio/${portfolioCourseId}`) 
   }
   
-  
 
       // if (response.ok) {
       //   // let { doenetId } = await response.json();
@@ -271,10 +270,10 @@ export function PortfolioActivitySettings(){
         <Td>Activity Label</Td>
         <Td><input name="label" style={{width:"390px"}} type="text" placeholder='Activity 1' defaultValue={data.label}/></Td>
         </tr>
-      <tr>
+      {/* <tr>
         <Td>Learning Outcomes</Td>
         <Td><textarea name="learningOutcomes" style={{width:"390px",resize: "vertical"}} placeholder='Description of Learning Outcomes' defaultValue={data.learningOutcomes}/></Td>
-        </tr>
+        </tr> */}
       <tr>
         <Td>Public <input name="public" type="checkbox" defaultChecked={data.public == '1'} /></Td>
         <Td></Td>

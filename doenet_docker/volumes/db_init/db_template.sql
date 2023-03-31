@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.32)
 # Database: doenet_local
-# Generation Time: 2023-03-30 01:51:28 +0000
+# Generation Time: 2023-03-31 02:55:48 +0000
 # ************************************************************
 
 
@@ -27,15 +27,15 @@ DROP TABLE IF EXISTS `activity_state`;
 
 CREATE TABLE `activity_state` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int NOT NULL,
-  `saveId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `cid` char(64) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `deviceName` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `saveId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `deviceName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `variantIndex` int NOT NULL,
-  `activityInfo` mediumtext COLLATE utf8mb3_unicode_ci,
-  `activityState` mediumtext COLLATE utf8mb3_unicode_ci,
+  `activityInfo` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `activityState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
   KEY `saveId` (`saveId`),
@@ -60,17 +60,17 @@ DROP TABLE IF EXISTS `assignment`;
 
 CREATE TABLE `assignment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `pinnedAfterDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means shows immediately',
   `pinnedUntilDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never stops being pinned',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
   `timeLimit` int DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
-  `attemptAggregation` char(1) COLLATE utf8mb3_unicode_ci DEFAULT 'm',
+  `attemptAggregation` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'm',
   `totalPointsOrPercent` float DEFAULT '10',
-  `gradeCategory` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `gradeCategory` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
   `showSolutionInGradebook` tinyint(1) NOT NULL DEFAULT '1',
@@ -111,7 +111,7 @@ DROP TABLE IF EXISTS `class_times`;
 
 CREATE TABLE `class_times` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `dotwIndex` int NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,
@@ -128,11 +128,11 @@ DROP TABLE IF EXISTS `collection`;
 
 CREATE TABLE `collection` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `entryId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `entryDoenetId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `entryContentId` char(64) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `entryVariant` text COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `entryId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `entryDoenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `entryContentId` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `entryVariant` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
@@ -145,7 +145,7 @@ DROP TABLE IF EXISTS `collection_groups`;
 
 CREATE TABLE `collection_groups` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `minStudents` int NOT NULL DEFAULT '1',
   `maxStudents` int NOT NULL DEFAULT '1',
   `preferredStudents` int NOT NULL DEFAULT '1',
@@ -162,10 +162,10 @@ DROP TABLE IF EXISTS `content`;
 
 CREATE TABLE `content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `cid` char(64) COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `versionId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `title` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
+  `versionId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
+  `title` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   `isDraft` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'When this is true (1) is the running draft version between published versions',
   `isNamed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'When this is true (1) is the running draft version between published versions',
@@ -187,14 +187,14 @@ DROP TABLE IF EXISTS `content_interactions`;
 
 CREATE TABLE `content_interactions` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `deviceName` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `stateVariables` mediumtext COLLATE utf8mb3_unicode_ci,
-  `variant` text COLLATE utf8mb3_unicode_ci NOT NULL,
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `deviceName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `contentId` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `stateVariables` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `variant` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `attemptNumber` int DEFAULT NULL,
-  `interactionSource` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `interactionSource` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
@@ -209,18 +209,18 @@ DROP TABLE IF EXISTS `course`;
 
 CREATE TABLE `course` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT 'Untitled Course',
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'Untitled Course',
   `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
   `isDeleted` tinyint(1) DEFAULT '0',
-  `image` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `color` char(6) COLLATE utf8mb3_unicode_ci DEFAULT 'none',
-  `defaultRoleId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `examPasscode` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `browserExamKeys` text COLLATE utf8mb3_unicode_ci,
-  `lastSeenExamKey` varchar(66) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `color` char(6) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'none',
+  `defaultRoleId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `examPasscode` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `browserExamKeys` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `lastSeenExamKey` varchar(66) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `canAutoEnroll` tinyint(1) NOT NULL DEFAULT '0',
-  `portfolioCourseForUserId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `portfolioCourseForUserId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -248,21 +248,21 @@ DROP TABLE IF EXISTS `course_content`;
 
 CREATE TABLE `course_content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `type` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `parentDoenetId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled',
+  `type` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `parentDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled',
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int NOT NULL DEFAULT '0',
   `isAssigned` int NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
   `isGloballyAssigned` int NOT NULL DEFAULT '1' COMMENT 'The content from cid shows to all students without a cidOverride',
   `isPublic` int NOT NULL DEFAULT '0' COMMENT 'The course is available to search for and this content is available',
   `userCanViewSource` int NOT NULL DEFAULT '0',
-  `sortOrder` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sortOrder` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `jsonDefinition` json DEFAULT NULL,
-  `imagePath` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `learningOutcomes` text COLLATE utf8mb3_unicode_ci,
+  `imagePath` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `learningOutcomes` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `courseId` (`courseId`)
@@ -273,27 +273,27 @@ LOCK TABLES `course_content` WRITE;
 
 INSERT INTO `course_content` (`id`, `type`, `courseId`, `doenetId`, `parentDoenetId`, `label`, `creationDate`, `isDeleted`, `isAssigned`, `isGloballyAssigned`, `isPublic`, `userCanViewSource`, `sortOrder`, `jsonDefinition`, `imagePath`, `learningOutcomes`)
 VALUES
-	(29,'activity','n2bEhi8v3mgfNnjIeMyK0','r8moGCuRDBE1jIM7tjR1C','n2bEhi8v3mgfNnjIeMyK0','Hey Matt Updated','2023-03-14 16:02:14',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1240w,f_auto,q_auto:best/rockcms/2022-08/220805-border-collie-play-mn-1100-82d2f1.jpg','Outcome'),
-	(30,'activity','n2bEhi8v3mgfNnjIeMyK0','wN0zFqUAtTVLZ4XzDep4P','n2bEhi8v3mgfNnjIeMyK0','Hi Keagan','2023-03-14 17:02:11',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','http://t1.gstatic.com/licensed-image?q=tbn:ANd9GcQJf7shtWhhyHsVcDHolvYP4YTODzJhudkj_ETH6eB3mDsnLNU5LnvH8dbEUtJE4UW0GKD6klPmWQAx4fk','some outcomes'),
-	(31,'activity','n2bEhi8v3mgfNnjIeMyK0','Y4hwykRPlKlYlBD15oKzk','n2bEhi8v3mgfNnjIeMyK0','Hey Jason! (updated)','2023-03-14 18:59:20',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','https://critter.science/wp-content/uploads/2018/08/puff5.jpg','more info here'),
-	(42,'activity','n2bEhi8v3mgfNnjIeMyK0','KnLHsnMdcQir9fJhaoIgK','n2bEhi8v3mgfNnjIeMyK0','Anteater!','2023-03-15 22:50:24',1,0,1,1,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreidysbfe7p5moekfd26azzpbzf2b6utfyicdpbeudot5qmnrbufr4y.jpg',''),
-	(43,'activity','n2bEhi8v3mgfNnjIeMyK0','tUNHK0SsKldYWKqk7uny2','n2bEhi8v3mgfNnjIeMyK0','The world!','2023-03-15 22:51:32',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreihdiajsgbhupojlk7ml6i7ilsdsmcr6fxmktw4qryxzdqzutbecl4.jpg',''),
-	(56,'activity','n2bEhi8v3mgfNnjIeMyK0','_DWRUIz0ngtbZCm4MJuYu9','n2bEhi8v3mgfNnjIeMyK0','_DWRUIz0ngtbZCm4MJuYu9','2023-03-21 13:22:01',0,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_x1HzuyJwvcarTUasvozEp\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreievsb6idm7evpjgprvu3ceja5y4vwyni77weiwed5eygaj2dav5vi.jpg',''),
-	(57,'activity','n2bEhi8v3mgfNnjIeMyK0','_jyBQ8oDQxwS3lLFV477Ru','n2bEhi8v3mgfNnjIeMyK0','_jyBQ8oDQxwS3lLFV477Ru','2023-03-21 16:53:12',0,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_fULTsPPQMyalZQJo39BQ2\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreihdiajsgbhupojlk7ml6i7ilsdsmcr6fxmktw4qryxzdqzutbecl4.jpg',''),
-	(59,'activity','n2bEhi8v3mgfNnjIeMyK0','_yLqBDOFOlO4cVGn5XnupY','n2bEhi8v3mgfNnjIeMyK0','Notes 3','2023-03-21 21:42:50',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_j06hynxES6dEMFrAvgMjA\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreietqictwqhbbova4vhfoqa2rp7no5jozyjekxiho7fadmvtsscbvm.jpg',''),
-	(61,'activity','n2bEhi8v3mgfNnjIeMyK0','_EHo02ENCyv55HgZFVN7xH','n2bEhi8v3mgfNnjIeMyK0','This is Sydney!','2023-03-24 15:07:37',1,1,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_1683DIudmiiJKwtIM6f8V\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreidhcrbztt3haras3w5dbm2grmhgay53rjw475dqbbzu42en7oe6ve\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreigxdya2c3coltpxswawp3i5fxqbflpguhw4bq6eaocwrrijxhl64u.jpg',''),
-	(62,'activity','n2bEhi8v3mgfNnjIeMyK0','_gdgXJwqjCRM4TfH8WYZ4J','n2bEhi8v3mgfNnjIeMyK0','The new guy','2023-03-25 17:27:06',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_GRwJiUJhOdrcYNz5T2NMW\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreiehm6cgxoejakdkbphzbxs6he6tqx6cwkzjpwcac5njag55lbeepi.jpg',''),
-	(63,'activity','n2bEhi8v3mgfNnjIeMyK0','_zdgXtX9aLTbq5LH6OJtKX','n2bEhi8v3mgfNnjIeMyK0','One two three four five six seven eight nine ten eleven','2023-03-25 18:57:22',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_GX1QZfuXec1UuBc1wAQ90\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreiaj5i4grgkfrhao36mbvwmziltonhv6rcp5xttwdfx2gqpyvqsc6e.jpg',''),
-	(64,'activity','n2bEhi8v3mgfNnjIeMyK0','_mSN2sMOgIrjbxJLDADg3z','n2bEhi8v3mgfNnjIeMyK0','Hey','2023-03-25 18:57:35',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_b6KyW8FmAhEavBpKquib4\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreifawl5n6y7gxfn45kckewqzttu7xsruzebvset6wd7ylvinqhbcyq.jpg',''),
-	(65,'activity','n2bEhi8v3mgfNnjIeMyK0','_NosV4hvVRLS6ERdB5MFi1','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-26 22:12:25',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_DNKRNwytb0JohdYcfH7kK\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',''),
-	(66,'activity','n2bEhi8v3mgfNnjIeMyK0','_A8U07ENIYi2g8wSZuYrxs','n2bEhi8v3mgfNnjIeMyK0','HEY!!!','2023-03-26 22:15:04',1,1,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_rC5xRQC5bNnmY9pxiu482\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreihyrn4fciwvamrppe3nvvoxi2xm4rjxac7b766j6hc7tjhswnqgoq\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreie6sil52ks5cnqdyu2a5ngrmbia3lt7nbwmmrn76cths7dq47f3cu.jpg',''),
-	(67,'activity','n2bEhi8v3mgfNnjIeMyK0','_xfKpaXhtreiMtaBB2cayx','n2bEhi8v3mgfNnjIeMyK0','_xfKpaXhtreiMtaBB2cayx','2023-03-27 15:32:37',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_MwKVl6QtJgktaExW2dG0c\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreid5cgwzdcjtr4lnn4obdroefoqbplt5a627w623siepcwcvd3c6ei\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreie6sil52ks5cnqdyu2a5ngrmbia3lt7nbwmmrn76cths7dq47f3cu.jpg',''),
-	(68,'activity','n2bEhi8v3mgfNnjIeMyK0','_VnvgWXzXJSOovmGhBoppA','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-27 15:32:37',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_vnjIYONKpeZsmIbPaxu6F\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',''),
-	(69,'activity','kDtzuV8rkZHGqo5NQPUAS','_tf79lyxNKY8kZ2Fl6TEbx','kDtzuV8rkZHGqo5NQPUAS','My new Activity','2023-03-27 18:41:35',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_qI4e6LwF5AmgJyCEZFCJf\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreihfa4ztampzcs5dawnwd2aedqlvpxjbogus6q2fsgw554kxeo2jau\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',''),
-	(70,'activity','n2bEhi8v3mgfNnjIeMyK0','_DN1ERHEfjjP5XXYKp5DaX','n2bEhi8v3mgfNnjIeMyK0','_DN1ERHEfjjP5XXYKp5DaX','2023-03-27 20:40:28',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_mDFxIShIyHgYIWphX26IA\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreibcuwwnvkpb5zn2fiy3pho5ocaotom4oxeckh6mscl5asuwjqtdya\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreig5lhv2bwixipe7mo5vteyg24gqgutg4sbddfehlo3qr6nlb32o2a.jpg',''),
-	(71,'activity','n2bEhi8v3mgfNnjIeMyK0','_rSFkYfdM1w7KsCPLKg16S','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-27 23:02:49',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_O8h5YqR4i05Ak0MDuftY4\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',''),
-	(72,'activity','kDtzuV8rkZHGqo5NQPUAS','_92h0JCdQ8GWozsMOkcboN','kDtzuV8rkZHGqo5NQPUAS','Untitled Activity','2023-03-28 13:20:21',0,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_XMp7Xcik4FUb7kzK8c1NR\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',''),
-	(74,'activity','n2bEhi8v3mgfNnjIeMyK0','_lfEFy3WqCiHgVp8xUTLhR','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-29 21:17:24',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_Fqfj6yGcpLGfdC4NOT323\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',''),
+	(29,'activity','n2bEhi8v3mgfNnjIeMyK0','r8moGCuRDBE1jIM7tjR1C','n2bEhi8v3mgfNnjIeMyK0','Hey Matt Updated','2023-03-14 16:02:14',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1240w,f_auto,q_auto:best/rockcms/2022-08/220805-border-collie-play-mn-1100-82d2f1.jpg',NULL),
+	(30,'activity','n2bEhi8v3mgfNnjIeMyK0','wN0zFqUAtTVLZ4XzDep4P','n2bEhi8v3mgfNnjIeMyK0','Hi Keagan','2023-03-14 17:02:11',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','http://t1.gstatic.com/licensed-image?q=tbn:ANd9GcQJf7shtWhhyHsVcDHolvYP4YTODzJhudkj_ETH6eB3mDsnLNU5LnvH8dbEUtJE4UW0GKD6klPmWQAx4fk',NULL),
+	(31,'activity','n2bEhi8v3mgfNnjIeMyK0','Y4hwykRPlKlYlBD15oKzk','n2bEhi8v3mgfNnjIeMyK0','Hey Jason! (updated)','2023-03-14 18:59:20',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','https://critter.science/wp-content/uploads/2018/08/puff5.jpg',NULL),
+	(42,'activity','n2bEhi8v3mgfNnjIeMyK0','KnLHsnMdcQir9fJhaoIgK','n2bEhi8v3mgfNnjIeMyK0','Anteater!','2023-03-15 22:50:24',1,0,1,1,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreidysbfe7p5moekfd26azzpbzf2b6utfyicdpbeudot5qmnrbufr4y.jpg',NULL),
+	(43,'activity','n2bEhi8v3mgfNnjIeMyK0','tUNHK0SsKldYWKqk7uny2','n2bEhi8v3mgfNnjIeMyK0','The world!','2023-03-15 22:51:32',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreihdiajsgbhupojlk7ml6i7ilsdsmcr6fxmktw4qryxzdqzutbecl4.jpg',NULL),
+	(56,'activity','n2bEhi8v3mgfNnjIeMyK0','_DWRUIz0ngtbZCm4MJuYu9','n2bEhi8v3mgfNnjIeMyK0','_DWRUIz0ngtbZCm4MJuYu9','2023-03-21 13:22:01',0,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_x1HzuyJwvcarTUasvozEp\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreievsb6idm7evpjgprvu3ceja5y4vwyni77weiwed5eygaj2dav5vi.jpg',NULL),
+	(57,'activity','n2bEhi8v3mgfNnjIeMyK0','_jyBQ8oDQxwS3lLFV477Ru','n2bEhi8v3mgfNnjIeMyK0','_jyBQ8oDQxwS3lLFV477Ru','2023-03-21 16:53:12',0,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_fULTsPPQMyalZQJo39BQ2\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreihdiajsgbhupojlk7ml6i7ilsdsmcr6fxmktw4qryxzdqzutbecl4.jpg',NULL),
+	(59,'activity','n2bEhi8v3mgfNnjIeMyK0','_yLqBDOFOlO4cVGn5XnupY','n2bEhi8v3mgfNnjIeMyK0','Notes 3','2023-03-21 21:42:50',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_j06hynxES6dEMFrAvgMjA\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreietqictwqhbbova4vhfoqa2rp7no5jozyjekxiho7fadmvtsscbvm.jpg',NULL),
+	(61,'activity','n2bEhi8v3mgfNnjIeMyK0','_EHo02ENCyv55HgZFVN7xH','n2bEhi8v3mgfNnjIeMyK0','This is Sydney!','2023-03-24 15:07:37',1,1,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_1683DIudmiiJKwtIM6f8V\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreidhcrbztt3haras3w5dbm2grmhgay53rjw475dqbbzu42en7oe6ve\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreigxdya2c3coltpxswawp3i5fxqbflpguhw4bq6eaocwrrijxhl64u.jpg',NULL),
+	(62,'activity','n2bEhi8v3mgfNnjIeMyK0','_gdgXJwqjCRM4TfH8WYZ4J','n2bEhi8v3mgfNnjIeMyK0','The new guy','2023-03-25 17:27:06',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_GRwJiUJhOdrcYNz5T2NMW\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreiehm6cgxoejakdkbphzbxs6he6tqx6cwkzjpwcac5njag55lbeepi.jpg',NULL),
+	(63,'activity','n2bEhi8v3mgfNnjIeMyK0','_zdgXtX9aLTbq5LH6OJtKX','n2bEhi8v3mgfNnjIeMyK0','One two three four five six seven eight nine ten eleven','2023-03-25 18:57:22',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_GX1QZfuXec1UuBc1wAQ90\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreiaj5i4grgkfrhao36mbvwmziltonhv6rcp5xttwdfx2gqpyvqsc6e.jpg',NULL),
+	(64,'activity','n2bEhi8v3mgfNnjIeMyK0','_mSN2sMOgIrjbxJLDADg3z','n2bEhi8v3mgfNnjIeMyK0','Hey','2023-03-25 18:57:35',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_b6KyW8FmAhEavBpKquib4\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreifawl5n6y7gxfn45kckewqzttu7xsruzebvset6wd7ylvinqhbcyq.jpg',NULL),
+	(65,'activity','n2bEhi8v3mgfNnjIeMyK0','_NosV4hvVRLS6ERdB5MFi1','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-26 22:12:25',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_DNKRNwytb0JohdYcfH7kK\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',NULL),
+	(66,'activity','n2bEhi8v3mgfNnjIeMyK0','_A8U07ENIYi2g8wSZuYrxs','n2bEhi8v3mgfNnjIeMyK0','HEY!!!','2023-03-26 22:15:04',1,1,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_rC5xRQC5bNnmY9pxiu482\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreihyrn4fciwvamrppe3nvvoxi2xm4rjxac7b766j6hc7tjhswnqgoq\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreie6sil52ks5cnqdyu2a5ngrmbia3lt7nbwmmrn76cths7dq47f3cu.jpg',NULL),
+	(67,'activity','n2bEhi8v3mgfNnjIeMyK0','_xfKpaXhtreiMtaBB2cayx','n2bEhi8v3mgfNnjIeMyK0','_xfKpaXhtreiMtaBB2cayx','2023-03-27 15:32:37',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_MwKVl6QtJgktaExW2dG0c\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreid5cgwzdcjtr4lnn4obdroefoqbplt5a627w623siepcwcvd3c6ei\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreie6sil52ks5cnqdyu2a5ngrmbia3lt7nbwmmrn76cths7dq47f3cu.jpg',NULL),
+	(68,'activity','n2bEhi8v3mgfNnjIeMyK0','_VnvgWXzXJSOovmGhBoppA','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-27 15:32:37',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_vnjIYONKpeZsmIbPaxu6F\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',NULL),
+	(69,'activity','kDtzuV8rkZHGqo5NQPUAS','_tf79lyxNKY8kZ2Fl6TEbx','kDtzuV8rkZHGqo5NQPUAS','My new Activity','2023-03-27 18:41:35',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_qI4e6LwF5AmgJyCEZFCJf\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreihfa4ztampzcs5dawnwd2aedqlvpxjbogus6q2fsgw554kxeo2jau\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',NULL),
+	(70,'activity','n2bEhi8v3mgfNnjIeMyK0','_DN1ERHEfjjP5XXYKp5DaX','n2bEhi8v3mgfNnjIeMyK0','_DN1ERHEfjjP5XXYKp5DaX','2023-03-27 20:40:28',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_mDFxIShIyHgYIWphX26IA\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreibcuwwnvkpb5zn2fiy3pho5ocaotom4oxeckh6mscl5asuwjqtdya\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreig5lhv2bwixipe7mo5vteyg24gqgutg4sbddfehlo3qr6nlb32o2a.jpg',NULL),
+	(71,'activity','n2bEhi8v3mgfNnjIeMyK0','_rSFkYfdM1w7KsCPLKg16S','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-27 23:02:49',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_O8h5YqR4i05Ak0MDuftY4\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',NULL),
+	(72,'activity','kDtzuV8rkZHGqo5NQPUAS','_92h0JCdQ8GWozsMOkcboN','kDtzuV8rkZHGqo5NQPUAS','Untitled Activity','2023-03-28 13:20:21',0,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_XMp7Xcik4FUb7kzK8c1NR\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',NULL),
+	(74,'activity','n2bEhi8v3mgfNnjIeMyK0','_lfEFy3WqCiHgVp8xUTLhR','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-29 21:17:24',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_Fqfj6yGcpLGfdC4NOT323\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',NULL),
 	(75,'activity','_jbFux7wn6QPHWpzs59NNL','_NYL5H0TbZs7tT6abh1m6w','_jbFux7wn6QPHWpzs59NNL','Test me','2023-03-30 00:41:56',0,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_7ngo01aKn2hDPUN8D0O7W\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}',NULL,NULL);
 
 /*!40000 ALTER TABLE `course_content` ENABLE KEYS */;
@@ -307,8 +307,8 @@ DROP TABLE IF EXISTS `course_grade_category`;
 
 CREATE TABLE `course_grade_category` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `gradeCategory` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `gradeCategory` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
   `totalPointsOrPercent` float NOT NULL DEFAULT '0',
   `numberToDrop` int NOT NULL DEFAULT '0',
   `assignmentsInPercent` bit(11) NOT NULL DEFAULT b'0',
@@ -324,9 +324,9 @@ CREATE TABLE `course_grade_category` (
 DROP TABLE IF EXISTS `course_role`;
 
 CREATE TABLE `course_role` (
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `roleId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `label` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled Role',
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `roleId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled Role',
   `isIncludedInGradebook` tinyint(1) NOT NULL DEFAULT '0',
   `canViewCourse` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'This is to hide the course from navigation initially for placement exams',
   `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
@@ -338,7 +338,7 @@ CREATE TABLE `course_role` (
   `canViewActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
   `canModifyActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
   `canModifyCourseSettings` tinyint(1) NOT NULL DEFAULT '0',
-  `dataAccessPermission` varchar(15) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'None',
+  `dataAccessPermission` varchar(15) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'None',
   `canViewUsers` tinyint(1) NOT NULL DEFAULT '0',
   `canManageUsers` tinyint(1) NOT NULL DEFAULT '0',
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
@@ -397,18 +397,18 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `course_user`;
 
 CREATE TABLE `course_user` (
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `externalId` varchar(32) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `externalId` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `dateEnrolled` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC DateTime',
-  `section` varchar(10) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `section` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `withdrew` bit(1) DEFAULT b'0',
   `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
   `courseCredit` double DEFAULT NULL,
-  `courseGrade` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `overrideCourseGrade` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `courseGrade` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `overrideCourseGrade` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `timeLimitMultiplier` float NOT NULL DEFAULT '1',
-  `roleId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `roleId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`courseId`,`userId`),
   KEY `course_user_ibfk_1` (`roleId`),
   CONSTRAINT `course_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `course_role` (`roleId`) ON UPDATE CASCADE
@@ -438,16 +438,16 @@ DROP TABLE IF EXISTS `drive`;
 
 CREATE TABLE `drive` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `driveType` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `driveType` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
   `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
   `isDeleted` tinyint(1) DEFAULT '0',
-  `image` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `color` char(6) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `examPasscode` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `browserExamKeys` text COLLATE utf8mb3_unicode_ci,
+  `image` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `color` char(6) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `examPasscode` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `browserExamKeys` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -461,19 +461,19 @@ DROP TABLE IF EXISTS `drive_content`;
 
 CREATE TABLE `drive_content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `itemId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `parentFolderId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `itemId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `parentFolderId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int NOT NULL DEFAULT '0',
   `isReleased` int NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the instructor in course',
   `isAssigned` int NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
   `isPublic` int NOT NULL DEFAULT '0' COMMENT 'The course is available to search for and this content is available',
-  `itemType` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `sourceDoenetId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'Filled after a copy of drive, folder or doenetML',
-  `sortOrder` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `itemType` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sourceDoenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'Filled after a copy of drive, folder or doenetML',
+  `sortOrder` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`itemId`),
   UNIQUE KEY `doenetId` (`doenetId`),
@@ -489,8 +489,8 @@ DROP TABLE IF EXISTS `drive_user`;
 
 CREATE TABLE `drive_user` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `driveId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `canEditContent` tinyint(1) DEFAULT '0',
   `canViewDrive` tinyint(1) DEFAULT '0',
   `canDeleteDrive` tinyint(1) DEFAULT '0',
@@ -504,7 +504,7 @@ CREATE TABLE `drive_user` (
   `canViewUnreleasedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canViewUnassignedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canChangeAllDriveSettings` tinyint(1) DEFAULT '0',
-  `role` char(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `role` char(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -518,20 +518,20 @@ DROP TABLE IF EXISTS `event`;
 
 CREATE TABLE `event` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `verb` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `activityCid` char(64) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `pageCid` char(64) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `verb` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `activityCid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `pageCid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `pageNumber` int DEFAULT NULL,
   `attemptNumber` int DEFAULT NULL,
   `activityVariantIndex` int DEFAULT NULL,
   `pageVariantIndex` int DEFAULT NULL,
-  `object` mediumtext COLLATE utf8mb3_unicode_ci,
-  `context` mediumtext COLLATE utf8mb3_unicode_ci,
-  `result` mediumtext COLLATE utf8mb3_unicode_ci,
+  `object` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `context` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `result` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
-  `version` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `version` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
@@ -555,8 +555,8 @@ DROP TABLE IF EXISTS `experiment`;
 
 CREATE TABLE `experiment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `experimentId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `waitingCid` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `experimentId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `waitingCid` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `creationDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `hasBegun` int DEFAULT '0',
@@ -575,9 +575,9 @@ CREATE TABLE `homepage_carousel` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `section` int DEFAULT '0',
   `position` int DEFAULT '0',
-  `imagePath` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `imagePath` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `link` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `link` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
@@ -622,15 +622,15 @@ DROP TABLE IF EXISTS `initial_renderer_state`;
 
 CREATE TABLE `initial_renderer_state` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `cid` char(64) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `variantIndex` int NOT NULL,
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
-  `solutionDisplayMode` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'button',
+  `solutionDisplayMode` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'button',
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
   `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `autoSubmit` tinyint(1) NOT NULL DEFAULT '0',
-  `rendererState` mediumtext COLLATE utf8mb3_unicode_ci,
-  `coreInfo` mediumtext COLLATE utf8mb3_unicode_ci,
+  `rendererState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `coreInfo` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniquekey` (`cid`,`variantIndex`,`showCorrectness`,`solutionDisplayMode`,`showFeedback`,`showHints`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -644,8 +644,8 @@ DROP TABLE IF EXISTS `ipfs_to_upload`;
 
 CREATE TABLE `ipfs_to_upload` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `cid` varchar(64) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `fileType` varchar(16) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `cid` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `fileType` varchar(16) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `sizeInBytes` int DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -694,13 +694,13 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `link_pages`;
 
 CREATE TABLE `link_pages` (
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `containingDoenetId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `parentDoenetId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `sourceCollectionDoenetId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `sourcePageDoenetId` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `containingDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `parentDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sourceCollectionDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sourcePageDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `timeOfLastUpdate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
@@ -713,16 +713,16 @@ DROP TABLE IF EXISTS `page_state`;
 
 CREATE TABLE `page_state` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `deviceName` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `cid` char(64) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `pageNumber` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `deviceName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `pageNumber` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `attemptNumber` int DEFAULT NULL,
-  `saveId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `coreInfo` mediumtext COLLATE utf8mb3_unicode_ci,
-  `coreState` mediumtext COLLATE utf8mb3_unicode_ci,
-  `rendererState` mediumtext COLLATE utf8mb3_unicode_ci,
+  `saveId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `coreInfo` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `coreState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `rendererState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId-doenetId-pageNumber-attemptNumber` (`userId`,`doenetId`,`pageNumber`,`attemptNumber`),
@@ -747,10 +747,10 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `pages`;
 
 CREATE TABLE `pages` (
-  `courseId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `containingDoenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `label` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled',
+  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `containingDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled',
   `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`containingDoenetId`,`doenetId`),
   KEY `doenetId` (`doenetId`),
@@ -791,12 +791,12 @@ DROP TABLE IF EXISTS `support_files`;
 
 CREATE TABLE `support_files` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `cid` char(80) COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `fileType` varchar(32) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `description` varchar(256) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `asFileName` varchar(256) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
+  `cid` char(80) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `fileType` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `asFileName` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `sizeInBytes` mediumint DEFAULT NULL,
   `widthPixels` int DEFAULT NULL,
   `heightPixels` int DEFAULT NULL,
@@ -923,12 +923,12 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `screenName` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT 'New User',
-  `email` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'full email address',
-  `lastName` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT '',
-  `firstName` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT '',
-  `profilePicture` varchar(128) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `screenName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'New User',
+  `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'full email address',
+  `lastName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '',
+  `firstName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '',
+  `profilePicture` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `trackingConsent` tinyint(1) DEFAULT '0',
   `canUpload` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -957,12 +957,12 @@ DROP TABLE IF EXISTS `user_assignment`;
 
 CREATE TABLE `user_assignment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `numberOfAttemptsAllowedAdjustment` int DEFAULT NULL,
-  `groupId` char(21) COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
-  `groupName` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
+  `groupId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
+  `groupName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',
   `completedDate` datetime DEFAULT NULL,
   `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
@@ -990,8 +990,8 @@ DROP TABLE IF EXISTS `user_assignment_attempt`;
 
 CREATE TABLE `user_assignment_attempt` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `attemptNumber` int NOT NULL DEFAULT '1',
   `credit` double DEFAULT NULL,
   `creditOverride` double DEFAULT NULL,
@@ -1019,8 +1019,8 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item`;
 
 CREATE TABLE `user_assignment_attempt_item` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int NOT NULL,
   `itemNumber` int NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
   `credit` double DEFAULT NULL COMMENT 'maximum credit',

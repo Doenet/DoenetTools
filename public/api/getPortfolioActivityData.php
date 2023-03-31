@@ -38,7 +38,7 @@ $activityData = [
     'doenetId' => $doenetId,
     'imagePath' => '/activity_default.jpg',
     'label' => '',
-    'learningOutcomes' => '',
+    // 'learningOutcomes' => '',
     'public' => false, //default to private
     'isNew' => true,
     'pageDoenetId' => $pageDoenetId,
@@ -78,10 +78,18 @@ if ($success) {
 }
 //Assume we are updating the activity and need the current settings
 if ($success) {
+    // $sql = "
+    // SELECT imagePath,
+    // label,
+    // learningOutcomes,
+    // isPublic
+    // FROM course_content
+    // WHERE doenetId='$doenetId'
+    // AND courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    // ";
     $sql = "
     SELECT imagePath,
     label,
-    learningOutcomes,
     isPublic
     FROM course_content
     WHERE doenetId='$doenetId'
@@ -95,7 +103,7 @@ if ($success) {
             'doenetId' => $doenetId,
             'imagePath' => $row['imagePath'],
             'label' => $row['label'],
-            'learningOutcomes' => $row['learningOutcomes'],
+            // 'learningOutcomes' => $row['learningOutcomes'],
             'public' => $row['isPublic'],
             'isNew' => false,
             'pageDoenetId' => $pageDoenetId,

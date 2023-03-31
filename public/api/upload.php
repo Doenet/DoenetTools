@@ -33,22 +33,22 @@ $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id, $type);
 
 //Test if user has permission to upload files
 
-$canUpload = false;
-$sql = "
-SELECT canUpload 
-FROM user 
-WHERE userId = '$userId'
-";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-if ($row['canUpload'] == '1') {
-    $canUpload = true;
-}
+// $canUpload = false;
+// $sql = "
+// SELECT canUpload 
+// FROM user 
+// WHERE userId = '$userId'
+// ";
+// $result = $conn->query($sql);
+// $row = $result->fetch_assoc();
+// if ($row['canUpload'] == '1') {
+//     $canUpload = true;
+// }
 
-if (!$canUpload) {
-    $success = false;
-    $msg = "You don't have permission to upload files.";
-}
+// if (!$canUpload) {
+//     $success = false;
+//     $msg = "You don't have permission to upload files.";
+// }
 
 //Test if user has space to upload files
 if ($success) {
