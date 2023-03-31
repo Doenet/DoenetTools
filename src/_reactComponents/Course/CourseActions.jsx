@@ -730,10 +730,13 @@ export const coursePermissionsAndSettings = atom({
   effects: [
     async ({ setSelf, trigger }) => {
       if (trigger === "get") {
-        const { data } = await axios.get(
-          "/api/getCoursePermissionsAndSettings.php",
-        );
-        setSelf(data.permissionsAndSettings);
+        const loadSettings = async () => {
+          const { data } = await axios.get(
+            "/api/getCoursePermissionsAndSettings.php",
+          );
+          setSelf(data.permissionsAndSettings);
+        };
+        loadSettings();
       }
     },
   ],
