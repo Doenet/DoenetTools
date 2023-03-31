@@ -25,6 +25,7 @@ import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuP
 import { loader as publicPortfolioLoader, PublicPortfolio } from "./Tools/_framework/Paths/PublicPortfolio";
 import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "./Tools/_framework/Paths/PortfolioActivityViewer";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+// import { action as portfolioEditorSupportPanelAction } from "./Tools/_framework/Panels/NewSupportPanel";
 
 import '@fontsource/jost';
 
@@ -112,6 +113,7 @@ const router = createBrowserRouter([
   {
     path: "/portfolioeditor/:doenetId",
     loader: portfolioEditorMenuCapLoader,
+    // action: portfolioEditorSupportPanelAction,
     // errorElement: <div>Error!</div>,
     element: (
                   <DarkmodeController>

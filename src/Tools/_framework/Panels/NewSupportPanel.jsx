@@ -1,13 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
-  useRecoilState,
    useRecoilValue,
 } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useNavigate } from 'react-router';
+import { useLoaderData, useNavigate } from 'react-router';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-// import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
+import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+
+// export async function action({ request, params }) {
+//   const formData = await request.formData();
+//   let formObj = Object.fromEntries(formData);
+//   console.log("formObj",formObj)
+//   return true;
+// }
 
 const SupportWrapper = styled.div`
   overflow: auto;
@@ -28,37 +34,35 @@ const ControlsWrapper = styled.div`
 
 
 
-export default function SupportPanel({ hide, children, panelTitles=[], panelIndex }) {
-  // console.log(">>>===SupportPanel")
+export default function SupportPanel({ hide, children }) {
+   /* console.log(">>>===SupportPanel") */
+   const data = useLoaderData();
   const navigate = useNavigate();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
-  //NEED THE ROOT PATH BEFORE THE ?
   const recoilPageToolView = useRecoilValue(pageToolViewAtom);
-  /* const recoilTool = useRecoilValue(searchParamAtomFamily('source')); */
-  /* console.log("recoilPageToolView",recoilPageToolView?.page) */
-  /* const courseId = useRecoilValue(courseIdAtom) */
+  const { compileActivity, updateAssignItem } = useCourse(data.courseId);
 
-  
-  /* const setSupportPanelIndex = useRecoilCallback(({set})=>(index)=>{
 
-    console.log(">>>TODO: change SupportPanelIndex to ",index) 
-  }) */
-  
-  /* let panelSelector = null;
-  if (panelTitles.length > 0){
-    
-    let options = [];
-    for (let [i,name] of Object.entries(panelTitles)){
-      options.push(<option key={`panelSelector${i}`} value={i}>{name}</option>)
-    }
-    
-    panelSelector = <select value={panelIndex} onChange={(e)=>{setSupportPanelIndex(e.target.value)}} >
-    {options}
-    </select>
-  } */
     return (
       <>
       <ControlsWrapper $hide={hide} aria-label="complementary controls" data-test="Support Panel Controls">
+        {recoilPageToolView?.page == 'portfolioeditor' && data.public == '1' ? <Button style={{background: "#ff7b00"}} value="Update Public Activity" onClick={()=>{
+            compileActivity({
+        activityDoenetId: doenetId,
+        isAssigned: true,
+        courseId:data.courseId,
+        // successCallback: () => {
+        //   addToast('Activity Assigned.', toastType.INFO);
+        // },
+      });
+      updateAssignItem({
+        doenetId,
+        isAssigned: true,
+        successCallback: () => {
+          //addToast(assignActivityToast, toastType.INFO);
+        },
+      });
+        }}/> : null }
         {recoilPageToolView?.page == 'portfolioeditor' ? <Button value="Settings" onClick={()=>navigate(`/portfolio/${doenetId}/settings?referrer=portfolioeditor`)}/> : null }
         <Button value="Documentation" onClick={()=>window.open("/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q")}/>
       </ControlsWrapper>
