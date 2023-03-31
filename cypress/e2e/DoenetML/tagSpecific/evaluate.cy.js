@@ -4571,10 +4571,10 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('NaN')
     })
     cy.get('#\\/h').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
+      expect(text.trim()).equal('NaN+1')
     })
     cy.get('#\\/ha').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
+      expect(text.trim()).equal('NaN+1')
     })
     cy.get('#\\/pg').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')

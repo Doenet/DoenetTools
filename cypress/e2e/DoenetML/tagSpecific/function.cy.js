@@ -5007,16 +5007,16 @@ describe('Function Tag Tests', function () {
     });
   });
 
-  it('function of function can redefine variable', () => {
+  it('function of function formula can redefine variable', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <function variables="t" name="f" symbolic>st^3</function>
+    <function variables="t" name="f" symbolic simplify="false">st^3</function>
 
-    <function name="f2" symbolic><copy target="f"/></function>
-    <function name="f3" variables="s" symbolic><copy target="f"/></function>
+    <function name="f2" symbolic simplify="false"><copy target="f"/></function>
+    <function name="f3" variables="s" symbolic simplify="false"><copy target="f.formula"/></function>
 
     <copy assignNames="f4" target="f"/>
     <copy assignNames="f5" target="f2"/>
@@ -6053,7 +6053,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="f1" symbolic>xyz</function>
+    <function name="f1" symbolic simplify="none">xyz</function>
     <copy target="f1" variables="x y" assignNames="f2" />
     <copy target="f2" variables="x y z" assignNames="f3" />
     <copy target="f3" variables="z y" assignNames="f4" />
@@ -6361,11 +6361,11 @@ describe('Function Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <function name="f1">255.029847 sin(0.52952342x) + 3</function>
-  <function name="f2" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f3" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f1" simplify="none">255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" simplify="none" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" simplify="none" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f4" simplify="none" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f5" simplify="none" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
   <copy target="f1" assignNames="f1a" />
   <copy target="f2" assignNames="f2a" />

@@ -930,40 +930,20 @@ export default class Function extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "isInterpolatedFunction"
         },
-        simplify: {
-          dependencyType: "stateVariable",
-          variableName: "simplify"
-        },
-        expand: {
-          dependencyType: "stateVariable",
-          variableName: "expand"
-        }
       }),
       definition: function ({ dependencyValues, usedDefault }) {
 
         if (dependencyValues.isInterpolatedFunction) {
           return { setValue: { formula: me.fromAst('\uff3f') } };
         } else if (dependencyValues.mathChild.length > 0) {
-          let formula = normalizeMathExpression({
-            value: dependencyValues.mathChild[0].stateValues.value,
-            simplify: dependencyValues.simplify,
-            expand: dependencyValues.expand,
-          });
-
           return {
-            setValue: { formula }
+            setValue: { formula: dependencyValues.mathChild[0].stateValues.value }
           }
         } else if (dependencyValues.functionChild.length > 0 &&
           !usedDefault.functionChild[0].formula
         ) {
-          let formula = normalizeMathExpression({
-            value: dependencyValues.functionChild[0].stateValues.formula,
-            simplify: dependencyValues.simplify,
-            expand: dependencyValues.expand,
-          });
-
           return {
-            setValue: { formula }
+            setValue: { formula: dependencyValues.functionChild[0].stateValues.formula }
           }
         } else {
           return {

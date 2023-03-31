@@ -1485,10 +1485,10 @@ describe('Function Operator Tag Tests', function () {
       for (let i = 1; i <= 21; i++) {
 
         let x = 0.2 * (i - 11);
-        expect(df1(x)).closeTo(Math.sin(x), 1E-10);
+        expect(df1(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
         expect(df2a(x)).closeTo(Math.sin(x), 1E-10);
-        expect(df3zy(x)).closeTo(Math.sin(x), 1E-10);
-        expect(df3zya(x)).closeTo(Math.sin(x), 1E-10);
+        expect(df3zy(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
+        expect(df3zya(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
         expect(df4zya(x)).closeTo(Math.sin(x), 1E-10);
         expect(df4yza(x)).closeTo(Math.sin(x), 1E-10);
 
