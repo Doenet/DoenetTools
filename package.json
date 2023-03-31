@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "docker compose -f ./docker-compose.yml -f ./.devcontainer/docker-compose.extend.yml build apache",
     "preview": "view preview",
     "start:ci": "docker compose up -d",
     "start:dev": "vite",
