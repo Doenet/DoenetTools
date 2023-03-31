@@ -2313,7 +2313,6 @@ export default class Function extends InlineComponent {
     }
 
     stateVariableDefinitions.minima = {
-      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -2928,7 +2927,6 @@ export default class Function extends InlineComponent {
     }
 
     stateVariableDefinitions.maxima = {
-      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
