@@ -40,17 +40,17 @@ export default function SupportPanel({ hide, children }) {
   const navigate = useNavigate();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
   const recoilPageToolView = useRecoilValue(pageToolViewAtom);
-  const { compileActivity, updateAssignItem } = useCourse(data.courseId);
+  const { compileActivity, updateAssignItem } = useCourse(data?.courseId);
 
 
     return (
       <>
       <ControlsWrapper $hide={hide} aria-label="complementary controls" data-test="Support Panel Controls">
-        {recoilPageToolView?.page == 'portfolioeditor' && data.public == '1' ? <Button style={{background: "#ff7b00"}} value="Update Public Activity" onClick={()=>{
+        {recoilPageToolView?.page == 'portfolioeditor' && data?.public == '1' ? <Button style={{background: "#ff7b00"}} value="Update Public Activity" onClick={()=>{
             compileActivity({
         activityDoenetId: doenetId,
         isAssigned: true,
-        courseId:data.courseId,
+        courseId:data?.courseId,
         // successCallback: () => {
         //   addToast('Activity Assigned.', toastType.INFO);
         // },
