@@ -108,7 +108,7 @@ const router = createBrowserRouter([
     loader: portfolioActivitySettingsLoader,
     action: portfolioActivitySettingsAction,
     ErrorBoundary: portfolioActivitySettingsError,
-    element: <PortfolioActivitySettings />,
+    element: <ChakraProvider theme={theme}><PortfolioActivitySettings /></ChakraProvider>,
   },
   {
     path: "/portfolioeditor/:doenetId",

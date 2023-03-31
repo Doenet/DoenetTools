@@ -7,9 +7,10 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImage } from '@fortawesome/free-solid-svg-icons';
-import { Box, Image } from '@chakra-ui/react';
+import { Box, Checkbox, Image, Text } from '@chakra-ui/react';
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
+import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 
 export async function action({ request, params }) {
@@ -29,7 +30,6 @@ export async function action({ request, params }) {
     const portfolioCourseId = response.data.portfolioCourseId;
     return redirect(`/portfolio/${portfolioCourseId}`) 
   }
-  
 
       // if (response.ok) {
       //   // let { doenetId } = await response.json();
@@ -139,6 +139,8 @@ export function PortfolioActivitySettings(){
   const navigate = useNavigate();
   let numberOfFilesUploading = useRef(0);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const { compileActivity, updateAssignItem } = useCourse(data.courseId);
+  let isMakePublic = useRef(false);
 
 
   let [imagePath,setImagePath] = useState(data.imagePath);
@@ -220,7 +222,11 @@ export function PortfolioActivitySettings(){
     <Form method="post">
   <MainGrid>
   <Slot1>
-    <div><h1>Activity Settings</h1></div>
+  <Text 
+    fontSize="24px"
+    fontWeight="700"
+    >Activity Settings</Text>
+    {/* <div><h1>Activity Settings</h1></div> */}
   </Slot1>
   <Slot2>
   <Table>
@@ -275,7 +281,21 @@ export function PortfolioActivitySettings(){
         <Td><textarea name="learningOutcomes" style={{width:"390px",resize: "vertical"}} placeholder='Description of Learning Outcomes' defaultValue={data.learningOutcomes}/></Td>
         </tr> */}
       <tr>
-        <Td>Public <input name="public" type="checkbox" defaultChecked={data.public == '1'} /></Td>
+        <Td><Checkbox 
+        size='lg'
+        name="public" 
+        value="on" 
+        defaultChecked={data.public == '1'}
+        onChange={(e)=>{
+          //Need to track that it was not public and now it is
+          if (e.target.checked && data.public == 0){
+            isMakePublic.current = true;
+          }else{
+            isMakePublic.current = false;
+
+          }
+        }}
+        >Public</Checkbox></Td>
         <Td></Td>
       </tr>
     </tbody>
@@ -302,6 +322,25 @@ export function PortfolioActivitySettings(){
         view: '',
         params:{},
       });
+          // console.log("check isMakePublic",e.target.checked,data.public,isMakePublic.current)
+      if (isMakePublic.current){
+        //"Making private a public activity
+        compileActivity({
+          activityDoenetId: data.doenetId,
+          isAssigned: true,
+          courseId:data.courseId,
+          successCallback: () => {
+          //   addToast('Activity Assigned.', toastType.INFO);
+          },
+        });
+        updateAssignItem({
+          doenetId: data.doenetId,
+          isAssigned: true,
+          successCallback: () => {
+            //addToast(assignActivityToast, toastType.INFO);
+          },
+        });
+      }
     }} />
     </SideBySide>
   </Slot3>
