@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DoenetViewer from '../../Tools/_framework/ToolPanels/AssignmentViewer';
-import testCodeDoenetML from './testCode.doenet';
+import {plainText as testCodeDoenetML } from './testCode.doenet';
 import core from '../../Core/Core';
 
 // import MathInputPallet from '../_framework/temp/MathInputPallet'
