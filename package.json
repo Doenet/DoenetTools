@@ -25,6 +25,7 @@
     "compile_grammar": "npx lezer-generator --output src/Parser/doenet.js src/Parser/doenet.grammar"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.18",
     "@chakra-ui/react": "^2.5.3",
     "@codemirror/basic-setup": "^0.19.0",
     "@codemirror/commands": "^0.19.5",

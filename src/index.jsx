@@ -13,7 +13,7 @@ import ToolRoot from './Tools/_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
 import { mathjaxConfig } from './Core/utils/math';
 import DarkmodeController from './Tools/_framework/DarkmodeController';
-import Community from "./Tools/_framework/Paths/Community";
+import {loader as communityLoader, Community} from "./Tools/_framework/Paths/Community";
 import {loader as siteLoader, SiteHeader} from "./Tools/_framework/Paths/SiteHeader";
 import {loader as caroselLoader, Home} from "./Tools/_framework/Paths/Home";
 import {loader as portfolioActivitySettingsLoader, 
@@ -64,7 +64,8 @@ const router = createBrowserRouter([
       },
       {
         path: "community",
-        loader: caroselLoader,
+        loader: communityLoader,
+        // action: communitySearchAction,
         element: <ChakraProvider theme={theme}><Community /></ChakraProvider>,
       },
       {

@@ -1,8 +1,46 @@
 import React from 'react';
-import { Text } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import { useLoaderData, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
+import Searchbar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
+import { Form, useFetcher, useSubmit } from 'react-router-dom';
+
+
+export async function loader({ request }){
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  console.log("q",q)
+  if (q){
+    //Show search results
+    // const response = await fetch('/api/getHPCarouselData.php');
+    // const data = await response.json();
+    return {q,searchResults:[]}
+  }else{
+    const response = await fetch('/api/getHPCarouselData.php');
+    const data = await response.json();
+    return data;
+  }
+}
+
+// export async function action({ request }) {
+
+//   const formData = await request.formData();
+//   const formObj = Object.fromEntries(formData);
+//   console.log("community up",formObj)
+//   // let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
+//   //   ...updates, doenetId:params.doenetId
+//   // })
+
+//   // if (referrer == "portfolioeditor"){
+//   //   return redirect(`/portfolioeditor/${updates.doenetId}?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
+//   // }else{
+//   //   const portfolioCourseId = response.data.portfolioCourseId;
+//   //   return redirect(`/portfolio/${portfolioCourseId}`) 
+//   // }
+// return {search:formObj.search,matchingCardInfo:[]};
+
+// }
 
 function Heading(props) {
   return <div style={{
@@ -49,18 +87,63 @@ const CarouselSection = styled.div`
       background: var(--mainGray);
 `
 
-export default function Community(props){
-  let context = useOutletContext();
-  const loaderData = useLoaderData();
-  const carouselData = loaderData?.carouselData;
+export function Community(){
+  // let context = useOutletContext();
+  const {carouselData, q, searchResults} = useLoaderData();
+  const submit = useSubmit();
+console.log({carouselData, q, searchResults})
 
-  //Don't do more processing if we don't know if we are signed in or not
-  if (context.signedIn == null){ return null;}
-  
+if (q){
+  return (<>
+  <SearchBarSection>
+  <SearchBarContainer>
+    <Box
+    width="400px"
+    >
+      <Form
+      onChange={(event) => {
+        submit(event.currentTarget);
+      }}
+      >
+      {/* <input type="text" name="search" /> */}
+      {/* <button type="submit">Search</button> */}
+      <Searchbar
+      // submitAction={(e)=>{
+        //   console.log("submitAction",e?.currentTarget)
+        //   submit(e.currentTarget);
+        // }}
+        />
+    </Form>
+    </Box>
+    {/* <input type='text' width="400px" /> */}
+    </SearchBarContainer> 
+    </SearchBarSection>
+  <Heading heading={`searching for "${q}"`} />
+  </>)
+}
+
   return <>
   <SearchBarSection>
   <SearchBarContainer>
-    <input type='text' width="400px" />
+    <Box
+    width="400px"
+    >
+      <Form
+      onChange={(event) => {
+        submit(event.currentTarget);
+      }}
+    >
+      {/* <input type="text" name="search" /> */}
+      {/* <button type="submit">Search</button> */}
+      <Searchbar
+      // submitAction={(e)=>{
+      //   console.log("submitAction",e?.currentTarget)
+      //   submit(e.currentTarget);
+      // }}
+      />
+    </Form>
+    </Box>
+    {/* <input type='text' width="400px" /> */}
     </SearchBarContainer> 
     </SearchBarSection>
   <Heading heading="Community Public Content" />
