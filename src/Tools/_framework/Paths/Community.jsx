@@ -23,7 +23,7 @@ export async function loader({ request }){
   }
 }
 
-function Card({ doenetId, imagePath, label, fullName }) {
+function ActivityCard({ doenetId, imagePath, label, fullName }) {
 
   const activityLink = `/portfolio/${doenetId}/viewer`;
 
@@ -83,6 +83,57 @@ function Card({ doenetId, imagePath, label, fullName }) {
           lineHeight='1' 
           noOfLines={2}
           >{label}</Text>
+          </Box>
+        </Box>
+      </Box>
+  );
+}
+
+function AuthorCard({ fullName, portfolioCourseId }) {
+  // function AuthorCard({ doenetId, imagePath, label, fullName }) {
+
+  const authorLink = `/portfolio/${portfolioCourseId}/public`;
+
+  return (
+      <Box 
+      display="flex" 
+      flexDirection="column"
+      height="180px"
+      width="180px"
+      background="black"
+      overflow="hidden"
+      margin="10px"
+      border="2px solid #949494"
+      borderRadius= "6px"
+      >
+        <Box 
+        height="130px"
+        display="flex" 
+        alignContent="center"
+        justifyContent="center"
+        alignItems="center"
+        >
+          <Link to={authorLink}>
+          <Avatar w="100px" h="100px" fontSize="60pt" name={fullName} />
+          </Link>
+        </Box>
+        <Box
+         height="50px"
+         display="flex"
+         padding="2px"
+         color="black"
+         background="white"
+          alignContent="center"
+          justifyContent="center"
+          alignItems="center"
+        >
+
+          <Box>
+          <Text 
+          fontSize='sm' 
+          lineHeight='1' 
+          noOfLines={2}
+          >{fullName}</Text>
           </Box>
         </Box>
       </Box>
@@ -177,11 +228,13 @@ if (q){
     >
       <TabList 
       gridColumn="1/2"
-      background= "var(--mainGray)"
+      // background= "var(--mainGray)"
+      background="var(--canvas)"
       width="400px"
       >
     <Tab
     background="var(--canvas)"
+    fontWeight="700"
     >Activities<Badge 
     ml='1' 
     mr='2'
@@ -192,6 +245,7 @@ if (q){
     >{searchResults?.activities?.length}</Badge>
     </Tab>
     <Tab
+    fontWeight="700"
     background="var(--canvas)"
     >Authors
     <Badge 
@@ -216,7 +270,7 @@ if (q){
         const { doenetId, imagePath, label, fullName } = activityObj;
         console.log("activityObj",activityObj)
         //{ activityLink, doenetId, imagePath, label, fullName }
-        return <Card 
+        return <ActivityCard 
         key={doenetId}  
         doenetId={doenetId}
         imagePath={imagePath}
@@ -226,7 +280,17 @@ if (q){
       })}
     </TabPanel>
     <TabPanel>
-      <p>Authors GO HERE</p>
+    {searchResults?.users.map((authorObj)=>{
+        const { courseId, firstName, lastName } = authorObj;
+        // console.log("authorObj",authorObj)
+
+        return <AuthorCard
+        key={courseId} 
+        fullName={`${firstName} ${lastName}`}
+        portfolioCourseId={courseId}
+        />
+      })}
+      
     </TabPanel>
   </TabPanels>
 </Tabs>
