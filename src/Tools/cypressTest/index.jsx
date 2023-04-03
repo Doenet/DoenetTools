@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import CypressTest from './CypressTest.jsx';
 import axios from 'axios';
 import { RecoilRoot } from 'recoil';
@@ -14,7 +14,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //   return <p>test</p>
 // }
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'));
+root.render(
   <RecoilRoot>
     <Router>
       <Routes>
@@ -31,8 +32,7 @@ ReactDOM.render(
           } />
       </Routes>
     </Router>
-  </RecoilRoot>,
-  document.getElementById('root'),
+  </RecoilRoot>
 );
 
 // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
