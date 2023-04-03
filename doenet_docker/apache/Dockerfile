@@ -5,7 +5,8 @@ RUN npm ci
 COPY index.html vite.config.js ./
 COPY src ./src
 COPY public ./public
-RUN npx vite build --outDir site
+ARG BUILD_MODE
+RUN npm run build -- --outDir site --mode ${BUILD_MODE}
 
 FROM httpd:2.4.41-alpine
 RUN apk update; \

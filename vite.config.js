@@ -3,9 +3,10 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import react from '@vitejs/plugin-react';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
+import { resolve } from 'path';
 import plainText from 'vite-plugin-plain-text';
 
-export default defineConfig({
+export default defineConfig((env) => ({
   appType: 'mpa',
   plugins: [
     react(),
@@ -47,9 +48,20 @@ export default defineConfig({
     outDir: './dist_local',
     rollupOptions: {
       plugins: [nodePolyfills()],
+      input:
+        env.mode === 'development'
+          ? {
+              main: resolve(__dirname, 'index.html'),
+              cypressTest: resolve(
+                __dirname,
+                'src/Tools/',
+                'cypressTest/index.html',
+              ),
+            }
+          : 'index.html',
     },
     commonjsOptions: {
       transformMixedEsModules: true,
     },
   },
-});
+}));

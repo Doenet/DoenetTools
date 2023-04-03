@@ -53,6 +53,8 @@ services:
     build:
       context: ./
       dockerfile: ./doenet_docker/apache/Dockerfile
+      args:
+        - BUILD_MODE=development
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
