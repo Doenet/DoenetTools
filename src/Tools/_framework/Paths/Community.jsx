@@ -1,46 +1,93 @@
 import React from 'react';
-import { Box, Text } from '@chakra-ui/react';
+import { Avatar, Box, Image, Tabs, Text } from '@chakra-ui/react';
 import { useLoaderData, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 import Searchbar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
-import { Form, useFetcher, useSubmit } from 'react-router-dom';
+import { Form, Link } from 'react-router-dom';
+import { map } from 'lodash';
 
 
 export async function loader({ request }){
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  console.log("q",q)
   if (q){
     //Show search results
-    // const response = await fetch('/api/getHPCarouselData.php');
-    // const data = await response.json();
-    return {q,searchResults:[]}
+    const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
+    const respObj = await response.json();
+    return {q,searchResults:respObj.searchResults}
   }else{
     const response = await fetch('/api/getHPCarouselData.php');
-    const data = await response.json();
-    return data;
+    const { carouselData } = await response.json();
+    return { carouselData };
   }
 }
 
-// export async function action({ request }) {
+function Card({ doenetId, imagePath, label, fullName }) {
 
-//   const formData = await request.formData();
-//   const formObj = Object.fromEntries(formData);
-//   console.log("community up",formObj)
-//   // let response = await axios.post("/api/updatePortfolioActivitySettings.php",{
-//   //   ...updates, doenetId:params.doenetId
-//   // })
+  const activityLink = `/portfolio/${doenetId}/viewer`;
 
-//   // if (referrer == "portfolioeditor"){
-//   //   return redirect(`/portfolioeditor/${updates.doenetId}?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`) 
-//   // }else{
-//   //   const portfolioCourseId = response.data.portfolioCourseId;
-//   //   return redirect(`/portfolio/${portfolioCourseId}`) 
-//   // }
-// return {search:formObj.search,matchingCardInfo:[]};
-
-// }
+  return (
+      <Box 
+      display="flex" 
+      flexDirection="column"
+      height="180px"
+      width="180px"
+      background="black"
+      overflow="hidden"
+      margin="10px"
+      border="2px solid #949494"
+      borderRadius= "6px"
+      >
+        <Box 
+        height="130px">
+          <Link to={activityLink}>
+          <Image 
+            width="100%"
+            height="100%"
+            objectFit="contain"
+            src={imagePath} 
+            alt="Activity Card"
+          />
+          </Link>
+        </Box>
+        <Box
+         height="50px"
+         display="flex"
+         justifyContent="flex-start"
+         padding="2px"
+         color="black"
+         background="white"
+        >
+          <Box 
+          width="40px"
+          display="flex"
+          alignContent="center"
+          justifyContent="center"
+          alignItems="center"
+          position="relative"
+          >
+            <Avatar size="sm" name={fullName} />
+            <Box
+            position="absolute"
+            width="100px"
+            left="8px"
+            bottom="0px"
+            >
+              <Text fontSize='10px'>{fullName}</Text>
+            </Box>
+          </Box>
+          <Box>
+          <Text 
+          fontSize='sm' 
+          lineHeight='1' 
+          noOfLines={2}
+          >{label}</Text>
+          </Box>
+        </Box>
+      </Box>
+  );
+}
 
 function Heading(props) {
   return <div style={{
@@ -90,8 +137,7 @@ const CarouselSection = styled.div`
 export function Community(){
   // let context = useOutletContext();
   const {carouselData, q, searchResults} = useLoaderData();
-  const submit = useSubmit();
-console.log({carouselData, q, searchResults})
+// console.log({carouselData, q, searchResults})
 
 if (q){
   return (<>
@@ -100,25 +146,62 @@ if (q){
     <Box
     width="400px"
     >
-      <Form
-      onChange={(event) => {
-        submit(event.currentTarget);
-      }}
-      >
-      {/* <input type="text" name="search" /> */}
-      {/* <button type="submit">Search</button> */}
-      <Searchbar
-      // submitAction={(e)=>{
-        //   console.log("submitAction",e?.currentTarget)
-        //   submit(e.currentTarget);
-        // }}
-        />
-    </Form>
+      <Form>
+        <Searchbar defaultValue={q}/>
+      </Form>
     </Box>
-    {/* <input type='text' width="400px" /> */}
     </SearchBarContainer> 
     </SearchBarSection>
-  <Heading heading={`searching for "${q}"`} />
+  <Box
+  display="flex"
+  flexDirection="column"
+  justifyContent="center"
+  alignItems="center"
+  height="100px"
+  background= "var(--canvas)"
+  >
+    <Text 
+    fontSize="24px"
+    >Results for 
+    <Text as='span'
+    fontSize="24px"
+    fontWeight="700"
+    > {q}</Text>
+    </Text>
+  </Box>
+  <Box
+  display="grid"
+  gridTemplateColumns="240px auto"
+  minHeight="calc(100vh - 200px)"
+  // height="100%"
+  >
+    {/* <Tabs> */}
+    <Box
+    gridColumn="1/2"
+    background= "var(--mainGray)"
+    >
+
+    </Box>
+    <Box
+    gridColumn="2/3"
+    background= "var(--mainGray)"
+    >
+      {searchResults?.activities.map((activityObj)=>{
+        const { doenetId, imagePath, label, fullName } = activityObj;
+        console.log("activityObj",activityObj)
+        //{ activityLink, doenetId, imagePath, label, fullName }
+        return <Card 
+        key={doenetId}  
+        doenetId={doenetId}
+        imagePath={imagePath}
+        label={label}
+        fullName={fullName}
+        />
+      })}
+    </Box>
+      {/* </Tabs> */}
+  </Box>
+ 
   </>)
 }
 
@@ -128,20 +211,9 @@ if (q){
     <Box
     width="400px"
     >
-      <Form
-      onChange={(event) => {
-        submit(event.currentTarget);
-      }}
-    >
-      {/* <input type="text" name="search" /> */}
-      {/* <button type="submit">Search</button> */}
-      <Searchbar
-      // submitAction={(e)=>{
-      //   console.log("submitAction",e?.currentTarget)
-      //   submit(e.currentTarget);
-      // }}
-      />
-    </Form>
+      <Form>
+        <Searchbar defaultValue={q}/>
+      </Form>
     </Box>
     {/* <input type='text' width="400px" /> */}
     </SearchBarContainer> 

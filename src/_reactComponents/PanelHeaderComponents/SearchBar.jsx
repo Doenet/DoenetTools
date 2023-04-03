@@ -6,10 +6,11 @@ import { Button, Input, InputGroup, InputLeftElement, InputRightAddon } from '@c
 import { Search2Icon } from "@chakra-ui/icons";
 
 
-export default function Searchbar({name='q',submitAction=()=>{}}) {
+export default function Searchbar({
+  name='q',
+  defaultValue,
+}) {
 
-
-  // return <input type="text" name="search" />
 
   return (
     <>
@@ -23,10 +24,7 @@ export default function Searchbar({name='q',submitAction=()=>{}}) {
         placeholder="Search..." 
         border="1px solid #949494" 
         name={name} 
-        onKeyDown={(e)=>{
-          if (e.key === 'Enter' || e.key === "Spacebar" || e.key === " "){
-            submitAction(e)
-          }}}
+        defaultValue={defaultValue}
         />
         <InputRightAddon
           p={0}
@@ -36,12 +34,10 @@ export default function Searchbar({name='q',submitAction=()=>{}}) {
           borderRightRadius={3.3}
         >
           <Button 
+          type="submit"
           size="sm" 
           borderLeftRadius={0} 
           borderRightRadius={3.3}
-          onClick={()=>{
-            submitAction();
-          }}
           >
             Search
           </Button>
