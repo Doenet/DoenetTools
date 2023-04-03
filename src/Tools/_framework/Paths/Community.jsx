@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Box, Image, Tabs, Text } from '@chakra-ui/react';
+import { Avatar, Badge, Box, Image, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text } from '@chakra-ui/react';
 import { useLoaderData, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
@@ -169,23 +169,49 @@ if (q){
     > {q}</Text>
     </Text>
   </Box>
-  <Box
-  display="grid"
-  gridTemplateColumns="240px auto"
-  minHeight="calc(100vh - 200px)"
-  // height="100%"
-  >
-    {/* <Tabs> */}
-    <Box
-    gridColumn="1/2"
-    background= "var(--mainGray)"
+    <Tabs 
+    orientation='vertical'
+    display="grid"
+    gridTemplateColumns="240px auto"
+    minHeight="calc(100vh - 200px)"
     >
+      <TabList 
+      gridColumn="1/2"
+      background= "var(--mainGray)"
+      width="400px"
+      >
+    <Tab
+    background="var(--canvas)"
+    >Activities<Badge 
+    ml='1' 
+    mr='2'
+    fontSize='0.8em' 
+    // colorScheme='var(--mainBlue)'
+    background='var(--lightBlue)'
+    borderRadius='full'
+    >{searchResults?.activities?.length}</Badge>
+    </Tab>
+    <Tab
+    background="var(--canvas)"
+    >Authors
+    <Badge 
+    ml='1' 
+    mr='2'
+    fontSize='0.8em' 
+    background='var(--lightBlue)'
+    // colorScheme='blue'
+    borderRadius='full'
+    >{searchResults?.users?.length}</Badge>
+    </Tab>
+  </TabList>
 
-    </Box>
-    <Box
-    gridColumn="2/3"
-    background= "var(--mainGray)"
-    >
+  
+
+  <TabPanels 
+  gridColumn="2/3"
+  background= "var(--mainGray)"
+  >
+    <TabPanel>
       {searchResults?.activities.map((activityObj)=>{
         const { doenetId, imagePath, label, fullName } = activityObj;
         console.log("activityObj",activityObj)
@@ -198,9 +224,13 @@ if (q){
         fullName={fullName}
         />
       })}
-    </Box>
-      {/* </Tabs> */}
-  </Box>
+    </TabPanel>
+    <TabPanel>
+      <p>Authors GO HERE</p>
+    </TabPanel>
+  </TabPanels>
+</Tabs>
+    
  
   </>)
 }
