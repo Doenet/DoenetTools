@@ -6,7 +6,7 @@ import { pageToolViewAtom } from './NewToolRoot';
 
 const LogoButton = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('./Doenet_Logo_cloud_only.png');
+    url('/Doenet_Logo_cloud_only.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: 50px 25px;

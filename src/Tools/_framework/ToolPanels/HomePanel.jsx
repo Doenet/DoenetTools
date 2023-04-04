@@ -134,7 +134,7 @@ export default function HomePage(props) {
 
   return <div style = {props.style}>
     <DoenetLogo>
-      <DoenetImage alt="Doenet logo showing donut in front of a cloud" src={'./Doenet_Logo_Frontpage.png'} />
+      <DoenetImage alt="Doenet logo showing donut in front of a cloud" src={'/Doenet_Logo_Frontpage.png'} />
     </DoenetLogo>
     <CloudColorSection>
       <SectionText>
