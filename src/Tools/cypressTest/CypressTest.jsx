@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PageViewer from '../../Viewer/PageViewer.jsx';
 import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
-// import {plainText as testCodeDoenetML } from './testCode.doenet';
+// import testCodeDoenetML from './testCode.doenet?raw';
 
 function Test() {
   // console.log("===Test")

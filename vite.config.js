@@ -4,14 +4,11 @@ import react from '@vitejs/plugin-react';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import plainText from 'vite-plugin-plain-text';
 
 export default defineConfig((env) => ({
   appType: 'mpa',
   plugins: [
-    react(),
-    plainText(/\/testActivityDefinition\.doenet/),
-    plainText(/\/testCode\.doenet/),
+    react()
   ],
   server: {
     port: 8000,
