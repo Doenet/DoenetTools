@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 // import styled from 'styled-components';
-import { Button, Input, InputGroup, InputLeftElement, InputRightAddon } from '@chakra-ui/react';
-import { Search2Icon } from "@chakra-ui/icons";
-
+import { Icon, Button, Input, InputGroup, InputLeftElement, InputRightAddon } from '@chakra-ui/react';
+// import { Search2Icon } from "@chakra-ui/icons";
+import { IoSearchSharp } from "react-icons/io5";
 
 export default function Searchbar({
   name='q',
@@ -17,7 +17,7 @@ export default function Searchbar({
       <InputGroup borderRadius={5} size="sm">
       <InputLeftElement
           pointerEvents="none"
-          children={<Search2Icon color="gray.600" />}
+          children={<Icon as={IoSearchSharp} color="gray.600" />}
           />
         <Input 
         type="text" 
