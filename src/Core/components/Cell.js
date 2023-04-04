@@ -384,9 +384,6 @@ export default class Cell extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         let number = dependencyValues.math.evaluate_to_constant();
-        if (!Number.isFinite(number)) {
-          number = NaN;
-        }
         return { setValue: { number } }
       },
       inverseDefinition({ desiredStateVariableValues }) {

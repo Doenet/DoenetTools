@@ -151,7 +151,7 @@ export default class FunctionIterates extends InlineComponent {
           if (dependencyValues.nDimensions === 1) {
             let numericalf = functionComp.stateValues.numericalfs[0];
             let value = initialValue.evaluate_to_constant();
-            if (value === null) {
+            if (Number.isNaN(value)) {
               allIterates = Array(nIterates).fill(me.fromAst('\uff3f'));
             } else {
               for (let ind = 0; ind < nIterates; ind++) {
@@ -161,8 +161,7 @@ export default class FunctionIterates extends InlineComponent {
             }
           } else {
             let numericalfs = functionComp.stateValues.numericalfs;
-            let value = initialValue.tree.slice(1).map(x => me.fromAst(x).evaluate_to_constant())
-              .map(x => x == null ? NaN : x);
+            let value = initialValue.tree.slice(1).map(x => me.fromAst(x).evaluate_to_constant());
             for (let ind = 0; ind < nIterates; ind++) {
               let iterComps = [];
               for (let i = 0; i < dependencyValues.nDimensions; i++) {

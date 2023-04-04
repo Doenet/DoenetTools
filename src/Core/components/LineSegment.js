@@ -524,9 +524,6 @@ export default class LineSegment extends GraphicalComponent {
           let numericalP = [];
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = endpoint[ind].evaluate_to_constant();
-            if (!Number.isFinite(val)) {
-              val = NaN;
-            }
             numericalP.push(val);
           }
           numericalEndpoints[arrayKey] = numericalP;

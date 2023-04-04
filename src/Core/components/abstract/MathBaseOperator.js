@@ -380,9 +380,6 @@ export default class MathOperator extends MathComponent {
               baseComponentType: "math"
             })) {
               let value = child.stateValues.value.evaluate_to_constant();
-              if (!Number.isFinite(value)) {
-                value = NaN;
-              }
               inputs.push(value);
             } else if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
@@ -464,9 +461,6 @@ export default class MathOperator extends MathComponent {
                 baseComponentType: "math"
               })) {
                 let value = child.stateValues.value.evaluate_to_constant();
-                if (!Number.isFinite(value)) {
-                  value = NaN;
-                }
                 inputs.push(value);
                 canBeModified.push(child.stateValues.canBeModified);
                 inputToChildIndex.push(childInd);
@@ -486,9 +480,6 @@ export default class MathOperator extends MathComponent {
                 // mathList
                 let values = child.stateValues.maths.map(x => {
                   let value = x.evaluate_to_constant();
-                  if (!Number.isFinite(value)) {
-                    value = NaN;
-                  }
                   return value;
                 })
                 inputs.push(...values);

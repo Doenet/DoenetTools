@@ -31,7 +31,115 @@ describe('Function Operator Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="original">x^3</function>
+    <function name="original" symbolic="true">x^3</function>
+    <clampfunction name="clamp01"><copy target="original" /></clampfunction>
+    <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
+
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace><evaluate function="$(../clamp01)" input="$x" /></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../clampn35)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map2" name="m4" />
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map3" name="m5" />
+    </aslist></p>
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+
+      let clamp01 = x => Math.min(1, Math.max(0, x));
+      let clampn35 = x => Math.min(5, Math.max(-3, x));
+      let indToVal = ind => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+
+      cy.log('Check values in DOM')
+      for (let i = 1; i <= 21; i++) {
+        cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(indToVal(i).toString())
+        });
+
+        cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clamp01(indToVal(i)).toString())
+        });
+
+        cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clampn35(indToVal(i)).toString())
+        });
+
+        cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clamp01(indToVal(i)).toString())
+        });
+
+        cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clampn35(indToVal(i)).toString())
+        });
+      }
+
+
+      cy.log('check mapped state values')
+      cy.window().then(async (win) => {
+        for (let i = 1; i <= 21; i++) {
+          expect(stateVariables[map1Replacements[i - 1].componentName].stateValues.value).closeTo(indToVal(i), 1E-10);
+          expect(stateVariables[map2Replacements[i - 1].componentName].stateValues.value).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(stateVariables[map3Replacements[i - 1].componentName].stateValues.value).closeTo(clampn35(indToVal(i)), 1E-10);
+          expect(stateVariables[map4Replacements[i - 1].componentName].stateValues.value).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(stateVariables[map5Replacements[i - 1].componentName].stateValues.value).closeTo(clampn35(indToVal(i)), 1E-10);
+        }
+      })
+
+      cy.log('check functions created from fDefinition')
+      cy.window().then(async (win) => {
+
+        let f01 = createFunctionFromDefinition(stateVariables['/clamp01'].stateValues.fDefinitions[0]);
+        let fn35 = createFunctionFromDefinition(stateVariables['/clampn35'].stateValues.fDefinitions[0]);
+
+        for (let i = 1; i <= 21; i++) {
+
+          let x = 0.2 * (i - 11);
+          expect(f01(x)).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(fn35(x)).closeTo(clampn35(indToVal(i)), 1E-10);
+
+        }
+
+      })
+    })
+  })
+
+  it('clamp function, numeric', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="original" symbolic="false">x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -234,6 +342,115 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <function name="original">x^3</function>
+    <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
+
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace><evaluate function="$(../wrap01)" input="$x" /></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../wrapn23)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map2" name="m4" />
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map3" name="m5" />
+    </aslist></p>
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+
+      let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
+      let wrapn23 = x => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
+      let indToVal = ind => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+
+      cy.log('Check values in DOM')
+
+      for (let i = 1; i <= 21; i++) {
+        cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(indToVal(i).toString())
+        });
+
+        cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrap01(indToVal(i)).toString())
+        });
+
+        cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrapn23(indToVal(i)).toString())
+        });
+
+        cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrap01(indToVal(i)).toString())
+        });
+
+        cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrapn23(indToVal(i)).toString())
+        });
+      }
+
+      cy.log('check mapped state values')
+      cy.window().then(async (win) => {
+        for (let i = 1; i <= 21; i++) {
+          expect(stateVariables[map1Replacements[i - 1].componentName].stateValues.value).closeTo(indToVal(i), 1E-10);
+          expect(stateVariables[map2Replacements[i - 1].componentName].stateValues.value).closeTo(wrap01(indToVal(i)), 1E-10);
+          expect(stateVariables[map3Replacements[i - 1].componentName].stateValues.value).closeTo(wrapn23(indToVal(i)), 1E-10);
+          expect(stateVariables[map4Replacements[i - 1].componentName].stateValues.value).closeTo(wrap01(indToVal(i)), 1E-10);
+          expect(stateVariables[map5Replacements[i - 1].componentName].stateValues.value).closeTo(wrapn23(indToVal(i)), 1E-10);
+        }
+      })
+
+
+      cy.log('check functions created from fDefinition')
+      cy.window().then(async (win) => {
+
+        let f01 = createFunctionFromDefinition(stateVariables['/wrap01'].stateValues.fDefinitions[0]);
+        let fn23 = createFunctionFromDefinition(stateVariables['/wrapn23'].stateValues.fDefinitions[0]);
+
+        for (let i = 1; i <= 21; i++) {
+
+          let x = 0.2 * (i - 11);
+          expect(f01(x)).closeTo(wrap01(indToVal(i)), 1E-10);
+          expect(fn23(x)).closeTo(wrapn23(indToVal(i)), 1E-10);
+
+        }
+
+      })
+    })
+  })
+
+  it('wrap function, numeric', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="original" symbolic="false">x^3</function>
     <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 
@@ -1121,21 +1338,21 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <function name="f1" variables="x y z">sin(x)z</function>
-      <function name="f2" variables="z y x">$f1</function>
+      <function name="f2" variables="z y x">$f1.formula</function>
       <function name="f3" variables="x y z">sin(x)yz</function>
-      <function name="f4" variables="z y x">$f3</function>
+      <function name="f4" variables="z y x">$f3.formula</function>
       
       <derivative derivvariables="z" name="df1" >$f1</derivative>
       <derivative name="df2">$f2</derivative>
-      <function variables="x" name="df2a">$df2</function>
+      <function variables="x" name="df2a">$df2.formula</function>
       <derivative derivvariables="z y" name="df3zy">$f3</derivative>
       <derivative derivvariables="y" name="df3y">$f3</derivative>
       <derivative derivvariables="z" name="df3zya">$df3y</derivative>
       <derivative derivvariables="z y" name="df4zy">$f4</derivative>
       <derivative name="df4z">$f4</derivative>
       <derivative derivvariables="y" name="df4yz">$df4z</derivative>
-      <function variables="x" name="df4zya">$df4zy</function>
-      <function variables="x" name="df4yza">$df4yz</function>
+      <function variables="x" name="df4zya">$df4zy.formula</function>
+      <function variables="x" name="df4yza">$df4yz.formula</function>
       
       <graph>
         $df2a
@@ -1148,6 +1365,26 @@ describe('Function Operator Tag Tests', function () {
       <graph>
         $df4yza
       </graph>
+
+      <map assignNames="t1 t2 t3">
+        <template newNamespace>
+          <p><aslist>
+          <evaluate function="$(../df1)" input="$v 0 0" name="df1" />
+          <evaluate function="$(../df2a)" input="$v" name="df2a" />
+          <evaluate function="$(../df3zy)" input="$v 0 0" name="df3zy" />
+          <evaluate function="$(../df3zya)" input="$v 0 0" name="df3zya" />
+          <evaluate function="$(../df4zya)" input="$v" name="df4zya" />
+          <evaluate function="$(../df4yza)" input="$v" name="df4yza" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df1)" input="$v 0 0" name="df1n" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df2a)" input="$v" name="df2an" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df3zy)" input="$v 0 0" name="df3zyn" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df3zya)" input="$v 0 0" name="df3zyan" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df4zya)" input="$v" name="df4zyan" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df4yza)" input="$v" name="df4yzan" />
+          </aslist></p>
+        </template>
+        <sources alias="v"><sequence from="-2" to="2" step="2" /></sources>
+      </map>
       `}, "*");
     });
 
@@ -1198,6 +1435,44 @@ describe('Function Operator Tag Tests', function () {
       expect(me.fromAst(stateVariables['/df4yza'].stateValues.formula).equals(me.fromText("sin(x)"))).eq(true);
       expect((stateVariables['/df4yza'].stateValues.variables)).eqls(["x"])
 
+      expect(stateVariables['/t1/df1'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df2a'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df3zy'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df3zya'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df4zya'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df4yza'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df1n'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df2an'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df3zyn'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df3zyan'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df4zyan'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df4yzan'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+
+      expect(stateVariables['/t2/df1'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df2a'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df3zy'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df3zya'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df4zya'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df4yza'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df1n'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df2an'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df3zyn'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df3zyan'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df4zyan'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df4yzan'].stateValues.value).closeTo(0, 1E-10)
+
+      expect(stateVariables['/t3/df1'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df2a'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df3zy'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df3zya'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df4zya'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df4yza'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df1n'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df2an'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df3zyn'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df3zyan'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df4zyan'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df4yzan'].stateValues.value).closeTo(Math.sin(2), 1E-10)
 
 
       let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinitions[0]);
@@ -1210,10 +1485,10 @@ describe('Function Operator Tag Tests', function () {
       for (let i = 1; i <= 21; i++) {
 
         let x = 0.2 * (i - 11);
-        expect(df1(x)).closeTo(Math.sin(x), 1E-10);
+        expect(df1(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
         expect(df2a(x)).closeTo(Math.sin(x), 1E-10);
-        expect(df3zy(x)).closeTo(Math.sin(x), 1E-10);
-        expect(df3zya(x)).closeTo(Math.sin(x), 1E-10);
+        expect(df3zy(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
+        expect(df3zya(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
         expect(df4zya(x)).closeTo(Math.sin(x), 1E-10);
         expect(df4yza(x)).closeTo(Math.sin(x), 1E-10);
 

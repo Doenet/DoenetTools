@@ -94,7 +94,6 @@ export default function periodicSetEquality(expr, other, { min_elements_match = 
     }
 
     number_list = number_list.map(x => me.fromAst(x).evaluate_to_constant())
-      .map(x => Number.isFinite(x) ? x : NaN)
 
     // use me.math.mod rather than % so it always non-negative
     let offset_diff = me.math.mod(number_list[0] - offset, period);
@@ -126,7 +125,7 @@ export default function periodicSetEquality(expr, other, { min_elements_match = 
 
     // penalize if don't have dots
     // max 80% without dots
-    fraction_matched *= (9 + n_ldots/2) / 10;
+    fraction_matched *= (9 + n_ldots / 2) / 10;
 
 
     return fraction_matched;
@@ -268,7 +267,7 @@ function contained_in(tree, i_set, match_partial) {
     let offset = me.fromAst(['/', tuples[i][1], period0]).evaluate_to_constant();
     let period = me.fromAst(['apply', 'abs', ['/', tuples[i][2], period0]]).evaluate_to_constant();
 
-    if (typeof period !== 'number')
+    if (typeof period !== 'number' || Number.isNaN(period))
       return false;
 
     let frac = me.math.fraction(period);

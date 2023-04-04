@@ -6792,7 +6792,7 @@ describe('Math Operator Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <function name="f" domain="[0,2]">(x+1)(x-2)(x-4)</function>
+      <function name="f" domain="[0,2]" simplify>(x+1)(x-2)(x-4)</function>
       <p>Min on [0,2]: <min name="min02">$$f(0) $(f.minimumValues) $$f(2)</min>.</p>
       <p>Abs treats as product of three factors: <abs name="abs">$$f(0) $(f.minimumValues) $$f(2)</abs>.</p>
       `}, "*");
