@@ -45,6 +45,9 @@ export default React.memo(function Graph(props) {
   }
 
   useEffect(() => {
+    if (SVs.haveGraphParent) {
+      return;
+    }
     return () => {
       callAction({
         action: actions.recordVisibilityChange,
@@ -55,6 +58,10 @@ export default React.memo(function Graph(props) {
 
   //Draw Board after mounting component
   useEffect(() => {
+    if (SVs.haveGraphParent) {
+      return;
+    }
+
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
     previousBoundingbox.current = boundingbox;
 
@@ -139,6 +146,14 @@ export default React.memo(function Graph(props) {
     }
   }, [board])
 
+  if (SVs.haveGraphParent) {
+    // have have graph parent, then don't render graph
+    // but just render children so that will be inside parent graph
+    return <>
+      <a name={id} />
+      {children}
+    </>
+  }
 
   const divStyle = {
     width: sizeToCSS(SVs.width),
