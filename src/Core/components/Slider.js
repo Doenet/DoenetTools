@@ -832,7 +832,7 @@ async function invertSliderValue({ desiredStateVariableValues, stateValues }) {
   } else {
     if (preliminaryValue instanceof me.class) {
       preliminaryValue = preliminaryValue.evaluate_to_constant();
-      if (preliminaryValue === null) {
+      if (Number.isNaN(preliminaryValue)) {
         return { success: false }
       }
     } else {

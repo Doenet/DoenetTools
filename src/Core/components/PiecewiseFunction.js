@@ -230,7 +230,8 @@ export default class PiecewiseFunction extends Function {
     delete stateVariableDefinitions.prescribedExtrema;
     delete stateVariableDefinitions.interpolationPoints;
     delete stateVariableDefinitions.xs;
-
+    delete stateVariableDefinitions.mathChildName;
+    delete stateVariableDefinitions.mathChildCreatedBySugar;
 
 
 
@@ -340,10 +341,7 @@ export default class PiecewiseFunction extends Function {
           for (let arrayKey of arrayKeys) {
             if (arrayKey === "0") {
               numericalfs[arrayKey] = function (x) {
-                let val = dependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
-                if (val === null) {
-                  val = NaN
-                }
+                let val = globalDependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
                 return val;
               }
             } else {

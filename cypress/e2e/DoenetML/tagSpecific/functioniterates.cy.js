@@ -173,7 +173,7 @@ describe('FunctionIterates Tag Tests', function () {
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
   
 
   `}, "*");
@@ -563,7 +563,7 @@ describe('FunctionIterates Tag Tests', function () {
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
 
 
-  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
+  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
   <copy prop="value" target="u" assignNames="u2" />
   <copy prop="value" target="fformula" assignNames="fformula2" />
   <copy prop="value" target="vars" assignNames="vars2" />

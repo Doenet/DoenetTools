@@ -1359,7 +1359,6 @@ export default class Graph extends BlockComponent {
             let num = 1;
             for (let piece of group) {
               if (typeof piece === "string") {
-                // Note: OK if null is converted to zero, as product will be rejected
                 num *= me.fromText(piece).evaluate_to_constant();
               } else {
                 let childInd = dependencyValues.gridAttrCompChildren.indexOf(piece);
@@ -1368,7 +1367,6 @@ export default class Graph extends BlockComponent {
                 if (factor instanceof me.class) {
                   factor = factor.evaluate_to_constant();
                 }
-                // Note: OK if null is converted to zero, as product will be rejected
                 num *= factor;
               }
             }

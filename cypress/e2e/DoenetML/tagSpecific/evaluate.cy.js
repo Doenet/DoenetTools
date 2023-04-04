@@ -1,4 +1,5 @@
 import me from 'math-expressions';
+import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
 
 describe('Evaluate Tag Tests', function () {
 
@@ -18,9 +19,9 @@ describe('Evaluate Tag Tests', function () {
   <p>Function: <mathinput name="formula" prefill="sin(x)"/></p>
   <p>Input value: <mathinput name="input" prefill="0" /></p>
 
-  <function name="f_symbolic" variables="$variable" symbolic>$formula</function>
+  <function name="f_symbolic" variables="$variable" simplify="none">$formula</function>
 
-  <function name="f_numeric" variables="$variable">$formula</function>
+  <function name="f_numeric" variables="$variable" symbolic="false" simplify="none">$formula</function>
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic" function="$f_symbolic" input="$input" />
@@ -325,7 +326,7 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <function variables="u" symbolic name="f">1+u</function>
+  <function variables="u" symbolic name="f" simplify="false">1+u</function>
   <answer>
     <mathinput />
     <award><math>1</math></award>
@@ -367,10 +368,10 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <function displayDigits="3" name="f1">100sin(x)</function>
-  <function displayDecimals="3" name="f2">100sin(x)</function>
-  <function displaySmallAsZero="1E-13" name="f3">100sin(x)</function>
-  <function name="f4">100sin(x)</function>
+  <function displayDigits="3" name="f1" symbolic="false">100sin(x)</function>
+  <function displayDecimals="3" name="f2" symbolic="false">100sin(x)</function>
+  <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
+  <function name="f4" symbolic="false">100sin(x)</function>
 
   <p>Input: <mathinput name="input" prefill="1" /></p>
 
@@ -699,10 +700,10 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <function displayDigits="3" name="f1">100sin(x)</function>
-  <function displayDecimals="3" name="f2">100sin(x)</function>
-  <function displaySmallAsZero="1E-13" name="f3">100sin(x)</function>
-  <function name="f4">100sin(x)</function>
+  <function displayDigits="3" name="f1" symbolic="false">100sin(x)</function>
+  <function displayDecimals="3" name="f2" symbolic="false">100sin(x)</function>
+  <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
+  <function name="f4" symbolic="false">100sin(x)</function>
 
   <p>Input: <mathinput name="input" prefill="1" /></p>
 
@@ -1170,7 +1171,7 @@ describe('Evaluate Tag Tests', function () {
   <text>a</text>
   <copy target="f2" displayDigits="3" assignNames="f1" />
   <copy target="f4" displayDecimals="3" assignNames="f2" />
-  <function displaySmallAsZero="1E-13" name="f3">100sin(x)</function>
+  <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
   <copy target="f3" displaySmallAsZero="0" assignNames="f4" />
 
   <p>Input: <mathinput name="input" prefill="1" /></p>
@@ -1505,9 +1506,9 @@ describe('Evaluate Tag Tests', function () {
   <p>Input 1 value: <mathinput name="input1" prefill="0" /></p>
   <p>Input 2 value: <mathinput name="input2" prefill="0" /></p>
 
-  <function name="f_symbolic" variables="$variable1 $variable2" symbolic>$formula</function>
+  <function name="f_symbolic" variables="$variable1 $variable2" simplify="false">$formula</function>
 
-  <function name="f_numeric" variables="$variable1 $variable2">$formula</function>
+  <function name="f_numeric" variables="$variable1 $variable2" symbolic="false" simplify="false">$formula</function>
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic" function="$f_symbolic" input="$input1 $input2" />
@@ -2144,9 +2145,9 @@ describe('Evaluate Tag Tests', function () {
   <p>Input 1 value: <mathinput name="input1" prefill="0" /></p>
   <p>Input 2 value: <mathinput name="input2" prefill="0" /></p>
 
-  <function name="f_symbolic" variables="$variable1 $variable2" symbolic displaySmallAsZero >$formula</function>
+  <function name="f_symbolic" variables="$variable1 $variable2" simplify="false" displaySmallAsZero >$formula</function>
 
-  <function name="f_numeric" variables="$variable1 $variable2" displaySmallAsZero >$formula</function>
+  <function name="f_numeric" variables="$variable1 $variable2" symbolic="false" simplify="false" displaySmallAsZero >$formula</function>
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic" function="$f_symbolic" input="$input1 $input2" />
@@ -2584,7 +2585,7 @@ describe('Evaluate Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p>f: <function name="f" variables="s t" symbolic simplify expand>st^2</function></p>
-  <p>g: <function name="g" variables="t s">$f</function></p>
+  <p>g: <function name="g" variables="t s" simplify expand>$f.formula</function></p>
 
   <p name="pf1">f(u, v+w) = $$f(u, v+w)</p>
   <p name="pf2">f(a+b, c) = $$f(a+b, c)</p>
@@ -2619,8 +2620,8 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>f: <function name="f" variables="s t">st^2</function></p>
-  <p>g: <function name="g" variables="t s">$f</function></p>
+  <p>f: <function name="f" variables="s t" symbolic="false">st^2</function></p>
+  <p>g: <function name="g" variables="t s" symbolic="false">$f.formula</function></p>
 
   <p name="pf">f(2, -3) = $$f(2, -3)</p>
   <p name="pg">g(2, -3) = $$g(2, -3)</p>
@@ -2691,16 +2692,16 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>f1: <function name="f1">1/x</function></p>
-  <p>f2: <function name="f2">1/(-x)</function></p>
-  <p>f3: <function name="f3">-1/x</function></p>
-  <p>f4: <function name="f4">-1/(-x)</function></p>
-  <p>f5: <function name="f5">1/(x(x-1))</function></p>
-  <p>f6: <function name="f6">1/(x(x+1))</function></p>
-  <p>f7: <function name="f7">1/(x(x+1)(x-1))</function></p>
-  <p>f5a: <function name="f5a">1/x*1/(x-1)</function></p>
-  <p>f6a: <function name="f6a">1/x*1/(x+1)</function></p>
-  <p>f7a: <function name="f7a">1/x*1/(x+1)*1/(x-1)</function></p>
+  <p>f1: <function name="f1" symbolic="false">1/x</function></p>
+  <p>f2: <function name="f2" symbolic="false">1/(-x)</function></p>
+  <p>f3: <function name="f3" symbolic="false">-1/x</function></p>
+  <p>f4: <function name="f4" symbolic="false">-1/(-x)</function></p>
+  <p>f5: <function name="f5" symbolic="false">1/(x(x-1))</function></p>
+  <p>f6: <function name="f6" symbolic="false">1/(x(x+1))</function></p>
+  <p>f7: <function name="f7" symbolic="false">1/(x(x+1)(x-1))</function></p>
+  <p>f5a: <function name="f5a" symbolic="false">1/x*1/(x-1)</function></p>
+  <p>f6a: <function name="f6a" symbolic="false">1/x*1/(x+1)</function></p>
+  <p>f7a: <function name="f7a" symbolic="false">1/x*1/(x+1)*1/(x-1)</function></p>
 
   <p><evaluate function="$f1" input="0" name="f10n" /></p>
   <p><evaluate function="$f1" input="0" name="f10s" forceSymbolic simplify /></p>
@@ -2877,11 +2878,11 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>f1: <function name="f1">1/x</function></p>
-  <p>f2: <function name="f2">1/(-x)</function></p>
-  <p>f3: <function name="f3">x^3</function></p>
-  <p>f4: <function name="f4">(-x)^3</function></p>
-  <p>f5: <function name="f5">sin(x)</function></p>
+  <p>f1: <function name="f1" symbolic="false">1/x</function></p>
+  <p>f2: <function name="f2" symbolic="false">1/(-x)</function></p>
+  <p>f3: <function name="f3" symbolic="false">x^3</function></p>
+  <p>f4: <function name="f4" symbolic="false">(-x)^3</function></p>
+  <p>f5: <function name="f5" symbolic="false">sin(x)</function></p>
 
   <p><evaluate function="$f1" input="Infinity" name="f1pn" /></p>
   <p><evaluate function="$f1" input="Infinity" name="f1ps" forceSymbolic simplify /></p>
@@ -2982,15 +2983,15 @@ describe('Evaluate Tag Tests', function () {
 
   })
 
-  it('evaluate at domain boundary', () => {
+  it('evaluate at domain boundary, numeric', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>f1: <function name="f1" domain="(-pi,pi)" displaySmallAsZero>sin(x)</function></p>
-  <p>f2: <function name="f2" domain="(-pi,pi]" displaySmallAsZero>sin(x)</function></p>
-  <p>f3: <function name="f3" domain="[-pi,pi]" displaySmallAsZero>sin(x)</function></p>
-  <p>f4: <function name="f4" domain="[-pi,pi)" displaySmallAsZero>sin(x)</function></p>
+  <p>f1: <function name="f1" domain="(-pi,pi)" displaySmallAsZero symbolic="false">sin(x)</function></p>
+  <p>f2: <function name="f2" domain="(-pi,pi]" displaySmallAsZero symbolic="false">sin(x)</function></p>
+  <p>f3: <function name="f3" domain="[-pi,pi]" displaySmallAsZero symbolic="false">sin(x)</function></p>
+  <p>f4: <function name="f4" domain="[-pi,pi)" displaySmallAsZero symbolic="false">sin(x)</function></p>
 
   <p><evaluate function="$f1" input="-pi" name="f1l" /></p>
   <p><evaluate function="$f1" input="pi" name="f1r" /></p>
@@ -3052,6 +3053,635 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/f4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
+
+    cy.log('test creating function from definition')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f1 = createFunctionFromDefinition(stateVariables['/f1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/f2'].stateValues.fDefinitions[0]);
+      let f3 = createFunctionFromDefinition(stateVariables['/f3'].stateValues.fDefinitions[0]);
+      let f4 = createFunctionFromDefinition(stateVariables['/f4'].stateValues.fDefinitions[0]);
+
+      expect(f1(-Math.PI)).eqls(NaN);
+      expect(f1(0)).eqls(0);
+      expect(f1(Math.PI)).eqls(NaN);
+      expect(f2(-Math.PI)).eqls(NaN);
+      expect(f2(0)).eqls(0);
+      expect(f2(Math.PI)).closeTo(0, 1E-14);
+      expect(f3(-Math.PI)).closeTo(0, 1E-14);
+      expect(f3(0)).eqls(0);
+      expect(f3(Math.PI)).closeTo(0, 1E-14);;
+      expect(f4(-Math.PI)).closeTo(0, 1E-14);;
+      expect(f4(0)).eqls(0);
+      expect(f4(Math.PI)).eqls(NaN);
+
+
+    })
+
+  })
+
+  it('evaluate at domain boundary, symbolic', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f1: <function name="f1" domain="(-pi,pi)" displaySmallAsZero>sin(x)</function></p>
+  <p>f2: <function name="f2" domain="(-pi,pi]" displaySmallAsZero>sin(x)</function></p>
+  <p>f3: <function name="f3" domain="[-pi,pi]" displaySmallAsZero>sin(x)</function></p>
+  <p>f4: <function name="f4" domain="[-pi,pi)" displaySmallAsZero>sin(x)</function></p>
+
+  <p><evaluate function="$f1" input="-pi" name="f1l" /></p>
+  <p><evaluate function="$f1" input="pi" name="f1r" /></p>
+  <p><evaluate function="$f1" input="0" name="f1m" /></p>
+  <p><evaluate function="$f1" input="10y" name="f1y" /></p>
+
+  <p><evaluate function="$f2" input="-pi" name="f2l" /></p>
+  <p><evaluate function="$f2" input="pi" name="f2r" /></p>
+  <p><evaluate function="$f2" input="0" name="f2m" /></p>
+  <p><evaluate function="$f2" input="10y" name="f2y" /></p>
+
+  <p><evaluate function="$f3" input="-pi" name="f3l" /></p>
+  <p><evaluate function="$f3" input="pi" name="f3r" /></p>
+  <p><evaluate function="$f3" input="0" name="f3m" /></p>
+  <p><evaluate function="$f3" input="10y" name="f3y" /></p>
+
+  <p><evaluate function="$f4" input="-pi" name="f4l" /></p>
+  <p><evaluate function="$f4" input="pi" name="f4r" /></p>
+  <p><evaluate function="$f4" input="0" name="f4m" /></p>
+  <p><evaluate function="$f4" input="10y" name="f4y" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f1l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f1y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+
+    cy.get('#\\/f2l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f2r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)') // eventually should be '0' once can simplify sin(pi)
+    })
+    cy.get('#\\/f2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+
+    cy.get('#\\/f3l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π)') // eventually should be '0' once can simplify sin(-pi)
+    })
+    cy.get('#\\/f3r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)') // eventually should be '0' once can simplify sin(pi)
+    })
+    cy.get('#\\/f3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+
+    cy.get('#\\/f4l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π)') // eventually should be '0' once can simplify sin(-pi)
+    })
+    cy.get('#\\/f4r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f4y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+
+  })
+
+  it('evaluate at domain boundary, numeric, multidimensional', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f1: <function name="f1" domain="(-pi,pi) (-pi, pi)" displaySmallAsZero symbolic="false" variables="x y">sin(x+y)</function></p>
+  <p>f2: <function name="f2" domain="(-pi,pi] (-pi, pi]" displaySmallAsZero symbolic="false" variables="x y">sin(x+y)</function></p>
+  <p>f3: <function name="f3" domain="[-pi,pi] [-pi, pi]" displaySmallAsZero symbolic="false" variables="x y">sin(x+y)</function></p>
+  <p>f4: <function name="f4" domain="[-pi,pi) [-pi, pi)" displaySmallAsZero symbolic="false" variables="x y">sin(x+y)</function></p>
+
+  <p><evaluate function="$f1" input="-pi -pi" name="f1ll" /></p>
+  <p><evaluate function="$f1" input="-pi pi" name="f1lr" /></p>
+  <p><evaluate function="$f1" input="-pi 0" name="f1lm" /></p>
+  <p><evaluate function="$f1" input="pi -pi" name="f1rl" /></p>
+  <p><evaluate function="$f1" input="pi pi" name="f1rr" /></p>
+  <p><evaluate function="$f1" input="pi 0" name="f1rm" /></p>
+  <p><evaluate function="$f1" input="0 -pi" name="f1ml" /></p>
+  <p><evaluate function="$f1" input="0 pi" name="f1mr" /></p>
+  <p><evaluate function="$f1" input="0 0" name="f1mm" /></p>
+
+  <p><evaluate function="$f2" input="-pi -pi" name="f2ll" /></p>
+  <p><evaluate function="$f2" input="-pi pi" name="f2lr" /></p>
+  <p><evaluate function="$f2" input="-pi 0" name="f2lm" /></p>
+  <p><evaluate function="$f2" input="pi -pi" name="f2rl" /></p>
+  <p><evaluate function="$f2" input="pi pi" name="f2rr" /></p>
+  <p><evaluate function="$f2" input="pi 0" name="f2rm" /></p>
+  <p><evaluate function="$f2" input="0 -pi" name="f2ml" /></p>
+  <p><evaluate function="$f2" input="0 pi" name="f2mr" /></p>
+  <p><evaluate function="$f2" input="0 0" name="f2mm" /></p>
+
+  <p><evaluate function="$f3" input="-pi -pi" name="f3ll" /></p>
+  <p><evaluate function="$f3" input="-pi pi" name="f3lr" /></p>
+  <p><evaluate function="$f3" input="-pi 0" name="f3lm" /></p>
+  <p><evaluate function="$f3" input="pi -pi" name="f3rl" /></p>
+  <p><evaluate function="$f3" input="pi pi" name="f3rr" /></p>
+  <p><evaluate function="$f3" input="pi 0" name="f3rm" /></p>
+  <p><evaluate function="$f3" input="0 -pi" name="f3ml" /></p>
+  <p><evaluate function="$f3" input="0 pi" name="f3mr" /></p>
+  <p><evaluate function="$f3" input="0 0" name="f3mm" /></p>
+
+  <p><evaluate function="$f4" input="-pi -pi" name="f4ll" /></p>
+  <p><evaluate function="$f4" input="-pi pi" name="f4lr" /></p>
+  <p><evaluate function="$f4" input="-pi 0" name="f4lm" /></p>
+  <p><evaluate function="$f4" input="pi -pi" name="f4rl" /></p>
+  <p><evaluate function="$f4" input="pi pi" name="f4rr" /></p>
+  <p><evaluate function="$f4" input="pi 0" name="f4rm" /></p>
+  <p><evaluate function="$f4" input="0 -pi" name="f4ml" /></p>
+  <p><evaluate function="$f4" input="0 pi" name="f4mr" /></p>
+  <p><evaluate function="$f4" input="0 0" name="f4mm" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f1ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+
+    cy.get('#\\/f2ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f2lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f2lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f2rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f2rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f2mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+
+    cy.get('#\\/f3ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+
+    cy.get('#\\/f4ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f4lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f4lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f4rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f4rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f4rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f4ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f4mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f4mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+
+    cy.log('test creating function from definition')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f1 = createFunctionFromDefinition(stateVariables['/f1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/f2'].stateValues.fDefinitions[0]);
+      let f3 = createFunctionFromDefinition(stateVariables['/f3'].stateValues.fDefinitions[0]);
+      let f4 = createFunctionFromDefinition(stateVariables['/f4'].stateValues.fDefinitions[0]);
+
+      expect(f1(-Math.PI, -Math.PI)).eqls(NaN);
+      expect(f1(-Math.PI, 0)).eqls(NaN);
+      expect(f1(-Math.PI, Math.PI)).eqls(NaN);
+      expect(f1(0, -Math.PI)).eqls(NaN);
+      expect(f1(0, 0)).eqls(0);
+      expect(f1(0, Math.PI)).eqls(NaN);
+      expect(f1(Math.PI, -Math.PI)).eqls(NaN);
+      expect(f1(Math.PI, 0)).eqls(NaN);
+      expect(f1(Math.PI, Math.PI)).eqls(NaN);
+
+      expect(f2(-Math.PI, -Math.PI)).eqls(NaN);
+      expect(f2(-Math.PI, 0)).eqls(NaN);
+      expect(f2(-Math.PI, Math.PI)).eqls(NaN);
+      expect(f2(0, -Math.PI)).eqls(NaN);
+      expect(f2(0, 0)).eqls(0);
+      expect(f2(0, Math.PI)).closeTo(0, 1E-14);
+      expect(f2(Math.PI, -Math.PI)).eqls(NaN);
+      expect(f2(Math.PI, 0)).closeTo(0, 1E-14);
+      expect(f2(Math.PI, Math.PI)).closeTo(0, 1E-14);
+
+      expect(f3(-Math.PI, -Math.PI)).closeTo(0, 1E-14);
+      expect(f3(-Math.PI, 0)).closeTo(0, 1E-14);
+      expect(f3(-Math.PI, Math.PI)).closeTo(0, 1E-14);
+      expect(f3(0, -Math.PI)).closeTo(0, 1E-14);
+      expect(f3(0, 0)).eqls(0);
+      expect(f3(0, Math.PI)).closeTo(0, 1E-14);
+      expect(f3(Math.PI, -Math.PI)).closeTo(0, 1E-14);
+      expect(f3(Math.PI, 0)).closeTo(0, 1E-14);
+      expect(f3(Math.PI, Math.PI)).closeTo(0, 1E-14);
+
+      expect(f4(-Math.PI, -Math.PI)).closeTo(0, 1E-14);
+      expect(f4(-Math.PI, 0)).closeTo(0, 1E-14);
+      expect(f4(-Math.PI, Math.PI)).eqls(NaN);
+      expect(f4(0, -Math.PI)).closeTo(0, 1E-14);
+      expect(f4(0, 0)).eqls(0);
+      expect(f4(0, Math.PI)).eqls(NaN);
+      expect(f4(Math.PI, -Math.PI)).eqls(NaN);
+      expect(f4(Math.PI, 0)).eqls(NaN);
+      expect(f4(Math.PI, Math.PI)).eqls(NaN);
+
+
+
+
+    })
+
+  })
+
+  it('evaluate at domain boundary, symbolic, multidimensional', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f1: <function name="f1" domain="(-pi,pi) (-pi, pi)" displaySmallAsZero variables="x y">sin(x+y)</function></p>
+  <p>f2: <function name="f2" domain="(-pi,pi] (-pi, pi]" displaySmallAsZero variables="x y">sin(x+y)</function></p>
+  <p>f3: <function name="f3" domain="[-pi,pi] [-pi, pi]" displaySmallAsZero variables="x y">sin(x+y)</function></p>
+  <p>f4: <function name="f4" domain="[-pi,pi) [-pi, pi)" displaySmallAsZero variables="x y">sin(x+y)</function></p>
+
+  <p><evaluate function="$f1" input="-pi -pi" name="f1ll" /></p>
+  <p><evaluate function="$f1" input="-pi pi" name="f1lr" /></p>
+  <p><evaluate function="$f1" input="-pi 0" name="f1lm" /></p>
+  <p><evaluate function="$f1" input="-pi 10y" name="f1ly" /></p>
+  <p><evaluate function="$f1" input="pi -pi" name="f1rl" /></p>
+  <p><evaluate function="$f1" input="pi pi" name="f1rr" /></p>
+  <p><evaluate function="$f1" input="pi 0" name="f1rm" /></p>
+  <p><evaluate function="$f1" input="pi 10y" name="f1ry" /></p>
+  <p><evaluate function="$f1" input="0 -pi" name="f1ml" /></p>
+  <p><evaluate function="$f1" input="0 pi" name="f1mr" /></p>
+  <p><evaluate function="$f1" input="0 0" name="f1mm" /></p>
+  <p><evaluate function="$f1" input="0 10y" name="f1my" /></p>
+  <p><evaluate function="$f1" input="10y -pi" name="f1yl" /></p>
+  <p><evaluate function="$f1" input="10y pi" name="f1yr" /></p>
+  <p><evaluate function="$f1" input="10y 0" name="f1ym" /></p>
+  <p><evaluate function="$f1" input="10y 10y" name="f1yy" /></p>
+
+  <p><evaluate function="$f2" input="-pi -pi" name="f2ll" /></p>
+  <p><evaluate function="$f2" input="-pi pi" name="f2lr" /></p>
+  <p><evaluate function="$f2" input="-pi 0" name="f2lm" /></p>
+  <p><evaluate function="$f2" input="-pi 10y" name="f2ly" /></p>
+  <p><evaluate function="$f2" input="pi -pi" name="f2rl" /></p>
+  <p><evaluate function="$f2" input="pi pi" name="f2rr" /></p>
+  <p><evaluate function="$f2" input="pi 0" name="f2rm" /></p>
+  <p><evaluate function="$f2" input="pi 10y" name="f2ry" /></p>
+  <p><evaluate function="$f2" input="0 -pi" name="f2ml" /></p>
+  <p><evaluate function="$f2" input="0 pi" name="f2mr" /></p>
+  <p><evaluate function="$f2" input="0 0" name="f2mm" /></p>
+  <p><evaluate function="$f2" input="0 10y" name="f2my" /></p>
+  <p><evaluate function="$f2" input="10y -pi" name="f2yl" /></p>
+  <p><evaluate function="$f2" input="10y pi" name="f2yr" /></p>
+  <p><evaluate function="$f2" input="10y 0" name="f2ym" /></p>
+  <p><evaluate function="$f2" input="10y 10y" name="f2yy" /></p>
+
+  <p><evaluate function="$f3" input="-pi -pi" name="f3ll" /></p>
+  <p><evaluate function="$f3" input="-pi pi" name="f3lr" /></p>
+  <p><evaluate function="$f3" input="-pi 0" name="f3lm" /></p>
+  <p><evaluate function="$f3" input="-pi 10y" name="f3ly" /></p>
+  <p><evaluate function="$f3" input="pi -pi" name="f3rl" /></p>
+  <p><evaluate function="$f3" input="pi pi" name="f3rr" /></p>
+  <p><evaluate function="$f3" input="pi 0" name="f3rm" /></p>
+  <p><evaluate function="$f3" input="pi 10y" name="f3ry" /></p>
+  <p><evaluate function="$f3" input="0 -pi" name="f3ml" /></p>
+  <p><evaluate function="$f3" input="0 pi" name="f3mr" /></p>
+  <p><evaluate function="$f3" input="0 0" name="f3mm" /></p>
+  <p><evaluate function="$f3" input="0 10y" name="f3my" /></p>
+  <p><evaluate function="$f3" input="10y -pi" name="f3yl" /></p>
+  <p><evaluate function="$f3" input="10y pi" name="f3yr" /></p>
+  <p><evaluate function="$f3" input="10y 0" name="f3ym" /></p>
+  <p><evaluate function="$f3" input="10y 10y" name="f3yy" /></p>
+
+  <p><evaluate function="$f4" input="-pi -pi" name="f4ll" /></p>
+  <p><evaluate function="$f4" input="-pi pi" name="f4lr" /></p>
+  <p><evaluate function="$f4" input="-pi 0" name="f4lm" /></p>
+  <p><evaluate function="$f4" input="-pi 10y" name="f4ly" /></p>
+  <p><evaluate function="$f4" input="pi -pi" name="f4rl" /></p>
+  <p><evaluate function="$f4" input="pi pi" name="f4rr" /></p>
+  <p><evaluate function="$f4" input="pi 0" name="f4rm" /></p>
+  <p><evaluate function="$f4" input="pi 10y" name="f4ry" /></p>
+  <p><evaluate function="$f4" input="0 -pi" name="f4ml" /></p>
+  <p><evaluate function="$f4" input="0 pi" name="f4mr" /></p>
+  <p><evaluate function="$f4" input="0 0" name="f4mm" /></p>
+  <p><evaluate function="$f4" input="0 10y" name="f4my" /></p>
+  <p><evaluate function="$f4" input="10y -pi" name="f4yl" /></p>
+  <p><evaluate function="$f4" input="10y pi" name="f4yr" /></p>
+  <p><evaluate function="$f4" input="10y 0" name="f4ym" /></p>
+  <p><evaluate function="$f4" input="10y 10y" name="f4yy" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f1ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1ly').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f1rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1ry').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f1ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f1my').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f1yl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f1yr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f1ym').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f1yy').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(20y)')
+    })
+
+
+    cy.get('#\\/f2ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f2lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f2lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f2ly').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f2rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f2rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(2π)')
+    })
+    cy.get('#\\/f2rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/f2ry').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f2ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f2mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/f2mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2my').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f2yl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f2yr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f2ym').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f2yy').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(20y)')
+    })
+
+
+    cy.get('#\\/f3ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−2π)')
+    })
+    cy.get('#\\/f3lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π)')
+    })
+    cy.get('#\\/f3ly').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f3rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(2π)')
+    })
+    cy.get('#\\/f3rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/f3ry').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f3ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π)')
+    })
+    cy.get('#\\/f3mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/f3mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3my').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f3yl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f3yr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f3ym').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f3yy').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(20y)')
+    })
+
+
+    cy.get('#\\/f4ll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−2π)')
+    })
+    cy.get('#\\/f4lr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f4lm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π)')
+    })
+    cy.get('#\\/f4ly').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f4rl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f4rr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f4rm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f4ry').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f4ml').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π)')
+    })
+    cy.get('#\\/f4mr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f4mm').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f4my').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f4yl').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−π+10y)')
+    })
+    cy.get('#\\/f4yr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π+10y)')
+    })
+    cy.get('#\\/f4ym').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(10y)')
+    })
+    cy.get('#\\/f4yy').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(20y)')
+    })
+
+
+
+
 
   })
 
@@ -3128,6 +3758,1010 @@ describe('Evaluate Tag Tests', function () {
 
   })
 
+  it('evaluate functions based on functions, symbolic', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>f: <function name="f" domain="(0,2]">x^2</function></p>
+  <p>fa: <function name="fa">$$f(x)</function></p>
+  <p>fxp1: <function name="fxp1">$$f(x+1)</function></p>
+  <p>fp1: <function name="fp1">$$f(x)+1</function></p>
+  <p>fp1a: <function name="fp1a">$$f(x)+<math>1</math></function></p>
+  <p>fxp1p1: <function name="fxp1p1">$$f(x+1)+1</function></p>
+  <p>fm: <function name="fm"><math>$$f(x)</math></function></p>
+  <p>fp1m: <function name="fp1m"><math>$$f(x)+1</math></function></p>
+
+  <p><evaluate function="$f" input="0" name="f0" /></p>
+  <p><evaluate function="$f" input="1" name="f1" /></p>
+  <p><evaluate function="$f" input="2" name="f2" /></p>
+  <p><evaluate function="$f" input="3" name="f3" /></p>
+
+  <p><evaluate function="$fa" input="0" name="fa0" /></p>
+  <p><evaluate function="$fa" input="1" name="fa1" /></p>
+  <p><evaluate function="$fa" input="2" name="fa2" /></p>
+  <p><evaluate function="$fa" input="3" name="fa3" /></p>
+
+  <p><evaluate function="$fxp1" input="0" name="fxp10" /></p>
+  <p><evaluate function="$fxp1" input="1" name="fxp11" /></p>
+  <p><evaluate function="$fxp1" input="2" name="fxp12" /></p>
+  <p><evaluate function="$fxp1" input="3" name="fxp13" /></p>
+
+  <p><evaluate function="$fp1" input="0" name="fp10" /></p>
+  <p><evaluate function="$fp1" input="1" name="fp11" /></p>
+  <p><evaluate function="$fp1" input="2" name="fp12" /></p>
+  <p><evaluate function="$fp1" input="3" name="fp13" /></p>
+
+  <p><evaluate function="$fp1a" input="0" name="fp1a0" /></p>
+  <p><evaluate function="$fp1a" input="1" name="fp1a1" /></p>
+  <p><evaluate function="$fp1a" input="2" name="fp1a2" /></p>
+  <p><evaluate function="$fp1a" input="3" name="fp1a3" /></p>
+
+  <p><evaluate function="$fxp1p1" input="0" name="fxp1p10" /></p>
+  <p><evaluate function="$fxp1p1" input="1" name="fxp1p11" /></p>
+  <p><evaluate function="$fxp1p1" input="2" name="fxp1p12" /></p>
+  <p><evaluate function="$fxp1p1" input="3" name="fxp1p13" /></p>
+
+  <p><evaluate function="$fm" input="0" name="fm0" /></p>
+  <p><evaluate function="$fm" input="1" name="fm1" /></p>
+  <p><evaluate function="$fm" input="2" name="fm2" /></p>
+  <p><evaluate function="$fm" input="3" name="fm3" /></p>
+
+  <p><evaluate function="$fp1m" input="0" name="fp1m0" /></p>
+  <p><evaluate function="$fp1m" input="1" name="fp1m1" /></p>
+  <p><evaluate function="$fp1m" input="2" name="fp1m2" /></p>
+  <p><evaluate function="$fp1m" input="3" name="fp1m3" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/f2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/f3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+
+    cy.get('#\\/fa0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/fa1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fa2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fa3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+
+    cy.get('#\\/fxp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fxp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/fxp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+
+    cy.get('#\\/fp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f+1')
+    })
+    cy.get('#\\/fp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f+1')
+    })
+
+    cy.get('#\\/fp1a0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f+1')
+    })
+    cy.get('#\\/fp1a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp1a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp1a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f+1')
+    })
+
+    cy.get('#\\/fxp1p10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fxp1p11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fxp1p12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f+1')
+    })
+    cy.get('#\\/fxp1p13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f+1')
+    })
+
+    cy.get('#\\/fm0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/fm1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fm2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fm3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    })
+
+    cy.get('#\\/fp1m0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fp1m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp1m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp1m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10')
+    })
+
+  })
+
+  it('evaluate functions based on functions, numeric', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>f: <function symbolic="false" name="f" domain="(0,2]">x^2</function></p>
+  <p>fa: <function symbolic="false" name="fa">$$f(x)</function></p>
+  <p>fxp1: <function symbolic="false" name="fxp1">$$f(x+1)</function></p>
+  <p>fp1: <function symbolic="false" name="fp1">$$f(x)+1</function></p>
+  <p>fp1a: <function symbolic="false" name="fp1a">$$f(x)+<math>1</math></function></p>
+  <p>fxp1p1: <function symbolic="false" name="fxp1p1">$$f(x+1)+1</function></p>
+  <p>fm: <function symbolic="false" name="fm"><math>$$f(x)</math></function></p>
+  <p>fp1m: <function symbolic="false" name="fp1m"><math>$$f(x)+1</math></function></p>
+
+  <p><evaluate function="$f" input="0" name="f0" /></p>
+  <p><evaluate function="$f" input="1" name="f1" /></p>
+  <p><evaluate function="$f" input="2" name="f2" /></p>
+  <p><evaluate function="$f" input="3" name="f3" /></p>
+
+  <p><evaluate function="$fa" input="0" name="fa0" /></p>
+  <p><evaluate function="$fa" input="1" name="fa1" /></p>
+  <p><evaluate function="$fa" input="2" name="fa2" /></p>
+  <p><evaluate function="$fa" input="3" name="fa3" /></p>
+
+  <p><evaluate function="$fxp1" input="0" name="fxp10" /></p>
+  <p><evaluate function="$fxp1" input="1" name="fxp11" /></p>
+  <p><evaluate function="$fxp1" input="2" name="fxp12" /></p>
+  <p><evaluate function="$fxp1" input="3" name="fxp13" /></p>
+
+  <p><evaluate function="$fp1" input="0" name="fp10" /></p>
+  <p><evaluate function="$fp1" input="1" name="fp11" /></p>
+  <p><evaluate function="$fp1" input="2" name="fp12" /></p>
+  <p><evaluate function="$fp1" input="3" name="fp13" /></p>
+
+  <p><evaluate function="$fp1a" input="0" name="fp1a0" /></p>
+  <p><evaluate function="$fp1a" input="1" name="fp1a1" /></p>
+  <p><evaluate function="$fp1a" input="2" name="fp1a2" /></p>
+  <p><evaluate function="$fp1a" input="3" name="fp1a3" /></p>
+
+  <p><evaluate function="$fxp1p1" input="0" name="fxp1p10" /></p>
+  <p><evaluate function="$fxp1p1" input="1" name="fxp1p11" /></p>
+  <p><evaluate function="$fxp1p1" input="2" name="fxp1p12" /></p>
+  <p><evaluate function="$fxp1p1" input="3" name="fxp1p13" /></p>
+
+  <p><evaluate function="$fm" input="0" name="fm0" /></p>
+  <p><evaluate function="$fm" input="1" name="fm1" /></p>
+  <p><evaluate function="$fm" input="2" name="fm2" /></p>
+  <p><evaluate function="$fm" input="3" name="fm3" /></p>
+
+  <p><evaluate function="$fp1m" input="0" name="fp1m0" /></p>
+  <p><evaluate function="$fp1m" input="1" name="fp1m1" /></p>
+  <p><evaluate function="$fp1m" input="2" name="fp1m2" /></p>
+  <p><evaluate function="$fp1m" input="3" name="fp1m3" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/f2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/f3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fa0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fa1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fa2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fa3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fxp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fxp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fxp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fp1a0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fp1a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp1a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp1a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fxp1p10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fxp1p11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fxp1p12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fxp1p13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fm0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fm1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fm2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fm3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fp1m0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fp1m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fp1m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fp1m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.log('test creating function from definition')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let fa = createFunctionFromDefinition(stateVariables['/fa'].stateValues.fDefinitions[0]);
+      let fxp1 = createFunctionFromDefinition(stateVariables['/fxp1'].stateValues.fDefinitions[0]);
+      let fp1 = createFunctionFromDefinition(stateVariables['/fp1'].stateValues.fDefinitions[0]);
+      let fp1a = createFunctionFromDefinition(stateVariables['/fp1a'].stateValues.fDefinitions[0]);
+      let fxp1p1 = createFunctionFromDefinition(stateVariables['/fxp1p1'].stateValues.fDefinitions[0]);
+      let fm = createFunctionFromDefinition(stateVariables['/fm'].stateValues.fDefinitions[0]);
+      let fp1m = createFunctionFromDefinition(stateVariables['/fp1m'].stateValues.fDefinitions[0]);
+
+
+      expect(f(0)).eqls(NaN);
+      expect(f(1)).eqls(1);
+      expect(f(2)).eqls(4);
+      expect(f(3)).eqls(NaN);
+
+      expect(fa(0)).eqls(NaN);
+      expect(fa(1)).eqls(1);
+      expect(fa(2)).eqls(4);
+      expect(fa(3)).eqls(NaN);
+
+      expect(fxp1(0)).eqls(1);
+      expect(fxp1(1)).eqls(4);
+      expect(fxp1(2)).eqls(NaN);
+      expect(fxp1(3)).eqls(NaN);
+
+      expect(fp1(0)).eqls(NaN);
+      expect(fp1(1)).eqls(2);
+      expect(fp1(2)).eqls(5);
+      expect(fp1(3)).eqls(NaN);
+
+      expect(fp1a(0)).eqls(NaN);
+      expect(fp1a(1)).eqls(2);
+      expect(fp1a(2)).eqls(5);
+      expect(fp1a(3)).eqls(NaN);
+
+      expect(fxp1p1(0)).eqls(2);
+      expect(fxp1p1(1)).eqls(5);
+      expect(fxp1p1(2)).eqls(NaN);
+      expect(fxp1p1(3)).eqls(NaN);
+
+      expect(fm(0)).eqls(NaN);
+      expect(fm(1)).eqls(NaN);
+      expect(fm(2)).eqls(NaN);
+      expect(fm(3)).eqls(NaN);
+
+      expect(fp1m(0)).eqls(NaN);
+      expect(fp1m(1)).eqls(NaN);
+      expect(fp1m(2)).eqls(NaN);
+      expect(fp1m(3)).eqls(NaN);
+
+
+    })
+  })
+
+  it('evaluate functions based on functions, numeric then symbolic', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+
+  <p>f: <function symbolic="false" name="f" domain="(0,2]">x^2</function></p>
+  <p>fa: <function name="fa">$$f(x)</function></p>
+  <p>fxp1: <function name="fxp1">$$f(x+1)</function></p>
+  <p>fpy: <function name="fpy">$$f(x)+y</function></p>
+  <p>fpya: <function name="fpya">$$f(x)+<math>y</math></function></p>
+  <p>fxp1py: <function name="fxp1py">$$f(x+1)+y</function></p>
+  <p>fm: <function name="fm"><math>$$f(x)</math></function></p>
+  <p>fpym: <function name="fpym"><math>$$f(x)+y</math></function></p>
+
+  <p><evaluate function="$f" input="0" name="f0" /></p>
+  <p><evaluate function="$f" input="1" name="f1" /></p>
+  <p><evaluate function="$f" input="2" name="f2" /></p>
+  <p><evaluate function="$f" input="3" name="f3" /></p>
+
+  <p><evaluate function="$fa" input="0" name="fa0" /></p>
+  <p><evaluate function="$fa" input="1" name="fa1" /></p>
+  <p><evaluate function="$fa" input="2" name="fa2" /></p>
+  <p><evaluate function="$fa" input="3" name="fa3" /></p>
+
+  <p><evaluate function="$fxp1" input="0" name="fxp10" /></p>
+  <p><evaluate function="$fxp1" input="1" name="fxp11" /></p>
+  <p><evaluate function="$fxp1" input="2" name="fxp12" /></p>
+  <p><evaluate function="$fxp1" input="3" name="fxp13" /></p>
+
+  <p><evaluate function="$fpy" input="0" name="fpy0" /></p>
+  <p><evaluate function="$fpy" input="1" name="fpy1" /></p>
+  <p><evaluate function="$fpy" input="2" name="fpy2" /></p>
+  <p><evaluate function="$fpy" input="3" name="fpy3" /></p>
+
+  <p><evaluate function="$fpya" input="0" name="fpya0" /></p>
+  <p><evaluate function="$fpya" input="1" name="fpya1" /></p>
+  <p><evaluate function="$fpya" input="2" name="fpya2" /></p>
+  <p><evaluate function="$fpya" input="3" name="fpya3" /></p>
+
+  <p><evaluate function="$fxp1py" input="0" name="fxp1py0" /></p>
+  <p><evaluate function="$fxp1py" input="1" name="fxp1py1" /></p>
+  <p><evaluate function="$fxp1py" input="2" name="fxp1py2" /></p>
+  <p><evaluate function="$fxp1py" input="3" name="fxp1py3" /></p>
+
+  <p><evaluate function="$fm" input="0" name="fm0" /></p>
+  <p><evaluate function="$fm" input="1" name="fm1" /></p>
+  <p><evaluate function="$fm" input="2" name="fm2" /></p>
+  <p><evaluate function="$fm" input="3" name="fm3" /></p>
+
+  <p><evaluate function="$fpym" input="0" name="fpym0" /></p>
+  <p><evaluate function="$fpym" input="1" name="fpym1" /></p>
+  <p><evaluate function="$fpym" input="2" name="fpym2" /></p>
+  <p><evaluate function="$fpym" input="3" name="fpym3" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/f2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/f3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fa0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fa1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fa2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fa3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fxp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fxp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fxp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fpy0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+    cy.get('#\\/fpy1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+1')
+    })
+    cy.get('#\\/fpy2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+4')
+    })
+    cy.get('#\\/fpy3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+
+    cy.get('#\\/fpya0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+    cy.get('#\\/fpya1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+1')
+    })
+    cy.get('#\\/fpya2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+4')
+    })
+    cy.get('#\\/fpya3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+
+    cy.get('#\\/fxp1py0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+1')
+    })
+    cy.get('#\\/fxp1py1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+4')
+    })
+    cy.get('#\\/fxp1py2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+    cy.get('#\\/fxp1py3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+
+    cy.get('#\\/fm0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fm1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fm2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fm3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fpym0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+    cy.get('#\\/fpym1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+    cy.get('#\\/fpym2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+    cy.get('#\\/fpym3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y+NaN')
+    })
+
+  })
+
+  it('evaluate functions based on functions, symbolic then numeric', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>f: <function name="f" domain="(0,2]">x^2</function></p>
+  <p>fa: <function symbolic="false" name="fa">$$f(x)</function></p>
+  <p>fxp1: <function symbolic="false" name="fxp1">$$f(x+1)</function></p>
+  <p>fp1: <function symbolic="false" name="fp1">$$f(x)+1</function></p>
+  <p>fp1a: <function symbolic="false" name="fp1a">$$f(x)+<math>1</math></function></p>
+  <p>fxp1p1: <function symbolic="false" name="fxp1p1">$$f(x+1)+1</function></p>
+  <p>fm: <function symbolic="false" name="fm"><math>$$f(x)</math></function></p>
+  <p>fp1m: <function symbolic="false" name="fp1m"><math>$$f(x)+1</math></function></p>
+
+  <p><evaluate function="$f" input="0" name="f0" /></p>
+  <p><evaluate function="$f" input="1" name="f1" /></p>
+  <p><evaluate function="$f" input="2" name="f2" /></p>
+  <p><evaluate function="$f" input="3" name="f3" /></p>
+
+  <p><evaluate function="$fa" input="0" name="fa0" /></p>
+  <p><evaluate function="$fa" input="1" name="fa1" /></p>
+  <p><evaluate function="$fa" input="2" name="fa2" /></p>
+  <p><evaluate function="$fa" input="3" name="fa3" /></p>
+
+  <p><evaluate function="$fxp1" input="0" name="fxp10" /></p>
+  <p><evaluate function="$fxp1" input="1" name="fxp11" /></p>
+  <p><evaluate function="$fxp1" input="2" name="fxp12" /></p>
+  <p><evaluate function="$fxp1" input="3" name="fxp13" /></p>
+
+  <p><evaluate function="$fp1" input="0" name="fp10" /></p>
+  <p><evaluate function="$fp1" input="1" name="fp11" /></p>
+  <p><evaluate function="$fp1" input="2" name="fp12" /></p>
+  <p><evaluate function="$fp1" input="3" name="fp13" /></p>
+
+  <p><evaluate function="$fp1a" input="0" name="fp1a0" /></p>
+  <p><evaluate function="$fp1a" input="1" name="fp1a1" /></p>
+  <p><evaluate function="$fp1a" input="2" name="fp1a2" /></p>
+  <p><evaluate function="$fp1a" input="3" name="fp1a3" /></p>
+
+  <p><evaluate function="$fxp1p1" input="0" name="fxp1p10" /></p>
+  <p><evaluate function="$fxp1p1" input="1" name="fxp1p11" /></p>
+  <p><evaluate function="$fxp1p1" input="2" name="fxp1p12" /></p>
+  <p><evaluate function="$fxp1p1" input="3" name="fxp1p13" /></p>
+
+  <p><evaluate function="$fm" input="0" name="fm0" /></p>
+  <p><evaluate function="$fm" input="1" name="fm1" /></p>
+  <p><evaluate function="$fm" input="2" name="fm2" /></p>
+  <p><evaluate function="$fm" input="3" name="fm3" /></p>
+
+  <p><evaluate function="$fp1m" input="0" name="fp1m0" /></p>
+  <p><evaluate function="$fp1m" input="1" name="fp1m1" /></p>
+  <p><evaluate function="$fp1m" input="2" name="fp1m2" /></p>
+  <p><evaluate function="$fp1m" input="3" name="fp1m3" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/f2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/f3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+
+    cy.get('#\\/fa0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fa1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fa2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fa3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fxp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fxp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fxp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fp1a0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fp1a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp1a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp1a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fxp1p10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fxp1p11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fxp1p12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/fxp1p13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+
+    cy.get('#\\/fm0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/fm1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fm2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fm3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    })
+
+    cy.get('#\\/fp1m0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fp1m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/fp1m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp1m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10')
+    })
+
+    cy.log('test creating function from definition')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let fa = createFunctionFromDefinition(stateVariables['/fa'].stateValues.fDefinitions[0]);
+      let fxp1 = createFunctionFromDefinition(stateVariables['/fxp1'].stateValues.fDefinitions[0]);
+      let fp1 = createFunctionFromDefinition(stateVariables['/fp1'].stateValues.fDefinitions[0]);
+      let fp1a = createFunctionFromDefinition(stateVariables['/fp1a'].stateValues.fDefinitions[0]);
+      let fxp1p1 = createFunctionFromDefinition(stateVariables['/fxp1p1'].stateValues.fDefinitions[0]);
+      let fm = createFunctionFromDefinition(stateVariables['/fm'].stateValues.fDefinitions[0]);
+      let fp1m = createFunctionFromDefinition(stateVariables['/fp1m'].stateValues.fDefinitions[0]);
+
+
+      // Note: function from definition is numeric even for f itself, so returns NaNs
+      expect(f(0)).eqls(NaN);
+      expect(f(1)).eqls(1);
+      expect(f(2)).eqls(4);
+      expect(f(3)).eqls(NaN);
+
+      expect(fa(0)).eqls(NaN);
+      expect(fa(1)).eqls(1);
+      expect(fa(2)).eqls(4);
+      expect(fa(3)).eqls(NaN);
+
+      expect(fxp1(0)).eqls(1);
+      expect(fxp1(1)).eqls(4);
+      expect(fxp1(2)).eqls(NaN);
+      expect(fxp1(3)).eqls(NaN);
+
+      expect(fp1(0)).eqls(NaN);
+      expect(fp1(1)).eqls(2);
+      expect(fp1(2)).eqls(5);
+      expect(fp1(3)).eqls(NaN);
+
+      expect(fp1a(0)).eqls(NaN);
+      expect(fp1a(1)).eqls(2);
+      expect(fp1a(2)).eqls(5);
+      expect(fp1a(3)).eqls(NaN);
+
+      expect(fxp1p1(0)).eqls(2);
+      expect(fxp1p1(1)).eqls(5);
+      expect(fxp1p1(2)).eqls(NaN);
+      expect(fxp1p1(3)).eqls(NaN);
+
+      expect(fm(0)).eqls(0);
+      expect(fm(1)).eqls(1);
+      expect(fm(2)).eqls(4);
+      expect(fm(3)).eqls(9);
+
+      expect(fp1m(0)).eqls(1);
+      expect(fp1m(1)).eqls(2);
+      expect(fp1m(2)).eqls(5);
+      expect(fp1m(3)).eqls(10);
+
+
+    })
+  })
+
+  it('an evaluate copied into a function can be reevaluated', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <function symbolic="false" name="f">2x</function>
+  <evaluate function="$f" input="x" name="fx" />
+  <function symbolic="false" name="g">$$f(x)</function>
+  <function symbolic="false" name="ga">$fx</function>
+  <function symbolic="false" name="h">$$f(x)+1</function>
+  <function symbolic="false" name="ha">$fx+1</function>
+  <p name="pg">$$g(2)</p>
+  <p name="pga">$$ga(2)</p>
+  <p name="ph">$$h(2)</p>
+  <p name="pha">$$ha(2)</p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/fx').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/ga').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/h').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN+1')
+    })
+    cy.get('#\\/ha').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN+1')
+    })
+    cy.get('#\\/pg').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/pga').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/ph').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/pha').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+
+  })
+
+  it('evaluate functions based on interpolated function', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>f: <function maxima="(5,4)" name="f">x^2</function></p>
+  <p>fa: <function name="fa">$$f(x)</function></p>
+  <p>fxp1: <function name="fxp1">$$f(x+1)</function></p>
+  <p>fp1: <function name="fp1">$$f(x)+1</function></p>
+  <p>fp1a: <function name="fp1a">$$f(x)+<math>1</math></function></p>
+  <p>fxp1p1: <function name="fxp1p1">$$f(x+1)+1</function></p>
+
+  <p><evaluate function="$f" input="3" name="f0" /></p>
+  <p><evaluate function="$f" input="4" name="f1" /></p>
+  <p><evaluate function="$f" input="5" name="f2" /></p>
+  <p><evaluate function="$f" input="6" name="f3" /></p>
+
+  <p><evaluate function="$fa" input="3" name="fa0" /></p>
+  <p><evaluate function="$fa" input="4" name="fa1" /></p>
+  <p><evaluate function="$fa" input="5" name="fa2" /></p>
+  <p><evaluate function="$fa" input="6" name="fa3" /></p>
+
+  <p><evaluate function="$fxp1" input="3" name="fxp10" /></p>
+  <p><evaluate function="$fxp1" input="4" name="fxp11" /></p>
+  <p><evaluate function="$fxp1" input="5" name="fxp12" /></p>
+  <p><evaluate function="$fxp1" input="6" name="fxp13" /></p>
+
+  <p><evaluate function="$fp1" input="3" name="fp10" /></p>
+  <p><evaluate function="$fp1" input="4" name="fp11" /></p>
+  <p><evaluate function="$fp1" input="5" name="fp12" /></p>
+  <p><evaluate function="$fp1" input="6" name="fp13" /></p>
+
+  <p><evaluate function="$fp1a" input="3" name="fp1a0" /></p>
+  <p><evaluate function="$fp1a" input="4" name="fp1a1" /></p>
+  <p><evaluate function="$fp1a" input="5" name="fp1a2" /></p>
+  <p><evaluate function="$fp1a" input="6" name="fp1a3" /></p>
+
+  <p><evaluate function="$fxp1p1" input="3" name="fxp1p10" /></p>
+  <p><evaluate function="$fxp1p1" input="4" name="fxp1p11" /></p>
+  <p><evaluate function="$fxp1p1" input="5" name="fxp1p12" /></p>
+  <p><evaluate function="$fxp1p1" input="6" name="fxp1p13" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/f2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/f3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+
+    cy.get('#\\/fa0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/fa1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/fa2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fa3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+
+    cy.get('#\\/fxp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/fxp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/fxp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/fp10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fp11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fp12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+
+    cy.get('#\\/fp1a0').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/fp1a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fp1a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fp1a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+
+    cy.get('#\\/fxp1p10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp1p11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/fxp1p12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/fxp1p13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+
+    cy.log('test creating function from definition')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let fa = createFunctionFromDefinition(stateVariables['/fa'].stateValues.fDefinitions[0]);
+      let fxp1 = createFunctionFromDefinition(stateVariables['/fxp1'].stateValues.fDefinitions[0]);
+      let fp1 = createFunctionFromDefinition(stateVariables['/fp1'].stateValues.fDefinitions[0]);
+      let fp1a = createFunctionFromDefinition(stateVariables['/fp1a'].stateValues.fDefinitions[0]);
+      let fxp1p1 = createFunctionFromDefinition(stateVariables['/fxp1p1'].stateValues.fDefinitions[0]);
+
+
+      expect(f(3)).eqls(0);
+      expect(f(4)).eqls(3);
+      expect(f(5)).eqls(4);
+      expect(f(6)).eqls(3);
+
+      expect(fa(3)).eqls(0);
+      expect(fa(4)).eqls(3);
+      expect(fa(5)).eqls(4);
+      expect(fa(6)).eqls(3);
+
+      expect(fxp1(3)).eqls(3);
+      expect(fxp1(4)).eqls(4);
+      expect(fxp1(5)).eqls(3);
+      expect(fxp1(6)).eqls(0);
+
+      expect(fp1(3)).eqls(1);
+      expect(fp1(4)).eqls(4);
+      expect(fp1(5)).eqls(5);
+      expect(fp1(6)).eqls(4);
+
+      expect(fp1a(3)).eqls(1);
+      expect(fp1a(4)).eqls(4);
+      expect(fp1a(5)).eqls(5);
+      expect(fp1a(6)).eqls(4);
+
+      expect(fxp1p1(3)).eqls(4);
+      expect(fxp1p1(4)).eqls(5);
+      expect(fxp1p1(5)).eqls(4);
+      expect(fxp1p1(6)).eqls(1);
+
+
+    })
+  })
 
 
 })

@@ -1,10 +1,14 @@
 import MathComponent from './Math';
 import me from 'math-expressions';
-import { vectorOperators } from '../utils/math';
+import { returnNumericFunctionForEvaluate, returnSymbolicFunctionForEvaluate } from '../utils/function';
 
 export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
   static rendererType = "math";
+
+  // remove variableForPlainMacro so that an evaluate copied into a function via a macro
+  // behaves like an evaluate (not just the value property) and can be reevaluated
+  static variableForPlainMacro = undefined;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -309,6 +313,23 @@ export default class Evaluate extends MathComponent {
       }
     }
 
+    stateVariableDefinitions.inputMaths = {
+      returnDependencies: () => ({
+        inputAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "input",
+          variableNames: ["maths"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.inputAttr) {
+          return { setValue: { inputMaths: dependencyValues.inputAttr.stateValues.maths } }
+        } else {
+          return { setValue: { inputMaths: [] } }
+        }
+      }
+    }
+
     stateVariableDefinitions.unnormalizedValue = {
       public: true,
       shadowingInstructions: {
@@ -316,15 +337,14 @@ export default class Evaluate extends MathComponent {
       },
       returnDependencies() {
         return {
-          inputAttr: {
-            dependencyType: "attributeComponent",
-            attributeName: "input",
-            variableNames: ["nComponents", "maths"]
+          inputMaths: {
+            dependencyType: "stateVariable",
+            variableName: "inputMaths"
           },
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
-            variableNames: ["symbolicfs", "numericalfs", "symbolic", "nInputs", "nOutputs"],
+            variableNames: ["symbolicfs", "numericalfs", "symbolic", "nInputs"],
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
@@ -339,60 +359,32 @@ export default class Evaluate extends MathComponent {
       },
       definition({ dependencyValues }) {
 
-        if (!(dependencyValues.functionAttr && dependencyValues.inputAttr)) {
-          return {
-            setValue: {
-              unnormalizedValue: me.fromAst('\uFF3F')
-            }
-          }
-        }
-
-        let input = dependencyValues.inputAttr.stateValues.maths;
-
-        // if have a single input, check if it is a vector
-        if (input.length === 1) {
-          let inputTree = input[0].tree;
-          if (Array.isArray(inputTree) && vectorOperators.includes(inputTree[0])) {
-            input = inputTree.slice(1).map(x => me.fromAst(x));
-          }
-        }
-
-
-        if (input.length !== dependencyValues.functionAttr.stateValues.nInputs) {
-          return {
-            setValue: {
-              unnormalizedValue: me.fromAst('\uFF3F')
-            }
-          }
-        }
-
-        let components = [];
-
         let functionComp = dependencyValues.functionAttr;
-        let nOutputs = functionComp.stateValues.nOutputs;
 
+        if (!functionComp) {
+          return {
+            setValue: {
+              unnormalizedValue: me.fromAst('\uFF3F')
+            }
+          }
+        }
+
+        let f;
         if (!dependencyValues.forceNumeric &&
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
         ) {
-          for (let ind = 0; ind < nOutputs; ind++) {
-            components.push(functionComp.stateValues.symbolicfs[ind](...input).tree)
-          }
+          f = returnSymbolicFunctionForEvaluate({
+            nInputs: functionComp.stateValues.nInputs,
+            symbolicfs: functionComp.stateValues.symbolicfs,
+          })
         } else {
-          let numericInput = input.map(x => x.evaluate_to_constant())
-            .map(x => x === null ? NaN : x);
-
-          for (let ind = 0; ind < nOutputs; ind++) {
-            components.push(functionComp.stateValues.numericalfs[ind](...numericInput))
-          }
+          f = returnNumericFunctionForEvaluate({
+            nInputs: functionComp.stateValues.nInputs,
+            numericalfs: functionComp.stateValues.numericalfs
+          })
         }
 
-        let unnormalizedValue;
-
-        if (nOutputs === 1) {
-          unnormalizedValue = me.fromAst(components[0])
-        } else {
-          unnormalizedValue = me.fromAst(["vector", ...components])
-        }
+        let unnormalizedValue = f(dependencyValues.inputMaths);
 
         // console.log("unnormalizedValue")
         // console.log(unnormalizedValue)
@@ -401,6 +393,161 @@ export default class Evaluate extends MathComponent {
           setValue: { unnormalizedValue }
         }
 
+      }
+    }
+
+    stateVariableDefinitions.formula = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      returnDependencies() {
+        return {
+          inputMaths: {
+            dependencyType: "stateVariable",
+            variableName: "inputMaths"
+          },
+          functionAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "function",
+            variableNames: ["symbolicfs", "nInputs"],
+          },
+        }
+
+      },
+      definition({ dependencyValues }) {
+
+        let functionComp = dependencyValues.functionAttr;
+
+        if (!functionComp) {
+          return {
+            setValue: {
+              formula: me.fromAst('\uFF3F')
+            }
+          }
+        }
+
+        let f = returnSymbolicFunctionForEvaluate({
+          nInputs: functionComp.stateValues.nInputs,
+          symbolicfs: functionComp.stateValues.symbolicfs,
+        })
+
+        let formula = f(dependencyValues.inputMaths);
+
+        return {
+          setValue: { formula }
+        }
+
+      }
+    }
+
+
+
+    stateVariableDefinitions.fReevaluate = {
+      returnDependencies() {
+        return {
+          functionAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "function",
+            variableNames: ["symbolicfs", "numericalfs", "symbolic", "nInputs"],
+          },
+          forceSymbolic: {
+            dependencyType: "stateVariable",
+            variableName: "forceSymbolic"
+          },
+          forceNumeric: {
+            dependencyType: "stateVariable",
+            variableName: "forceNumeric"
+          }
+        }
+
+      },
+      definition({ dependencyValues }) {
+
+        let functionComp = dependencyValues.functionAttr;
+
+        if (!functionComp) {
+          return {
+            setValue: {
+              fReevaluate: _ => me.fromAst('\uFF3F')
+            }
+          }
+        }
+
+        let fReevaluate;
+
+        if (!dependencyValues.forceNumeric &&
+          (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
+        ) {
+          fReevaluate = returnSymbolicFunctionForEvaluate({
+            nInputs: functionComp.stateValues.nInputs,
+            symbolicfs: functionComp.stateValues.symbolicfs,
+          })
+        } else {
+          fReevaluate = returnNumericFunctionForEvaluate({
+            nInputs: functionComp.stateValues.nInputs,
+            numericalfs: functionComp.stateValues.numericalfs
+          })
+        }
+
+        return { setValue: { fReevaluate } }
+      }
+    }
+
+    stateVariableDefinitions.fReevaluateDefinition = {
+      returnDependencies() {
+        return {
+          functionAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "function",
+            variableNames: ["fDefinitions", "symbolic", "nInputs"],
+          },
+          forceSymbolic: {
+            dependencyType: "stateVariable",
+            variableName: "forceSymbolic"
+          },
+          forceNumeric: {
+            dependencyType: "stateVariable",
+            variableName: "forceNumeric"
+          }
+        }
+
+      },
+      definition({ dependencyValues }) {
+
+        let functionComp = dependencyValues.functionAttr;
+
+        if (!functionComp) {
+          return {
+            setValue: {
+              fReevaluateDefinition: {}
+            }
+          }
+        }
+
+        let fReevaluateDefinition;
+
+        if (!dependencyValues.forceNumeric &&
+          (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
+        ) {
+          // TODO: fDefinitions only used for moving a function across the webworker barrier,
+          // i.e., to move it to a renderer.
+          // Currently, the only renderer using functions is graph, which just does numerical functions.
+          // Is there a reason to implement a "symbolicForEvaluate" functionType definition?
+          fReevaluateDefinition = {
+            functionType: "numericForEvaluate",
+            nInputs: functionComp.stateValues.nInputs,
+            fDefinitions: functionComp.stateValues.fDefinitions
+          }
+        } else {
+          fReevaluateDefinition = {
+            functionType: "numericForEvaluate",
+            nInputs: functionComp.stateValues.nInputs,
+            fDefinitions: functionComp.stateValues.fDefinitions
+          }
+        }
+
+        return { setValue: { fReevaluateDefinition } }
       }
     }
 

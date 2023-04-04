@@ -1,8 +1,8 @@
 import InlineComponent from './abstract/InlineComponent';
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { normalizeMathExpression, returnNVariables, roundForDisplay, vectorOperators } from '../utils/math';
-import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula } from '../utils/function';
+import { mergeListsWithOtherContainers, normalizeMathExpression, returnNVariables, roundForDisplay, vectorOperators } from '../utils/math';
+import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnNumericalFunctionFromReevaluatedFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula, returnSymbolicFunctionFromReevaluatedFormula } from '../utils/function';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -17,9 +17,9 @@ export default class Function extends InlineComponent {
     attributes.simplify = {
       createComponentOfType: "text",
       createStateVariable: "simplifySpecified",
-      defaultValue: "none",
+      defaultValue: "full",
       toLowerCase: true,
-      valueTransformations: { "true": "full" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     attributes.expand = {
@@ -791,7 +791,7 @@ export default class Function extends InlineComponent {
       shadowingInstructions: {
         createComponentOfType: "boolean",
       },
-      defaultValue: false,
+      defaultValue: true,
       hasEssential: true,
       returnDependencies: () => ({
         symbolicAttr: {
@@ -906,52 +906,6 @@ export default class Function extends InlineComponent {
       targetVariableName: "variable1"
     };
 
-    stateVariableDefinitions.unnormalizedFormula = {
-      defaultValue: me.fromAst(0),
-      hasEssential: true,
-      returnDependencies: () => ({
-        mathChild: {
-          dependencyType: "child",
-          childGroups: ["maths"],
-          variableNames: ["value"]
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["formula"],
-        },
-        isInterpolatedFunction: {
-          dependencyType: "stateVariable",
-          variableName: "isInterpolatedFunction"
-        }
-      }),
-      definition: function ({ dependencyValues, usedDefault }) {
-
-        if (dependencyValues.isInterpolatedFunction) {
-          return { setValue: { unnormalizedFormula: me.fromAst('\uff3f') } };
-        } else if (dependencyValues.mathChild.length > 0) {
-          return {
-            setValue: {
-              unnormalizedFormula: dependencyValues.mathChild[0].stateValues.value
-            }
-          }
-        } else if (dependencyValues.functionChild.length > 0 &&
-          !usedDefault.functionChild[0].formula
-        ) {
-          return {
-            setValue: {
-              unnormalizedFormula: dependencyValues.functionChild[0].stateValues.formula
-            }
-          }
-        } else {
-          return {
-            useEssentialOrDefaultValue: { unnormalizedFormula: true }
-          }
-        }
-      }
-
-    }
-
     stateVariableDefinitions.formula = {
       public: true,
       shadowingInstructions: {
@@ -961,36 +915,40 @@ export default class Function extends InlineComponent {
       defaultValue: me.fromAst(0),
       hasEssential: true,
       returnDependencies: () => ({
-        unnormalizedFormula: {
-          dependencyType: "stateVariable",
-          variableName: "unnormalizedFormula"
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["value", "formula"],
+          variablesOptional: true,
         },
-        simplify: {
-          dependencyType: "stateVariable",
-          variableName: "simplify"
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["formula"],
         },
-        expand: {
+        isInterpolatedFunction: {
           dependencyType: "stateVariable",
-          variableName: "expand"
-        }
+          variableName: "isInterpolatedFunction"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
-        // need to communicate the case when
-        // the default value of 0 was used
-        if (usedDefault.unnormalizedFormula) {
+
+        if (dependencyValues.isInterpolatedFunction) {
+          return { setValue: { formula: me.fromAst('\uff3f') } };
+        } else if (dependencyValues.mathChild.length > 0) {
+          return {
+            setValue: { formula: dependencyValues.mathChild[0].stateValues.value }
+          }
+        } else if (dependencyValues.functionChild.length > 0 &&
+          !usedDefault.functionChild[0].formula
+        ) {
+          return {
+            setValue: { formula: dependencyValues.functionChild[0].stateValues.formula }
+          }
+        } else {
           return {
             useEssentialOrDefaultValue: { formula: true }
           }
-        }
-
-        let formula = normalizeMathExpression({
-          value: dependencyValues.unnormalizedFormula,
-          simplify: dependencyValues.simplify,
-          expand: dependencyValues.expand,
-        });
-
-        return {
-          setValue: { formula }
         }
       }
 
@@ -1199,10 +1157,49 @@ export default class Function extends InlineComponent {
     }
 
 
+    stateVariableDefinitions.mathChildName = {
+      returnDependencies() {
+        return {
+          mathChild: {
+            dependencyType: "child",
+            childGroups: ["maths"],
+          },
+        }
+      },
+      definition({ dependencyValues }) {
+        if (dependencyValues.mathChild.length > 0) {
+          return { setValue: { mathChildName: dependencyValues.mathChild[0].componentName } }
+        } else {
+          return { setValue: { mathChildName: null } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.mathChildCreatedBySugar = {
+      stateVariablesDeterminingDependencies: ["mathChildName"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.mathChildName) {
+          return {
+            mathChildCreatedBySugar: {
+              dependencyType: "doenetAttribute",
+              componentName: stateValues.mathChildName,
+              attributeName: "createdFromSugar"
+            }
+          }
+        } else {
+          return {};
+        }
+      },
+      definition({ dependencyValues }) {
+        return { setValue: { mathChildCreatedBySugar: Boolean(dependencyValues.mathChildCreatedBySugar) } }
+      }
+    }
+
+
     stateVariableDefinitions.symbolicfs = {
       isArray: true,
       entryPrefixes: ["symbolicf"],
-      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
+      stateVariablesDeterminingDependencies: ["isInterpolatedFunction", "mathChildName", "mathChildCreatedBySugar"],
       returnArraySizeDependencies: () => ({
         nOutputs: {
           dependencyType: "stateVariable",
@@ -1239,51 +1236,81 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          return {
-            globalDependencies: {
-              formula: {
+          let globalDependencies = {
+            formula: {
+              dependencyType: "stateVariable",
+              variableName: "formula",
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables",
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs",
+            },
+            functionChild: {
+              dependencyType: "child",
+              childGroups: ["functions"],
+              variableNames: ["symbolicfs"],
+            },
+            simplify: {
+              dependencyType: "stateVariable",
+              variableName: "simplify"
+            },
+            expand: {
+              dependencyType: "stateVariable",
+              variableName: "expand"
+            },
+            isInterpolatedFunction: {
+              dependencyType: "stateVariable",
+              variableName: "isInterpolatedFunction"
+            },
+            symbolicfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "symbolicfShadow"
+            },
+            numericalfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "numericalfShadow"
+            },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            }
+          }
+
+
+          if (stateValues.mathChildName) {
+            if (stateValues.mathChildCreatedBySugar) {
+              globalDependencies.mathChildExpressionWithCodes = {
                 dependencyType: "stateVariable",
-                variableName: "formula",
-              },
-              variables: {
-                dependencyType: "stateVariable",
-                variableName: "variables",
-              },
-              nInputs: {
-                dependencyType: "stateVariable",
-                variableName: "nInputs",
-              },
-              functionChild: {
+                componentName: stateValues.mathChildName,
+                variableName: "expressionWithCodes"
+              }
+              globalDependencies.mathChildMathChildren = {
                 dependencyType: "child",
-                childGroups: ["functions"],
-                variableNames: ["symbolicfs"],
-              },
-              simplify: {
+                parentName: stateValues.mathChildName,
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluate", "inputMaths"],
+                variablesOptional: true,
+              }
+              globalDependencies.mathChildCodePre = {
                 dependencyType: "stateVariable",
-                variableName: "simplify"
-              },
-              expand: {
-                dependencyType: "stateVariable",
-                variableName: "expand"
-              },
-              isInterpolatedFunction: {
-                dependencyType: "stateVariable",
-                variableName: "isInterpolatedFunction"
-              },
-              symbolicfShadow: {
-                dependencyType: "stateVariable",
-                variableName: "symbolicfShadow"
-              },
-              numericalfShadow: {
-                dependencyType: "stateVariable",
-                variableName: "numericalfShadow"
-              },
-              domain: {
-                dependencyType: "stateVariable",
-                variableName: "domain"
+                componentName: stateValues.mathChildName,
+                variableName: "codePre"
+              }
+            } else {
+              globalDependencies.mathChild = {
+                dependencyType: "child",
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluate", "inputMaths"],
+                variablesOptional: true,
               }
             }
           }
+
+          return { globalDependencies }
         }
       },
       arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys }) {
@@ -1296,25 +1323,15 @@ export default class Function extends InlineComponent {
                 xs: globalDependencyValues.xs,
                 coeffs: globalDependencyValues.coeffs,
                 interpolationPoints: globalDependencyValues.interpolationPoints,
-                domain: globalDependencyValues.domain
+                domain: globalDependencyValues.domain,
               });
               symbolicfs[arrayKey] = function (x) {
-                me.fromAst(numericalf(x.evaluate_to_constant()))
+                let val = x.evaluate_to_constant();
+                return me.fromAst(numericalf(val))
               }
             } else {
               symbolicfs[arrayKey] = x => me.fromAst('\uff3f');
             }
-          }
-          return {
-            setValue: { symbolicfs }
-          }
-        } else if (!usedDefault.formula && (
-          globalDependencyValues.formula.tree !== '\uff3f'
-          || globalDependencyValues.functionChild.length === 0
-        )) {
-          let symbolicfs = {};
-          for (let arrayKey of arrayKeys) {
-            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey);
           }
           return {
             setValue: { symbolicfs }
@@ -1324,6 +1341,162 @@ export default class Function extends InlineComponent {
           for (let arrayKey of arrayKeys) {
             symbolicfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
               .symbolicfs[arrayKey];
+          }
+          return {
+            setValue: { symbolicfs }
+          }
+        } else if (!usedDefault.formula) {
+
+          // Have mathChildMathChildren only if the math child was created by sugar.
+          // In this case, the children of the math child were specified as direct
+          // children of the function.
+          // If any of those children is an <evaluate> (i.e., have fReevaluate state variable)
+          // and has a variable in its input that is a function variable,
+          // then when evaluating the function, we will reevaluate the <evaluate>
+          // using the values of the variables passed to the function
+          if (globalDependencyValues.mathChildMathChildren?.length > 0) {
+
+            let variables = globalDependencyValues.variables.map(x => x.subscripts_to_strings().tree)
+
+            let evaluateChildrenToReevaluate = {};
+            let needToReevaluate = false;
+
+            let codePre = globalDependencyValues.mathChildCodePre;
+            let subsMapping = {};
+
+            // Formula is based on a math child that has math children.
+            // Check to see if any of those children are evaluates whose inputs contain a variable
+            for (let [ind, mathGrandChild] of globalDependencyValues.mathChildMathChildren.entries()) {
+
+              if (mathGrandChild.stateValues.fReevaluate) {
+
+                let inputVariables = mathGrandChild.stateValues.inputMaths
+                  .reduce((a, c) => [...a, ...c.subscripts_to_strings().variables()], [])
+
+                if (inputVariables.some(invar => variables.includes(invar))) {
+                  // The inputMaths to the <evaluate> contain a function variable.
+                  // In this case, we won't use the value state variable
+                  // but instead will reevaluate.
+                  // Create a data structure with the info we'll need to reevaluate on function evaluation
+                  evaluateChildrenToReevaluate[codePre + ind] = {
+                    fReevaluate: mathGrandChild.stateValues.fReevaluate,
+                    inputMathFs: mathGrandChild.stateValues.inputMaths.map(x => x.subscripts_to_strings().f())
+                  }
+                  needToReevaluate = true;
+                } else {
+                  // Just use the precomputed value of the <evaluate>
+                  // Add that value to the subsMapping in case we are recreating the formula
+                  // due to a reevaluation for another <evaluate>
+                  subsMapping[codePre + ind] = mathGrandChild.stateValues.value;
+
+                }
+
+              } else {
+                // We have a <math> that isn't an <evaluate>.
+                // Add its value to subsMapping in case we are recreating the fomrulat
+                // due to a reevaluation for an <evaluate>
+                subsMapping[codePre + ind] = mathGrandChild.stateValues.value;
+              }
+            }
+
+
+            if (needToReevaluate) {
+              // We found one <evaluate> that needs to be reevaluated
+
+              // For all values that don't need to be reevaluated,
+              // substitute them directly into the expressionWithCodes for the formula.
+
+              let formulaExpressionWithCodes = globalDependencyValues.mathChildExpressionWithCodes;
+              if (Object.keys(subsMapping).length > 0) {
+                formulaExpressionWithCodes = formulaExpressionWithCodes.substitute(subsMapping);
+              }
+
+              formulaExpressionWithCodes = me.fromAst(mergeListsWithOtherContainers(formulaExpressionWithCodes.tree))
+
+              // At this point, formulaExpressionWithCodes contains only those codes from
+              // <evaluate>s that need to be reevaluated.
+              // evaluateChildrenToReevaluate contains information for reevaluating those <evaluates>
+              // based on the inputs passed to the function
+              let symbolicfs = {};
+              for (let arrayKey of arrayKeys) {
+                symbolicfs[arrayKey] = returnSymbolicFunctionFromReevaluatedFormula({
+                  formulaExpressionWithCodes,
+                  evaluateChildrenToReevaluate,
+                  simplify: globalDependencyValues.simplify,
+                  expand: globalDependencyValues.expand,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables,
+                  domain: globalDependencyValues.domain,
+                  component: arrayKey
+                })
+              }
+              return {
+                setValue: { symbolicfs }
+              }
+            }
+
+          } else if (globalDependencyValues.mathChild?.[0].stateValues.fReevaluate) {
+
+            // We have a single mathChild that is an <evaluate>
+            // that was not added via sugar,
+            // i.e., it was a direct child of the <function>.
+
+
+            let variables = globalDependencyValues.variables.map(x => x.subscripts_to_strings().tree)
+
+            let mathChild = globalDependencyValues.mathChild[0]
+            let inputVariables = mathChild.stateValues.inputMaths
+              .reduce((a, c) => [...a, ...c.subscripts_to_strings().variables()], [])
+
+            if (inputVariables.some(invar => variables.includes(invar))) {
+              // The inputMaths to the <evaluate> contain a function variable.
+              // This sole <evaluate> is the only component to the function's formula,
+              // so we need to reevaluate the <evaluate> based on the inputs of the function
+
+              // So that we can reuse returnNumericalFunctionFromReevaluatedFormula,
+              // we create a fake formulaExpressionWithCodes just containing a code for the evaluate
+              let formulaExpressionWithCodes = me.fromAst('code');
+
+              // We create the same data structure for the reevaluation, as above
+
+              let evaluateChildrenToReevaluate = {
+                code: {
+                  fReevaluate: mathChild.stateValues.fReevaluate,
+                  inputMathFs: mathChild.stateValues.inputMaths.map(x => x.subscripts_to_strings().f())
+                }
+              }
+
+              let symbolicfs = {};
+              for (let arrayKey of arrayKeys) {
+                symbolicfs[arrayKey] = returnSymbolicFunctionFromReevaluatedFormula({
+                  formulaExpressionWithCodes,
+                  evaluateChildrenToReevaluate,
+                  simplify: globalDependencyValues.simplify,
+                  expand: globalDependencyValues.expand,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables,
+                  domain: globalDependencyValues.domain,
+                  component: arrayKey
+                })
+              }
+              return {
+                setValue: { symbolicfs }
+              }
+
+            }
+          }
+
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula({
+              formula: globalDependencyValues.formula,
+              simplify: globalDependencyValues.simplify,
+              expand: globalDependencyValues.expand,
+              nInputs: globalDependencyValues.nInputs,
+              variables: globalDependencyValues.variables,
+              domain: globalDependencyValues.domain,
+              component: arrayKey
+            });
           }
           return {
             setValue: { symbolicfs }
@@ -1347,9 +1520,6 @@ export default class Function extends InlineComponent {
             if (arrayKey === "0") {
               symbolicfs[arrayKey] = function (x) {
                 let input = x.evaluate_to_constant();
-                if (input === null) {
-                  return NaN;
-                }
                 return me.fromAst(globalDependencyValues.numericalfShadow(input))
               }
             } else {
@@ -1362,7 +1532,15 @@ export default class Function extends InlineComponent {
         } else {
           let symbolicfs = {};
           for (let arrayKey of arrayKeys) {
-            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey);
+            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula({
+              formula: globalDependencyValues.formula,
+              simplify: globalDependencyValues.simplify,
+              expand: globalDependencyValues.expand,
+              nInputs: globalDependencyValues.nInputs,
+              variables: globalDependencyValues.variables,
+              domain: globalDependencyValues.domain,
+              component: arrayKey
+            });
           }
           return {
             setValue: { symbolicfs }
@@ -1380,7 +1558,7 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.numericalfs = {
       isArray: true,
       entryPrefixes: ["numericalf"],
-      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
+      stateVariablesDeterminingDependencies: ["isInterpolatedFunction", "mathChildName", "mathChildCreatedBySugar"],
       returnArraySizeDependencies: () => ({
         nOutputs: {
           dependencyType: "stateVariable",
@@ -1417,46 +1595,77 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          return {
-            globalDependencies: {
-              formula: {
+          let globalDependencies = {
+            formula: {
+              dependencyType: "stateVariable",
+              variableName: "formula",
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables",
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs",
+            },
+            functionChild: {
+              dependencyType: "child",
+              childGroups: ["functions"],
+              variableNames: ["numericalfs"],
+            },
+            isInterpolatedFunction: {
+              dependencyType: "stateVariable",
+              variableName: "isInterpolatedFunction"
+            },
+            symbolicfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "symbolicfShadow"
+            },
+            numericalfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "numericalfShadow"
+            },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            }
+          }
+
+
+          if (stateValues.mathChildName) {
+            if (stateValues.mathChildCreatedBySugar) {
+              globalDependencies.mathChildExpressionWithCodes = {
                 dependencyType: "stateVariable",
-                variableName: "formula",
-              },
-              variables: {
-                dependencyType: "stateVariable",
-                variableName: "variables",
-              },
-              nInputs: {
-                dependencyType: "stateVariable",
-                variableName: "nInputs",
-              },
-              functionChild: {
+                componentName: stateValues.mathChildName,
+                variableName: "expressionWithCodes"
+              }
+              globalDependencies.mathChildMathChildren = {
                 dependencyType: "child",
-                childGroups: ["functions"],
-                variableNames: ["numericalfs"],
-              },
-              isInterpolatedFunction: {
+                parentName: stateValues.mathChildName,
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluate", "inputMaths"],
+                variablesOptional: true,
+              }
+              globalDependencies.mathChildCodePre = {
                 dependencyType: "stateVariable",
-                variableName: "isInterpolatedFunction"
-              },
-              symbolicfShadow: {
-                dependencyType: "stateVariable",
-                variableName: "symbolicfShadow"
-              },
-              numericalfShadow: {
-                dependencyType: "stateVariable",
-                variableName: "numericalfShadow"
-              },
-              domain: {
-                dependencyType: "stateVariable",
-                variableName: "domain"
+                componentName: stateValues.mathChildName,
+                variableName: "codePre"
+              }
+            } else {
+              globalDependencies.mathChild = {
+                dependencyType: "child",
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluate", "inputMaths"],
+                variablesOptional: true,
               }
             }
           }
+
+          return { globalDependencies }
         }
       },
       arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys }) {
+
         if (globalDependencyValues.isInterpolatedFunction) {
           let numericalfs = {};
           for (let arrayKey of arrayKeys) {
@@ -1465,28 +1674,11 @@ export default class Function extends InlineComponent {
                 xs: globalDependencyValues.xs,
                 coeffs: globalDependencyValues.coeffs,
                 interpolationPoints: globalDependencyValues.interpolationPoints,
-                domain: globalDependencyValues.domain
+                domain: globalDependencyValues.domain,
               });
             } else {
               numericalfs[arrayKey] = x => me.fromAst('\uff3f');
             }
-          }
-          return {
-            setValue: { numericalfs }
-          }
-        } else if (!usedDefault.formula && (
-          globalDependencyValues.formula.tree !== '\uff3f'
-          || globalDependencyValues.functionChild.length === 0
-        )) {
-          let numericalfs = {};
-          for (let arrayKey of arrayKeys) {
-            numericalfs[arrayKey] = returnNumericalFunctionFromFormula({
-              formula: globalDependencyValues.formula,
-              nInputs: globalDependencyValues.nInputs,
-              variables: globalDependencyValues.variables,
-              domain: globalDependencyValues.domain,
-              component: arrayKey
-            })
           }
           return {
             setValue: { numericalfs }
@@ -1496,6 +1688,155 @@ export default class Function extends InlineComponent {
           for (let arrayKey of arrayKeys) {
             numericalfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
               .numericalfs[arrayKey];
+          }
+          return {
+            setValue: { numericalfs }
+          }
+        } else if (!usedDefault.formula) {
+
+          // Have mathChildMathChildren only if the math child was created by sugar.
+          // In this case, the children of the math child were specified as direct
+          // children of the function.
+          // If any of those children is an <evaluate> (i.e., have fReevaluate state variable)
+          // and has a variable in its input that is a function variable,
+          // then when evaluating the function, we will reevaluate the <evaluate>
+          // using the values of the variables passed to the function
+          if (globalDependencyValues.mathChildMathChildren?.length > 0) {
+
+            let variables = globalDependencyValues.variables.map(x => x.subscripts_to_strings().tree)
+
+            let evaluateChildrenToReevaluate = {};
+            let needToReevaluate = false;
+
+            let codePre = globalDependencyValues.mathChildCodePre;
+            let subsMapping = {};
+
+            // Formula is based on a math child that has math children.
+            // Check to see if any of those children are evaluates whose inputs contain a variable
+            for (let [ind, mathGrandChild] of globalDependencyValues.mathChildMathChildren.entries()) {
+
+              if (mathGrandChild.stateValues.fReevaluate) {
+
+                let inputVariables = mathGrandChild.stateValues.inputMaths
+                  .reduce((a, c) => [...a, ...c.subscripts_to_strings().variables()], [])
+
+                if (inputVariables.some(invar => variables.includes(invar))) {
+                  // The inputMaths to the <evaluate> contain a function variable.
+                  // In this case, we won't use the value state variable
+                  // but instead will reevaluate.
+                  // Create a data structure with the info we'll need to reevaluate on function evaluation
+                  evaluateChildrenToReevaluate[codePre + ind] = {
+                    fReevaluate: mathGrandChild.stateValues.fReevaluate,
+                    inputMathFs: mathGrandChild.stateValues.inputMaths.map(x => x.subscripts_to_strings().f())
+                  }
+                  needToReevaluate = true;
+                } else {
+                  // Just use the precomputed value of the <evaluate>
+                  // Add that value to the subsMapping in case we are recreating the formula
+                  // due to a reevaluation for another <evaluate>
+                  subsMapping[codePre + ind] = mathGrandChild.stateValues.value;
+
+                }
+
+              } else {
+                // We have a <math> that isn't an <evaluate>.
+                // Add its value to subsMapping in case we are recreating the fomrulat
+                // due to a reevaluation for an <evaluate>
+                subsMapping[codePre + ind] = mathGrandChild.stateValues.value;
+              }
+            }
+
+
+            if (needToReevaluate) {
+              // We found one <evaluate> that needs to be reevaluated
+
+              // For all values that don't need to be reevaluated,
+              // substitute them directly into the expressionWithCodes for the formula.
+
+              let formulaExpressionWithCodes = globalDependencyValues.mathChildExpressionWithCodes;
+              if (Object.keys(subsMapping).length > 0) {
+                formulaExpressionWithCodes = formulaExpressionWithCodes.substitute(subsMapping);
+              }
+
+              formulaExpressionWithCodes = me.fromAst(mergeListsWithOtherContainers(formulaExpressionWithCodes.tree))
+
+              // At this point, formulaExpressionWithCodes contains only those codes from
+              // <evaluate>s that need to be reevaluated.
+              // evaluateChildrenToReevaluate contains information for reevaluating those <evaluates>
+              // based on the inputs passed to the function
+              let numericalfs = {};
+              for (let arrayKey of arrayKeys) {
+                numericalfs[arrayKey] = returnNumericalFunctionFromReevaluatedFormula({
+                  formulaExpressionWithCodes,
+                  evaluateChildrenToReevaluate,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables,
+                  domain: globalDependencyValues.domain,
+                  component: arrayKey
+                })
+              }
+              return {
+                setValue: { numericalfs }
+              }
+            }
+
+          } else if (globalDependencyValues.mathChild?.[0].stateValues.fReevaluate) {
+
+            // We have a single mathChild that is an <evaluate>
+            // that was not added via sugar,
+            // i.e., it was a direct child of the <function>.
+
+            let variables = globalDependencyValues.variables.map(x => x.subscripts_to_strings().tree)
+
+            let mathChild = globalDependencyValues.mathChild[0]
+            let inputVariables = mathChild.stateValues.inputMaths
+              .reduce((a, c) => [...a, ...c.subscripts_to_strings().variables()], [])
+
+            if (inputVariables.some(invar => variables.includes(invar))) {
+              // The inputMaths to the <evaluate> contain a function variable.
+              // This sole <evaluate> is the only component to the function's formula,
+              // so we need to reevaluate the <evaluate> based on the inputs of the function
+
+              // So that we can reuse returnNumericalFunctionFromReevaluatedFormula,
+              // we create a fake formulaExpressionWithCodes just containing a code for the evaluate
+              let formulaExpressionWithCodes = me.fromAst('code');
+
+              // We create the same data structure for the reevaluation, as above
+
+              let evaluateChildrenToReevaluate = {
+                code: {
+                  fReevaluate: mathChild.stateValues.fReevaluate,
+                  inputMathFs: mathChild.stateValues.inputMaths.map(x => x.subscripts_to_strings().f())
+                }
+              }
+
+              let numericalfs = {};
+              for (let arrayKey of arrayKeys) {
+                numericalfs[arrayKey] = returnNumericalFunctionFromReevaluatedFormula({
+                  formulaExpressionWithCodes,
+                  evaluateChildrenToReevaluate,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables,
+                  domain: globalDependencyValues.domain,
+                  component: arrayKey
+                })
+              }
+              return {
+                setValue: { numericalfs }
+              }
+
+            }
+          }
+
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            numericalfs[arrayKey] = returnNumericalFunctionFromFormula({
+              formula: globalDependencyValues.formula,
+              nInputs: globalDependencyValues.nInputs,
+              variables: globalDependencyValues.variables,
+              domain: globalDependencyValues.domain,
+              component: arrayKey
+            })
           }
           return {
             setValue: { numericalfs }
@@ -1518,10 +1859,7 @@ export default class Function extends InlineComponent {
           for (let arrayKey of arrayKeys) {
             if (arrayKey === "0") {
               numericalfs[arrayKey] = function (x) {
-                let val = dependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
-                if (val === null) {
-                  val = NaN
-                }
+                let val = globalDependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
                 return val;
               }
             } else {
@@ -1566,7 +1904,7 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.fDefinitions = {
       isArray: true,
       entryPrefixes: ["fDefinition"],
-      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
+      stateVariablesDeterminingDependencies: ["isInterpolatedFunction", "mathChildName", "mathChildCreatedBySugar"],
       returnArraySizeDependencies: () => ({
         nOutputs: {
           dependencyType: "stateVariable",
@@ -1603,50 +1941,78 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          return {
-            globalDependencies: {
-              formula: {
+
+          let globalDependencies = {
+            formula: {
+              dependencyType: "stateVariable",
+              variableName: "formula",
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables",
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs",
+            },
+            functionChild: {
+              dependencyType: "child",
+              childGroups: ["functions"],
+              variableNames: ["fDefinitions"],
+            },
+            isInterpolatedFunction: {
+              dependencyType: "stateVariable",
+              variableName: "isInterpolatedFunction"
+            },
+            symbolicfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "symbolicfShadow"
+            },
+            numericalfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "numericalfShadow"
+            },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            }
+          }
+
+
+          if (stateValues.mathChildName) {
+            if (stateValues.mathChildCreatedBySugar) {
+              globalDependencies.mathChildExpressionWithCodes = {
                 dependencyType: "stateVariable",
-                variableName: "formula",
-              },
-              variables: {
-                dependencyType: "stateVariable",
-                variableName: "variables",
-              },
-              nInputs: {
-                dependencyType: "stateVariable",
-                variableName: "nInputs",
-              },
-              nOutputs: {
-                dependencyType: "stateVariable",
-                variableName: "nOutputs",
-              },
-              functionChild: {
+                componentName: stateValues.mathChildName,
+                variableName: "expressionWithCodes"
+              }
+              globalDependencies.mathChildMathChildren = {
                 dependencyType: "child",
-                childGroups: ["functions"],
-                variableNames: ["fDefinitions"],
-              },
-              isInterpolatedFunction: {
+                parentName: stateValues.mathChildName,
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluateDefinition", "inputMaths"],
+                variablesOptional: true,
+              }
+              globalDependencies.mathChildCodePre = {
                 dependencyType: "stateVariable",
-                variableName: "isInterpolatedFunction"
-              },
-              symbolicfShadow: {
-                dependencyType: "stateVariable",
-                variableName: "symbolicfShadow"
-              },
-              numericalfShadow: {
-                dependencyType: "stateVariable",
-                variableName: "numericalfShadow"
-              },
-              domain: {
-                dependencyType: "stateVariable",
-                variableName: "domain"
+                componentName: stateValues.mathChildName,
+                variableName: "codePre"
+              }
+            } else {
+              globalDependencies.mathChild = {
+                dependencyType: "child",
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluateDefinition", "inputMaths"],
+                variablesOptional: true,
               }
             }
           }
+
+          return { globalDependencies }
         }
       },
       arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys }) {
+
         if (globalDependencyValues.isInterpolatedFunction) {
 
           let fDefinitions = {};
@@ -1657,7 +2023,7 @@ export default class Function extends InlineComponent {
                 xs: globalDependencyValues.xs,
                 coeffs: globalDependencyValues.coeffs,
                 interpolationPoints: globalDependencyValues.interpolationPoints,
-                domain: globalDependencyValues.domain,
+                domain: globalDependencyValues.domain ? globalDependencyValues.domain.map(x => x.tree) : null,
               }
             } else {
               fDefinitions[arrayKey] = {};
@@ -1668,10 +2034,158 @@ export default class Function extends InlineComponent {
             setValue: { fDefinitions }
           }
 
-        } else if (!usedDefault.formula && (
-          globalDependencyValues.formula.tree !== '\uff3f'
-          || globalDependencyValues.functionChild.length === 0
-        )) {
+        } else if (globalDependencyValues.functionChild.length > 0) {
+
+          let fDefinitions = {};
+          for (let arrayKey of arrayKeys) {
+            fDefinitions[arrayKey] = globalDependencyValues.functionChild[0].stateValues.fDefinitions[arrayKey];
+          }
+          return {
+            setValue: { fDefinitions }
+          }
+        } else if (!usedDefault.formula) {
+
+          // Have mathChildMathChildren only if the math child was created by sugar.
+          // In this case, the children of the math child were specified as direct
+          // children of the function.
+          // If any of those children is an <evaluate> (i.e., have fReevaluate state variable)
+          // and has a variable in its input that is a function variable,
+          // then when evaluating the function, we will reevaluate the <evaluate>
+          // using the values of the variables passed to the function
+          if (globalDependencyValues.mathChildMathChildren?.length > 0) {
+
+            let variables = globalDependencyValues.variables.map(x => x.subscripts_to_strings().tree)
+
+            let evaluateChildrenToReevaluate = {};
+            let needToReevaluate = false;
+
+            let codePre = globalDependencyValues.mathChildCodePre;
+            let subsMapping = {};
+
+            // Formula is based on a math child that has math children.
+            // Check to see if any of those children are evaluates whose inputs are a variable
+            for (let [ind, mathGrandChild] of globalDependencyValues.mathChildMathChildren.entries()) {
+
+              if (mathGrandChild.stateValues.fReevaluateDefinition) {
+
+                let inputVariables = mathGrandChild.stateValues.inputMaths
+                  .reduce((a, c) => [...a, ...c.subscripts_to_strings().variables()], [])
+
+                if (inputVariables.some(invar => variables.includes(invar))) {
+                  // The inputMaths to the <evaluate> contain a function variable.
+                  // In this case, we won't use the value state variable
+                  // but instead will reevaluate.
+                  // Create a data structure with the info we'll need to reevaluate on function evaluation
+                  evaluateChildrenToReevaluate[codePre + ind] = {
+                    fReevaluateDefinition: mathGrandChild.stateValues.fReevaluateDefinition,
+                    inputMaths: mathGrandChild.stateValues.inputMaths
+                  }
+                  needToReevaluate = true;
+                } else {
+                  // Just use the precomputed value of the <evaluate>
+                  // Add that value to the subsMapping in case we are recreating the formula
+                  // due to a reevaluation for another <evaluate>
+                  subsMapping[codePre + ind] = mathGrandChild.stateValues.value;
+
+                }
+
+              } else {
+                // We have a <math> that isn't an <evaluate>.
+                // Add its value to subsMapping in case we are recreating the fomrulat
+                // due to a reevaluation for an <evaluate>
+                subsMapping[codePre + ind] = mathGrandChild.stateValues.value;
+              }
+            }
+
+
+            if (needToReevaluate) {
+              // We found one <evaluate> that needs to be reevaluated
+
+              // For all values that don't need to be reevaluated,
+              // substitute them directly into the expressionWithCodes for the formula.
+
+              let formulaExpressionWithCodes = globalDependencyValues.mathChildExpressionWithCodes;
+              if (Object.keys(subsMapping).length > 0) {
+                formulaExpressionWithCodes = formulaExpressionWithCodes.substitute(subsMapping);
+              }
+
+              formulaExpressionWithCodes = me.fromAst(mergeListsWithOtherContainers(formulaExpressionWithCodes.tree))
+
+              // At this point, formulaExpressionWithCodes contains only those codes from
+              // <evaluate>s that need to be reevaluated.
+              // evaluateChildrenToReevaluate contains information for reevaluating those <evaluates>
+              // based on the inputs passed to the function
+
+              let fDefinitions = {};
+
+              for (let arrayKey of arrayKeys) {
+                fDefinitions[arrayKey] = {
+                  functionType: "reevaluatedFormula",
+                  formulaExpressionWithCodes,
+                  evaluateChildrenToReevaluate,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables.map(x => x.tree),
+                  domain: globalDependencyValues.domain ? globalDependencyValues.domain.map(x => x.tree) : null,
+                  component: arrayKey
+                }
+              }
+              return {
+                setValue: { fDefinitions }
+              }
+            }
+
+          } else if (globalDependencyValues.mathChild?.[0].stateValues.fReevaluateDefinition) {
+
+            // We have a single mathChild that is an <evaluate>
+            // that was not added via sugar,
+            // i.e., it was a direct child of the <function>.
+
+
+            let variables = globalDependencyValues.variables.map(x => x.subscripts_to_strings().tree)
+
+            let mathChild = globalDependencyValues.mathChild[0]
+            let inputVariables = mathChild.stateValues.inputMaths
+              .reduce((a, c) => [...a, ...c.subscripts_to_strings().variables()], [])
+
+            if (inputVariables.some(invar => variables.includes(invar))) {
+              // The inputMaths to the <evaluate> contain a function variable.
+              // This sole <evaluate> is the only component to the function's formula,
+              // so we need to reevaluate the <evaluate> based on the inputs of the function
+
+              // So that we can reuse returnNumericalFunctionFromReevaluatedFormula,
+              // we create a fake formulaExpressionWithCodes just containing a code for the evaluate
+              let formulaExpressionWithCodes = me.fromAst('code');
+
+              // We create the same data structure for the reevaluation, as above
+
+              let evaluateChildrenToReevaluate = {
+                code: {
+                  fReevaluateDefinition: mathChild.stateValues.fReevaluateDefinition,
+                  inputMaths: mathChild.stateValues.inputMaths
+                }
+              }
+
+
+              let fDefinitions = {};
+
+              for (let arrayKey of arrayKeys) {
+                fDefinitions[arrayKey] = {
+                  functionType: "reevaluatedFormula",
+                  formulaExpressionWithCodes,
+                  evaluateChildrenToReevaluate,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables.map(x => x.tree),
+                  domain: globalDependencyValues.domain ? globalDependencyValues.domain.map(x => x.tree) : null,
+                  component: arrayKey
+                }
+              }
+              return {
+                setValue: { fDefinitions }
+              }
+
+            }
+          }
+
 
           let fDefinitions = {};
           for (let arrayKey of arrayKeys) {
@@ -1681,18 +2195,9 @@ export default class Function extends InlineComponent {
               variables: globalDependencyValues.variables.map(x => x.tree),
               nInputs: globalDependencyValues.nInputs,
               nOutputs: globalDependencyValues.nOutputs,
-              domain: globalDependencyValues.domain,
+              domain: globalDependencyValues.domain ? globalDependencyValues.domain.map(x => x.tree) : null,
               component: arrayKey,
             }
-          }
-          return {
-            setValue: { fDefinitions }
-          }
-        } else if (globalDependencyValues.functionChild.length > 0) {
-
-          let fDefinitions = {};
-          for (let arrayKey of arrayKeys) {
-            fDefinitions[arrayKey] = globalDependencyValues.functionChild[0].stateValues.fDefinitions[arrayKey];
           }
           return {
             setValue: { fDefinitions }
@@ -1725,7 +2230,7 @@ export default class Function extends InlineComponent {
               variables: globalDependencyValues.variables.map(x => x.tree),
               nInputs: globalDependencyValues.nInputs,
               nOutputs: globalDependencyValues.nOutputs,
-              domain: globalDependencyValues.domain,
+              domain: globalDependencyValues.domain ? globalDependencyValues.domain.map(x => x.tree) : null,
               component: arrayKey,
             }
           }
@@ -1947,20 +2452,18 @@ export default class Function extends InlineComponent {
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
-              try {
-                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
-                if (!Number.isFinite(minx)) {
-                  minx = -Infinity;
-                } else {
-                  openMin = !domain.tree[2][1];
-                }
-                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
-                if (!Number.isFinite(maxx)) {
-                  maxx = Infinity;
-                } else {
-                  openMax = !domain.tree[2][2];
-                }
-              } catch (e) { }
+              minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
+              if (!Number.isFinite(minx)) {
+                minx = -Infinity;
+              } else {
+                openMin = !domain.tree[2][1];
+              }
+              maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
+              if (!Number.isFinite(maxx)) {
+                maxx = Infinity;
+              } else {
+                openMax = !domain.tree[2][2];
+              }
             }
           }
 
@@ -2182,20 +2685,18 @@ export default class Function extends InlineComponent {
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
-              try {
-                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
-                if (!Number.isFinite(minx)) {
-                  minx = -100 * dependencyValues.xscale;
-                } else {
-                  openMin = !domain.tree[2][1];
-                }
-                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
-                if (!Number.isFinite(maxx)) {
-                  maxx = 100 * dependencyValues.xscale;
-                } else {
-                  openMax = !domain.tree[2][2];
-                }
-              } catch (e) { }
+              minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
+              if (!Number.isFinite(minx)) {
+                minx = -100 * dependencyValues.xscale;
+              } else {
+                openMin = !domain.tree[2][1];
+              }
+              maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
+              if (!Number.isFinite(maxx)) {
+                maxx = 100 * dependencyValues.xscale;
+              } else {
+                openMax = !domain.tree[2][2];
+              }
             }
           }
 
@@ -2557,20 +3058,18 @@ export default class Function extends InlineComponent {
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
-              try {
-                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
-                if (!Number.isFinite(minx)) {
-                  minx = -Infinity;
-                } else {
-                  openMin = !domain.tree[2][1];
-                }
-                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
-                if (!Number.isFinite(maxx)) {
-                  maxx = Infinity;
-                } else {
-                  openMax = !domain.tree[2][2];
-                }
-              } catch (e) { }
+              minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
+              if (!Number.isFinite(minx)) {
+                minx = -Infinity;
+              } else {
+                openMin = !domain.tree[2][1];
+              }
+              maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
+              if (!Number.isFinite(maxx)) {
+                maxx = Infinity;
+              } else {
+                openMax = !domain.tree[2][2];
+              }
             }
           }
 
@@ -2793,20 +3292,18 @@ export default class Function extends InlineComponent {
           if (dependencyValues.domain !== null) {
             let domain = dependencyValues.domain[0];
             if (domain !== undefined) {
-              try {
-                minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
-                if (!Number.isFinite(minx)) {
-                  minx = -100 * dependencyValues.xscale;
-                } else {
-                  openMin = !domain.tree[2][1];
-                }
-                maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
-                if (!Number.isFinite(maxx)) {
-                  maxx = 100 * dependencyValues.xscale;
-                } else {
-                  openMax = !domain.tree[2][2];
-                }
-              } catch (e) { }
+              minx = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
+              if (!Number.isFinite(minx)) {
+                minx = -100 * dependencyValues.xscale;
+              } else {
+                openMin = !domain.tree[2][1];
+              }
+              maxx = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
+              if (!Number.isFinite(maxx)) {
+                maxx = 100 * dependencyValues.xscale;
+              } else {
+                openMax = !domain.tree[2][2];
+              }
             }
           }
 
