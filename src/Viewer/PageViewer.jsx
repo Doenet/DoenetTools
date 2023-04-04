@@ -812,10 +812,7 @@ export default function PageViewer(props) {
       terminateCoreAndAnimations();
     }
     // console.log(`send message to create core ${pageNumber}`)
-
-    const bundledURl = new URL('./core.js', import.meta.url);
-    const unbunledURL = new URL('../Core/CoreWorker.js', import.meta.url);
-    coreWorker.current = new Worker(props.unbundledCore ? unbunledURL : bundledURl, { type: 'module' });
+    coreWorker.current = new Worker(new URL('../Core/CoreWorker.js', import.meta.url), { type: 'module' });
 
     coreWorker.current.postMessage({
       messageType: "createCore",
