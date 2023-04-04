@@ -2,9 +2,7 @@ version: '3.9'
 
 services:
   apache:
-    image: lyanthropos/doenet_test:apache-dev
-    ports:
-      - 8080:80
+    image: lyanthropos/doenet_apache:dev
     networks:
       - dev_net
     depends_on:
@@ -13,13 +11,13 @@ services:
     restart: always
 
   php:
-    image: lyanthropos/doenet_test:php-dev
+    image: lyanthropos/doenet_php:dev
     networks:
       - dev_net
     restart: always
 
   mysql:
-    image: lyanthropos/doenet_test:mysql-dev
+    image: lyanthropos/doenet_mysql:dev
     networks:
       - dev_net
     restart: always

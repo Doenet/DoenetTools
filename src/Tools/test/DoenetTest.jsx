@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
 import PageViewer from '../../Viewer/PageViewer.jsx';
-import testCodeDoenetML from './testCode.doenet';
-import testActivityDefinition from './testActivityDefinition.doenet';
+import {plainText as testActivityDefinition } from './testActivityDefinition.doenet';
+import {plainText as testCodeDoenetML } from './testCode.doenet';
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from '../../Core/utils/math.js';
 

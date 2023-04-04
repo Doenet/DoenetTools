@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { BoardContext, IMAGE_LAYER_OFFSET } from './graph';
 import { retrieveMediaForCid } from '../../Core/utils/retrieveMedia';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import me from 'math-expressions';

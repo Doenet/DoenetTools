@@ -2,11 +2,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import me from 'math-expressions';
 import styled from "styled-components";
 // import { Spring } from '@react-spring/web';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { useSetRecoilState } from 'recoil';
-import { rendererState } from './useDoenetRenderer';
+import { rendererState } from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;

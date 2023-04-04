@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext, POINT_LAYER_OFFSET } from './graph';
 import { MathJax } from 'better-react-mathjax';
 

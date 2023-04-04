@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function List(props) {

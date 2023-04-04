@@ -174,7 +174,7 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
 
 function calculateInitialRendererState({ doenetML, doenetId, requestedVariantIndex, flags = {} }) {
 
-  let coreWorker = new Worker('/viewer/core.js', { type: 'module' });
+  let coreWorker = new Worker(new URL('../Core/CoreWorker.js', import.meta.url), { type: 'module' });
 
   coreWorker.postMessage({
     messageType: "createCore",

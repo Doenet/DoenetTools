@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment as thoughtBubble } from '@fortawesome/free-regular-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';

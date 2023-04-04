@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, createContext } from 'react';
 import { sizeToCSS } from './utils/css';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import cssesc from 'cssesc';

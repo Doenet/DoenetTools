@@ -3,10 +3,10 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
-import ToolRoot from '../_framework/NewToolRoot';
+import ToolRoot from './Tools/_framework/NewToolRoot';
 import { MathJaxContext } from 'better-react-mathjax';
-import { mathjaxConfig } from '../../Core/utils/math';
-import DarkmodeController from '../_framework/DarkmodeController';
+import { mathjaxConfig } from './Core/utils/math';
+import DarkmodeController from './Tools/_framework/DarkmodeController';
 
 const root = createRoot(document.getElementById('root'));
 root.render(

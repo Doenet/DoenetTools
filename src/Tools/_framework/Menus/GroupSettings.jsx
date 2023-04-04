@@ -1,5 +1,5 @@
 import axios from 'axios';
-import parse from 'csv-parse';
+import {parse} from 'csv-parse';
 import React, { useEffect, useReducer, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {

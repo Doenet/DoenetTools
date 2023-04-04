@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { BASE_LAYER_OFFSET, BoardContext } from './graph';
 import me from 'math-expressions';
 
