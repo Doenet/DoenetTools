@@ -1,11 +1,11 @@
 import React from 'react';
-import { Avatar, Badge, Box, Image, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text } from '@chakra-ui/react';
+import { Avatar, Badge, Box, Image, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react';
 import { useLoaderData, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 import Searchbar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
 import { Form, Link } from 'react-router-dom';
-import { map } from 'lodash';
+import { RiEmotionSadLine } from "react-icons/ri";
 
 
 export async function loader({ request }){
@@ -278,6 +278,20 @@ if (q){
         fullName={fullName}
         />
       })}
+      { searchResults?.activities?.length == 0 ? 
+      <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      alignContent="center"
+      minHeight="200px"
+      border="1px solid var(--canvastext)"
+      >
+ <Icon fontSize="48pt" as={RiEmotionSadLine} />
+ <Text fontSize="36pt">No Matching Activities Found!</Text>
+      </Box> 
+      : null}
     </TabPanel>
     <TabPanel>
     {searchResults?.users.map((authorObj)=>{
@@ -290,7 +304,20 @@ if (q){
         portfolioCourseId={courseId}
         />
       })}
-      
+      { searchResults?.users?.length == 0 ? 
+      <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      alignContent="center"
+      minHeight="200px"
+      border="1px solid var(--canvastext)"
+      >
+ <Icon fontSize="48pt" as={RiEmotionSadLine} />
+ <Text fontSize="36pt">No Matching Authors Found!</Text>
+      </Box> 
+      : null}
     </TabPanel>
   </TabPanels>
 </Tabs>
