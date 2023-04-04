@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Badge, Box, Image, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react';
+import { Avatar, Badge, Box, Image, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Wrap } from '@chakra-ui/react';
 import { useLoaderData, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
@@ -40,7 +40,8 @@ function ActivityCard({ doenetId, imagePath, label, fullName }) {
       borderRadius= "6px"
       >
         <Box 
-        height="130px">
+        height="130px"
+        >
           <Link to={activityLink}>
           <Image 
             width="100%"
@@ -266,9 +267,13 @@ if (q){
   background= "var(--mainGray)"
   >
     <TabPanel>
+      <Wrap
+      padding="10px 10px 10px 10px"
+      margin="0px"
+      >
+
       {searchResults?.activities.map((activityObj)=>{
         const { doenetId, imagePath, label, fullName } = activityObj;
-        console.log("activityObj",activityObj)
         //{ activityLink, doenetId, imagePath, label, fullName }
         return <ActivityCard 
         key={doenetId}  
@@ -286,14 +291,23 @@ if (q){
       alignItems="center"
       alignContent="center"
       minHeight="200px"
-      border="1px solid var(--canvastext)"
+      background="var(--canvas)"
+      padding="20px"
+      // border="1px solid var(--canvastext)"
       >
  <Icon fontSize="48pt" as={RiEmotionSadLine} />
  <Text fontSize="36pt">No Matching Activities Found!</Text>
       </Box> 
       : null}
+      {/* </Box> */}
+      </Wrap>
+
     </TabPanel>
     <TabPanel>
+    <Wrap
+      padding="10px 10px 10px 10px"
+      margin="0px"
+      >
     {searchResults?.users.map((authorObj)=>{
         const { courseId, firstName, lastName } = authorObj;
         // console.log("authorObj",authorObj)
@@ -312,12 +326,15 @@ if (q){
       alignItems="center"
       alignContent="center"
       minHeight="200px"
-      border="1px solid var(--canvastext)"
+      background="var(--canvas)"
+      padding="20px"
+      // border="1px solid var(--canvastext)"
       >
  <Icon fontSize="48pt" as={RiEmotionSadLine} />
  <Text fontSize="36pt">No Matching Authors Found!</Text>
       </Box> 
       : null}
+      </Wrap>
     </TabPanel>
   </TabPanels>
 </Tabs>
