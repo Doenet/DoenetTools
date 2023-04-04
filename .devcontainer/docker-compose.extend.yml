@@ -19,8 +19,6 @@ services:
     #   context: .
     #   dockerfile: .devcontainer/Dockerfile
     image: lyanthropos/doenet_dev
-    ports:
-      - 80:80
     volumes:
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       - /var/run/docker.sock:/var/run/docker.sock
@@ -55,6 +53,8 @@ services:
     build:
       context: ./
       dockerfile: ./doenet_docker/apache/Dockerfile
+      args:
+        - BUILD_MODE=development
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf

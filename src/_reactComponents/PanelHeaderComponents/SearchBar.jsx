@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 // import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 // import styled from 'styled-components';
 import { Icon, Button, Input, InputGroup, InputLeftElement, InputRightAddon } from '@chakra-ui/react';
-// import { Search2Icon } from "@chakra-ui/icons";
 import { IoSearchSharp } from "react-icons/io5";
 
 export default function Searchbar({
