@@ -2,7 +2,7 @@ describe('factor polynomial tests, old algorithm', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   // Note: even through have a better factoring test,

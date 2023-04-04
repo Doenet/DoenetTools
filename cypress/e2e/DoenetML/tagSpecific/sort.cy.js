@@ -3,7 +3,7 @@ describe('Sort Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -879,7 +879,7 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    cy.get('#\\/cs textarea').type("(a,b,c,d){enter}", {force:true});
+    cy.get('#\\/cs textarea').type("(a,b,c,d){enter}", { force: true });
 
     cy.get('#\\/P5 .mjx-mrow').should('contain.text', '(a,b,c,d)');
 
@@ -900,7 +900,7 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    cy.get('#\\/cs textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}(3,4,5){enter}", {force:true});
+    cy.get('#\\/cs textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}(3,4,5){enter}", { force: true });
 
     cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(3,4,5)');
 
@@ -922,7 +922,7 @@ describe('Sort Tag Tests', function () {
 
 
   })
-  
+
   it('sort texts', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -980,7 +980,7 @@ describe('Sort Tag Tests', function () {
 
 
   })
-  
+
   it('sort text, numbers, maths', () => {
     cy.window().then(async (win) => {
       win.postMessage({

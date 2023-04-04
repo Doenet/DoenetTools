@@ -14,7 +14,7 @@ describe('Specifying single variant document tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('document with no variant control', () => {
@@ -4636,7 +4636,7 @@ describe('Specifying single variant document tests', function () {
       a = stateVariables["/a"].stateValues.value;
     });
 
-    
+
     let doenetML2 = `<text>2</text>` + randomPiece1 + nonRandom1 + randomPiece2 + nonRandom2 + nonRandom3 + nonRandom4;
 
     cy.window().then(async (win) => {
@@ -4681,7 +4681,7 @@ describe('Specifying single variant document tests', function () {
       w2 = stateVariables["/w2"].stateValues.value;
       w3 = stateVariables["/w3"].stateValues.value;
       m = stateVariables["/m"].stateValues.value;
-      
+
     });
 
 

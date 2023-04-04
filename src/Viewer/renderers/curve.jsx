@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
 import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext, CONTROL_POINT_LAYER_OFFSET, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 
 export default React.memo(function Curve(props) {
@@ -43,6 +45,8 @@ export default React.memo(function Curve(props) {
   let lastControlPointPositionsFromCore = useRef(null);
   lastControlPointPositionsFromCore.current = SVs.numericalControlPoints;
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
   useEffect(() => {
 
     //On unmount
@@ -64,6 +68,9 @@ export default React.memo(function Curve(props) {
       return null;
     }
 
+    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    lineColor = lineColor.toLowerCase();
+
     //things to be passed to JSXGraph as attributes
     var curveAttributes = {
       name: SVs.labelForGraph,
@@ -71,7 +78,7 @@ export default React.memo(function Curve(props) {
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
-      strokeColor: SVs.selectedStyle.lineColor,
+      strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       strokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
@@ -129,9 +136,9 @@ export default React.memo(function Curve(props) {
       }
 
       if (SVs.applyStyleToLabel) {
-        curveAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+        curveAttributes.label.strokeColor = lineColor;
       } else {
-        curveAttributes.label.strokeColor = "#000000";
+        curveAttributes.label.strokeColor = "var(canvastext)";
       }
     } else {
       curveAttributes.label = {
@@ -625,9 +632,13 @@ export default React.memo(function Curve(props) {
         controlPointAttributes.current.layer = controlPointLayer;
       }
 
-      if (curveJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
-        curveJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
-        curveJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+
+      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      lineColor = lineColor.toLowerCase();
+
+      if (curveJXG.current.visProp.strokecolor !== lineColor) {
+        curveJXG.current.visProp.strokecolor = lineColor;
+        curveJXG.current.visProp.highlightstrokecolor = lineColor;
       }
       if (curveJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
         curveJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
@@ -683,9 +694,9 @@ export default React.memo(function Curve(props) {
         curveJXG.current.label.needsUpdate = true;
         curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.labelForGraph !== "";
         if (SVs.applyStyleToLabel) {
-          curveJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+          curveJXG.current.label.visProp.strokecolor = lineColor
         } else {
-          curveJXG.current.label.visProp.strokecolor = "#000000";
+          curveJXG.current.label.visProp.strokecolor = "var(canvastext)";
         }
         curveJXG.current.label.update();
       }

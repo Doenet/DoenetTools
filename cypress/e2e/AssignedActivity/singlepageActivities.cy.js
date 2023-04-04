@@ -53,7 +53,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -137,7 +137,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -186,7 +186,7 @@ describe('Single page activity tests', function () {
     })
     cy.go("back");
     cy.url().should('match', /[^#]/)
-    
+
     cy.get('#\\/toAside').then(el => {
       let rect = el[0].getBoundingClientRect();
       cy.log(rect.top)
@@ -224,7 +224,7 @@ describe('Single page activity tests', function () {
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
     cy.createActivity({ courseId, doenetId: doenetId2, parentDoenetId: courseId, pageDoenetId: pageDoenetId3, doenetML: doenetMLother });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -239,7 +239,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
 
-    cy.wait(100)
+    cy.wait(200)
     // TODO: should not have to wait here.  It seems like this a bug
     // Without the wait get into an inconsistent situation where the activity does appear for the student,
     // but when click "View Activity" it says the assignment is not assigned
@@ -247,7 +247,7 @@ describe('Single page activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
@@ -348,7 +348,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -357,7 +357,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
     cy.log('go to url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`)
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
     cy.get('#\\/asideTitle').should('have.text', 'The aside');
@@ -370,7 +370,7 @@ describe('Single page activity tests', function () {
 
 
     cy.log('go to aside url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#/aside`)
 
     cy.get('#\\/insideAside').should('have.text', 'Content in aside');
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
@@ -398,17 +398,18 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100)
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
@@ -440,7 +441,7 @@ describe('Single page activity tests', function () {
 
     cy.signin({ userId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Edit Activity"]').click();
@@ -454,7 +455,7 @@ describe('Single page activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
@@ -462,7 +463,7 @@ describe('Single page activity tests', function () {
     cy.get('#\\/cr').should('contain.text', '1');
     cy.get('#\\/ans2').should('not.exist');
 
-    
+
     cy.get('[data-test=NewVersionAvailable]').click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
     cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
@@ -474,7 +475,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
     cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
     cy.get('[data-test=ConfirmNewVersion]').click();
-  
+
     cy.get('#\\/cr').should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -495,7 +496,7 @@ describe('Single page activity tests', function () {
 
     cy.signin({ userId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
 
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -510,7 +511,7 @@ describe('Single page activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
@@ -520,7 +521,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true }); 
+    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -537,7 +538,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -634,6 +635,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(1000);
 
     cy.go("back")
 
@@ -664,7 +666,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -859,7 +861,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1124,7 +1126,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1212,7 +1214,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1305,7 +1307,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1326,10 +1328,10 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
 
 
-    cy.get('#\\/x textarea').type("x", {force: true}).blur();
+    cy.get('#\\/x textarea').type("x", { force: true }).blur();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
 
-    cy.get('#\\/x textarea').type("{end}{backspace}y", {force: true}).blur();
+    cy.get('#\\/x textarea').type("{end}{backspace}y", { force: true }).blur();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
 
     cy.get('#\\/hello input').type("hello").blur();
@@ -1358,7 +1360,7 @@ describe('Single page activity tests', function () {
         args: { x: -2, y: 3 }
       })
     })
-    
+
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
 
     cy.window().then(async (win) => {
@@ -1385,7 +1387,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1399,7 +1401,7 @@ describe('Single page activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
@@ -1429,7 +1431,7 @@ describe('Single page activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1443,7 +1445,7 @@ describe('Single page activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 

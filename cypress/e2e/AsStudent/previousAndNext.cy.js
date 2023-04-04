@@ -129,7 +129,7 @@ describe('Previous and Next Activty Button Tests', () => {
       });
       if (isAssigned) {
         cy.visit(
-          `http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${`_pageDoenetId${i}.1`}`,
+          `/course?tool=editor&doenetId=${doenetId}&pageId=${`_pageDoenetId${i}.1`}`,
         );
         cy.get('[data-test="AssignmentSettingsMenu Menu"]')
           .should('be.visible')
@@ -150,7 +150,7 @@ describe('Previous and Next Activty Button Tests', () => {
 
   it('Next button goes to from first to second', () => {
     cy.visit(
-      `http://localhost/course?tool=assignment&doenetId=${genIdsInContnetOrder[0].doenetId}&pageId=${genIdsInContnetOrder[0].firstPageId}`,
+      `/course?tool=assignment&doenetId=${genIdsInContnetOrder[0].doenetId}&pageId=${genIdsInContnetOrder[0].firstPageId}`,
     );
     cy.get('[data-test="Previous Activity Button"]').should('be.disabled');
     cy.get('[data-test="Next Activity Button"]').should('be.enabled').click();
@@ -161,7 +161,7 @@ describe('Previous and Next Activty Button Tests', () => {
 
   it('Previous button goes to from second to first', () => {
     cy.visit(
-      `http://localhost/course?tool=assignment&doenetId=${genIdsInContnetOrder[1].doenetId}&pageId=${genIdsInContnetOrder[1].firstPageId}`,
+      `/course?tool=assignment&doenetId=${genIdsInContnetOrder[1].doenetId}&pageId=${genIdsInContnetOrder[1].firstPageId}`,
     );
     cy.get('[data-test="Next Activity Button"]').should('be.enabled');
     cy.get('[data-test="Previous Activity Button"]')
@@ -178,7 +178,7 @@ describe('Previous and Next Activty Button Tests', () => {
     );
     expect(procIdx).to.not.equal(-1);
     cy.visit(
-      `http://localhost/course?tool=assignment&doenetId=${genIdsInContnetOrder[procIdx].doenetId}&pageId=${genIdsInContnetOrder[procIdx].firstPageId}`,
+      `/course?tool=assignment&doenetId=${genIdsInContnetOrder[procIdx].doenetId}&pageId=${genIdsInContnetOrder[procIdx].firstPageId}`,
     );
     cy.get('[data-test="Next Activity Button"]').should('be.disabled');
     cy.get('[data-test="Previous Activity Button"]').should('be.disabled');
@@ -186,7 +186,7 @@ describe('Previous and Next Activty Button Tests', () => {
 
   it('Next button from first to last, skipping unassigned', () => {
     cy.visit(
-      `http://localhost/course?tool=assignment&doenetId=${genIdsInContnetOrder[0].doenetId}&pageId=${genIdsInContnetOrder[0].firstPageId}`,
+      `/course?tool=assignment&doenetId=${genIdsInContnetOrder[0].doenetId}&pageId=${genIdsInContnetOrder[0].firstPageId}`,
     );
     cy.get('[data-test="Previous Activity Button"]').should('be.disabled');
     let i;
@@ -210,8 +210,7 @@ describe('Previous and Next Activty Button Tests', () => {
 
   it('Previous button goes to from last to first, skipping unassigned and proctored', () => {
     cy.visit(
-      `http://localhost/course?tool=assignment&doenetId=${
-        genIdsInContnetOrder[activityOptions.length - 1].doenetId
+      `/course?tool=assignment&doenetId=${genIdsInContnetOrder[activityOptions.length - 1].doenetId
       }&pageId=${genIdsInContnetOrder[activityOptions.length - 1].firstPageId}`,
     );
     cy.get('[data-test="Next Activity Button"]').should('be.disabled');

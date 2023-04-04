@@ -83,16 +83,16 @@ describe('visibility events test', function () {
 
   </section>
   `
-  
+
     cy.saveDoenetML({ doenetML, pageId: pageDoenetId, courseId });
-    cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
+    cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="toast"]').contains('Activity Assigned');
 
     cy.clock();
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`)
     //Interact with content
     cy.get('[data-test="Crumb 3"]').contains('Cypress Activity');
     cy.tick(1000);
@@ -129,7 +129,7 @@ describe('visibility events test', function () {
 
     cy.log('wait 5 minutes')
     cy.wait(1000);
-    cy.tick(5*60*1000)
+    cy.tick(5 * 60 * 1000)
     cy.tick(1000)
     cy.tick(1000)
     cy.tick(1000)
@@ -192,7 +192,7 @@ describe('visibility events test', function () {
     cy.wait(1000);
 
     //Test if interactions were recorded
-    cy.request(`http://localhost/api/getEventData.php?doenetId[]=${doenetId}`)
+    cy.request(`/api/getEventData.php?doenetId[]=${doenetId}`)
       .then((resp) => {
         const events = resp.body.events;
 

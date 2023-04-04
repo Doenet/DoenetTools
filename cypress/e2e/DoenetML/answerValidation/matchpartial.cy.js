@@ -13,7 +13,7 @@ describe('Match partial validation tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('match partial with ordered and unordered tuple', () => {

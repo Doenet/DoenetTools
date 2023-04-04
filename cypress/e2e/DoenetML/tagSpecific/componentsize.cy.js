@@ -3,7 +3,7 @@ describe('Component Size Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   // Note: skipping all since we moved from widths to sizes

@@ -257,12 +257,23 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
 
+        let markerColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          markerColorWord = dependencyValues.selectedStyle.markerColorWordDarkMode;
+        } else {
+          markerColorWord = dependencyValues.selectedStyle.markerColorWord;
+        }
         return {
           setValue: {
-            styleDescription: dependencyValues.selectedStyle.markerColorWord
+            styleDescription: markerColorWord
           }
         };
       }
@@ -278,10 +289,14 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
-        let pointDescription = dependencyValues.selectedStyle.markerColorWord
+        let pointDescription = dependencyValues.styleDescription
           + " " + dependencyValues.selectedStyle.markerStyleWord;
         return { setValue: { styleDescriptionWithNoun: pointDescription } };
       }

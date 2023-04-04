@@ -12,7 +12,7 @@ describe('Relationships among pages tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it("Problem numbering continues across pages", () => {

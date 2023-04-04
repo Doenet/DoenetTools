@@ -48,15 +48,15 @@ describe('video events test', function () {
   <p>Skip to time 57: <updateValue target="v" prop="time" newValue="57" name="skip2"><label>Skip 2</label></updateValue></p>
   `
     cy.saveDoenetML({ doenetML, pageId: pageDoenetId, courseId });
-    cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
+    cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
 
-    cy.get('[data-test="Crumb Menu"]').click({force:true});
+    cy.get('[data-test="Crumb Menu"]').click({ force: true });
     cy.get('[data-test="Crumb Menu Item 2"]').click();
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
 
 
@@ -110,7 +110,7 @@ describe('video events test', function () {
 
     cy.wait(1000); //TODO: time travel instead of wait?
     //Test if interactions were recorded
-    cy.request(`http://localhost/api/getEventData.php?doenetId[]=${doenetId}`)
+    cy.request(`/api/getEventData.php?doenetId[]=${doenetId}`)
       .then((resp) => {
         const events = resp.body.events;
 
