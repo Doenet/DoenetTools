@@ -3,7 +3,7 @@ describe('Solution Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -36,7 +36,7 @@ describe('Solution Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/solutionText'].stateValues.text).eq('This is the text of the solution.');
     })
-    
+
   })
 
   it('Can open solution in read only mode', () => {
@@ -95,7 +95,7 @@ describe('Solution Tag Tests', function () {
     cy.get("#\\/sol_button").click();
     cy.get('#\\/solOpen').should('have.text', 'false');
 
-    
+
   })
 
 })

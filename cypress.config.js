@@ -36,7 +36,7 @@ module.exports = defineConfig({
       on('task', { queryDb: query => { return queryTestDb(query, config) }, }); //For running sql query
     },
 
-    baseUrl: 'http://localhost',
+    baseUrl: 'http://localhost:8000',
   },
   env: {
     db: {

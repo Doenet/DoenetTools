@@ -2,7 +2,7 @@ describe('PeriodicSet Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -935,7 +935,7 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/offsets textarea').type('{end},8{enter}', { force: true });
     cy.get('#\\/offsets2').should('contain.text', '3,1,8')
-    
+
     cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
     })

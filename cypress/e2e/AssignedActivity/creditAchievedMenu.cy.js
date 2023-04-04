@@ -43,7 +43,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -95,7 +95,7 @@ describe('Credit achieved menu tests', function () {
       doenetML1, doenetML2, doenetML3, doenetML4
     });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -194,7 +194,7 @@ describe('Credit achieved menu tests', function () {
       doenetML1, doenetML2, doenetML3, doenetML4
     });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -292,7 +292,7 @@ describe('Credit achieved menu tests', function () {
       doenetML1, doenetML2, doenetML3, doenetML4
     });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -388,7 +388,7 @@ describe('Credit achieved menu tests', function () {
       doenetML1, doenetML2, doenetML3
     });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -486,7 +486,7 @@ describe('Credit achieved menu tests', function () {
       doenetML1, doenetML2, doenetML3
     });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();

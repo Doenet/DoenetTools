@@ -13,7 +13,7 @@ describe('Ion Compounds Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('answer compounds from atom and ions', () => {
@@ -52,13 +52,13 @@ describe('Ion Compounds Tests', function () {
       let mathinputLiOCorrectAnchor = cesc('#' + mathinputLiOName + '_correct');
       let mathinputLiOIncorrectAnchor = cesc('#' + mathinputLiOName + '_incorrect');
 
-      cy.get(mathinputLiOAnchor).type("LiO{enter}", {force: true});
+      cy.get(mathinputLiOAnchor).type("LiO{enter}", { force: true });
       cy.get(mathinputLiOIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputLiOAnchor).type("{end}{leftarrow} {enter}", {force: true});
+      cy.get(mathinputLiOAnchor).type("{end}{leftarrow} {enter}", { force: true });
       cy.get(mathinputLiOIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputLiOAnchor).type("{end}{leftarrow}{backspace}_2{enter}", {force: true});
+      cy.get(mathinputLiOAnchor).type("{end}{leftarrow}{backspace}_2{enter}", { force: true });
       cy.get(mathinputLiOCorrectAnchor).should('be.visible')
 
       let mathinputCaPName = stateVariables['/ansCaP'].stateValues.inputChildren[0].componentName
@@ -67,13 +67,13 @@ describe('Ion Compounds Tests', function () {
       let mathinputCaPCorrectAnchor = cesc('#' + mathinputCaPName + '_correct');
       let mathinputCaPIncorrectAnchor = cesc('#' + mathinputCaPName + '_incorrect');
 
-      cy.get(mathinputCaPAnchor).type("CaP{enter}", {force: true});
+      cy.get(mathinputCaPAnchor).type("CaP{enter}", { force: true });
       cy.get(mathinputCaPIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputCaPAnchor).type("{end}{leftarrow}_3{enter}", {force: true});
+      cy.get(mathinputCaPAnchor).type("{end}{leftarrow}_3{enter}", { force: true });
       cy.get(mathinputCaPIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputCaPAnchor).type("{ctrl+end}_2{enter}", {force: true});
+      cy.get(mathinputCaPAnchor).type("{ctrl+end}_2{enter}", { force: true });
       cy.get(mathinputCaPCorrectAnchor).should('be.visible')
 
       let mathinputMgSName = stateVariables['/ansMgS'].stateValues.inputChildren[0].componentName
@@ -82,10 +82,10 @@ describe('Ion Compounds Tests', function () {
       let mathinputMgSCorrectAnchor = cesc('#' + mathinputMgSName + '_correct');
       let mathinputMgSIncorrectAnchor = cesc('#' + mathinputMgSName + '_incorrect');
 
-      cy.get(mathinputMgSAnchor).type("MgS{enter}", {force: true});
+      cy.get(mathinputMgSAnchor).type("MgS{enter}", { force: true });
       cy.get(mathinputMgSIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputMgSAnchor).type("{end}{leftarrow} {enter}", {force: true});
+      cy.get(mathinputMgSAnchor).type("{end}{leftarrow} {enter}", { force: true });
       cy.get(mathinputMgSCorrectAnchor).should('be.visible')
 
       let mathinputSrIName = stateVariables['/ansSrI'].stateValues.inputChildren[0].componentName
@@ -94,13 +94,13 @@ describe('Ion Compounds Tests', function () {
       let mathinputSrICorrectAnchor = cesc('#' + mathinputSrIName + '_correct');
       let mathinputSrIIncorrectAnchor = cesc('#' + mathinputSrIName + '_incorrect');
 
-      cy.get(mathinputSrIAnchor).type("SrI{enter}", {force: true});
+      cy.get(mathinputSrIAnchor).type("SrI{enter}", { force: true });
       cy.get(mathinputSrIIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputSrIAnchor).type("{end}_2{enter}", {force: true});
+      cy.get(mathinputSrIAnchor).type("{end}_2{enter}", { force: true });
       cy.get(mathinputSrIIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputSrIAnchor).type("{leftarrow}{leftarrow}{leftarrow} {enter}", {force: true});
+      cy.get(mathinputSrIAnchor).type("{leftarrow}{leftarrow}{leftarrow} {enter}", { force: true });
       cy.get(mathinputSrICorrectAnchor).should('be.visible')
 
 

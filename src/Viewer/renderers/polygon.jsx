@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 
 export default React.memo(function Polygon(props) {
@@ -23,6 +25,7 @@ export default React.memo(function Polygon(props) {
   let lastPositionsFromCore = useRef(null);
   lastPositionsFromCore.current = SVs.numericalVertices;
 
+  const darkMode = useRecoilValue(darkModeAtom);
 
 
   useEffect(() => {
@@ -47,6 +50,13 @@ export default React.memo(function Polygon(props) {
     let fixed = !SVs.draggable || SVs.fixed;
     let verticesFixed = !SVs.verticesDraggable || SVs.fixed;
 
+
+    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    lineColor = lineColor.toLowerCase();
+    let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+    fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+
+
     jsxPointAttributes.current = {
       fillColor: 'none',
       strokeColor: 'none',
@@ -63,16 +73,14 @@ export default React.memo(function Polygon(props) {
       visible: !SVs.hidden,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: true,
-      strokeColor: SVs.selectedStyle.lineColor,
+      strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: lineColor,
       highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
-
-    const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
     let jsxPolygonAttributes = {
       name: SVs.labelForGraph,
@@ -99,9 +107,9 @@ export default React.memo(function Polygon(props) {
     }
 
     if (SVs.applyStyleToLabel) {
-      jsxPolygonAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      jsxPolygonAttributes.label.strokeColor = lineColor;
     } else {
-      jsxPolygonAttributes.label.strokeColor = "#000000";
+      jsxPolygonAttributes.label.strokeColor = "var(--canvastext)";
     }
 
     if (SVs.filled) {
@@ -365,19 +373,22 @@ export default React.memo(function Polygon(props) {
       }
 
 
+      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      lineColor = lineColor.toLowerCase();
+      let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+      fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+
       polygonJXG.current.name = SVs.labelForGraph;
 
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
-          polygonJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+          polygonJXG.current.label.visProp.strokecolor = lineColor
         } else {
-          polygonJXG.current.label.visProp.strokecolor = "#000000";
+          polygonJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
         polygonJXG.current.label.needsUpdate = true;
         polygonJXG.current.label.update();
       }
-
-      const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
       if (polygonJXG.current.visProp.fillcolor !== fillColor) {
         polygonJXG.current.visProp.fillcolor = fillColor;
@@ -402,9 +413,9 @@ export default React.memo(function Polygon(props) {
           border.setAttribute({ layer: borderLayer });
         }
 
-        if (border.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
-          border.visProp.strokecolor = SVs.selectedStyle.lineColor;
-          border.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+        if (border.visProp.strokecolor !== lineColor) {
+          border.visProp.strokecolor = lineColor;
+          border.visProp.highlightstrokecolor = lineColor;
         }
         if (border.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
           border.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;

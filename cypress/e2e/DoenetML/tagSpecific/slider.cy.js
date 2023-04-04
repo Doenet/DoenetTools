@@ -3,7 +3,7 @@ describe('Slider Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -22,7 +22,7 @@ describe('Slider Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
-    
+
     cy.get('#\\/sv').should('have.text', '1')
 
     cy.window().then(async (win) => {
@@ -95,6 +95,7 @@ describe('Slider Tag Tests', function () {
 
     cy.get('#\\/sv').should('have.text', '0')
 
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '0')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
     })
@@ -115,6 +116,7 @@ describe('Slider Tag Tests', function () {
       .trigger('mouseup')
 
     cy.get('#\\/sv').should('have.text', '1')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '1')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
     })
@@ -134,6 +136,7 @@ describe('Slider Tag Tests', function () {
       .trigger('mouseup')
 
     cy.get('#\\/sv').should('have.text', '9')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '9')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
     })
@@ -151,6 +154,7 @@ describe('Slider Tag Tests', function () {
     cy.get("#\\/mi textarea").type("{end}{backspace}2.5{enter}", { force: true })
 
     cy.get('#\\/sv').should('have.text', '3')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '3')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
     })
@@ -171,6 +175,7 @@ describe('Slider Tag Tests', function () {
     cy.get('#\\/b').should('have.text', 'true');
 
     cy.get('#\\/sv').should('have.text', '3')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '3')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
     })
@@ -185,10 +190,11 @@ describe('Slider Tag Tests', function () {
     cy.log('drag handle past below document and past end sets to maximum 10');
     cy.get('#\\/_document1')
       .trigger('mousedown', numberToPx2(3), 50)
-      .trigger('mousemove', numberToPx2(25), 400, {force: true})
+      .trigger('mousemove', numberToPx2(25), 400, { force: true })
       .trigger('mouseup')
 
     cy.get('#\\/sv').should('have.text', '10')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '10')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10')
     })
@@ -205,6 +211,7 @@ describe('Slider Tag Tests', function () {
       .trigger('mousedown', numberToPx2(6), 50)
 
     cy.get('#\\/sv').should('have.text', '6')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '6')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('6')
     })
@@ -221,6 +228,7 @@ describe('Slider Tag Tests', function () {
       .trigger('mousemove', numberToPx2(2), 0)
 
     cy.get('#\\/sv').should('have.text', '2')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '2')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
     })
@@ -235,9 +243,10 @@ describe('Slider Tag Tests', function () {
 
     cy.log('drag past left edge and below slider');
     cy.get('#\\/_document1')
-      .trigger('mousemove', numberToPx2(-1), 200, {force: true})
+      .trigger('mousemove', numberToPx2(-1), 200, { force: true })
 
     cy.get('#\\/sv').should('have.text', '0')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '0')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
     })
@@ -252,9 +261,10 @@ describe('Slider Tag Tests', function () {
 
     cy.log('drag to 7, but below slider');
     cy.get('#\\/_document1')
-      .trigger('mousemove', numberToPx2(7), 300, {force: true})
+      .trigger('mousemove', numberToPx2(7), 300, { force: true })
 
     cy.get('#\\/sv').should('have.text', '7')
+    cy.get("#\\/mi .mq-editable-field").should('contain.text', '7')
     cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7')
     })

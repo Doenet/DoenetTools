@@ -13,7 +13,7 @@ describe('Angle Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('angle determined by three points, 45-45-90 triangle', () => {
