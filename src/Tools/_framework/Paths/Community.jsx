@@ -24,7 +24,9 @@ export async function loader({ request }){
 }
 
 function ActivityCard({ doenetId, imagePath, label, fullName }) {
-
+if (!imagePath){
+  imagePath = "/activity_default.jpg"
+}
   const activityLink = `/portfolio/${doenetId}/viewer`;
 
   return (
