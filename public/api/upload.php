@@ -10,9 +10,9 @@ $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 // include "randomId.php";
-include 'userQuotaBytesAvailable.php';
-include 'getFilename.php';
-include 'cidFromSHA.php';
+include_once 'userQuotaBytesAvailable.php';
+include_once 'getFilename.php';
+include_once 'cidFromSHA.php';
 
 $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 

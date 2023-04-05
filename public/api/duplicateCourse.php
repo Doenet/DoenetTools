@@ -6,9 +6,9 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
-include 'permissionsAndSettingsForOneCourseFunction.php';
-include 'permissionsAndSettingsFunction.php';
-include 'mineActivityForIdsFunction.php';
+include_once 'permissionsAndSettingsForOneCourseFunction.php';
+include_once 'permissionsAndSettingsFunction.php';
+include_once 'mineActivityForIdsFunction.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
