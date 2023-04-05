@@ -2118,9 +2118,6 @@ describe('Sectioning Tag Tests', function () {
         <aside name="aside32">
           <p><lorem generateSentences="1" /></p>
         </aside>
-        <aside name="aside33" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </aside>
       </aside>
   
       <p>Title 1: <text name="title1" copySource="aside1.title" /></p>
@@ -2128,7 +2125,6 @@ describe('Sectioning Tag Tests', function () {
       <p>Title 3: <text name="title3" copySource="aside3.title" /></p>
       <p>Title 3.1: <text name="title31" copySource="aside31.title" /></p>
       <p>Title 3.2: <text name="title32" copySource="aside32.title" /></p>
-      <p>Title 3.3: <text name="title33" copySource="aside33.title" /></p>
 
     `}, "*");
     });
@@ -2146,19 +2142,16 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/aside31_title').should('contain.text', 'Subpoint');
     cy.get('#\\/aside31_title').should('not.contain.text', '1');
     cy.get('#\\/aside31_title').should('not.contain.text', ':');
-    cy.get('#\\/aside32_title').should('contain.text', 'Aside 2 ');
+    cy.get('#\\/aside32_title').should('contain.text', 'Aside 5 ');
     cy.get('#\\/aside32_title').should('not.contain.text', ':');
-    cy.get('#\\/aside33_title').should('contain.text', 'Aside 3.3 ');
-    cy.get('#\\/aside33_title').should('not.contain.text', ':');
 
 
     cy.get('#\\/title31').should('have.text', 'Subpoint');
-    cy.get('#\\/title32').should('have.text', 'Aside 2');
-    cy.get('#\\/title33').should('have.text', 'Aside 3.3');
+    cy.get('#\\/title32').should('have.text', 'Aside 5');
 
   });
 
-  it('Example, problems, exercise do not include parent number by default', () => {
+  it('Example, problems, exercise do not include parent number', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2181,15 +2174,6 @@ describe('Sectioning Tag Tests', function () {
         <example name="exam12">
           <p><lorem generateSentences="1" /></p>
         </example>
-        <problem name="prob13" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </problem>
-        <exercise name="exer13" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </exercise>
-        <example name="exam13" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </example>
 
       </section>
   
@@ -2201,9 +2185,6 @@ describe('Sectioning Tag Tests', function () {
       <p>Title Problem 1.2: <text name="titleProb12" copySource="prob12.title" /></p>
       <p>Title Exercise 1.2: <text name="titleExer12" copySource="exer12.title" /></p>
       <p>Title Example 1.2: <text name="titleExam12" copySource="exam12.title" /></p>
-      <p>Title Problem 1.3: <text name="titleProb13" copySource="prob13.title" /></p>
-      <p>Title Exercise 1.3: <text name="titleExer13" copySource="exer13.title" /></p>
-      <p>Title Example 1.3: <text name="titleExam13" copySource="exam13.title" /></p>
 
 
       <p>Number for Section 1: <text name="sectionNumberSec1" copySource="sec1.sectionNumber" /></p>
@@ -2213,9 +2194,6 @@ describe('Sectioning Tag Tests', function () {
       <p>Number for Problem 1.2: <text name="sectionNumberProb12" copySource="prob12.sectionNumber" /></p>
       <p>Number for Exercise 1.2: <text name="sectionNumberExer12" copySource="exer12.sectionNumber" /></p>
       <p>Number for Example 1.2: <text name="sectionNumberExam12" copySource="exam12.sectionNumber" /></p>
-      <p>Number for Problem 1.3: <text name="sectionNumberProb13" copySource="prob13.sectionNumber" /></p>
-      <p>Number for Exercise 1.3: <text name="sectionNumberExer13" copySource="exer13.sectionNumber" /></p>
-      <p>Number for Example 1.3: <text name="sectionNumberExam13" copySource="exam13.sectionNumber" /></p>
 
 
 
@@ -2229,9 +2207,6 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/prob12_title').should('have.text', 'Problem 4');
     cy.get('#\\/exer12_title').should('have.text', 'Exercise 5');
     cy.get('#\\/exam12_title').should('have.text', 'Example 6');
-    cy.get('#\\/prob13_title').should('have.text', 'Problem 1.7');
-    cy.get('#\\/exer13_title').should('have.text', 'Exercise 1.8');
-    cy.get('#\\/exam13_title').should('have.text', 'Example 1.9');
 
     cy.get('#\\/titleProb11').should('have.text', 'Problem 1');
     cy.get('#\\/titleExer11').should('have.text', 'Exercise 2');
@@ -2239,9 +2214,6 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/titleProb12').should('have.text', 'Problem 4');
     cy.get('#\\/titleExer12').should('have.text', 'Exercise 5');
     cy.get('#\\/titleExam12').should('have.text', 'Example 6');
-    cy.get('#\\/titleProb13').should('have.text', 'Problem 1.7');
-    cy.get('#\\/titleExer13').should('have.text', 'Exercise 1.8');
-    cy.get('#\\/titleExam13').should('have.text', 'Example 1.9');
 
     cy.get('#\\/sectionNumberProb11').should('have.text', '1');
     cy.get('#\\/sectionNumberExer11').should('have.text', '2');
@@ -2249,9 +2221,6 @@ describe('Sectioning Tag Tests', function () {
     cy.get('#\\/sectionNumberProb12').should('have.text', '4');
     cy.get('#\\/sectionNumberExer12').should('have.text', '5');
     cy.get('#\\/sectionNumberExam12').should('have.text', '6');
-    cy.get('#\\/sectionNumberProb13').should('have.text', '1.7');
-    cy.get('#\\/sectionNumberExer13').should('have.text', '1.8');
-    cy.get('#\\/sectionNumberExam13').should('have.text', '1.9');
 
   });
 
@@ -2908,31 +2877,48 @@ describe('Sectioning Tag Tests', function () {
       win.postMessage({
         doenetML: `
 
-<section>
-  <objectives>
+<section name="sec1">
+  <objectives name="obj1">
     <ul>
       <li>First</li>
       <li>Second</li>
     </ul>
   </objectives>
-  <exploration>
+  <exploration name="exp2">
     An exploration
   </exploration>
-  <subsection>
-
+  <subsection name="sec1-1">
+    <activity name="act3">
+      Activity inside a subsection.
+    </activity>
   </subsection>
-  <section>
-
+  <section name="sec1-2">
+    <aside name="aside4">
+      An aside
+    </aside>
   </section>
-  <activity>
+  <activity name="act5">
     Final activity
   </activity>
-  <outcomes>
+  <outcomes name="out6">
     <ul>
       <li>First</li>
       <li>Second</li>
     </ul>
   </outcomes>
+</section>
+<section name="sec2">
+  <objectives name="obj7">
+  <ul>
+    <li>First 2</li>
+    <li>Second 2</li>
+  </ul>
+  </objectives>
+  <section name="sec2-1">
+    <exploration name="exp8">
+      Another exploration
+    </exploration>
+  </section>
 </section>
 
     `}, "*");
@@ -2941,14 +2927,21 @@ describe('Sectioning Tag Tests', function () {
     // Note: not sure if this is how we want numbering to work long term,
     // but this test at least documents how it is working now.
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1');
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1');
 
-    cy.get('#\\/_objectives1_title').should('have.text', 'Objectives 1');
-    cy.get('#\\/_exploration1_title').should('have.text', 'Exploration 2');
-    cy.get('#\\/_subsection1_title').should('have.text', 'Section 1.1');
-    cy.get('#\\/_section2_title').should('have.text', 'Section 1.2');
-    cy.get('#\\/_activity1_title').should('have.text', 'Activity 3');
-    cy.get('#\\/_outcomes1_title').should('have.text', 'Outcomes 4');
+    cy.get('#\\/obj1_title').should('have.text', 'Objectives 1');
+    cy.get('#\\/exp2_title').should('have.text', 'Exploration 2');
+    cy.get('#\\/sec1-1_title').should('have.text', 'Section 1.1');
+    cy.get('#\\/act3_title').should('have.text', 'Activity 3');
+    cy.get('#\\/sec1-2_title').should('have.text', 'Section 1.2');
+    cy.get('#\\/aside4_title').should('contain.text', 'Aside 4');
+    cy.get('#\\/act5_title').should('have.text', 'Activity 5');
+    cy.get('#\\/out6_title').should('have.text', 'Outcomes 6');
+
+    cy.get('#\\/sec2_title').should('have.text', 'Section 2');
+
+    cy.get('#\\/obj7_title').should('have.text', 'Objectives 7');
+    cy.get('#\\/sec2-1_title').should('have.text', 'Section 2.1');
 
   });
 

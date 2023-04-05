@@ -1,6 +1,6 @@
-import SectioningComponent from './abstract/SectioningComponent';
+import { SectioningComponent, SectioningComponentNumberWithSiblings } from './abstract/SectioningComponent';
 
-export class Section extends SectioningComponent {
+export class Section extends SectioningComponentNumberWithSiblings {
   static componentType = "section";
   static rendererType = "section";
 
@@ -13,10 +13,6 @@ export class Section extends SectioningComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.componentTypeForEnumeration.definition = () => ({
-      setValue: { componentTypeForEnumeration: "section" }
-    });
 
     return stateVariableDefinitions;
   }
@@ -54,7 +50,7 @@ export class Subsubsection extends Section {
   }
 }
 
-export class Paragraphs extends SectioningComponent {
+export class Paragraphs extends SectioningComponentNumberWithSiblings {
   static componentType = "paragraphs";
   static rendererType = "section";
 
@@ -64,10 +60,6 @@ export class Paragraphs extends SectioningComponent {
 
     stateVariableDefinitions.level.definition = () => ({
       setValue: { level: 4 }
-    });
-
-    stateVariableDefinitions.componentTypeForEnumeration.definition = () => ({
-      setValue: { componentTypeForEnumeration: "paragraphs" }
     });
 
     return stateVariableDefinitions;
@@ -127,10 +119,6 @@ export class Aside extends SectioningComponent {
       setValue: { containerTag: "aside" }
     });
 
-    stateVariableDefinitions.excludeComponentTypesForEnumeration.definition = () => ({
-      setValue: { excludeComponentTypesForEnumeration: ["section"] }
-    });
-
     return stateVariableDefinitions;
   }
 
@@ -168,10 +156,6 @@ export class Assemblage extends SectioningComponent {
       setValue: { containerTag: "article" }
     });
 
-    stateVariableDefinitions.excludeComponentTypesForEnumeration.definition = () => ({
-      setValue: { excludeComponentTypesForEnumeration: ["section"] }
-    });
-
     return stateVariableDefinitions;
   }
 
@@ -202,10 +186,6 @@ export class Problem extends SectioningComponent {
 
     stateVariableDefinitions.containerTag.definition = () => ({
       setValue: { containerTag: "article" }
-    });
-
-    stateVariableDefinitions.excludeComponentTypesForEnumeration.definition = () => ({
-      setValue: { excludeComponentTypesForEnumeration: ["section"] }
     });
 
     return stateVariableDefinitions;
@@ -251,10 +231,6 @@ export class Example extends SectioningComponent {
 
     stateVariableDefinitions.containerTag.definition = () => ({
       setValue: { containerTag: "article" }
-    });
-
-    stateVariableDefinitions.excludeComponentTypesForEnumeration.definition = () => ({
-      setValue: { excludeComponentTypesForEnumeration: ["section"] }
     });
 
     return stateVariableDefinitions;
@@ -353,6 +329,7 @@ export class Proof extends Aside {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.includeAutoNumberIfNoTitle.defaultValue = false;
+    attributes.doNotNumber.defaultValue = true;
     return attributes;
   }
 
@@ -383,10 +360,6 @@ export class StandinForFutureLayoutTag extends SectioningComponent {
 
     stateVariableDefinitions.containerTag.definition = () => ({
       setValue: { containerTag: "aside" }
-    });
-
-    stateVariableDefinitions.excludeComponentTypesForEnumeration.definition = () => ({
-      setValue: { excludeComponentTypesForEnumeration: ["section"] }
     });
 
     return stateVariableDefinitions

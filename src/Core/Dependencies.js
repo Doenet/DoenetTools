@@ -6636,12 +6636,6 @@ class CountAmongSiblingsDependency extends Dependency {
       this.sameType = true;
     }
 
-    if (this.definition.excludeComponentTypes) {
-      this.excludeComponentTypes = this.definition.excludeComponentTypes;
-    } else {
-      this.excludeComponentTypes = [];
-    }
-
     this.includeInheritedComponentTypes = Boolean(this.definition.includeInheritedComponentTypes);
 
   }
@@ -6904,17 +6898,9 @@ class CountAmongSiblingsDependency extends Dependency {
             inheritedComponentType: x.componentType,
             baseComponentType: childComponentType
           })
-          && !this.excludeComponentTypes.some(y =>
-            this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: x.componentType,
-              baseComponentType: y
-            })
-          )
         )
       } else {
-        children = children.filter(x => x.componentType === childComponentType
-          && !this.excludeComponentTypes.includes(x.componentType)
-        );
+        children = children.filter(x => x.componentType === childComponentType);
       }
     }
 

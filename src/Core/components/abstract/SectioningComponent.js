@@ -3,7 +3,7 @@ import { determineVariantsForSection, getVariantsForDescendantsForUniqueVariants
 import { returnStyleDefinitionStateVariables } from '../../utils/style';
 import { returnFeedbackDefinitionStateVariables } from '../../utils/feedback';
 
-export default class SectioningComponent extends BlockComponent {
+export class SectioningComponent extends BlockComponent {
   constructor(args) {
     super(args);
 
@@ -111,9 +111,9 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
     }
 
-    attributes.includeParentNumber = {
+    attributes.doNotNumber = {
       createComponentOfType: "boolean",
-      createStateVariable: "includeParentNumber",
+      createStateVariable: "doNotNumber",
       defaultValue: false,
       public: true,
     }
@@ -158,22 +158,9 @@ export default class SectioningComponent extends BlockComponent {
     let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
 
-    stateVariableDefinitions.componentTypeForEnumeration = {
-      returnDependencies: () => ({}),
-      definition: () => ({
-        setValue: { componentTypeForEnumeration: "_sectioningComponent" }
-      })
-    }
-
-    stateVariableDefinitions.excludeComponentTypesForEnumeration = {
-      returnDependencies: () => ({}),
-      definition: () => ({
-        setValue: { excludeComponentTypesForEnumeration: [] }
-      })
-    }
 
     stateVariableDefinitions.enumeration = {
-      stateVariablesDeterminingDependencies: ["componentTypeForEnumeration", "excludeComponentTypesForEnumeration"],
+      stateVariablesDeterminingDependencies: ["doNotNumber"],
       additionalStateVariablesDefined: [{
         variableName: "sectionNumber",
         public: true,
@@ -181,35 +168,30 @@ export default class SectioningComponent extends BlockComponent {
           createComponentOfType: "text",
         },
       }],
-      returnDependencies: ({ stateValues }) => ({
-        countAmongSiblings: {
-          dependencyType: "countAmongSiblings",
-          componentType: stateValues.componentTypeForEnumeration,
-          includeInheritedComponentTypes: true,
-          excludeComponentTypes: stateValues.excludeComponentTypesForEnumeration
-        },
-        sectionAncestor: {
-          dependencyType: "ancestor",
-          componentType: "_sectioningComponent",
-          variableNames: ["enumeration"]
-        },
-        includeParentNumber: {
-          dependencyType: "stateVariable",
-          variableName: "includeParentNumber"
+      returnDependencies: ({ stateValues }) => {
+        let dependencies = {
+          doNotNumber: {
+            dependencyType: "stateVariable",
+            variableName: "doNotNumber"
+          }
         }
-      }),
+        if (!stateValues.doNotNumber) {
+          dependencies.sectioningCounter = {
+            dependencyType: "counter",
+            counterName: "sectioning"
+          };
+        }
+
+        return dependencies;
+      },
       definition({ dependencyValues }) {
 
-        let enumeration = [];
-        if (dependencyValues.includeParentNumber && dependencyValues.sectionAncestor) {
-          enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
+        if (dependencyValues.doNotNumber) {
+          return { setValue: { enumeration: [], sectionNumber: null } }
+        } else {
+          let sectionNumber = String(dependencyValues.sectioningCounter);
+          return { setValue: { enumeration: [sectionNumber], sectionNumber } }
         }
-
-        enumeration.push(dependencyValues.countAmongSiblings)
-
-
-        return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
-
       }
     }
 
@@ -1042,5 +1024,76 @@ export default class SectioningComponent extends BlockComponent {
     }
 
   }
+
+}
+
+
+export class SectioningComponentNumberWithSiblings extends SectioningComponent {
+
+  static componentType = "_sectioningComponentNumberWithSiblings";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.includeParentNumber = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeParentNumber",
+      defaultValue: false,
+      public: true,
+    }
+
+    return attributes;
+  }
+
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+
+    stateVariableDefinitions.enumeration = {
+      additionalStateVariablesDefined: [{
+        variableName: "sectionNumber",
+        public: true,
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
+      }],
+      returnDependencies: () => ({
+        countAmongSiblings: {
+          dependencyType: "countAmongSiblings",
+          componentType: '_sectioningComponentNumberWithSiblings',
+          includeInheritedComponentTypes: true,
+        },
+        sectionAncestor: {
+          dependencyType: "ancestor",
+          componentType: "_sectioningComponent",
+          variableNames: ["enumeration"]
+        },
+        includeParentNumber: {
+          dependencyType: "stateVariable",
+          variableName: "includeParentNumber"
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let enumeration = [];
+        if (dependencyValues.includeParentNumber && dependencyValues.sectionAncestor) {
+          enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
+        }
+
+        enumeration.push(dependencyValues.countAmongSiblings)
+
+
+        return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
+
+      }
+    }
+
+
+    return stateVariableDefinitions;
+  }
+
 
 }

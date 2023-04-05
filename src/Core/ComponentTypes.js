@@ -171,6 +171,7 @@ import BlockQuote from './components/BlockQuote';
 
 //Extended
 import * as ComponentSize from './components/abstract/ComponentSize';
+import * as SectioningComponent from './components/abstract/SectioningComponent';
 import BaseComponent from './components/abstract/BaseComponent';
 import InlineComponent from './components/abstract/InlineComponent';
 import BlockComponent from './components/abstract/BlockComponent';
@@ -183,7 +184,6 @@ import BooleanBaseOperatorOfMath from './components/abstract/BooleanBaseOperator
 import MathBaseOperator from './components/abstract/MathBaseOperator';
 import MathBaseOperatorOneInput from './components/abstract/MathBaseOperatorOneInput';
 import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
-import SectioningComponent from './components/abstract/SectioningComponent';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
 import SingleCharacterInline from './components/abstract/SingleCharacterInline';
@@ -352,7 +352,7 @@ const componentTypeArray = [
   MathBaseOperator, MathBaseOperatorOneInput,
   FunctionBaseOperator,
   ...Object.values(ComponentSize),
-  SectioningComponent,
+  ...Object.values(SectioningComponent),
   InlineRenderInlineChildren,
   TextOrInline,
   SingleCharacterInline,
