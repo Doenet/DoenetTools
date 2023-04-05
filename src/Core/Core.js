@@ -2582,6 +2582,7 @@ export default class Core {
               targetName: name,
               compositeName: dep.compositeName,
               propVariable: dep.propVariable,
+              fromPlainMacro: dep.fromPlainMacro,
               arrayStateVariable: dep.arrayStateVariable,
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
@@ -3314,8 +3315,7 @@ export default class Core {
       let shadowStandardVariables = false;
       let stateVariablesToShadow = [];
       if (targetComponent.constructor.plainMacroReturnsSameType) {
-        let isPlainMacro = this._components[redefineDependencies.compositeName].doenetAttributes.isPlainMacro;
-        if (isPlainMacro) {
+        if (redefineDependencies.fromPlainMacro) {
           shadowStandardVariables = true;
         }
 

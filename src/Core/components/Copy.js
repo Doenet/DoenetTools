@@ -2966,6 +2966,10 @@ export async function replacementFromProp({ component, components,
         repl.doenetAttributes = {};
       }
       repl.doenetAttributes.fromPlainMacro = true;
+      if (repl.downstreamDependencies?.[target.componentName]?.[0]) {
+        repl.downstreamDependencies[target.componentName][0]
+          .fromPlainMacro = true;
+      }
     }
   } else if (await component.stateValues.isPlainCopy) {
     for (let repl of serializedReplacements) {
@@ -2973,6 +2977,10 @@ export async function replacementFromProp({ component, components,
         repl.doenetAttributes = {};
       }
       repl.doenetAttributes.fromPlainCopy = true;
+      if (repl.downstreamDependencies?.[target.componentName]?.[0]) {
+        repl.downstreamDependencies[target.componentName][0]
+          .fromPlainCopy = true;
+      }
     }
   }
 
