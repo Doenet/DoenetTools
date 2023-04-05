@@ -15,9 +15,9 @@ export async function action({params}){
   let respObj = await response.json();
 
   console.log("respObj",respObj)
-  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
-  // return redirect(`/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`);
-  return true;
+  const { nextActivityDoenetId, nextPageDoenetId } = respObj;
+  return redirect(`/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`);
+  // return true;
 }
 
 export async function loader({params}){
