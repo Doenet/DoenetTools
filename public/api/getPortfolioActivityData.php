@@ -38,6 +38,7 @@ $activityData = [
     'doenetId' => $doenetId,
     'imagePath' => '/activity_default.jpg',
     'label' => '',
+    'userCanViewSource' => '',
     // 'learningOutcomes' => '',
     'public' => false, //default to private
     'isNew' => true,
@@ -90,11 +91,20 @@ if ($success) {
     $sql = "
     SELECT imagePath,
     label,
+    userCanViewSource,
     isPublic
     FROM course_content
     WHERE doenetId='$doenetId'
-    AND courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
     ";
+    // $sql = "
+    // SELECT imagePath,
+    // label,
+    // userCanViewSource,
+    // isPublic
+    // FROM course_content
+    // WHERE doenetId='$doenetId'
+    // AND courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    // ";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -103,6 +113,7 @@ if ($success) {
             'doenetId' => $doenetId,
             'imagePath' => $row['imagePath'],
             'label' => $row['label'],
+            'userCanViewSource' => $row['userCanViewSource'],
             // 'learningOutcomes' => $row['learningOutcomes'],
             'public' => $row['isPublic'],
             'isNew' => false,

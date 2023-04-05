@@ -25,7 +25,7 @@ import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuP
 import { loader as publicPortfolioLoader, PublicPortfolio } from "./Tools/_framework/Paths/PublicPortfolio";
 import { loader as portfolioActivityViewerLoader, action as portfolioActivityViewerAction, PortfolioActivityViewer } from "./Tools/_framework/Paths/PortfolioActivityViewer";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-// import { action as portfolioEditorSupportPanelAction } from "./Tools/_framework/Panels/NewSupportPanel";
+import { action as editorSupportPanelAction, loader as editorSupportPanelLoader } from "./Tools/_framework/Panels/NewSupportPanel";
 
 import '@fontsource/jost';
 
@@ -115,6 +115,23 @@ const router = createBrowserRouter([
     path: "/portfolioeditor/:doenetId",
     loader: portfolioEditorMenuCapLoader,
     // action: portfolioEditorSupportPanelAction,
+    // errorElement: <div>Error!</div>,
+    element: (
+                  <DarkmodeController>
+                    <MathJaxContext
+                      version={2}
+                      config={mathjaxConfig}
+                      onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+                    >
+                      <ToolRoot />
+                    </MathJaxContext>
+                  </DarkmodeController>
+              ),
+  },
+  {
+    path: "/public",
+    loader: editorSupportPanelLoader,
+    action: editorSupportPanelAction,
     // errorElement: <div>Error!</div>,
     element: (
                   <DarkmodeController>
