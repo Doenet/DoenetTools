@@ -3089,7 +3089,7 @@ describe('Copy Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-    <copy assignNames="problem1" uri="doenet:cId=bafkreibxl27ejdmpnxyw4pv5yfixggs54a6n4nkczeeq4aac7yec2ojep4&DoenEtiD=abcdefg" />
+    <copy assignNames="problem1" uri="doenet:cId=bafkreidqud3rixmphu3jufuke4rw7magtcrbrjgeo6ihkoyonsig7wciey&DoenEtiD=abcdefg" />
   
     `}, "*");
     });
@@ -3106,7 +3106,7 @@ describe('Copy Tag Tests', function () {
       expect(problem1Version).not.eq(-1)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_copy1"].stateValues.cid).eq("bafkreibxl27ejdmpnxyw4pv5yfixggs54a6n4nkczeeq4aac7yec2ojep4")
+        expect(stateVariables["/_copy1"].stateValues.cid).eq("bafkreidqud3rixmphu3jufuke4rw7magtcrbrjgeo6ihkoyonsig7wciey")
         expect(stateVariables["/_copy1"].stateValues.doenetId).eq("abcdefg")
       })
     })
@@ -3143,7 +3143,7 @@ describe('Copy Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-    <problem name="problem1" copyFromUri="doenet:cId=bafkreibxl27ejdmpnxyw4pv5yfixggs54a6n4nkczeeq4aac7yec2ojep4&DoenEtiD=abcdefg" />
+    <problem name="problem1" copyFromUri="doenet:cId=bafkreidqud3rixmphu3jufuke4rw7magtcrbrjgeo6ihkoyonsig7wciey&DoenEtiD=abcdefg" />
   
     `}, "*");
     });
@@ -7718,7 +7718,7 @@ describe('Copy Tag Tests', function () {
   it('copy of external content retains desired variant, no problem in external content', () => {
     let doenetML = `
     <text>a</text>
-    <copy assignNames="problem1" uri="doenet:CID=bafkreibxl27ejdmpnxyw4pv5yfixggs54a6n4nkczeeq4aac7yec2ojep4" />
+    <copy assignNames="problem1" uri="doenet:CID=bafkreidqud3rixmphu3jufuke4rw7magtcrbrjgeo6ihkoyonsig7wciey" />
     `;
 
     cy.get('#testRunner_toggleControls').click();

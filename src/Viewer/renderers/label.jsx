@@ -3,6 +3,9 @@ import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
 
 export default React.memo(function Label(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
@@ -25,6 +28,8 @@ export default React.memo(function Label(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
 
   useEffect(() => {
     //On unmount
@@ -44,11 +49,25 @@ export default React.memo(function Label(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+
+    let cssStyle = ``;
+    if (backgroundColor) {
+      cssStyle += `background-color: ${backgroundColor}`;
+    }
+
     //things to be passed to JSXGraph as attributes
     let jsxLabelAttributes = {
       visible: !SVs.hidden,
       fixed,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
+      cssStyle,
+      highlightCssStyle: cssStyle,
+      strokeColor: textColor,
+      strokeOpacity: 1,
+      highlightStrokeColor: textColor,
+      highlightStrokeOpacity: 0.5,
       highlight: !fixed,
       useMathJax: SVs.hasLatex,
       parse: false,
@@ -279,6 +298,25 @@ export default React.memo(function Label(props) {
         labelJXG.current.setAttribute({ layer });
       }
 
+      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let cssStyle = ``;
+      if (backgroundColor) {
+        cssStyle += `background-color: ${backgroundColor}`;
+      } else {
+        cssStyle += `background-color: transparent`;
+      }
+
+      if (labelJXG.current.visProp.strokecolor !== textColor) {
+        labelJXG.current.visProp.strokecolor = textColor;
+        labelJXG.current.visProp.highlightstrokecolor = textColor;
+      }
+      if (labelJXG.current.visProp.cssstyle !== cssStyle) {
+        labelJXG.current.visProp.cssstyle = cssStyle;
+        labelJXG.current.visProp.highlightcssstyle = cssStyle;
+      }
+
+
       let fixed = !SVs.draggable || SVs.fixed;
 
 
@@ -342,17 +380,17 @@ export default React.memo(function Label(props) {
     return null;
   }
 
-  if (children.length > 0) {
-    return <span id={id} style={{ marginRight: "12px" }}><a name={id} />{children}</span>;
-  } else {
-    let label = SVs.value;
 
-    if (SVs.hasLatex) {
-      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
-    }
-    return <span id={id}><a name={id} />{label}</span>;
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  style.marginRight = "12px";
 
+  let label = SVs.value;
+
+  if (SVs.hasLatex) {
+    label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
   }
+  return <span id={id} style={style}><a name={id} />{label}</span>;
+
 
 
 })

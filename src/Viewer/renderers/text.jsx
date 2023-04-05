@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
 
 export default React.memo(function Text(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -25,6 +28,8 @@ export default React.memo(function Text(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
 
   useEffect(() => {
     //On unmount
@@ -44,12 +49,28 @@ export default React.memo(function Text(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+
+    let cssStyle = ``;
+    if (backgroundColor) {
+      cssStyle += `background-color: ${backgroundColor}`;
+    }
+
     //things to be passed to JSXGraph as attributes
     let jsxTextAttributes = {
       visible: !SVs.hidden,
       fixed,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
-      highlight: !fixed
+      cssStyle,
+      highlightCssStyle: cssStyle,
+      strokeColor: textColor,
+      strokeOpacity: 1,
+      highlightStrokeColor: textColor,
+      highlightStrokeOpacity: 0.5,
+      highlight: !fixed,
+      parse: false,
+
     };
 
 
@@ -263,8 +284,25 @@ export default React.memo(function Text(props) {
         textJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
+      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let cssStyle = ``;
+      if (backgroundColor) {
+        cssStyle += `background-color: ${backgroundColor}`;
+      } else {
+        cssStyle += `background-color: transparent`;
+      }
 
+      if (textJXG.current.visProp.strokecolor !== textColor) {
+        textJXG.current.visProp.strokecolor = textColor;
+        textJXG.current.visProp.highlightstrokecolor = textColor;
+      }
+      if (textJXG.current.visProp.cssstyle !== cssStyle) {
+        textJXG.current.visProp.cssstyle = cssStyle;
+        textJXG.current.visProp.highlightcssstyle = cssStyle;
+      }
+
+      let fixed = !SVs.draggable || SVs.fixed;
 
       textJXG.current.visProp.highlight = !fixed;
       textJXG.current.visProp.fixed = fixed;
@@ -325,5 +363,7 @@ export default React.memo(function Text(props) {
   if (SVs.hidden) {
     return null;
   }
-  return <><a name={id} /><span id={id}>{SVs.text}</span></>
+
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  return <><a name={id} /><span id={id} style={style}>{SVs.text}</span></>
 })

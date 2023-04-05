@@ -3,6 +3,7 @@ import me from 'math-expressions';
 import { convertValueToMathExpression, roundForDisplay, vectorOperators } from '../utils/math';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
+import { returnTextStyleDescriptionDefinitions } from '../utils/style';
 
 export default class Point extends GraphicalComponent {
   constructor(args) {
@@ -246,6 +247,9 @@ export default class Point extends GraphicalComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.styleDescription = {
       public: true,

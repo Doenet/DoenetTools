@@ -2,7 +2,8 @@ import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition, superSubscriptsToUnicode, unicodeToSuperSubscripts, vectorOperators } from '../utils/math';
 import { flattenDeep } from '../utils/array';
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
+import { returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 const vectorAndListOperators = ["list", ...vectorOperators];
 
@@ -25,6 +26,7 @@ export default class MathComponent extends InlineComponent {
   static primaryEssentialStateVariable = "value";
 
   static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -166,8 +168,6 @@ export default class MathComponent extends InlineComponent {
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
     }
 
-    attributes.styleNumber.defaultValue = 0;
-
     return attributes;
   }
 
@@ -191,8 +191,14 @@ export default class MathComponent extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
-
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
 
     stateVariableDefinitions.displayDigits = {
       public: true,
@@ -1986,57 +1992,6 @@ export default class MathComponent extends InlineComponent {
         }
 
       },
-    }
-
-    stateVariableDefinitions.anchor = {
-      defaultValue: me.fromText("(0,0)"),
-      public: true,
-      forRenderer: true,
-      hasEssential: true,
-      shadowingInstructions: {
-        createComponentOfType: "point"
-      },
-      returnDependencies: () => ({
-        anchorAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "anchor",
-          variableNames: ["coords"],
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.anchorAttr) {
-          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
-        } else {
-          return { useEssentialOrDefaultValue: { anchor: true } }
-        }
-      },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
-        if (dependencyValues.anchorAttr) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "anchorAttr",
-              desiredValue: desiredStateVariableValues.anchor,
-              variableIndex: 0,
-            }]
-          }
-        } else {
-          return {
-            success: true,
-            instructions: [{
-              setEssentialValue: "anchor",
-              value: desiredStateVariableValues.anchor
-            }]
-          }
-        }
-
-      }
     }
 
     return stateVariableDefinitions;

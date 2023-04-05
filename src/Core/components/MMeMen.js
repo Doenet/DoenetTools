@@ -1,7 +1,8 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
+import { returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export class M extends InlineComponent {
   constructor(args) {
@@ -53,8 +54,6 @@ export class M extends InlineComponent {
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
     }
 
-    attributes.styleNumber.defaultValue = 0;
-
     return attributes;
 
   };
@@ -74,8 +73,13 @@ export class M extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
-
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
 
     stateVariableDefinitions.latex = {
       public: true,
@@ -261,59 +265,6 @@ export class M extends InlineComponent {
         }
 
         return { setValue: { text: superSubscriptsToUnicode(expression.toString()) } };
-      }
-    }
-
-
-
-    stateVariableDefinitions.anchor = {
-      defaultValue: me.fromText("(0,0)"),
-      public: true,
-      forRenderer: true,
-      hasEssential: true,
-      shadowingInstructions: {
-        createComponentOfType: "point"
-      },
-      returnDependencies: () => ({
-        anchorAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "anchor",
-          variableNames: ["coords"],
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.anchorAttr) {
-          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
-        } else {
-          return { useEssentialOrDefaultValue: { anchor: true } }
-        }
-      },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
-        if (dependencyValues.anchorAttr) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "anchorAttr",
-              desiredValue: desiredStateVariableValues.anchor,
-              variableIndex: 0,
-            }]
-          }
-        } else {
-          return {
-            success: true,
-            instructions: [{
-              setEssentialValue: "anchor",
-              value: desiredStateVariableValues.anchor
-            }]
-          }
-        }
-
       }
     }
 

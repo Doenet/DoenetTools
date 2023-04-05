@@ -143,6 +143,8 @@ export default class SectioningComponent extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // Note: style definition state variables allow one to redefine the style
+    // via styledefinitions inside a setup in the section
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
 

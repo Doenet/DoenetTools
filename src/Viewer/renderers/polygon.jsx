@@ -52,9 +52,8 @@ export default React.memo(function Polygon(props) {
 
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
     let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-    fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+    fillColor = SVs.filled ? fillColor : "none";
 
 
     jsxPointAttributes.current = {
@@ -374,9 +373,8 @@ export default React.memo(function Polygon(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
       let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-      fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+      fillColor = SVs.filled ? fillColor : "none";
 
       polygonJXG.current.name = SVs.labelForGraph;
 

@@ -282,7 +282,7 @@ export default class BaseComponent {
         propagateToProps: true,
       },
       styleNumber: {
-        createComponentOfType: "number",
+        createComponentOfType: "integer",
         createStateVariable: "styleNumber",
         defaultValue: 1,
         public: true,

@@ -2,11 +2,22 @@ import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { getFromText, mathStateVariableFromNumberStateVariable, numberToMathExpression, roundForDisplay, textToAst } from '../utils/math';
 import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
+import { returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export default class NumberComponent extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveNumber: this.moveNumber.bind(this),
+    });
+
+  }
   static componentType = "number";
 
   static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -41,6 +52,37 @@ export default class NumberComponent extends InlineComponent {
       createStateVariable: "valueOnNaN",
       defaultValue: NaN,
     };
+
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.layer = {
+      createComponentOfType: "number",
+      createStateVariable: "layer",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.anchor = {
+      createComponentOfType: "point",
+    }
+
+    attributes.positionFromAnchor = {
+      createComponentOfType: "text",
+      createStateVariable: "positionFromAnchor",
+      defaultValue: "center",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
+    }
+
     return attributes;
   }
 
@@ -87,6 +129,16 @@ export default class NumberComponent extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
 
     stateVariableDefinitions.displayDigits = {
       public: true,
@@ -693,7 +745,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "number",
+        createComponentOfType: this.componentType,
         attributesToShadow: [
           "displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros",
         ],
@@ -1276,5 +1328,59 @@ export default class NumberComponent extends InlineComponent {
     },
     "text"
   ];
+
+
+  async moveNumber({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
+    let components = ["vector"];
+    if (x !== undefined) {
+      components[1] = x;
+    }
+    if (y !== undefined) {
+      components[2] = y;
+    }
+    if (z !== undefined) {
+      components[3] = z;
+    }
+    if (transient) {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        transient,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      });
+    } else {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            x, y, z
+          }
+        }
+      });
+    }
+
+  }
+
 
 }
