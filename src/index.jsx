@@ -9,7 +9,7 @@ import { MathJaxContext } from 'better-react-mathjax';
 import { mathjaxConfig } from './Core/utils/math';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import DarkmodeController from './Tools/_framework/DarkmodeController';
-import { ErrorPage } from './Tools/_framework/Paths/ErrorPage';
+import ErrorPage from './Tools/_framework/Paths/ErrorPage';
 
 const theme = extendTheme({
   fonts: {
