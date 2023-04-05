@@ -23,7 +23,7 @@ import {loader as portfolioActivitySettingsLoader,
 import {loader as portfolioLoader, action as portfolioAction, Portfolio } from "./Tools/_framework/Paths/Portfolio";
 import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuPanelCaps/PortfilioEditorInfoCap";
 import { loader as publicPortfolioLoader, PublicPortfolio } from "./Tools/_framework/Paths/PublicPortfolio";
-import { loader as portfolioActivityViewerLoader, PortfolioActivityViewer } from "./Tools/_framework/Paths/PortfolioActivityViewer";
+import { loader as portfolioActivityViewerLoader, action as portfolioActivityViewerAction, PortfolioActivityViewer } from "./Tools/_framework/Paths/PortfolioActivityViewer";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 // import { action as portfolioEditorSupportPanelAction } from "./Tools/_framework/Panels/NewSupportPanel";
 
@@ -89,7 +89,7 @@ const router = createBrowserRouter([
   {
     path: "/portfolio/:doenetId/viewer",
     loader: portfolioActivityViewerLoader,
-    // action: portfolioActivitySettingsAction,
+    action: portfolioActivityViewerAction,
     element: (
       <DarkmodeController>
         <MathJaxContext

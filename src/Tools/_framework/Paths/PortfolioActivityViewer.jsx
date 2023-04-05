@@ -1,14 +1,24 @@
 import React from 'react';
-import { useLoaderData, useNavigate, useOutletContext } from 'react-router';
+import { redirect, useLoaderData, useNavigate, useOutletContext } from 'react-router';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import PageViewer from '../../../Viewer/PageViewer';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-import { Link } from 'react-router-dom';
+import { Form, Link } from 'react-router-dom';
 import { Avatar } from '@chakra-ui/react';
 import { pageToolViewAtom } from '../NewToolRoot';
+
+export async function action({params}){
+  let response = await fetch(`/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`);
+  let respObj = await response.json();
+
+  console.log("respObj",respObj)
+  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
+  // return redirect(`/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`);
+  return true;
+}
 
 export async function loader({params}){
   //Check if signedIn
@@ -181,7 +191,14 @@ export function PortfolioActivityViewer() {
         navigate(`/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
       }
       } /></HeaderSectionRight>
-      {signedIn ? <HeaderSectionRight><Button value="Remix" onClick={()=>{}} /></HeaderSectionRight> : null}
+      {signedIn ? 
+        <HeaderSectionRight>
+        <Form method="post">
+        <Button value="Remix" onClick={()=>{}} />
+        </Form>
+        </HeaderSectionRight> 
+        :
+         null}
       </div>
     </HeaderContent>
   </Header>
