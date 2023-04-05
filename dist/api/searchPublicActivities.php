@@ -21,6 +21,8 @@ $matchingUsers = [];
 $matchingActivities = [];
 //Get Matching Activities 
 if ($success) {
+
+  // Doesn't show public from courses only portfolios
   $sql = "
   SELECT cc.doenetId,
   CAST(cc.jsonDefinition as CHAR) AS json,
@@ -31,9 +33,12 @@ if ($success) {
   FROM course_content AS cc
   LEFT JOIN pages AS p
     ON p.containingDoenetId = cc.doenetId
+  LEFT JOIN course AS c
+    ON c.courseId = cc.courseId
   WHERE cc.label LIKE '%$q%'
   AND cc.isPublic = 1
   AND cc.isDeleted = 0
+  AND c.portfolioCourseForUserId IS NOT NULL
   LIMIT 100
   ";
   
