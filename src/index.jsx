@@ -45,6 +45,7 @@ import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
 } from "./Tools/_framework/Panels/NewSupportPanel";
+import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
 
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
       </>
     ),
     children: [
+      {
+        path: "*",
+        element: <ErrorPage />,
+      },
       {
         path: "/",
         loader: caroselLoader,
