@@ -667,6 +667,12 @@ export default class Document extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.containerTag = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { containerTag: "div" } })
+    }
+
     return stateVariableDefinitions;
   }
 
