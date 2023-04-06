@@ -59,7 +59,7 @@ export default function EditorViewer() {
   const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  const pageObj = useRecoilValue(itemByDoenetId(effectivePageId))
+  const [pageObj,setPageObj] = useRecoilState(itemByDoenetId(effectivePageId))
   const activityObj = useRecoilValue(itemByDoenetId(doenetId))
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const { canUpload } = useRecoilValue(profileAtom);
@@ -133,11 +133,19 @@ export default function EditorViewer() {
   useEffect(() => {
     if (effectivePageId !== '' && pageInitiated) {
       initDoenetML(effectivePageId)
+    }else if(loaderPageId){
+      //Add Activity from Portfolio so init pageObj
+      setPageObj({containingDoenetId : loaderDoenetId,
+      doenetId : loaderPageId,
+      isSelected : false,
+      label : "Untitled",
+      parentDoenetId : loaderDoenetId,
+      type : "page"});
     }
     return () => {
       setEditorInit("");
     }
-  }, [effectivePageId, pageInitiated]);
+  }, [initDoenetML,setEditorInit,loaderPageId,effectivePageId, pageInitiated]);
 
   useEventListener("keydown", e => {
     if ((e.keyCode === 83 && e.metaKey) || (e.keyCode === 83 && e.ctrlKey)) {
