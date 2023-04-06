@@ -323,8 +323,8 @@ export default class CodeEditor extends BlockComponent {
   }
 
 
-  updateImmediateValue({ text, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
-    if (!this.stateValues.disabled) {
+  async updateImmediateValue({ text, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+    if (!await this.stateValues.disabled) {
       return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
@@ -344,79 +344,82 @@ export default class CodeEditor extends BlockComponent {
     }
   }
 
-  updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     //Only update when value is out of date
-    if (!this.stateValues.disabled &&
-      this.stateValues.immediateValue !== this.stateValues.value
-    ) {
-      let updateInstructions = [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "value",
-        value: this.stateValues.immediateValue,
-      },
-      // in case value ended up being a different value than requested
-      // we set immediate value to whatever was the result
-      // (hence the need to execute update first)
-      // Also, this makes sure immediateValue is saved to the database,
-      // since in updateImmediateValue, immediateValue is note saved to database
-      {
-        updateType: "executeUpdate"
-      },
-      {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "immediateValue",
-        valueOfStateVariable: "value",
-      }, {
-        updateType: "unsetComponentNeedingUpdateValue",
-      }];
+    if (!await this.stateValues.disabled) {
+      let immediateValue = await this.stateValues.immediateValue;
 
-      let event = {
-        verb: "answered",
-        object: {
+      if (await this.stateValues.value !== immediateValue) {
+
+        let updateInstructions = [{
+          updateType: "updateValue",
           componentName: this.componentName,
-          componentType: this.componentType,
+          stateVariable: "value",
+          value: immediateValue,
         },
-        result: {
-          response: this.stateValues.immediateValue,
-          responseText: this.stateValues.immediateValue,
-        }
-      }
-
-      if (this.stateValues.answerAncestor) {
-        event.context = {
-          answerAncestor: this.stateValues.answerAncestor.componentName
-        }
-      }
-
-      return this.coreFunctions.performUpdate({
-        updateInstructions,
-        actionId,
-        sourceInformation,
-        skipRendererUpdate: true,
-        event
-      }).then(() => {
-        this.coreFunctions.triggerChainedActions({
+        // in case value ended up being a different value than requested
+        // we set immediate value to whatever was the result
+        // (hence the need to execute update first)
+        // Also, this makes sure immediateValue is saved to the database,
+        // since in updateImmediateValue, immediateValue is note saved to database
+        {
+          updateType: "executeUpdate"
+        },
+        {
+          updateType: "updateValue",
           componentName: this.componentName,
+          stateVariable: "immediateValue",
+          valueOfStateVariable: "value",
+        }, {
+          updateType: "unsetComponentNeedingUpdateValue",
+        }];
+
+        let event = {
+          verb: "answered",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: immediateValue,
+            responseText: immediateValue,
+          }
+        }
+
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor) {
+          event.context = {
+            answerAncestor: answerAncestor.componentName
+          }
+        }
+
+        return this.coreFunctions.performUpdate({
+          updateInstructions,
           actionId,
           sourceInformation,
-          skipRendererUpdate
-        })
-        if (this.attributes.staticName &&
-          this.definingChildren.length === 2 &&
-          this.definingChildren[1].componentType === 'codeViewer') {
-          this.coreFunctions.performAction({
-            componentName: this.definingChildren[1].componentName,
-            actionName: "updateComponents",
-            args: { sourceInformation, skipRendererUpdate }
-          });
-        }
-      });
-
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
+          skipRendererUpdate: true,
+          event
+        }).then(() => {
+          this.coreFunctions.triggerChainedActions({
+            componentName: this.componentName,
+            actionId,
+            sourceInformation,
+            skipRendererUpdate
+          })
+          if (this.attributes.staticName &&
+            this.definingChildren.length === 2 &&
+            this.definingChildren[1].componentType === 'codeViewer') {
+            this.coreFunctions.performAction({
+              componentName: this.definingChildren[1].componentName,
+              actionName: "updateComponents",
+              args: { sourceInformation, skipRendererUpdate }
+            });
+          }
+        });
+      }
     }
+
+    this.coreFunctions.resolveAction({ actionId });
   }
 
   async updateComponents() {

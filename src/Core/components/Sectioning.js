@@ -1,4 +1,4 @@
-import { SectioningComponent, SectioningComponentNumberWithSiblings } from './abstract/SectioningComponent';
+import { SectioningComponent, SectioningComponentNumberWithSiblings, UnnumberedSectioningComponentNumber } from './abstract/SectioningComponent';
 
 export class Section extends SectioningComponentNumberWithSiblings {
   static componentType = "section";
@@ -124,16 +124,8 @@ export class Aside extends SectioningComponent {
 
 }
 
-export class Biographical extends Aside {
-  static componentType = "biographical";
-}
-
-export class Historical extends Aside {
-  static componentType = "historical";
-}
-
-export class Assemblage extends SectioningComponent {
-  static componentType = "assemblage";
+export class Objectives extends SectioningComponent {
+  static componentType = "objectives";
   static rendererType = "section";
 
   static createAttributesObject() {
@@ -159,14 +151,6 @@ export class Assemblage extends SectioningComponent {
     return stateVariableDefinitions;
   }
 
-}
-
-export class Objectives extends Assemblage {
-  static componentType = "objectives";
-}
-
-export class Outcomes extends Objectives {
-  static componentType = "outcomes";
 }
 
 export class Problem extends SectioningComponent {
@@ -197,28 +181,8 @@ export class Exercise extends Problem {
   static componentType = "exercise";
 }
 
-export class Question extends Problem {
-  static componentType = "question";
-}
-
 export class Activity extends Problem {
   static componentType = "activity";
-}
-
-export class Exploration extends Activity {
-  static componentType = "exploration";
-}
-
-export class Project extends Activity {
-  static componentType = "project";
-}
-
-export class Investigation extends Activity {
-  static componentType = "investigation";
-}
-
-export class Exercises extends Section {
-  static componentType = "exercises";
 }
 
 export class Example extends SectioningComponent {
@@ -246,96 +210,57 @@ export class Note extends Example {
   static componentType = "note";
 }
 
-export class Remark extends Note {
-  static componentType = "remark";
-}
-
-export class Convention extends Note {
-  static componentType = "convention";
-}
-
-export class Observation extends Note {
-  static componentType = "observation";
-}
-
-export class Warning extends Note {
-  static componentType = "warning";
-}
-
-export class Insight extends Note {
-  static componentType = "insight";
-}
-
 export class Theorem extends Example {
   static componentType = "theorem";
 }
 
-export class Corollary extends Theorem {
-  static componentType = "corollary";
-}
-
-export class Lemma extends Theorem {
-  static componentType = "lemma";
-}
-
-export class Algorithm extends Theorem {
-  static componentType = "algorithm";
-}
-
-export class Proposition extends Theorem {
-  static componentType = "proposition";
-}
-
-export class Claim extends Theorem {
-  static componentType = "claim";
-}
-
-export class Fact extends Theorem {
-  static componentType = "fact";
-}
-
-export class Identity extends Theorem {
-  static componentType = "identity";
-}
-
-
-export class Axiom extends Example {
-  static componentType = "axiom";
-}
-
-export class Conjecture extends Axiom {
-  static componentType = "conjecture";
-}
-
-export class Principle extends Axiom {
-  static componentType = "principle";
-}
-
-export class Heuristic extends Axiom {
-  static componentType = "heuristic";
-}
-
-export class Hypothesis extends Axiom {
-  static componentType = "hypothesis";
-}
-
-export class Assumption extends Axiom {
-  static componentType = "assumption";
-}
-
-export class Proof extends Aside {
+export class Proof extends UnnumberedSectioningComponentNumber {
   static componentType = "proof";
+  static rendererType = "section";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.includeAutoNumberIfNoTitle.defaultValue = false;
-    attributes.doNotNumber.defaultValue = true;
+
+    attributes.collapsible = {
+      createComponentOfType: "boolean",
+      createStateVariable: "collapsible",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    }
+    attributes.startOpen = {
+      createComponentOfType: "boolean",
+      createStateVariable: "startOpen",
+      defaultValue: false,
+    }
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    delete stateVariableDefinitions.collapsible;
+
+    stateVariableDefinitions.open.returnDependencies = () => ({
+      startOpen: {
+        dependencyType: "stateVariable",
+        variableName: "startOpen"
+      }
+    })
+
+    stateVariableDefinitions.open.definition = ({ dependencyValues }) => ({
+      useEssentialOrDefaultValue: {
+        open: {
+          defaultValue: dependencyValues.startOpen,
+        }
+      }
+    })
+
+    stateVariableDefinitions.level.definition = () => ({
+      setValue: { level: 3 }
+    });
 
     stateVariableDefinitions.containerTag.definition = () => ({
       setValue: { containerTag: "article" }

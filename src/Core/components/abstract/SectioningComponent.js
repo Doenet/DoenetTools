@@ -69,20 +69,6 @@ export class SectioningComponent extends BlockComponent {
       forRenderer: true,
     };
 
-    attributes.suppressAutoName = {
-      createComponentOfType: "boolean",
-      createStateVariable: "suppressAutoName",
-      defaultValue: false,
-      public: true,
-    }
-
-    attributes.suppressAutoNumber = {
-      createComponentOfType: "boolean",
-      createStateVariable: "suppressAutoNumber",
-      defaultValue: false,
-      public: true,
-    }
-
     attributes.includeAutoName = {
       createComponentOfType: "boolean",
       createStateVariable: "includeAutoName",
@@ -111,17 +97,13 @@ export class SectioningComponent extends BlockComponent {
       public: true,
     }
 
-    attributes.doNotNumber = {
-      createComponentOfType: "boolean",
-      createStateVariable: "doNotNumber",
-      defaultValue: false,
-      public: true,
-    }
-
     attributes.level = {
       createComponentOfType: "integer",
     }
 
+    attributes.renameTo = {
+      createComponentOfType: "text"
+    }
 
 
     return attributes;
@@ -160,7 +142,6 @@ export class SectioningComponent extends BlockComponent {
 
 
     stateVariableDefinitions.enumeration = {
-      stateVariablesDeterminingDependencies: ["doNotNumber"],
       additionalStateVariablesDefined: [{
         variableName: "sectionNumber",
         public: true,
@@ -168,36 +149,37 @@ export class SectioningComponent extends BlockComponent {
           createComponentOfType: "text",
         },
       }],
-      returnDependencies: ({ stateValues }) => {
-        let dependencies = {
-          doNotNumber: {
-            dependencyType: "stateVariable",
-            variableName: "doNotNumber"
-          }
+      returnDependencies: () => ({
+        sectioningCounter: {
+          dependencyType: "counter",
+          counterName: "sectioning"
         }
-        if (!stateValues.doNotNumber) {
-          dependencies.sectioningCounter = {
-            dependencyType: "counter",
-            counterName: "sectioning"
-          };
-        }
-
-        return dependencies;
-      },
+      }),
       definition({ dependencyValues }) {
 
-        if (dependencyValues.doNotNumber) {
-          return { setValue: { enumeration: [], sectionNumber: null } }
-        } else {
-          let sectionNumber = String(dependencyValues.sectioningCounter);
-          return { setValue: { enumeration: [sectionNumber], sectionNumber } }
-        }
+        let sectionNumber = String(dependencyValues.sectioningCounter);
+        return { setValue: { enumeration: [sectionNumber], sectionNumber } }
       }
     }
 
     stateVariableDefinitions.sectionName = {
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { sectionName: this.name } })
+      returnDependencies: () => ({
+        renameToAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "renameTo",
+          variableNames: ["value"]
+        }
+
+      }),
+      definition: ({ dependencyValues }) => {
+        if (dependencyValues.renameToAttr) {
+          return { setValue: { sectionName: dependencyValues.renameToAttr.stateValues.value } }
+        } else {
+          // Note since used an arrow function for definition,
+          // this.name refers to the name of the component class
+          return { setValue: { sectionName: this.name } }
+        }
+      }
     }
 
 
@@ -1035,6 +1017,8 @@ export class SectioningComponentNumberWithSiblings extends SectioningComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
+    delete attributes.renameTo;
+
     attributes.includeParentNumber = {
       createComponentOfType: "boolean",
       createStateVariable: "includeParentNumber",
@@ -1088,6 +1072,43 @@ export class SectioningComponentNumberWithSiblings extends SectioningComponent {
 
         return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
 
+      }
+    }
+
+
+    return stateVariableDefinitions;
+  }
+
+
+}
+
+export class UnnumberedSectioningComponentNumber extends SectioningComponent {
+
+  static componentType = "_unnumberedSectioningComponentNumber";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.includeAutoNumberIfNoTitle.defaultValue = false;
+    return attributes;
+  }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+
+    stateVariableDefinitions.enumeration = {
+      additionalStateVariablesDefined: [{
+        variableName: "sectionNumber",
+        public: true,
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
+      }],
+      returnDependencies: () => ({}),
+      definition() {
+        return { setValue: { enumeration: [], sectionNumber: null } }
       }
     }
 

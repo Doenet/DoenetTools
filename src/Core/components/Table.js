@@ -69,7 +69,7 @@ export default class Table extends BlockComponent {
         if (stateValues.number) {
           dependencies.tableCounter = {
             dependencyType: "counter",
-            counterName: "table"
+            counterName: "sectioning"
           }
         }
         return dependencies;

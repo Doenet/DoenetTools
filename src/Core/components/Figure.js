@@ -68,7 +68,7 @@ export default class Figure extends BlockComponent {
         if (stateValues.number) {
           dependencies.figureCounter = {
             dependencyType: "counter",
-            counterName: "figure"
+            counterName: "sectioning"
           }
         }
         return dependencies;
