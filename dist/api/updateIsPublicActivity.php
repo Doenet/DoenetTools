@@ -56,13 +56,28 @@ if ($success) {
 }
 
 if ($success) {
-    $sql = "
+    if ($isPublic){
+        //Make Public
+        $sql = "
         UPDATE course_content
-        SET isPublic = '$isPublic',
-        userCanViewSource = '1'
+        SET isPublic = '1',
+        userCanViewSource = '1',
+        addToPublicPortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
         WHERE doenetId = '$doenetId'
         ";
-    $conn->query($sql);
+        $conn->query($sql);
+    }else{
+        //Make Private
+        $sql = "
+        UPDATE course_content
+        SET isPublic = '0',
+        userCanViewSource = '1',
+        addToPrivatePortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+        WHERE doenetId = '$doenetId'
+        ";
+        $conn->query($sql);
+    }
+    
 }
 
 $response_arr = [

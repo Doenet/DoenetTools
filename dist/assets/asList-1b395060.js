@@ -1,1 +1,0 @@
-import{av as t,bn as d,j as s,a as o}from"./index-5e1f94d1.js";const h=t.memo(function(a){let{name:c,id:e,SVs:r,children:n}=d(a);if(r.hidden)return null;if(n.length===0)return s(t.Fragment,{},e);let i=n.slice(1).reduce((m,l)=>[...m,", ",l],[n[0]]);return o(t.Fragment,{children:[s("a",{name:e}),i]},e)});export{h as default};

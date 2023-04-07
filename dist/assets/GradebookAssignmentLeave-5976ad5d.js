@@ -1,1 +1,0 @@
-import{v as e}from"./index-5e1f94d1.js";import{processGradesAtom as r}from"./GradebookAssignment-fac91e58.js";import"./Gradebook-6c5ba3ed.js";import"./RoleDropdown-e61c36e9.js";import"./DropdownMenu-3fbe3458.js";import"./setPrototypeOf-51e8cf87.js";import"./ButtonGroup-f887e702.js";function l(){return e(({set:o})=>()=>{o(r,"Assignment Table")})(),null}export{l as default};

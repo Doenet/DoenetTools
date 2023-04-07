@@ -81,27 +81,26 @@ if ($success) {
     // $learningOutcomes = '';
     $isPublic = '0';
 
-    $sql = "SELECT sortOrder
-        FROM `course_content`
-        WHERE courseId = '$portfolioCourseId'
-        AND sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousContainingDoenetId' AND isDeleted = 0)
-        AND isDeleted = 0
-        ORDER BY sortOrder
-        LIMIT 2";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    $prev = $row['sortOrder'] ?: '';
-    $row = $result->fetch_assoc();
-    $next = $row['sortOrder'] ?: '';
-    $sortOrder = SortOrder\getSortOrder($prev, $next);
+
+    // $sql = "SELECT sortOrder
+    //     FROM `course_content`
+    //     WHERE courseId = '$portfolioCourseId'
+    //     AND isDeleted = 0
+    //     AND isPublic = 0
+    //     ORDER BY sortOrder DESC
+    //     LIMIT 1";
+    // $result = $conn->query($sql);
+    // $row = $result->fetch_assoc();
+    // $prev = $row['sortOrder'] ?: 'a';
+    $sortOrder = 'n'; //We are sorting by date created and not using manual sorting
 
     $sql = "
         INSERT INTO course_content
         (type,courseId,doenetId,parentDoenetId,label,creationDate,isPublic,
-        sortOrder,jsonDefinition,imagePath)
+        sortOrder,jsonDefinition,imagePath,addToPrivatePortfolioDate)
         VALUES
         ('activity','$portfolioCourseId','$doenetId','$portfolioCourseId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isPublic',
-        '$sortOrder','$jsonDefinition','$imagePath')
+        '$sortOrder','$jsonDefinition','$imagePath',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
         ";
         // $sql = "
         // INSERT INTO course_content
