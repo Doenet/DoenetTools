@@ -70,7 +70,7 @@ if ($success && !$notMe) {
     WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
     AND cc.isDeleted = 0
     AND cc.isPublic = 0
-    ORDER BY addToPrivatePortfolioDate
+    ORDER BY addToPrivatePortfolioDate DESC
     ";
     $result = $conn->query($sql);
 
@@ -102,7 +102,7 @@ if ($success && !$notMe) {
     WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
     AND cc.isDeleted = 0
     AND cc.isPublic = 1
-    ORDER BY addToPublicPortfolioDate
+    ORDER BY addToPublicPortfolioDate DESC
     ";
     $result = $conn->query($sql);
 

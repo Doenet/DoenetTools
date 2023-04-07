@@ -36,6 +36,7 @@ export default function EditorViewer() {
   // console.log(">>>>===EditorViewer",refreshCount.current)
   // refreshCount.current++;
   let data = useLoaderData();
+  const dataCourseId = data?.courseId;
   const loaderDoenetId = data?.doenetId;
   const loaderPageId = data?.pageDoenetId;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
@@ -52,7 +53,7 @@ export default function EditorViewer() {
     effectivePageId = loaderPageId;
     effectiveDoenetId = loaderDoenetId;
   }
-  const courseId = useRecoilValue(courseIdAtom)
+  const [courseId,setCourseId] = useRecoilState(courseIdAtom)
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
@@ -135,6 +136,7 @@ export default function EditorViewer() {
       initDoenetML(effectivePageId)
     }else if(loaderPageId){
       //Add Activity from Portfolio so init pageObj
+      setCourseId(dataCourseId);
       setPageObj({containingDoenetId : loaderDoenetId,
       doenetId : loaderPageId,
       isSelected : false,
@@ -145,7 +147,7 @@ export default function EditorViewer() {
     return () => {
       setEditorInit("");
     }
-  }, [initDoenetML,setEditorInit,loaderPageId,effectivePageId, pageInitiated]);
+  }, [dataCourseId,setCourseId,initDoenetML,setEditorInit,loaderPageId,effectivePageId, pageInitiated]);
 
   useEventListener("keydown", e => {
     if ((e.keyCode === 83 && e.metaKey) || (e.keyCode === 83 && e.ctrlKey)) {
