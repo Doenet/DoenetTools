@@ -41,6 +41,9 @@ export default defineConfig((env) => ({
       NodeModulesPolyfillPlugin(),
     ],
   },
+  worker: {
+    format: 'iife',
+  },
   build: {
     outDir: './dist_local',
     rollupOptions: {
