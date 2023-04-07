@@ -97,10 +97,10 @@ if ($success) {
     $sql = "
         INSERT INTO course_content
         (type,courseId,doenetId,parentDoenetId,label,creationDate,isPublic,
-        sortOrder,jsonDefinition,imagePath)
+        sortOrder,jsonDefinition,imagePath,addToPrivatePortfolioDate)
         VALUES
         ('activity','$portfolioCourseId','$doenetId','$portfolioCourseId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isPublic',
-        '$sortOrder','$jsonDefinition','$imagePath')
+        '$sortOrder','$jsonDefinition','$imagePath',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
         ";
         // $sql = "
         // INSERT INTO course_content

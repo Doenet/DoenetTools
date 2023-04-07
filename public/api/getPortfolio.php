@@ -68,7 +68,9 @@ if ($success && !$notMe) {
     LEFT JOIN pages AS p
     ON p.containingDoenetId = cc.doenetId
     WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
-    AND cc.isDeleted = '0'
+    AND cc.isDeleted = 0
+    AND cc.isPublic = 0
+    ORDER BY addToPrivatePortfolioDate
     ";
     $result = $conn->query($sql);
 
@@ -84,13 +86,42 @@ if ($success && !$notMe) {
                 'public' => $row['isPublic'],
                 'pageDoenetId' => $row['pageDoenetId'],
             ];
-            if ($row['isPublic'] == '1') {
-                array_push($publicActivities, $activity);
-            } else {
-                array_push($privateActivities, $activity);
-            }
+            array_push($privateActivities, $activity);
         }
     }
+    $sql = "
+    SELECT cc.doenetId,
+    cc.imagePath,
+    cc.label,
+    cc.isPublic,
+    CAST(jsonDefinition as CHAR) AS json,
+    p.doenetId AS 'pageDoenetId'
+    FROM course_content AS cc
+    LEFT JOIN pages AS p
+    ON p.containingDoenetId = cc.doenetId
+    WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    AND cc.isDeleted = 0
+    AND cc.isPublic = 1
+    ORDER BY addToPublicPortfolioDate
+    ";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $json = json_decode($row['json'], true);
+            $activity = [
+                'doenetId' => $row['doenetId'],
+                'version' => $json['version'],
+                'content' => $json['content'],
+                'imagePath' => $row['imagePath'],
+                'label' => $row['label'],
+                'public' => $row['isPublic'],
+                'pageDoenetId' => $row['pageDoenetId'],
+            ];
+            array_push($publicActivities, $activity);
+        }
+    }
+    
 }
 
 $response_arr = [

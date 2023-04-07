@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.32)
 # Database: doenet_local
-# Generation Time: 2023-03-31 02:55:48 +0000
+# Generation Time: 2023-04-07 13:12:11 +0000
 # ************************************************************
 
 
@@ -230,12 +230,7 @@ LOCK TABLES `course` WRITE;
 
 INSERT INTO `course` (`id`, `courseId`, `label`, `isPublic`, `isDeleted`, `image`, `color`, `defaultRoleId`, `examPasscode`, `browserExamKeys`, `lastSeenExamKey`, `canAutoEnroll`, `portfolioCourseForUserId`)
 VALUES
-	(3,'umnMathPlacement','UMN Placement Exams',0,0,'picture11.jpg','none','7VhPa3uv4pClP0WNyEDQJ',NULL,NULL,NULL,1,NULL),
-	(23,'n2bEhi8v3mgfNnjIeMyK0','Portfolio Course',1,0,NULL,'none','LOdhwzdh6YuYZZfh71BK8',NULL,NULL,NULL,0,'devuserid'),
-	(25,'_6Ih49jCBQQJwXPxymf4aE','Untitled Course',0,0,'none','81667A','kb112fiNFjuxrOW108rrr',NULL,NULL,NULL,0,NULL),
-	(26,'kDtzuV8rkZHGqo5NQPUAS','Portfolio Course',1,0,NULL,'none','coUI6WMSDfN9sMiHmJBcJ',NULL,NULL,NULL,0,'t1LsUo14It9GJIWAs9xnB'),
-	(27,'_RZdUgp6Ly8UohjwyUP5LZ','Untitled Course',0,0,'picture12.jpg','none','g69ylodbvZm8IH5Kusuj3',NULL,NULL,NULL,0,NULL),
-	(28,'_jbFux7wn6QPHWpzs59NNL','Untitled Course',0,0,'picture11.jpg','none','XOeEQaGKHB77FSiwanjgR',NULL,NULL,NULL,0,NULL);
+	(3,'umnMathPlacement','UMN Placement Exams',0,0,'picture11.jpg','none','7VhPa3uv4pClP0WNyEDQJ',NULL,NULL,NULL,1,NULL);
 
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -263,41 +258,13 @@ CREATE TABLE `course_content` (
   `jsonDefinition` json DEFAULT NULL,
   `imagePath` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `learningOutcomes` json DEFAULT NULL,
+  `addToPrivatePortfolioDate` timestamp NULL DEFAULT NULL,
+  `addToPublicPortfolioDate` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `courseId` (`courseId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
-LOCK TABLES `course_content` WRITE;
-/*!40000 ALTER TABLE `course_content` DISABLE KEYS */;
-
-INSERT INTO `course_content` (`id`, `type`, `courseId`, `doenetId`, `parentDoenetId`, `label`, `creationDate`, `isDeleted`, `isAssigned`, `isGloballyAssigned`, `isPublic`, `userCanViewSource`, `sortOrder`, `jsonDefinition`, `imagePath`, `learningOutcomes`)
-VALUES
-	(29,'activity','n2bEhi8v3mgfNnjIeMyK0','r8moGCuRDBE1jIM7tjR1C','n2bEhi8v3mgfNnjIeMyK0','Hey Matt Updated','2023-03-14 16:02:14',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1240w,f_auto,q_auto:best/rockcms/2022-08/220805-border-collie-play-mn-1100-82d2f1.jpg',NULL),
-	(30,'activity','n2bEhi8v3mgfNnjIeMyK0','wN0zFqUAtTVLZ4XzDep4P','n2bEhi8v3mgfNnjIeMyK0','Hi Keagan','2023-03-14 17:02:11',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','http://t1.gstatic.com/licensed-image?q=tbn:ANd9GcQJf7shtWhhyHsVcDHolvYP4YTODzJhudkj_ETH6eB3mDsnLNU5LnvH8dbEUtJE4UW0GKD6klPmWQAx4fk',NULL),
-	(31,'activity','n2bEhi8v3mgfNnjIeMyK0','Y4hwykRPlKlYlBD15oKzk','n2bEhi8v3mgfNnjIeMyK0','Hey Jason! (updated)','2023-03-14 18:59:20',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','https://critter.science/wp-content/uploads/2018/08/puff5.jpg',NULL),
-	(42,'activity','n2bEhi8v3mgfNnjIeMyK0','KnLHsnMdcQir9fJhaoIgK','n2bEhi8v3mgfNnjIeMyK0','Anteater!','2023-03-15 22:50:24',1,0,1,1,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreidysbfe7p5moekfd26azzpbzf2b6utfyicdpbeudot5qmnrbufr4y.jpg',NULL),
-	(43,'activity','n2bEhi8v3mgfNnjIeMyK0','tUNHK0SsKldYWKqk7uny2','n2bEhi8v3mgfNnjIeMyK0','The world!','2023-03-15 22:51:32',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreihdiajsgbhupojlk7ml6i7ilsdsmcr6fxmktw4qryxzdqzutbecl4.jpg',NULL),
-	(56,'activity','n2bEhi8v3mgfNnjIeMyK0','_DWRUIz0ngtbZCm4MJuYu9','n2bEhi8v3mgfNnjIeMyK0','_DWRUIz0ngtbZCm4MJuYu9','2023-03-21 13:22:01',0,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_x1HzuyJwvcarTUasvozEp\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreievsb6idm7evpjgprvu3ceja5y4vwyni77weiwed5eygaj2dav5vi.jpg',NULL),
-	(57,'activity','n2bEhi8v3mgfNnjIeMyK0','_jyBQ8oDQxwS3lLFV477Ru','n2bEhi8v3mgfNnjIeMyK0','_jyBQ8oDQxwS3lLFV477Ru','2023-03-21 16:53:12',0,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_fULTsPPQMyalZQJo39BQ2\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreihdiajsgbhupojlk7ml6i7ilsdsmcr6fxmktw4qryxzdqzutbecl4.jpg',NULL),
-	(59,'activity','n2bEhi8v3mgfNnjIeMyK0','_yLqBDOFOlO4cVGn5XnupY','n2bEhi8v3mgfNnjIeMyK0','Notes 3','2023-03-21 21:42:50',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_j06hynxES6dEMFrAvgMjA\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreietqictwqhbbova4vhfoqa2rp7no5jozyjekxiho7fadmvtsscbvm.jpg',NULL),
-	(61,'activity','n2bEhi8v3mgfNnjIeMyK0','_EHo02ENCyv55HgZFVN7xH','n2bEhi8v3mgfNnjIeMyK0','This is Sydney!','2023-03-24 15:07:37',1,1,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_1683DIudmiiJKwtIM6f8V\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreidhcrbztt3haras3w5dbm2grmhgay53rjw475dqbbzu42en7oe6ve\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreigxdya2c3coltpxswawp3i5fxqbflpguhw4bq6eaocwrrijxhl64u.jpg',NULL),
-	(62,'activity','n2bEhi8v3mgfNnjIeMyK0','_gdgXJwqjCRM4TfH8WYZ4J','n2bEhi8v3mgfNnjIeMyK0','The new guy','2023-03-25 17:27:06',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_GRwJiUJhOdrcYNz5T2NMW\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreiehm6cgxoejakdkbphzbxs6he6tqx6cwkzjpwcac5njag55lbeepi.jpg',NULL),
-	(63,'activity','n2bEhi8v3mgfNnjIeMyK0','_zdgXtX9aLTbq5LH6OJtKX','n2bEhi8v3mgfNnjIeMyK0','One two three four five six seven eight nine ten eleven','2023-03-25 18:57:22',1,0,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_GX1QZfuXec1UuBc1wAQ90\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreiaj5i4grgkfrhao36mbvwmziltonhv6rcp5xttwdfx2gqpyvqsc6e.jpg',NULL),
-	(64,'activity','n2bEhi8v3mgfNnjIeMyK0','_mSN2sMOgIrjbxJLDADg3z','n2bEhi8v3mgfNnjIeMyK0','Hey','2023-03-25 18:57:35',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_b6KyW8FmAhEavBpKquib4\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreifawl5n6y7gxfn45kckewqzttu7xsruzebvset6wd7ylvinqhbcyq.jpg',NULL),
-	(65,'activity','n2bEhi8v3mgfNnjIeMyK0','_NosV4hvVRLS6ERdB5MFi1','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-26 22:12:25',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_DNKRNwytb0JohdYcfH7kK\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',NULL),
-	(66,'activity','n2bEhi8v3mgfNnjIeMyK0','_A8U07ENIYi2g8wSZuYrxs','n2bEhi8v3mgfNnjIeMyK0','HEY!!!','2023-03-26 22:15:04',1,1,1,0,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_rC5xRQC5bNnmY9pxiu482\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreihyrn4fciwvamrppe3nvvoxi2xm4rjxac7b766j6hc7tjhswnqgoq\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreie6sil52ks5cnqdyu2a5ngrmbia3lt7nbwmmrn76cths7dq47f3cu.jpg',NULL),
-	(67,'activity','n2bEhi8v3mgfNnjIeMyK0','_xfKpaXhtreiMtaBB2cayx','n2bEhi8v3mgfNnjIeMyK0','_xfKpaXhtreiMtaBB2cayx','2023-03-27 15:32:37',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_MwKVl6QtJgktaExW2dG0c\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreid5cgwzdcjtr4lnn4obdroefoqbplt5a627w623siepcwcvd3c6ei\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreie6sil52ks5cnqdyu2a5ngrmbia3lt7nbwmmrn76cths7dq47f3cu.jpg',NULL),
-	(68,'activity','n2bEhi8v3mgfNnjIeMyK0','_VnvgWXzXJSOovmGhBoppA','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-27 15:32:37',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_vnjIYONKpeZsmIbPaxu6F\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',NULL),
-	(69,'activity','kDtzuV8rkZHGqo5NQPUAS','_tf79lyxNKY8kZ2Fl6TEbx','kDtzuV8rkZHGqo5NQPUAS','My new Activity','2023-03-27 18:41:35',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_qI4e6LwF5AmgJyCEZFCJf\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreihfa4ztampzcs5dawnwd2aedqlvpxjbogus6q2fsgw554kxeo2jau\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/activity_default.jpg',NULL),
-	(70,'activity','n2bEhi8v3mgfNnjIeMyK0','_DN1ERHEfjjP5XXYKp5DaX','n2bEhi8v3mgfNnjIeMyK0','_DN1ERHEfjjP5XXYKp5DaX','2023-03-27 20:40:28',0,1,1,1,1,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_mDFxIShIyHgYIWphX26IA\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreibcuwwnvkpb5zn2fiy3pho5ocaotom4oxeckh6mscl5asuwjqtdya\", \"itemWeights\": [1], \"isSinglePage\": true}','/media/bafkreig5lhv2bwixipe7mo5vteyg24gqgutg4sbddfehlo3qr6nlb32o2a.jpg',NULL),
-	(71,'activity','n2bEhi8v3mgfNnjIeMyK0','_rSFkYfdM1w7KsCPLKg16S','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-27 23:02:49',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_O8h5YqR4i05Ak0MDuftY4\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',NULL),
-	(72,'activity','kDtzuV8rkZHGqo5NQPUAS','_92h0JCdQ8GWozsMOkcboN','kDtzuV8rkZHGqo5NQPUAS','Untitled Activity','2023-03-28 13:20:21',0,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_XMp7Xcik4FUb7kzK8c1NR\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',NULL),
-	(74,'activity','n2bEhi8v3mgfNnjIeMyK0','_lfEFy3WqCiHgVp8xUTLhR','n2bEhi8v3mgfNnjIeMyK0','Untitled Activity','2023-03-29 21:17:24',1,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_Fqfj6yGcpLGfdC4NOT323\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}','/activity_default.jpg',NULL),
-	(75,'activity','_jbFux7wn6QPHWpzs59NNL','_NYL5H0TbZs7tT6abh1m6w','_jbFux7wn6QPHWpzs59NNL','Test me','2023-03-30 00:41:56',0,0,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_7ngo01aKn2hDPUN8D0O7W\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": null, \"itemWeights\": [1], \"isSinglePage\": true}',NULL,NULL);
-
-/*!40000 ALTER TABLE `course_content` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table course_grade_category
@@ -354,35 +321,6 @@ LOCK TABLES `course_role` WRITE;
 
 INSERT INTO `course_role` (`courseId`, `roleId`, `label`, `isIncludedInGradebook`, `canViewCourse`, `canViewUnassignedContent`, `canViewContentSource`, `canEditContent`, `canPublishContent`, `canProctor`, `canViewAndModifyGrades`, `canViewActivitySettings`, `canModifyActivitySettings`, `canModifyCourseSettings`, `dataAccessPermission`, `canViewUsers`, `canManageUsers`, `isAdmin`, `isOwner`, `sectionPermissionOnly`)
 VALUES
-	('_6Ih49jCBQQJwXPxymf4aE','3JRNpFofoYpZ2lcOIcnkw','Author',0,1,1,1,1,1,0,0,0,0,0,'Aggregate',0,0,0,0,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','DohbDtghtLsumJMrSAWcU','Owner',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,1,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','eAwVktSYpdME1BS74sOJE','Guest Instructor',0,1,1,1,0,0,0,0,1,0,0,'None',0,0,0,0,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','kb112fiNFjuxrOW108rrr','Student',1,1,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','kL3Wdw6ay1uIkA2uz4M5k','Instructor (non-editing)',0,1,1,1,0,0,1,1,1,1,0,'Aggregate',1,1,0,0,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','NyxPngS0qpwBmJq9CI2FD','Proctor',0,1,0,0,0,0,1,0,0,0,0,'None',1,0,0,0,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','utJqKkOc1gFGnHu6N1P8J','Designer',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,0,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','VuXxFxS2SdVBUIRAXWOWl','TA',0,1,1,1,0,0,1,1,1,0,0,'Aggregate',1,0,0,0,NULL),
-	('_6Ih49jCBQQJwXPxymf4aE','zVyF5byYHccryY2IR1XUn','weird role',0,1,0,0,0,0,0,0,0,0,0,'Identified',0,0,0,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','4jNt0YR8dh7Im8hR0TbSQ','Proctor',0,1,0,0,0,0,1,0,0,0,0,'None',1,0,0,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','b2k9P0y6QFvHOCQ5EzQs5','Instructor (non-editing)',0,1,1,1,0,0,1,1,1,1,0,'Aggregate',1,1,0,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','csyFkrbunmzv86VkJr1KO','Author',0,1,1,1,1,1,0,0,0,0,0,'Aggregate',0,0,0,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','HHE6ozq7TqCAM9HGweqxc','TA',0,1,1,1,0,0,1,1,1,0,0,'Aggregate',1,0,0,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','LxGQmGZvDQ4twRjih4R3g','Guest Instructor',0,1,1,1,0,0,0,0,1,0,0,'None',0,0,0,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','lYorz8CdZfxhxcKdY4owg','Designer',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','WU0Z5zJjauqi3owRhxCbW','Owner',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,1,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','XOeEQaGKHB77FSiwanjgR','Student',1,1,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),
-	('_jbFux7wn6QPHWpzs59NNL','YXdCxxNKdZizSDtsGFakq','Auditor',0,1,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','2dXlIPiClUk5OWXP4FgG1','Instructor (non-editing)',0,1,1,1,0,0,1,1,1,1,0,'Aggregate',1,1,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','AgOGh4CORUwMv8wQu7feF','Guest Instructor',0,1,1,1,0,0,0,0,1,0,0,'None',0,0,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','E7nXEqxAe2sbkYhdy3WQ6','Author',0,1,1,1,1,1,0,0,0,0,0,'Aggregate',0,0,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','g69ylodbvZm8IH5Kusuj3','Student',1,1,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','G6QSH7UkyojdxFknDeK53','Proctor',0,1,0,0,0,0,1,0,0,0,0,'None',1,0,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','HkqNhgD2mCO7Su5o6Oedi','Auditor',0,1,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','SnKkWBGvzYdZ840I8fYxF','TA',0,1,1,1,0,0,1,1,1,0,0,'Aggregate',1,0,0,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','V1Wrq51IE4KlXXVK9iCXA','Designer',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,0,NULL),
-	('_RZdUgp6Ly8UohjwyUP5LZ','VYR5DOmDU1Dk17usG9F17','Owner',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,1,NULL),
-	('kDtzuV8rkZHGqo5NQPUAS','coUI6WMSDfN9sMiHmJBcJ','Owner',0,1,1,1,1,1,1,1,1,1,1,'None',1,1,1,1,NULL),
-	('n2bEhi8v3mgfNnjIeMyK0','LOdhwzdh6YuYZZfh71BK8','Owner',0,1,1,1,1,1,1,1,1,1,1,'None',1,1,1,1,NULL),
 	('umnMathPlacement','7VhPa3uv4pClP0WNyEDQJ','Student',1,0,0,0,0,0,0,0,0,0,0,'None',0,0,0,0,NULL),
 	('umnMathPlacement','dx39LHmbs6dzvU4aVdJHr','Author',0,1,1,1,1,1,0,0,0,0,0,'Aggregate',0,0,0,0,NULL),
 	('umnMathPlacement','JCrC2g6iRxFN55OZPj3eL','Owner',0,1,1,1,1,1,1,1,1,1,1,'Identified',1,1,1,1,NULL);
@@ -419,12 +357,6 @@ LOCK TABLES `course_user` WRITE;
 
 INSERT INTO `course_user` (`courseId`, `userId`, `externalId`, `dateEnrolled`, `section`, `withdrew`, `dateWithdrew`, `courseCredit`, `courseGrade`, `overrideCourseGrade`, `timeLimitMultiplier`, `roleId`)
 VALUES
-	('_6Ih49jCBQQJwXPxymf4aE','devuserid',NULL,'2023-03-15 20:21:36',NULL,b'0',NULL,NULL,NULL,NULL,1,'DohbDtghtLsumJMrSAWcU'),
-	('_6Ih49jCBQQJwXPxymf4aE','t1LsUo14It9GJIWAs9xnB','','2023-03-23 14:56:40','',b'0',NULL,NULL,NULL,NULL,1,'zVyF5byYHccryY2IR1XUn'),
-	('_jbFux7wn6QPHWpzs59NNL','devuserid',NULL,'2023-03-28 17:00:04',NULL,b'0',NULL,NULL,NULL,NULL,1,'WU0Z5zJjauqi3owRhxCbW'),
-	('_RZdUgp6Ly8UohjwyUP5LZ','devuserid',NULL,'2023-03-27 23:09:58',NULL,b'0',NULL,NULL,NULL,NULL,1,'VYR5DOmDU1Dk17usG9F17'),
-	('kDtzuV8rkZHGqo5NQPUAS','t1LsUo14It9GJIWAs9xnB',NULL,'2023-03-27 14:22:37',NULL,b'0',NULL,NULL,NULL,NULL,1,'coUI6WMSDfN9sMiHmJBcJ'),
-	('n2bEhi8v3mgfNnjIeMyK0','devuserid',NULL,'2023-03-13 23:14:56',NULL,b'0',NULL,NULL,NULL,NULL,1,'LOdhwzdh6YuYZZfh71BK8'),
 	('umnMathPlacement','devuserid',NULL,'2022-10-21 18:36:28',NULL,b'0',NULL,NULL,NULL,NULL,1,'JCrC2g6iRxFN55OZPj3eL');
 
 /*!40000 ALTER TABLE `course_user` ENABLE KEYS */;
@@ -757,31 +689,6 @@ CREATE TABLE `pages` (
   CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`containingDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
-LOCK TABLES `pages` WRITE;
-/*!40000 ALTER TABLE `pages` DISABLE KEYS */;
-
-INSERT INTO `pages` (`courseId`, `containingDoenetId`, `doenetId`, `label`, `isDeleted`)
-VALUES
-	('kDtzuV8rkZHGqo5NQPUAS','_92h0JCdQ8GWozsMOkcboN','_XMp7Xcik4FUb7kzK8c1NR','Untitled',0),
-	('n2bEhi8v3mgfNnjIeMyK0','_A8U07ENIYi2g8wSZuYrxs','_rC5xRQC5bNnmY9pxiu482','Untitled',1),
-	('n2bEhi8v3mgfNnjIeMyK0','_DN1ERHEfjjP5XXYKp5DaX','_mDFxIShIyHgYIWphX26IA','Untitled',0),
-	('n2bEhi8v3mgfNnjIeMyK0','_DWRUIz0ngtbZCm4MJuYu9','_x1HzuyJwvcarTUasvozEp','Untitled',0),
-	('n2bEhi8v3mgfNnjIeMyK0','_EHo02ENCyv55HgZFVN7xH','_1683DIudmiiJKwtIM6f8V','Untitled',1),
-	('n2bEhi8v3mgfNnjIeMyK0','_gdgXJwqjCRM4TfH8WYZ4J','_GRwJiUJhOdrcYNz5T2NMW','Untitled',1),
-	('n2bEhi8v3mgfNnjIeMyK0','_jyBQ8oDQxwS3lLFV477Ru','_fULTsPPQMyalZQJo39BQ2','Untitled',0),
-	('n2bEhi8v3mgfNnjIeMyK0','_lfEFy3WqCiHgVp8xUTLhR','_Fqfj6yGcpLGfdC4NOT323','Untitled',1),
-	('n2bEhi8v3mgfNnjIeMyK0','_mSN2sMOgIrjbxJLDADg3z','_b6KyW8FmAhEavBpKquib4','Untitled',1),
-	('n2bEhi8v3mgfNnjIeMyK0','_NosV4hvVRLS6ERdB5MFi1','_DNKRNwytb0JohdYcfH7kK','Untitled',1),
-	('_jbFux7wn6QPHWpzs59NNL','_NYL5H0TbZs7tT6abh1m6w','_7ngo01aKn2hDPUN8D0O7W','Untitled',0),
-	('n2bEhi8v3mgfNnjIeMyK0','_rSFkYfdM1w7KsCPLKg16S','_O8h5YqR4i05Ak0MDuftY4','Untitled',1),
-	('kDtzuV8rkZHGqo5NQPUAS','_tf79lyxNKY8kZ2Fl6TEbx','_qI4e6LwF5AmgJyCEZFCJf','Untitled',0),
-	('n2bEhi8v3mgfNnjIeMyK0','_VnvgWXzXJSOovmGhBoppA','_vnjIYONKpeZsmIbPaxu6F','Untitled',1),
-	('n2bEhi8v3mgfNnjIeMyK0','_xfKpaXhtreiMtaBB2cayx','_MwKVl6QtJgktaExW2dG0c','Untitled',0),
-	('n2bEhi8v3mgfNnjIeMyK0','_yLqBDOFOlO4cVGn5XnupY','_j06hynxES6dEMFrAvgMjA','Untitled',1),
-	('n2bEhi8v3mgfNnjIeMyK0','_zdgXtX9aLTbq5LH6OJtKX','_GX1QZfuXec1UuBc1wAQ90','Untitled',1);
-
-/*!40000 ALTER TABLE `pages` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table support_files
