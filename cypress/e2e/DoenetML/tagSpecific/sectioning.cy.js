@@ -2557,4 +2557,108 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
+  it('Problems tag causes child sections to be rendered as a list', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <problem name="aProb" newNamespace>
+      <title>This is a problem</title>
+      <p>Here is a problem!</p>
+  
+      <ol>
+        <li>Item 1</li>
+        <li>Item 2</li>
+      </ol>
+    </problem>
+  
+    <exercises name="exercises">
+      <problem name="prob1" newNamespace>
+        <p>We don't have a title, but we have a list.</p>
+          
+        <ol>
+          <li>Item A</li>
+          <li>Item B</li>
+        </ol>
+      </problem>
+      <problem name="prob2" newNamespace>
+      <title>A titled problem</title>
+        <p>Work hard</p>
+      </problem>
+  
+      $aProb{assignNames='aProbb'}
+    </exercises>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/aProb_title').should('have.text', 'This is a problem');
+    cy.get('#\\/aProb\\/_ol1').should('have.css', 'list-style-type', 'decimal');
+
+    cy.get('#\\/exercises li').eq(0).should('contain.text', "We don't have a title, but we have a list.")
+
+    cy.get('#\\/prob1_title').should('have.text', '');
+    cy.get('#\\/prob1\\/_ol1').should('have.css', 'list-style-type', 'lower-alpha');
+
+    cy.get('#\\/prob2_title').should('have.text', 'A titled problem');
+
+    cy.get('#\\/aProbb_title').should('have.text', 'This is a problem');
+    cy.get('#\\/aProbb\\/_ol1').should('have.css', 'list-style-type', 'lower-alpha');
+
+
+
+  });
+
+  it('As list attribute causes child sections to be rendered as a list', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <problem name="aProb" newNamespace>
+      <title>This is a problem</title>
+      <p>Here is a problem!</p>
+  
+      <ol>
+        <li>Item 1</li>
+        <li>Item 2</li>
+      </ol>
+    </problem>
+  
+    <section name="exercises" asList>
+      <problem name="prob1" newNamespace>
+        <p>We don't have a title, but we have a list.</p>
+          
+        <ol>
+          <li>Item A</li>
+          <li>Item B</li>
+        </ol>
+      </problem>
+      <problem name="prob2" newNamespace>
+      <title>A titled problem</title>
+        <p>Work hard</p>
+      </problem>
+  
+      $aProb{assignNames='aProbb'}
+    </section>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/aProb_title').should('have.text', 'This is a problem');
+    cy.get('#\\/aProb\\/_ol1').should('have.css', 'list-style-type', 'decimal');
+
+    cy.get('#\\/exercises li').eq(0).should('contain.text', "We don't have a title, but we have a list.")
+
+    cy.get('#\\/prob1_title').should('have.text', '');
+    cy.get('#\\/prob1\\/_ol1').should('have.css', 'list-style-type', 'lower-alpha');
+
+    cy.get('#\\/prob2_title').should('have.text', 'A titled problem');
+
+    cy.get('#\\/aProbb_title').should('have.text', 'This is a problem');
+    cy.get('#\\/aProbb\\/_ol1').should('have.css', 'list-style-type', 'lower-alpha');
+
+
+
+  });
+
 });

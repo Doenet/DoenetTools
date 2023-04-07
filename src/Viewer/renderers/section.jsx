@@ -68,7 +68,7 @@ export default React.memo(function Section(props) {
 
   if (title) {
     title = <>{SVs.titlePrefix}{title}</>
-  } else {
+  } else if (!SVs.inAList) {
     title = SVs.title;
   }
 
@@ -193,6 +193,13 @@ export default React.memo(function Section(props) {
 
     checkworkComponent = <div>{checkworkComponent}</div>
   }
+
+  if (SVs.asList) {
+    children = <ol>
+      {children.map(child => <li>{child}</li>)}
+    </ol>
+  }
+
 
   //TODO checkwork
   let content =

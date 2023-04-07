@@ -97,6 +97,14 @@ export class SectioningComponent extends BlockComponent {
       public: true,
     }
 
+    attributes.asList = {
+      createComponentOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    }
+
     attributes.level = {
       createComponentOfType: "integer",
     }
@@ -132,6 +140,8 @@ export class SectioningComponent extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let componentClass = this;
+
     // Note: style definition state variables allow one to redefine the style
     // via styledefinitions inside a setup in the section
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
@@ -140,8 +150,21 @@ export class SectioningComponent extends BlockComponent {
     let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
 
+    stateVariableDefinitions.inAList = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        parentIsAsList: {
+          dependencyType: "parentStateVariable",
+          variableName: "asList"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { inAList: Boolean(dependencyValues.parentIsAsList) } }
+      }
+    }
 
     stateVariableDefinitions.enumeration = {
+      stateVariablesDeterminingDependencies: ["inAList"],
       additionalStateVariablesDefined: [{
         variableName: "sectionNumber",
         public: true,
@@ -149,16 +172,43 @@ export class SectioningComponent extends BlockComponent {
           createComponentOfType: "text",
         },
       }],
-      returnDependencies: () => ({
-        sectioningCounter: {
-          dependencyType: "counter",
-          counterName: "sectioning"
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
+      returnDependencies: ({ stateValues }) => {
+
+        let dependencies = {
+          inAList: {
+            dependencyType: "stateVariable",
+            variableName: "inAList"
+          }
         }
-      }),
+
+        if (stateValues.inAList) {
+          dependencies.countAmongSiblings = {
+            dependencyType: "countAmongSiblings",
+            componentType: '_sectioningComponent',
+            includeInheritedComponentTypes: true,
+          }
+        } else {
+
+          dependencies.sectioningCounter = {
+            dependencyType: "counter",
+            counterName: "sectioning"
+          }
+        }
+
+        return dependencies;
+
+      },
       definition({ dependencyValues }) {
 
-        let sectionNumber = String(dependencyValues.sectioningCounter);
-        return { setValue: { enumeration: [sectionNumber], sectionNumber } }
+        if (dependencyValues.inAList) {
+          let sectionNumber = dependencyValues.countAmongSiblings;
+          let enumeration = [sectionNumber];
+          return { setValue: { enumeration, sectionNumber } }
+        } else {
+          let sectionNumber = String(dependencyValues.sectioningCounter);
+          return { setValue: { enumeration: [sectionNumber], sectionNumber } }
+        }
       }
     }
 
@@ -175,9 +225,7 @@ export class SectioningComponent extends BlockComponent {
         if (dependencyValues.renameToAttr) {
           return { setValue: { sectionName: dependencyValues.renameToAttr.stateValues.value } }
         } else {
-          // Note since used an arrow function for definition,
-          // this.name refers to the name of the component class
-          return { setValue: { sectionName: this.name } }
+          return { setValue: { sectionName: componentClass.name } }
         }
       }
     }
@@ -215,15 +263,30 @@ export class SectioningComponent extends BlockComponent {
         titleChildName: {
           dependencyType: "stateVariable",
           variableName: "titleChildName"
+        },
+        asList: {
+          dependencyType: "stateVariable",
+          variableName: "asList"
         }
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentInfoObjects }) {
         let childIndicesToRender = [];
 
         let allTitleChildNames = dependencyValues.titleChildren.map(x => x.componentName);
 
         for (let [ind, child] of dependencyValues.allChildren.entries()) {
-          if (typeof child !== "object"
+          if (dependencyValues.asList) {
+            // if asList, then only include titleChild and sections
+            if (child.componentName === dependencyValues.titleChildName
+              || componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "_sectioningComponent"
+              })
+            ) {
+              childIndicesToRender.push(ind);
+            }
+
+          } else if (typeof child !== "object"
             || !allTitleChildNames.includes(child.componentName)
             || child.componentName === dependencyValues.titleChildName
           ) {
@@ -1058,17 +1121,28 @@ export class SectioningComponentNumberWithSiblings extends SectioningComponent {
         includeParentNumber: {
           dependencyType: "stateVariable",
           variableName: "includeParentNumber"
+        },
+        inAList: {
+          dependencyType: "stateVariable",
+          variableName: "inAList"
+        },
+        countAmongSiblingsInAList: {
+          dependencyType: "countAmongSiblings",
+          componentType: '_sectioningComponent',
+          includeInheritedComponentTypes: true,
         }
       }),
       definition({ dependencyValues }) {
 
         let enumeration = [];
-        if (dependencyValues.includeParentNumber && dependencyValues.sectionAncestor) {
-          enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
+        if (dependencyValues.inAList) {
+          enumeration.push(dependencyValues.countAmongSiblingsInAList)
+        } else {
+          if (dependencyValues.includeParentNumber && dependencyValues.sectionAncestor) {
+            enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
+          }
+          enumeration.push(dependencyValues.countAmongSiblings)
         }
-
-        enumeration.push(dependencyValues.countAmongSiblings)
-
 
         return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
 

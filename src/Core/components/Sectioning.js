@@ -271,6 +271,25 @@ export class Proof extends UnnumberedSectioningComponentNumber {
 
 }
 
+
+export class Problems extends SectioningComponent {
+  static componentType = "problems";
+  static rendererType = "section";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.asList.defaultValue = true;
+    return attributes;
+  }
+
+}
+
+
+export class Exercises extends Problems {
+  static componentType = "exercises";
+}
+
+
 export class StandinForFutureLayoutTag extends SectioningComponent {
   static componentType = "standinForFutureLayoutTag";
   static rendererType = "section";

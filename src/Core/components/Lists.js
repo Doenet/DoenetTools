@@ -75,13 +75,24 @@ export class Ol extends BlockComponent {
           dependencyType: "attributeComponent",
           attributeName: "level",
           variableNames: ["value"]
+        },
+        sectionAncestorInAList: {
+          dependencyType: "ancestor",
+          componentType: "_sectioningComponent",
+          variableNames: ["inAList"],
         }
       }),
       definition({ dependencyValues }) {
         let level = dependencyValues.levelAttr?.stateValues.value;
 
         if (!(level > 0)) {
-          level = (dependencyValues.ancestorLevel?.stateValues.level || 0) + 1;
+          let ancestorLevel = dependencyValues.ancestorLevel?.stateValues.level;
+          if (!(ancestorLevel > 0) && dependencyValues.sectionAncestorInAList?.stateValues.inAList) {
+            level = 2;
+          } else {
+            level = (ancestorLevel || 0) + 1;
+          }
+
         }
 
         return { setValue: { level } }

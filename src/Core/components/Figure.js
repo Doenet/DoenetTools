@@ -62,6 +62,7 @@ export default class Figure extends BlockComponent {
         },
         forRenderer: true,
       }],
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies({ stateValues }) {
         let dependencies = {};
 
