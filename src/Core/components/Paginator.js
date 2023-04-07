@@ -1,6 +1,15 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export class Paginator extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      setPage: this.setPage.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "paginator";
   static rendererType = "containerBlock";
   static renderChildren = true;
@@ -26,7 +35,7 @@ export class Paginator extends BlockComponent {
 
   }
 
-  
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -84,10 +93,10 @@ export class Paginator extends BlockComponent {
           }
         }
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues, sourceInformation = {} }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues, sourceDetails = {} }) {
 
         // allow change only from setPage action
-        if (!sourceInformation.fromSetPage) {
+        if (!sourceDetails.fromSetPage) {
           return { success: false }
         }
 
@@ -128,7 +137,7 @@ export class Paginator extends BlockComponent {
 
 
 
-  async setPage({ number, actionId }) {
+  async setPage({ number, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     if (!Number.isInteger(number)) {
       this.coreFunctions.resolveAction({ actionId });
@@ -142,13 +151,15 @@ export class Paginator extends BlockComponent {
       componentName: this.componentName,
       stateVariable: "currentPage",
       value: pageNumber,
-      sourceInformation: { fromSetPage: true }
+      sourceDetails: { fromSetPage: true }
     }];
 
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "selected",
         object: {
@@ -177,11 +188,6 @@ export class Paginator extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    setPage: this.setPage.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 }
 
@@ -236,9 +242,7 @@ export class PaginatorControls extends BlockComponent {
       public: true,
     }
     attributes.paginator = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "paginator",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
     return attributes;
@@ -252,21 +256,22 @@ export class PaginatorControls extends BlockComponent {
 
 
     stateVariableDefinitions.paginatorComponentName = {
-      stateVariablesDeterminingDependencies: ["paginator"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.paginator) {
-          return {
-            paginatorComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.paginator
-            }
-          }
-        } else {
-          return {}
+      returnDependencies: () => ({
+        paginator: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "paginator"
         }
-      },
+      }),
       definition({ dependencyValues }) {
-        return { setValue: { paginatorComponentName: dependencyValues.paginatorComponentName } }
+        let paginatorComponentName;
+
+        if (dependencyValues.paginator?.length === 1) {
+          paginatorComponentName = dependencyValues.paginator[0].absoluteName;
+        } else {
+          paginatorComponentName = null;
+        }
+
+        return { setValue: { paginatorComponentName } }
       }
     }
 

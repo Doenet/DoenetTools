@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PageViewer from '../../Viewer/PageViewer.jsx';
 import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
-// import testCodeDoenetML from './testCode.doenet';
+import { useRecoilState } from 'recoil';
+import { darkModeAtom } from '../_framework/DarkmodeController.jsx';
+// import {plainText as testCodeDoenetML } from './testCode.doenet';
 
 function Test() {
   // console.log("===Test")
@@ -50,6 +52,8 @@ function Test() {
   const [readOnly, setReadOnly] = useState(testSettings.readOnly);
   const [showFeedback, setShowFeedback] = useState(testSettings.showFeedback);
   const [showHints, setShowHints] = useState(testSettings.showHints);
+
+  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
 
   const [bundledCore, setBundledCore] = useState(testSettings.bundledCore);
   const [allowLoadState, setAllowLoadState] = useState(testSettings.allowLoadState);
@@ -256,6 +260,14 @@ function Test() {
       </div>
       <hr />
       <div>
+        <label> <input id="testRunner_darkmode" type='checkbox' checked={darkModeToggle === 'dark'} onChange={
+          () => {
+            setDarkModeToggle(darkModeToggle === 'dark' ? 'light' : 'dark')
+          }
+        } />Dark Mode</label>
+      </div>
+      <hr />
+      <div>
         <label> <input id="testRunner_bundledCore" type='checkbox' checked={bundledCore} onChange={
           () => {
             testSettings.bundledCore = !testSettings.bundledCore;
@@ -330,15 +342,14 @@ function Test() {
 
 
   return (
-    <>
+    <div style={{ backgroundColor: "var(--canvas)", color: "var(--canvastext)" }}>
       <div style={{ backgroundColor: "var(--mainGray)" }}><h3><button id="testRunner_toggleControls" onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
         Test Viewer and Core
       </h3>
         {controls}
       </div>
       {viewer}
-
-    </>
+    </div>
   )
 }
 

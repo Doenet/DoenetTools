@@ -4,7 +4,7 @@ describe('ODEsystem Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -801,8 +801,8 @@ describe('ODEsystem Tag Tests', function () {
       let ode = stateVariables['/ode'];
       let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
       let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
-      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
-      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinitions[0]);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinitions[0]);
       let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       let expectedFx = t => 8 * Math.exp(0.1 * t) - 7 * Math.exp(0.2 * t);
@@ -834,8 +834,8 @@ describe('ODEsystem Tag Tests', function () {
       let ode = stateVariables['/ode'];
       let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
       let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
-      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
-      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinitions[0]);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinitions[0]);
       let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       let expectedFx = t => 4 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
@@ -865,8 +865,8 @@ describe('ODEsystem Tag Tests', function () {
       let ode = stateVariables['/ode'];
       let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
       let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
-      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
-      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinitions[0]);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinitions[0]);
       let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       let expectedFx = t => -6 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
@@ -902,8 +902,8 @@ describe('ODEsystem Tag Tests', function () {
       let ode = stateVariables['/ode'];
       let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
       let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
-      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
-      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinitions[0]);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinitions[0]);
       let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       for (let t = 0; t <= 10; t += 1) {

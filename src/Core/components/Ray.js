@@ -1,14 +1,19 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, vectorOperators } from '../utils/math';
 
 export default class Ray extends GraphicalComponent {
-  static componentType = "ray";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveRay: this.moveRay.bind(this),
-    rayClicked: this.rayClicked.bind(this),
-  };
+    Object.assign(this.actions, {
+      moveRay: this.moveRay.bind(this),
+      rayClicked: this.rayClicked.bind(this),
+      mouseDownOnRay: this.mouseDownOnRay.bind(this),
+    });
+
+  }
+  static componentType = "ray";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -49,8 +54,20 @@ export default class Ray extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -64,7 +81,7 @@ export default class Ray extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -321,7 +338,7 @@ export default class Ray extends GraphicalComponent {
             nDimDirection = dependencyValues.directionAttr.stateValues.nDimensions;
           } else if (dependencyValues.directionShadow) {
             let directionTree = dependencyValues.directionShadow.tree;
-            if (Array.isArray(directionTree) && ["tuple", "vector"].includes(directionTree[0])) {
+            if (Array.isArray(directionTree) && vectorOperators.includes(directionTree[0])) {
               nDimDirection = directionTree.length - 1;
             } else {
               nDimDirection = 2;
@@ -405,7 +422,7 @@ export default class Ray extends GraphicalComponent {
             nDimThrough = dependencyValues.throughAttr.stateValues.nDimensions;
           } else if (dependencyValues.throughShadow) {
             let throughTree = dependencyValues.throughShadow.tree;
-            if (Array.isArray(throughTree) && ["tuple", "vector"].includes(throughTree[0])) {
+            if (Array.isArray(throughTree) && vectorOperators.includes(throughTree[0])) {
               nDimThrough = throughTree.length - 1;
             } else {
               nDimThrough = 2;
@@ -489,7 +506,7 @@ export default class Ray extends GraphicalComponent {
             nDimEndpoint = dependencyValues.endpointAttr.stateValues.nDimensions;
           } else if (dependencyValues.endpointShadow) {
             let endpointTree = dependencyValues.endpointShadow.tree;
-            if (Array.isArray(endpointTree) && ["tuple", "vector"].includes(endpointTree[0])) {
+            if (Array.isArray(endpointTree) && vectorOperators.includes(endpointTree[0])) {
               nDimEndpoint = endpointTree.length - 1;
             } else {
               nDimEndpoint = 2;
@@ -1222,9 +1239,6 @@ export default class Ray extends GraphicalComponent {
         let numericalEndpoint = [];
         for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
           let val = endpoint[ind].evaluate_to_constant();
-          if (!Number.isFinite(val)) {
-            val = NaN;
-          }
           numericalEndpoint.push(val);
         }
 
@@ -1258,9 +1272,6 @@ export default class Ray extends GraphicalComponent {
         let numericalThroughpoint = [];
         for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
           let val = through[ind].evaluate_to_constant();
-          if (!Number.isFinite(val)) {
-            val = NaN;
-          }
           numericalThroughpoint.push(val);
         }
 
@@ -1350,7 +1361,9 @@ export default class Ray extends GraphicalComponent {
   }
 
 
-  async moveRay({ endpointcoords, throughcoords, transient, skippable, sourceInformation, actionId }) {
+  async moveRay({ endpointcoords, throughcoords, transient, skippable, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     let updateInstructions = [];
 
@@ -1376,7 +1389,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "direction",
           value: direction.map(x => me.fromAst(x)),
-          sourceInformation
         })
 
       } else {
@@ -1386,7 +1398,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "endpoint",
           value: endpointcoords.map(x => me.fromAst(x)),
-          sourceInformation
         })
       }
 
@@ -1402,7 +1413,6 @@ export default class Ray extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "direction",
             value: direction.map(x => me.fromAst(x)),
-            sourceInformation
           })
         }
       }
@@ -1417,7 +1427,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "through",
           value: throughcoords.map(x => me.fromAst(x)),
-          sourceInformation
         })
       } else {
         // if not based on through
@@ -1432,7 +1441,6 @@ export default class Ray extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "direction",
           value: direction.map(x => me.fromAst(x)),
-          sourceInformation
         })
       }
 
@@ -1449,7 +1457,6 @@ export default class Ray extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "direction",
             value: direction.map(x => me.fromAst(x)),
-            sourceInformation
           })
         }
       }
@@ -1462,11 +1469,15 @@ export default class Ray extends GraphicalComponent {
         transient,
         skippable,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -1483,11 +1494,28 @@ export default class Ray extends GraphicalComponent {
 
   }
 
-  async rayClicked({ actionId }) {
+  async rayClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnRay({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
+      componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

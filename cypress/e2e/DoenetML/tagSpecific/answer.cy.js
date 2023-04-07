@@ -12,7 +12,7 @@ describe('Answer Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('answer sugar from one string', () => {
@@ -993,6 +993,174 @@ describe('Answer Tag Tests', function () {
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hellothere']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hellothere');
+      });
+
+      cy.log("Submit answer")
+      cy.get(textinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hellothere');
+      cy.get('#\\/cr1').should('have.text', 'hellothere')
+      cy.get('#\\/sr1').should('have.text', 'hellothere')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hellothere']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hellothere']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hellothere');
+      });
+
+
+      cy.log("Enter another correct answer")
+      cy.get(textinputAnchor).clear().type(`hello  there`).blur();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hello  there');
+      cy.get('#\\/cr1').should('have.text', 'hello  there')
+      cy.get('#\\/sr1').should('have.text', 'hellothere')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hellothere']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hello  there');
+      });
+
+      cy.log("Submit answer")
+      cy.get(textinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hello  there');
+      cy.get('#\\/cr1').should('have.text', 'hello  there')
+      cy.get('#\\/sr1').should('have.text', 'hello  there')
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+        expect(stateVariables[textinputName].stateValues.value).eq('hello  there');
+      });
+    })
+
+  });
+
+  it('answer sugar from one string, set to text, expanded', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer type="text" expanded>hello there</answer></p>
+  <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', '');
+      cy.get('#\\/cr1').should('have.text', '')
+      cy.get('#\\/sr1').should('have.text', '')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect(stateVariables[textinputName].stateValues.value).eq('');
+      });
+
+      cy.log("Type correct answer in")
+      cy.get(textinputAnchor).type(` hello there `).blur();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', ' hello there ');
+      cy.get('#\\/cr1').should('have.text', ' hello there ')
+      cy.get('#\\/sr1').should('have.text', '')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect(stateVariables[textinputName].stateValues.value).eq(' hello there ');
+      });
+
+
+      cy.log("Pressing enter does not submit")
+      cy.get(textinputAnchor).type(`{enter}`).blur();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', ' hello there \n');
+      cy.get('#\\/cr1').should('have.text', ' hello there \n')
+      cy.get('#\\/sr1').should('have.text', '')
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there \n']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect(stateVariables[textinputName].stateValues.value).eq(' hello there \n');
+      });
+
+
+      cy.log("Submit answer")
+      cy.get(textinputSubmitAnchor).click();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', ' hello there \n');
+      cy.get('#\\/cr1').should('have.text', ' hello there \n')
+      cy.get('#\\/sr1').should('have.text', ' hello there \n')
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there \n']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there \n']);
+        expect(stateVariables[textinputName].stateValues.value).eq(' hello there \n');
+      });
+
+      cy.log("Enter wrong answer")
+      cy.get(textinputAnchor).clear().type(`hellothere`).blur();
+
+      cy.log('Test value displayed in browser')
+      cy.get(textinputAnchor).should('have.value', 'hellothere');
+      cy.get('#\\/cr1').should('have.text', 'hellothere')
+      cy.get('#\\/sr1').should('have.text', ' hello there \n')
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.log('Test internal values')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hellothere']);
+        expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there \n']);
         expect(stateVariables[textinputName].stateValues.value).eq('hellothere');
       });
 
@@ -18288,7 +18456,7 @@ describe('Answer Tag Tests', function () {
       </choiceInput>
     
     </sideBySide>
-    <copy prop='selectedValue' target='choice1' />
+    <copy prop='selectedValue' target='choice1' assignNames="sv" />
     
     <answer>
       <award><when><copy prop='selectedValue' target='choice1' /> = 4</when></award>
@@ -18304,6 +18472,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Select correct answer")
     cy.get('#\\/choice1').select(`4`);
+    cy.get('#\\/sv').should('have.text', '4');
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -18319,6 +18488,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Select incorrect answer and submit")
     cy.get('#\\/choice1').select(`3`);
+    cy.get('#\\/sv').should('have.text', '3');
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
@@ -21961,6 +22131,328 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/ti_correct').should('be.visible');
 
 
+  });
+
+  it('a function defined by formula uses formula for a response', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Type the function <m>f(x) = <function name="correctFunction">x^2</function></m></p>
+  <p><m>f(x) = </m><mathInput name="userFormula"/></p>
+  
+  <answer>
+    <award>
+      <when>$userFormula = $correctFunction</when>
+    </award>
+  </answer>
+
+  <p>Submitted responses: <copy prop="submittedResponses" source="_answer1" assignNames="sr1 sr2" /></p>
+
+  `}, "*");
+    });
+
+
+    cy.get("#\\/_p1").should("contain.text", "Type the function");
+
+
+    cy.get("#\\/userFormula textarea").type("x^2{enter}", { force: true });
+
+    cy.get("#\\/_answer1_submit").click();
+
+    cy.get("#\\/_answer1_correct").should("be.visible");
+
+    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "x2");
+    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
+
+    cy.get("#\\/userFormula textarea").type("{home}3{enter}", { force: true });
+
+    cy.get("#\\/_answer1_submit").click();
+
+    cy.get("#\\/_answer1_incorrect").should("be.visible");
+
+    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "3x2");
+    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
+
+
+  });
+
+  it('hand-graded answers', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Maths: 
+    <answer handGraded name="m1" />
+    <answer handGraded type="math" name="m2" />
+    <answer handGraded name="m3" ><mathinput /></answer>
+    <answer handGraded name="m4">x</answer>
+    <answer handGraded name="m5"><math>x</math></answer>
+    <answer handGraded name="m6"><award><math>x</math></award></answer>
+    <answer handGraded name="m7"><mathinput /><award><math>x</math></award></answer>
+  </p>
+  <p>Submitted responses:
+    <math name="m1sr" copySource="m1" />
+    <math name="m2sr" copySource="m2" />
+    <math name="m3sr" copySource="m3" />
+    <math name="m4sr" copySource="m4" />
+    <math name="m5sr" copySource="m5" />
+    <math name="m6sr" copySource="m6" />
+    <math name="m7sr" copySource="m7" />
+  </p>
+  <p>Credit achieved:
+    <number name="m1ca" copySource="m1.creditAchieved" />
+    <number name="m2ca" copySource="m2.creditAchieved" />
+    <number name="m3ca" copySource="m3.creditAchieved" />
+    <number name="m4ca" copySource="m4.creditAchieved" />
+    <number name="m5ca" copySource="m5.creditAchieved" />
+    <number name="m6ca" copySource="m6.creditAchieved" />
+    <number name="m7ca" copySource="m7.creditAchieved" />
+  </p>
+  <p>Texts: 
+    <answer handGraded type="text" name="t1" />
+    <answer handGraded name="t2"><textinput /></answer>
+    <answer handGraded name="t3"><text>hello</text></answer>
+    <answer handGraded name="t4"><award><text>hello</text></award></answer>
+  </p>
+  <p>Submitted responses:
+    <text name="t1sr" copySource="t1" />
+    <text name="t2sr" copySource="t2" />
+    <text name="t3sr" copySource="t3" />
+    <text name="t4sr" copySource="t4" />
+  </p>
+  <p>Credit achieved:
+    <number name="t1ca" copySource="t1.creditAchieved" />
+    <number name="t2ca" copySource="t2.creditAchieved" />
+    <number name="t3ca" copySource="t3.creditAchieved" />
+    <number name="t4ca" copySource="t4.creditAchieved" />
+  </p>
+  <p>Multiple inputs
+    <answer handGraded name="mi1"><mathinput /><mathinput /></answer>
+    <answer handGraded name="mi2"><textinput /><textinput /></answer>
+    <answer handGraded name="mi3"><mathinput /><textinput /></answer>
+  </p>
+  <p>Submitted responses:
+    <math name="mi1sr1" copySource="mi1.submittedResponse1" />
+    <math name="mi1sr2" copySource="mi1.submittedResponse2" />
+    <text name="mi2sr1" copySource="mi2.submittedResponse1" />
+    <text name="mi2sr2" copySource="mi2.submittedResponse2" />
+    <math name="mi3sr1" copySource="mi3.submittedResponse1" />
+    <text name="mi3sr2" copySource="mi3.submittedResponse2" />
+  </p>
+  <p>Credit achieved:
+    <number name="mi1ca" copySource="mi1.creditAchieved" />
+    <number name="mi2ca" copySource="mi2.creditAchieved" />
+    <number name="mi3ca" copySource="mi3.creditAchieved" />
+  </p>
+  <p>Inputs outside answer
+    <mathinput name="oi1i1" /> <mathinput name="oi1i2" /> <answer handGraded name="oi1"><award><when>$oi1i1$oi1i2</when></award></answer>
+    <textinput name="oi2i1" /> <textinput name="oi2i2" /> <answer handGraded name="oi2"><award><when>$oi2i1$oi2i2</when></award></answer>
+    <mathinput name="oi3i1" /> <textinput name="oi3i2" /> <answer handGraded name="oi3"><award><when>$oi3i1$oi3i2</when></award></answer>
+  </p>
+  <p>Submitted responses:
+    <math name="oi1sr1" copySource="oi1.submittedResponse1" />
+    <math name="oi1sr2" copySource="oi1.submittedResponse2" />
+    <text name="oi2sr1" copySource="oi2.submittedResponse1" />
+    <text name="oi2sr2" copySource="oi2.submittedResponse2" />
+    <math name="oi3sr1" copySource="oi3.submittedResponse1" />
+    <text name="oi3sr2" copySource="oi3.submittedResponse2" />
+  </p>
+  <p>Credit achieved:
+    <number name="oi1ca" copySource="oi1.creditAchieved" />
+    <number name="oi2ca" copySource="oi2.creditAchieved" />
+    <number name="oi3ca" copySource="oi3.creditAchieved" />
+  </p>
+
+
+  `}, "*");
+    });
+
+
+    cy.get("#\\/_text1").should("have.text", "a");
+
+    cy.get('#\\/m1 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m2 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m3 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m4 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m5 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m6 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/m7 textarea').type("x{enter}", { force: true })
+
+    cy.get('#\\/t1 input').type("hello{enter}")
+    cy.get('#\\/t2 input').type("hello{enter}")
+    cy.get('#\\/t3 input').type("hello{enter}")
+    cy.get('#\\/t4 input').type("hello{enter}")
+
+    cy.get('#\\/mi1 textarea').eq(0).type("x{enter}", { force: true })
+    cy.get('#\\/mi1 textarea').eq(1).type("y{enter}", { force: true })
+    cy.get('#\\/mi1_submit').click();
+    cy.get('#\\/mi2 input').eq(0).type("hello{enter}")
+    cy.get('#\\/mi2 input').eq(1).type("bye{enter}")
+    cy.get('#\\/mi2_submit').click();
+    cy.get('#\\/mi3 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/mi3 input').type("bye{enter}")
+    cy.get('#\\/mi3_submit').click();
+
+
+    cy.get('#\\/oi1i1 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/oi1i2 textarea').type("y{enter}", { force: true })
+    cy.get('#\\/oi1_submit').click();
+    cy.get('#\\/oi2i1 input').type("hello{enter}")
+    cy.get('#\\/oi2i2 input').type("bye{enter}")
+    cy.get('#\\/oi2_submit').click();
+    cy.get('#\\/oi3i1 textarea').type("x{enter}", { force: true })
+    cy.get('#\\/oi3i2 input').type("bye{enter}")
+    cy.get('#\\/oi3_submit').click();
+
+
+    cy.get('#\\/oi3sr2').should('have.text', 'bye')
+
+    cy.get('#\\/m1sr .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/m2sr .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/m3sr .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/m4sr .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/m5sr .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/m6sr .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/m7sr .mjx-mrow').eq(0).should('have.text', "x")
+
+    cy.get('#\\/t1sr').should('have.text', "hello")
+    cy.get('#\\/t2sr').should('have.text', "hello")
+    cy.get('#\\/t3sr').should('have.text', "hello")
+    cy.get('#\\/t4sr').should('have.text', "hello")
+
+    cy.get('#\\/mi1sr1 .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/mi1sr2 .mjx-mrow').eq(0).should('have.text', "y")
+    cy.get('#\\/mi2sr1').should('have.text', "hello")
+    cy.get('#\\/mi2sr2').should('have.text', "bye")
+    cy.get('#\\/mi3sr1 .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/mi3sr2').should('have.text', "bye")
+
+    cy.get('#\\/oi1sr1 .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/oi1sr2 .mjx-mrow').eq(0).should('have.text', "y")
+    cy.get('#\\/oi2sr1').should('have.text', "hello")
+    cy.get('#\\/oi2sr2').should('have.text', "bye")
+    cy.get('#\\/oi3sr1 .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get('#\\/oi3sr2').should('have.text', "bye")
+
+
+    cy.get('#\\/m1ca').should('have.text', '0')
+    cy.get('#\\/m2ca').should('have.text', '0')
+    cy.get('#\\/m3ca').should('have.text', '0')
+    cy.get('#\\/m4ca').should('have.text', '0')
+    cy.get('#\\/m5ca').should('have.text', '0')
+    cy.get('#\\/m6ca').should('have.text', '0')
+    cy.get('#\\/m7ca').should('have.text', '0')
+
+    cy.get('#\\/t1ca').should('have.text', '0')
+    cy.get('#\\/t2ca').should('have.text', '0')
+    cy.get('#\\/t3ca').should('have.text', '0')
+    cy.get('#\\/t4ca').should('have.text', '0')
+
+    cy.get('#\\/mi1ca').should('have.text', '0')
+    cy.get('#\\/mi2ca').should('have.text', '0')
+    cy.get('#\\/mi3ca').should('have.text', '0')
+
+    cy.get('#\\/oi1ca').should('have.text', '0')
+    cy.get('#\\/oi2ca').should('have.text', '0')
+    cy.get('#\\/oi3ca').should('have.text', '0')
+
+
+    cy.log("revise answers and submit")
+
+    cy.get('#\\/m1 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/m2 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/m3 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/m4 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/m5 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/m6 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/m7 textarea').type("{end}y{enter}", { force: true })
+
+    cy.get('#\\/t1 input').type(" there{enter}")
+    cy.get('#\\/t2 input').type(" there{enter}")
+    cy.get('#\\/t3 input').type(" there{enter}")
+    cy.get('#\\/t4 input').type(" there{enter}")
+
+
+    cy.get('#\\/mi1 textarea').eq(0).type("{end}z{enter}", { force: true })
+    cy.get('#\\/mi1_submit').click();
+    cy.get('#\\/mi1 textarea').eq(1).type("{end}z{enter}", { force: true })
+    cy.get('#\\/mi1_submit').click();
+    cy.get('#\\/mi2 input').eq(0).type(" there{enter}")
+    cy.get('#\\/mi2_submit').click();
+    cy.get('#\\/mi2 input').eq(1).type(" now{enter}")
+    cy.get('#\\/mi2_submit').click();
+    cy.get('#\\/mi3 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/mi3_submit').click();
+    cy.get('#\\/mi3 input').type(" now{enter}")
+    cy.get('#\\/mi3_submit').click();
+
+
+
+    cy.get('#\\/oi1i1 textarea').type("{end}z{enter}", { force: true })
+    cy.get('#\\/oi1_submit').click();
+    cy.get('#\\/oi1i2 textarea').type("{end}z{enter}", { force: true })
+    cy.get('#\\/oi1_submit').click();
+    cy.get('#\\/oi2i1 input').type(" there{enter}")
+    cy.get('#\\/oi2_submit').click();
+    cy.get('#\\/oi2i2 input').type(" now{enter}")
+    cy.get('#\\/oi2_submit').click();
+    cy.get('#\\/oi3i1 textarea').type("{end}y{enter}", { force: true })
+    cy.get('#\\/oi3_submit').click();
+    cy.get('#\\/oi3i2 input').type(" now{enter}")
+    cy.get('#\\/oi3_submit').click();
+
+
+    cy.get('#\\/oi3sr2').should('have.text', 'bye now')
+
+    cy.get('#\\/m1sr .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/m2sr .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/m3sr .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/m4sr .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/m5sr .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/m6sr .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/m7sr .mjx-mrow').eq(0).should('have.text', "xy")
+
+    cy.get('#\\/t1sr').should('have.text', "hello there")
+    cy.get('#\\/t2sr').should('have.text', "hello there")
+    cy.get('#\\/t3sr').should('have.text', "hello there")
+    cy.get('#\\/t4sr').should('have.text', "hello there")
+
+    cy.get('#\\/mi1sr1 .mjx-mrow').eq(0).should('have.text', "xz")
+    cy.get('#\\/mi1sr2 .mjx-mrow').eq(0).should('have.text', "yz")
+    cy.get('#\\/mi2sr1').should('have.text', "hello there")
+    cy.get('#\\/mi2sr2').should('have.text', "bye now")
+    cy.get('#\\/mi3sr1 .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/mi3sr2').should('have.text', "bye now")
+
+    cy.get('#\\/oi1sr1 .mjx-mrow').eq(0).should('have.text', "xz")
+    cy.get('#\\/oi1sr2 .mjx-mrow').eq(0).should('have.text', "yz")
+    cy.get('#\\/oi2sr1').should('have.text', "hello there")
+    cy.get('#\\/oi2sr2').should('have.text', "bye now")
+    cy.get('#\\/oi3sr1 .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get('#\\/oi3sr2').should('have.text', "bye now")
+
+
+    cy.get('#\\/m1ca').should('have.text', '0')
+    cy.get('#\\/m2ca').should('have.text', '0')
+    cy.get('#\\/m3ca').should('have.text', '0')
+    cy.get('#\\/m4ca').should('have.text', '0')
+    cy.get('#\\/m5ca').should('have.text', '0')
+    cy.get('#\\/m6ca').should('have.text', '0')
+    cy.get('#\\/m7ca').should('have.text', '0')
+
+    cy.get('#\\/t1ca').should('have.text', '0')
+    cy.get('#\\/t2ca').should('have.text', '0')
+    cy.get('#\\/t3ca').should('have.text', '0')
+    cy.get('#\\/t4ca').should('have.text', '0')
+
+    cy.get('#\\/mi1ca').should('have.text', '0')
+    cy.get('#\\/mi2ca').should('have.text', '0')
+    cy.get('#\\/mi3ca').should('have.text', '0')
+
+    cy.get('#\\/oi1ca').should('have.text', '0')
+    cy.get('#\\/oi2ca').should('have.text', '0')
+    cy.get('#\\/oi3ca').should('have.text', '0')
   });
 
 })

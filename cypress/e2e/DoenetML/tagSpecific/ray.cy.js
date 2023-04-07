@@ -21,7 +21,7 @@ describe('Ray Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -5698,6 +5698,201 @@ describe('Ray Tag Tests', function () {
     })
 
   })
+
+  it('change ray by binding to values', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <ray name="v" />
+  <ray name="v2" copySource="v" />
+
+  <p>
+  <copy source="v.through" assignNames="vThrough" />
+  <copy source="v.endpoint" assignNames="vEndpoint" />
+  <copy source="v.direction" assignNames="vDirection" />
+  </p>
+
+  <p>
+  <copy source="v2.through" assignNames="v2Through" />
+  <copy source="v2.endpoint" assignNames="v2Endpoint" />
+  <copy source="v2.direction" assignNames="v2Direction" />
+  </p>
+
+  <p>
+  <mathinput bindValueTo="$v.through" name="mivt" />
+  <mathinput bindValueTo="$v.endpoint" name="mive" />
+  <mathinput bindValueTo="$v.direction" name="mivd" />
+  </p>
+
+  <p>
+  <mathinput bindValueTo="$v2.through" name="miv2t" />
+  <mathinput bindValueTo="$v2.endpoint" name="miv2e" />
+  <mathinput bindValueTo="$v2.direction" name="miv2d" />
+  </p>
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(1,0)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(1,0)');
+
+    cy.log('change head using alt vector')
+    cy.get('#\\/mivt textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 6,9{enter}", { force: true });
+
+    cy.get('#\\/vThrough .mjx-mrow').should('contain.text', '(6,9)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(6,9)');
+
+
+    cy.log('change tail using alt vector')
+    cy.get('#\\/mive textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -3,7{enter}", { force: true });
+    cy.get('#\\/vEndpoint .mjx-mrow').should('contain.text', '(−3,7)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(3,16)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(3,16)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(6,9)');
+
+    cy.log('change displacement using alt vector')
+    cy.get('#\\/mivd textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -4,1{enter}", { force: true });
+    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(−4,1)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(−7,8)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(−7,8)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+
+
+    cy.log('cannot change dimnension through displacement')
+    cy.get('#\\/mivd textarea').type("{ctrl+home}{shift+end}{backspace}(9,8,7{enter}", { force: true });
+    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(9,8)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(6,15)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(6,15)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(9,8)');
+
+
+    cy.log('cannot change dimnension through tail')
+    cy.get('#\\/mive textarea').type("{ctrl+home}{shift+end}{backspace}(-5,-6,-7{enter}", { force: true });
+    cy.get('#\\/vEndpoint .mjx-mrow').should('contain.text', '(−5,−6)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(4,2)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(4,2)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(9,8)');
+
+
+    cy.log('cannot change dimnension through head')
+    cy.get('#\\/mivt textarea').type("{ctrl+home}{shift+end}{backspace}(9,-9,7{enter}", { force: true });
+    cy.get('#\\/vThrough .mjx-mrow').should('contain.text', '(9,−9)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(9,−9)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(14,−3)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(9,−9)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(14,−3)');
+
+
+
+    cy.log('cannot change dimnension through copied head')
+    cy.get('#\\/miv2t textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 0,1,2,3{enter}", { force: true });
+    cy.get('#\\/vThrough .mjx-mrow').should('contain.text', '(0,1)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(0,1)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(0,1)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(5,7)');
+
+
+    cy.log('cannot change dimnension through copied tail')
+    cy.get('#\\/miv2e textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 2, 4, 6, 8{enter}", { force: true });
+    cy.get('#\\/vEndpoint .mjx-mrow').should('contain.text', '(2,4)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(7,11)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(7,11)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(5,7)');
+
+
+    cy.log('cannot change dimnension through copied displacement')
+    cy.get('#\\/miv2d textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -8, -6, =4, -2{enter}", { force: true });
+    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(−8,−6)');
+
+    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
+    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
+    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+
+
+  })
+
+  it('style description changes with theme', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <styleDefinitions>
+        <styleDefinition styleNumber="1" lineColor="brown" lineColorDarkMode="yellow" />
+        <styleDefinition styleNumber="2" lineColor="#540907" lineColorWord="dark red" lineColorDarkMode="#f0c6c5" lineColorWordDarkMode="light red" />
+      </styleDefinitions>
+    </setup>
+    <graph>
+      <ray name="A" styleNumber="1" labelIsName endpoint="(0,0)" through="(1,2)" />
+      <ray name="B" styleNumber="2" labelIsName endpoint="(2,2)" through="(3,4)" />
+      <ray name="C" styleNumber="5" labelIsName endpoint="(4,4)" through="(5,6)" />
+    </graph>
+    <p name="Adescrip">Ray A is $A.styleDescription.</p>
+    <p name="Bdescrip">B is a $B.styleDescriptionWithNoun.</p>
+    <p name="Cdescrip">C is a $C.styleDescriptionWithNoun.</p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Ray A is thick brown.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red ray.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black ray.');
+
+    cy.log('set dark mode')
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_darkmode').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Ray A is thick yellow.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red ray.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white ray.');
+
+
+  });
 
 
 });

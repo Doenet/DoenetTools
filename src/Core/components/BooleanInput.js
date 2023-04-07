@@ -5,9 +5,9 @@ export default class BooleanInput extends Input {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateBoolean: this.updateBoolean.bind(this)
-    };
+    });
 
     this.externalActions = {};
 
@@ -160,7 +160,7 @@ export default class BooleanInput extends Input {
 
   static adapters = ["value"];
 
-  async updateBoolean({ boolean, actionId }) {
+  async updateBoolean({ boolean, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
@@ -193,10 +193,15 @@ export default class BooleanInput extends Input {
         updateInstructions,
         event,
         actionId,
+        sourceInformation,
+        skipRendererUpdate: true,
       });
 
       return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
 
 

@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import useDoenetRender from '../useDoenetRenderer';
+import { BoardContext, LINE_LAYER_OFFSET } from './graph';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 export default React.memo(function RegionBetweenCurveXAxis(props) {
   let { name, id, SVs } = useDoenetRender(props);
@@ -12,6 +14,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
 
   let curveJXG = useRef(null)
   let integralJXG = useRef(null)
+
+  const darkMode = useRecoilValue(darkModeAtom);
+
 
   useEffect(() => {
     //On unmount
@@ -32,7 +37,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       return null;
     }
 
-    let fillColor = SVs.selectedStyle.fillColor;
+
+    let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+    fillColor = fillColor.toLowerCase();
 
 
     // Note: actual content of label is being ignored
@@ -46,7 +53,7 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
 
       fillColor,
       fillOpacity: SVs.selectedStyle.fillOpacity,
@@ -105,14 +112,16 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       integralJXG.current.curveLeft.coords.setCoordinates(JXG.COORDS_BY_USER, [x1, y1]);
       integralJXG.current.curveRight.coords.setCoordinates(JXG.COORDS_BY_USER, [x2, y2]);
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = integralJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
         integralJXG.current.setAttribute({ layer });
       }
 
-      let fillColor = SVs.selectedStyle.fillColor;
+
+      let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+      fillColor = fillColor.toLowerCase();
 
       if (integralJXG.current.visProp.fillcolor !== fillColor) {
         integralJXG.current.visProp.fillcolor = fillColor;
@@ -136,7 +145,7 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       integralJXG.current.needsUpdate = true;
       integralJXG.current.curveLeft.update();
       integralJXG.current.fullUpdate();
-      
+
       board.update();
       board.fullUpdate();
 

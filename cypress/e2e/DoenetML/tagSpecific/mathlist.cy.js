@@ -12,7 +12,7 @@ describe('MathList Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('mathlist from string', () => {
@@ -1295,10 +1295,10 @@ describe('MathList Tag Tests', function () {
     })
 
     cy.log("change values")
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}h{enter}", {force:true});
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}i{enter}", {force:true});
-    cy.get("#\\/mi3 textarea").type("{end}{backspace}j{enter}", {force:true});
-    cy.get("#\\/mi4 textarea").type("{end}{backspace}k{enter}", {force:true});
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}h{enter}", { force: true });
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}i{enter}", { force: true });
+    cy.get("#\\/mi3 textarea").type("{end}{backspace}j{enter}", { force: true });
+    cy.get("#\\/mi4 textarea").type("{end}{backspace}k{enter}", { force: true });
 
 
     cy.log('Test value displayed in browser')
@@ -1376,13 +1376,13 @@ describe('MathList Tag Tests', function () {
 
 
     cy.log("change values")
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}l{enter}", {force:true});
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}m{enter}", {force:true});
-    cy.get("#\\/mi3 textarea").type("{end}{backspace}n{enter}", {force:true});
-    cy.get("#\\/mi4 textarea").type("{end}{backspace}o{enter}", {force:true});
-    cy.get("#\\/mi5 textarea").type("{end}{backspace}p{enter}", {force:true});
-    cy.get("#\\/mi6 textarea").type("{end}{backspace}q{enter}", {force:true});
-    cy.get("#\\/mi7 textarea").type("{end}{backspace}r{enter}", {force:true});
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}l{enter}", { force: true });
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}m{enter}", { force: true });
+    cy.get("#\\/mi3 textarea").type("{end}{backspace}n{enter}", { force: true });
+    cy.get("#\\/mi4 textarea").type("{end}{backspace}o{enter}", { force: true });
+    cy.get("#\\/mi5 textarea").type("{end}{backspace}p{enter}", { force: true });
+    cy.get("#\\/mi6 textarea").type("{end}{backspace}q{enter}", { force: true });
+    cy.get("#\\/mi7 textarea").type("{end}{backspace}r{enter}", { force: true });
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math4 .mjx-mrow').should('contain.text', 'r')
@@ -1511,11 +1511,11 @@ describe('MathList Tag Tests', function () {
 
 
     cy.log("change values")
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}f{enter}", {force:true});
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}g{enter}", {force:true});
-    cy.get("#\\/mi3 textarea").type("{end}{backspace}h{enter}", {force:true});
-    cy.get("#\\/mi4 textarea").type("{end}{backspace}i{enter}", {force:true});
-    cy.get("#\\/mi5 textarea").type("{end}{backspace}j{enter}", {force:true});
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}f{enter}", { force: true });
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}g{enter}", { force: true });
+    cy.get("#\\/mi3 textarea").type("{end}{backspace}h{enter}", { force: true });
+    cy.get("#\\/mi4 textarea").type("{end}{backspace}i{enter}", { force: true });
+    cy.get("#\\/mi5 textarea").type("{end}{backspace}j{enter}", { force: true });
 
 
     cy.log('Test value displayed in browser')
@@ -2287,7 +2287,7 @@ describe('MathList Tag Tests', function () {
 
     cy.get("#\\/ml1 .mjx-mrow").eq(0).should("have.text", "34.24502348")
     cy.get("#\\/ml1 .mjx-mrow").eq(1).should("have.text", "250")
- 
+
     cy.get("#\\/ml1Dig4 .mjx-mrow").eq(0).should("have.text", "34.25")
     cy.get("#\\/ml1Dig4 .mjx-mrow").eq(1).should("have.text", "245.2")
     cy.get("#\\/ml1Dig4a .mjx-mrow").eq(0).should("have.text", "34.25")

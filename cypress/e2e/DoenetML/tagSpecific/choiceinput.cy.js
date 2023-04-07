@@ -13,7 +13,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('default is block format, shuffleOrder', () => {
@@ -478,7 +478,7 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
       <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy target="lambda2" />+<copy target="twice" /></math>.</choice>
       <choice>The sequence is <aslist><sequence from="1" to="5" /></aslist>.</choice>
-      <choice>Can't convert this latex: <m>\\int_a^b q(t) \\, dt</m>.</choice>
+      <choice>Can't convert this latex: <m>\\bar{x}^i</m>.</choice>
     </choiceinput>
 
     <copy name="copy" inline target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
@@ -501,7 +501,7 @@ describe('ChoiceInput Tag Tests', function () {
       "The function is f(ξ) = sin(ξ).",
       "The sum of λ² and 2 λ² is 3 λ².",
       "The sequence is 1, 2, 3, 4, 5.",
-      "Can't convert this latex: \\int_a^b q(t) \\, dt."
+      "Can't convert this latex: \\bar{x}^i."
     ];
     cy.get('#\\/_p1').should('have.text', 'Selected values: ')
     cy.get('#\\/_p2').should('have.text', 'Selected indices: ')

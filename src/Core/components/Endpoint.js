@@ -27,7 +27,7 @@ export default class Endpoint extends Point {
   }
 
 
-  async switchPoint({ actionId, }) {
+  async switchPoint({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -37,6 +37,8 @@ export default class Endpoint extends Point {
           value: !await this.stateValues.open,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

@@ -15,7 +15,7 @@ describe('Math Operator Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('sum', () => {
@@ -2071,10 +2071,10 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('floor(2.1x)')
+        expect(text.trim()).equal('⌊2.1x⌋')
       });
       cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('ceil(−3.2y)')
+        expect(text.trim()).equal('⌈−3.2y⌉')
       });
 
       cy.window().then(async (win) => {
@@ -2090,6 +2090,109 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/_ceil4'].stateValues.value).eqls(["apply", "ceil", ['-', ['*', 3.2, 'y']]]);
       })
     })
+  })
+
+  it('floor and ceil as math expression', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <math name="floor1" format="latex">\\lfloor 55.3252326 \\rfloor</math>
+      <math name="floor2">floor(55.3252326)</math>
+      <math name="floor1simp" copySource="floor1" simplify />
+      <math name="floor2simp" copySource="floor2" simplify />
+      <math name="ceil1" format="latex">\\lceil \\log(31.1) \\rceil</math>
+      <math name="ceil2">ceil(log(31.1))</math>
+      <math name="ceil1simp" copySource="ceil1" simplify />
+      <math name="ceil2simp" copySource="ceil2" simplify />
+
+      <math name="floor3" format="latex" simplify>\\lfloor $floor1/$ceil1 \\rfloor</math>
+      <math name="floor4" simplify>floor($floor1/$ceil1)</math>
+      <math name="ceil3" format="latex" simplify>\\lceil $ceil1/$floor1 \\rceil</math>
+      <math name="ceil4" simplify>ceil($ceil1/$floor1)</math>
+
+      <p>Allow for slight roundoff error:
+      <math format="latex" name="floor5" simplify>\\lfloor 3.999999999999999 \\rfloor</math>
+      <math name="floor6" simplify>floor 3.999999999999999</math>
+      <math format="latex" name="ceil5" simplify>\\lceil -6999.999999999999 \\rceil</math>
+      <math name="ceil6" simplify>ceil -6999.999999999999</math>
+      </p>
+
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('⌊55.3252326⌋')
+    });
+    cy.get('#\\/floor2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('⌊55.3252326⌋')
+    });
+    cy.get('#\\/floor1simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('55')
+    });
+    cy.get('#\\/floor2simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('55')
+    });
+    cy.get('#\\/ceil1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('⌈log(31.1)⌉')
+    });
+    cy.get('#\\/ceil2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('⌈log(31.1)⌉')
+    });
+    cy.get('#\\/ceil1simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/ceil2simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('13')
+    });
+    cy.get('#\\/floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('13')
+    });
+    cy.get('#\\/ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/floor5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/floor6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/ceil5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7000')
+    });
+    cy.get('#\\/ceil6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7000')
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/floor1'].stateValues.value).eqls(["apply", "floor", 55.3252326]);
+      expect(stateVariables['/floor2'].stateValues.value).eqls(["apply", "floor", 55.3252326]);
+      expect(stateVariables['/floor1simp'].stateValues.value).eq(55);
+      expect(stateVariables['/floor2simp'].stateValues.value).eq(55);
+      expect(stateVariables['/ceil1'].stateValues.value).eqls(["apply", "ceil", ["apply", "log", 31.1]]);
+      expect(stateVariables['/ceil2'].stateValues.value).eqls(["apply", "ceil", ["apply", "log", 31.1]]);
+      expect(stateVariables['/ceil1simp'].stateValues.value).eq(4);
+      expect(stateVariables['/ceil2simp'].stateValues.value).eq(4);
+      expect(stateVariables['/floor3'].stateValues.value).eq(13);
+      expect(stateVariables['/floor4'].stateValues.value).eq(13);
+      expect(stateVariables['/ceil3'].stateValues.value).eq(1);
+      expect(stateVariables['/ceil4'].stateValues.value).eq(1);
+      expect(stateVariables['/floor5'].stateValues.value).eq(4);
+      expect(stateVariables['/floor6'].stateValues.value).eq(4);
+      expect(stateVariables['/ceil5'].stateValues.value).eq(-7000);
+      expect(stateVariables['/ceil6'].stateValues.value).eq(-7000);
+
+    })
+
   })
 
   it('abs', () => {
@@ -5373,7 +5476,7 @@ describe('Math Operator Tag Tests', function () {
     cy.get('#\\/mimaths01 textarea').type("{end}{backspace}8{enter}", { force: true });
 
     cy.get('#\\/maths01 .mjx-mrow').should('contain.text', '6')
-    
+
     cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
     cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
     cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
@@ -6028,7 +6131,7 @@ describe('Math Operator Tag Tests', function () {
     cy.get('#\\/mimaths10 textarea').type("{end}{backspace}2{enter}", { force: true });
 
     cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '3')
-    
+
     cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
     cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
     cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
@@ -6689,7 +6792,7 @@ describe('Math Operator Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <function name="f" domain="[0,2]">(x+1)(x-2)(x-4)</function>
+      <function name="f" domain="[0,2]" simplify>(x+1)(x-2)(x-4)</function>
       <p>Min on [0,2]: <min name="min02">$$f(0) $(f.minimumValues) $$f(2)</min>.</p>
       <p>Abs treats as product of three factors: <abs name="abs">$$f(0) $(f.minimumValues) $$f(2)</abs>.</p>
       `}, "*");

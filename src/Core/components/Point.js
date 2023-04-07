@@ -1,10 +1,21 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
+import { convertValueToMathExpression, roundForDisplay, vectorOperators } from '../utils/math';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Point extends GraphicalComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      movePoint: this.movePoint.bind(this),
+      switchPoint: this.switchPoint.bind(this),
+      pointClicked: this.pointClicked.bind(this),
+      mouseDownOnPoint: this.mouseDownOnPoint.bind(this),
+    });
+
+  }
   static componentType = "point";
 
 
@@ -246,12 +257,23 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
 
+        let markerColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          markerColorWord = dependencyValues.selectedStyle.markerColorWordDarkMode;
+        } else {
+          markerColorWord = dependencyValues.selectedStyle.markerColorWord;
+        }
         return {
           setValue: {
-            styleDescription: dependencyValues.selectedStyle.markerColorWord
+            styleDescription: markerColorWord
           }
         };
       }
@@ -267,10 +289,14 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
-        let pointDescription = dependencyValues.selectedStyle.markerColorWord
+        let pointDescription = dependencyValues.styleDescription
           + " " + dependencyValues.selectedStyle.markerStyleWord;
         return { setValue: { styleDescriptionWithNoun: pointDescription } };
       }
@@ -432,7 +458,7 @@ export default class Point extends GraphicalComponent {
         if (basedOnCoords) {
 
           let coordsTree = coords.tree;
-          if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
+          if (Array.isArray(coordsTree) && vectorOperators.includes(coordsTree[0])) {
             nDimensions = Math.max(coordsTree.length - 1, nDimensions);
           } else {
             nDimensions = Math.max(1, nDimensions);
@@ -592,7 +618,7 @@ export default class Point extends GraphicalComponent {
         if (basedOnCoords) {
 
           let coordsTree = coords.tree;
-          if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
+          if (Array.isArray(coordsTree) && vectorOperators.includes(coordsTree[0])) {
             for (let arrayKey of arrayKeys) {
               let ind = Number(arrayKey);
               if (ind >= 0 || ind < coordsTree.length - 1) {
@@ -942,7 +968,7 @@ export default class Point extends GraphicalComponent {
 
         let coordsTree = desiredStateVariableValues.coords.tree;
 
-        if (!(Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0]))) {
+        if (!(Array.isArray(coordsTree) && vectorOperators.includes(coordsTree[0]))) {
           desiredXValues[0] = desiredStateVariableValues.coords;
         } else {
           for (let i = 0; i < coordsTree.length - 1; i++) {
@@ -1088,11 +1114,7 @@ export default class Point extends GraphicalComponent {
           let x = dependencyValuesByKey[arrayKey].x;
           if (x) {
             x = dependencyValuesByKey[arrayKey].x.evaluate_to_constant();
-            if (Number.isFinite(x)) {
-              numericalXs[arrayKey] = x;
-            } else {
-              numericalXs[arrayKey] = NaN;
-            }
+            numericalXs[arrayKey] = x;
           } else {
             numericalXs[arrayKey] = NaN;
           }
@@ -1172,7 +1194,9 @@ export default class Point extends GraphicalComponent {
     stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
   }];
 
-  async movePoint({ x, y, z, transient, actionId }) {
+  async movePoint({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -1193,6 +1217,8 @@ export default class Point extends GraphicalComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1203,6 +1229,8 @@ export default class Point extends GraphicalComponent {
           value: components,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -1223,11 +1251,14 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  async pointClicked({ actionId }) {
+  async pointClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
@@ -1235,10 +1266,18 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  actions = {
-    movePoint: this.movePoint.bind(this),
-    switchPoint: this.switchPoint.bind(this),
-    pointClicked: this.pointClicked.bind(this),
-  };
+  async mouseDownOnPoint({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
+      componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }

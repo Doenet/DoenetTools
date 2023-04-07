@@ -4,6 +4,14 @@ import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 export class M extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveMath: this.moveMath.bind(this),
+    });
+
+  }
   static componentType = "m";
   static rendererType = "math";
 
@@ -312,7 +320,9 @@ export class M extends InlineComponent {
     return stateVariableDefinitions;
   }
 
-  async moveMath({ x, y, z, transient, actionId }) {
+  async moveMath({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = ["vector"];
     if (x !== undefined) {
       components[1] = x;
@@ -333,6 +343,8 @@ export class M extends InlineComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -343,6 +355,8 @@ export class M extends InlineComponent {
           value: me.fromAst(components),
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -357,11 +371,6 @@ export class M extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveMath: this.moveMath.bind(this),
-  };
 
 }
 

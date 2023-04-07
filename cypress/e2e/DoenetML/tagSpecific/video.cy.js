@@ -13,7 +13,7 @@ describe('Video Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -267,7 +267,7 @@ describe('Video Tag Tests', function () {
     cy.get('#\\/v').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
 
     cy.get('#\\/state').contains("initializing")
-    
+
     cy.log('clicking play action too early does not do anything (no error)')
     cy.get('#\\/playAction').click();
     cy.get('#\\/state').contains("stopped")

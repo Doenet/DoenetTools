@@ -1,15 +1,20 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
-import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
+import { convertValueToMathExpression, roundForDisplay, vectorOperators } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
-  static componentType = "vector";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveVector: this.moveVector.bind(this),
-    vectorClicked: this.vectorClicked.bind(this),
+    Object.assign(this.actions, {
+      moveVector: this.moveVector.bind(this),
+      vectorClicked: this.vectorClicked.bind(this),
+      mouseDownOnVector: this.mouseDownOnVector.bind(this),
+    });
+
   }
+  static componentType = "vector";
 
   static primaryStateVariableForDefinition = "displacementShadow";
 
@@ -78,6 +83,13 @@ export default class Vector extends GraphicalComponent {
     attributes.padZeros = {
       createComponentOfType: "boolean",
       createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
+
+    attributes.displayWithAngleBrackets = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayWithAngleBrackets",
       defaultValue: false,
       public: true,
     };
@@ -234,8 +246,20 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -249,7 +273,7 @@ export default class Vector extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -686,7 +710,7 @@ export default class Vector extends GraphicalComponent {
               // since based on displacement and no source of displacement
               // we must have a displacement shadow
               let displacementTree = dependencyValues.displacementShadow.tree;
-              if (Array.isArray(displacementTree) && ["tuple", "vector"].includes(displacementTree[0])) {
+              if (Array.isArray(displacementTree) && vectorOperators.includes(displacementTree[0])) {
                 nDimDisplacement = displacementTree.length - 1;
               } else {
                 nDimDisplacement = 1;
@@ -770,7 +794,7 @@ export default class Vector extends GraphicalComponent {
             nDimHead = dependencyValues.headAttr.stateValues.nDimensions;
           } else if (dependencyValues.headShadow) {
             let headTree = dependencyValues.headShadow.tree;
-            if (Array.isArray(headTree) && ["tuple", "vector"].includes(headTree[0])) {
+            if (Array.isArray(headTree) && vectorOperators.includes(headTree[0])) {
               nDimHead = headTree.length - 1;
             } else {
               nDimHead = 2;
@@ -854,7 +878,7 @@ export default class Vector extends GraphicalComponent {
             nDimTail = dependencyValues.tailAttr.stateValues.nDimensions;
           } else if (dependencyValues.tailShadow) {
             let tailTree = dependencyValues.tailShadow.tree;
-            if (Array.isArray(tailTree) && ["tuple", "vector"].includes(tailTree[0])) {
+            if (Array.isArray(tailTree) && vectorOperators.includes(tailTree[0])) {
               nDimTail = tailTree.length - 1;
             } else {
               nDimTail = 2;
@@ -969,7 +993,7 @@ export default class Vector extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros", "displayWithAngleBrackets"],
         returnWrappingComponents(prefix) {
           if (prefix === "x") {
             return [];
@@ -1126,7 +1150,7 @@ export default class Vector extends GraphicalComponent {
                 // since based on displacement and no source of displacement
                 // we must have a displacement shadow
                 let displacementTree = globalDependencyValues.displacementShadow.tree;
-                if (Array.isArray(displacementTree) && ["tuple", "vector"].includes(displacementTree[0])) {
+                if (Array.isArray(displacementTree) && vectorOperators.includes(displacementTree[0])) {
                   displacement[arrayKey] = globalDependencyValues.displacementShadow.get_component(Number(arrayKey));
                 } else {
                   displacement[arrayKey] = globalDependencyValues.displacementShadow;
@@ -1690,6 +1714,94 @@ export default class Vector extends GraphicalComponent {
     }
 
 
+    stateVariableDefinitions.magnitude = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+        displacement: {
+          dependencyType: "stateVariable",
+          variableName: "displacement"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let magnitude2 = 0;
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let disp = dependencyValues.displacement[dim].evaluate_to_constant();
+          if (!Number.isFinite(disp)) {
+            all_numeric = false;
+            break;
+          }
+          magnitude2 += disp * disp;
+        }
+
+        if (all_numeric) {
+          return { setValue: { magnitude: me.fromAst(Math.sqrt(magnitude2)) } };
+        }
+
+        magnitude2 = ['+'];
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          magnitude2.push(['^', dependencyValues.displacement[dim], 2])
+        }
+
+        return {
+          setValue: {
+            magnitude:
+              me.fromAst(['apply', 'sqrt', magnitude2])
+          }
+        }
+
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let dir = [];
+        let dir_length2 = 0;
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let disp = dependencyValues.displacement[dim].evaluate_to_constant();
+          if (!Number.isFinite(disp)) {
+            all_numeric = false;
+            break;
+          }
+          dir.push(disp);
+          dir_length2 += disp * disp;
+        }
+
+        if (!all_numeric) {
+          return { success: false }
+        }
+
+        // make dir be unit length
+        let dir_length = Math.sqrt(dir_length2);
+        dir = dir.map(x => x / dir_length);
+
+        let desiredMagnitude = desiredStateVariableValues.magnitude.evaluate_to_constant();
+
+        if (!Number.isFinite(desiredMagnitude) || desiredMagnitude < 0) {
+          return { success: false }
+        }
+
+        let desiredDisplacement = [];
+
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          desiredDisplacement.push(me.fromAst(dir[dim] * desiredMagnitude));
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "displacement",
+            desiredValue: desiredDisplacement
+          }]
+        }
+
+      }
+    }
 
     stateVariableDefinitions.numericalEndpoints = {
       forRenderer: true,
@@ -1711,14 +1823,8 @@ export default class Vector extends GraphicalComponent {
 
         let numericalHead, numericalTail;
         if (dependencyValues.nDimensions === 1) {
-          let numericalHead = dependencyValues.head[0].evaluate_to_constant();
-          if (!Number.isFinite(numericalHead)) {
-            numericalHead = NaN;
-          }
+          numericalHead = dependencyValues.head[0].evaluate_to_constant();
           numericalTail = dependencyValues.tail[0].evaluate_to_constant();
-          if (!Number.isFinite(numericalTail)) {
-            numericalTail = NaN;
-          }
         } else {
 
           numericalHead = [];
@@ -1726,15 +1832,9 @@ export default class Vector extends GraphicalComponent {
 
           for (let i = 0; i < dependencyValues.nDimensions; i++) {
             let head = dependencyValues.head[i].evaluate_to_constant();
-            if (!Number.isFinite(head)) {
-              head = NaN;
-            }
             numericalHead.push(head);
 
             let tail = dependencyValues.tail[i].evaluate_to_constant();
-            if (!Number.isFinite(tail)) {
-              tail = NaN;
-            }
             numericalTail.push(tail);
           }
         }
@@ -1748,6 +1848,10 @@ export default class Vector extends GraphicalComponent {
         displacement: {
           dependencyType: "stateVariable",
           variableName: "displacement"
+        },
+        displayWithAngleBrackets: {
+          dependencyType: "stateVariable",
+          variableName: "displayWithAngleBrackets"
         }
       }),
       definition({ dependencyValues }) {
@@ -1760,7 +1864,8 @@ export default class Vector extends GraphicalComponent {
           }
         }
         if (coordsAst.length > 1) {
-          coordsAst = ["vector", ...coordsAst];
+          let operator = dependencyValues.displayWithAngleBrackets ? "altvector" : "vector";
+          coordsAst = [operator, ...coordsAst];
         } else if (coordsAst.length === 1) {
           coordsAst = coordsAst[0];
         } else {
@@ -1774,7 +1879,7 @@ export default class Vector extends GraphicalComponent {
         let coordsAst = desiredStateVariableValues.displacementCoords.tree;
         let newDisplacement;
 
-        if (Array.isArray(coordsAst) && (coordsAst[0] === "vector" || coordsAst[0] === "tuple")) {
+        if (Array.isArray(coordsAst) && vectorOperators.includes(coordsAst[0])) {
           newDisplacement = coordsAst.slice(1).map(x => me.fromAst(x));
         } else {
           newDisplacement = [desiredStateVariableValues.displacementCoords];
@@ -1926,7 +2031,9 @@ export default class Vector extends GraphicalComponent {
     stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
   }];
 
-  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {
+  async moveVector({ tailcoords, headcoords, transient, skippable, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     if (tailcoords !== undefined) {
       if (headcoords !== undefined) {
@@ -1971,7 +2078,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "displacement",
           value: displacement.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
 
       } else {
@@ -1981,7 +2088,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "tail",
           value: tailcoords.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       }
 
@@ -1997,7 +2104,7 @@ export default class Vector extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "displacement",
             value: displacement.map(x => me.fromAst(x)),
-            sourceInformation
+            sourceDetails
           })
         }
       }
@@ -2012,7 +2119,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "head",
           value: headcoords.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       } else {
         // if not based on head
@@ -2027,7 +2134,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "displacement",
           value: displacement.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       }
 
@@ -2044,7 +2151,7 @@ export default class Vector extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "displacement",
             value: displacement.map(x => me.fromAst(x)),
-            sourceInformation
+            sourceDetails
           })
         }
       }
@@ -2058,11 +2165,15 @@ export default class Vector extends GraphicalComponent {
         transient,
         skippable,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -2079,11 +2190,28 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async vectorClicked({ actionId }) {
+  async vectorClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnVector({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
+      componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

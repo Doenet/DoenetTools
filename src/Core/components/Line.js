@@ -3,13 +3,18 @@ import me from 'math-expressions';
 import { returnNVariables, convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Line extends GraphicalComponent {
-  static componentType = "line";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveLine: this.moveLine.bind(this),
-    switchLine: this.switchLine.bind(this),
-    lineClicked: this.lineClicked.bind(this)
-  };
+    Object.assign(this.actions, {
+      moveLine: this.moveLine.bind(this),
+      switchLine: this.switchLine.bind(this),
+      lineClicked: this.lineClicked.bind(this),
+      mouseDownOnLine: this.mouseDownOnLine.bind(this),
+    });
+
+  }
+  static componentType = "line";
 
 
   static createAttributesObject() {
@@ -161,8 +166,21 @@ export default class Line extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
+
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -176,7 +194,7 @@ export default class Line extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -984,9 +1002,6 @@ export default class Line extends GraphicalComponent {
                 let val = desiredStateVariableValues.points[arrayKey];
                 if (val instanceof me.class) {
                   val = val.evaluate_to_constant();
-                  if (val === null) {
-                    val = NaN;
-                  }
                 }
 
                 if (!workspace.desiredPoint1) {
@@ -998,9 +1013,6 @@ export default class Line extends GraphicalComponent {
                 let oDim = dim === "0" ? "1" : "0";
                 if (workspace.desiredPoint1[oDim] === undefined) {
                   let oVal = (await stateValues.points)[1][oDim].evaluate_to_constant();
-                  if (oVal === null) {
-                    oVal = NaN;
-                  }
                   workspace.desiredPoint1[oDim] = oVal;
                 }
 
@@ -1335,9 +1347,6 @@ export default class Line extends GraphicalComponent {
           let numericalP = [];
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = point[ind].evaluate_to_constant();
-            if (!Number.isFinite(val)) {
-              val = NaN;
-            }
             numericalP.push(val);
           }
           numericalPoints[arrayKey] = numericalP;
@@ -1367,20 +1376,8 @@ export default class Line extends GraphicalComponent {
       definition: function ({ dependencyValues }) {
 
         let numericalCoeff0 = dependencyValues.coeff0.evaluate_to_constant();
-        if (!Number.isFinite(numericalCoeff0)) {
-          numericalCoeff0 = NaN;
-        }
-
-
         let numericalCoeffvar1 = dependencyValues.coeffvar1.evaluate_to_constant();
-        if (!Number.isFinite(numericalCoeffvar1)) {
-          numericalCoeffvar1 = NaN;
-        }
-
         let numericalCoeffvar2 = dependencyValues.coeffvar2.evaluate_to_constant();
-        if (!Number.isFinite(numericalCoeffvar2)) {
-          numericalCoeffvar2 = NaN;
-        }
 
         return { setValue: { numericalCoeff0, numericalCoeffvar1, numericalCoeffvar2 } }
       }
@@ -1627,7 +1624,9 @@ export default class Line extends GraphicalComponent {
     stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
   }];
 
-  async moveLine({ point1coords, point2coords, transient, actionId }) {
+  async moveLine({ point1coords, point2coords, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let desiredPoints = {
       "0,0": me.fromAst(point1coords[0]),
@@ -1648,6 +1647,8 @@ export default class Line extends GraphicalComponent {
         }],
         transient: true,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1658,6 +1659,8 @@ export default class Line extends GraphicalComponent {
           value: desiredPoints
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -1678,11 +1681,28 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  async lineClicked({ actionId }) {
+  async lineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnLine({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
+      componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

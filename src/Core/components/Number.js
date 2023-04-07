@@ -802,7 +802,7 @@ export default class NumberComponent extends InlineComponent {
                   } else {
                     number = dependencyValues.valueOnNaN;
                   }
-                } else if (number === null || Number.isNaN(number)) {
+                } else if (Number.isNaN(number)) {
 
                   if (dependencyValues.convertBoolean) {
                     let parsedExpression = buildParsedExpression({
@@ -961,9 +961,6 @@ export default class NumberComponent extends InlineComponent {
         if (Number.isNaN(number)) {
           try {
             number = me.fromAst(textToAst.convert(value)).evaluate_to_constant();
-            if (number === null) {
-              number = NaN;
-            }
           } catch (e) {
             number = NaN;
           }

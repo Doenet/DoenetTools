@@ -4,7 +4,7 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Section(props) {
@@ -56,8 +56,8 @@ export default React.memo(function Section(props) {
   // is just asking for trouble
   if (SVs.titleChildName) {
     for (let [ind, child] of children.entries()) {
-      //child might be a string
-      if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
+      //child might be null or a string
+      if (child?.props?.componentInstructions.componentName === SVs.titleChildName) {
         title = children[ind];
         children.splice(ind, 1); // remove title
         break;

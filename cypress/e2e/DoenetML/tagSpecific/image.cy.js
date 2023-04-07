@@ -13,7 +13,7 @@ describe('Image Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -484,6 +484,101 @@ describe('Image Tag Tests', function () {
 
   });
 
+  it('rotate image in graph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph >
+      <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" rotate="$rotate1" name="image1" />
+    </graph>
+    
+    <p name="pRotate1">Rotate 1: $image1.rotate</p>
+    <p>Change rotate 1 <mathinput name="rotate1" prefill="pi/4" /></p>
+    <p>Change rotate 1a <mathinput name="rotate1a" bindValueTo="$image1.rotate" /></p>
+
+    <image copySource="image1" name="image1a" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // Is there a way to test the rotation of the image in the graph?
+
+    cy.get("#\\/pRotate1").should('contain.text', 'Rotate 1: 0.785')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/image1"].stateValues.rotate).eq(Math.PI / 4)
+    });
+
+    cy.log("change rotate")
+
+    cy.get('#\\/rotate1 textarea').type("{end}{shift+home}{backspace}3pi/4{enter}", { force: true })
+
+    cy.get("#\\/pRotate1").should('contain.text', 'Rotate 1: 2.356')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/image1"].stateValues.rotate).eq(3 * Math.PI / 4)
+    });
+
+    cy.get('#\\/rotate1a textarea').type("{end}{shift+home}{backspace}-pi{enter}", { force: true })
+
+    cy.get("#\\/pRotate1").should('contain.text', 'Rotate 1: -3.14159')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/image1"].stateValues.rotate).eq(-Math.PI)
+    });
+
+
+  });
+
+  it('image in graph, handle bad anchor coordinates', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph >
+      <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" anchor="$anchorCoords1" name="image1" />
+    </graph>
+    
+
+    <p name="pAnchor1">Anchor 1 coordinates: $image1.anchor</p>
+    <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="x" /></p>
+    
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'x')
+
+
+    cy.log("give good anchor coords")
+
+    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', '(6,7)')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+
+    cy.log("give bad anchor coords again")
+
+    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', 'q')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'q')
+
+
+  });
 })
 
 

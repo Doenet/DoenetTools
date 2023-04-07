@@ -12,7 +12,7 @@ describe('Hints Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -67,7 +67,7 @@ describe('Hints Tag Tests', function () {
     cy.get('#\\/hint1 [data-test=hint-heading]').should("contain.text", "Hint")
     cy.get('#\\/hint2 [data-test=hint-heading]').should("contain.text", "Hint 2")
     cy.get('#\\/_title1').should('have.text', 'Hint 2');
-    
+
   });
 
 

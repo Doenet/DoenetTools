@@ -4,10 +4,10 @@ export default class Textinput extends Input {
   constructor(args) {
     super(args);
 
-    this.actions = {
+    Object.assign(this.actions, {
       updateImmediateValue: this.updateImmediateValue.bind(this),
       updateValue: this.updateValue.bind(this)
-    };
+    });
 
 
     this.externalActions = {};
@@ -60,6 +60,7 @@ export default class Textinput extends Input {
       defaultValue: false,
       forRenderer: true,
       public: true,
+      fallBackToParentStateVariable: "expanded",
     };
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -228,7 +229,7 @@ export default class Textinput extends Input {
   }
 
 
-  async updateImmediateValue({ text, actionId }) {
+  async updateImmediateValue({ text, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     if (!await this.stateValues.disabled) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -242,13 +243,15 @@ export default class Textinput extends Input {
         }],
         transient: true,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       })
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  async updateValue({ actionId }) {
+  async updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     if (!await this.stateValues.disabled) {
       let immediateValue = await this.stateValues.immediateValue;
 
@@ -299,11 +302,16 @@ export default class Textinput extends Input {
         await this.coreFunctions.performUpdate({
           updateInstructions,
           actionId,
+          sourceInformation,
+          skipRendererUpdate: true,
           event
         });
 
         return await this.coreFunctions.triggerChainedActions({
           componentName: this.componentName,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
         });
 
       }

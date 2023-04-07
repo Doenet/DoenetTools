@@ -10,7 +10,7 @@ describe('Circle Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -8989,31 +8989,31 @@ describe('Circle Tag Tests', function () {
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
-    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-  
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('not.exist');
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
+
 
   });
 
@@ -9045,31 +9045,31 @@ describe('Circle Tag Tests', function () {
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
-    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-  
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('not.exist');
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
+
 
   });
 
@@ -9173,6 +9173,64 @@ describe('Circle Tag Tests', function () {
     cy.get('#\\/stn8').should('have.text', 'filled green circle with a thin dotted red border')
     cy.get('#\\/bst8').should('have.text', 'thin dotted red')
     cy.get('#\\/fst8').should('have.text', 'green')
+
+
+  });
+
+  it('style description changes with theme', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <styleDefinitions>
+        <styleDefinition styleNumber="1" lineColor="brown" lineColorDarkMode="yellow" fillColor="brown" fillColorDarkMode="yellow" />
+        <styleDefinition styleNumber="2" lineColor="#540907" lineColorWord="dark red" lineColorDarkMode="#f0c6c5" lineColorWordDarkMode="light red" fillColor="#540907" fillColorWord="dark red" fillColorDarkMode="#f0c6c5" fillColorWordDarkMode="light red" />
+      </styleDefinitions>
+    </setup>
+    <graph>
+      <circle name="A" styleNumber="1" labelIsName center="(0,0)" filled />
+      <circle name="B" styleNumber="2" labelIsName center="(2,2)" filled />
+      <circle name="C" styleNumber="5" labelIsName center="(4,4)" filled />
+    </graph>
+    <p name="Adescrip">Circle A is $A.styleDescription.</p>
+    <p name="Bdescrip">B is a $B.styleDescriptionWithNoun.</p>
+    <p name="Cdescrip">C is a $C.styleDescriptionWithNoun.</p>
+    <p name="Aborderdescrip">A has a $A.borderStyleDescription border.</p>
+    <p name="Bborderdescrip">B has a $B.borderStyleDescription border.</p>
+    <p name="Cborderdescrip">C has a $C.borderStyleDescription border.</p>
+    <p name="Afilldescrip">A has a $A.fillStyleDescription fill.</p>
+    <p name="Bfilldescrip">B has a $B.fillStyleDescription fill.</p>
+    <p name="Cfilldescrip">C has a $C.fillStyleDescription fill.</p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Circle A is filled brown with thick border.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a filled dark red circle.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a filled black circle with a thin border.');
+    cy.get('#\\/Aborderdescrip').should('have.text', 'A has a thick brown border.');
+    cy.get('#\\/Bborderdescrip').should('have.text', 'B has a dark red border.');
+    cy.get('#\\/Cborderdescrip').should('have.text', 'C has a thin black border.');
+    cy.get('#\\/Afilldescrip').should('have.text', 'A has a brown fill.');
+    cy.get('#\\/Bfilldescrip').should('have.text', 'B has a dark red fill.');
+    cy.get('#\\/Cfilldescrip').should('have.text', 'C has a black fill.');
+
+    cy.log('set dark mode')
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_darkmode').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Circle A is filled yellow with thick border.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a filled light red circle.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a filled white circle with a thin border.');
+    cy.get('#\\/Aborderdescrip').should('have.text', 'A has a thick yellow border.');
+    cy.get('#\\/Bborderdescrip').should('have.text', 'B has a light red border.');
+    cy.get('#\\/Cborderdescrip').should('have.text', 'C has a thin white border.');
+    cy.get('#\\/Afilldescrip').should('have.text', 'A has a yellow fill.');
+    cy.get('#\\/Bfilldescrip').should('have.text', 'B has a light red fill.');
+    cy.get('#\\/Cfilldescrip').should('have.text', 'C has a white fill.');
 
 
   });

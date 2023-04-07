@@ -12,7 +12,7 @@ describe('ref Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -294,6 +294,95 @@ describe('ref Tag Tests', function () {
     })
 
   });
+
+  it('navigate to target action opens aside', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <ref name="toAside" target="/aside" hide>Aside</ref>
+    <p>
+    <callAction target="toAside" actionName="navigateToTarget" name="go"><label>Go to aside</label></callAction>
+    </p>
+    <lorem generateParagraphs="2" />
+
+    <aside name="aside">
+      <title name="asideTitle">The aside</title>
+      <p name="inside">Inside the aside</p>
+    </aside>
+
+    <lorem generateParagraphs="10" />
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/asideTitle').should('have.text', 'The aside')
+
+    cy.log('Aside closed at the beginning')
+    cy.get('#\\/inside').should('not.exist')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(false);
+    })
+
+    cy.log('clicking action opens aside')
+    cy.get('#\\/go').click();
+
+    cy.get('#\\/inside').should('have.text', "Inside the aside");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(true);
+    })
+
+  });
+
+  it('chain action to navigate to target', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <ref target="countAside" name="refCountAside" />
+      <animateFromSequence target="n" from="1" to="5" animationinterval="500" animationmode="increase once" name="count" />
+    </setup>
+
+    <callAction target="refCountAside" actionName="navigateToTarget" name="startCount">
+      <label>Start counting</label>
+    </callAction>
+    <callAction target="count" actionName="startAnimation" triggerWith="startCount" />
+    <ref name="toAside" target="/aside" hide>Aside</ref>
+    <p>
+    <callAction target="toAside" actionName="navigateToTarget" name="go"><label>Go to aside</label></callAction>
+    </p>
+
+    <lorem generateParagraphs="1" />
+
+    <aside name="countAside">
+      <title name="asideTitle">Counting</title>
+      Let's count: <number name="n">1</number>
+    </aside>
+
+    <lorem generateParagraphs="10" />
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/asideTitle').should('have.text', 'Counting')
+
+    cy.log('Aside closed at the beginning')
+    cy.get('#\\/n').should('not.exist')
+
+    cy.log('clicking action opens aside and starts counting')
+    cy.get('#\\/startCount').click();
+
+    cy.get('#\\/n').should('have.text', '1');
+    cy.get('#\\/n').should('have.text', '2');
+    cy.get('#\\/n').should('have.text', '3');
+    cy.get('#\\/n').should('have.text', '4');
+    cy.get('#\\/n').should('have.text', '5');
+
+  });
+
 
 
 });

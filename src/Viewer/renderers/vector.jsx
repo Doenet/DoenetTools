@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import useDoenetRender from '../useDoenetRenderer';
+import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 export default React.memo(function Vector(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -29,6 +31,8 @@ export default React.memo(function Vector(props) {
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
 
   useEffect(() => {
 
@@ -54,8 +58,12 @@ export default React.memo(function Vector(props) {
 
     }
 
-    let layer = 10 * SVs.layer + 7;
+    let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
+    let pointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
     let fixed = !SVs.draggable || SVs.fixed;
+
+    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var jsxVectorAttributes = {
@@ -64,9 +72,9 @@ export default React.memo(function Vector(props) {
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
       layer,
-      strokeColor: SVs.selectedStyle.lineColor,
+      strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: lineColor,
       highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
@@ -84,26 +92,26 @@ export default React.memo(function Vector(props) {
     let jsxPointAttributes = Object.assign({}, jsxVectorAttributes);
     Object.assign(jsxPointAttributes, {
       withLabel: false,
+      fixed: false,
+      highlight: true,
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      layer: layer + 1,
+      layer: pointLayer,
     });
 
     // create invisible points at endpoints
     let tailPointAttributes = Object.assign({}, jsxPointAttributes);
     let tailDraggable = SVs.tailDraggable && !SVs.fixed;
-    tailPointAttributes.visible = tailDraggable;
-    tailPointAttributes.fixed = !tailDraggable;
-    tailPointAttributes.highlight = tailDraggable;
+    let tailVisible = tailDraggable && !SVs.hidden;
+    tailPointAttributes.visible = tailVisible;
     let newPoint1JXG = board.create('point', endpoints[0], tailPointAttributes);
 
     let headPointAttributes = Object.assign({}, jsxPointAttributes);
     let headDraggable = SVs.headDraggable && !SVs.fixed;
-    headPointAttributes.visible = headDraggable;
-    headPointAttributes.fixed = !headDraggable;
-    headPointAttributes.highlight = headDraggable;
+    let headVisible = headDraggable && !SVs.hidden;
+    headPointAttributes.visible = headVisible;
     let newPoint2JXG = board.create('point', endpoints[1], headPointAttributes);
 
 
@@ -115,9 +123,9 @@ export default React.memo(function Vector(props) {
     }
 
     if (SVs.applyStyleToLabel) {
-      jsxVectorAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      jsxVectorAttributes.label.strokeColor = lineColor;
     } else {
-      jsxVectorAttributes.label.strokeColor = "#000000";
+      jsxVectorAttributes.label.strokeColor = "var(--canvastext)";
     }
 
     let newVectorJXG = board.create('arrow', [newPoint1JXG, newPoint2JXG], jsxVectorAttributes);
@@ -173,12 +181,18 @@ export default React.memo(function Vector(props) {
       tailBeingDragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 1;
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
     newPoint2JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       downOnPoint.current = 2;
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
 
     // if drag vector, need to keep track of original point positions
@@ -191,6 +205,9 @@ export default React.memo(function Vector(props) {
         [...newVectorJXG.point1.coords.scrCoords],
         [...newVectorJXG.point2.coords.scrCoords]
       ];
+      callAction({
+        action: actions.mouseDownOnVector
+      });
     });
 
     function onDragHandler(e, i) {
@@ -228,7 +245,7 @@ export default React.memo(function Vector(props) {
         }
 
         if (i === 0 || i === 1) {
-          instructions.sourceInformation = { vertex: i };
+          instructions.sourceDetails = { vertex: i };
         }
 
         callAction({
@@ -317,51 +334,25 @@ export default React.memo(function Vector(props) {
       vectorJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
       vectorJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
 
-      let visible = !SVs.hidden;
+      let visible = !SVs.hidden && validPoints;
 
       let fixed = !SVs.draggable || SVs.fixed;
+      let tailDraggable = SVs.tailDraggable && !SVs.fixed;
+      let tailVisible = tailDraggable && visible;
+      let headDraggable = SVs.headDraggable && !SVs.fixed;
+      let headVisible = headDraggable && visible;
 
       vectorJXG.current.visProp.fixed = fixed;
       vectorJXG.current.visProp.highlight = !fixed;
 
+      vectorJXG.current.visProp["visible"] = visible;
+      vectorJXG.current.visPropCalc["visible"] = visible;
 
-      if (validPoints) {
-        vectorJXG.current.visProp["visible"] = visible;
-        vectorJXG.current.visPropCalc["visible"] = visible;
-        // vectorJXG.current.setAttribute({visible: visible})
+      point1JXG.current.visProp["visible"] = tailVisible;
+      point1JXG.current.visPropCalc["visible"] = tailVisible;
 
-        if (SVs.tailDraggable && !SVs.fixed) {
-          point1JXG.current.visProp["visible"] = visible;
-          point1JXG.current.visPropCalc["visible"] = visible;
-          point1JXG.current.visProp["fixed"] = false;
-        } else {
-          point1JXG.current.visProp["visible"] = false;
-          point1JXG.current.visPropCalc["visible"] = false;
-          point1JXG.current.visProp["fixed"] = true;
-        }
-
-        if (SVs.headDraggable && !SVs.fixed) {
-          point2JXG.current.visProp["visible"] = visible;
-          point2JXG.current.visPropCalc["visible"] = visible;
-          point2JXG.current.visProp["fixed"] = false;
-        } else {
-          point2JXG.current.visProp["visible"] = false;
-          point2JXG.current.visPropCalc["visible"] = false;
-          point2JXG.current.visProp["fixed"] = true;
-        }
-      }
-      else {
-        vectorJXG.current.visProp["visible"] = false;
-        vectorJXG.current.visPropCalc["visible"] = false;
-        // vectorJXG.current.setAttribute({visible: false})
-
-        point1JXG.current.visProp["visible"] = false;
-        point1JXG.current.visPropCalc["visible"] = false;
-
-        point2JXG.current.visProp["visible"] = false;
-        point2JXG.current.visPropCalc["visible"] = false;
-
-      }
+      point2JXG.current.visProp["visible"] = headVisible;
+      point2JXG.current.visPropCalc["visible"] = headVisible;
 
       if (sourceOfUpdate.sourceInformation &&
         name in sourceOfUpdate.sourceInformation
@@ -375,18 +366,23 @@ export default React.memo(function Vector(props) {
       }
 
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = vectorJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
+        let pointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
         vectorJXG.current.setAttribute({ layer });
-        point1JXG.current.setAttribute({ layer: layer + 1 });
-        point2JXG.current.setAttribute({ layer: layer + 1 });
+        point1JXG.current.setAttribute({ layer: pointLayer });
+        point2JXG.current.setAttribute({ layer: pointLayer });
       }
 
-      if (vectorJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
-        vectorJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
-        vectorJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+
+      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      lineColor = lineColor.toLowerCase();
+
+      if (vectorJXG.current.visProp.strokecolor !== lineColor) {
+        vectorJXG.current.visProp.strokecolor = lineColor;
+        vectorJXG.current.visProp.highlightstrokecolor = lineColor;
       }
       if (vectorJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
         vectorJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
@@ -413,9 +409,9 @@ export default React.memo(function Vector(props) {
       vectorJXG.current.update()
       if (vectorJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
-          vectorJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+          vectorJXG.current.label.visProp.strokecolor = lineColor
         } else {
-          vectorJXG.current.label.visProp.strokecolor = "#000000";
+          vectorJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
         vectorJXG.current.label.needsUpdate = true;
         vectorJXG.current.label.update();

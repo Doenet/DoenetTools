@@ -2,7 +2,7 @@ describe('Group Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('nested groups, copied', () => {
@@ -505,7 +505,7 @@ describe('Group Tag Tests', function () {
     cy.log('type in first textinput')
     cy.get('#\\/g\\/ti_input').clear().type("bye{enter}")
     cy.get('#\\/g\\/t').should('contain.text', 'bye')
-    
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g/ti'].stateValues.value).eq("bye")

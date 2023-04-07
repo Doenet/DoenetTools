@@ -22,7 +22,7 @@ describe('Function Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('function with nothing', () => {
@@ -42,7 +42,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -70,7 +70,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -97,7 +97,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -124,7 +124,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -151,7 +151,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1, 1E-12);
       expect(f(6)).closeTo(2 + 4, 1E-12);
@@ -178,7 +178,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1 * 5, 1E-12);
       expect(f(6)).closeTo(2 + 4 * 5, 1E-12);
@@ -205,7 +205,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(1)).closeTo(3 - 1, 1E-12);
       expect(f(2)).closeTo(3 - 4, 1E-12);
@@ -232,7 +232,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1, 1E-12);
       expect(f(6)).closeTo(3 - 4, 1E-12);
@@ -259,7 +259,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1 * 5, 1E-12);
       expect(f(6)).closeTo(3 - 4 * 5, 1E-12);
@@ -286,7 +286,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -311,7 +311,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -336,7 +336,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -361,7 +361,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(-4 - 3, 1E-12);
       expect(f(1)).closeTo(-1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -386,7 +386,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -417,7 +417,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -448,7 +448,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -479,7 +479,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(0.5)).closeTo(-1, 1E-12);
@@ -510,7 +510,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(2, 1E-12);
       expect(f(0.5)).closeTo(1, 1E-12);
@@ -541,7 +541,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(-2, 1E-12);
       expect(f(0.5)).closeTo(-1, 1E-12);
@@ -572,7 +572,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(2, 1E-12);
@@ -603,7 +603,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -634,7 +634,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -665,7 +665,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(0, 1E-12);
@@ -694,7 +694,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(0)).closeTo(0, 1E-12);
@@ -720,7 +720,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(4, 1E-12);
@@ -749,7 +749,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(0)).closeTo(4, 1E-12);
@@ -775,7 +775,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(2, 1E-12);
       expect(f(0)).closeTo(1, 1E-12);
@@ -806,7 +806,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(3)).closeTo(-2, 1E-12);
       expect(f(5)).closeTo(-2, 1E-12);
 
@@ -814,7 +814,7 @@ describe('Function Tag Tests', function () {
       expect(f(4)).closeTo(-3, 1E-12);
       expect(f(6)).closeTo(-3, 1E-12);
 
-      let g = createFunctionFromDefinition(stateVariables['/_function2'].stateValues.fDefinition);
+      let g = createFunctionFromDefinition(stateVariables['/_function2'].stateValues.fDefinitions[0]);
       expect(g(3)).closeTo(2, 1E-12);
       expect(g(5)).closeTo(-2, 1E-12);
 
@@ -843,7 +843,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
       expect(f(2)).closeTo(3, 1E-12);
       expect(f(4)).closeTo(4, 1E-12);
 
@@ -851,7 +851,7 @@ describe('Function Tag Tests', function () {
       expect(f(3)).closeTo(3.5, 1E-12);
       expect(f(5)).closeTo(3, 1E-12);
 
-      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinition);
+      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinitions[0]);
       expect(g(0)).closeTo(4, 1E-12);
       expect(g(2)).closeTo(3, 1E-12);
 
@@ -859,7 +859,7 @@ describe('Function Tag Tests', function () {
       expect(g(1)).closeTo(3.5, 1E-12);
       expect(g(3)).closeTo(4, 1E-12);
 
-      let h = createFunctionFromDefinition(stateVariables['/h'].stateValues.fDefinition);
+      let h = createFunctionFromDefinition(stateVariables['/h'].stateValues.fDefinitions[0]);
       expect(h(4)).closeTo(4, 1E-12);
       expect(h(6)).closeTo(3, 1E-12);
 
@@ -886,7 +886,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).closeTo(2, 1E-12);
       expect(f(-5)).closeTo(0, 1E-12);
       expect(f(-6)).closeTo(-1, 1E-12);
@@ -921,7 +921,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1, 1E-12);
       expect(f(-12)).closeTo(-1, 1E-12);
@@ -945,7 +945,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 3 * (-12 + 6), 1E-12);
@@ -973,7 +973,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -984,7 +984,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/m1').should('contain.text', '2')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 2 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 2 * (-12 + 6), 1E-12);
@@ -995,7 +995,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/m1').should('contain.text', '−3')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 - 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 - 3 * (-12 + 6), 1E-12);
@@ -1007,7 +1007,7 @@ describe('Function Tag Tests', function () {
     cy.wait(100);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -1036,7 +1036,7 @@ describe('Function Tag Tests', function () {
     cy.log('with undefined slope, get line through points')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -1047,7 +1047,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/m1').should('contain.text', '2')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * 2, 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * 2, 1E-3);
@@ -1067,7 +1067,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/m1').should('contain.text', '−3')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * (-3), 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * (-3), 1E-3);
@@ -1086,7 +1086,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/m1').should('contain.text', '＿')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -1112,7 +1112,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -1147,7 +1147,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -1183,7 +1183,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-0.01)).closeTo(2 - 0.01 * 0.5, 1E-3)
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(0.01)).closeTo(2 + 0.01 * 0.5, 1E-3)
@@ -1225,7 +1225,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       assert.isNaN(f(0));
       assert.isNaN(f(1));
       assert.isNaN(f(2));
@@ -1250,7 +1250,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -1264,7 +1264,7 @@ describe('Function Tag Tests', function () {
       expect(f(-3)).closeTo(2 - slope * 3, 1E-12);
       expect(f(-4)).closeTo(2 - slope * 4, 1E-12);
 
-      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinition);
+      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinitions[0]);
       expect(g(1)).closeTo(5, 1E-12);
       expect(g(4)).closeTo(2, 1E-12);
       // linear function
@@ -1276,7 +1276,7 @@ describe('Function Tag Tests', function () {
       expect(g(-1)).closeTo(5 + slope * -2, 1E-12);
       expect(g(-2)).closeTo(5 + slope * -3, 1E-12);
 
-      let h = createFunctionFromDefinition(stateVariables['/h'].stateValues.fDefinition);
+      let h = createFunctionFromDefinition(stateVariables['/h'].stateValues.fDefinitions[0]);
       expect(h(0)).closeTo(2, 1E-12);
       expect(h(2)).closeTo(1, 1E-12);
       expect(h(3)).closeTo(2, 1E-12);
@@ -1313,7 +1313,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       for (let x = -5; x <= 6; x += 0.1) {
         expect(f(x - 0.1)).lessThan(f(x));
       }
@@ -1717,7 +1717,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -1753,7 +1753,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1785,7 +1785,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -1820,7 +1820,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -1857,7 +1857,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -1890,7 +1890,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -1926,7 +1926,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1958,7 +1958,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -1992,7 +1992,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let numericalf = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let numericalf = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -2029,7 +2029,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let numericalf = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let numericalf = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -2063,7 +2063,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let numericalf = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let numericalf = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -2098,7 +2098,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -2135,7 +2135,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -2166,7 +2166,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -2200,7 +2200,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -2234,7 +2234,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function2'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function2'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function2'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function2'].stateValues.symbolicfs)[0];
 
@@ -2270,7 +2270,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function2'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function2'].stateValues.fDefinitions[0]);
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -4887,7 +4887,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).eq(2 * (-2) ** 3 + 1)
     });
 
@@ -4903,7 +4903,7 @@ describe('Function Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       expect(f(-2)).eq(4 * (-2) ** 3 + 1)
     });
 
@@ -5007,16 +5007,16 @@ describe('Function Tag Tests', function () {
     });
   });
 
-  it('function of function can redefine variable', () => {
+  it('function of function formula can redefine variable', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <function variables="t" name="f" symbolic>st^3</function>
+    <function variables="t" name="f" symbolic simplify="false">st^3</function>
 
-    <function name="f2" symbolic><copy target="f"/></function>
-    <function name="f3" variables="s" symbolic><copy target="f"/></function>
+    <function name="f2" symbolic simplify="false"><copy target="f"/></function>
+    <function name="f3" variables="s" symbolic simplify="false"><copy target="f.formula"/></function>
 
     <copy assignNames="f4" target="f"/>
     <copy assignNames="f5" target="f2"/>
@@ -5358,7 +5358,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5389,7 +5389,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5420,7 +5420,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5451,7 +5451,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5482,7 +5482,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5513,7 +5513,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5544,7 +5544,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5575,7 +5575,7 @@ describe('Function Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
       // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
@@ -5608,8 +5608,8 @@ describe('Function Tag Tests', function () {
       expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
       // let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
-      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
       // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
       // let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
@@ -5651,8 +5651,8 @@ describe('Function Tag Tests', function () {
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
       expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
-      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
 
       let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
@@ -5695,8 +5695,8 @@ describe('Function Tag Tests', function () {
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
       expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
-      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
       // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
       // let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
@@ -5738,9 +5738,9 @@ describe('Function Tag Tests', function () {
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
       expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
-      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
-      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 2);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
+      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[2]);
       // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
       // let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
@@ -5791,9 +5791,9 @@ describe('Function Tag Tests', function () {
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
       expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
-      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
-      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 2);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
+      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[2]);
       // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
       // let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
@@ -5844,8 +5844,8 @@ describe('Function Tag Tests', function () {
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
       expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
-      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
       // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
       // let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
@@ -5887,9 +5887,62 @@ describe('Function Tag Tests', function () {
       expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
       expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 0);
-      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 1);
-      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition, 2);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
+      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[2]);
+      // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      // let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
+      // let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      // let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
+      // let symbolicf3 = (stateVariables['/_function1'].stateValues.symbolicfs)[2];
+
+      expect(f1(-5, 2)).closeTo(200, 1E-12);
+      expect(f2(-5, 2)).closeTo(-500, 1E-12);
+      expect(f3(-5, 2)).closeTo(-10, 1E-12);
+      expect(f1(3, -4)).closeTo(-576, 1E-12);
+      expect(f2(3, -4)).closeTo(432, 1E-12);
+      expect(f3(3, -4)).closeTo(-12, 1E-12);
+      // expect(numericalf1(-5, 2)).closeTo(200, 1E-12);
+      // expect(numericalf2(-5, 2)).closeTo(-500, 1E-12);
+      // expect(numericalf3(-5, 2)).closeTo(-10, 1E-12);
+      // expect(numericalf1(3, -4)).closeTo(-576, 1E-12);
+      // expect(numericalf2(3, -4)).closeTo(432, 1E-12);
+      // expect(numericalf3(3, -4)).closeTo(-12, 1E-12);
+      // expect(symbolicf1(-5, 2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
+      // expect(symbolicf2(-5, 2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
+      // expect(symbolicf3(-5, 2).equals(me.fromText('(-5)*2'))).eq(true);
+      // expect(symbolicf1(3, -4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
+      // expect(symbolicf2(3, -4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
+      // expect(symbolicf3(3, -4).equals(me.fromText('3*(-4)'))).eq(true);
+      // expect(symbolicf1('z', 'w').equals(me.fromText('z^2w^3'))).eq(true);
+      // expect(symbolicf2('z', 'w').equals(me.fromText('z^3w^2'))).eq(true);
+      // expect(symbolicf3('z', 'w').equals(me.fromText('zw'))).eq(true);
+
+
+    })
+  })
+
+  it('3D vector-valued function of two variables, as alt vector', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="s t">⟨s^2t^3, s^3t^2, st⟩</function>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
+
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[1]);
+      let f3 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[2]);
       // let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
       // let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
       // let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
@@ -5928,10 +5981,10 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="f1">x^2</function>
+    <function name="f1" symbolic="false">x^2</function>
     <copy target="f1" symbolic assignNames="f2" />
     <copy target="f2" symbolic="false" assignNames="f3" />
-    <function name="g1" symbolic>x^2</function>
+    <function name="g1">x^2</function>
     <copy target="g1" symbolic="false" assignNames="g2" />
     <copy target="g2" symbolic assignNames="g3" />
 
@@ -6000,7 +6053,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="f1" symbolic>xyz</function>
+    <function name="f1" symbolic simplify="none">xyz</function>
     <copy target="f1" variables="x y" assignNames="f2" />
     <copy target="f2" variables="x y z" assignNames="f3" />
     <copy target="f3" variables="z y" assignNames="f4" />
@@ -6308,11 +6361,11 @@ describe('Function Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <function name="f1">255.029847 sin(0.52952342x) + 3</function>
-  <function name="f2" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f3" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f1" simplify="none">255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" simplify="none" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" simplify="none" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f4" simplify="none" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f5" simplify="none" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
   <copy target="f1" assignNames="f1a" />
   <copy target="f2" assignNames="f2a" />
@@ -6697,5 +6750,45 @@ describe('Function Tag Tests', function () {
     })
 
   })
+
+  it('style description changes with theme', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <styleDefinitions>
+        <styleDefinition styleNumber="1" lineColor="brown" lineColorDarkMode="yellow" />
+        <styleDefinition styleNumber="2" lineColor="#540907" lineColorWord="dark red" lineColorDarkMode="#f0c6c5" lineColorWordDarkMode="light red" />
+      </styleDefinitions>
+    </setup>
+    <graph>
+      <function name="A" styleNumber="1" labelIsName>x^2</function>
+      <function name="B" styleNumber="2" labelIsName>x^2+2</function>
+      <function name="C" styleNumber="5" labelIsName>x^2+4</function>
+    </graph>
+    <p name="Adescrip">Function A is $A.styleDescription.</p>
+    <p name="Bdescrip">B is a $B.styleDescriptionWithNoun.</p>
+    <p name="Cdescrip">C is a $C.styleDescriptionWithNoun.</p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Function A is thick brown.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red function.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black function.');
+
+    cy.log('set dark mode')
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_darkmode').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Function A is thick yellow.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red function.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white function.');
+
+
+  });
 
 });

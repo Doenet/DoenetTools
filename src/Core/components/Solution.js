@@ -1,6 +1,16 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Solution extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      revealSolution: this.revealSolution.bind(this),
+      closeSolution: this.closeSolution.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "solution";
   static renderChildren = true;
 
@@ -209,7 +219,7 @@ export default class Solution extends BlockComponent {
   }
 
 
-  async revealSolution({ actionId }) {
+  async revealSolution({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let { allowView, message, scoredComponent } = await this.coreFunctions.recordSolutionView();
 
@@ -246,14 +256,17 @@ export default class Solution extends BlockComponent {
     }
 
     return await this.coreFunctions.performUpdate({
-      updateInstructions, actionId,
+      updateInstructions,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event,
       overrideReadOnly: true,
     })
 
   }
 
-  async closeSolution({ actionId }) {
+  async closeSolution({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -264,6 +277,8 @@ export default class Solution extends BlockComponent {
       }],
       overrideReadOnly: true,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "closed",
         object: {
@@ -285,12 +300,6 @@ export default class Solution extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    revealSolution: this.revealSolution.bind(this),
-    closeSolution: this.closeSolution.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

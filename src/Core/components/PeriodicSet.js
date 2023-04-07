@@ -523,12 +523,12 @@ export default class PeriodicSet extends MathComponent {
         let uniqueOffsets = [];
         if (dependencyValues.period !== null) {
           let periodValue = dependencyValues.period.evaluate_to_constant();
-          if (periodValue !== null) {
+          if (!Number.isNaN(periodValue)) {
             for (let ind1 = 0; ind1 < dependencyValues.nOffsets; ind1++) {
               let isUnique = true;
               for (let ind2 = 0; ind2 < ind1; ind2++) {
                 let offsetDiff = dependencyValues.offsets[ind1].subtract(dependencyValues.offsets[ind2]).evaluate_to_constant();
-                if (offsetDiff !== null && Math.abs(offsetDiff % periodValue) < 1E-10 * periodValue) {
+                if (Math.abs(offsetDiff % periodValue) < 1E-10 * periodValue) {
                   redundantOffsets = true;
                   isUnique = false;
                   break;
@@ -574,7 +574,7 @@ export default class PeriodicSet extends MathComponent {
         // remove redundant offsets
         if (dependencyValues.period !== null) {
           let periodValue = dependencyValues.period.evaluate_to_constant();
-          if (periodValue !== null) {
+          if (!Number.isNaN(periodValue)) {
 
             let period = dependencyValues.period.simplify()
 
@@ -582,7 +582,7 @@ export default class PeriodicSet extends MathComponent {
             let shiftedOffsetsWithNumeric = [];
             for (let offset of dependencyValues.uniqueOffsets) {
               let offsetValue = offset.evaluate_to_constant();
-              if (offsetValue === null) {
+              if (Number.isNaN(offsetValue)) {
                 allFinite = false;
                 break;
               } else {

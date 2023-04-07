@@ -22,7 +22,7 @@ describe('Function Operator Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -31,7 +31,7 @@ describe('Function Operator Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="original">x^3</function>
+    <function name="original" symbolic="true">x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -119,8 +119,116 @@ describe('Function Operator Tag Tests', function () {
       cy.log('check functions created from fDefinition')
       cy.window().then(async (win) => {
 
-        let f01 = createFunctionFromDefinition(stateVariables['/clamp01'].stateValues.fDefinition);
-        let fn35 = createFunctionFromDefinition(stateVariables['/clampn35'].stateValues.fDefinition);
+        let f01 = createFunctionFromDefinition(stateVariables['/clamp01'].stateValues.fDefinitions[0]);
+        let fn35 = createFunctionFromDefinition(stateVariables['/clampn35'].stateValues.fDefinitions[0]);
+
+        for (let i = 1; i <= 21; i++) {
+
+          let x = 0.2 * (i - 11);
+          expect(f01(x)).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(fn35(x)).closeTo(clampn35(indToVal(i)), 1E-10);
+
+        }
+
+      })
+    })
+  })
+
+  it('clamp function, numeric', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="original" symbolic="false">x^3</function>
+    <clampfunction name="clamp01"><copy target="original" /></clampfunction>
+    <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
+
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace><evaluate function="$(../clamp01)" input="$x" /></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../clampn35)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map2" name="m4" />
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map3" name="m5" />
+    </aslist></p>
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+
+      let clamp01 = x => Math.min(1, Math.max(0, x));
+      let clampn35 = x => Math.min(5, Math.max(-3, x));
+      let indToVal = ind => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+
+      cy.log('Check values in DOM')
+      for (let i = 1; i <= 21; i++) {
+        cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(indToVal(i).toString())
+        });
+
+        cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clamp01(indToVal(i)).toString())
+        });
+
+        cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clampn35(indToVal(i)).toString())
+        });
+
+        cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clamp01(indToVal(i)).toString())
+        });
+
+        cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clampn35(indToVal(i)).toString())
+        });
+      }
+
+
+      cy.log('check mapped state values')
+      cy.window().then(async (win) => {
+        for (let i = 1; i <= 21; i++) {
+          expect(stateVariables[map1Replacements[i - 1].componentName].stateValues.value).closeTo(indToVal(i), 1E-10);
+          expect(stateVariables[map2Replacements[i - 1].componentName].stateValues.value).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(stateVariables[map3Replacements[i - 1].componentName].stateValues.value).closeTo(clampn35(indToVal(i)), 1E-10);
+          expect(stateVariables[map4Replacements[i - 1].componentName].stateValues.value).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(stateVariables[map5Replacements[i - 1].componentName].stateValues.value).closeTo(clampn35(indToVal(i)), 1E-10);
+        }
+      })
+
+      cy.log('check functions created from fDefinition')
+      cy.window().then(async (win) => {
+
+        let f01 = createFunctionFromDefinition(stateVariables['/clamp01'].stateValues.fDefinitions[0]);
+        let fn35 = createFunctionFromDefinition(stateVariables['/clampn35'].stateValues.fDefinitions[0]);
 
         for (let i = 1; i <= 21; i++) {
 
@@ -213,8 +321,8 @@ describe('Function Operator Tag Tests', function () {
       cy.log('check functions created from fDefinition')
       cy.window().then(async (win) => {
 
-        let f01 = createFunctionFromDefinition(stateVariables['/clamp01'].stateValues.fDefinition);
-        let fn35 = createFunctionFromDefinition(stateVariables['/clampn35'].stateValues.fDefinition);
+        let f01 = createFunctionFromDefinition(stateVariables['/clamp01'].stateValues.fDefinitions[0]);
+        let fn35 = createFunctionFromDefinition(stateVariables['/clampn35'].stateValues.fDefinitions[0]);
 
         for (let i = 1; i <= 5; i++) {
 
@@ -322,8 +430,117 @@ describe('Function Operator Tag Tests', function () {
       cy.log('check functions created from fDefinition')
       cy.window().then(async (win) => {
 
-        let f01 = createFunctionFromDefinition(stateVariables['/wrap01'].stateValues.fDefinition);
-        let fn23 = createFunctionFromDefinition(stateVariables['/wrapn23'].stateValues.fDefinition);
+        let f01 = createFunctionFromDefinition(stateVariables['/wrap01'].stateValues.fDefinitions[0]);
+        let fn23 = createFunctionFromDefinition(stateVariables['/wrapn23'].stateValues.fDefinitions[0]);
+
+        for (let i = 1; i <= 21; i++) {
+
+          let x = 0.2 * (i - 11);
+          expect(f01(x)).closeTo(wrap01(indToVal(i)), 1E-10);
+          expect(fn23(x)).closeTo(wrapn23(indToVal(i)), 1E-10);
+
+        }
+
+      })
+    })
+  })
+
+  it('wrap function, numeric', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="original" symbolic="false">x^3</function>
+    <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
+
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace><evaluate function="$(../wrap01)" input="$x" /></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../wrapn23)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map2" name="m4" />
+    </aslist></p>
+    <p><aslist>
+      <copy target="_map3" name="m5" />
+    </aslist></p>
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+
+      let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
+      let wrapn23 = x => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
+      let indToVal = ind => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+
+      cy.log('Check values in DOM')
+
+      for (let i = 1; i <= 21; i++) {
+        cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(indToVal(i).toString())
+        });
+
+        cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrap01(indToVal(i)).toString())
+        });
+
+        cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrapn23(indToVal(i)).toString())
+        });
+
+        cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrap01(indToVal(i)).toString())
+        });
+
+        cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(wrapn23(indToVal(i)).toString())
+        });
+      }
+
+      cy.log('check mapped state values')
+      cy.window().then(async (win) => {
+        for (let i = 1; i <= 21; i++) {
+          expect(stateVariables[map1Replacements[i - 1].componentName].stateValues.value).closeTo(indToVal(i), 1E-10);
+          expect(stateVariables[map2Replacements[i - 1].componentName].stateValues.value).closeTo(wrap01(indToVal(i)), 1E-10);
+          expect(stateVariables[map3Replacements[i - 1].componentName].stateValues.value).closeTo(wrapn23(indToVal(i)), 1E-10);
+          expect(stateVariables[map4Replacements[i - 1].componentName].stateValues.value).closeTo(wrap01(indToVal(i)), 1E-10);
+          expect(stateVariables[map5Replacements[i - 1].componentName].stateValues.value).closeTo(wrapn23(indToVal(i)), 1E-10);
+        }
+      })
+
+
+      cy.log('check functions created from fDefinition')
+      cy.window().then(async (win) => {
+
+        let f01 = createFunctionFromDefinition(stateVariables['/wrap01'].stateValues.fDefinitions[0]);
+        let fn23 = createFunctionFromDefinition(stateVariables['/wrapn23'].stateValues.fDefinitions[0]);
 
         for (let i = 1; i <= 21; i++) {
 
@@ -401,8 +618,8 @@ describe('Function Operator Tag Tests', function () {
       expect(stateVariables["/_point2"].stateValues.xs[1]).closeTo(y2, 1E-12);
 
 
-      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinition);
-      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinitions[0]);
 
       for (let i = 1; i <= 21; i++) {
 
@@ -469,8 +686,8 @@ describe('Function Operator Tag Tests', function () {
       expect(stateVariables["/_point2"].stateValues.xs[0]).closeTo(x2, 1E-12);
       expect(stateVariables["/_point2"].stateValues.xs[1]).closeTo(y2, 1E-12);
 
-      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinition);
-      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinitions[0]);
 
       for (let i = 1; i <= 21; i++) {
 
@@ -572,18 +789,18 @@ describe('Function Operator Tag Tests', function () {
       expect(me.fromAst(stateVariables['/d13'].stateValues.formula).equals(me.fromText("xz"))).eq(true);
       expect(me.fromAst(stateVariables['/d14'].stateValues.formula).equals(me.fromText("xz"))).eq(true);
 
-      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinition);
-      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinition);
-      let d2b = createFunctionFromDefinition(stateVariables['/d2b'].stateValues.fDefinition);
-      let d2c = createFunctionFromDefinition(stateVariables['/d2c'].stateValues.fDefinition);
-      let d5 = createFunctionFromDefinition(stateVariables['/d5'].stateValues.fDefinition);
-      let d5b = createFunctionFromDefinition(stateVariables['/d5b'].stateValues.fDefinition);
-      let d6 = createFunctionFromDefinition(stateVariables['/d6'].stateValues.fDefinition);
-      let d6b = createFunctionFromDefinition(stateVariables['/d6b'].stateValues.fDefinition);
-      let d9 = createFunctionFromDefinition(stateVariables['/d9'].stateValues.fDefinition);
-      let d10 = createFunctionFromDefinition(stateVariables['/d10'].stateValues.fDefinition);
-      let d11 = createFunctionFromDefinition(stateVariables['/d11'].stateValues.fDefinition);
-      let d12 = createFunctionFromDefinition(stateVariables['/d12'].stateValues.fDefinition);
+      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinitions[0]);
+      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinitions[0]);
+      let d2b = createFunctionFromDefinition(stateVariables['/d2b'].stateValues.fDefinitions[0]);
+      let d2c = createFunctionFromDefinition(stateVariables['/d2c'].stateValues.fDefinitions[0]);
+      let d5 = createFunctionFromDefinition(stateVariables['/d5'].stateValues.fDefinitions[0]);
+      let d5b = createFunctionFromDefinition(stateVariables['/d5b'].stateValues.fDefinitions[0]);
+      let d6 = createFunctionFromDefinition(stateVariables['/d6'].stateValues.fDefinitions[0]);
+      let d6b = createFunctionFromDefinition(stateVariables['/d6b'].stateValues.fDefinitions[0]);
+      let d9 = createFunctionFromDefinition(stateVariables['/d9'].stateValues.fDefinitions[0]);
+      let d10 = createFunctionFromDefinition(stateVariables['/d10'].stateValues.fDefinitions[0]);
+      let d11 = createFunctionFromDefinition(stateVariables['/d11'].stateValues.fDefinitions[0]);
+      let d12 = createFunctionFromDefinition(stateVariables['/d12'].stateValues.fDefinitions[0]);
 
       for (let i = 1; i <= 21; i++) {
 
@@ -690,18 +907,18 @@ describe('Function Operator Tag Tests', function () {
       expect(me.fromAst(stateVariables['/d13'].stateValues.formula).equals(me.fromText("xz"))).eq(true);
       expect(me.fromAst(stateVariables['/d14'].stateValues.formula).equals(me.fromText("xz"))).eq(true);
 
-      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinition);
-      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinition);
-      let d2b = createFunctionFromDefinition(stateVariables['/d2b'].stateValues.fDefinition);
-      let d2c = createFunctionFromDefinition(stateVariables['/d2c'].stateValues.fDefinition);
-      let d5 = createFunctionFromDefinition(stateVariables['/d5'].stateValues.fDefinition);
-      let d5b = createFunctionFromDefinition(stateVariables['/d5b'].stateValues.fDefinition);
-      let d6 = createFunctionFromDefinition(stateVariables['/d6'].stateValues.fDefinition);
-      let d6b = createFunctionFromDefinition(stateVariables['/d6b'].stateValues.fDefinition);
-      let d9 = createFunctionFromDefinition(stateVariables['/d9'].stateValues.fDefinition);
-      let d10 = createFunctionFromDefinition(stateVariables['/d10'].stateValues.fDefinition);
-      let d11 = createFunctionFromDefinition(stateVariables['/d11'].stateValues.fDefinition);
-      let d12 = createFunctionFromDefinition(stateVariables['/d12'].stateValues.fDefinition);
+      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinitions[0]);
+      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinitions[0]);
+      let d2b = createFunctionFromDefinition(stateVariables['/d2b'].stateValues.fDefinitions[0]);
+      let d2c = createFunctionFromDefinition(stateVariables['/d2c'].stateValues.fDefinitions[0]);
+      let d5 = createFunctionFromDefinition(stateVariables['/d5'].stateValues.fDefinitions[0]);
+      let d5b = createFunctionFromDefinition(stateVariables['/d5b'].stateValues.fDefinitions[0]);
+      let d6 = createFunctionFromDefinition(stateVariables['/d6'].stateValues.fDefinitions[0]);
+      let d6b = createFunctionFromDefinition(stateVariables['/d6b'].stateValues.fDefinitions[0]);
+      let d9 = createFunctionFromDefinition(stateVariables['/d9'].stateValues.fDefinitions[0]);
+      let d10 = createFunctionFromDefinition(stateVariables['/d10'].stateValues.fDefinitions[0]);
+      let d11 = createFunctionFromDefinition(stateVariables['/d11'].stateValues.fDefinitions[0]);
+      let d12 = createFunctionFromDefinition(stateVariables['/d12'].stateValues.fDefinitions[0]);
 
       for (let i = 1; i <= 5; i++) {
 
@@ -1121,21 +1338,21 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <function name="f1" variables="x y z">sin(x)z</function>
-      <function name="f2" variables="z y x">$f1</function>
+      <function name="f2" variables="z y x">$f1.formula</function>
       <function name="f3" variables="x y z">sin(x)yz</function>
-      <function name="f4" variables="z y x">$f3</function>
+      <function name="f4" variables="z y x">$f3.formula</function>
       
       <derivative derivvariables="z" name="df1" >$f1</derivative>
       <derivative name="df2">$f2</derivative>
-      <function variables="x" name="df2a">$df2</function>
+      <function variables="x" name="df2a">$df2.formula</function>
       <derivative derivvariables="z y" name="df3zy">$f3</derivative>
       <derivative derivvariables="y" name="df3y">$f3</derivative>
       <derivative derivvariables="z" name="df3zya">$df3y</derivative>
       <derivative derivvariables="z y" name="df4zy">$f4</derivative>
       <derivative name="df4z">$f4</derivative>
       <derivative derivvariables="y" name="df4yz">$df4z</derivative>
-      <function variables="x" name="df4zya">$df4zy</function>
-      <function variables="x" name="df4yza">$df4yz</function>
+      <function variables="x" name="df4zya">$df4zy.formula</function>
+      <function variables="x" name="df4yza">$df4yz.formula</function>
       
       <graph>
         $df2a
@@ -1148,6 +1365,26 @@ describe('Function Operator Tag Tests', function () {
       <graph>
         $df4yza
       </graph>
+
+      <map assignNames="t1 t2 t3">
+        <template newNamespace>
+          <p><aslist>
+          <evaluate function="$(../df1)" input="$v 0 0" name="df1" />
+          <evaluate function="$(../df2a)" input="$v" name="df2a" />
+          <evaluate function="$(../df3zy)" input="$v 0 0" name="df3zy" />
+          <evaluate function="$(../df3zya)" input="$v 0 0" name="df3zya" />
+          <evaluate function="$(../df4zya)" input="$v" name="df4zya" />
+          <evaluate function="$(../df4yza)" input="$v" name="df4yza" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df1)" input="$v 0 0" name="df1n" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df2a)" input="$v" name="df2an" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df3zy)" input="$v 0 0" name="df3zyn" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df3zya)" input="$v 0 0" name="df3zyan" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df4zya)" input="$v" name="df4zyan" />
+          <evaluate forceNumeric displayDigits="3" function="$(../df4yza)" input="$v" name="df4yzan" />
+          </aslist></p>
+        </template>
+        <sources alias="v"><sequence from="-2" to="2" step="2" /></sources>
+      </map>
       `}, "*");
     });
 
@@ -1198,22 +1435,60 @@ describe('Function Operator Tag Tests', function () {
       expect(me.fromAst(stateVariables['/df4yza'].stateValues.formula).equals(me.fromText("sin(x)"))).eq(true);
       expect((stateVariables['/df4yza'].stateValues.variables)).eqls(["x"])
 
+      expect(stateVariables['/t1/df1'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df2a'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df3zy'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df3zya'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df4zya'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df4yza'].stateValues.value).eqls(["apply", "sin", -2])
+      expect(stateVariables['/t1/df1n'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df2an'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df3zyn'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df3zyan'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df4zyan'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+      expect(stateVariables['/t1/df4yzan'].stateValues.value).closeTo(Math.sin(-2), 1E-10)
+
+      expect(stateVariables['/t2/df1'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df2a'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df3zy'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df3zya'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df4zya'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df4yza'].stateValues.value).eq(0)
+      expect(stateVariables['/t2/df1n'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df2an'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df3zyn'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df3zyan'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df4zyan'].stateValues.value).closeTo(0, 1E-10)
+      expect(stateVariables['/t2/df4yzan'].stateValues.value).closeTo(0, 1E-10)
+
+      expect(stateVariables['/t3/df1'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df2a'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df3zy'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df3zya'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df4zya'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df4yza'].stateValues.value).eqls(["apply", "sin", 2])
+      expect(stateVariables['/t3/df1n'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df2an'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df3zyn'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df3zyan'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df4zyan'].stateValues.value).closeTo(Math.sin(2), 1E-10)
+      expect(stateVariables['/t3/df4yzan'].stateValues.value).closeTo(Math.sin(2), 1E-10)
 
 
-      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinition);
-      let df2a = createFunctionFromDefinition(stateVariables['/df2a'].stateValues.fDefinition);
-      let df3zy = createFunctionFromDefinition(stateVariables['/df3zy'].stateValues.fDefinition);
-      let df3zya = createFunctionFromDefinition(stateVariables['/df3zya'].stateValues.fDefinition);
-      let df4zya = createFunctionFromDefinition(stateVariables['/df4zya'].stateValues.fDefinition);
-      let df4yza = createFunctionFromDefinition(stateVariables['/df4yza'].stateValues.fDefinition);
+      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinitions[0]);
+      let df2a = createFunctionFromDefinition(stateVariables['/df2a'].stateValues.fDefinitions[0]);
+      let df3zy = createFunctionFromDefinition(stateVariables['/df3zy'].stateValues.fDefinitions[0]);
+      let df3zya = createFunctionFromDefinition(stateVariables['/df3zya'].stateValues.fDefinitions[0]);
+      let df4zya = createFunctionFromDefinition(stateVariables['/df4zya'].stateValues.fDefinitions[0]);
+      let df4yza = createFunctionFromDefinition(stateVariables['/df4yza'].stateValues.fDefinitions[0]);
 
       for (let i = 1; i <= 21; i++) {
 
         let x = 0.2 * (i - 11);
-        expect(df1(x)).closeTo(Math.sin(x), 1E-10);
+        expect(df1(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
         expect(df2a(x)).closeTo(Math.sin(x), 1E-10);
-        expect(df3zy(x)).closeTo(Math.sin(x), 1E-10);
-        expect(df3zya(x)).closeTo(Math.sin(x), 1E-10);
+        expect(df3zy(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
+        expect(df3zya(x, 0, 0)).closeTo(Math.sin(x), 1E-10);
         expect(df4zya(x)).closeTo(Math.sin(x), 1E-10);
         expect(df4yza(x)).closeTo(Math.sin(x), 1E-10);
 
@@ -1248,7 +1523,7 @@ describe('Function Operator Tag Tests', function () {
 
 
 
-      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinition);
+      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinitions[0]);
 
       for (let i = 1; i <= 21; i++) {
 
@@ -1306,13 +1581,13 @@ describe('Function Operator Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
-      let d1 = createFunctionFromDefinition(stateVariables['/_derivative1'].stateValues.fDefinition);
-      let d2 = createFunctionFromDefinition(stateVariables['/_derivative2'].stateValues.fDefinition);
-      let d3 = createFunctionFromDefinition(stateVariables['/_derivative3'].stateValues.fDefinition);
-      let d4 = createFunctionFromDefinition(stateVariables['/_derivative4'].stateValues.fDefinition);
-      let d5 = createFunctionFromDefinition(stateVariables['/_derivative5'].stateValues.fDefinition);
-      let d6 = createFunctionFromDefinition(stateVariables['/_derivative6'].stateValues.fDefinition);
+      let f1 = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let d1 = createFunctionFromDefinition(stateVariables['/_derivative1'].stateValues.fDefinitions[0]);
+      let d2 = createFunctionFromDefinition(stateVariables['/_derivative2'].stateValues.fDefinitions[0]);
+      let d3 = createFunctionFromDefinition(stateVariables['/_derivative3'].stateValues.fDefinitions[0]);
+      let d4 = createFunctionFromDefinition(stateVariables['/_derivative4'].stateValues.fDefinitions[0]);
+      let d5 = createFunctionFromDefinition(stateVariables['/_derivative5'].stateValues.fDefinitions[0]);
+      let d6 = createFunctionFromDefinition(stateVariables['/_derivative6'].stateValues.fDefinitions[0]);
 
       for (let x = -10; x <= 10; x += 0.5) {
         expect(f1(x)).eq((x - 3) ** 2 + 4);
@@ -1350,11 +1625,11 @@ describe('Function Operator Tag Tests', function () {
 
       let dx = 0.0001;
 
-      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
-      let d1 = createFunctionFromDefinition(stateVariables['/_derivative1'].stateValues.fDefinition);
-      let d2 = createFunctionFromDefinition(stateVariables['/_derivative2'].stateValues.fDefinition);
-      let d3 = createFunctionFromDefinition(stateVariables['/_derivative3'].stateValues.fDefinition);
-      let d4 = createFunctionFromDefinition(stateVariables['/_derivative4'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
+      let d1 = createFunctionFromDefinition(stateVariables['/_derivative1'].stateValues.fDefinitions[0]);
+      let d2 = createFunctionFromDefinition(stateVariables['/_derivative2'].stateValues.fDefinitions[0]);
+      let d3 = createFunctionFromDefinition(stateVariables['/_derivative3'].stateValues.fDefinitions[0]);
+      let d4 = createFunctionFromDefinition(stateVariables['/_derivative4'].stateValues.fDefinitions[0]);
 
 
       // make sure we don't get within dx of a grid point
@@ -1424,24 +1699,24 @@ describe('Function Operator Tag Tests', function () {
 
       let dx = 0.0001;
 
-      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinition);
-      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinition);
-      let df1b = createFunctionFromDefinition(stateVariables['/df1b'].stateValues.fDefinition);
-      let df2 = createFunctionFromDefinition(stateVariables['/df2'].stateValues.fDefinition);
-      let df3 = createFunctionFromDefinition(stateVariables['/df3'].stateValues.fDefinition);
-      let df4 = createFunctionFromDefinition(stateVariables['/df4'].stateValues.fDefinition);
-      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinition);
-      let dg1 = createFunctionFromDefinition(stateVariables['/dg1'].stateValues.fDefinition);
-      let dg1b = createFunctionFromDefinition(stateVariables['/dg1b'].stateValues.fDefinition);
-      let dg2 = createFunctionFromDefinition(stateVariables['/dg2'].stateValues.fDefinition);
-      let dg3 = createFunctionFromDefinition(stateVariables['/dg3'].stateValues.fDefinition);
-      let dg4 = createFunctionFromDefinition(stateVariables['/dg4'].stateValues.fDefinition);
-      let zero1 = createFunctionFromDefinition(stateVariables['/zero1'].stateValues.fDefinition);
-      let zero2 = createFunctionFromDefinition(stateVariables['/zero2'].stateValues.fDefinition);
-      let zero3 = createFunctionFromDefinition(stateVariables['/zero3'].stateValues.fDefinition);
-      let zero4 = createFunctionFromDefinition(stateVariables['/zero4'].stateValues.fDefinition);
-      let zero5 = createFunctionFromDefinition(stateVariables['/zero5'].stateValues.fDefinition);
-      let zero6 = createFunctionFromDefinition(stateVariables['/zero6'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinitions[0]);
+      let df1b = createFunctionFromDefinition(stateVariables['/df1b'].stateValues.fDefinitions[0]);
+      let df2 = createFunctionFromDefinition(stateVariables['/df2'].stateValues.fDefinitions[0]);
+      let df3 = createFunctionFromDefinition(stateVariables['/df3'].stateValues.fDefinitions[0]);
+      let df4 = createFunctionFromDefinition(stateVariables['/df4'].stateValues.fDefinitions[0]);
+      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinitions[0]);
+      let dg1 = createFunctionFromDefinition(stateVariables['/dg1'].stateValues.fDefinitions[0]);
+      let dg1b = createFunctionFromDefinition(stateVariables['/dg1b'].stateValues.fDefinitions[0]);
+      let dg2 = createFunctionFromDefinition(stateVariables['/dg2'].stateValues.fDefinitions[0]);
+      let dg3 = createFunctionFromDefinition(stateVariables['/dg3'].stateValues.fDefinitions[0]);
+      let dg4 = createFunctionFromDefinition(stateVariables['/dg4'].stateValues.fDefinitions[0]);
+      let zero1 = createFunctionFromDefinition(stateVariables['/zero1'].stateValues.fDefinitions[0]);
+      let zero2 = createFunctionFromDefinition(stateVariables['/zero2'].stateValues.fDefinitions[0]);
+      let zero3 = createFunctionFromDefinition(stateVariables['/zero3'].stateValues.fDefinitions[0]);
+      let zero4 = createFunctionFromDefinition(stateVariables['/zero4'].stateValues.fDefinitions[0]);
+      let zero5 = createFunctionFromDefinition(stateVariables['/zero5'].stateValues.fDefinitions[0]);
+      let zero6 = createFunctionFromDefinition(stateVariables['/zero6'].stateValues.fDefinitions[0]);
 
 
       // make sure we don't get within dx of a grid point
@@ -1594,39 +1869,39 @@ describe('Function Operator Tag Tests', function () {
       let dx = 0.0001;
 
 
-      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinition);
-      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinition);
-      let df1b = createFunctionFromDefinition(stateVariables['/df1b'].stateValues.fDefinition);
-      let df2 = createFunctionFromDefinition(stateVariables['/df2'].stateValues.fDefinition);
-      let df2b = createFunctionFromDefinition(stateVariables['/df2b'].stateValues.fDefinition);
-      let df3 = createFunctionFromDefinition(stateVariables['/df3'].stateValues.fDefinition);
-      let df4 = createFunctionFromDefinition(stateVariables['/df4'].stateValues.fDefinition);
-      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinition);
-      let dg1 = createFunctionFromDefinition(stateVariables['/dg1'].stateValues.fDefinition);
-      let dg1b = createFunctionFromDefinition(stateVariables['/dg1b'].stateValues.fDefinition);
-      let dg2 = createFunctionFromDefinition(stateVariables['/dg2'].stateValues.fDefinition);
-      let dg2b = createFunctionFromDefinition(stateVariables['/dg2b'].stateValues.fDefinition);
-      let dg3 = createFunctionFromDefinition(stateVariables['/dg3'].stateValues.fDefinition);
-      let dg4 = createFunctionFromDefinition(stateVariables['/dg4'].stateValues.fDefinition);
-      let h = createFunctionFromDefinition(stateVariables['/h'].stateValues.fDefinition);
-      let dh1 = createFunctionFromDefinition(stateVariables['/dh1'].stateValues.fDefinition);
-      let dh1b = createFunctionFromDefinition(stateVariables['/dh1b'].stateValues.fDefinition);
-      let dh2 = createFunctionFromDefinition(stateVariables['/dh2'].stateValues.fDefinition);
-      let dh2b = createFunctionFromDefinition(stateVariables['/dh2b'].stateValues.fDefinition);
-      let dh3 = createFunctionFromDefinition(stateVariables['/dh3'].stateValues.fDefinition);
-      let dh4 = createFunctionFromDefinition(stateVariables['/dh4'].stateValues.fDefinition);
-      let zero1 = createFunctionFromDefinition(stateVariables['/zero1'].stateValues.fDefinition);
-      let zero2 = createFunctionFromDefinition(stateVariables['/zero2'].stateValues.fDefinition);
-      let zero3 = createFunctionFromDefinition(stateVariables['/zero3'].stateValues.fDefinition);
-      let zero4 = createFunctionFromDefinition(stateVariables['/zero4'].stateValues.fDefinition);
-      let zero5 = createFunctionFromDefinition(stateVariables['/zero5'].stateValues.fDefinition);
-      let zero6 = createFunctionFromDefinition(stateVariables['/zero6'].stateValues.fDefinition);
-      let zero7 = createFunctionFromDefinition(stateVariables['/zero7'].stateValues.fDefinition);
-      let zero8 = createFunctionFromDefinition(stateVariables['/zero8'].stateValues.fDefinition);
-      let zero9 = createFunctionFromDefinition(stateVariables['/zero9'].stateValues.fDefinition);
-      let zero10 = createFunctionFromDefinition(stateVariables['/zero10'].stateValues.fDefinition);
-      let zero11 = createFunctionFromDefinition(stateVariables['/zero11'].stateValues.fDefinition);
-      let zero12 = createFunctionFromDefinition(stateVariables['/zero12'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinitions[0]);
+      let df1b = createFunctionFromDefinition(stateVariables['/df1b'].stateValues.fDefinitions[0]);
+      let df2 = createFunctionFromDefinition(stateVariables['/df2'].stateValues.fDefinitions[0]);
+      let df2b = createFunctionFromDefinition(stateVariables['/df2b'].stateValues.fDefinitions[0]);
+      let df3 = createFunctionFromDefinition(stateVariables['/df3'].stateValues.fDefinitions[0]);
+      let df4 = createFunctionFromDefinition(stateVariables['/df4'].stateValues.fDefinitions[0]);
+      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinitions[0]);
+      let dg1 = createFunctionFromDefinition(stateVariables['/dg1'].stateValues.fDefinitions[0]);
+      let dg1b = createFunctionFromDefinition(stateVariables['/dg1b'].stateValues.fDefinitions[0]);
+      let dg2 = createFunctionFromDefinition(stateVariables['/dg2'].stateValues.fDefinitions[0]);
+      let dg2b = createFunctionFromDefinition(stateVariables['/dg2b'].stateValues.fDefinitions[0]);
+      let dg3 = createFunctionFromDefinition(stateVariables['/dg3'].stateValues.fDefinitions[0]);
+      let dg4 = createFunctionFromDefinition(stateVariables['/dg4'].stateValues.fDefinitions[0]);
+      let h = createFunctionFromDefinition(stateVariables['/h'].stateValues.fDefinitions[0]);
+      let dh1 = createFunctionFromDefinition(stateVariables['/dh1'].stateValues.fDefinitions[0]);
+      let dh1b = createFunctionFromDefinition(stateVariables['/dh1b'].stateValues.fDefinitions[0]);
+      let dh2 = createFunctionFromDefinition(stateVariables['/dh2'].stateValues.fDefinitions[0]);
+      let dh2b = createFunctionFromDefinition(stateVariables['/dh2b'].stateValues.fDefinitions[0]);
+      let dh3 = createFunctionFromDefinition(stateVariables['/dh3'].stateValues.fDefinitions[0]);
+      let dh4 = createFunctionFromDefinition(stateVariables['/dh4'].stateValues.fDefinitions[0]);
+      let zero1 = createFunctionFromDefinition(stateVariables['/zero1'].stateValues.fDefinitions[0]);
+      let zero2 = createFunctionFromDefinition(stateVariables['/zero2'].stateValues.fDefinitions[0]);
+      let zero3 = createFunctionFromDefinition(stateVariables['/zero3'].stateValues.fDefinitions[0]);
+      let zero4 = createFunctionFromDefinition(stateVariables['/zero4'].stateValues.fDefinitions[0]);
+      let zero5 = createFunctionFromDefinition(stateVariables['/zero5'].stateValues.fDefinitions[0]);
+      let zero6 = createFunctionFromDefinition(stateVariables['/zero6'].stateValues.fDefinitions[0]);
+      let zero7 = createFunctionFromDefinition(stateVariables['/zero7'].stateValues.fDefinitions[0]);
+      let zero8 = createFunctionFromDefinition(stateVariables['/zero8'].stateValues.fDefinitions[0]);
+      let zero9 = createFunctionFromDefinition(stateVariables['/zero9'].stateValues.fDefinitions[0]);
+      let zero10 = createFunctionFromDefinition(stateVariables['/zero10'].stateValues.fDefinitions[0]);
+      let zero11 = createFunctionFromDefinition(stateVariables['/zero11'].stateValues.fDefinitions[0]);
+      let zero12 = createFunctionFromDefinition(stateVariables['/zero12'].stateValues.fDefinitions[0]);
 
 
 
@@ -1822,26 +2097,26 @@ describe('Function Operator Tag Tests', function () {
 
 
 
-      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinition);
-      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinition);
-      let df1b = createFunctionFromDefinition(stateVariables['/df1b'].stateValues.fDefinition);
-      let df2 = createFunctionFromDefinition(stateVariables['/df2'].stateValues.fDefinition);
-      let df2b = createFunctionFromDefinition(stateVariables['/df2b'].stateValues.fDefinition);
-      let df3 = createFunctionFromDefinition(stateVariables['/df3'].stateValues.fDefinition);
-      let df4 = createFunctionFromDefinition(stateVariables['/df4'].stateValues.fDefinition);
-      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinition);
-      let dg1 = createFunctionFromDefinition(stateVariables['/dg1'].stateValues.fDefinition);
-      let dg1b = createFunctionFromDefinition(stateVariables['/dg1b'].stateValues.fDefinition);
-      let dg2 = createFunctionFromDefinition(stateVariables['/dg2'].stateValues.fDefinition);
-      let dg2b = createFunctionFromDefinition(stateVariables['/dg2b'].stateValues.fDefinition);
-      let dg3 = createFunctionFromDefinition(stateVariables['/dg3'].stateValues.fDefinition);
-      let dg4 = createFunctionFromDefinition(stateVariables['/dg4'].stateValues.fDefinition);
-      let zero1 = createFunctionFromDefinition(stateVariables['/zero1'].stateValues.fDefinition);
-      let zero2 = createFunctionFromDefinition(stateVariables['/zero2'].stateValues.fDefinition);
-      let zero3 = createFunctionFromDefinition(stateVariables['/zero3'].stateValues.fDefinition);
-      let zero4 = createFunctionFromDefinition(stateVariables['/zero4'].stateValues.fDefinition);
-      let zero5 = createFunctionFromDefinition(stateVariables['/zero5'].stateValues.fDefinition);
-      let zero6 = createFunctionFromDefinition(stateVariables['/zero6'].stateValues.fDefinition);
+      let f = createFunctionFromDefinition(stateVariables['/f'].stateValues.fDefinitions[0]);
+      let df1 = createFunctionFromDefinition(stateVariables['/df1'].stateValues.fDefinitions[0]);
+      let df1b = createFunctionFromDefinition(stateVariables['/df1b'].stateValues.fDefinitions[0]);
+      let df2 = createFunctionFromDefinition(stateVariables['/df2'].stateValues.fDefinitions[0]);
+      let df2b = createFunctionFromDefinition(stateVariables['/df2b'].stateValues.fDefinitions[0]);
+      let df3 = createFunctionFromDefinition(stateVariables['/df3'].stateValues.fDefinitions[0]);
+      let df4 = createFunctionFromDefinition(stateVariables['/df4'].stateValues.fDefinitions[0]);
+      let g = createFunctionFromDefinition(stateVariables['/g'].stateValues.fDefinitions[0]);
+      let dg1 = createFunctionFromDefinition(stateVariables['/dg1'].stateValues.fDefinitions[0]);
+      let dg1b = createFunctionFromDefinition(stateVariables['/dg1b'].stateValues.fDefinitions[0]);
+      let dg2 = createFunctionFromDefinition(stateVariables['/dg2'].stateValues.fDefinitions[0]);
+      let dg2b = createFunctionFromDefinition(stateVariables['/dg2b'].stateValues.fDefinitions[0]);
+      let dg3 = createFunctionFromDefinition(stateVariables['/dg3'].stateValues.fDefinitions[0]);
+      let dg4 = createFunctionFromDefinition(stateVariables['/dg4'].stateValues.fDefinitions[0]);
+      let zero1 = createFunctionFromDefinition(stateVariables['/zero1'].stateValues.fDefinitions[0]);
+      let zero2 = createFunctionFromDefinition(stateVariables['/zero2'].stateValues.fDefinitions[0]);
+      let zero3 = createFunctionFromDefinition(stateVariables['/zero3'].stateValues.fDefinitions[0]);
+      let zero4 = createFunctionFromDefinition(stateVariables['/zero4'].stateValues.fDefinitions[0]);
+      let zero5 = createFunctionFromDefinition(stateVariables['/zero5'].stateValues.fDefinitions[0]);
+      let zero6 = createFunctionFromDefinition(stateVariables['/zero6'].stateValues.fDefinitions[0]);
 
 
       // make sure we don't get within dx of a grid point
@@ -2074,7 +2349,7 @@ describe('Function Operator Tag Tests', function () {
 
         v = 'y';
         cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
-        cy.get(cesc('#/xa')).should('contain.text',v)
+        cy.get(cesc('#/xa')).should('contain.text', v)
         verifyExtrema(c1, c2, c3, c4, c5)
 
 
@@ -2115,7 +2390,7 @@ describe('Function Operator Tag Tests', function () {
 
         v = 'q';
         cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
-        cy.get(cesc('#/xa')).should('contain.text',v)
+        cy.get(cesc('#/xa')).should('contain.text', v)
         verifyExtrema(c1, c2, c3, c4, c5)
 
       })
@@ -2166,7 +2441,7 @@ describe('Function Operator Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let fp = createFunctionFromDefinition(stateVariables['/fp'].stateValues.fDefinition);
+      let fp = createFunctionFromDefinition(stateVariables['/fp'].stateValues.fDefinitions[0]);
 
       let max1x = (-5 - 3) / 2
       cy.get('#\\/max1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2217,8 +2492,8 @@ describe('Function Operator Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinition);
-      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinition);
+      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinitions[0]);
+      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinitions[0]);
 
       expect(d1(0)).eqls(NaN)
       expect(d2(0)).eqls(NaN)

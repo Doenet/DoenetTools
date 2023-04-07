@@ -4,7 +4,7 @@ describe('UpdateValue Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -804,6 +804,86 @@ describe('UpdateValue Tag Tests', function () {
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "pointClicked",
+        componentName: "/P",
+      });
+      cy.get('#\\/x').should('contain.text', '9x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+
+
+    });
+  })
+
+  it('update triggered when mouse down', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+    <math name="x">x</math>
+    
+    <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenObjectsFocused="P" />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+
+    cy.get('#\\/trip').should('not.exist');
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "mouseDownOnPoint",
+        componentName: "/P",
+      });
+      cy.get('#\\/x').should('contain.text', '3x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "mouseDownOnPoint",
         componentName: "/P",
       });
       cy.get('#\\/x').should('contain.text', '9x')
@@ -2084,6 +2164,43 @@ describe('UpdateValue Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/uv'].stateValues.label).eq("Hello!");
     });
+
+
+  })
+
+  it('bug fix: no duplicate name error, #1921', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <updateValue target="v.tail.coords" newValue="(3,4)"><label>Move tail</label></updateValue>
+    <triggerSet>
+      <label>Move both</label>
+      <updateValue target="v.head.coords" newValue="(5,6)" />
+      <updateValue target="v.tail.coords" newValue="(7,2)" />
+    </triggerSet><graph>
+      <vector name="v" />
+    </graph><copy source="v.tail" assignNames="vt" /><copy source="v.head" assignNames="vh" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_updatevalue1').should('contain.text', 'Move tail')
+    cy.get('#\\/_triggerset1').should('contain.text', 'Move both')
+    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(1,0)")
+    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+
+    cy.get('#\\/_updatevalue1').click();
+
+    cy.get('#\\/vt .mjx-mrow').should('contain.text', "(3,4)")
+
+    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(3,4)")
+    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(4,4)")
+
+    cy.get('#\\/_triggerset1').click();
+    cy.get('#\\/vt .mjx-mrow').should('contain.text', "(7,2)")
+
+    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(7,2)")
+    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(9,4)")
 
 
   })

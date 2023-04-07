@@ -7,17 +7,21 @@ import me from 'math-expressions';
 import { returnBezierFunctions } from '../utils/function';
 
 export default class Curve extends GraphicalComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveControlVector: this.moveControlVector.bind(this),
+      moveThroughPoint: this.moveThroughPoint.bind(this),
+      changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
+      switchCurve: this.switchCurve.bind(this),
+      curveClicked: this.curveClicked.bind(this),
+      mouseDownOnCurve: this.mouseDownOnCurve.bind(this),
+    });
+
+  }
   static componentType = "curve";
   static rendererType = "curve";
-
-
-  actions = {
-    moveControlVector: this.moveControlVector.bind(this),
-    moveThroughPoint: this.moveThroughPoint.bind(this),
-    changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
-    switchCurve: this.switchCurve.bind(this),
-    curveClicked: this.curveClicked.bind(this)
-  };
 
   static primaryStateVariableForDefinition = "fShadow";
 
@@ -241,8 +245,21 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
+
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -256,7 +273,7 @@ export default class Curve extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -426,9 +443,6 @@ export default class Curve extends GraphicalComponent {
           }
         } else if (dependencyValues.parMaxAttr !== null) {
           parMax = dependencyValues.parMaxAttr.stateValues.value.evaluate_to_constant();
-          if (!Number.isFinite(parMax)) {
-            parMax = NaN;
-          }
         } else if (dependencyValues.curveType === "function") {
           let domain = null;
           if (dependencyValues.functionChild.length === 1) {
@@ -438,12 +452,7 @@ export default class Curve extends GraphicalComponent {
           }
           if (domain !== null) {
             domain = domain[0];
-            try {
-              parMax = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
-              if (!Number.isFinite(parMax) && parMax !== Infinity) {
-                parMax = NaN;
-              }
-            } catch (e) { }
+            parMax = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
           }
           let graphMin, graphMax;
           if (dependencyValues.flipFunction) {
@@ -535,9 +544,6 @@ export default class Curve extends GraphicalComponent {
           }
         } else if (dependencyValues.parMinAttr !== null) {
           parMin = dependencyValues.parMinAttr.stateValues.value.evaluate_to_constant();
-          if (!Number.isFinite(parMin)) {
-            parMin = NaN;
-          }
         } else if (dependencyValues.curveType === "function") {
           let domain = null;
           if (dependencyValues.functionChild.length === 1) {
@@ -547,12 +553,7 @@ export default class Curve extends GraphicalComponent {
           }
           if (domain !== null) {
             domain = domain[0];
-            try {
-              parMin = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
-              if (!Number.isFinite(parMin) && parMin !== -Infinity) {
-                parMin = NaN;
-              }
-            } catch (e) { }
+            parMin = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
           }
           let graphMin, graphMax;
           if (dependencyValues.flipFunction) {
@@ -576,6 +577,29 @@ export default class Curve extends GraphicalComponent {
           parMin = -10;
         }
         return { setValue: { parMin } }
+      }
+    }
+
+    stateVariableDefinitions.domainForFunctions = {
+      returnDependencies: () => ({
+        parMin: {
+          dependencyType: "stateVariable",
+          variableName: "parMin"
+        },
+        parMax: {
+          dependencyType: "stateVariable",
+          variableName: "parMax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        // closed interval [parMin, parMax]
+        let interval = me.fromAst(["interval",
+          ["tuple", dependencyValues.parMin, dependencyValues.parMax],
+          ["tuple", true, true],
+        ])
+        return {
+          setValue: { domainForFunctions: [interval] }
+        }
       }
     }
 
@@ -1561,9 +1585,6 @@ export default class Curve extends GraphicalComponent {
 
             if (vectorX) {
               let pointX = dependencyValuesByKey[arrayKey].throughPointX.evaluate_to_constant();
-              if (!Number.isFinite(pointX)) {
-                pointX = NaN
-              }
               newControlValues[arrayKey] = me.fromAst(pointX + vectorX.tree)
             } else {
               newControlValues[arrayKey] = null;
@@ -2262,7 +2283,20 @@ export default class Curve extends GraphicalComponent {
         variableName: "fDefinitions",
         isArray: true,
         forRenderer: true,
+        entryPrefixes: ["fDefinition"],
       }],
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "function",
+        addStateVariablesShadowingStateVariables: {
+          fDefinitions: {
+            stateVariableToShadow: "fDefinitions",
+          },
+          domain: {
+            stateVariableToShadow: "domainForFunctions",
+          }
+        },
+      },
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -2344,22 +2378,32 @@ export default class Curve extends GraphicalComponent {
 
         if (globalDependencyValues.curveType === "bezier") {
 
+          let bezierArguments = {
+            functionType: "bezier",
+            nThroughPoints: globalDependencyValues.nThroughPoints,
+            numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
+            splineCoeffs: globalDependencyValues.splineCoeffs,
+            extrapolateForward: globalDependencyValues.extrapolateForward,
+            extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
+            extrapolateBackward: globalDependencyValues.extrapolateBackward,
+            extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
+          }
+
+          let fs = {};
+          let fDefinitions = {};
+          bezierArguments.component = 0;
+          fs[0] = returnBezierFunctions(bezierArguments);
+          fDefinitions[0] = bezierArguments;
+
+          bezierArguments = { ...bezierArguments };
+          bezierArguments.component = 1;
+          fs[1] = returnBezierFunctions(bezierArguments);
+          fDefinitions[1] = bezierArguments;
+
           return {
             setValue: {
-              fs: returnBezierFunctions(globalDependencyValues),
-              fDefinitions: {
-                0: {
-                  functionType: "bezier",
-                  nThroughPoints: globalDependencyValues.nThroughPoints,
-                  numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
-                  splineCoeffs: globalDependencyValues.splineCoeffs,
-                  extrapolateForward: globalDependencyValues.extrapolateForward,
-                  extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
-                  extrapolateBackward: globalDependencyValues.extrapolateBackward,
-                  extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
-                },
-                1: null,
-              }
+              fs,
+              fDefinitions
             }
           }
         }
@@ -3174,7 +3218,9 @@ export default class Curve extends GraphicalComponent {
 
 
 
-  async moveControlVector({ controlVector, controlVectorInds, transient, actionId, }) {
+  async moveControlVector({ controlVector, controlVectorInds, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let desiredVector = {
       [controlVectorInds + ",0"]: me.fromAst(controlVector[0]),
@@ -3188,10 +3234,12 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "controlVectors",
           value: desiredVector,
-          sourceInformation: { controlVectorMoved: controlVectorInds }
+          sourceDetails: { controlVectorMoved: controlVectorInds }
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -3200,9 +3248,11 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "controlVectors",
           value: desiredVector,
-          sourceInformation: { controlVectorMoved: controlVectorInds }
+          sourceDetails: { controlVectorMoved: controlVectorInds }
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -3217,7 +3267,9 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async moveThroughPoint({ throughPoint, throughPointInd, transient, actionId, }) {
+  async moveThroughPoint({ throughPoint, throughPointInd, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let desiredPoint = {
       [throughPointInd + ",0"]: me.fromAst(throughPoint[0]),
@@ -3231,10 +3283,12 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "throughPoints",
           value: desiredPoint,
-          sourceInformation: { throughPointMoved: throughPointInd }
+          sourceDetails: { throughPointMoved: throughPointInd }
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -3243,9 +3297,11 @@ export default class Curve extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "throughPoints",
           value: desiredPoint,
-          sourceInformation: { throughPointMoved: throughPointInd }
+          sourceDetails: { throughPointMoved: throughPointInd }
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -3260,7 +3316,9 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async changeVectorControlDirection({ direction, throughPointInd, actionId, }) {
+  async changeVectorControlDirection({ direction, throughPointInd, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -3269,6 +3327,8 @@ export default class Curve extends GraphicalComponent {
         value: { [throughPointInd]: direction },
       }],
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
   }
 
@@ -3276,11 +3336,28 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async curveClicked({ actionId, name }) {
+  async curveClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mouseDownOnCurve({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "down",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

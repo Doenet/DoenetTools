@@ -505,9 +505,6 @@ export default class BezierControls extends InlineComponent {
                 if (value) {
                   useEssential = false;
                   value = value.evaluate_to_constant();
-                  if (!Number.isFinite(value)) {
-                    value = NaN;
-                  }
                   newControlValues[arrayKey] = me.fromAst(value);
                 }
               }
@@ -532,9 +529,6 @@ export default class BezierControls extends InlineComponent {
                   if (value) {
                     useEssential = false;
                     value = value.evaluate_to_constant();
-                    if (!Number.isFinite(value)) {
-                      value = NaN;
-                    }
                     newControlValues[arrayKey] = me.fromAst(value);
                   }
                 } else {
@@ -542,9 +536,6 @@ export default class BezierControls extends InlineComponent {
                   if (value) {
                     useEssential = false;
                     value = value.evaluate_to_constant();
-                    if (!Number.isFinite(value)) {
-                      value = NaN;
-                    }
                     if (direction === "symmetric") {
                       newControlValues[arrayKey] = me.fromAst(-value);
                     } else {
@@ -612,11 +603,7 @@ export default class BezierControls extends InlineComponent {
 
                 if (useEssential) {
                   // make sure essential values are numeric
-                  let desiredValue = desiredStateVariableValues.controls[arrayKey].evaluate_to_constant();
-                  if (!Number.isFinite(desiredValue)) {
-                    desiredValue = NaN;
-                  }
-                  desiredValue = me.fromAst(desiredValue);
+                  let desiredValue = me.fromAst(desiredStateVariableValues.controls[arrayKey].evaluate_to_constant());
                   if (direction === "symmetric") {
                     instructions.push({
                       setDependency: dependencyNamesByKey[arrayKey].essentialSymmetricControl,
@@ -654,11 +641,7 @@ export default class BezierControls extends InlineComponent {
 
                 if (useEssential) {
                   // make sure essential values are numeric
-                  desiredValue = desiredValue.evaluate_to_constant();
-                  if (!Number.isFinite(desiredValue)) {
-                    desiredValue = NaN;
-                  }
-                  desiredValue = me.fromAst(desiredValue);
+                  desiredValue = me.fromAst(desiredValue.evaluate_to_constant());
                   if (direction === "symmetric") {
                     instructions.push({
                       setDependency: dependencyNamesByKey[arrayKey].essentialSymmetricControl,

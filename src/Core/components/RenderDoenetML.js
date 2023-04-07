@@ -4,6 +4,14 @@ import { setUpVariantSeedAndRng } from '../utils/variants';
 
 
 export default class RenderDoenetML extends CompositeComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      updateComponents: this.updateComponents.bind(this)
+    });
+
+  }
   static componentType = "renderDoenetML";
 
   static assignNamesToReplacements = true;
@@ -20,9 +28,7 @@ export default class RenderDoenetML extends CompositeComponent {
     }
 
     attributes.codeSource = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "rawCodeSource",
-      defaultValue: null,
+      createTargetComponentNames: true,
     }
 
 
@@ -38,21 +44,22 @@ export default class RenderDoenetML extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.codeSourceComponentName = {
-      stateVariablesDeterminingDependencies: ["rawCodeSource"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.rawCodeSource) {
-          return {
-            codeSourceComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.rawCodeSource
-            }
-          }
-        } else {
-          return {}
+      returnDependencies: () => ({
+        codeSource: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "codeSource"
         }
-      },
+      }),
       definition({ dependencyValues }) {
-        return { setValue: { codeSourceComponentName: dependencyValues.codeSourceComponentName } }
+        let codeSourceComponentName;
+
+        if (dependencyValues.codeSource?.length === 1) {
+          codeSourceComponentName = dependencyValues.codeSource[0].absoluteName;
+        } else {
+          codeSourceComponentName = null;
+        }
+
+        return { setValue: { codeSourceComponentName } }
       }
     }
 
@@ -297,7 +304,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
   }
 
-  async updateComponents({ actionId }) {
+  async updateComponents({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
@@ -308,6 +315,8 @@ export default class RenderDoenetML extends CompositeComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       // event: {
       //   verb: "selected",
       //   object: {
@@ -321,9 +330,5 @@ export default class RenderDoenetML extends CompositeComponent {
       // },
     });
   }
-
-  actions = {
-    updateComponents: this.updateComponents.bind(this)
-  };
 
 }

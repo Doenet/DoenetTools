@@ -1,11 +1,11 @@
 import React from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
- // Moved most of checkWorkStyle styling into Button
- const Button = styled.button `
+// Moved most of checkWorkStyle styling into Button
+const Button = styled.button`
   position: relative;
   height: 24px;
   display: inline-block;
@@ -50,7 +50,8 @@ export default React.memo(function Answer(props) {
   if (SVs.inputChildren.length > 0) {
     let inputChildNames = SVs.inputChildren.map(x => x.componentName);
     inputChildrenToRender = children.filter(
-      child => typeof child !== "string" && inputChildNames.includes(child.props.componentInstructions.componentName)
+      //child might be null or a string
+      child => child && typeof child !== "string" && inputChildNames.includes(child.props.componentInstructions.componentName)
     )
   }
 

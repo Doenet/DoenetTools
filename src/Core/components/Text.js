@@ -3,6 +3,14 @@ import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 
 export default class Text extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveText: this.moveText.bind(this),
+    });
+
+  }
   static componentType = "text";
 
   static includeBlankStringChildren = true;
@@ -223,7 +231,9 @@ export default class Text extends InlineComponent {
   }
 
 
-  async moveText({ x, y, z, transient, actionId }) {
+  async moveText({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
     let components = ["vector"];
     if (x !== undefined) {
       components[1] = x;
@@ -244,6 +254,8 @@ export default class Text extends InlineComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -254,6 +266,8 @@ export default class Text extends InlineComponent {
           value: me.fromAst(components),
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -268,11 +282,6 @@ export default class Text extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveText: this.moveText.bind(this),
-  };
 
 
 }

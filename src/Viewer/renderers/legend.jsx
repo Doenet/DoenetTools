@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext } from './graph';
+import { deepCompare } from '../../Core/utils/deepFunctions';
 
 export default React.memo(function Legend(props) {
   let { name, id, SVs } = useDoenetRender(props);
@@ -10,15 +11,16 @@ export default React.memo(function Legend(props) {
   let swatches = useRef([]);
   let labels = useRef([])
 
+  let previousElements = useRef(null);
+  let previousPosition = useRef(null);
+  let previousLimits = useRef(null);
+
+
   useEffect(() => {
 
     //On unmount
     return () => {
-      // if line is defined
-      if (Object.keys(lineJXG.current).length !== 0) {
-        deleteLegend();
-      }
-
+      deleteLegend();
     }
   }, [])
 
@@ -209,13 +211,24 @@ export default React.memo(function Legend(props) {
 
 
   if (board) {
-    if (swatches.current.length > 0) {
 
-      deleteLegend();
+    if (!deepCompare(previousElements.current, SVs.legendElements)
+      || !deepCompare(previousLimits.current, SVs.graphLimits)
+      || previousPosition.current !== SVs.position
+    ) {
+
+      if (swatches.current.length > 0) {
+        deleteLegend();
+      }
+      createLegend();
 
     }
 
-    createLegend();
+    previousElements.current = [...SVs.legendElements];
+    previousLimits.current = Object.assign({}, SVs.graphLimits);
+    previousPosition.current = SVs.position;
+
+
 
     return <><a name={id} /></>
 

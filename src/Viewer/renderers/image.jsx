@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { BoardContext } from './graph';
+import { BoardContext, IMAGE_LAYER_OFFSET } from './graph';
 import { retrieveMediaForCid } from '../../Core/utils/retrieveMedia';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import me from 'math-expressions';
@@ -28,6 +28,9 @@ export default React.memo(function Image(props) {
   let currentSize = useRef(null);
 
   let currentOffset = useRef(null);
+
+  let rotationTransform = useRef(null);
+  let lastRotate = useRef(SVs.rotate);
 
   const urlOrSource = (SVs.cid ? url : SVs.source) || "";
 
@@ -69,8 +72,8 @@ export default React.memo(function Image(props) {
     let jsxImageAttributes = {
       visible: !SVs.hidden,
       fixed,
-      layer: 10 * SVs.layer + 0,
-      highlight: !fixed
+      layer: 10 * SVs.layer + IMAGE_LAYER_OFFSET,
+      highlight: !fixed,
     };
 
 
@@ -137,6 +140,33 @@ export default React.memo(function Image(props) {
 
     let newImageJXG = board.create('image', [urlOrSource, offset, [width, height]], jsxImageAttributes);
 
+    // tranformation code copied from jsxgraph documentation:
+    // https://jsxgraph.uni-bayreuth.de/wiki/index.php?title=Images#The_JavaScript_code_5
+    var tOff = board.create('transform', [
+      function () {
+        return -newImageJXG.X() - newImageJXG.W() * 0.5;
+      }, function () {
+        return -newImageJXG.Y() - newImageJXG.H() * 0.5;
+      }
+    ], { type: 'translate' });
+    var tOffInverse = board.create('transform', [
+      function () {
+        return newImageJXG.X() + newImageJXG.W() * 0.5;
+      }, function () {
+        return newImageJXG.Y() + newImageJXG.H() * 0.5;
+      }
+    ], { type: 'translate' });
+    var tRot = board.create('transform', [
+      SVs.rotate
+    ], { type: 'rotate' });
+
+
+    tOff.bindTo(newImageJXG);        // Shift image to origin
+    tRot.bindTo(newImageJXG);        // Rotate
+    tOffInverse.bindTo(newImageJXG); // Shift image back
+
+    rotationTransform.current = tRot;
+    lastRotate.current = SVs.rotate;
 
     newImageJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -214,6 +244,9 @@ export default React.memo(function Image(props) {
     previousPositionFromAnchor.current = SVs.positionFromAnchor;
     currentSize.current = [width, height];
 
+    // need fullUpdate to get initial rotation in case image was from a blob
+    imageJXG.current.fullUpdate();
+
   }
 
   if (board) {
@@ -260,7 +293,7 @@ export default React.memo(function Image(props) {
         imageJXG.current.visPropCalc["visible"] = false;
       }
 
-      let layer = 10 * SVs.layer + 0;
+      let layer = 10 * SVs.layer + IMAGE_LAYER_OFFSET;
       let layerChanged = imageJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
@@ -288,6 +321,12 @@ export default React.memo(function Image(props) {
         imageJXG.current.setSize(width, height);
         currentSize.current = [width, height];
       }
+
+      if (SVs.rotate != lastRotate.current) {
+        rotationTransform.current.setMatrix(board, "rotate", [SVs.rotate]);
+        lastRotate.current = SVs.rotate;
+      }
+
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current || sizeChanged) {
         let offset;

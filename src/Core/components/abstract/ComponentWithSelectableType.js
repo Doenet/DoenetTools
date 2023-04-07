@@ -505,9 +505,6 @@ function convertValueToType(value, type) {
   if (type === "number") {
     if (value instanceof me.class) {
       let num = value.evaluate_to_constant();
-      if (!Number.isFinite(num)) {
-        num = NaN;
-      }
       return num;
     }
     return Number(value);

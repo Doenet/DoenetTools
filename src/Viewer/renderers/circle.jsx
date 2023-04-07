@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import useDoenetRender from '../useDoenetRenderer';
+import { BoardContext, LINE_LAYER_OFFSET } from './graph';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 export default React.memo(function Circle(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
@@ -25,6 +27,8 @@ export default React.memo(function Circle(props) {
   lastCenterFromCore.current = SVs.numericalCenter;
   throughAnglesFromCore.current = SVs.throughAngles;
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
   useEffect(() => {
 
     //On unmount
@@ -47,7 +51,12 @@ export default React.memo(function Circle(props) {
     }
 
     let fixed = !SVs.draggable || SVs.fixed;
-    const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
+
+
+    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    lineColor = lineColor.toLowerCase();
+    let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+    fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
 
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
@@ -55,10 +64,10 @@ export default React.memo(function Circle(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed,
-      layer: 10 * SVs.layer + 5,
-      strokeColor: SVs.selectedStyle.lineColor,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
+      strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
@@ -84,9 +93,9 @@ export default React.memo(function Circle(props) {
 
     if (SVs.showLabel && SVs.labelForGraph !== "") {
       if (SVs.applyStyleToLabel) {
-        jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+        jsxCircleAttributes.label.strokeColor = lineColor;
       } else {
-        jsxCircleAttributes.label.strokeColor = "#000000";
+        jsxCircleAttributes.label.strokeColor = "var(--canvastext)";
       }
     }
 
@@ -142,6 +151,9 @@ export default React.memo(function Circle(props) {
       centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
+      callAction({
+        action: actions.mouseDownOnCircle
+      });
     });
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
@@ -229,16 +241,21 @@ export default React.memo(function Circle(props) {
       circleJXG.current.visProp.fixed = fixed;
       circleJXG.current.visProp.highlight = !fixed;
 
-      let layer = 10 * SVs.layer + 5;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = circleJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
         circleJXG.current.setAttribute({ layer });
       }
 
-      if (circleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
-        circleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
-        circleJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      lineColor = lineColor.toLowerCase();
+      let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+      fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+
+      if (circleJXG.current.visProp.strokecolor !== lineColor) {
+        circleJXG.current.visProp.strokecolor = lineColor;
+        circleJXG.current.visProp.highlightstrokecolor = lineColor;
       }
       if (circleJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
         circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
@@ -252,8 +269,6 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
         circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
       }
-
-      const fillColor = SVs.filled ? SVs.selectedStyle.fillColor.toLowerCase() : "none";
 
       if (circleJXG.current.visProp.fillcolor !== fillColor) {
         circleJXG.current.visProp.fillcolor = fillColor;
@@ -278,9 +293,9 @@ export default React.memo(function Circle(props) {
 
       if (circleJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
-          circleJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+          circleJXG.current.label.visProp.strokecolor = lineColor
         } else {
-          circleJXG.current.label.visProp.strokecolor = "#000000";
+          circleJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
         circleJXG.current.label.needsUpdate = true;
         circleJXG.current.label.update();

@@ -37,12 +37,22 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
 
-        let styleDescription = dependencyValues.selectedStyle.fillColorWord;
+        let fillColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
+        } else {
+          fillColorWord = dependencyValues.selectedStyle.fillColorWord;
+        }
 
-        return { setValue: { styleDescription } };
+        return { setValue: { styleDescription: fillColorWord } };
       }
     }
 

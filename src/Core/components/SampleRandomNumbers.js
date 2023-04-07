@@ -5,6 +5,14 @@ import { setUpVariantSeedAndRng } from '../utils/variants';
 import CompositeComponent from './abstract/CompositeComponent';
 
 export default class SampleRandomNumbers extends CompositeComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      resample: this.resample.bind(this),
+    });
+
+  }
   static componentType = "sampleRandomNumbers";
 
   static assignNamesToReplacements = true;
@@ -606,7 +614,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
     return { success: false };
   }
 
-  async resample({ actionId }) {
+  async resample({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let sampledValues = sampleFromRandomNumbers({
       type: await this.stateValues.type,
@@ -628,14 +636,11 @@ export default class SampleRandomNumbers extends CompositeComponent {
         stateVariable: "sampledValues",
         value: sampledValues,
       }],
-      actionId
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
 
   }
-
-
-  actions = {
-    resample: this.resample.bind(this),
-  };
 
 }

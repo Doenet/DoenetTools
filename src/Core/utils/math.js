@@ -2,33 +2,37 @@ import me from 'math-expressions';
 
 export var appliedFunctionSymbolsDefault = [
   "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
-  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
-  "asech", "asin", "asinh", "atan", "atanh",
-  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
-  "sech", "sin", "sinh", "tan", "tanh",
-  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
+  "cos", "cosh", "acos", "acosh", 'arccos', 'arccosh',
+  "cot", "coth", "acot", "acoth", 'arccot', 'arccoth',
+  "csc", "csch", "acsc", "acsch", 'arccsc', 'arccsch',
+  "sec", "sech", "asec", "asech", 'arcsec', 'arcsech',
+  "sin", "sinh", "asin", "asinh", 'arcsin', 'arcsinh',
+  "tan", "tanh", "atan", "atan2", "atanh", 'arctan', 'arctanh',
   'arg',
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
   'count', 'mod', 're', 'im', 'det', 'trace',
+  'nPr', 'nCr',
 ];
 
 export var appliedFunctionSymbolsDefaultLatex = [
   "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
-  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
-  "asech", "asin", "asinh", "atan", "atanh",
-  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
-  "sech", "sin", "sinh", "tan", "tanh",
-  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
+  "cos", "cosh", "acos", "acosh", 'arccos', 'arccosh',
+  "cot", "coth", "acot", "acoth", 'arccot', 'arccoth',
+  "csc", "csch", "acsc", "acsch", 'arccsc', 'arccsch',
+  "sec", "sech", "asec", "asech", 'arcsec', 'arcsech',
+  "sin", "sinh", "asin", "asinh", 'arcsin', 'arcsinh',
+  "tan", "tanh", "atan", "atan2", "atanh", 'arctan', 'arctanh',
   'arg',
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
   'sum', 'prod', 'variance', 'std',
   'count', 'mod', 'Re', 'Im', 'det', 'trace',
+  'nPr', 'nCr',
 ];
 
-let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset']
+let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset', 'angle', 'circ', '$', '%']
 
 export var textToAst = new me.converters.textToAstObj({
   appliedFunctionSymbols: appliedFunctionSymbolsDefault
@@ -220,7 +224,7 @@ export async function preprocessMathInverseDefinition({ desiredValue,
   stateValues, variableName = "value", arrayKey,
   workspace }) {
 
-  if ((desiredValue.tree[0] !== "tuple" && desiredValue.tree[0] !== "vector")
+  if (!vectorOperators.includes(desiredValue.tree[0])
     || !desiredValue.tree.includes()
   ) {
     return { desiredValue };
@@ -248,7 +252,7 @@ export async function preprocessMathInverseDefinition({ desiredValue,
       currentValue = currentValue[arrayKey]
     }
 
-    if (currentValue && (currentValue.tree[0] === "tuple" || currentValue.tree[0] === "vector")) {
+    if (currentValue && vectorOperators.includes(currentValue.tree[0])) {
 
       // if we have a currentValue that is a vector
       // we will merge components from desired value into current value
@@ -439,9 +443,6 @@ export function mathStateVariableFromNumberStateVariable({
     inverseDefinition: function ({ desiredStateVariableValues }) {
 
       let desiredNumber = desiredStateVariableValues[mathVariableName].evaluate_to_constant();
-      if (desiredNumber === null) {
-        desiredNumber = NaN;
-      }
       return {
         success: true,
         instructions: [{
@@ -527,7 +528,7 @@ export function mergeListsWithOtherContainers(tree) {
   let operator = tree[0];
   let operands = tree.slice(1);
 
-  if (["tuple", "vector", "list", "set"].includes(operator)) {
+  if ([...vectorOperators, "list", "set"].includes(operator)) {
     operands = operands.reduce((a, c) => Array.isArray(c) && c[0] === "list" ? [...a, ...c.slice(1)] : [...a, c], [])
   }
 
@@ -539,11 +540,11 @@ export function mergeListsWithOtherContainers(tree) {
 
 export function wrapWordWithVar(string, parseScientificNotation) {
 
-  // wrap words that aren't already in a \var with a \var
+  // wrap words that aren't already in a \operatorname with a \operatorname
 
   let newString = "";
 
-  let regex = /\\var\s*{[^{}]*}/
+  let regex = /\\operatorname\s*{[^{}]*}/
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
@@ -593,7 +594,7 @@ function wrapWordWithVarSub(string, parseScientificNotation) {
     } else {
       let beginWord = beginMatch + match[1].length;
       newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
+      newString += `\\operatorname{${match[2]}}`;
       string = string.substring(endMatch);
     }
 
@@ -610,7 +611,7 @@ export function wrapWordIncludingNumberWithVar(string, parseScientificNotation) 
 
   let newString = "";
 
-  let regex = /\\var\s*{[^{}]*}/
+  let regex = /\\operatorname\s*{[^{}]*}/
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
@@ -661,7 +662,7 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
     } else {
       let beginWord = beginMatch + match[1].length;
       newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
+      newString += `\\operatorname{${match[2]}}`;
       string = string.substring(endMatch);
     }
 
@@ -675,7 +676,7 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
 }
 
 export function stripLatex(latex) {
-  return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
+  return latex.replaceAll(`\\,`, '').replaceAll(/\\operatorname{([^{}]*)}/g, '$1');
 }
 
 export function superSubscriptsToUnicode(text) {
@@ -823,3 +824,5 @@ export const mathjaxConfig = {
     displayMath: [['\\[', '\\]']]
   }
 };
+
+export const vectorOperators = ["vector", "altvector", "tuple"];

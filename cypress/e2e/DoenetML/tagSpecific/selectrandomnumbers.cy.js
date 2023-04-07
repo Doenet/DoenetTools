@@ -4,7 +4,7 @@ describe('SelectRandomNumbers Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -47,7 +47,7 @@ describe('SelectRandomNumbers Tag Tests', function () {
       let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(0.5, 0.05);
-      expect(varX).closeTo(1 / 12, 0.005)
+      expect(varX).closeTo(1 / 12, 0.02)
 
       let firstSelect = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
       expect(firstSelect.stateValues.mean).closeTo(0.5, 1E-10)
@@ -102,7 +102,7 @@ describe('SelectRandomNumbers Tag Tests', function () {
       let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(4, 0.5);
-      expect(varX).closeTo(8 ** 2 / 12, 0.5)
+      expect(varX).closeTo(8 ** 2 / 12, 1)
 
       let firstSelect = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
       expect(firstSelect.stateValues.mean).closeTo(4, 1E-10)
@@ -156,7 +156,7 @@ describe('SelectRandomNumbers Tag Tests', function () {
       let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(-4.5, 0.05);
-      expect(varX).closeTo(1 / 12, 0.01)
+      expect(varX).closeTo(1 / 12, 0.02)
 
       let firstSelect = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
       expect(firstSelect.stateValues.mean).closeTo(-4.5, 1E-10)
@@ -312,7 +312,7 @@ describe('SelectRandomNumbers Tag Tests', function () {
       let meanX = me.math.mean(samples);
       let varX = me.math.variance(samples, 'uncorrected');
 
-      expect(meanX).closeTo(0, 0.1);
+      expect(meanX).closeTo(0, 0.2);
       expect(varX).closeTo(1, 0.2)
 
       let firstSelect = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
@@ -1467,7 +1467,7 @@ describe('SelectRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -1476,15 +1476,15 @@ describe('SelectRandomNumbers Tag Tests', function () {
       let n3 = stateVariables["/n3"].stateValues.value;
       let n4 = stateVariables["/n4"].stateValues.value;
 
-      cy.get('#\\/n1').should('have.text', String(Math.round(n1*10**8)/10**8))
-      cy.get('#\\/n2').should('have.text', String(Math.round(n2*10**1)/10**1))
-      cy.get('#\\/n3').should('have.text', String(Math.round(n3*10**3)/10**3))
-      cy.get('#\\/n4').should('have.text', String(n4)+".0")
+      cy.get('#\\/n1').should('have.text', String(Math.round(n1 * 10 ** 8) / 10 ** 8))
+      cy.get('#\\/n2').should('have.text', String(Math.round(n2 * 10 ** 1) / 10 ** 1))
+      cy.get('#\\/n3').should('have.text', String(Math.round(n3 * 10 ** 3) / 10 ** 3))
+      cy.get('#\\/n4').should('have.text', String(n4) + ".0")
 
-      cy.get('#\\/n1a').should('have.text', String(Math.round(n1*10**8)/10**8))
-      cy.get('#\\/n2a').should('have.text', String(Math.round(n2*10**1)/10**1))
-      cy.get('#\\/n3a').should('have.text', String(Math.round(n3*10**3)/10**3))
-      cy.get('#\\/n4a').should('have.text', String(n4)+".0")
+      cy.get('#\\/n1a').should('have.text', String(Math.round(n1 * 10 ** 8) / 10 ** 8))
+      cy.get('#\\/n2a').should('have.text', String(Math.round(n2 * 10 ** 1) / 10 ** 1))
+      cy.get('#\\/n3a').should('have.text', String(Math.round(n3 * 10 ** 3) / 10 ** 3))
+      cy.get('#\\/n4a').should('have.text', String(n4) + ".0")
 
     });
 

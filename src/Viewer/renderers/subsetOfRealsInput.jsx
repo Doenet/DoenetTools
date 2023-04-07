@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from "styled-components";
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';

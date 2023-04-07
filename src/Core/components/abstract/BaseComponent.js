@@ -68,6 +68,14 @@ export default class BaseComponent {
       this.variants = serializedComponent.variants;
     }
 
+    if (serializedComponent.range) {
+      this.doenetMLrange = serializedComponent.range;
+    }
+
+    this.actions = {
+      copyDoenetMLToClipboard: this.copyDoenetMLToClipboard.bind(this),
+    }
+
   }
 
   static componentType = "_base";
@@ -624,6 +632,28 @@ export default class BaseComponent {
         }
       }
     }
+
+
+    stateVariableDefinitions.doenetML = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        doenetML: {
+          dependencyType: "doenetML"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let doenetML = dependencyValues.doenetML;
+        if (!doenetML) {
+          doenetML = "";
+        }
+        return { setValue: { doenetML } }
+      }
+
+    }
+
 
     return stateVariableDefinitions;
   }
@@ -1193,6 +1223,18 @@ export default class BaseComponent {
     }
 
     return { success: true, desiredVariant }
+
+  }
+
+  async copyDoenetMLToClipboard({ actionId }) {
+
+    let doenetML = await this.stateValues.doenetML;
+
+    if (!doenetML) {
+      this.coreFunctions.resolveAction({ actionId });
+    } else {
+      this.coreFunctions.copyToClipboard(doenetML, actionId);
+    }
 
   }
 

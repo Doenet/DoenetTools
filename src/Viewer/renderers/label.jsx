@@ -1,6 +1,6 @@
-import React, { useContext, useRef } from 'react';
-import { BoardContext } from './graph';
-import useDoenetRender from './useDoenetRenderer';
+import React, { useContext, useEffect, useRef } from 'react';
+import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
+import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
 
@@ -26,6 +26,20 @@ export default React.memo(function Label(props) {
   let previousPositionFromAnchor = useRef(null);
 
 
+  useEffect(() => {
+    //On unmount
+    return () => {
+      if (labelJXG.current !== null) {
+        labelJXG.current.off('drag');
+        labelJXG.current.off('down');
+        labelJXG.current.off('up');
+        board?.removeObject(labelJXG.current);
+        labelJXG.current = null;
+      }
+
+    }
+  }, [])
+
   function createLabelJXG() {
 
     let fixed = !SVs.draggable || SVs.fixed;
@@ -34,7 +48,7 @@ export default React.memo(function Label(props) {
     let jsxLabelAttributes = {
       visible: !SVs.hidden,
       fixed,
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
       highlight: !fixed,
       useMathJax: SVs.hasLatex,
       parse: false,
@@ -206,10 +220,12 @@ export default React.memo(function Label(props) {
     if (SVs.hasLatex) {
       setTimeout(() => {
 
-        labelJXG.current.needsUpdate = true;
-        labelJXG.current.setText(SVs.value)
-        labelJXG.current.update();
-        board.updateRenderer();
+        if (labelJXG.current) {
+          labelJXG.current.needsUpdate = true;
+          labelJXG.current.setText(SVs.value)
+          labelJXG.current.update();
+          board?.updateRenderer();
+        }
 
       }, 1000)
     }
@@ -256,7 +272,7 @@ export default React.memo(function Label(props) {
         labelJXG.current.visPropCalc["visible"] = false;
       }
 
-      let layer = 10 * SVs.layer + 9;
+      let layer = 10 * SVs.layer + TEXT_LAYER_OFFSET;
       let layerChanged = labelJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

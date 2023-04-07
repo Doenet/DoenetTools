@@ -4,6 +4,21 @@ import me from 'math-expressions';
 import subsets, { buildSubsetFromMathExpression } from '../utils/subset-of-reals';
 
 export default class SubsetOfRealsInput extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      addPoint: this.addPoint.bind(this),
+      deletePoint: this.deletePoint.bind(this),
+      movePoint: this.movePoint.bind(this),
+      togglePoint: this.togglePoint.bind(this),
+      toggleInterval: this.toggleInterval.bind(this),
+      clear: this.clear.bind(this),
+      setToR: this.setToR.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "subsetOfRealsInput";
 
   static variableForPlainMacro = "subsetValue";
@@ -389,7 +404,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async addPoint({ value, actionId }) {
+  async addPoint({ value, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let dx = await this.stateValues.dx;
     let roundedValue = Math.round(
@@ -431,6 +446,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
               value: additionalPoints
             }],
             actionId,
+            sourceInformation,
+            skipRendererUpdate,
             event: {
               verb: "interacted",
               object: {
@@ -460,6 +477,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
           return await this.coreFunctions.performUpdate({
             updateInstructions,
             actionId,
+            sourceInformation,
+            skipRendererUpdate,
             event: {
               verb: "interacted",
               object: {
@@ -483,7 +502,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  async deletePoint({ pointInd, actionId }) {
+  async deletePoint({ pointInd, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let point = await this.stateValues.points[pointInd];
     let additionalPoints = [...await this.stateValues.additionalPoints];
@@ -500,6 +519,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
           value: additionalPoints
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -636,6 +657,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -698,7 +721,9 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return updateInstructions;
   }
 
-  async movePoint({ pointInd, value, transient, actionId }) {
+  async movePoint({ pointInd, value, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     let dx = await this.stateValues.dx;
 
@@ -737,6 +762,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
           }],
           transient: true,
           actionId,
+          sourceInformation,
+          skipRendererUpdate,
         });
       } else {
         return await this.coreFunctions.performUpdate({
@@ -747,6 +774,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
             value: additionalPoints
           }],
           actionId,
+          sourceInformation,
+          skipRendererUpdate,
           event: {
             verb: "interacted",
             object: {
@@ -790,11 +819,15 @@ export default class SubsetOfRealsInput extends BlockComponent {
           updateInstructions,
           transient: true,
           actionId,
+          sourceInformation,
+          skipRendererUpdate,
         });
       } else {
         return await this.coreFunctions.performUpdate({
           updateInstructions,
           actionId,
+          sourceInformation,
+          skipRendererUpdate,
           event: {
             verb: "interacted",
             object: {
@@ -813,7 +846,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  async togglePoint({ pointInd, actionId }) {
+  async togglePoint({ pointInd, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let point = (await this.stateValues.points)[pointInd];
 
@@ -923,6 +956,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -938,7 +973,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  async toggleInterval({ intervalInd, actionId }) {
+  async toggleInterval({ intervalInd, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     let interval = (await this.stateValues.intervals)[intervalInd];
 
@@ -1288,6 +1323,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -1303,7 +1340,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  async clear({ actionId }) {
+  async clear({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     let updateInstructions = await this.createUpdateInstructions({
       intervalsFromSubset: [],
       pointsFromSubset: [],
@@ -1314,6 +1351,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -1330,7 +1369,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
     });
   }
 
-  async setToR({ actionId }) {
+  async setToR({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
     let updateInstructions = await this.createUpdateInstructions({
       intervalsFromSubset: [[-Infinity, Infinity]],
       pointsFromSubset: [],
@@ -1341,6 +1380,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -1368,17 +1409,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
     })
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    addPoint: this.addPoint.bind(this),
-    deletePoint: this.deletePoint.bind(this),
-    movePoint: this.movePoint.bind(this),
-    togglePoint: this.togglePoint.bind(this),
-    toggleInterval: this.toggleInterval.bind(this),
-    clear: this.clear.bind(this),
-    setToR: this.setToR.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
 
 }
 

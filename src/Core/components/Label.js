@@ -3,6 +3,14 @@ import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 import me from 'math-expressions';
 
 export default class Label extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveLabel: this.moveLabel.bind(this),
+    });
+
+  }
   static componentType = "label";
   static renderChildren = true;
   static rendererType = "label";
@@ -17,10 +25,7 @@ export default class Label extends InlineComponent {
     let attributes = super.createAttributesObject();
 
     attributes.forObject = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "forObject",
-      defaultValue: null,
-      public: true,
+      createTargetComponentNames: true,
     }
 
     attributes.draggable = {
@@ -367,15 +372,22 @@ export default class Label extends InlineComponent {
     }
 
     stateVariableDefinitions.forObjectComponentName = {
-      stateVariablesDeterminingDependencies: ["forObject"],
-      returnDependencies: ({ stateValues }) => ({
-        forObjectComponentName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.forObject
+      returnDependencies: () => ({
+        forObject: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "forObject"
         }
       }),
       definition({ dependencyValues }) {
-        return { setValue: { forObjectComponentName: dependencyValues.forObjectComponentName } }
+        let forObjectComponentName;
+
+        if (dependencyValues.forObject?.length === 1) {
+          forObjectComponentName = dependencyValues.forObject[0].absoluteName;
+        } else {
+          forObjectComponentName = null;
+        }
+
+        return { setValue: { forObjectComponentName } }
       }
 
     }
@@ -438,7 +450,9 @@ export default class Label extends InlineComponent {
   static adapters = ["text"];
 
 
-  async moveLabel({ x, y, z, transient, actionId }) {
+  async moveLabel({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = ["vector"];
     if (x !== undefined) {
       components[1] = x;
@@ -459,6 +473,8 @@ export default class Label extends InlineComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -469,6 +485,8 @@ export default class Label extends InlineComponent {
           value: me.fromAst(components),
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -483,10 +501,5 @@ export default class Label extends InlineComponent {
     }
 
   }
-
-
-  actions = {
-    moveLabel: this.moveLabel.bind(this),
-  };
 
 }

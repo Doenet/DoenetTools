@@ -21,7 +21,7 @@ describe('FunctionIterates Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -173,7 +173,7 @@ describe('FunctionIterates Tag Tests', function () {
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
   
 
   `}, "*");
@@ -294,6 +294,71 @@ describe('FunctionIterates Tag Tests', function () {
   <m>a = </m> <mathinput name="a" prefill="3" />, <m>b = </m> <mathinput name="b" prefill="-2" />, <m>c = </m> <mathinput name="c" prefill="1" />, <m>d = </m> <mathinput name="d" prefill="4" />.
   <m>f($x, $y) =</m> <function name="f" simplify variables="$x $y">($a$x+$b$y, $c$x+$d$y)</function>
   <m>u = </m> <mathinput name="u" prefill="(2,1)" /> <m>n=</m> <mathinput name="n" prefill="3" /></p>
+
+  <functionIterates function="$f" initialValue="$u" nIterates="$n" name="fis" />
+  <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
+  <copy prop="value" target="n" assignNames="n2" />
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    function checkIterates({ a, b, c, d, u1, u2, n }) {
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        let A = me.math.matrix([[a, b], [c, d]]);
+        let x = me.math.matrix([[u1], [u2]]);
+
+        let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
+        let iterAnchors = iterNames.map(x => cesc('#' + x))
+
+
+        for (let i = 0; i < n; i++) {
+          x = me.math.multiply(A, x);
+          let x1 = me.math.subset(x, me.math.index(0, 0));
+          let x2 = me.math.subset(x, me.math.index(1, 0));
+          expect(stateVariables[iterNames[i]].stateValues.value).eqls(["vector", x1, x2])
+          cy.get(iterAnchors[i]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.replace(/−/g, '-')).equal(`(${x1},${x2})`)
+          })
+        }
+
+
+      });
+    }
+
+    checkIterates({ a: 3, b: -2, c: 1, d: 4, u1: 2, u2: 1, n: 3 })
+
+    cy.log(`change values`)
+    cy.get('#\\/x textarea').type("{end}{backspace}q{enter}", { force: true })
+    cy.get('#\\/y textarea').type("{end}{backspace}r{enter}", { force: true })
+    cy.get('#\\/a textarea').type("{end}{backspace}{backspace}-4{enter}", { force: true })
+    cy.get('#\\/b textarea').type("{end}{backspace}{backspace}7{enter}", { force: true })
+    cy.get('#\\/c textarea').type("{end}{backspace}{backspace}6{enter}", { force: true })
+    cy.get('#\\/d textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/u textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}-8, 9{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true })
+
+    cy.get('#\\/n2').should('contain.text', '5')
+
+    checkIterates({ a: -4, b: 7, c: 6, d: -1, u1: -8, u2: 9, n: 5 })
+
+
+  })
+
+  it('2D linear function, with alt vectors', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>variables: <mathinput name="x" prefill="x" /> and <mathinput name="y" prefill="y" />.
+  <m>a = </m> <mathinput name="a" prefill="3" />, <m>b = </m> <mathinput name="b" prefill="-2" />, <m>c = </m> <mathinput name="c" prefill="1" />, <m>d = </m> <mathinput name="d" prefill="4" />.
+  <m>f($x, $y) =</m> <function name="f" simplify variables="$x $y">⟨$a$x+$b$y, $c$x+$d$y⟩</function>
+  <m>u = </m> <mathinput name="u" prefill="⟨2,1⟩" /> <m>n=</m> <mathinput name="n" prefill="3" /></p>
 
   <functionIterates function="$f" initialValue="$u" nIterates="$n" name="fis" />
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
@@ -498,7 +563,7 @@ describe('FunctionIterates Tag Tests', function () {
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
 
 
-  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
+  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
   <copy prop="value" target="u" assignNames="u2" />
   <copy prop="value" target="fformula" assignNames="fformula2" />
   <copy prop="value" target="vars" assignNames="vars2" />

@@ -1,8 +1,18 @@
 import { returnLabelStateVariableDefinitions } from '../utils/label';
 import { normalizeMathExpression } from '../utils/math';
+import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggeringAttributes } from '../utils/triggering';
 import InlineComponent from './abstract/InlineComponent';
 
 export default class UpdateValue extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      updateValue: this.updateValue.bind(this),
+      updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this)
+    });
+
+  }
   static componentType = "updateValue";
 
   static acceptTarget = true;
@@ -49,20 +59,11 @@ export default class UpdateValue extends InlineComponent {
       public: true,
     };
 
-    attributes.triggerWhen = {
-      createComponentOfType: "boolean",
-      createStateVariable: "triggerWhen",
-      defaultValue: false,
-      triggerActionOnChange: "updateValueIfTriggerNewlyTrue"
-    }
 
-    attributes.triggerWith = {
-      createPrimitiveOfType: "string"
-    }
+    let triggerAttributes = returnStandardTriggeringAttributes("updateValueIfTriggerNewlyTrue")
 
-    attributes.triggerWhenObjectsClicked = {
-      createPrimitiveOfType: "string"
-    }
+    Object.assign(attributes, triggerAttributes);
+
 
     // for newValue with type==="math"
     // let simplify="" or simplify="true" be full simplify
@@ -72,7 +73,7 @@ export default class UpdateValue extends InlineComponent {
       defaultValue: "none",
       public: true,
       toLowerCase: true,
-      valueTransformations: { "true": "full" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
 
@@ -93,6 +94,8 @@ export default class UpdateValue extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    addStandardTriggeringStateVariableDefinitions(stateVariableDefinitions, "updateValue");
 
     let labelDefinitions = returnLabelStateVariableDefinitions();
 
@@ -298,155 +301,12 @@ export default class UpdateValue extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.insideTriggerSet = {
-      returnDependencies: () => ({
-        parentTriggerSet: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "triggerSet",
-          variableName: "updateValueAndActionsToTrigger"
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          setValue: {
-            insideTriggerSet: dependencyValues.parentTriggerSet !== null
-          }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWith = {
-      returnDependencies: () => ({
-        triggerWith: {
-          dependencyType: "attributePrimitive",
-          attributeName: "triggerWith"
-        },
-        triggerWhenObjectsClicked: {
-          dependencyType: "attributePrimitive",
-          attributeName: "triggerWhenObjectsClicked"
-        },
-        triggerWhen: {
-          dependencyType: "attributeComponent",
-          attributeName: "triggerWhen"
-        },
-        insideTriggerSet: {
-          dependencyType: "stateVariable",
-          variableName: "insideTriggerSet"
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet) {
-          return { setValue: { triggerWith: null } }
-        } else {
-
-          let triggerWith = [];
-          if (dependencyValues.triggerWith !== null) {
-            for (let target of dependencyValues.triggerWith.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target })
-            }
-          }
-          if (dependencyValues.triggerWhenObjectsClicked !== null) {
-            for (let target of dependencyValues.triggerWhenObjectsClicked.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target, triggeringAction: "click" })
-            }
-          }
-
-          if (triggerWith.length === 0) {
-            triggerWith = null;
-          }
-
-          return { setValue: { triggerWith } }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWithTargetIds = {
-      chainActionOnActionOfStateVariableTargets: {
-        triggeredAction: "updateValue"
-      },
-      stateVariablesDeterminingDependencies: ["triggerWith"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          triggerWith: {
-            dependencyType: "stateVariable",
-            variableName: "triggerWith"
-          }
-        };
-        if (stateValues.triggerWith) {
-          for (let [ind, targetObj] of stateValues.triggerWith.entries()) {
-
-            dependencies[`triggerWithTargetComponentName${ind}`] = {
-              dependencyType: "expandTargetName",
-              target: targetObj.target
-            }
-          }
-        }
-        return dependencies;
-      },
-      definition({ dependencyValues }) {
-        let triggerWithTargetIds = [];
-
-        if (dependencyValues.triggerWith) {
-          for (let [ind, targetObj] of dependencyValues.triggerWith.entries()) {
-
-            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
-
-            if (targetObj.triggeringAction) {
-              id += "|" + targetObj.triggeringAction;
-            };
-
-            if (!triggerWithTargetIds.includes(id)) {
-              triggerWithTargetIds.push(id);
-            }
-
-          }
-        }
-
-        return { setValue: { triggerWithTargetIds } }
-      },
-      markStale() {
-        return { updateActionChaining: true }
-      }
-    }
-
-
-    let originalHiddenReturnDependencies = stateVariableDefinitions.hidden.returnDependencies;
-    let originalHiddenDefinition = stateVariableDefinitions.hidden.definition;
-
-    stateVariableDefinitions.hidden.returnDependencies = function (args) {
-      let dependencies = originalHiddenReturnDependencies(args);
-      dependencies.triggerWhen = {
-        dependencyType: "attributeComponent",
-        attributeName: "triggerWhen"
-      };
-      dependencies.triggerWith = {
-        dependencyType: "stateVariable",
-        variableName: "triggerWith"
-      }
-      dependencies.insideTriggerSet = {
-        dependencyType: "stateVariable",
-        variableName: "insideTriggerSet"
-      }
-      return dependencies;
-    }
-
-    stateVariableDefinitions.hidden.definition = function (args) {
-      if (args.dependencyValues.triggerWhen ||
-        args.dependencyValues.triggerWith ||
-        args.dependencyValues.insideTriggerSet
-      ) {
-        return { setValue: { hidden: true } }
-      } else {
-        return originalHiddenDefinition(args);
-      }
-    }
-
     return stateVariableDefinitions;
 
   }
 
 
-  async updateValue({ actionId }) {
+  async updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     let targets = await this.stateValues.targets;
     let newValue = await this.stateValues.newValue;
@@ -479,6 +339,8 @@ export default class UpdateValue extends InlineComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate: true,
       event: {
         verb: "selected",
         object: {
@@ -494,6 +356,9 @@ export default class UpdateValue extends InlineComponent {
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
 
 
@@ -505,15 +370,10 @@ export default class UpdateValue extends InlineComponent {
     if (await stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !await this.stateValues.insideTriggerSet
     ) {
-      return await this.updateValue({ actionId });
+      return await this.updateValue({ actionId, skipRendererUpdate: true });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
-
-  actions = {
-    updateValue: this.updateValue.bind(this),
-    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this)
-  };
 }
 

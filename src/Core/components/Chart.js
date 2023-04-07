@@ -1,6 +1,15 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Chart extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      changeAxisLimits: this.changeAxisLimits.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+
+  }
   static componentType = "chart";
 
   static acceptTarget = true;
@@ -671,7 +680,9 @@ export default class Chart extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId }) {
+  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let updateInstructions = [];
 
@@ -711,6 +722,8 @@ export default class Chart extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -735,24 +748,6 @@ export default class Chart extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
-  }
-
-  recordVisibilityChange({ isVisible, actionId }) {
-    this.coreFunctions.requestRecordEvent({
-      verb: "visibilityChanged",
-      object: {
-        componentName: this.componentName,
-        componentType: this.componentType,
-      },
-      result: { isVisible }
-    })
-    this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    changeAxisLimits: this.changeAxisLimits.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }
