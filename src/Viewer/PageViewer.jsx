@@ -16,6 +16,7 @@ import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../_reactComponents/Course/CourseActions';
 
 import cssesc from 'cssesc';
+import { darkModeAtom } from '../Tools/_framework/DarkmodeController';
 
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
@@ -142,6 +143,8 @@ export default function PageViewer(props) {
   const prefixForIds = props.prefixForIds || "";
 
   const previousLocationKeys = useRef([]);
+
+  const darkMode = useRecoilValue(darkModeAtom);
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(props.doenetId));
@@ -303,6 +306,13 @@ export default function PageViewer(props) {
 
 
   }, [location, hash, documentRenderer, props.pageIsActive])
+
+  useEffect(() => {
+    callAction({
+      action: { actionName: "setTheme" },
+      args: { theme: darkMode }
+    })
+  }, [darkMode])
 
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
@@ -812,10 +822,7 @@ export default function PageViewer(props) {
       terminateCoreAndAnimations();
     }
     // console.log(`send message to create core ${pageNumber}`)
-
-    const bundledURl = new URL('./core.js', import.meta.url);
-    const unbunledURL = new URL('../Core/CoreWorker.js', import.meta.url);
-    coreWorker.current = new Worker(props.unbundledCore ? unbunledURL : bundledURl, { type: 'module' });
+    coreWorker.current = new Worker(new URL('../Core/CoreWorker.js', import.meta.url), { type: 'module' });
 
     coreWorker.current.postMessage({
       messageType: "createCore",
@@ -827,6 +834,7 @@ export default function PageViewer(props) {
         previousComponentTypeCounts: props.previousComponentTypeCounts,
         activityCid: props.activityCid,
         flags: props.flags,
+        theme: darkMode,
         requestedVariantIndex,
         pageNumber,
         attemptNumber,
@@ -839,10 +847,11 @@ export default function PageViewer(props) {
       }
     });
 
-    setStage('waitingOnCore');
+    setStage('waitingOnCore')
 
     for (let actionArgs of actionsBeforeCoreCreated.current) {
-      coreWorker.current.postMessage({
+      // Note: we protect against the possibility that core is terminated before posting message
+      coreWorker.current?.postMessage({
         messageType: "requestAction",
         args: actionArgs
       });
@@ -1043,7 +1052,6 @@ export default function PageViewer(props) {
     // kill the core worker
 
     terminateCoreAndAnimations()
-    coreWorker.current = null;
 
     setStage('readyToCreateCore');
 

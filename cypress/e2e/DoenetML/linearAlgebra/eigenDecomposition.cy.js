@@ -4,7 +4,7 @@ describe('EigenDecomposition Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -253,5 +253,5 @@ describe('EigenDecomposition Tag Tests', function () {
 })
 
 function reviveComplex(num) {
-  return me.math.complex({re: num.re, im: num.im})
+  return me.math.complex({ re: num.re, im: num.im })
 }

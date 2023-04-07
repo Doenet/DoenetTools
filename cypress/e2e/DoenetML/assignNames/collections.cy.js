@@ -14,7 +14,7 @@ describe('Collection assignName Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('name points and coords off a graph', () => {
@@ -2321,17 +2321,17 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all three points');
     cy.window().then(async (win) => {
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: 1, y: 2 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: 3, y: 4 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p3",
         args: { x: 5, y: 6 }
@@ -2741,32 +2741,32 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all six points');
     cy.window().then(async (win) => {
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/q1",
         args: { x: -1, y: -9 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/q2",
         args: { x: -2, y: -8 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/q3",
         args: { x: -3, y: -7 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/q4",
         args: { x: -4, y: -6 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/q5",
         args: { x: -5, y: -5 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/q6",
         args: { x: -6, y: -4 }
@@ -3211,22 +3211,22 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
 
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: 4, y: -5 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: 3, y: -6 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p3",
         args: { x: 2, y: -7 }
       });
-      await win.callAction1({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p4",
         args: { x: 1, y: -8 }

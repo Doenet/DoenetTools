@@ -3,6 +3,8 @@ import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext, LINE_LAYER_OFFSET } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 
 export default React.memo(function Line(props) {
@@ -24,6 +26,8 @@ export default React.memo(function Line(props) {
   let lastPositionsFromCore = useRef(null);
 
   lastPositionsFromCore.current = SVs.numericalPoints;
+
+  const darkMode = useRecoilValue(darkModeAtom);
 
 
   useEffect(() => {
@@ -51,6 +55,9 @@ export default React.memo(function Line(props) {
     let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
+    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    lineColor = lineColor.toLowerCase();
+
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
       name: SVs.labelForGraph,
@@ -58,9 +65,9 @@ export default React.memo(function Line(props) {
       withlabel,
       fixed,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
-      strokeColor: SVs.selectedStyle.lineColor,
+      strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: lineColor,
       highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
@@ -103,9 +110,9 @@ export default React.memo(function Line(props) {
       }
 
       if (SVs.applyStyleToLabel) {
-        jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+        jsxLineAttributes.label.strokeColor = lineColor;
       } else {
-        jsxLineAttributes.label.strokeColor = "#000000";
+        jsxLineAttributes.label.strokeColor = "var(--canvastext)";
       }
     } else {
       jsxLineAttributes.label = {
@@ -278,9 +285,13 @@ export default React.memo(function Line(props) {
         lineJXG.current.setAttribute({ layer });
       }
 
-      if (lineJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
-        lineJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
-        lineJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+
+      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      lineColor = lineColor.toLowerCase();
+
+      if (lineJXG.current.visProp.strokecolor !== lineColor) {
+        lineJXG.current.visProp.strokecolor = lineColor;
+        lineJXG.current.visProp.highlightstrokecolor = lineColor;
       }
       if (lineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
         lineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
@@ -308,9 +319,9 @@ export default React.memo(function Line(props) {
       if (lineJXG.current.hasLabel) {
         lineJXG.current.label.needsUpdate = true;
         if (SVs.applyStyleToLabel) {
-          lineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+          lineJXG.current.label.visProp.strokecolor = lineColor
         } else {
-          lineJXG.current.label.visProp.strokecolor = "#000000";
+          lineJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
         if (SVs.labelPosition !== previousLabelPosition.current) {
           let anchorx, anchory, offset;

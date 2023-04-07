@@ -59,9 +59,9 @@ export default class MatchesPattern extends BooleanComponent {
     let wrapNonMathWithMath = function ({ matchedChildren, componentInfoObjects }) {
 
       // if have no children or a single math, don't do anything
-      if (matchedChildren.length === 0 || 
+      if (matchedChildren.length === 0 ||
         matchedChildren.length === 1 && componentInfoObjects.componentIsSpecifiedType(matchedChildren[0], "math")
-        ) {
+      ) {
         return { success: false }
       }
 
@@ -220,7 +220,7 @@ export default class MatchesPattern extends BooleanComponent {
 
         let variables = {};
         if (dependencyValues.requireNumericMatches) {
-          let isNumeric = m => me.fromAst(m).evaluate_to_constant() !== null
+          let isNumeric = m => !Number.isNaN(me.fromAst(m).evaluate_to_constant())
           dependencyValues.patternVariables.forEach(v => variables[v] = isNumeric)
         } else if (dependencyValues.requireVariableMatches) {
           let isString = m => typeof m === "string";

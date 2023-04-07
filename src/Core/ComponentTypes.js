@@ -75,6 +75,7 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
+import PiecewiseFunction from './components/PiecewiseFunction';
 import Interval from './components/Interval';
 import Template from './components/Template';
 import Option from './components/Option';
@@ -244,6 +245,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
+  PiecewiseFunction,
   Interval,
   Template, Option,
   Sequence,

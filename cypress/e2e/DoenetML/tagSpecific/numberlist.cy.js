@@ -12,7 +12,7 @@ describe('Numberlist Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('numberlist from string', () => {
@@ -1037,7 +1037,7 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.get("#\\/ml1").should("have.text", "34.24502348, 250")
- 
+
     cy.get("#\\/ml1Dig4").should("have.text", "34.25, 245.2")
     cy.get("#\\/ml1Dig4a").should("have.text", "34.25, 245.2")
 
@@ -1080,5 +1080,5 @@ describe('Numberlist Tag Tests', function () {
     })
 
   })
-  
+
 })

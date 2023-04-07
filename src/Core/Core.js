@@ -31,6 +31,7 @@ export default class Core {
     requestedVariant, requestedVariantIndex,
     previousComponentTypeCounts = {},
     flags = {},
+    theme,
     prerender = false,
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
@@ -52,6 +53,7 @@ export default class Core {
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
     this.flags = flags;
+    this.theme = theme;
 
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
@@ -190,6 +192,12 @@ export default class Core {
     });
 
     this.documentName = serializedComponents[0].componentName;
+
+    if (!serializedComponents[0].state) {
+      serializedComponents[0].state = {};
+    }
+    serializedComponents[0].state.theme = this.theme;
+
     serializedComponents[0].doenetAttributes.cid = this.cid;
 
     this._components = {};
@@ -8191,6 +8199,22 @@ export default class Core {
   }
 
   async performAction({ componentName, actionName, args, event, caseInsensitiveMatch }) {
+
+    if (actionName === "setTheme" && !componentName) {
+      // For now, co-opting the action mechanism to let the viewer set the theme (dark mode) on document.
+      // Don't have an actual action on document as don't want the ability for others to call it.
+      // Theme doesn't affect the colors displayed, only the words in the styleDescriptions.
+      return await this.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.documentName,
+          stateVariable: "theme",
+          value: args.theme,
+        }],
+        actionId: args.actionId,
+        doNotSave: true, // this isn't an interaction, so don't save page state
+      });
+    }
 
     let component = this.components[componentName];
     if (component && component.actions) {

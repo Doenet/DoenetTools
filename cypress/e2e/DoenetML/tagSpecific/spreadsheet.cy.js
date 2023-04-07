@@ -3,7 +3,7 @@ describe('Spreadsheet Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   var enterSpreadsheetText = function ({ id = "\\/_spreadsheet1", row, column, text = "", clear = false, verify = true }) {
@@ -3547,7 +3547,7 @@ describe('Spreadsheet Tag Tests', function () {
 
 
   });
- 
+
   it('copy multidimensional propIndex of evaluated cells, dot and array notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3628,7 +3628,7 @@ describe('Spreadsheet Tag Tests', function () {
 
 
   });
-  
+
   it('copy multidimensional propIndex of evaluated rows and columns, dot and array notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3709,7 +3709,7 @@ describe('Spreadsheet Tag Tests', function () {
 
 
   });
-  
+
   it('copy single propIndex of evaluated rows and columns, dot and array notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3790,7 +3790,7 @@ describe('Spreadsheet Tag Tests', function () {
 
 
   });
- 
+
   it('copy propIndex of points in cells', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3861,7 +3861,7 @@ describe('Spreadsheet Tag Tests', function () {
 
 
   });
- 
+
   it('copy propIndex of points in cells, dot and array notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3932,7 +3932,7 @@ describe('Spreadsheet Tag Tests', function () {
 
 
   });
- 
+
   it('copy multidimensional propIndex of points in cells, dot and array notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({

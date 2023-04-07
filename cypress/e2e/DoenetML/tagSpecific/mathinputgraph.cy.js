@@ -13,7 +13,7 @@ describe('MathInput Graph Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('mathinputs specifying point', () => {
@@ -96,10 +96,10 @@ describe('MathInput Graph Tests', function () {
       cy.log(`move point to (5,-6)`)
       cy.window().then(async (win) => {
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 5, y: -6 }
-      });
+          actionName: "movePoint",
+          componentName: "/_point1",
+          args: { x: 5, y: -6 }
+        });
         let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables['/x'].stateValues.value).evaluate_to_constant()).to.eq(5);
         expect(me.fromAst(stateVariables['/y'].stateValues.value).evaluate_to_constant()).to.eq(-6);
@@ -178,10 +178,10 @@ describe('MathInput Graph Tests', function () {
       cy.log(`try to move point to (5,6)`)
       cy.window().then(async (win) => {
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 5, y: 6 }
-      });
+          actionName: "movePoint",
+          componentName: "/_point1",
+          args: { x: 5, y: 6 }
+        });
         let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables['/x'].stateValues.value).evaluate_to_constant()).to.eq(-1.2);
         expect(me.fromAst(stateVariables['/y'].stateValues.value).evaluate_to_constant()).to.eq(6);
@@ -259,10 +259,10 @@ describe('MathInput Graph Tests', function () {
       cy.log(`try to move point to (5,6)`)
       cy.window().then(async (win) => {
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 5, y: 6 }
-      });
+          actionName: "movePoint",
+          componentName: "/_point1",
+          args: { x: 5, y: 6 }
+        });
         let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables['/a'].stateValues.value).evaluate_to_constant()).is.eq(-1.5);
         expect(me.fromAst(stateVariables['/b'].stateValues.value).evaluate_to_constant()).is.eq(2);
@@ -340,10 +340,10 @@ describe('MathInput Graph Tests', function () {
       cy.log(`move point to (5,6)`)
       cy.window().then(async (win) => {
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 5, y: 6 }
-      });
+          actionName: "movePoint",
+          componentName: "/_point1",
+          args: { x: 5, y: 6 }
+        });
         let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables['/a'].stateValues.value).evaluate_to_constant()).is.eq(2.5);
         expect(me.fromAst(stateVariables['/b'].stateValues.value).evaluate_to_constant()).is.eq(2);

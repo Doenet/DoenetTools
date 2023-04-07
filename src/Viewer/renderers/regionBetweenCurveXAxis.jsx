@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext, LINE_LAYER_OFFSET } from './graph';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 export default React.memo(function RegionBetweenCurveXAxis(props) {
   let { name, id, SVs } = useDoenetRender(props);
@@ -12,6 +14,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
 
   let curveJXG = useRef(null)
   let integralJXG = useRef(null)
+
+  const darkMode = useRecoilValue(darkModeAtom);
+
 
   useEffect(() => {
     //On unmount
@@ -32,7 +37,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       return null;
     }
 
-    let fillColor = SVs.selectedStyle.fillColor;
+
+    let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+    fillColor = fillColor.toLowerCase();
 
 
     // Note: actual content of label is being ignored
@@ -112,7 +119,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
         integralJXG.current.setAttribute({ layer });
       }
 
-      let fillColor = SVs.selectedStyle.fillColor;
+
+      let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
+      fillColor = fillColor.toLowerCase();
 
       if (integralJXG.current.visProp.fillcolor !== fillColor) {
         integralJXG.current.visProp.fillcolor = fillColor;

@@ -62,7 +62,7 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
         setRenderersToLoad((old) => {
           let rendererPromises = { ...old };
           if (!(childInstructions.rendererType in rendererPromises)) {
-            rendererPromises[childInstructions.rendererType] = import(`./renderers/${childInstructions.rendererType}.js`);
+            rendererPromises[childInstructions.rendererType] = import(`./renderers/${childInstructions.rendererType}.jsx`);
           }
           return rendererPromises;
         })

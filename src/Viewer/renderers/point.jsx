@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from '../useDoenetRenderer';
 import { BoardContext, POINT_LAYER_OFFSET } from './graph';
 import { MathJax } from 'better-react-mathjax';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { useRecoilValue } from 'recoil';
 
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -27,6 +29,9 @@ export default React.memo(function Point(props) {
 
   lastPositionFromCore.current = SVs.numericalXs;
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
+
   const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
 
 
@@ -48,8 +53,11 @@ export default React.memo(function Point(props) {
   }, [])
 
   function createPointJXG() {
-    let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-    let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
+
+    let markerColor = darkMode === "dark" ? SVs.selectedStyle.markerColorDarkMode : SVs.selectedStyle.markerColor;
+    markerColor = markerColor.toLowerCase();
+    let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
+    let strokeColor = useOpenSymbol ? markerColor : "none";
 
     let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
@@ -121,9 +129,9 @@ export default React.memo(function Point(props) {
       }
 
       if (SVs.applyStyleToLabel) {
-        jsxPointAttributes.label.strokeColor = SVs.selectedStyle.markerColor;
+        jsxPointAttributes.label.strokeColor = markerColor;
       } else {
-        jsxPointAttributes.label.strokeColor = "#000000";
+        jsxPointAttributes.label.strokeColor = "var(--canvastext)";
       }
     } else {
       jsxPointAttributes.label = {
@@ -262,8 +270,10 @@ export default React.memo(function Point(props) {
       createPointJXG();
     } else {
       //if values update
-      let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
+      let markerColor = darkMode === "dark" ? SVs.selectedStyle.markerColorDarkMode : SVs.selectedStyle.markerColor;
+      markerColor = markerColor.toLowerCase();
+      let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
+      let strokeColor = useOpenSymbol ? markerColor : "none";
 
       if (pointJXG.current.visProp.fillcolor !== fillColor) {
         pointJXG.current.visProp.fillcolor = fillColor;
@@ -369,9 +379,9 @@ export default React.memo(function Point(props) {
       if (pointJXG.current.hasLabel) {
         pointJXG.current.label.needsUpdate = true;
         if (SVs.applyStyleToLabel) {
-          pointJXG.current.label.visProp.strokecolor = SVs.selectedStyle.markerColor;
+          pointJXG.current.label.visProp.strokecolor = markerColor;
         } else {
-          pointJXG.current.label.visProp.strokecolor = "#000000";
+          pointJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
         if (SVs.labelPosition !== previousLabelPosition.current) {
           let anchorx, anchory, offset;

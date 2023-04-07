@@ -246,8 +246,20 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -261,7 +273,7 @@ export default class Vector extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -1811,14 +1823,8 @@ export default class Vector extends GraphicalComponent {
 
         let numericalHead, numericalTail;
         if (dependencyValues.nDimensions === 1) {
-          let numericalHead = dependencyValues.head[0].evaluate_to_constant();
-          if (!Number.isFinite(numericalHead)) {
-            numericalHead = NaN;
-          }
+          numericalHead = dependencyValues.head[0].evaluate_to_constant();
           numericalTail = dependencyValues.tail[0].evaluate_to_constant();
-          if (!Number.isFinite(numericalTail)) {
-            numericalTail = NaN;
-          }
         } else {
 
           numericalHead = [];
@@ -1826,15 +1832,9 @@ export default class Vector extends GraphicalComponent {
 
           for (let i = 0; i < dependencyValues.nDimensions; i++) {
             let head = dependencyValues.head[i].evaluate_to_constant();
-            if (!Number.isFinite(head)) {
-              head = NaN;
-            }
             numericalHead.push(head);
 
             let tail = dependencyValues.tail[i].evaluate_to_constant();
-            if (!Number.isFinite(tail)) {
-              tail = NaN;
-            }
             numericalTail.push(tail);
           }
         }

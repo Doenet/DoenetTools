@@ -13,7 +13,7 @@ describe('Ion Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('ion names and charges', () => {
@@ -525,34 +525,34 @@ describe('Ion Tests', function () {
       let mathinputSCorrectAnchor = cesc('#' + mathinputSName + '_correct');
       let mathinputSIncorrectAnchor = cesc('#' + mathinputSName + '_incorrect');
 
-      cy.get(mathinputClAnchor).type("Cl{enter}", {force: true});
+      cy.get(mathinputClAnchor).type("Cl{enter}", { force: true });
       cy.get(mathinputClIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputClAnchor).type("{end}^-{enter}", {force: true});
+      cy.get(mathinputClAnchor).type("{end}^-{enter}", { force: true });
       cy.get(mathinputClCorrectAnchor).should('be.visible')
 
-      cy.get(mathinputHAnchor).type("H{enter}", {force: true});
+      cy.get(mathinputHAnchor).type("H{enter}", { force: true });
       cy.get(mathinputHIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputHAnchor).type("{end}^+{enter}", {force: true});
+      cy.get(mathinputHAnchor).type("{end}^+{enter}", { force: true });
       cy.get(mathinputHCorrectAnchor).should('be.visible')
 
-      cy.get(mathinputMgAnchor).type("Mg{enter}", {force: true});
+      cy.get(mathinputMgAnchor).type("Mg{enter}", { force: true });
       cy.get(mathinputMgIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputMgAnchor).type("{end}^2+{enter}", {force: true});
+      cy.get(mathinputMgAnchor).type("{end}^2+{enter}", { force: true });
       cy.get(mathinputMgCorrectAnchor).should('be.visible')
 
-      cy.get(mathinputPAnchor).type("P{enter}", {force: true});
+      cy.get(mathinputPAnchor).type("P{enter}", { force: true });
       cy.get(mathinputPIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputPAnchor).type("{end}^3-{enter}", {force: true});
+      cy.get(mathinputPAnchor).type("{end}^3-{enter}", { force: true });
       cy.get(mathinputPCorrectAnchor).should('be.visible')
 
-      cy.get(mathinputSAnchor).type("S{enter}", {force: true});
+      cy.get(mathinputSAnchor).type("S{enter}", { force: true });
       cy.get(mathinputSIncorrectAnchor).should('be.visible')
 
-      cy.get(mathinputSAnchor).type("{end}^2-{enter}", {force: true});
+      cy.get(mathinputSAnchor).type("{end}^2-{enter}", { force: true });
       cy.get(mathinputSCorrectAnchor).should('be.visible')
 
     })

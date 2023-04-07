@@ -220,7 +220,7 @@ export default class RegularPolygon extends Polygon {
           let varEnding = Number(arrayKey) + 1;
 
           if (dependencyValuesByKey[arrayKey].centerAttr !== null) {
-            specifiedCenter[arrayKey] = evaluate_to_constant(dependencyValuesByKey[arrayKey].centerAttr.stateValues["x" + varEnding]);
+            specifiedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerAttr.stateValues["x" + varEnding].evaluate_to_constant();
           }
         }
 
@@ -666,7 +666,7 @@ export default class RegularPolygon extends Polygon {
 
           center = dependencyValues.specifiedCenter;
 
-          let vertex = dependencyValues.verticesAttr.stateValues.points[0].map(evaluate_to_constant);
+          let vertex = dependencyValues.verticesAttr.stateValues.points[0].map(x => x.evaluate_to_constant());
 
           directionWithRadius = [vertex[0] - center[0], vertex[1] - center[1]]
 
@@ -694,7 +694,7 @@ export default class RegularPolygon extends Polygon {
           directionWithRadius = dependencyValues.essentialDirection.map(x => x * circumradius);
 
 
-          let vertex = dependencyValues.verticesAttr.stateValues.points[0].map(evaluate_to_constant);
+          let vertex = dependencyValues.verticesAttr.stateValues.points[0].map(x => x.evaluate_to_constant());
 
 
           center = [vertex[0] - directionWithRadius[0], vertex[1] - directionWithRadius[1]];
@@ -703,8 +703,8 @@ export default class RegularPolygon extends Polygon {
           // have at least two vertices specified, use the first 2
           // these vertices are adjacent vertices of the polygon, in counterclockwise order
 
-          let vertex1 = dependencyValues.verticesAttr.stateValues.points[0].map(evaluate_to_constant);
-          let vertex2 = dependencyValues.verticesAttr.stateValues.points[1].map(evaluate_to_constant);
+          let vertex1 = dependencyValues.verticesAttr.stateValues.points[0].map(x => x.evaluate_to_constant());
+          let vertex2 = dependencyValues.verticesAttr.stateValues.points[1].map(x => x.evaluate_to_constant());
 
           let sideVector = [vertex2[0] - vertex1[0], vertex2[1] - vertex1[1]];
           let midpoint = [(vertex1[0] + vertex2[0]) / 2, (vertex1[1] + vertex2[1]) / 2];
@@ -734,7 +734,7 @@ export default class RegularPolygon extends Polygon {
           desiredCenter = workspace.desiredCenter;
         }
         if (!desiredCenter) {
-          desiredCenter = (await stateValues.center).map(evaluate_to_constant);
+          desiredCenter = (await stateValues.center).map(x => x.evaluate_to_constant());
         }
 
         let desiredDirectionWithRadius = desiredStateVariableValues.directionWithRadius;
@@ -742,8 +742,8 @@ export default class RegularPolygon extends Polygon {
           desiredDirectionWithRadius = workspace.desiredDirectionWithRadius
         };
         if (!desiredDirectionWithRadius) {
-          let center = (await stateValues.center).map(evaluate_to_constant);
-          let vertex1 = (await stateValues.vertices)[0].map(evaluate_to_constant);
+          let center = (await stateValues.center).map(x => x.evaluate_to_constant());
+          let vertex1 = (await stateValues.vertices)[0].map(x => x.evaluate_to_constant());
           desiredDirectionWithRadius = [vertex1[0] - center[0], vertex1[1] - center[1]]
         }
 
@@ -1091,7 +1091,7 @@ export default class RegularPolygon extends Polygon {
         if (changingJustOneVertex) {
           // if change one vertex, then make sure that center stays the same
 
-          desiredCenter = (await stateValues.center).map(evaluate_to_constant);
+          desiredCenter = (await stateValues.center).map(x => x.evaluate_to_constant());
 
         } else {
 
@@ -1122,8 +1122,8 @@ export default class RegularPolygon extends Polygon {
               workspace.allVertices[vertexInd + ",1"] = v_y;
             }
 
-            center_x += evaluate_to_constant(v_x);
-            center_y += evaluate_to_constant(v_y);
+            center_x += v_x.evaluate_to_constant();
+            center_y += v_y.evaluate_to_constant();
           }
 
           center_x /= nVertices;
@@ -1149,7 +1149,7 @@ export default class RegularPolygon extends Polygon {
           desiredVertex_y = vertices[vertexInd1][1];
         }
 
-        let desiredVertex = [evaluate_to_constant(desiredVertex_x), evaluate_to_constant(desiredVertex_y)];
+        let desiredVertex = [desiredVertex_x.evaluate_to_constant(), desiredVertex_y.evaluate_to_constant()];
 
         let centerToVertex = [desiredVertex[0] - desiredCenter[0], desiredVertex[1] - desiredCenter[1]];
 
@@ -1242,7 +1242,7 @@ export default class RegularPolygon extends Polygon {
 
         let instructions = [{
           setDependency: "centerComponents",
-          desiredValue: [evaluate_to_constant(desired_center_x), evaluate_to_constant(desired_center_y)],
+          desiredValue: [desired_center_x.evaluate_to_constant(), desired_center_y.evaluate_to_constant()],
         }];
 
         return {
@@ -1269,9 +1269,9 @@ export default class RegularPolygon extends Polygon {
         }
       }),
       definition({ dependencyValues }) {
-        let center = dependencyValues.center.map(evaluate_to_constant);
+        let center = dependencyValues.center.map(x => x.evaluate_to_constant());
 
-        let vertex1 = dependencyValues.vertex1.map(evaluate_to_constant);
+        let vertex1 = dependencyValues.vertex1.map(x => x.evaluate_to_constant());
 
         let circumradius = Math.sqrt(
           (vertex1[0] - center[0]) ** 2
@@ -1282,9 +1282,9 @@ export default class RegularPolygon extends Polygon {
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        let center = dependencyValues.center.map(evaluate_to_constant);
+        let center = dependencyValues.center.map(x => x.evaluate_to_constant());
 
-        let vertex1 = dependencyValues.vertex1.map(evaluate_to_constant);
+        let vertex1 = dependencyValues.vertex1.map(x => x.evaluate_to_constant());
 
         let directionWithRadius = [vertex1[0] - center[0], vertex1[1] - center[1]];
 
@@ -1512,13 +1512,4 @@ export default class RegularPolygon extends Polygon {
   }
 
 
-}
-
-function evaluate_to_constant(x) {
-  let val = x.evaluate_to_constant();
-  if (val === null) {
-    return NaN;
-  } else {
-    return val;
-  }
 }

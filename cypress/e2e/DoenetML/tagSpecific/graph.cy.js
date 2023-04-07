@@ -14,7 +14,7 @@ describe('Graph Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -2008,4 +2008,43 @@ describe('Graph Tag Tests', function () {
 
   });
 
-});
+  it('graph inside graph renders children in parent graph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph name="g1">
+      <vector tail="(3,4)">(4,-5)</vector>
+      <graph name="g1inner" xmin="-2" xmax="5" ymin="-3" ymax="4">
+        <point>(6,9)
+          <constraints>
+            <constrainToGraph />
+          </constraints>
+        </point>
+      </graph
+    </graph>
+    
+    <graph xmin="-15" xmax="15" ymin="-15" ymax="15" name="g2">
+      <circle center="(-5,-4)" />
+      $g1
+    </graph>
+    
+  `}, "*");
+
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+      // Not sure what to test as the interesting part is the graph renderer
+      // The only new part from core is that the inner graph ignores its xmin, etc. attributes
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/g1inner"].stateValues.xmin).eq(-10);
+        expect(stateVariables["/g1inner"].stateValues.xmax).eq(10);
+        expect(stateVariables["/g1inner"].stateValues.ymin).eq(-10);
+        expect(stateVariables["/g1inner"].stateValues.ymax).eq(10);
+      })
+
+    });
+
+  });
+
+})

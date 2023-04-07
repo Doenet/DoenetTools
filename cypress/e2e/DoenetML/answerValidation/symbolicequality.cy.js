@@ -12,7 +12,7 @@ describe('Symbolic equality tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('symbolic equality match with no simplification', () => {
@@ -868,7 +868,7 @@ describe('Symbolic equality tests', function () {
         expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
       });
 
-      
+
       cy.log("Submit as exp")
       cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-5exp(-t)', { force: true });
       cy.get(mathinputSubmitAnchor).click();

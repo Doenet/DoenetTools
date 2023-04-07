@@ -4,7 +4,7 @@ describe('Substitute Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -115,7 +115,7 @@ describe('Substitute Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <textinput name="simplify" />
+    <textinput name="simplify" prefill="false" />
     <substitute name="s_one" match="x" replacement="y" assignNames="one" simplify="$simplify">
       x+y
     </substitute>

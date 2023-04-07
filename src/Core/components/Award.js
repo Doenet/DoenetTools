@@ -49,7 +49,7 @@ export default class Award extends BaseComponent {
       createStateVariable: "simplifyOnCompare",
       defaultValue: "none",
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"],
       public: true,
       fallBackToParentStateVariable: "simplifyOnCompare",
@@ -791,7 +791,7 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 }
 
 function addResponsesToDescendantsWithTarget(components, target, absoluteTarget) {
-  
+
   for (let component of components) {
     let propsOrDAttrs = component.props;
     if (!propsOrDAttrs || Object.keys(propsOrDAttrs).length === 0) {
