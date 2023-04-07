@@ -12,7 +12,7 @@ describe('base component property Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('change fixed even when fixed', () => {
@@ -498,7 +498,7 @@ describe('base component property Tests', function () {
     cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? false');
     cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? false');
 
-       
+
   })
 
   it('change hidden, inverse direction', () => {

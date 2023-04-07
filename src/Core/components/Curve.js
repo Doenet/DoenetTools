@@ -245,8 +245,21 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
+
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -260,7 +273,7 @@ export default class Curve extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -430,9 +443,6 @@ export default class Curve extends GraphicalComponent {
           }
         } else if (dependencyValues.parMaxAttr !== null) {
           parMax = dependencyValues.parMaxAttr.stateValues.value.evaluate_to_constant();
-          if (!Number.isFinite(parMax)) {
-            parMax = NaN;
-          }
         } else if (dependencyValues.curveType === "function") {
           let domain = null;
           if (dependencyValues.functionChild.length === 1) {
@@ -442,12 +452,7 @@ export default class Curve extends GraphicalComponent {
           }
           if (domain !== null) {
             domain = domain[0];
-            try {
-              parMax = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
-              if (!Number.isFinite(parMax) && parMax !== Infinity) {
-                parMax = NaN;
-              }
-            } catch (e) { }
+            parMax = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
           }
           let graphMin, graphMax;
           if (dependencyValues.flipFunction) {
@@ -539,9 +544,6 @@ export default class Curve extends GraphicalComponent {
           }
         } else if (dependencyValues.parMinAttr !== null) {
           parMin = dependencyValues.parMinAttr.stateValues.value.evaluate_to_constant();
-          if (!Number.isFinite(parMin)) {
-            parMin = NaN;
-          }
         } else if (dependencyValues.curveType === "function") {
           let domain = null;
           if (dependencyValues.functionChild.length === 1) {
@@ -551,12 +553,7 @@ export default class Curve extends GraphicalComponent {
           }
           if (domain !== null) {
             domain = domain[0];
-            try {
-              parMin = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
-              if (!Number.isFinite(parMin) && parMin !== -Infinity) {
-                parMin = NaN;
-              }
-            } catch (e) { }
+            parMin = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
           }
           let graphMin, graphMax;
           if (dependencyValues.flipFunction) {
@@ -1588,9 +1585,6 @@ export default class Curve extends GraphicalComponent {
 
             if (vectorX) {
               let pointX = dependencyValuesByKey[arrayKey].throughPointX.evaluate_to_constant();
-              if (!Number.isFinite(pointX)) {
-                pointX = NaN
-              }
               newControlValues[arrayKey] = me.fromAst(pointX + vectorX.tree)
             } else {
               newControlValues[arrayKey] = null;

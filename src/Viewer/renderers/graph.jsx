@@ -35,6 +35,8 @@ export default React.memo(function Graph(props) {
   let previousYaxisWithLabel = useRef(null);
 
 
+  let showNavigation = SVs.showNavigation && !SVs.fixAxes;
+
   let onChangeVisibility = isVisible => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -43,6 +45,9 @@ export default React.memo(function Graph(props) {
   }
 
   useEffect(() => {
+    if (SVs.haveGraphParent) {
+      return;
+    }
     return () => {
       callAction({
         action: actions.recordVisibilityChange,
@@ -53,6 +58,10 @@ export default React.memo(function Graph(props) {
 
   //Draw Board after mounting component
   useEffect(() => {
+    if (SVs.haveGraphParent) {
+      return;
+    }
+
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
     previousBoundingbox.current = boundingbox;
 
@@ -73,7 +82,7 @@ export default React.memo(function Graph(props) {
         boundingbox,
         axis: false,
         showCopyright: false,
-        showNavigation: SVs.showNavigation && !SVs.fixAxes,
+        showNavigation: false, // will add navigation buttons later so can style them
         // keepAspectRatio: SVs.identicalAxisScales,
         zoom: { wheel: !SVs.fixAxes },
         pan: { enabled: !SVs.fixAxes },
@@ -122,7 +131,7 @@ export default React.memo(function Graph(props) {
 
     boardJustInitialized.current = true;
 
-    previousShowNavigation.current = SVs.showNavigation;
+    previousShowNavigation.current = showNavigation;
 
     // on unmount
     return () => {
@@ -131,6 +140,20 @@ export default React.memo(function Graph(props) {
 
   }, [])
 
+  useEffect(() => {
+    if (board && showNavigation) {
+      addNavigationButtons();
+    }
+  }, [board])
+
+  if (SVs.haveGraphParent) {
+    // have have graph parent, then don't render graph
+    // but just render children so that will be inside parent graph
+    return <>
+      <a name={id} />
+      {children}
+    </>
+  }
 
   const divStyle = {
     width: sizeToCSS(SVs.width),
@@ -311,7 +334,7 @@ export default React.memo(function Graph(props) {
       yaxis.current = null;
     }
 
-    if (SVs.showNavigation) {
+    if (showNavigation) {
       if (!previousShowNavigation.current) {
         addNavigationButtons();
         previousShowNavigation.current = true;
@@ -410,8 +433,12 @@ export default React.memo(function Graph(props) {
       label: {
         offset: [12, -2],
         layer: 2,
-        strokeColor: "var(--canvastext)"
+        strokeColor: "var(--canvastext)",
+        highlightStrokeColor: "var(--canvastext)",
+        highlightStrokeOpacity: 1,
       },
+      strokeColor: "var(--canvastext)",
+      strokeOpacity: 0.5,
       // minorTicks: 4,
       precision: 4,
       drawLabels: SVs.displayYAxisTickLabels
@@ -566,8 +593,12 @@ export default React.memo(function Graph(props) {
       label: {
         offset: [-5, -15],
         layer: 2,
-        strokeColor: "var(--canvastext)"
+        strokeColor: "var(--canvastext)",
+        highlightStrokeColor: "var(--canvastext)",
+        highlightStrokeOpacity: 1,
       },
+      strokeColor: "var(--canvastext)",
+      strokeOpacity: 0.5,
       // minorTicks: 4,
       precision: 4,
       drawLabels: SVs.displayXAxisTickLabels
@@ -731,7 +762,11 @@ export default React.memo(function Graph(props) {
 
       button = document.createElement('span');
       navigationBar.appendChild(button);
-      button.appendChild(document.createTextNode(label));
+      let el_span = document.createElement("span");
+      el_span.setAttribute('style', 'color: var(--canvastext); opacity: 0.7');
+      let text_node = document.createTextNode(label);
+      button.appendChild(el_span);
+      el_span.appendChild(text_node);
 
       // Style settings are superseded by adding the CSS class below
       button.style.paddingLeft = '7px';

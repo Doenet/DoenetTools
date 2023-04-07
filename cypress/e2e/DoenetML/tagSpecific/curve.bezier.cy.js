@@ -2,7 +2,7 @@ describe('Curve Tag Bezier Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   function checkBezierCurve({ curve, throughPoints, directions, controlVectors }) {

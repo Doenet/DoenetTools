@@ -3,12 +3,15 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import react from '@vitejs/plugin-react';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
-export default defineConfig({
+export default defineConfig((env) => ({
   appType: 'mpa',
-  plugins: [react()],
-  assetsInclude: ['**/*.doenet'],
+  plugins: [
+    react()
+  ],
   server: {
+    port: 8000,
     proxy: {
       '/api': 'http://apache',
       '/cyapi': 'http://apache',
@@ -20,6 +23,7 @@ export default defineConfig({
       { find: 'csv-parse', replacement: 'csv-parse/browser/esm' },
       { find: '@Toast', replacement: '/src/Tools/_framework/Toast' },
       { find: '@Tool', replacement: '/src/Tools/_framework/Tool' },
+      { find: '@ToolRoot', replacement: '/src/Tools/_framework/NewToolRoot' },
       { find: 'solid-svg', replacement: '@fortawesome/free-solid-svg-icons' },
     ],
   },
@@ -37,13 +41,27 @@ export default defineConfig({
       NodeModulesPolyfillPlugin(),
     ],
   },
+  worker: {
+    format: 'iife',
+  },
   build: {
     outDir: './dist_local',
     rollupOptions: {
       plugins: [nodePolyfills()],
+      input:
+        env.mode === 'development'
+          ? {
+              main: resolve(__dirname, 'index.html'),
+              cypressTest: resolve(
+                __dirname,
+                'src/Tools/',
+                'cypressTest/index.html',
+              ),
+            }
+          : 'index.html',
     },
     commonjsOptions: {
       transformMixedEsModules: true,
     },
   },
-});
+}));

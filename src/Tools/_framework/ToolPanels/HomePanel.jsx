@@ -447,7 +447,7 @@ export default function HomePanel(props) {
       {signInButton}
       <img style={{
         width: '143px'
-      }} alt="Doenet logo showing donut in front of a cloud" src='/media/Doenet_Logo_Frontpage.png' />
+      }} alt="Doenet logo showing donut in front of a cloud" src='/Doenet_Logo_Frontpage.png' />
 
       <div style={{
         display: 'flex',

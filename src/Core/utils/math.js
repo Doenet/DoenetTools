@@ -443,9 +443,6 @@ export function mathStateVariableFromNumberStateVariable({
     inverseDefinition: function ({ desiredStateVariableValues }) {
 
       let desiredNumber = desiredStateVariableValues[mathVariableName].evaluate_to_constant();
-      if (desiredNumber === null) {
-        desiredNumber = NaN;
-      }
       return {
         success: true,
         instructions: [{

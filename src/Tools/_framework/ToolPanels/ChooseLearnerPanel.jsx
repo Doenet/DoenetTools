@@ -210,7 +210,7 @@ export default function ChooseLearnerPanel(props) {
       <img
         style={{ width: '250px', height: '250px' }}
         alt="Doenet Logo"
-        src={'/media/Doenet_Logo_Frontpage.png'}
+        src={'/Doenet_Logo_Frontpage.png'}
       />
       <div style={{ leftPadding: "10px" }}>
         <label>

@@ -12,7 +12,7 @@ describe('Lorem Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
 
@@ -165,7 +165,7 @@ describe('Lorem Tag Tests', function () {
 
 
     cy.get(cesc('#/_text1')).should('have.text', 'b');   // to wait for page to load
-    
+
     cy.get(cesc('#/n')).should('have.text', '1');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

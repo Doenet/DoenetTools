@@ -30,7 +30,7 @@ export default class BooleanComponent extends InlineComponent {
       createStateVariable: "simplifyOnCompare",
       defaultValue: "none",
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       public: true,
     };

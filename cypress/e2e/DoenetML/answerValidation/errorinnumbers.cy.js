@@ -12,7 +12,7 @@ describe('Allow error in numbers validation tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('expression with single number', () => {

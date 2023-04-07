@@ -22,7 +22,7 @@ describe('Function Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('function with nothing', () => {
@@ -5007,16 +5007,16 @@ describe('Function Tag Tests', function () {
     });
   });
 
-  it('function of function can redefine variable', () => {
+  it('function of function formula can redefine variable', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <function variables="t" name="f" symbolic>st^3</function>
+    <function variables="t" name="f" symbolic simplify="false">st^3</function>
 
-    <function name="f2" symbolic><copy target="f"/></function>
-    <function name="f3" variables="s" symbolic><copy target="f"/></function>
+    <function name="f2" symbolic simplify="false"><copy target="f"/></function>
+    <function name="f3" variables="s" symbolic simplify="false"><copy target="f.formula"/></function>
 
     <copy assignNames="f4" target="f"/>
     <copy assignNames="f5" target="f2"/>
@@ -5981,10 +5981,10 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="f1">x^2</function>
+    <function name="f1" symbolic="false">x^2</function>
     <copy target="f1" symbolic assignNames="f2" />
     <copy target="f2" symbolic="false" assignNames="f3" />
-    <function name="g1" symbolic>x^2</function>
+    <function name="g1">x^2</function>
     <copy target="g1" symbolic="false" assignNames="g2" />
     <copy target="g2" symbolic assignNames="g3" />
 
@@ -6053,7 +6053,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function name="f1" symbolic>xyz</function>
+    <function name="f1" symbolic simplify="none">xyz</function>
     <copy target="f1" variables="x y" assignNames="f2" />
     <copy target="f2" variables="x y z" assignNames="f3" />
     <copy target="f3" variables="z y" assignNames="f4" />
@@ -6361,11 +6361,11 @@ describe('Function Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <function name="f1">255.029847 sin(0.52952342x) + 3</function>
-  <function name="f2" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f3" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f1" simplify="none">255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" simplify="none" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" simplify="none" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f4" simplify="none" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f5" simplify="none" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
   <copy target="f1" assignNames="f1a" />
   <copy target="f2" assignNames="f2a" />
@@ -6750,5 +6750,45 @@ describe('Function Tag Tests', function () {
     })
 
   })
+
+  it('style description changes with theme', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <styleDefinitions>
+        <styleDefinition styleNumber="1" lineColor="brown" lineColorDarkMode="yellow" />
+        <styleDefinition styleNumber="2" lineColor="#540907" lineColorWord="dark red" lineColorDarkMode="#f0c6c5" lineColorWordDarkMode="light red" />
+      </styleDefinitions>
+    </setup>
+    <graph>
+      <function name="A" styleNumber="1" labelIsName>x^2</function>
+      <function name="B" styleNumber="2" labelIsName>x^2+2</function>
+      <function name="C" styleNumber="5" labelIsName>x^2+4</function>
+    </graph>
+    <p name="Adescrip">Function A is $A.styleDescription.</p>
+    <p name="Bdescrip">B is a $B.styleDescriptionWithNoun.</p>
+    <p name="Cdescrip">C is a $C.styleDescriptionWithNoun.</p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Function A is thick brown.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red function.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black function.');
+
+    cy.log('set dark mode')
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_darkmode').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Function A is thick yellow.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red function.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white function.');
+
+
+  });
 
 });

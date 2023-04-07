@@ -13,7 +13,7 @@ describe('Sequence Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('number sequence, no parameters', () => {
@@ -1554,9 +1554,9 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
 
-    let na=10.12345;
-    let nb=na+0.03257;
-    let nc=nb+0.03257;
+    let na = 10.12345;
+    let nb = na + 0.03257;
+    let nc = nb + 0.03257;
 
     cy.get('#\\/n1a').should('have.text', String(Math.round(na * 10 ** 8) / 10 ** 8))
     cy.get('#\\/n1b').should('have.text', String(Math.round(nb * 10 ** 8) / 10 ** 8))

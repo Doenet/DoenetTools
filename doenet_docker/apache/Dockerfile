@@ -6,7 +6,7 @@ COPY index.html vite.config.js ./
 COPY src ./src
 COPY public ./public
 ARG BUILD_MODE
-RUN NODE_OPTIONS=--max-old-space-size=7680 npm run build -- --outDir site --mode ${BUILD_MODE}
+RUN NODE_OPTIONS=--max-old-space-size=4098 npm run build -- --outDir site --mode ${BUILD_MODE}
 
 FROM httpd:2.4.41-alpine
 RUN apk update; \

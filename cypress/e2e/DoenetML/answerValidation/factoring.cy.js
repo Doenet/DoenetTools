@@ -2,7 +2,7 @@ describe('factor polynomial tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('factor x^2-1', () => {

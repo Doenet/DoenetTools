@@ -146,11 +146,6 @@ export default class FunctionOperator extends Function {
     }
 
 
-    stateVariableDefinitions.numericalFunctionOperatorArguments = {
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { numericalFunctionOperatorArguments: {} } })
-    }
-
     stateVariableDefinitions.formulaOperator = {
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { formulaOperator: x => me.fromAst('\uff3f') } })
@@ -286,11 +281,18 @@ export default class FunctionOperator extends Function {
         }
       }),
       arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys, arraySize }) {
-
         if (globalDependencyValues.operatorBasedOnFormula) {
           let symbolicfs = {};
           for (let arrayKey of arrayKeys) {
-            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey)
+            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula({
+              formula: globalDependencyValues.formula,
+              simplify: globalDependencyValues.simplify,
+              expand: globalDependencyValues.expand,
+              nInputs: globalDependencyValues.nInputs,
+              variables: globalDependencyValues.variables,
+              domain: globalDependencyValues.domain,
+              component: arrayKey
+            })
             return {
               setValue: { symbolicfs }
             }
@@ -315,7 +317,15 @@ export default class FunctionOperator extends Function {
               let childFs = [];
 
               for (let ind = 0; ind < arraySize[0]; ind++) {
-                childFs.push(returnSymbolicFunctionFromFormula(dependencyValuesWithChildFormula, ind))
+                childFs.push(returnSymbolicFunctionFromFormula({
+                  formula: dependencyValuesWithChildFormula.formula,
+                  simplify: dependencyValuesWithChildFormula.simplify,
+                  expand: dependencyValuesWithChildFormula.expand,
+                  nInputs: dependencyValuesWithChildFormula.nInputs,
+                  variables: dependencyValuesWithChildFormula.variables,
+                  domain: globalDependencyValues.domain,
+                  component: ind
+                }))
               }
               let symbolicfs = {};
               for (let arrayKey of arrayKeys) {
