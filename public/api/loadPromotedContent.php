@@ -19,10 +19,9 @@ if ($userId == '') {
 
 $response_arr;
 try {
-
     $sql = 
         "select groupName, currentlyFeatured, homepage,
-                pc.sortOrder, doenetId, course_content.label, course_content.imagePath,
+                positionInGroup, doenetId, label, 
                 screenName, email, lastName, firstName, 
                 profilePicture, trackingConsent, canUpload
         from promoted_content_groups pcg
@@ -47,8 +46,9 @@ try {
         }
     }
     $response_arr = [
-        'success' => true,
-        'carouselData' => $promotedGroups
+        'success' => $success,
+        'message' => $message,
+        'promotedGroups' => $promotedGroups
     ];
     // set response code - 200 OK
     http_response_code(200);

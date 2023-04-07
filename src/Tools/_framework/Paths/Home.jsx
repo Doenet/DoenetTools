@@ -147,7 +147,7 @@ const Main = styled.main`
 export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
-  const favorites = loaderData?.carouselData?.[3];
+  const favorites = loaderData?.carouselData?.Homepage;
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);

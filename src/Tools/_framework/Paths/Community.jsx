@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   Badge,
   Box,
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
   Icon,
+  MenuItem,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
   Text,
+  useDisclosure,
   Wrap,
   Flex,
 } from '@chakra-ui/react';
@@ -28,7 +39,19 @@ export async function loader({ request }) {
     //Show search results
     const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
     const respObj = await response.json();
-    return { q, searchResults: respObj.searchResults };
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const { isAdmin } = await isAdminResponse.json();
+    console.log('QWERQERQWER', isAdmin);
+    let carouselGroups = [];
+    if (isAdmin) {
+      const carouselDataGroups = await fetch(
+        `/api/loadPromotedContentGroups.php`,
+      );
+      const responseGroups = await carouselDataGroups.json();
+      carouselGroups = responseGroups.carouselGroups;
+    }
+    console.log('loading groups', carouselGroups);
+    return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
     const response = await fetch('/api/getHPCarouselData.php');
     const { carouselData } = await response.json();
@@ -68,8 +91,68 @@ const CarouselSection = styled.div`
   background: var(--mainGray);
 `;
 
+export function MoveToGroupMenuItem({ doenetId }) {
+  const { carouselGroups } = useLoaderData();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef();
+
+  return (
+    <>
+      <MenuItem ref={btnRef} colorScheme="teal" onClick={onOpen}>
+        Promote on Community Page
+      </MenuItem>
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        finalFocusRef={btnRef}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Add Activity To Group</DrawerHeader>
+
+          <DrawerBody>
+            {carouselGroups.map((carouselItem) => {
+              return (
+                <Button
+                  size="sm"
+                  mergin="5px"
+                  key={carouselItem.groupName}
+                  onClick={() => {
+                    const uploadData = { groupId: carouselItem.id, doenetId };
+                    console.log('doenetId during request', uploadData);
+                    axios
+                      .post('/api/addPromotedContent.php', uploadData)
+                      .then(({ data }) => {
+                        onClose();
+                      })
+                      .catch((e) => {
+                        alert('Error saving new promoted activity');
+                        console.log(e);
+                      });
+                  }}
+                >
+                  Move to group "{carouselItem.groupName}"
+                </Button>
+              );
+            })}
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button variant="outline" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </>
+  );
+}
+
 export function Community() {
-  const { carouselData, q, searchResults } = useLoaderData();
+  const { carouselData, q, searchResults, carouselGroups, isAdmin } =
+    useLoaderData();
   const [currentTab, setCurrentTab] = useState(0);
 
   if (q) {
@@ -185,11 +268,19 @@ export function Community() {
 
                     return (
                       <ActivityCard
+                        carouselGroups={carouselGroups}
                         key={doenetId}
                         imageLink={imageLink}
                         imagePath={imagePath}
                         label={label}
                         fullName={fullName}
+                        menuItems={
+                          isAdmin ? (
+                            <>
+                              <MoveToGroupMenuItem doenetId={doenetId} />
+                            </>
+                          ) : null
+                        }
                       />
                     );
                   } else if (itemObj?.type == 'author') {
@@ -237,11 +328,19 @@ export function Community() {
 
                   return (
                     <ActivityCard
+                      carouselGroups={carouselGroups}
                       key={doenetId}
                       imageLink={imageLink}
                       imagePath={imagePath}
                       label={label}
                       fullName={fullName}
+                      menuItems={
+                        isAdmin ? (
+                          <>
+                            <MoveToGroupMenuItem doenetId={doenetId} />
+                          </>
+                        ) : null
+                      }
                     />
                   );
                 })}
@@ -330,8 +429,11 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        <Carousel title="College Math" data={carouselData[0]} />
-        <Carousel title="Science & Engineering" data={carouselData[1]} />
+        <Carousel title="College Math" data={carouselData['College Math']} />
+        <Carousel
+          title="Science & Engineering"
+          data={carouselData['Engineering']}
+        />
         <Carousel title="K-12 Math" data={carouselData[2]} />
       </CarouselSection>
     </>
