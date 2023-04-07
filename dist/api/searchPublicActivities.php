@@ -47,6 +47,7 @@ if ($success) {
     while($row = $result->fetch_assoc()){
       $json = json_decode($row['json'], true);
       array_push($matchingActivities,[
+        'type' => 'activity',
         'doenetId' => $row['doenetId'],
         'courseId' => $row['courseId'],
         'version' => $json['version'],
@@ -99,6 +100,7 @@ if ($success) {
     while($row = $result->fetch_assoc()){
       $json = json_decode($row['json'], true);
       array_push($matchingUsers,[
+        'type' => 'author',
         'courseId' => $row['courseId'],
         'firstName' => $row['firstName'],
         'lastName' => $row['lastName'],
