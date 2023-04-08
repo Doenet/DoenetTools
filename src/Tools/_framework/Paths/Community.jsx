@@ -39,7 +39,7 @@ function ActivityCard({ doenetId, imagePath, label, fullName }) {
   if (!imagePath) {
     imagePath = '/activity_default.jpg';
   }
-  const activityLink = `/portfolio/${doenetId}/viewer`;
+  const activityLink = `/portfolioviewer/${doenetId}`;
 
   return (
     <Box
@@ -98,7 +98,7 @@ function ActivityCard({ doenetId, imagePath, label, fullName }) {
 function AuthorCard({ fullName, portfolioCourseId }) {
   // function AuthorCard({ doenetId, imagePath, label, fullName }) {
 
-  const authorLink = `/portfolio/${portfolioCourseId}/public`;
+  const authorLink = `/publicportfolio/${portfolioCourseId}`;
 
   return (
     <Box
