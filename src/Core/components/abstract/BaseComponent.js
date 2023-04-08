@@ -269,9 +269,13 @@ export default class BaseComponent {
       },
       disabled: {
         createComponentOfType: "boolean",
+        createStateVariable: "disabledPreliminary",
+        defaultValue: false,
       },
       fixed: {
         createComponentOfType: "boolean",
+        createStateVariable: "fixedPreliminary",
+        defaultValue: false,
         ignoreFixed: true,
       },
       modifyIndirectly: {
@@ -428,12 +432,11 @@ export default class BaseComponent {
       hasEssential: true,
       doNotShadowEssential: true,
       defaultValue: false,
-      provideEssentialValuesInDefinition: true,
       returnDependencies: () => ({
-        disabledAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "disabled",
-          variableNames: ["value"],
+        disabledPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "disabledPreliminary",
+          variablesOptional: true,
         },
         readOnly: {
           dependencyType: "flag",
@@ -452,21 +455,15 @@ export default class BaseComponent {
           variableName: "disabled"
         },
       }),
-      definition({ dependencyValues, usedDefault, essentialValues }) {
+      definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.readOnly) {
           return { setValue: { disabled: true } }
         }
 
-        if (dependencyValues.disabledAttr !== null) {
+        if (!usedDefault.disabledPreliminary) {
           return {
             setValue: {
-              disabled: dependencyValues.disabledAttr.stateValues.value
-            }
-          }
-        } else if (essentialValues.disabled !== undefined) {
-          return {
-            useEssentialOrDefaultValue: {
-              disabled: true
+              disabled: dependencyValues.disabledPreliminary
             }
           }
         }
@@ -498,13 +495,12 @@ export default class BaseComponent {
         }
       },
       inverseDefinition({ dependencyValues, desiredStateVariableValues }) {
-        if (dependencyValues.disabledAttr !== null) {
+        if (dependencyValues.disabledPreliminary !== null) {
           return {
             success: true,
             instructions: [{
-              setDependency: "disabledAttr",
+              setDependency: "disabledPreliminary",
               desiredValue: desiredStateVariableValues.disabled,
-              variableIndex: 0
             }]
           }
         } else {
@@ -529,12 +525,11 @@ export default class BaseComponent {
       hasEssential: true,
       doNotShadowEssential: true,
       ignoreFixed: true,
-      provideEssentialValuesInDefinition: true,
       returnDependencies: () => ({
-        fixedAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "fixed",
-          variableNames: ["value"],
+        fixedPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "fixedPreliminary",
+          variablesOptional: true,
         },
         parentFixed: {
           dependencyType: "parentStateVariable",
@@ -553,17 +548,11 @@ export default class BaseComponent {
           attributeName: "ignoreParentFixed"
         },
       }),
-      definition({ dependencyValues, usedDefault, essentialValues }) {
-        if (dependencyValues.fixedAttr !== null) {
+      definition({ dependencyValues, usedDefault }) {
+        if (!usedDefault.fixedPreliminary) {
           return {
             setValue: {
-              fixed: dependencyValues.fixedAttr.stateValues.value
-            }
-          }
-        } else if (essentialValues.fixed !== undefined) {
-          return {
-            useEssentialOrDefaultValue: {
-              fixed: true
+              fixed: dependencyValues.fixedPreliminary
             }
           }
         }
@@ -596,13 +585,12 @@ export default class BaseComponent {
         }
       },
       inverseDefinition({ dependencyValues, desiredStateVariableValues }) {
-        if (dependencyValues.fixedAttr !== null) {
+        if (dependencyValues.fixedPreliminary !== null) {
           return {
             success: true,
             instructions: [{
-              setDependency: "fixedAttr",
+              setDependency: "fixedPreliminary",
               desiredValue: desiredStateVariableValues.fixed,
-              variableIndex: 0
             }]
           }
         } else {

@@ -2838,6 +2838,7 @@ export default class Core {
         "defaultValue",
         "propagateToProps",
         "triggerActionOnChange",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -2949,6 +2950,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -3229,6 +3231,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -9359,7 +9362,7 @@ export default class Core {
       return;
     }
 
-    if (await component.stateValues.fixed && !instruction.overrideFixed && !stateVarObj.ignoreFixed) {
+    if (!instruction.overrideFixed && !stateVarObj.ignoreFixed && await component.stateValues.fixed) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`);
       return;
     }
@@ -9565,7 +9568,14 @@ export default class Core {
               && this._components[baseComponent.shadows.componentName].constructor.plainMacroReturnsSameType
             )
           )) {
-            baseComponent = this._components[baseComponent.shadows.componentName]
+            baseComponent = this._components[baseComponent.shadows.componentName];
+
+            // if any of the shadow sources are fixed, reject this change
+            if (!instruction.overrideFixed && !stateVarObj.ignoreFixed && await baseComponent.stateValues.fixed) {
+              console.log(`Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixed is true.`);
+              return;
+            }
+
           }
 
           this.calculateEssentialVariableChanges({
