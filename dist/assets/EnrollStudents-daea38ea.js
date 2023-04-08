@@ -1,0 +1,1 @@
+import{R as a,p as r,l,m as s,j as o,B as i}from"./index-9d63439d.js";import{B as n}from"./ButtonGroup-ec02b3e9.js";function p(){const e=a(r),t=l(s("courseId"));return o(n,{vertical:!0,children:o(i,{width:"menu",onClick:()=>e({page:"course",tool:"people",view:"",params:{courseId:t}}),value:"Go to People",children:"Go to People"})})}export{p as default};
