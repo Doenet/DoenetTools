@@ -256,6 +256,10 @@ export default class BaseComponent {
     return this.childrenMatchedWithPlaceholders
       && !this.placeholderActiveChildrenIndices;
   }
+  get matchedCompositeChildren() {
+    return this.matchedCompositeChildrenWithPlaceholders
+      && !this.placeholderActiveChildrenIndices;
+  }
 
 
   static createAttributesObject() {

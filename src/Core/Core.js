@@ -629,7 +629,7 @@ export default class Core {
         let indicesToRender = [];
 
         if (unproxiedComponent && unproxiedComponent.constructor.renderChildren) {
-          if (!unproxiedComponent.childrenMatched) {
+          if (!unproxiedComponent.matchedCompositeChildren) {
             await this.deriveChildResultsFromDefiningChildren({
               parent: unproxiedComponent, expandComposites: true, forceExpandComposites: true,
             });
@@ -782,7 +782,7 @@ export default class Core {
       return;
     }
 
-    if (!component.childrenMatched) {
+    if (!component.matchedCompositeChildren) {
       await this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, //forceExpandComposites: true,
       });
@@ -1012,7 +1012,7 @@ export default class Core {
 
     let parentsWithCompositesNotReady = [];
 
-    if (!component.childrenMatched) {
+    if (!component.matchedCompositeChildren) {
       await this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, forceExpandComposites,
       });
@@ -1055,7 +1055,7 @@ export default class Core {
 
     let componentNames = [component.componentName];
     if (component.constructor.renderChildren) {
-      if (!component.childrenMatched) {
+      if (!component.matchedCompositeChildren) {
         await this.deriveChildResultsFromDefiningChildren({
           parent: component, expandComposites: true, //forceExpandComposites: true,
         });
@@ -1596,12 +1596,22 @@ export default class Core {
     if (childGroupResults.success) {
       delete this.unmatchedChildren[parent.componentName];
       parent.childrenMatchedWithPlaceholders = true;
+      parent.matchedCompositeChildrenWithPlaceholders = true;
     } else {
       parent.childrenMatchedWithPlaceholders = false;
-      let unmatchedChildrenTypes = childGroupResults.unmatchedChildren
-        .map(x => x.componentType).join(', ')
+      parent.matchedCompositeChildrenWithPlaceholders = true;
+      let unmatchedChildrenTypes = [];
+      for (let child of childGroupResults.unmatchedChildren) {
+        unmatchedChildrenTypes.push(child.componentType);
+        if (this.componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "_composite"
+        })) {
+          parent.matchedCompositeChildrenWithPlaceholders = false;
+        }
+      }
       this.unmatchedChildren[parent.componentName] = {
-        message: `invalid children of type(s): ${unmatchedChildrenTypes}`
+        message: `invalid children of type(s): ${unmatchedChildrenTypes.join(", ")}`
       }
     }
 
