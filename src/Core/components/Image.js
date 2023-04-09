@@ -2,7 +2,7 @@ import BlockComponent from './abstract/BlockComponent';
 import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities, widthFractions, percentWidthsBySize } from '../utils/size';
 import me from 'math-expressions';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
-import { returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export default class Image extends BlockComponent {
   constructor(args) {
@@ -103,19 +103,7 @@ export default class Image extends BlockComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
-
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    Object.assign(attributes, returnAnchorAttributes())
 
     attributes.rotate = {
       createComponentOfType: "number",

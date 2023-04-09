@@ -7,7 +7,7 @@ import { createFunctionFromDefinition } from '../../Core/utils/function';
 export default React.memo(function CobwebPolyline(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  CobwebPolyline.ignoreActionsWithoutCore = true;
+  CobwebPolyline.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

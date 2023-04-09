@@ -8,7 +8,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Polyline(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Polyline.ignoreActionsWithoutCore = true;
+  Polyline.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

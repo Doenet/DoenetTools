@@ -6,11 +6,12 @@ import me from 'math-expressions';
 import { useRecoilValue } from 'recoil';
 import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 import { textRendererStyle } from '../../Core/utils/style';
+import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
 
 export default React.memo(function MathComponent(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  MathComponent.ignoreActionsWithoutCore = true;
+  MathComponent.ignoreActionsWithoutCore = () => true;
 
 
   let mathJXG = useRef(null);
@@ -104,36 +105,7 @@ export default React.memo(function MathComponent(props) {
 
     jsxMathAttributes.anchor = newAnchorPointJXG;
 
-    let anchorx, anchory;
-    if (SVs.positionFromAnchor === "center") {
-      anchorx = "middle";
-      anchory = "middle";
-    } else if (SVs.positionFromAnchor === "lowerleft") {
-      anchorx = "right";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "lowerright") {
-      anchorx = "left";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "upperleft") {
-      anchorx = "right";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "upperright") {
-      anchorx = "left";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "bottom") {
-      anchorx = "middle";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "top") {
-      anchorx = "middle";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "right") {
-      anchorx = "left";
-      anchory = "middle";
-    } else {
-      // positionFromAnchor === left
-      anchorx = "right";
-      anchory = "middle";
-    }
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
     jsxMathAttributes.anchorx = anchorx;
     jsxMathAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
@@ -364,36 +336,7 @@ export default React.memo(function MathComponent(props) {
       mathJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let anchorx, anchory;
-        if (SVs.positionFromAnchor === "center") {
-          anchorx = "middle";
-          anchory = "middle";
-        } else if (SVs.positionFromAnchor === "lowerleft") {
-          anchorx = "right";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "lowerright") {
-          anchorx = "left";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "upperleft") {
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "upperright") {
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "bottom") {
-          anchorx = "middle";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "top") {
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "right") {
-          anchorx = "left";
-          anchory = "middle";
-        } else {
-          // positionFromAnchor === left
-          anchorx = "right";
-          anchory = "middle";
-        }
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
         mathJXG.current.visProp.anchorx = anchorx;
         mathJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];

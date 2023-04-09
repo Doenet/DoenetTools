@@ -10,7 +10,7 @@ import { textRendererStyle } from '../../Core/utils/style';
 export default React.memo(function Vector(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Vector.ignoreActionsWithoutCore = true;
+  Vector.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

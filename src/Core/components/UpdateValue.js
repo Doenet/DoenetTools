@@ -1,7 +1,9 @@
+import { returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 import { returnLabelStateVariableDefinitions } from '../utils/label';
 import { normalizeMathExpression } from '../utils/math';
 import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggeringAttributes } from '../utils/triggering';
 import InlineComponent from './abstract/InlineComponent';
+import me from 'math-expressions';
 
 export default class UpdateValue extends InlineComponent {
   constructor(args) {
@@ -9,11 +11,13 @@ export default class UpdateValue extends InlineComponent {
 
     Object.assign(this.actions, {
       updateValue: this.updateValue.bind(this),
-      updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this)
+      updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this),
+      moveButton: this.moveButton.bind(this),
     });
 
   }
   static componentType = "updateValue";
+  static rendererType = "button";
 
   static acceptTarget = true;
 
@@ -60,6 +64,17 @@ export default class UpdateValue extends InlineComponent {
     };
 
 
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    Object.assign(attributes, returnAnchorAttributes())
+
+
     let triggerAttributes = returnStandardTriggeringAttributes("updateValueIfTriggerNewlyTrue")
 
     Object.assign(attributes, triggerAttributes);
@@ -98,8 +113,17 @@ export default class UpdateValue extends InlineComponent {
     addStandardTriggeringStateVariableDefinitions(stateVariableDefinitions, "updateValue");
 
     let labelDefinitions = returnLabelStateVariableDefinitions();
-
     Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
+    stateVariableDefinitions.clickAction = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { clickAction: "updateValue" } })
+    }
+
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({
@@ -375,5 +399,59 @@ export default class UpdateValue extends InlineComponent {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
+
+
+  async moveButton({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
+    let components = ["vector"];
+    if (x !== undefined) {
+      components[1] = x;
+    }
+    if (y !== undefined) {
+      components[2] = y;
+    }
+    if (z !== undefined) {
+      components[3] = z;
+    }
+    if (transient) {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        transient,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      });
+    } else {
+      return await this.coreFunctions.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        }],
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            x, y, z
+          }
+        }
+      });
+    }
+
+  }
+
 }
 

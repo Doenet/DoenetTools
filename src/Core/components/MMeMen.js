@@ -2,7 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
 import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
-import { returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export class M extends InlineComponent {
   constructor(args) {
@@ -40,19 +40,7 @@ export class M extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
-
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    Object.assign(attributes, returnAnchorAttributes())
 
     return attributes;
 

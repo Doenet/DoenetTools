@@ -1,7 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
 import me from 'math-expressions';
-import { returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export default class Label extends InlineComponent {
   constructor(args) {
@@ -46,19 +46,9 @@ export default class Label extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
 
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    Object.assign(attributes, returnAnchorAttributes())
+
 
     return attributes;
   }

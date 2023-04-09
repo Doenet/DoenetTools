@@ -3,7 +3,7 @@ import me from 'math-expressions';
 import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition, superSubscriptsToUnicode, unicodeToSuperSubscripts, vectorOperators } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
-import { returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 const vectorAndListOperators = ["list", ...vectorOperators];
 
@@ -154,19 +154,7 @@ export default class MathComponent extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
-
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    Object.assign(attributes, returnAnchorAttributes())
 
     return attributes;
   }

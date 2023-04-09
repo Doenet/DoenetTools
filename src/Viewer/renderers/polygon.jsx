@@ -8,7 +8,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Polygon(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Polygon.ignoreActionsWithoutCore = true;
+  Polygon.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

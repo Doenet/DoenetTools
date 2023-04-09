@@ -1418,5 +1418,162 @@ describe('TriggerSet Tag Tests', function () {
 
   })
 
+  it('triggerset in graph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>n: <number name="n">1</number></p>
+    <graph >
+      <triggerset anchor="$anchorCoords1" name="triggerset1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1" disabled="$disabled1">
+        <label>increment and add point</label>
+        <callAction target="_graph1" actionName="addChildren">
+          <point>(3,4)</point>
+        </callAction>
+        <updateValue target="n" newValue="$n+1" />
+      </triggerset>
+      <triggerset name="triggerset2">
+        <label>add point 2 and decrement</label>
+        <callAction target="_graph1" actionName="addChildren">
+          <point>(-3,-4)</point>
+        </callAction>
+        <updateValue target="n" newValue="$n-1" />
+
+      </triggerset>
+    </graph>
+
+    <p name="pAnchor1">Anchor 1 coordinates: $triggerset1.anchor</p>
+    <p name="pAnchor2">Anchor 2 coordinates: $triggerset2.anchor</p>
+    <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="(1,3)" /></p>
+    <p name="pChangeAnchor2">Change anchor 2 coordinates: <mathinput name="anchorCoords2" bindValueTo="$triggerset2.anchor" /></p>
+    <p name="pPositionFromAnchor1">Position from anchor 1: $triggerset1.positionFromAnchor</p>
+    <p name="pPositionFromAnchor2">Position from anchor 2: $triggerset2.positionFromAnchor</p>
+    <p>Change position from anchor 1
+    <choiceinput inline preselectChoice="1" name="positionFromAnchor1">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p>Change position from anchor 2
+    <choiceinput inline name="positionFromAnchor2" bindValueTo="$triggerset2.positionFromAnchor">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p name="pDraggable1">Draggable 1: $draggable1</p>
+    <p name="pDraggable2">Draggable 2: $draggable2</p>
+    <p>Change draggable 1 <booleanInput name="draggable1" prefill="true" /></p>
+    <p>Change draggable 2 <booleanInput name="draggable2" bindValueTo="$triggerset2.draggable" /></p>
+    <p name="pDisabled1">Disabled 1: $disabled1</p>
+    <p name="pDisabled2">Disabled 2: $disabled2</p>
+    <p>Change disabled 1 <booleanInput name="disabled1" prefill="true" /></p>
+    <p>Change disabled 2 <booleanInput name="disabled2" bindValueTo="$triggerset2.disabled" /></p>
+    <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
+
+    ` }, "*");
+    });
+
+    // TODO: how to click on the buttons and test if they are disabled?
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
+    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
+    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
+    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
+    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
+
+
+    cy.log("move triggersets by dragging")
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/triggerset1",
+        args: { x: -2, y: 3 }
+      })
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/triggerset2",
+        args: { x: 4, y: -5 }
+      })
+    })
+
+    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+
+
+    cy.log("move triggersets by entering coordinates")
+
+    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+
+    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+
+    cy.log('change position from anchor');
+    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
+    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+
+    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+
+
+    cy.log('make not draggable')
+
+    cy.get('#\\/draggable1').click();
+    cy.get('#\\/draggable2').click();
+    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
+    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+
+
+    cy.log('cannot move triggersets by dragging')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/triggerset1",
+        args: { x: -10, y: -9 }
+      })
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/triggerset2",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get("#\\/bi").click();
+    cy.get("#\\/b").should('have.text', 'true');
+
+    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+
+
+  })
+
 
 });

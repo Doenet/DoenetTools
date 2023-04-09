@@ -1,4 +1,4 @@
-import { returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
@@ -43,19 +43,7 @@ export default class Text extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
-
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    Object.assign(attributes, returnAnchorAttributes())
 
     return attributes;
 
