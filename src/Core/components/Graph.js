@@ -220,7 +220,12 @@ export default class Graph extends BlockComponent {
     },
     {
       group: "graphical",
-      componentTypes: ["_graphical", "text", "image", "math", "m", "md", "label", "number", "updateValue", "callAction", "triggerSet"]
+      componentTypes: [
+        "_graphical", "image",
+        "text", "math", "m", "md", "label", "number",
+        "updateValue", "callAction", "triggerSet",
+        "booleanInput"
+      ]
     },
     {
       group: "graphs",
