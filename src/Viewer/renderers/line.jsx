@@ -11,7 +11,7 @@ import { textRendererStyle } from '../../Core/utils/style';
 export default React.memo(function Line(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
-  Line.ignoreActionsWithoutCore = true;
+  Line.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

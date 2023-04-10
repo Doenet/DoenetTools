@@ -7,7 +7,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function LineSegment(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  LineSegment.ignoreActionsWithoutCore = true;
+  LineSegment.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

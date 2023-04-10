@@ -1,4 +1,4 @@
-import { returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
@@ -43,19 +43,7 @@ export default class Text extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
-
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    Object.assign(attributes, returnAnchorAttributes())
 
     return attributes;
 
@@ -190,52 +178,14 @@ export default class Text extends InlineComponent {
   async moveText({ x, y, z, transient, actionId,
     sourceInformation = {}, skipRendererUpdate = false,
   }) {
-    let components = ["vector"];
-    if (x !== undefined) {
-      components[1] = x;
-    }
-    if (y !== undefined) {
-      components[2] = y;
-    }
-    if (z !== undefined) {
-      components[3] = z;
-    }
-    if (transient) {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        transient,
-        actionId,
-        sourceInformation,
-        skipRendererUpdate,
-      });
-    } else {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        actionId,
-        sourceInformation,
-        skipRendererUpdate,
-        event: {
-          verb: "interacted",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            x, y, z
-          }
-        }
-      });
-    }
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
 
   }
 

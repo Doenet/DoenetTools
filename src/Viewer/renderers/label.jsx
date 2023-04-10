@@ -6,11 +6,12 @@ import me from 'math-expressions';
 import { useRecoilValue } from 'recoil';
 import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 import { textRendererStyle } from '../../Core/utils/style';
+import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
 
 export default React.memo(function Label(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
-  Label.ignoreActionsWithoutCore = true;
+  Label.ignoreActionsWithoutCore = () => true;
 
   let labelJXG = useRef(null);
   let anchorPointJXG = useRef(null);
@@ -102,36 +103,7 @@ export default React.memo(function Label(props) {
 
     jsxLabelAttributes.anchor = newAnchorPointJXG;
 
-    let anchorx, anchory;
-    if (SVs.positionFromAnchor === "center") {
-      anchorx = "middle";
-      anchory = "middle";
-    } else if (SVs.positionFromAnchor === "lowerleft") {
-      anchorx = "right";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "lowerright") {
-      anchorx = "left";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "upperleft") {
-      anchorx = "right";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "upperright") {
-      anchorx = "left";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "bottom") {
-      anchorx = "middle";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "top") {
-      anchorx = "middle";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "right") {
-      anchorx = "left";
-      anchory = "middle";
-    } else {
-      // positionFromAnchor === left
-      anchorx = "right";
-      anchory = "middle";
-    }
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
     jsxLabelAttributes.anchorx = anchorx;
     jsxLabelAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
@@ -326,36 +298,7 @@ export default React.memo(function Label(props) {
       labelJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let anchorx, anchory;
-        if (SVs.positionFromAnchor === "center") {
-          anchorx = "middle";
-          anchory = "middle";
-        } else if (SVs.positionFromAnchor === "lowerleft") {
-          anchorx = "right";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "lowerright") {
-          anchorx = "left";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "upperleft") {
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "upperright") {
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "bottom") {
-          anchorx = "middle";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "top") {
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "right") {
-          anchorx = "left";
-          anchory = "middle";
-        } else {
-          // positionFromAnchor === left
-          anchorx = "right";
-          anchory = "middle";
-        }
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
         labelJXG.current.visProp.anchorx = anchorx;
         labelJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];

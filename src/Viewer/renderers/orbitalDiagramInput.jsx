@@ -18,7 +18,7 @@ export default React.memo(function orbitalDiagramInput(props) {
   let selectedRowIndex0 = SVs.selectedRowIndex - 1;
   let selectedBoxIndex0 = SVs.selectedBoxIndex - 1;
 
-  orbitalDiagramInput.ignoreActionsWithoutCore = true;
+  orbitalDiagramInput.ignoreActionsWithoutCore = () => true;
 
   // use ref for fixed so changed value appears in callbacks
   let fixed = createRef(SVs.fixed);

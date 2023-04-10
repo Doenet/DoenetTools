@@ -8,7 +8,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Ray(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Ray.ignoreActionsWithoutCore = true;
+  Ray.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

@@ -8,7 +8,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function RegionBetweenCurveXAxis(props) {
   let { name, id, SVs } = useDoenetRender(props);
 
-  RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
+  RegionBetweenCurveXAxis.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

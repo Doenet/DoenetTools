@@ -7,7 +7,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Circle(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
-  Circle.ignoreActionsWithoutCore = true;
+  Circle.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

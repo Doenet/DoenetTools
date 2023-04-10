@@ -6,7 +6,7 @@ import me from 'math-expressions';
 export default React.memo(function Pegboard(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Pegboard.ignoreActionsWithoutCore = true;
+  Pegboard.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 

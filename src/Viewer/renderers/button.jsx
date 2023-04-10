@@ -1,21 +1,17 @@
-import { MathJax } from 'better-react-mathjax';
-
 import React, { useContext, useEffect, useRef } from 'react';
-import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
+import Button from '../../_reactComponents/PanelHeaderComponents/Button';
+import { BoardContext } from './graph';
 import me from 'math-expressions';
-import { useRecoilValue } from 'recoil';
-import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
-import { textRendererStyle } from '../../Core/utils/style';
 import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
 
-export default React.memo(function NumberComponent(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  NumberComponent.ignoreActionsWithoutCore = () => true;
+export default React.memo(function ButtonComponent(props) {
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
 
+  ButtonComponent.ignoreActionsWithoutCore = actionName => actionName === "moveButton";
 
-  let numberJXG = useRef(null);
+  let buttonJXG = useRef(null);
   let anchorPointJXG = useRef(null);
   let anchorRel = useRef(null);
 
@@ -31,50 +27,34 @@ export default React.memo(function NumberComponent(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
-  const darkMode = useRecoilValue(darkModeAtom);
-
+  let label = SVs.label ? SVs.label : "Button";
 
   useEffect(() => {
     //On unmount
     return () => {
-      if (numberJXG.current !== null) {
-        numberJXG.current.off('drag');
-        numberJXG.current.off('down');
-        numberJXG.current.off('up');
-        board?.removeObject(numberJXG.current);
-        numberJXG.current = null;
+      if (buttonJXG.current !== null) {
+        buttonJXG.current.off('drag');
+        buttonJXG.current.off('down');
+        buttonJXG.current.off('up');
+        board?.removeObject(buttonJXG.current);
+        buttonJXG.current = null;
       }
 
     }
   }, [])
 
-  function createNumberJXG() {
+  function createButtonJXG() {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
-    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
-    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
-
-    let cssStyle = ``;
-    if (backgroundColor) {
-      cssStyle += `background-color: ${backgroundColor}`;
-    }
-
-    //things to be passed to JSXGraph as attributes
-    let jsxNumberAttributes = {
+    let jsxButtonAttributes = {
       visible: !SVs.hidden,
       fixed,
-      layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
-      cssStyle,
-      highlightCssStyle: cssStyle,
-      strokeColor: textColor,
-      strokeOpacity: 1,
-      highlightStrokeColor: textColor,
-      highlightStrokeOpacity: 0.5,
-      highlight: !fixed,
+      disabled: SVs.disabled,
+      useMathJax: SVs.labelHasLatex,
       parse: false,
-
     };
+
 
     let newAnchorPointJXG;
 
@@ -84,42 +64,50 @@ export default React.memo(function NumberComponent(props) {
         anchor.get_component(0).evaluate_to_constant(),
         anchor.get_component(1).evaluate_to_constant()
       ]
+
       if (!Number.isFinite(anchorCoords[0])) {
         anchorCoords[0] = 0;
-        jsxNumberAttributes['visible'] = false;
+        jsxButtonAttributes['visible'] = false;
       }
       if (!Number.isFinite(anchorCoords[1])) {
         anchorCoords[1] = 0;
-        jsxNumberAttributes['visible'] = false;
+        jsxButtonAttributes['visible'] = false;
+      }
+
+      if (!jsxButtonAttributes.visible) {
+        // currently, creating an invisible button crashes jsxgraph
+        return;
       }
 
       newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
 
     } catch (e) {
-      jsxNumberAttributes['visible'] = false;
-      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
+      // currently, creating an invisible button crashes jsxgraph
+      return;
     }
 
-    jsxNumberAttributes.anchor = newAnchorPointJXG;
+    jsxButtonAttributes.anchor = newAnchorPointJXG;
 
     let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
-    jsxNumberAttributes.anchorx = anchorx;
-    jsxNumberAttributes.anchory = anchory;
+
+    jsxButtonAttributes.anchorx = anchorx;
+    jsxButtonAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
 
-    let newNumberJXG = board.create('text', [0, 0, SVs.text], jsxNumberAttributes);
 
-    newNumberJXG.on('down', function (e) {
+    let newButtonJXG = board.create('button', [0, 0, label, () => callAction({ action: actions[SVs.clickAction] })], jsxButtonAttributes);
+
+    newButtonJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
 
     });
 
-    newNumberJXG.on('up', function (e) {
+    newButtonJXG.on('up', function (e) {
       if (dragged.current) {
         callAction({
-          action: actions.moveNumber,
+          action: actions.moveButton,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
@@ -130,7 +118,7 @@ export default React.memo(function NumberComponent(props) {
 
     });
 
-    newNumberJXG.on('drag', function (e) {
+    newButtonJXG.on('drag', function (e) {
       // the reason we calculate point position with this algorithm,
       // rather than using .X() and .Y() directly
       // is that attributes .X() and .Y() are affected by the
@@ -143,8 +131,8 @@ export default React.memo(function NumberComponent(props) {
       var o = board.origin.scrCoords;
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
-      let width = newNumberJXG.size[0] / board.unitX;
-      let height = newNumberJXG.size[1] / board.unitY;
+      let width = newButtonJXG.size[0] / board.unitX;
+      let height = newButtonJXG.size[1] / board.unitY;
 
       let anchorx = anchorRel.current[0];
       let anchory = anchorRel.current[1];
@@ -177,7 +165,7 @@ export default React.memo(function NumberComponent(props) {
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
-        action: actions.moveNumber,
+        action: actions.moveButton,
         args: {
           x: calculatedX.current,
           y: calculatedY.current,
@@ -186,7 +174,7 @@ export default React.memo(function NumberComponent(props) {
         }
       });
 
-      newNumberJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
+      newButtonJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
       //Protect against very small unintended drags
@@ -198,11 +186,25 @@ export default React.memo(function NumberComponent(props) {
     });
 
 
-    numberJXG.current = newNumberJXG;
+    buttonJXG.current = newButtonJXG;
     anchorPointJXG.current = newAnchorPointJXG;
     previousPositionFromAnchor.current = SVs.positionFromAnchor;
 
+    // Note: no idea why one has to update the label after waiting
+    // But, if we don't do that, the label isn't positioned correctly if any anchors are "middle"
+    // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
+    if (SVs.labelHasLatex) {
+      setTimeout(() => {
 
+        if (buttonJXG.current) {
+          buttonJXG.current.needsUpdate = true;
+          buttonJXG.current.setText(label)
+          buttonJXG.current.update();
+          board?.updateRenderer();
+        }
+
+      }, 1000)
+    }
   }
 
   if (board) {
@@ -220,74 +222,53 @@ export default React.memo(function NumberComponent(props) {
     lastPositionFromCore.current = anchorCoords;
 
 
-    if (numberJXG.current === null) {
-      createNumberJXG();
+    if (buttonJXG.current === null) {
+      createButtonJXG();
     } else {
 
-      numberJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
+      buttonJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       anchorPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, anchorCoords);
 
-
-      numberJXG.current.setText(SVs.text)
+      buttonJXG.current.setText(label)
 
       let visible = !SVs.hidden;
 
       if (Number.isFinite(anchorCoords[0]) && Number.isFinite(anchorCoords[1])) {
-        let actuallyChangedVisibility = numberJXG.current.visProp["visible"] !== visible;
-        numberJXG.current.visProp["visible"] = visible;
-        numberJXG.current.visPropCalc["visible"] = visible;
+        let actuallyChangedVisibility = buttonJXG.current.visProp["visible"] !== visible;
+        buttonJXG.current.visProp["visible"] = visible;
+        buttonJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          numberJXG.current.setAttribute({ visible })
+          buttonJXG.current.setAttribute({ visible })
         }
       } else {
-        numberJXG.current.visProp["visible"] = false;
-        numberJXG.current.visPropCalc["visible"] = false;
+        buttonJXG.current.visProp["visible"] = false;
+        buttonJXG.current.visPropCalc["visible"] = false;
       }
 
-      let layer = 10 * SVs.layer + TEXT_LAYER_OFFSET;
-      let layerChanged = numberJXG.current.visProp.layer !== layer;
-
-      if (layerChanged) {
-        numberJXG.current.setAttribute({ layer });
-      }
-
-      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
-      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
-      let cssStyle = ``;
-      if (backgroundColor) {
-        cssStyle += `background-color: ${backgroundColor}`;
-      } else {
-        cssStyle += `background-color: transparent`;
-      }
-
-      if (numberJXG.current.visProp.strokecolor !== textColor) {
-        numberJXG.current.visProp.strokecolor = textColor;
-        numberJXG.current.visProp.highlightstrokecolor = textColor;
-      }
-      if (numberJXG.current.visProp.cssstyle !== cssStyle) {
-        numberJXG.current.visProp.cssstyle = cssStyle;
-        numberJXG.current.visProp.highlightcssstyle = cssStyle;
+      if (buttonJXG.current.visProp.disabled !== SVs.disabled) {
+        buttonJXG.current.visProp.disabled = SVs.disabled;
+        buttonJXG.current.setAttribute({ disabled: SVs.disabled })
       }
 
       let fixed = !SVs.draggable || SVs.fixed;
 
-      numberJXG.current.visProp.highlight = !fixed;
-      numberJXG.current.visProp.fixed = fixed;
+      buttonJXG.current.visProp.highlight = !fixed;
+      buttonJXG.current.visProp.fixed = fixed;
 
-      numberJXG.current.needsUpdate = true;
+      buttonJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
         let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
-        numberJXG.current.visProp.anchorx = anchorx;
-        numberJXG.current.visProp.anchory = anchory;
+        buttonJXG.current.visProp.anchorx = anchorx;
+        buttonJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
         previousPositionFromAnchor.current = SVs.positionFromAnchor;
-        numberJXG.current.fullUpdate();
+        buttonJXG.current.fullUpdate();
       } else {
-        numberJXG.current.update();
+        buttonJXG.current.update();
       }
 
       anchorPointJXG.current.needsUpdate = true;
@@ -305,11 +286,16 @@ export default React.memo(function NumberComponent(props) {
     return null;
   }
 
-  let number = SVs.text;
-  if (SVs.renderAsMath) {
-    number = "\\(" + number + "\\)"
-  }
-
-  let style = textRendererStyle(darkMode, SVs.selectedStyle);
-  return <><a name={id} /><span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{number}</MathJax></span></>
+  return (
+    <div id={id} margin="12px 0" style={{ display: "inline-block" }}>
+      <a name={id} />
+      <Button
+        id={id + "_button"}
+        onClick={() => callAction({ action: actions[SVs.clickAction] })}
+        disabled={SVs.disabled}
+        value={label}
+        valueHasLatex={SVs.labelHasLatex}
+      />
+    </div>
+  )
 })

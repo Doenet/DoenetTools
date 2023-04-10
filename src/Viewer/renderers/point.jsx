@@ -9,7 +9,7 @@ import { textRendererStyle } from '../../Core/utils/style';
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Point.ignoreActionsWithoutCore = true;
+  Point.ignoreActionsWithoutCore = () => true;
 
   // console.log(`for point ${name}, SVs: `, SVs)
 
