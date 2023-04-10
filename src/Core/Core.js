@@ -1452,6 +1452,8 @@ export default class Core {
 
     await this.dependencies.resolveStateVariablesIfReady({ component: newComponent });
 
+    this.recordStateVariablesMustEvaluate(componentName);
+
     await this.checkForActionChaining({ component: newComponent });
 
     // this.dependencies.collateCountersAndPropagateToAncestors(newComponent);
@@ -1503,6 +1505,17 @@ export default class Core {
       delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
     }
 
+  }
+
+  recordStateVariablesMustEvaluate(componentName) {
+
+    let comp = this._components[componentName];
+
+    for (let vName in comp.state) {
+      if (comp.state[vName].mustEvaluate) {
+        this.updateInfo.stateVariablesToEvaluate.push({ componentName, stateVariable: vName })
+      }
+    }
   }
 
   async deriveChildResultsFromDefiningChildren({ parent, expandComposites = true,

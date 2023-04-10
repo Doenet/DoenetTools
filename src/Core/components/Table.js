@@ -63,13 +63,14 @@ export default class Table extends BlockComponent {
         },
         forRenderer: true,
       }],
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies({ stateValues }) {
         let dependencies = {};
 
         if (stateValues.number) {
           dependencies.tableCounter = {
             dependencyType: "counter",
-            counterName: "table"
+            counterName: "sectioning"
           }
         }
         return dependencies;

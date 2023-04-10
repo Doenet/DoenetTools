@@ -362,6 +362,7 @@ export default class ODESystem extends InlineComponent {
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["number"],
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies({ stateValues }) {
         if (stateValues.number) {
           return {

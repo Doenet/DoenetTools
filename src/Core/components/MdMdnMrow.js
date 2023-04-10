@@ -363,6 +363,7 @@ export class Mrow extends M {
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["numbered"],
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies({ stateValues }) {
         if (stateValues.numbered) {
           return {

@@ -58,6 +58,7 @@ export default class Footnote extends InlineComponent {
         createComponentOfType: "text",
       },
       forRenderer: true,
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies: () => ({
         footnoteCounter: {
           dependencyType: "counter",

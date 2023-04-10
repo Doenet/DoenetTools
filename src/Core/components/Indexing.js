@@ -1,14 +1,22 @@
-import BaseComponent from './abstract/BaseComponent';
+import CompositeComponent from './abstract/CompositeComponent';
 import TextComponent from './Text';
 
 export class H extends TextComponent {
   static componentType = "h";
   static rendererType = "text";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.sortby = {
+      createComponentOfType: "text",
+
+    }
+    return attributes;
+  }
 }
 
-export class Idx extends BaseComponent {
+export class Idx extends CompositeComponent {
   static componentType = "idx";
-  static rendererType = undefined;
 
   static returnChildGroups() {
 
@@ -57,6 +65,15 @@ export class Idx extends BaseComponent {
           terms = [value];
         }
         return { setValue: { terms } }
+      }
+    }
+
+    stateVariableDefinitions.readyToExpandWhenResolved = {
+      returnDependencies: () => ({}),
+      definition() {
+        return {
+          setValue: { readyToExpandWhenResolved: true }
+        }
       }
     }
 

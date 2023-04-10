@@ -292,6 +292,9 @@ function substituteDeprecations(serializedComponents) {
     selectforvariantnames: "selectForVariants",
   }
 
+  // use lower case
+  let deprecatedPropertyDeletions = new Set(["suppressautoname", "suppressautonumber"]);
+
   // Note: use lower case for keys
   let deprecatedPropertySubstitutionsComponentSpecific = {
     copy: {
@@ -341,6 +344,15 @@ function substituteDeprecations(serializedComponents) {
             console.warn(`Attribute ${prop} is deprecated.  Use ${newProp} instead.`)
 
             component.props[newProp] = component.props[prop];
+            delete component.props[prop];
+
+            // since modified object over which are looping
+            // break out of loop and start over
+            retry = true;
+            break;
+
+          } else if (deprecatedPropertyDeletions.has(propLower)) {
+            console.warn(`Attribute ${prop} is deprecated.  It is ignored.`)
             delete component.props[prop];
 
             // since modified object over which are looping

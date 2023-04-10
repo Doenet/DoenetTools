@@ -357,6 +357,7 @@ export class Men extends M {
         createComponentOfType: "text",
       },
       forRenderer: true,
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies: () => ({
         equationCounter: {
           dependencyType: "counter",

@@ -2074,7 +2074,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}xy`, { force: true, delay: 50 });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy`, { force: true, delay: 50 });
 
     cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
     cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')

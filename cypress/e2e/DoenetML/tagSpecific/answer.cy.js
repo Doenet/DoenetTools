@@ -8306,8 +8306,8 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
+    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
 
 
     cy.log('Test value displayed in browser')
@@ -8855,8 +8855,8 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
+    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
     // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
@@ -9375,8 +9375,8 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
+    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
     // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
@@ -16142,7 +16142,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/element_incorrect').should('be.visible');
 
     cy.log("Change set to letters")
-    cy.get("#\\/set textarea").type("{end}{leftarrow}{backspace}{backspace}{backspace}{backspace}{backspace}a,b,c,d,e,f,g", { force: true });
+    cy.get("#\\/set textarea").type("{ctrl+home}{shift+end}{backspace}{{}a,b,c,d,e,f,g", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_correct').should('be.visible');
 
@@ -16157,7 +16157,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/element_incorrect').should('be.visible');
 
     cy.log("Change set to mathematical expressions")
-    cy.get("#\\/set textarea").type("{end}{leftarrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(x+y)/2{rightarrow}, e^(x^2{rightarrow} + y){rightArrow}, (1,2,3)", { force: true });
+    cy.get("#\\/set textarea").type("{ctrl+home}{shift+end}{backspace}{{}(x+y)/2{rightarrow}, e^(x^2{rightarrow} + y){rightArrow}, (1,2,3)", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_incorrect').should('be.visible');
 
@@ -16172,7 +16172,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter third expression")
-    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x+2y-x/2{rightarrow}-3y/2", { force: true });
+    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}x+2y-x/2{rightarrow}-3y/2", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_correct').should('be.visible');
 

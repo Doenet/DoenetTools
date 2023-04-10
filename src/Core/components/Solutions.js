@@ -1,6 +1,6 @@
 import BlockComponent from './abstract/BlockComponent';
 
-export default class Solution extends BlockComponent {
+export class Solution extends BlockComponent {
   constructor(args) {
     super(args);
 
@@ -12,6 +12,7 @@ export default class Solution extends BlockComponent {
 
   }
   static componentType = "solution";
+  static rendererType = "solution";
   static renderChildren = true;
 
   static sendToRendererEvenIfHidden = true;
@@ -214,6 +215,12 @@ export default class Solution extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.sectionName = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { sectionName: "Solution" } })
+    }
+
     return stateVariableDefinitions;
 
   }
@@ -305,4 +312,19 @@ export default class Solution extends BlockComponent {
 
   static includeBlankStringChildren = true;
 
+}
+
+export class GivenAnswer extends Solution {
+  static componentType = "givenAnswer";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.sectionName.definition = () => ({
+      setValue: { sectionName: "Answer" }
+    });
+
+    return stateVariableDefinitions;
+  }
 }
