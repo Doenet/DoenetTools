@@ -2,7 +2,7 @@ import BlockComponent from './abstract/BlockComponent';
 import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities, widthFractions, percentWidthsBySize } from '../utils/size';
 import me from 'math-expressions';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
-import { returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export default class Image extends BlockComponent {
   constructor(args) {
@@ -422,52 +422,14 @@ export default class Image extends BlockComponent {
   async moveImage({ x, y, z, transient, actionId,
     sourceInformation = {}, skipRendererUpdate = false
   }) {
-    let components = ["vector"];
-    if (x !== undefined) {
-      components[1] = x;
-    }
-    if (y !== undefined) {
-      components[2] = y;
-    }
-    if (z !== undefined) {
-      components[3] = z;
-    }
-    if (transient) {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        transient,
-        actionId,
-        sourceInformation,
-        skipRendererUpdate,
-      });
-    } else {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        actionId,
-        sourceInformation,
-        skipRendererUpdate,
-        event: {
-          verb: "interacted",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            x, y, z
-          }
-        }
-      });
-    }
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
 
   }
 

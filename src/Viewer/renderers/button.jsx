@@ -27,6 +27,8 @@ export default React.memo(function ButtonComponent(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  let label = SVs.label ? SVs.label : "Button";
+
   useEffect(() => {
     //On unmount
     return () => {
@@ -93,7 +95,7 @@ export default React.memo(function ButtonComponent(props) {
     anchorRel.current = [anchorx, anchory];
 
 
-    let newButtonJXG = board.create('button', [0, 0, SVs.label, () => callAction({ action: actions[SVs.clickAction] })], jsxButtonAttributes);
+    let newButtonJXG = board.create('button', [0, 0, label, () => callAction({ action: actions[SVs.clickAction] })], jsxButtonAttributes);
 
     newButtonJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -196,7 +198,7 @@ export default React.memo(function ButtonComponent(props) {
 
         if (buttonJXG.current) {
           buttonJXG.current.needsUpdate = true;
-          buttonJXG.current.setText(SVs.label)
+          buttonJXG.current.setText(label)
           buttonJXG.current.update();
           board?.updateRenderer();
         }
@@ -227,7 +229,7 @@ export default React.memo(function ButtonComponent(props) {
       buttonJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       anchorPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, anchorCoords);
 
-      buttonJXG.current.setText(SVs.label)
+      buttonJXG.current.setText(label)
 
       let visible = !SVs.hidden;
 
@@ -291,7 +293,7 @@ export default React.memo(function ButtonComponent(props) {
         id={id + "_button"}
         onClick={() => callAction({ action: actions[SVs.clickAction] })}
         disabled={SVs.disabled}
-        value={SVs.label}
+        value={label}
         valueHasLatex={SVs.labelHasLatex}
       />
     </div>

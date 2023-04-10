@@ -110,3 +110,60 @@ export function getPositionFromAnchorByCoordinate(positionFromAnchor) {
   }
   return { anchorx, anchory };
 }
+
+export async function moveGraphicalObjectWithAnchorAction({
+  x, y, z, transient, actionId,
+  sourceInformation = {}, skipRendererUpdate = false,
+  componentName, componentType,
+  coreFunctions,
+}) {
+
+
+  let components = ["vector"];
+  if (x !== undefined) {
+    components[1] = x;
+  }
+  if (y !== undefined) {
+    components[2] = y;
+  }
+  if (z !== undefined) {
+    components[3] = z;
+  }
+  if (transient) {
+    return await coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName,
+        stateVariable: "anchor",
+        value: me.fromAst(components),
+      }],
+      transient,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
+  } else {
+    return await coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName,
+        stateVariable: "anchor",
+        value: me.fromAst(components),
+      }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+      event: {
+        verb: "interacted",
+        object: {
+          componentName,
+          componentType,
+        },
+        result: {
+          x, y, z
+        }
+      }
+    });
+  }
+
+}
