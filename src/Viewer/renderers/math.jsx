@@ -3,6 +3,9 @@ import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
 
 export default React.memo(function MathComponent(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -26,6 +29,9 @@ export default React.memo(function MathComponent(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
+
   useEffect(() => {
     //On unmount
     return () => {
@@ -45,11 +51,25 @@ export default React.memo(function MathComponent(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+
+    let cssStyle = ``;
+    if (backgroundColor) {
+      cssStyle += `background-color: ${backgroundColor}`;
+    }
+
     //things to be passed to JSXGraph as attributes
     let jsxMathAttributes = {
       visible: !SVs.hidden,
       fixed,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
+      cssStyle,
+      highlightCssStyle: cssStyle,
+      strokeColor: textColor,
+      strokeOpacity: 1,
+      highlightStrokeColor: textColor,
+      highlightStrokeOpacity: 0.5,
       highlight: !fixed,
       useMathJax: true,
       parse: false,
@@ -317,8 +337,26 @@ export default React.memo(function MathComponent(props) {
         mathJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
+      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let cssStyle = ``;
+      if (backgroundColor) {
+        cssStyle += `background-color: ${backgroundColor}`;
+      } else {
+        cssStyle += `background-color: transparent`;
+      }
 
+      if (mathJXG.current.visProp.strokecolor !== textColor) {
+        mathJXG.current.visProp.strokecolor = textColor;
+        mathJXG.current.visProp.highlightstrokecolor = textColor;
+      }
+      if (mathJXG.current.visProp.cssstyle !== cssStyle) {
+        mathJXG.current.visProp.cssstyle = cssStyle;
+        mathJXG.current.visProp.highlightcssstyle = cssStyle;
+      }
+
+
+      let fixed = !SVs.draggable || SVs.fixed;
 
       mathJXG.current.visProp.highlight = !fixed;
       mathJXG.current.visProp.fixed = fixed;
@@ -428,19 +466,22 @@ export default React.memo(function MathComponent(props) {
     ))
   }
 
+
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+
   // TODO: BADBADBAD
   // Don't understand why MathJax isn't updating when using {latexOrInputChildren}
   // so hard coded the only two cases using so far: with 1 or 2 entries
 
   if (latexOrInputChildren.length === 0) {
-    return <>{anchors}<span id={id}></span></>
+    return <>{anchors}<span id={id} style={style}></span></>
 
   } else if (latexOrInputChildren.length === 1) {
-    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
+    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
 
   } else if (latexOrInputChildren.length === 2) {
-    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
+    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
   } else {
-    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
+    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
   }
 })

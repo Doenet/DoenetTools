@@ -3933,13 +3933,17 @@ class AttributeComponentDependency extends Dependency {
     while (comp.shadows) {
       let shadows = comp.shadows;
       let propVariable = comp.shadows.propVariable;
+      let fromPlainMacro = comp.doenetAttributes.fromPlainMacro;
 
       comp = this.dependencyHandler._components[shadows.componentName];
       if (!comp) {
         break;
       }
 
-      if (propVariable) {
+      // if a prop variable was created from a plain macro that is marked as returning the same type
+      // then treat it like a regular copy (as if there was no prop variable)
+      // and shadow all attributes
+      if (propVariable && !(fromPlainMacro && comp.constructor.plainMacroReturnsSameType)) {
         if (!(
           comp.state[propVariable]?.shadowingInstructions?.attributesToShadow?.includes(this.attributeName)
           || comp.constructor.createAttributesObject()[this.attributeName]?.propagateToProps
@@ -3954,7 +3958,7 @@ class AttributeComponentDependency extends Dependency {
             break;
           }
         }
-        if (shadows.firstLevelReplacement && "sourceAttributesToIgnore" in composite.state) {
+        if ((shadows.firstLevelReplacement || fromPlainMacro) && "sourceAttributesToIgnore" in composite.state) {
           let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
           if (sourceAttributesToIgnore.includes(this.attributeName)) {
             break;

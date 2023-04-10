@@ -10012,4 +10012,106 @@ describe('Line Tag Tests', function () {
 
   });
 
+  it('color line text via style', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <styleDefinitions>
+        <styleDefinition styleNumber="2" textColor="green" />
+        <styleDefinition styleNumber="3" textColor="red" backgroundColor="blue" />
+      </styleDefinitions>
+    </setup>
+
+    <p>Style number: <mathinput prefill="1" name="sn" /></p>
+
+    <p><line name="no_style">y=x</line> is <text name="tsd_no_style">$no_style.textStyleDescription</text>, i.e., the text color is <text name="tc_no_style">$no_style.textColor</text> and the background color is <text name="bc_no_style">$no_style.backgroundColor</text>.</p>
+    <p><line name="fixed_style" stylenumber="2">y=2x</line> is <text name="tsd_fixed_style">$fixed_style.textStyleDescription</text>, i.e., the text color is <text name="tc_fixed_style">$fixed_style.textColor</text> and the background color is <text name="bc_fixed_style">$fixed_style.backgroundColor</text>.</p>
+    <p><line name="variable_style" stylenumber="$sn">y=3x</line> is <text name="tsd_variable_style">$variable_style.textStyleDescription</text>, i.e., the text color is <text name="tc_variable_style">$variable_style.textColor</text> and the background color is <text name="bc_variable_style">$variable_style.backgroundColor</text>.</p>
+
+    <graph>
+      $no_style{anchor="(1,2)"}
+      $fixed_style{anchor="(3,4)"}
+      $variable_style
+    </graph>
+
+    ` }, "*");
+    });
+
+    cy.get('#\\/tsd_no_style').should('have.text', 'black');
+    cy.get('#\\/tc_no_style').should('have.text', 'black');
+    cy.get('#\\/bc_no_style').should('have.text', 'none');
+
+    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
+    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
+    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+
+    cy.get('#\\/tsd_variable_style').should('have.text', 'black');
+    cy.get('#\\/tc_variable_style').should('have.text', 'black');
+    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+
+
+    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+    // TODO: how to test color in graph
+
+
+    cy.get('#\\/sn textarea').type("{end}{backspace}2{enter}", { force: true })
+
+    cy.get('#\\/tsd_variable_style').should('have.text', 'green');
+    cy.get('#\\/tc_variable_style').should('have.text', 'green');
+    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+
+    cy.get('#\\/tsd_no_style').should('have.text', 'black');
+    cy.get('#\\/tc_no_style').should('have.text', 'black');
+    cy.get('#\\/bc_no_style').should('have.text', 'none');
+
+    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
+    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
+    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+
+    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+
+
+    cy.get('#\\/sn textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/tsd_variable_style').should('have.text', 'red with a blue background');
+    cy.get('#\\/tc_variable_style').should('have.text', 'red');
+    cy.get('#\\/bc_variable_style').should('have.text', 'blue');
+
+    cy.get('#\\/tsd_no_style').should('have.text', 'black');
+    cy.get('#\\/tc_no_style').should('have.text', 'black');
+    cy.get('#\\/bc_no_style').should('have.text', 'none');
+
+    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
+    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
+    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+
+    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+
+    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(255, 0, 0)');
+    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgb(0, 0, 255)');
+
+
+  })
+
 })

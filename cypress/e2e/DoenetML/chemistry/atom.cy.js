@@ -170,20 +170,20 @@ describe('Atom Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/an1').contains('He')
-    cy.get('#\\/an2').contains('C')
-    cy.get('#\\/an3').contains('O')
-    cy.get('#\\/an4').contains('As')
+    cy.get('#\\/an1 .mjx-mrow').contains('He')
+    cy.get('#\\/an2 .mjx-mrow').contains('C')
+    cy.get('#\\/an3 .mjx-mrow').contains('O')
+    cy.get('#\\/an4 .mjx-mrow').contains('As')
 
-    cy.get('#\\/ar1').contains('He')
-    cy.get('#\\/ar2').contains('O')
-    cy.get('#\\/ar3').contains('C')
-    cy.get('#\\/ar4').contains('As')
+    cy.get('#\\/ar1 .mjx-mrow').contains('He')
+    cy.get('#\\/ar2 .mjx-mrow').contains('O')
+    cy.get('#\\/ar3 .mjx-mrow').contains('C')
+    cy.get('#\\/ar4 .mjx-mrow').contains('As')
 
-    cy.get('#\\/ie1').contains('As')
-    cy.get('#\\/ie2').contains('C')
-    cy.get('#\\/ie3').contains('O')
-    cy.get('#\\/ie4').contains('He')
+    cy.get('#\\/ie1 .mjx-mrow').contains('As')
+    cy.get('#\\/ie2 .mjx-mrow').contains('C')
+    cy.get('#\\/ie3 .mjx-mrow').contains('O')
+    cy.get('#\\/ie4 .mjx-mrow').contains('He')
 
   })
 

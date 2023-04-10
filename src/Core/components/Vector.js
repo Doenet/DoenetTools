@@ -2,6 +2,7 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { convertValueToMathExpression, roundForDisplay, vectorOperators } from '../utils/math';
+import { returnTextStyleDescriptionDefinitions } from '../utils/style';
 
 export default class Vector extends GraphicalComponent {
   constructor(args) {
@@ -235,6 +236,9 @@ export default class Vector extends GraphicalComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.styleDescription = {
       public: true,

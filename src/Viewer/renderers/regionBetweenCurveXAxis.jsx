@@ -39,7 +39,6 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
 
 
     let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-    fillColor = fillColor.toLowerCase();
 
 
     // Note: actual content of label is being ignored
@@ -121,7 +120,6 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
 
 
       let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-      fillColor = fillColor.toLowerCase();
 
       if (integralJXG.current.visProp.fillcolor !== fillColor) {
         integralJXG.current.visProp.fillcolor = fillColor;

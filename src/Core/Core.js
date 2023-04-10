@@ -2582,6 +2582,7 @@ export default class Core {
               targetName: name,
               compositeName: dep.compositeName,
               propVariable: dep.propVariable,
+              fromPlainMacro: dep.fromPlainMacro,
               arrayStateVariable: dep.arrayStateVariable,
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
@@ -3311,8 +3312,23 @@ export default class Core {
         };
       }
 
+      let shadowStandardVariables = false;
+      let stateVariablesToShadow = [];
+      if (targetComponent.constructor.plainMacroReturnsSameType) {
+        if (redefineDependencies.fromPlainMacro) {
+          shadowStandardVariables = true;
+        }
+
+        // shadow any variables marked as shadowVariable
+        for (let varName in targetComponent.state) {
+          let stateObj = targetComponent.state[varName];
+          if ((stateObj.shadowVariable || stateObj.isShadow)) {
+            stateVariablesToShadow.push(varName);
+          }
+        }
+      }
+
       if (redefineDependencies.additionalStateVariableShadowing) {
-        let stateVariablesToShadow = [];
         let differentStateVariablesInTarget = [];
         for (let varName in redefineDependencies.additionalStateVariableShadowing) {
           stateVariablesToShadow.push(varName);
@@ -3327,9 +3343,16 @@ export default class Core {
           targetComponent,
           differentStateVariablesInTarget
         });
+      } else if (shadowStandardVariables) {
+        this.modifyStateDefsToBeShadows({
+          stateVariablesToShadow,
+          stateVariableDefinitions,
+          targetComponent
+        });
       }
 
       // for referencing a prop variable, don't shadow standard state variables
+      // (unless except for above cases)
       // so just return now
       return;
 
@@ -9518,9 +9541,17 @@ export default class Core {
           // For setting essential value, we keep the values for all 
           // shadowed components in sync.
           // We find the original component and the recurse on all the components
-          // that shadow it
+          // that shadow it.
+          // Don't include shadows due to propVariable
+          // unless it is a plain macro marked as returning the same type
           let baseComponent = component;
-          while (baseComponent.shadows && baseComponent.shadows.propVariable === undefined) {
+          while (baseComponent.shadows && (
+            baseComponent.shadows.propVariable === undefined
+            || (
+              baseComponent.doenetAttributes.fromPlainMacro
+              && this._components[baseComponent.shadows.componentName].constructor.plainMacroReturnsSameType
+            )
+          )) {
             baseComponent = this._components[baseComponent.shadows.componentName]
           }
 
@@ -9804,7 +9835,14 @@ export default class Core {
 
     if (recurseToShadows && component.shadowedBy) {
       for (let shadow of component.shadowedBy) {
-        if (shadow.shadows.propVariable === undefined) {
+        // Don't include shadows due to propVariable
+        // unless it is a plain macro marked as returning the same type
+        if (shadow.shadows.propVariable === undefined
+          || (
+            shadow.doenetAttributes.fromPlainMacro
+            && component.constructor.plainMacroReturnsSameType
+          )
+        ) {
           this.calculateEssentialVariableChanges({
             component: shadow,
             varName,

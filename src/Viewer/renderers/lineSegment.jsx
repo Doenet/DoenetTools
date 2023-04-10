@@ -58,7 +58,6 @@ export default React.memo(function LineSegment(props) {
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var jsxSegmentAttributes = {
@@ -424,7 +423,6 @@ export default React.memo(function LineSegment(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (lineSegmentJXG.current.visProp.strokecolor !== lineColor) {
         lineSegmentJXG.current.visProp.strokecolor = lineColor;

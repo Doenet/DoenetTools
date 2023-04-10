@@ -1,6 +1,7 @@
 import InlineComponent from '../abstract/InlineComponent';
 import me from 'math-expressions';
 import { returnNVariables, roundForDisplay } from '../../utils/math';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../../utils/style';
 
 export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
@@ -116,6 +117,13 @@ export default class ODESystem extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
 
     stateVariableDefinitions.validIndependentVariable = {
       returnDependencies: () => ({

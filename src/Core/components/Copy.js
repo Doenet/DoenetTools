@@ -2960,6 +2960,30 @@ export async function replacementFromProp({ component, components,
   }
 
 
+  if (await component.stateValues.isPlainMacro) {
+    for (let repl of serializedReplacements) {
+      if (!repl.doenetAttributes) {
+        repl.doenetAttributes = {};
+      }
+      repl.doenetAttributes.fromPlainMacro = true;
+      if (repl.downstreamDependencies?.[target.componentName]?.[0]) {
+        repl.downstreamDependencies[target.componentName][0]
+          .fromPlainMacro = true;
+      }
+    }
+  } else if (await component.stateValues.isPlainCopy) {
+    for (let repl of serializedReplacements) {
+      if (!repl.doenetAttributes) {
+        repl.doenetAttributes = {};
+      }
+      repl.doenetAttributes.fromPlainCopy = true;
+      if (repl.downstreamDependencies?.[target.componentName]?.[0]) {
+        repl.downstreamDependencies[target.componentName][0]
+          .fromPlainCopy = true;
+      }
+    }
+  }
+
   // console.log(`serializedReplacements for ${component.componentName}`)
   // console.log(JSON.parse(JSON.stringify(serializedReplacements)))
   // console.log(serializedReplacements)

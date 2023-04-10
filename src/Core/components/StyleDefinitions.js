@@ -10,9 +10,10 @@ export class StyleDefinition extends BaseComponent {
     let attributes = super.createAttributesObject();
 
     attributes.styleNumber = {
-      createPrimitiveOfType: "number",
+      createPrimitiveOfType: "integer",
       createStateVariable: "styleNumber",
       defaultValue: 1,
+      clamp: [1, Infinity]
     }
 
     for (let styleAttr in styleAttributes) {

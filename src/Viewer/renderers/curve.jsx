@@ -69,7 +69,6 @@ export default React.memo(function Curve(props) {
     }
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var curveAttributes = {
@@ -634,7 +633,6 @@ export default React.memo(function Curve(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (curveJXG.current.visProp.strokecolor !== lineColor) {
         curveJXG.current.visProp.strokecolor = lineColor;
