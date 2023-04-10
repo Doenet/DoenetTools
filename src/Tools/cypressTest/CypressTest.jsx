@@ -18,7 +18,6 @@ function Test() {
     readOnly: false,
     showFeedback: true,
     showHints: true,
-    bundledCore: true,
     allowLoadState: false,
     allowSaveState: false,
     allowLocalState: false,
@@ -55,7 +54,6 @@ function Test() {
 
   const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
 
-  const [bundledCore, setBundledCore] = useState(testSettings.bundledCore);
   const [allowLoadState, setAllowLoadState] = useState(testSettings.allowLoadState);
   const [allowSaveState, setAllowSaveState] = useState(testSettings.allowSaveState);
   const [allowLocalState, setAllowLocalState] = useState(testSettings.allowLocalState);
@@ -266,17 +264,6 @@ function Test() {
           }
         } />Dark Mode</label>
       </div>
-      <hr />
-      <div>
-        <label> <input id="testRunner_bundledCore" type='checkbox' checked={bundledCore} onChange={
-          () => {
-            testSettings.bundledCore = !testSettings.bundledCore;
-            localStorage.setItem("test settings", JSON.stringify(testSettings))
-            setBundledCore(was => !was)
-            setUpdateNumber(was => was + 1)
-          }
-        } />Bundled Core</label>
-      </div>
     </div>
   }
 
@@ -302,7 +289,6 @@ function Test() {
       }}
       attemptNumber={attemptNumber}
       requestedVariantIndex={requestedVariantIndex.current}
-      unbundledCore={!bundledCore}
       doenetId="doenetIdFromCypress"
       pageIsActive={true}
     // collaborate={true}
@@ -331,7 +317,6 @@ function Test() {
       }}
       attemptNumber={attemptNumber}
       requestedVariantIndex={requestedVariantIndex.current}
-      unbundledCore={!bundledCore}
       doenetId="doenetIdFromCypress"
       paginate={paginate}
     // collaborate={true}

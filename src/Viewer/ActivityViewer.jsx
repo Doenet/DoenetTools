@@ -1355,7 +1355,6 @@ export default function ActivityViewer(props) {
         flags={flags}
         activityVariantIndex={variantIndex}
         requestedVariantIndex={variantsByPage[ind]}
-        unbundledCore={props.unbundledCore}
         updateCreditAchievedCallback={props.updateCreditAchievedCallback}
         setIsInErrorState={props.setIsInErrorState}
         updateAttemptNumber={props.updateAttemptNumber}
