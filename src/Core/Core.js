@@ -10,11 +10,10 @@ import createStateProxyHandler from './StateProxyHandler';
 import { convertAttributesForComponentType, postProcessCopy, verifyReplacementsMatchSpecifiedType } from './utils/copy';
 import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
-import { preprocessMathInverseDefinition } from './utils/math';
+import { preprocessMathInverseDefinition, removeFunctionsMathExpressionClass } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 import { nanoid } from 'nanoid';
 import { cidFromText } from './utils/cid';
-import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { toastType } from '../Tools/_framework/ToastTypes';
@@ -2838,6 +2837,7 @@ export default class Core {
         "defaultValue",
         "propagateToProps",
         "triggerActionOnChange",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -2949,6 +2949,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -3229,6 +3230,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -9359,7 +9361,7 @@ export default class Core {
       return;
     }
 
-    if (await component.stateValues.fixed && !instruction.overrideFixed && !stateVarObj.ignoreFixed) {
+    if (!instruction.overrideFixed && !stateVarObj.ignoreFixed && await component.stateValues.fixed) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`);
       return;
     }
@@ -9565,7 +9567,14 @@ export default class Core {
               && this._components[baseComponent.shadows.componentName].constructor.plainMacroReturnsSameType
             )
           )) {
-            baseComponent = this._components[baseComponent.shadows.componentName]
+            baseComponent = this._components[baseComponent.shadows.componentName];
+
+            // if any of the shadow sources are fixed, reject this change
+            if (!instruction.overrideFixed && !stateVarObj.ignoreFixed && await baseComponent.stateValues.fixed) {
+              console.log(`Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixed is true.`);
+              return;
+            }
+
           }
 
           this.calculateEssentialVariableChanges({
