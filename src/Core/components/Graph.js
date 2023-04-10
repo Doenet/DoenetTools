@@ -196,6 +196,14 @@ export default class Graph extends BlockComponent {
       defaultValue: false,
       public: true,
     };
+
+    attributes.showBorder = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showBorder",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
     return attributes;
   }
 
@@ -213,6 +221,10 @@ export default class Graph extends BlockComponent {
     {
       group: "graphical",
       componentTypes: ["_graphical", "text", "image", "math", "m", "md", "label"]
+    },
+    {
+      group: "graphs",
+      componentTypes: ["graph"]
     },
     {
       group: "childrenThatShouldNotBeHere",
@@ -465,19 +477,19 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.childIndicesToRender = {
       returnDependencies: () => ({
-        graphicalChildren: {
+        graphicalOrGraphChildren: {
           dependencyType: "child",
-          childGroups: ["graphical"],
+          childGroups: ["graphical", "graphs"],
         },
         allChildren: {
           dependencyType: "child",
-          childGroups: ["graphical", "xlabels", "ylabels", "childrenThatShouldNotBeHere"],
+          childGroups: ["graphical", "xlabels", "ylabels", "graphs", "childrenThatShouldNotBeHere"],
         },
       }),
       definition({ dependencyValues }) {
         let childIndicesToRender = [];
 
-        let graphicalChildNames = dependencyValues.graphicalChildren.map(x => x.componentName);
+        let graphicalChildNames = dependencyValues.graphicalOrGraphChildren.map(x => x.componentName);
 
         for (let [ind, child] of dependencyValues.allChildren.entries()) {
           if (graphicalChildNames.includes(child.componentName)) {
@@ -705,6 +717,21 @@ export default class Graph extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.haveGraphParent = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        graphParent: {
+          dependencyType: "parentIdentity",
+          parentComponentType: "graph"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: { haveGraphParent: dependencyValues.graphParent !== null }
+        }
+      }
+    }
+
     stateVariableDefinitions.xmin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
       public: true,
@@ -726,6 +753,11 @@ export default class Graph extends BlockComponent {
           xminPrelim: {
             dependencyType: "stateVariable",
             variableName: "xminPrelim"
+          },
+          graphParentXmin: {
+            dependencyType: "parentStateVariable",
+            parentComponentType: "graph",
+            variableName: "xmin"
           }
         }
 
@@ -750,6 +782,9 @@ export default class Graph extends BlockComponent {
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.graphParentXmin !== null) {
+          return { setValue: { xmin: dependencyValues.graphParentXmin } }
+        }
         if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { xmin: dependencyValues.xminPrelim } }
         }
@@ -786,7 +821,16 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        if (dependencyValues.graphParentXmin !== null) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "graphParentXmin",
+              desiredValue: desiredStateVariableValues.xmin
+            }]
+          }
+        }
         if (await stateValues.fixAxes) {
           return { success: false }
         }
@@ -821,6 +865,11 @@ export default class Graph extends BlockComponent {
           xmaxPrelim: {
             dependencyType: "stateVariable",
             variableName: "xmaxPrelim"
+          },
+          graphParentXmax: {
+            dependencyType: "parentStateVariable",
+            parentComponentType: "graph",
+            variableName: "xmax"
           }
         }
 
@@ -845,6 +894,9 @@ export default class Graph extends BlockComponent {
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.graphParentXmax !== null) {
+          return { setValue: { xmax: dependencyValues.graphParentXmax } }
+        }
         if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { xmax: dependencyValues.xmaxPrelim } }
         }
@@ -892,7 +944,16 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        if (dependencyValues.graphParentXmax !== null) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "graphParentXmax",
+              desiredValue: desiredStateVariableValues.xmax
+            }]
+          }
+        }
         if (await stateValues.fixAxes) {
           return { success: false }
         }
@@ -928,6 +989,11 @@ export default class Graph extends BlockComponent {
           yminPrelim: {
             dependencyType: "stateVariable",
             variableName: "yminPrelim"
+          },
+          graphParentYmin: {
+            dependencyType: "parentStateVariable",
+            parentComponentType: "graph",
+            variableName: "ymin"
           }
         }
 
@@ -952,6 +1018,9 @@ export default class Graph extends BlockComponent {
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.graphParentYmin !== null) {
+          return { setValue: { ymin: dependencyValues.graphParentYmin } }
+        }
         if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { ymin: dependencyValues.yminPrelim } }
         }
@@ -988,7 +1057,16 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        if (dependencyValues.graphParentYmin !== null) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "graphParentYmin",
+              desiredValue: desiredStateVariableValues.ymin
+            }]
+          }
+        }
         if (await stateValues.fixAxes) {
           return { success: false }
         }
@@ -1023,6 +1101,11 @@ export default class Graph extends BlockComponent {
           ymaxPrelim: {
             dependencyType: "stateVariable",
             variableName: "ymaxPrelim"
+          },
+          graphParentYmax: {
+            dependencyType: "parentStateVariable",
+            parentComponentType: "graph",
+            variableName: "ymax"
           }
         }
 
@@ -1047,6 +1130,9 @@ export default class Graph extends BlockComponent {
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.graphParentYmax !== null) {
+          return { setValue: { ymax: dependencyValues.graphParentYmax } }
+        }
         if (!dependencyValues.identicalAxisScales || dependencyValues.aspectRatioFromAxisScales) {
           return { setValue: { ymax: dependencyValues.ymaxPrelim } }
         }
@@ -1097,7 +1183,16 @@ export default class Graph extends BlockComponent {
 
 
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        if (dependencyValues.graphParentYmax !== null) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "graphParentYmax",
+              desiredValue: desiredStateVariableValues.ymax
+            }]
+          }
+        }
         if (await stateValues.fixAxes) {
           return { success: false }
         }
@@ -1351,7 +1446,6 @@ export default class Graph extends BlockComponent {
             let num = 1;
             for (let piece of group) {
               if (typeof piece === "string") {
-                // Note: OK if null is converted to zero, as product will be rejected
                 num *= me.fromText(piece).evaluate_to_constant();
               } else {
                 let childInd = dependencyValues.gridAttrCompChildren.indexOf(piece);
@@ -1360,7 +1454,6 @@ export default class Graph extends BlockComponent {
                 if (factor instanceof me.class) {
                   factor = factor.evaluate_to_constant();
                 }
-                // Note: OK if null is converted to zero, as product will be rejected
                 num *= factor;
               }
             }
@@ -1388,7 +1481,9 @@ export default class Graph extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId }) {
+  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let updateInstructions = [];
 
@@ -1428,6 +1523,8 @@ export default class Graph extends BlockComponent {
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -1442,7 +1539,7 @@ export default class Graph extends BlockComponent {
 
   }
 
-  async addChildren({ serializedComponents, actionId }) {
+  async addChildren({ serializedComponents, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     if (serializedComponents && serializedComponents.length > 0) {
 
@@ -1467,13 +1564,15 @@ export default class Graph extends BlockComponent {
           value: await this.stateValues.nChildrenAdded + processResult.serializedComponents.length,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate
       });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  async deleteChildren({ number, actionId }) {
+  async deleteChildren({ number, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     let numberToDelete = Math.min(number, await this.stateValues.nChildrenAdded);
 
@@ -1493,7 +1592,9 @@ export default class Graph extends BlockComponent {
           stateVariable: "nChildrenAdded",
           value: await this.stateValues.nChildrenAdded - numberToDelete,
         }],
-        actionId
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
 
     } else {

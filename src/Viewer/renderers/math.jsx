@@ -1,6 +1,6 @@
-import React, { useContext, useRef } from 'react';
-import { BoardContext } from './graph';
-import useDoenetRender from './useDoenetRenderer';
+import React, { useContext, useEffect, useRef } from 'react';
+import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
+import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
 
@@ -26,6 +26,20 @@ export default React.memo(function MathComponent(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  useEffect(() => {
+    //On unmount
+    return () => {
+      if (mathJXG.current !== null) {
+        mathJXG.current.off('drag');
+        mathJXG.current.off('down');
+        mathJXG.current.off('up');
+        board?.removeObject(mathJXG.current);
+        mathJXG.current = null;
+      }
+
+    }
+  }, [])
+
 
   function createMathJXG() {
 
@@ -35,7 +49,7 @@ export default React.memo(function MathComponent(props) {
     let jsxMathAttributes = {
       visible: !SVs.hidden,
       fixed,
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
       highlight: !fixed,
       useMathJax: true,
       parse: false,
@@ -225,10 +239,12 @@ export default React.memo(function MathComponent(props) {
     // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
     setTimeout(() => {
 
-      mathJXG.current.needsUpdate = true;
-      mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
-      mathJXG.current.update();
-      board.updateRenderer();
+      if (mathJXG.current) {
+        mathJXG.current.needsUpdate = true;
+        mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
+        mathJXG.current.update();
+        board.updateRenderer();
+      }
 
     }, 1000)
   }
@@ -294,7 +310,7 @@ export default React.memo(function MathComponent(props) {
         mathJXG.current.visPropCalc["visible"] = false;
       }
 
-      let layer = 10 * SVs.layer + 9;
+      let layer = 10 * SVs.layer + TEXT_LAYER_OFFSET;
       let layerChanged = mathJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {

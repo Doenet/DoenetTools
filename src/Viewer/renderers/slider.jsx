@@ -2,11 +2,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import me from 'math-expressions';
 import styled from "styled-components";
 // import { Spring } from '@react-spring/web';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { useSetRecoilState } from 'recoil';
-import { rendererState } from './useDoenetRenderer';
+import { rendererState } from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
@@ -26,7 +26,7 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: black; // black?
+  background-color: var(--canvastext); 
   height: 2px;
   width: ${props => props.width};
   user-select: none;
@@ -61,7 +61,7 @@ const Tick = styled.div`
 const Label = styled.p`
     position: absolute;
     left: ${props => props.x};
-    color: black;
+    color: var(--canvastext); 
     font-size: 12px;
     top: 1px;
     user-select: none;

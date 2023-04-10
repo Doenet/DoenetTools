@@ -458,7 +458,9 @@ export default class AnimateFromSequence extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  async changedAnimationOn({ stateValues, previousValues, actionId }) {
+  async changedAnimationOn({ stateValues, previousValues, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let updateInstructions = [];
 
@@ -529,6 +531,8 @@ export default class AnimateFromSequence extends BaseComponent {
         await this.coreFunctions.performUpdate({
           updateInstructions,
           actionId,
+          sourceInformation,
+          skipRendererUpdate: true,
           event: {
             verb: "played",
             object: {
@@ -545,6 +549,9 @@ export default class AnimateFromSequence extends BaseComponent {
 
         await this.coreFunctions.triggerChainedActions({
           componentName: this.componentName,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
         });
 
         this.animationId = nanoid();
@@ -568,6 +575,9 @@ export default class AnimateFromSequence extends BaseComponent {
         this.canceledAnimationId = this.animationId;
         await this.coreFunctions.triggerChainedActions({
           componentName: this.componentName,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
         })
 
         this.coreFunctions.requestRecordEvent({
@@ -666,7 +676,9 @@ export default class AnimateFromSequence extends BaseComponent {
 
   }
 
-  async advanceAnimation({ previousAnimationId, actionId }) {
+  async advanceAnimation({ previousAnimationId, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let animationOn = await this.stateValues.animationOn;
 
@@ -740,6 +752,8 @@ export default class AnimateFromSequence extends BaseComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate
     });
 
     if (continueAnimation) {
@@ -756,7 +770,7 @@ export default class AnimateFromSequence extends BaseComponent {
     }
   }
 
-  startAnimation({ actionId }) {
+  startAnimation({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -765,10 +779,12 @@ export default class AnimateFromSequence extends BaseComponent {
         value: true,
       }],
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
   }
 
-  stopAnimation({ actionId }) {
+  stopAnimation({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -776,11 +792,13 @@ export default class AnimateFromSequence extends BaseComponent {
         stateVariable: "animationOn",
         value: false,
       }],
-      actionId
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
   }
 
-  async toggleAnimation({ actionId }) {
+  async toggleAnimation({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -789,6 +807,8 @@ export default class AnimateFromSequence extends BaseComponent {
         value: !(await this.stateValues.animationOn),
       }],
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
   }
 

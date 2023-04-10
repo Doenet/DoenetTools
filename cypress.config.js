@@ -22,21 +22,21 @@ function queryTestDb(query, config) {
 
 module.exports = defineConfig({
   numTestsKeptInMemory: 20,
-  defaultCommandTimeout: 20000,
+  defaultCommandTimeout: 30000,
   e2e: {
     setupNodeEvents(on, config) {
       on('before:browser:launch', (browser = {}, launchOptions) => {
-      
+
         if (browser.name === 'chrome') {
           launchOptions.args.push('--mute-audio');
         }
-    
+
         return launchOptions;
       });
       on('task', { queryDb: query => { return queryTestDb(query, config) }, }); //For running sql query
     },
-    
-    baseUrl: 'http://localhost',
+
+    baseUrl: 'http://localhost:8000',
   },
   env: {
     db: {

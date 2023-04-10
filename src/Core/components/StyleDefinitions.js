@@ -53,7 +53,7 @@ export class StyleDefinition extends BaseComponent {
             styleDefinition[styleAttr] =
               dependencyValues[styleAttr].stateValues.value;
 
-            if(typeof styleDefinition[styleAttr] === "string") {
+            if (typeof styleDefinition[styleAttr] === "string") {
               styleDefinition[styleAttr] = styleDefinition[styleAttr].toLowerCase();
             }
           }

@@ -1,12 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
-
-
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'));
+root.render(
   <>
   test here
-  </>,
-  document.getElementById('root'),
+  </>
 );
 

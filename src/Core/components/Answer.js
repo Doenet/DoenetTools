@@ -36,6 +36,12 @@ export default class Answer extends InlineComponent {
       defaultValue: 1,
       public: true,
     };
+    attributes.handGraded = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "handGraded",
+      defaultValue: false,
+      public: true,
+    };
     attributes.inline = {
       createComponentOfType: "boolean",
       createStateVariable: "inline",
@@ -65,7 +71,7 @@ export default class Answer extends InlineComponent {
       createStateVariable: "simplifyOnCompare",
       defaultValue: "none",
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       public: true,
     };
@@ -200,6 +206,13 @@ export default class Answer extends InlineComponent {
       public: true,
     }
 
+    attributes.expanded = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expanded",
+      defaultValue: false,
+      public: true,
+    }
+
     // temporary attribute until fix toast
     attributes.suppressToast = {
       createComponentOfType: "boolean",
@@ -259,6 +272,7 @@ export default class Answer extends InlineComponent {
       let nChoicesFound = 0;
       let definitelyDoNotAddInput = false, mayNeedInput = false;
       let foundResponse = false;
+      let foundAward = false;
 
       let childIsWrappable = [];
       for (let child of matchedChildren) {
@@ -294,6 +308,7 @@ export default class Answer extends InlineComponent {
           childIsWrappable.push(true);
           nChoicesFound++;
         } else if (componentIsSpecifiedType(child, "award")) {
+          foundAward = true;
           childIsWrappable.push(false);
           if (child.attributes?.sourcesAreResponses) {
             foundResponse = true;
@@ -399,6 +414,10 @@ export default class Answer extends InlineComponent {
         }
       }
 
+
+      if (componentAttributes.handGraded && !foundAward) {
+        mayNeedInput = true;
+      }
 
       if (!mayNeedInput && !foundResponse) {
         // recurse to all descendants of awards to see if have a response
@@ -581,6 +600,10 @@ export default class Answer extends InlineComponent {
         showCorrectnessFlag: {
           dependencyType: "flag",
           flagName: "showCorrectness"
+        },
+        handGraded: {
+          dependencyType: "stateVariable",
+          variableName: "handGraded"
         }
       }),
       definition({ dependencyValues, usedDefault }) {
@@ -588,7 +611,7 @@ export default class Answer extends InlineComponent {
         if (!usedDefault.showCorrectnessPreliminary) {
           showCorrectness = dependencyValues.showCorrectnessPreliminary
         } else {
-          showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+          showCorrectness = dependencyValues.showCorrectnessFlag !== false && !dependencyValues.handGraded;
         }
         return { setValue: { showCorrectness } }
       }
@@ -638,6 +661,10 @@ export default class Answer extends InlineComponent {
           haveAwardThatRequiresInput: {
             dependencyType: "stateVariable",
             variableName: "haveAwardThatRequiresInput"
+          },
+          handGraded: {
+            dependencyType: "stateVariable",
+            variableName: "handGraded"
           }
         };
 
@@ -667,7 +694,7 @@ export default class Answer extends InlineComponent {
         let skipFirstSugaredInput =
           inputChildren[0]?.componentType !== "choiceInput"
           && (
-            !dependencyValues.haveAwardThatRequiresInput
+            !(dependencyValues.haveAwardThatRequiresInput || dependencyValues.handGraded)
             || dependencyValues.allInputChildrenIncludingSugared.length > 1
           );
 
@@ -1245,7 +1272,7 @@ export default class Answer extends InlineComponent {
         inputChildren: {
           dependencyType: "child",
           childGroups: ["inputs"],
-          variableNames: ["creditAchievedIfSubmit"],
+          variableNames: ["creditAchievedIfSubmit", "value"],  // include value so inputs always make dependency values change
           childIndices: stateValues.inputChildIndices,
           variablesOptional: true,
         },
@@ -1731,7 +1758,7 @@ export default class Answer extends InlineComponent {
   }
 
 
-  async submitAnswer({ actionId }) {
+  async submitAnswer({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
     if (numberOfAttemptsLeft < 1) {
@@ -1740,6 +1767,9 @@ export default class Answer extends InlineComponent {
     }
 
     let creditAchieved = await this.stateValues.creditAchievedIfSubmit;
+    if (await this.stateValues.handGraded) {
+      creditAchieved = 0;
+    }
     let awardsUsed = await this.stateValues.awardsUsedIfSubmit;
     let inputUsed = await this.stateValues.inputUsedIfSubmit;
 
@@ -1867,6 +1897,8 @@ export default class Answer extends InlineComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions: instructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate: true,
       event: {
         verb: "submitted",
         object: {
@@ -1885,6 +1917,9 @@ export default class Answer extends InlineComponent {
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
 
 

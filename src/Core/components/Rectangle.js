@@ -898,12 +898,6 @@ export default class Rectangle extends Polygon {
         // console.log("inverse definition of vertices of rectangle",
         //   desiredStateVariableValues, dependencyValuesByKey, stateValues);
 
-        // if not draggable, then disallow initial change 
-
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
         if (!workspace.v0) {
           let vertices = await stateValues.vertices;
           workspace.v0 = [...vertices[0]];
@@ -1152,7 +1146,24 @@ export default class Rectangle extends Polygon {
     return stateVariableDefinitions;
   }
 
-  async movePolygon({ pointCoords, transient, sourceInformation, actionId }) {
+  async movePolygon({ pointCoords, transient, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
+
+    let nVerticesMoved = Object.keys(pointCoords).length;
+
+    if (nVerticesMoved === 1) {
+      // single vertex dragged
+      if (!await this.stateValues.verticesDraggable) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    } else {
+      // whole rectangle dragged
+      if (!await this.stateValues.draggable) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    }
+
     let updateInstructions = [];
 
     let vertexComponents = {};
@@ -1166,7 +1177,7 @@ export default class Rectangle extends Polygon {
       componentName: this.componentName,
       stateVariable: "vertices",
       value: vertexComponents,
-      sourceInformation
+      sourceDetails
     });
 
     if (Object.keys(pointCoords).length === 1) {
@@ -1252,12 +1263,16 @@ export default class Rectangle extends Polygon {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
-        actionId
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {

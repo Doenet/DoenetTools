@@ -12,7 +12,7 @@ describe('Feedback Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('feedback from answer value or credit', () => {
@@ -2280,6 +2280,7 @@ describe('Feedback Tag Tests', function () {
         doenetML: `
         <text>a</text>
         <p>
+          <graph />
           <ul>
             <li>
               x: <answer name="ans"><mathinput name="mi" />x</answer>   
@@ -2302,7 +2303,10 @@ describe('Feedback Tag Tests', function () {
 
     cy.get("#\\/fb").should('not.exist');
 
-    cy.get('#\\/mi textarea').type("y{enter}", { force: true });
+    // Note: added 100 ms delay because otherwise when Enter key event was received,
+    // the renderer had not yet gotten signal from core that answer blank was unvalidated,
+    // which is a necessary condition for Enter to lead to a submitAnswer
+    cy.get('#\\/mi textarea').type("y{enter}", { force: true, delay: 100 });
 
     cy.get('#\\/_li2 .mjx-mrow').should('contain.text', 'y');
     cy.get("#\\/fb").should('have.text', 'You answered at least twice');

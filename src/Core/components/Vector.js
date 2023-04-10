@@ -246,8 +246,20 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -261,7 +273,7 @@ export default class Vector extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -1811,14 +1823,8 @@ export default class Vector extends GraphicalComponent {
 
         let numericalHead, numericalTail;
         if (dependencyValues.nDimensions === 1) {
-          let numericalHead = dependencyValues.head[0].evaluate_to_constant();
-          if (!Number.isFinite(numericalHead)) {
-            numericalHead = NaN;
-          }
+          numericalHead = dependencyValues.head[0].evaluate_to_constant();
           numericalTail = dependencyValues.tail[0].evaluate_to_constant();
-          if (!Number.isFinite(numericalTail)) {
-            numericalTail = NaN;
-          }
         } else {
 
           numericalHead = [];
@@ -1826,15 +1832,9 @@ export default class Vector extends GraphicalComponent {
 
           for (let i = 0; i < dependencyValues.nDimensions; i++) {
             let head = dependencyValues.head[i].evaluate_to_constant();
-            if (!Number.isFinite(head)) {
-              head = NaN;
-            }
             numericalHead.push(head);
 
             let tail = dependencyValues.tail[i].evaluate_to_constant();
-            if (!Number.isFinite(tail)) {
-              tail = NaN;
-            }
             numericalTail.push(tail);
           }
         }
@@ -2031,7 +2031,9 @@ export default class Vector extends GraphicalComponent {
     stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
   }];
 
-  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {
+  async moveVector({ tailcoords, headcoords, transient, skippable, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     if (tailcoords !== undefined) {
       if (headcoords !== undefined) {
@@ -2076,7 +2078,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "displacement",
           value: displacement.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
 
       } else {
@@ -2086,7 +2088,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "tail",
           value: tailcoords.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       }
 
@@ -2102,7 +2104,7 @@ export default class Vector extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "displacement",
             value: displacement.map(x => me.fromAst(x)),
-            sourceInformation
+            sourceDetails
           })
         }
       }
@@ -2117,7 +2119,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "head",
           value: headcoords.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       } else {
         // if not based on head
@@ -2132,7 +2134,7 @@ export default class Vector extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "displacement",
           value: displacement.map(x => me.fromAst(x)),
-          sourceInformation
+          sourceDetails
         })
       }
 
@@ -2149,7 +2151,7 @@ export default class Vector extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "displacement",
             value: displacement.map(x => me.fromAst(x)),
-            sourceInformation
+            sourceDetails
           })
         }
       }
@@ -2163,11 +2165,15 @@ export default class Vector extends GraphicalComponent {
         transient,
         skippable,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -2184,22 +2190,28 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async vectorClicked({ actionId }) {
+  async vectorClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async vectorFocused({ actionId }) {
+  async vectorFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

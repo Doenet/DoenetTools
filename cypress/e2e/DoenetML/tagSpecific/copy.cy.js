@@ -20,7 +20,7 @@ describe('Copy Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
 
   })
 
@@ -14068,7 +14068,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/p34') + ' .mjx-mrow').eq(1).should('not.exist');
     cy.get(cesc('#/p35')).should('have.text', '')
 
-    cy.get(cesc('#/p36')).should('have.text', '0 = -23.1058 \\, x - 3.0203 \\, y + 120.4105');
+    cy.get(cesc('#/p36')).should('have.text', '0 = -23.1058 x - 3.0203 y + 120.4105');
     cy.get(cesc('#/p37') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
     cy.get(cesc('#/p37') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
     cy.get(cesc('#/p38') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
@@ -14934,6 +14934,27 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/n8').should('have.text', '8.85')
 
 
+
+  });
+
+
+  it('correctly wrap replacement changes when verifying to force component type', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+        <answer name="ans">47</answer>
+        <number copySource="ans.submittedResponse" name="num" />
+    `}, "*");
+    });
+
+    cy.get('#\\/num').should('have.text', 'NaN')
+
+    cy.get('#\\/ans textarea').type("4{enter}", { force: true });
+    cy.get('#\\/num').should('have.text', '4')
+
+    cy.get('#\\/ans textarea').type("7{enter}", { force: true });
+    cy.get('#\\/num').should('have.text', '47')
 
   });
 

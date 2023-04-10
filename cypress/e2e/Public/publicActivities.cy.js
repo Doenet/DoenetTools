@@ -38,25 +38,25 @@ describe('Multipage activity tests', function () {
 <p>This is public</p>
 `
 
-    cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId, doenetML});
+    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
-    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
-    
+
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
 
     cy.log('Document is not public by default')
 
-    cy.visit(`http://localhost/public?doenetId=${doenetId}`)
+    cy.visit(`/public?doenetId=${doenetId}`)
     cy.get('[data-test="Main Panel"]').should('contain.text', 'not found');
 
     cy.go("back");
 
-    cy.visit(`http://localhost/public?tool=editor&doenetId=${doenetId}`)
+    cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
     cy.get('[data-test="Main Panel"]').should('contain.text', 'not found');
 
     cy.go("back");
@@ -66,7 +66,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Make Publicly Visible"]').click()
     cy.wait(1000);
 
-    cy.visit(`http://localhost/public?doenetId=${doenetId}`)
+    cy.visit(`/public?doenetId=${doenetId}`)
 
     cy.get('#\\/_p1').should('have.text', 'This is public')
 
@@ -74,7 +74,7 @@ describe('Multipage activity tests', function () {
     cy.go("back");
 
 
-    cy.visit(`http://localhost/public?tool=editor&doenetId=${doenetId}`)
+    cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
     cy.get('[data-test="Main Panel"]').should('contain.text', 'not found');
 
     cy.go("back");
@@ -84,7 +84,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Show DoenetML Source"]').click()
     cy.wait(1000);
 
-    cy.visit(`http://localhost/public?doenetId=${doenetId}`)
+    cy.visit(`/public?doenetId=${doenetId}`)
 
     cy.get('#\\/_p1').should('have.text', 'This is public')
 
@@ -92,7 +92,7 @@ describe('Multipage activity tests', function () {
     cy.go("back");
 
 
-    cy.visit(`http://localhost/public?tool=editor&doenetId=${doenetId}`)
+    cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
 
     cy.get('#\\/_p1').should('have.text', 'This is public')
     cy.get('#\\/_p2').should('not.exist')
@@ -125,7 +125,7 @@ describe('Multipage activity tests', function () {
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -140,7 +140,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Show DoenetML Source"]').click()
     cy.wait(1000)
 
-    cy.visit(`http://localhost/public?doenetId=${doenetId}`)
+    cy.visit(`/public?doenetId=${doenetId}`)
 
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
@@ -190,7 +190,7 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.visit(`http://localhost/public?tool=editor&doenetId=${doenetId}`)
+    cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
@@ -266,7 +266,7 @@ describe('Multipage activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -281,7 +281,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Show DoenetML Source"]').click()
     cy.wait(1000)
 
-    cy.visit(`http://localhost/public?doenetId=${doenetId}`)
+    cy.visit(`/public?doenetId=${doenetId}`)
 
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')
@@ -329,7 +329,7 @@ describe('Multipage activity tests', function () {
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
-    cy.visit(`http://localhost/public?tool=editor&doenetId=${doenetId}`)
+    cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
 
 
     cy.get('#\\/_section1_title').should('have.text', 'Section 1')

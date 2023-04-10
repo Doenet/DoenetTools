@@ -101,7 +101,7 @@ describe('Line Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('move points copied by line', () => {
@@ -769,7 +769,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_line1'].stateValues.equation).eqls([ "/", "＿", 2 ]);
+      expect(stateVariables['/_line1'].stateValues.equation).eqls(["/", "＿", 2]);
       expect(stateVariables['/_line1'].stateValues.coeff0).eq("\uff3f");
       expect(stateVariables['/_line1'].stateValues.coeffvar1).eq("\uff3f");
       expect(stateVariables['/_line1'].stateValues.coeffvar2).eq("\uff3f");
@@ -784,7 +784,7 @@ describe('Line Tag Tests', function () {
       expect(stateVariables['/_line3'].stateValues.coeffvar1).eq("\uff3f");
       expect(stateVariables['/_line3'].stateValues.coeffvar2).eq("\uff3f");
 
-      expect(stateVariables['/_line4'].stateValues.equation).eqls([ "/", "＿", 2 ]);
+      expect(stateVariables['/_line4'].stateValues.equation).eqls(["/", "＿", 2]);
       expect(stateVariables['/_line4'].stateValues.coeff0).eq("\uff3f");
       expect(stateVariables['/_line4'].stateValues.coeffvar1).eq("\uff3f");
       expect(stateVariables['/_line4'].stateValues.coeffvar2).eq("\uff3f");
@@ -9969,6 +9969,46 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/pPos').should('have.text', 'Position: lowerright')
     cy.get('#\\/labelPos').select("lowerLeft")
     cy.get('#\\/pPos').should('have.text', 'Position: lowerleft')
+
+  });
+
+  it('style description changes with theme', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <setup>
+      <styleDefinitions>
+        <styleDefinition styleNumber="1" lineColor="brown" lineColorDarkMode="yellow" />
+        <styleDefinition styleNumber="2" lineColor="#540907" lineColorWord="dark red" lineColorDarkMode="#f0c6c5" lineColorWordDarkMode="light red" />
+      </styleDefinitions>
+    </setup>
+    <graph>
+      <line name="A" styleNumber="1" labelIsName through="(0,0) (1,2)" />
+      <line name="B" styleNumber="2" labelIsName through="(2,2) (3,4)" />
+      <line name="C" styleNumber="5" labelIsName through="(4,4) (5,6)" />
+    </graph>
+    <p name="Adescrip">Line A is $A.styleDescription.</p>
+    <p name="Bdescrip">B is a $B.styleDescriptionWithNoun.</p>
+    <p name="Cdescrip">C is a $C.styleDescriptionWithNoun.</p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Line A is thick brown.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red line.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black line.');
+
+    cy.log('set dark mode')
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_darkmode').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.get('#\\/Adescrip').should('have.text', 'Line A is thick yellow.');
+    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red line.');
+    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white line.');
+
 
   });
 

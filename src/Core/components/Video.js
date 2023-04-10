@@ -351,7 +351,7 @@ export default class Video extends BlockComponent {
 
 
 
-  recordVideoStarted({ beginTime, duration, rate }) {
+  recordVideoStarted({ beginTime, duration, rate, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.requestRecordEvent({
       verb: "played",
       object: {
@@ -371,11 +371,14 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "playing",
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
     })
   }
 
-  async recordVideoWatched({ beginTime, endTime, duration, rates }) {
+  async recordVideoWatched({ beginTime, endTime, duration, rates, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.requestRecordEvent({
       verb: "watched",
       object: {
@@ -436,15 +439,21 @@ export default class Video extends BlockComponent {
         stateVariable: "segmentsWatched",
         value: segmentsWatched,
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate: true,
       canSkipUpdatingRenderer: true,
     })
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
   }
 
-  recordVideoPaused({ endTime, duration }) {
+  recordVideoPaused({ endTime, duration, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.requestRecordEvent({
       verb: "paused",
       object: {
@@ -463,6 +472,9 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
     })
   }
@@ -482,7 +494,7 @@ export default class Video extends BlockComponent {
     })
   }
 
-  recordVideoCompleted({ duration }) {
+  recordVideoCompleted({ duration, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.requestRecordEvent({
       verb: "completed",
       object: {
@@ -498,6 +510,9 @@ export default class Video extends BlockComponent {
         stateVariable: "state",
         value: "stopped",
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
     })
   }
@@ -515,7 +530,7 @@ export default class Video extends BlockComponent {
   }
 
 
-  recordVideoReady({ duration }) {
+  recordVideoReady({ duration, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -529,36 +544,45 @@ export default class Video extends BlockComponent {
         stateVariable: "duration",
         value: duration,
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
       doNotSave: true  // video actions don't count as changing page state
     })
   }
 
-  playVideo() {
-    this.coreFunctions.performUpdate({
+  async playVideo({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+    await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "state",
         value: "playing",
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
     })
   }
 
-  pauseVideo() {
-    this.coreFunctions.performUpdate({
+  async pauseVideo({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+    await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "state",
         value: "stopped",
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
     })
   }
 
-  setTime({ time }) {
+  setTime({ time, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -566,6 +590,9 @@ export default class Video extends BlockComponent {
         stateVariable: "time",
         value: time,
       }],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
     })
   }

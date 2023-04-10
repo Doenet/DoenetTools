@@ -9,7 +9,7 @@ export default class Document extends BaseComponent {
 
     Object.assign(this.actions, {
       submitAllAnswers: this.submitAllAnswers.bind(this),
-      recordVisibilityChange: this.recordVisibilityChange.bind(this)
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
 
   }
@@ -164,6 +164,48 @@ export default class Document extends BaseComponent {
         } else {
           return { setValue: { description: dependencyValues.descriptionChild[0].stateValues.text } };
         }
+      }
+    }
+
+    // Theme is used to by styleDescriptions to use the dark mode words if theme is dark.
+    // It is set to be either "light" or "dark" via an action sent by the viewer. 
+    stateVariableDefinitions.theme = {
+      hasEssential: true,
+      defaultValue: "light",
+      returnDependencies: () => ({
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.documentAncestor) {
+          // this document is inside another document so use the ancestor's value
+          return { setValue: { theme: dependencyValues.documentAncestor.stateValues.theme } }
+        } else {
+          return { useEssentialOrDefaultValue: { theme: true } }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.documentAncestor) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "documentAncestor",
+              desiredValue: desiredStateVariableValues.theme,
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "theme",
+              value: desiredStateVariableValues.theme,
+            }]
+          }
+        }
+
       }
     }
 
@@ -626,7 +668,7 @@ export default class Document extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  async submitAllAnswers({ actionId }) {
+  async submitAllAnswers({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -637,11 +679,17 @@ export default class Document extends BaseComponent {
     });
 
 
-    for (let answer of await this.stateValues.answerDescendants) {
+    let nAnswers = await this.stateValues.answerDescendants;
+    for (let [ind, answer] of await this.stateValues.answerDescendants.entries()) {
       if (!await answer.stateValues.justSubmitted) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
-          actionName: "submitAnswer"
+          actionName: "submitAnswer",
+          args: {
+            actionId,
+            sourceInformation,
+            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1
+          }
         })
       }
     }

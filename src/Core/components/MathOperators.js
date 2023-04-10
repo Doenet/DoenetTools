@@ -162,9 +162,6 @@ function clamp({ value, lowerValue, upperValue }) {
   if (numericValue instanceof me.class) {
     numericValue = numericValue.evaluate_to_constant();
   }
-  if (!Number.isFinite(numericValue)) {
-    return me.fromAst(NaN);
-  }
   return me.fromAst(Math.max(lowerValue, Math.min(upperValue, numericValue)));
 }
 

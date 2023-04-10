@@ -4,15 +4,19 @@ import { useToast, toastType } from '@Toast';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-import { rendererState } from './renderers/useDoenetRenderer';
-import { atom, atomFamily, useRecoilCallback } from 'recoil';
+import { rendererState } from './useDoenetRenderer';
+import { atom, atomFamily, useRecoilCallback, useRecoilValue } from 'recoil';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import axios from 'axios';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
+import { itemByDoenetId } from '../_reactComponents/Course/CourseActions';
+
 import cssesc from 'cssesc';
+import { darkModeAtom } from '../Tools/_framework/DarkmodeController';
 
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
@@ -140,6 +144,15 @@ export default function PageViewer(props) {
 
   const previousLocationKeys = useRef([]);
 
+  const darkMode = useRecoilValue(darkModeAtom);
+
+  const pageToolView = useRecoilValue(pageToolViewAtom);
+  const itemInCourse = useRecoilValue(itemByDoenetId(props.doenetId));
+  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
+
+  let navigate = useNavigate();
+
+
   let location = useLocation();
   let hash = location.hash;
 
@@ -194,6 +207,8 @@ export default function PageViewer(props) {
           resetPage(e.data.args);
         } else if (e.data.messageType === "copyToClipboard") {
           copyToClipboard(e.data.args);
+        } else if (e.data.messageType === "navigateToTarget") {
+          navigateToTarget(e.data.args);
         } else if (e.data.messageType === "terminated") {
           terminateCoreAndAnimations();
         }
@@ -291,6 +306,13 @@ export default function PageViewer(props) {
 
 
   }, [location, hash, documentRenderer, props.pageIsActive])
+
+  useEffect(() => {
+    callAction({
+      action: { actionName: "setTheme" },
+      args: { theme: darkMode }
+    })
+  }, [darkMode])
 
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
@@ -403,7 +425,7 @@ export default function PageViewer(props) {
     // console.log(">>>core.rendererTypesInDocument",core.rendererTypesInDocument);  
     for (let rendererClassName of coreInfo.current.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
-      renderPromises.push(import(`./renderers/${rendererClassName}.js`));
+      renderPromises.push(import(`./renderers/${rendererClassName}.jsx`));
     }
 
     let documentComponentInstructions = coreInfo.current.documentToRender;
@@ -800,8 +822,7 @@ export default function PageViewer(props) {
       terminateCoreAndAnimations();
     }
     // console.log(`send message to create core ${pageNumber}`)
-
-    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : '/viewer/core.js', { type: 'module' });
+    coreWorker.current = new Worker(new URL('../Core/CoreWorker.js', import.meta.url), { type: 'module' });
 
     coreWorker.current.postMessage({
       messageType: "createCore",
@@ -813,6 +834,7 @@ export default function PageViewer(props) {
         previousComponentTypeCounts: props.previousComponentTypeCounts,
         activityCid: props.activityCid,
         flags: props.flags,
+        theme: darkMode,
         requestedVariantIndex,
         pageNumber,
         attemptNumber,
@@ -825,10 +847,11 @@ export default function PageViewer(props) {
       }
     });
 
-    setStage('waitingOnCore');
+    setStage('waitingOnCore')
 
     for (let actionArgs of actionsBeforeCoreCreated.current) {
-      coreWorker.current.postMessage({
+      // Note: we protect against the possibility that core is terminated before posting message
+      coreWorker.current?.postMessage({
         messageType: "requestAction",
         args: actionArgs
       });
@@ -889,6 +912,44 @@ export default function PageViewer(props) {
     resolveAction({ actionId });
   }
 
+
+  async function navigateToTarget({ cid, doenetId, variantIndex, edit, hash, page, uri, targetName, actionId, componentName, effectiveName }) {
+
+    let id = prefixForIds + effectiveName;
+    let { targetForATag, url, haveValidTarget, externalUri } = getURLFromRef({
+      cid, doenetId, variantIndex, edit, hash, page,
+      givenUri: uri,
+      targetName,
+      pageToolView,
+      inCourse: Object.keys(itemInCourse).length > 0,
+      search: location.search,
+      id
+    });
+
+
+    if (haveValidTarget) {
+
+      if (targetForATag === "_blank") {
+        window.open(url, targetForATag);
+      } else {
+
+        // TODO: when fix regular ref navigation to scroll back to previous scroll position
+        // when click the back button
+        // add that ability to this navigation as well
+
+        // let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
+        // let stateObj = { fromLink: true }
+        // Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scrollableContainer?.[scrollAttribute], enumerable: true });
+
+        navigate(url)
+      }
+
+
+    }
+
+
+    resolveAction({ actionId });
+  }
 
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
@@ -991,7 +1052,6 @@ export default function PageViewer(props) {
     // kill the core worker
 
     terminateCoreAndAnimations()
-    coreWorker.current = null;
 
     setStage('readyToCreateCore');
 
@@ -1034,8 +1094,8 @@ export async function renderersloadComponent(promises, rendererClassNames) {
       let module = await promise;
       rendererClasses[rendererClassNames[index]] = module.default;
     } catch (error) {
-      console.log(error)
-      throw Error(`Error: loading ${rendererClassNames[index]} failed.`)
+      console.log('here:', error)
+      throw Error(`loading ${rendererClassNames[index]} failed.`)
     }
 
   }
@@ -1062,4 +1122,84 @@ class ErrorBoundary extends React.Component {
     }
     return this.props.children;
   }
+}
+
+
+export function getURLFromRef({
+  cid, doenetId, variantIndex,
+  edit, hash, page,
+  givenUri,
+  targetName = "",
+  pageToolView = {},
+  inCourse = false,
+  search = "",
+  id = ""
+}) {
+
+  let url = "";
+  let targetForATag = "_blank";
+  let haveValidTarget = false;
+  let externalUri = false;
+  if (cid || doenetId) {
+    if (cid) {
+      url = `cid=${cid}`;
+    } else {
+      url = `doenetId=${doenetId}`;
+    }
+    if (variantIndex) {
+      url += `&variant=${variantIndex}`;
+    }
+
+    let usePublic = false;
+    if (pageToolView.page === "public") {
+      usePublic = true;
+    } else if (!inCourse) {
+      usePublic = true;
+    }
+    if (usePublic) {
+      if (edit === true || edit === null && pageToolView.page === "public" && pageToolView.tool === "editor") {
+        url = `tool=editor&${url}`;
+      }
+      url = `/public?${url}`;
+    } else if (pageToolView.page === "placementexam") {
+      url = `?tool=exam&${url}`;
+    } else {
+      url = `?tool=assignment&${url}`;
+    }
+
+    haveValidTarget = true;
+
+    if (hash) {
+      url += hash;
+    } else {
+      if (page) {
+        url += `#page${page}`;
+        if (targetName) {
+          url += targetName;
+        }
+      } else if (targetName) {
+        url += '#' + targetName;
+      }
+    }
+  } else if (givenUri) {
+    url = givenUri;
+    if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://" || url.substring(0, 7) === "mailto:") {
+      haveValidTarget = true;
+      externalUri = true;
+    }
+  } else {
+    url += search;
+
+    if (page) {
+      url += `#page${page}`;
+    } else {
+      let firstSlash = id.indexOf("/");
+      let prefix = id.substring(0, firstSlash);
+      url += "#" + prefix;
+    }
+    url += targetName;
+    targetForATag = null;
+    haveValidTarget = true;
+  }
+  return { targetForATag, url, haveValidTarget, externalUri };
 }

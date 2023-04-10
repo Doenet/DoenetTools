@@ -702,7 +702,9 @@ export default class Slider extends BaseComponent {
   }
 
 
-  async changeValue({ value, transient, actionId }) {
+  async changeValue({ value, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
     if (!await this.stateValues.disabled) {
       if (transient) {
         return await this.coreFunctions.performUpdate({
@@ -713,7 +715,9 @@ export default class Slider extends BaseComponent {
             value
           }],
           transient,
-          actionId
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
         });
       } else {
         return await this.coreFunctions.performUpdate({
@@ -724,6 +728,8 @@ export default class Slider extends BaseComponent {
             value
           }],
           actionId,
+          sourceInformation,
+          skipRendererUpdate,
           event: {
             verb: "selected",
             object: {
@@ -826,7 +832,7 @@ async function invertSliderValue({ desiredStateVariableValues, stateValues }) {
   } else {
     if (preliminaryValue instanceof me.class) {
       preliminaryValue = preliminaryValue.evaluate_to_constant();
-      if (preliminaryValue === null) {
+      if (Number.isNaN(preliminaryValue)) {
         return { success: false }
       }
     } else {

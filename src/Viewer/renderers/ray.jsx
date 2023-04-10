@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import useDoenetRender from '../useDoenetRenderer';
+import { BoardContext, LINE_LAYER_OFFSET } from './graph';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 // import me from 'math-expressions';
 
 export default React.memo(function Ray(props) {
@@ -28,6 +30,8 @@ export default React.memo(function Ray(props) {
   lastEndpointFromCore.current = SVs.numericalEndpoint;
   lastThroughpointFromCore.current = SVs.numericalThroughpoint;
   fixed.current = !SVs.draggable || SVs.fixed;
+
+  const darkMode = useRecoilValue(darkModeAtom);
 
   useEffect(() => {
 
@@ -63,16 +67,19 @@ export default React.memo(function Ray(props) {
       return;
     }
 
+    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    lineColor = lineColor.toLowerCase();
+
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: fixed.current,
-      strokeColor: SVs.selectedStyle.lineColor,
+      strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: lineColor,
       highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
@@ -90,9 +97,9 @@ export default React.memo(function Ray(props) {
     }
 
     if (SVs.applyStyleToLabel) {
-      jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      jsxRayAttributes.label.strokeColor = lineColor;
     } else {
-      jsxRayAttributes.label.strokeColor = "#000000";
+      jsxRayAttributes.label.strokeColor = "var(--canvastext)";
     }
 
     let through = [
@@ -305,16 +312,20 @@ export default React.memo(function Ray(props) {
       rayJXG.current.visProp.fixed = fixed.current;
       rayJXG.current.visProp.highlight = !fixed.current;
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = rayJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
         rayJXG.current.setAttribute({ layer });
       }
 
-      if (rayJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
-        rayJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
-        rayJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+
+      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      lineColor = lineColor.toLowerCase();
+
+      if (rayJXG.current.visProp.strokecolor !== lineColor) {
+        rayJXG.current.visProp.strokecolor = lineColor;
+        rayJXG.current.visProp.highlightstrokecolor = lineColor;
       }
       if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
         rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
@@ -343,9 +354,9 @@ export default React.memo(function Ray(props) {
       rayJXG.current.update()
       if (rayJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
-          rayJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+          rayJXG.current.label.visProp.strokecolor = lineColor
         } else {
-          rayJXG.current.label.visProp.strokecolor = "#000000";
+          rayJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
         rayJXG.current.label.needsUpdate = true;
         rayJXG.current.label.update();

@@ -73,7 +73,7 @@ export default class UpdateValue extends InlineComponent {
       defaultValue: "none",
       public: true,
       toLowerCase: true,
-      valueTransformations: { "true": "full" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
 
@@ -306,7 +306,7 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
-  async updateValue({ actionId }) {
+  async updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     let targets = await this.stateValues.targets;
     let newValue = await this.stateValues.newValue;
@@ -339,6 +339,8 @@ export default class UpdateValue extends InlineComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate: true,
       event: {
         verb: "selected",
         object: {
@@ -354,6 +356,9 @@ export default class UpdateValue extends InlineComponent {
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
 
 
@@ -365,7 +370,7 @@ export default class UpdateValue extends InlineComponent {
     if (await stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !await this.stateValues.insideTriggerSet
     ) {
-      return await this.updateValue({ actionId });
+      return await this.updateValue({ actionId, skipRendererUpdate: true });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }

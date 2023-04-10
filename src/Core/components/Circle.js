@@ -70,8 +70,20 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "filled",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
 
         let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
@@ -87,16 +99,24 @@ export default class Circle extends Curve {
 
         let styleDescription;
         if (!dependencyValues.filled) {
-          styleDescription = borderDescription + dependencyValues.selectedStyle.lineColorWord;
+          styleDescription = borderDescription + lineColorWord;
         } else {
-          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
-            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord;
+
+          let fillColorWord;
+          if (dependencyValues.document?.stateValues.theme === "dark") {
+            fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
+          } else {
+            fillColorWord = dependencyValues.selectedStyle.fillColorWord;
+          }
+
+          if (fillColorWord === lineColorWord) {
+            styleDescription = "filled " + fillColorWord;
             if (borderDescription) {
               styleDescription += " with " + borderDescription + "border";
             }
           } else {
-            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
-              + " with " + borderDescription + dependencyValues.selectedStyle.lineColorWord
+            styleDescription = "filled " + fillColorWord
+              + " with " + borderDescription + lineColorWord
               + " border";
           }
         }
@@ -119,8 +139,20 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "filled",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -135,18 +167,26 @@ export default class Circle extends Curve {
 
         let styleDescriptionWithNoun;
         if (!dependencyValues.filled) {
-          styleDescriptionWithNoun = borderDescription + dependencyValues.selectedStyle.lineColorWord
+          styleDescriptionWithNoun = borderDescription + lineColorWord
             + " circle";
         } else {
-          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
-            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+
+          let fillColorWord;
+          if (dependencyValues.document?.stateValues.theme === "dark") {
+            fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
+          } else {
+            fillColorWord = dependencyValues.selectedStyle.fillColorWord;
+          }
+
+          if (fillColorWord === lineColorWord) {
+            styleDescriptionWithNoun = "filled " + fillColorWord
               + " circle";
             if (borderDescription) {
               styleDescriptionWithNoun += " with a " + borderDescription + "border";
             }
           } else {
-            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
-              + " circle with a " + borderDescription + dependencyValues.selectedStyle.lineColorWord
+            styleDescriptionWithNoun = "filled " + fillColorWord
+              + " circle with a " + borderDescription + lineColorWord
               + " border";
           }
         }
@@ -166,8 +206,20 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -181,7 +233,7 @@ export default class Circle extends Curve {
           borderStyleDescription += " ";
         }
 
-        borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
+        borderStyleDescription += lineColorWord
 
         return { setValue: { borderStyleDescription } };
       }
@@ -201,15 +253,26 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "filled",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
 
+        let fillColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
+        } else {
+          fillColorWord = dependencyValues.selectedStyle.fillColorWord;
+        }
 
         let fillStyleDescription;
         if (!dependencyValues.filled) {
           fillStyleDescription = "unfilled";
         } else {
-          fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;
+          fillStyleDescription = fillColorWord;
         }
 
         return { setValue: { fillStyleDescription } };
@@ -700,9 +763,6 @@ export default class Circle extends Curve {
           let prescribedX = dependencyValuesByKey[arrayKey].prescribedCenterX;
           if (prescribedX) {
             numericalPrescribedCenter[arrayKey] = prescribedX.evaluate_to_constant();
-            if (!Number.isFinite(numericalPrescribedCenter[arrayKey])) {
-              numericalPrescribedCenter[arrayKey] = NaN;
-            }
           } else {
             numericalPrescribedCenter[arrayKey] = NaN;
           }
@@ -1120,17 +1180,7 @@ export default class Circle extends Curve {
           if (dependencyValues.nThroughPoints === 0) {
             let r = dependencyValues.essentialRadius;
             if (r instanceof me.class) {
-              try {
-                r = r.evaluate_to_constant();
-              }
-              catch (e) {
-              }
-              if (!Number.isFinite(r)) {
-                r = NaN;
-              }
-            }
-            return {
-              setValue: { numericalRadius: r }
+              r = r.evaluate_to_constant();
             }
             return {
               setValue: { numericalRadius: r }
@@ -1161,17 +1211,7 @@ export default class Circle extends Curve {
         if (dependencyValues.nThroughPoints < 2) {
           let r = dependencyValues.essentialRadius;
           if (r instanceof me.class) {
-            try {
-              r = r.evaluate_to_constant();
-            }
-            catch (e) {
-            }
-            if (!Number.isFinite(r)) {
-              r = NaN;
-            }
-          }
-          return {
-            setValue: { numericalRadius: r }
+            r = r.evaluate_to_constant();
           }
           return {
             setValue: { numericalRadius: r }
@@ -1437,14 +1477,7 @@ export default class Circle extends Curve {
               let value = dependencyValuesByKey[arrayKey].essentialCenterX;
 
               if (value instanceof me.class) {
-                try {
-                  value = value.evaluate_to_constant();
-                }
-                catch (e) {
-                }
-                if (!Number.isFinite(value)) {
-                  value = NaN;
-                }
+                value = value.evaluate_to_constant();
               }
               numericalCenter[arrayKey] = value;
             }
@@ -1525,14 +1558,7 @@ export default class Circle extends Curve {
             let value = dependencyValuesByKey[arrayKey].essentialCenterX;
 
             if (value instanceof me.class) {
-              try {
-                value = value.evaluate_to_constant();
-              }
-              catch (e) {
-              }
-              if (!Number.isFinite(value)) {
-                value = NaN;
-              }
+              value = value.evaluate_to_constant();
             }
             numericalCenter[arrayKey] = value;
           }
@@ -2335,7 +2361,9 @@ export default class Circle extends Curve {
   }
 
 
-  async moveCircle({ center, radius, throughAngles, transient, actionId }) {
+  async moveCircle({ center, radius, throughAngles, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let instructions = [];
 
@@ -2392,11 +2420,15 @@ export default class Circle extends Curve {
         updateInstructions: instructions,
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -2412,22 +2444,28 @@ export default class Circle extends Curve {
 
   }
 
-  async circleClicked({ actionId }) {
+  async circleClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async circleFocused({ actionId }) {
+  async circleFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

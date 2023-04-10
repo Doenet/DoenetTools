@@ -14,12 +14,13 @@ import {
   buildTimestamp, 
   ClipboardLinkButtons, 
   RenameVersionControl,
-  fileByContentId } from '../ToolHandlers/CourseToolHandler';
+  // fileByContentId 
+} from '../ToolHandlers/CourseToolHandler';
 import { nanoid } from 'nanoid';
 import axios from "axios";
 import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
-import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
+// import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 import { editorPageIdInitAtom, textEditorDoenetMLAtom, viewerDoenetMLAtom, updateTextEditorDoenetMLAtom} from '../../../_sharedRecoil/EditorViewerRecoil';
 import { cidFromText } from '../../../Core/utils/cid';
@@ -186,7 +187,7 @@ console.log(">>>===VersionHistory")
     newVersions.named = [newVersion,...oldVersions.named];
 
     set(itemHistoryAtom(doenetId),newVersions)
-    set(fileByContentId(cid),doenetML);
+    // set(fileByContentId(cid),doenetML);
     
     //TODO: Errors don't seem to fire when offline
     axios.post("/api/saveNewVersion.php",newDBVersion)
@@ -228,7 +229,7 @@ console.log(">>>===VersionHistory")
           addToast(message, toastType.ERROR)
       }
 
-      set(fileByContentId(cid),doenetML);
+      // set(fileByContentId(cid),doenetML);
 
       //Update data structures 
     set(itemHistoryAtom(doenetId),(was)=>{
@@ -307,7 +308,7 @@ console.log(">>>===VersionHistory")
 
           newVersions.draft = newDraft;
           set(itemHistoryAtom(doenetId),newVersions)
-          set(fileByContentId(newDraftContentId),newDraftDoenetML)
+          // set(fileByContentId(newDraftContentId),newDraftDoenetML)
 
           let newDBVersion = {...newDraft,
             doenetML:newDraftDoenetML,
@@ -317,7 +318,7 @@ console.log(">>>===VersionHistory")
           try {
             const { data } = await axios.post("/api/saveNewVersion.php",newDBVersion)
             if (data.success){
-              set(editorSaveTimestamp,new Date());
+              // set(editorSaveTimestamp,new Date());
             }else{
               //TODO: Toast here
               console.log("ERROR",data.message)
@@ -338,12 +339,12 @@ console.log(">>>===VersionHistory")
       }
     }
 
-    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId)).toString();
+    // const doenetML = await snapshot.getPromise(fileByContentId(displayContentId)).toString();
 
 
-    //Display doenetML in viewer and text editor
-    set(viewerDoenetMLAtom,doenetML)
-    set(updateTextEditorDoenetMLAtom,doenetML)
+    // //Display doenetML in viewer and text editor
+    // set(viewerDoenetMLAtom,doenetML)
+    // set(updateTextEditorDoenetMLAtom,doenetML)
     // set(textEditorDoenetMLAtom,doenetML) //This causes current draft to be overwritten
     
   })

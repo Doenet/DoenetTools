@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, createContext } from 'react';
 import { sizeToCSS } from './utils/css';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import JXG from 'jsxgraph';
@@ -35,6 +35,8 @@ export default React.memo(function Graph(props) {
   let previousYaxisWithLabel = useRef(null);
 
 
+  let showNavigation = SVs.showNavigation && !SVs.fixAxes;
+
   let onChangeVisibility = isVisible => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -43,6 +45,9 @@ export default React.memo(function Graph(props) {
   }
 
   useEffect(() => {
+    if (SVs.haveGraphParent) {
+      return;
+    }
     return () => {
       callAction({
         action: actions.recordVisibilityChange,
@@ -53,6 +58,10 @@ export default React.memo(function Graph(props) {
 
   //Draw Board after mounting component
   useEffect(() => {
+    if (SVs.haveGraphParent) {
+      return;
+    }
+
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
     previousBoundingbox.current = boundingbox;
 
@@ -73,7 +82,7 @@ export default React.memo(function Graph(props) {
         boundingbox,
         axis: false,
         showCopyright: false,
-        showNavigation: SVs.showNavigation && !SVs.fixAxes,
+        showNavigation: false, // will add navigation buttons later so can style them
         // keepAspectRatio: SVs.identicalAxisScales,
         zoom: { wheel: !SVs.fixAxes },
         pan: { enabled: !SVs.fixAxes },
@@ -122,7 +131,7 @@ export default React.memo(function Graph(props) {
 
     boardJustInitialized.current = true;
 
-    previousShowNavigation.current = SVs.showNavigation;
+    previousShowNavigation.current = showNavigation;
 
     // Question: jsxgraph has added a "hit" listener for keyfocusin
     // so we just add a keyfocusout listener.
@@ -167,6 +176,20 @@ export default React.memo(function Graph(props) {
 
   }, [])
 
+  useEffect(() => {
+    if (board && showNavigation) {
+      addNavigationButtons();
+    }
+  }, [board])
+
+  if (SVs.haveGraphParent) {
+    // have have graph parent, then don't render graph
+    // but just render children so that will be inside parent graph
+    return <>
+      <a name={id} />
+      {children}
+    </>
+  }
 
   const divStyle = {
     width: sizeToCSS(SVs.width),
@@ -184,7 +207,11 @@ export default React.memo(function Graph(props) {
     outerStyle = { display: "flex", justifyContent: SVs.horizontalAlign };
   }
 
-  divStyle.border = "2px solid var(--canvastext)";
+  if (SVs.showBorder) {
+    divStyle.border = "2px solid var(--canvastext)";
+  } else {
+    divStyle.border = "none";
+  }
   divStyle.marginBottom = "12px";
   divStyle.marginTop = "12px";
   divStyle.backgroundColor = "var(--canvas)";
@@ -343,7 +370,7 @@ export default React.memo(function Graph(props) {
       yaxis.current = null;
     }
 
-    if (SVs.showNavigation) {
+    if (showNavigation) {
       if (!previousShowNavigation.current) {
         addNavigationButtons();
         previousShowNavigation.current = true;
@@ -406,7 +433,7 @@ export default React.memo(function Graph(props) {
   );
 
   function createYAxis(theBoard) {
-    let yaxisOptions = {};
+    let yaxisOptions = { highlight: false, fixed: true };
     if (SVs.ylabel) {
       let position = 'rt';
       let offset = [-10, -5];
@@ -441,11 +468,15 @@ export default React.memo(function Graph(props) {
       ticksDistance: 2,
       label: {
         offset: [12, -2],
-        layer: 2
+        layer: 2,
+        strokeColor: "var(--canvastext)",
+        highlightStrokeColor: "var(--canvastext)",
+        highlightStrokeOpacity: 1,
       },
+      strokeColor: "var(--canvastext)",
+      strokeOpacity: 0.5,
       // minorTicks: 4,
       precision: 4,
-      strokeColor: "var(--canvastext)",
       drawLabels: SVs.displayYAxisTickLabels
     };
     if (SVs.yTickScaleFactor !== null) {
@@ -568,7 +599,7 @@ export default React.memo(function Graph(props) {
   }
 
   function createXAxis(theBoard) {
-    let xaxisOptions = {};
+    let xaxisOptions = { highlight: false, fixed: true };
     if (SVs.xlabel) {
       let position = 'rt';
       let offset = [5, 10];
@@ -598,10 +629,14 @@ export default React.memo(function Graph(props) {
       label: {
         offset: [-5, -15],
         layer: 2,
+        strokeColor: "var(--canvastext)",
+        highlightStrokeColor: "var(--canvastext)",
+        highlightStrokeOpacity: 1,
       },
+      strokeColor: "var(--canvastext)",
+      strokeOpacity: 0.5,
       // minorTicks: 4,
       precision: 4,
-      strokeColor: 'var(--canvastext)',
       drawLabels: SVs.displayXAxisTickLabels
     };
     if (SVs.xTickScaleFactor !== null) {
@@ -763,7 +798,11 @@ export default React.memo(function Graph(props) {
 
       button = document.createElement('span');
       navigationBar.appendChild(button);
-      button.appendChild(document.createTextNode(label));
+      let el_span = document.createElement("span");
+      el_span.setAttribute('style', 'color: var(--canvastext); opacity: 0.7');
+      let text_node = document.createTextNode(label);
+      button.appendChild(el_span);
+      el_span.appendChild(text_node);
 
       // Style settings are superseded by adding the CSS class below
       button.style.paddingLeft = '7px';
@@ -807,3 +846,17 @@ export default React.memo(function Graph(props) {
   }
 
 })
+
+// ticks labels: layer 2 overall 
+
+
+// NOTE: there can be at most 10 different layer offsets,
+// given that the DoenetML layer is multiplied by 10 and added to these offsets
+let tempCounter = 0;
+export const BASE_LAYER_OFFSET = tempCounter++;
+export const IMAGE_LAYER_OFFSET = tempCounter++;
+export const LINE_LAYER_OFFSET = tempCounter++;
+export const VERTEX_LAYER_OFFSET = tempCounter++;
+export const CONTROL_POINT_LAYER_OFFSET = tempCounter++;
+export const POINT_LAYER_OFFSET = tempCounter++;
+export const TEXT_LAYER_OFFSET = tempCounter++;

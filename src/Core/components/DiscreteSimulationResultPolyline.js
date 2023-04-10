@@ -56,8 +56,20 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let curveDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -71,7 +83,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           curveDescription += " ";
         }
 
-        curveDescription += dependencyValues.selectedStyle.lineColorWord
+        curveDescription += lineColorWord
 
         return { setValue: { styleDescription: curveDescription } };
       }
@@ -485,7 +497,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   }
 
 
-  async movePolyline({ pointCoords, transient, sourceInformation, actionId, }) {
+  async movePolyline({ pointCoords, transient, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -500,10 +514,12 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           componentName: this.componentName,
           stateVariable: "vertices",
           value: vertexComponents,
-          sourceInformation
+          sourceDetails
         }],
         transient: true,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
 
@@ -513,9 +529,11 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           componentName: this.componentName,
           stateVariable: "vertices",
           value: vertexComponents,
-          sourceInformation
+          sourceDetails
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -531,14 +549,15 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
   }
 
-  async finalizePolylinePosition() {
+  async finalizePolylinePosition({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     // trigger a movePolyline 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
     return await this.actions.movePolyline({
       pointCoords: await this.stateValues.numericalVertices,
-      transient: false
+      transient: false,
+      actionId, sourceInformation, skipRendererUpdate
     });
   }
 

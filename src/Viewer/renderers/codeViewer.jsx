@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import useDoenetRenderer from './useDoenetRenderer';
+import useDoenetRenderer from '../useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import VisibilitySensor from 'react-visibility-sensor-v2';

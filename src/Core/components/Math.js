@@ -46,7 +46,7 @@ export default class MathComponent extends InlineComponent {
       defaultValue: "none",
       public: true,
       toLowerCase: true,
-      valueTransformations: { "true": "full", "false": "none" },
+      valueTransformations: { "": "full", "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     attributes.expand = {
@@ -838,7 +838,7 @@ export default class MathComponent extends InlineComponent {
       }),
       set: x => x === null ? null : convertValueToMathExpression(x),
       definition: calculateExpressionWithCodes,
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, componentName }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
 
         let newExpressionWithCodes = desiredStateVariableValues.expressionWithCodes;
 
@@ -957,6 +957,8 @@ export default class MathComponent extends InlineComponent {
           childGroups: ["maths"],
           variableNames: ["value"],
         },
+        // Note: need stringChildren for inverse definition
+        // (even though not in definition)
         stringChildren: {
           dependencyType: "child",
           childGroups: ["strings"],
@@ -1062,9 +1064,6 @@ export default class MathComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         let number = dependencyValues.value.evaluate_to_constant();
-        if (number === null) {
-          number = NaN;
-        }
         return { setValue: { number } };
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
@@ -1536,7 +1535,7 @@ export default class MathComponent extends InlineComponent {
         };
         return { globalDependencies };
       },
-      arrayDefinitionByKey({ globalDependencyValues, arrayKeys, arraySize }) {
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
 
 
         let tree = globalDependencyValues.value.tree;
@@ -1755,7 +1754,7 @@ export default class MathComponent extends InlineComponent {
           // matrixEntry1_2 is the 2nd entry from the first row
           let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0
+            x => Number.isInteger(x) && x >= 0
           )) {
             if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
@@ -1878,7 +1877,7 @@ export default class MathComponent extends InlineComponent {
         };
         return { globalDependencies };
       },
-      arrayDefinitionByKey({ globalDependencyValues, arrayKeys, arraySize }) {
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
 
 
         let tree = globalDependencyValues.value.tree;
@@ -2055,7 +2054,9 @@ export default class MathComponent extends InlineComponent {
   ];
 
 
-  async moveMath({ x, y, z, transient, actionId }) {
+  async moveMath({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
     let components = ["vector"];
     if (x !== undefined) {
       components[1] = x;
@@ -2076,6 +2077,8 @@ export default class MathComponent extends InlineComponent {
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -2086,6 +2089,8 @@ export default class MathComponent extends InlineComponent {
           value: me.fromAst(components),
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -2134,7 +2139,10 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
       // if don't have any string or math children,
       // set expressionWithCodes to be null,
       // which will indicate that value should use valueShadow
-      return { setValue: { expressionWithCodes: null } }
+      return {
+        setValue: { expressionWithCodes: null },
+        setEssentialValue: { expressionWithCodes: null }
+      }
     }
   }
 
@@ -2663,7 +2671,7 @@ function checkForScalarLinearExpression(tree, variables, inverseTree, components
 }
 
 async function invertMath({ desiredStateVariableValues, dependencyValues,
-  stateValues, workspace, overrideFixed, componentName
+  stateValues, workspace, overrideFixed
 }) {
 
   if (!await stateValues.canBeModified && !overrideFixed) {

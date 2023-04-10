@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import parse from 'csv-parse';
+import { parse } from 'csv-parse';
 import { atom, useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';

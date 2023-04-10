@@ -31,6 +31,7 @@ export default class Core {
     requestedVariant, requestedVariantIndex,
     previousComponentTypeCounts = {},
     flags = {},
+    theme,
     prerender = false,
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
@@ -52,6 +53,7 @@ export default class Core {
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
     this.flags = flags;
+    this.theme = theme;
 
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
@@ -74,6 +76,7 @@ export default class Core {
       recordSolutionView: this.recordSolutionView.bind(this),
       requestComponentDoenetML: this.requestComponentDoenetML.bind(this),
       copyToClipboard: this.copyToClipboard.bind(this),
+      navigateToTarget: this.navigateToTarget.bind(this),
     }
 
     this.updateInfo = {
@@ -189,6 +192,12 @@ export default class Core {
     });
 
     this.documentName = serializedComponents[0].componentName;
+
+    if (!serializedComponents[0].state) {
+      serializedComponents[0].state = {};
+    }
+    serializedComponents[0].state.theme = this.theme;
+
     serializedComponents[0].doenetAttributes.cid = this.cid;
 
     this._components = {};
@@ -530,7 +539,7 @@ export default class Core {
       }
 
 
-      await this.processStateVariableTriggers();
+      await this.processStateVariableTriggers(true);
 
     } else {
       if (parent === undefined) {
@@ -588,7 +597,7 @@ export default class Core {
         });
       }
 
-      await this.processStateVariableTriggers();
+      await this.processStateVariableTriggers(true);
 
     }
 
@@ -902,11 +911,13 @@ export default class Core {
     return deletedComponentNames;
   }
 
-  async processStateVariableTriggers() {
+  async processStateVariableTriggers(updateRenderersIfTriggered = false) {
 
     // TODO: can we make this more efficient by only checking components that changed?
     // componentsToUpdateRenderers is close, but it includes only rendered components
     // and we could have components with triggers that are not rendered
+
+    let triggeredAction = false;
 
     for (let componentName in this.stateVariableChangeTriggers) {
       let component = this._components[componentName];
@@ -925,13 +936,19 @@ export default class Core {
               actionName: triggerInstructions.action,
               args: {
                 stateValues: { [stateVariable]: value },
-                previousValues: { [stateVariable]: previousValue }
-              }
+                previousValues: { [stateVariable]: previousValue },
+                skipRendererUpdate: true,
+              },
             })
+            triggeredAction = true;
           }
         }
 
       }
+    }
+
+    if (triggeredAction && updateRenderersIfTriggered) {
+      this.updateAllChangedRenderers();
     }
 
   }
@@ -3417,6 +3434,9 @@ export default class Core {
       let copyComponentType = stateDef.public && stateDef.shadowingInstructions.hasVariableComponentType;
 
       if (stateDef.isArray) {
+
+        let overrideVarNameWith = differentStateVariablesInTarget[varInd];
+
         stateDef.returnArrayDependenciesByKey = function ({ arrayKeys }) {
           let dependenciesByKey = {};
 
@@ -3425,7 +3445,7 @@ export default class Core {
               targetVariable: {
                 dependencyType: "stateVariable",
                 componentName: targetComponent.componentName,
-                variableName: this.arrayVarNameFromArrayKey(key),
+                variableName: overrideVarNameWith || this.arrayVarNameFromArrayKey(key),
               }
             };
           }
@@ -4801,13 +4821,19 @@ export default class Core {
         args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
 
         // only include array keys that exist
+        // unless given a Javascript array
         let newDesiredStateVariableValues = {};
         for (let vName in args.desiredStateVariableValues) {
-          newDesiredStateVariableValues[vName] = {}
-          for (let key in args.desiredStateVariableValues[vName]) {
-            if (args.arrayKeys.includes(key)) {
-              newDesiredStateVariableValues[vName][key] = args.desiredStateVariableValues[vName][key];
+          if (Array.isArray(args.desiredStateVariableValues[vName])) {
+            newDesiredStateVariableValues[vName] = args.desiredStateVariableValues[vName];
+          } else {
+            newDesiredStateVariableValues[vName] = {}
 
+            for (let key in args.desiredStateVariableValues[vName]) {
+              if (args.arrayKeys.includes(key)) {
+                newDesiredStateVariableValues[vName][key] = args.desiredStateVariableValues[vName][key];
+
+              }
             }
           }
         }
@@ -8174,6 +8200,22 @@ export default class Core {
 
   async performAction({ componentName, actionName, args, event, caseInsensitiveMatch }) {
 
+    if (actionName === "setTheme" && !componentName) {
+      // For now, co-opting the action mechanism to let the viewer set the theme (dark mode) on document.
+      // Don't have an actual action on document as don't want the ability for others to call it.
+      // Theme doesn't affect the colors displayed, only the words in the styleDescriptions.
+      return await this.performUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.documentName,
+          stateVariable: "theme",
+          value: args.theme,
+        }],
+        actionId: args.actionId,
+        doNotSave: true, // this isn't an interaction, so don't save page state
+      });
+    }
+
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
@@ -8229,7 +8271,7 @@ export default class Core {
     }
   }
 
-  async triggerChainedActions({ componentName, triggeringAction }) {
+  async triggerChainedActions({ componentName, triggeringAction, actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
       await this.checkForActionChaining({
@@ -8247,8 +8289,19 @@ export default class Core {
 
     if (this.actionsChangedToActions[id]) {
       for (let chainedActionInstructions of this.actionsChangedToActions[id]) {
+        chainedActionInstructions = { ...chainedActionInstructions };
+        if (chainedActionInstructions.args) {
+          chainedActionInstructions.args = { ...chainedActionInstructions.args }
+        } else {
+          chainedActionInstructions.args = {};
+        }
+        chainedActionInstructions.args.skipRendererUpdate = true;
         await this.performAction(chainedActionInstructions);
       }
+    }
+
+    if (!skipRendererUpdate) {
+      await this.updateAllChangedRenderers(sourceInformation, actionId);
     }
   }
 
@@ -8272,8 +8325,8 @@ export default class Core {
           componentSourceInformation = sourceInformation[instruction.componentName] = {};
         }
 
-        if (instruction.sourceInformation) {
-          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        if (instruction.sourceDetails) {
+          Object.assign(componentSourceInformation, instruction.sourceDetails);
         }
       }
 
@@ -8327,13 +8380,13 @@ export default class Core {
 
   async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false,
     doNotSave = false, canSkipUpdatingRenderer = false,
+    skipRendererUpdate = false, sourceInformation = {},
     suppressToast = false  // temporary
   }) {
 
     if (this.flags.readOnly && !overrideReadOnly) {
 
       if (!canSkipUpdatingRenderer) {
-        let sourceInformation = {};
 
         for (let instruction of updateInstructions) {
 
@@ -8342,8 +8395,8 @@ export default class Core {
             componentSourceInformation = sourceInformation[instruction.componentName] = {};
           }
 
-          if (instruction.sourceInformation) {
-            Object.assign(componentSourceInformation, instruction.sourceInformation);
+          if (instruction.sourceDetails) {
+            Object.assign(componentSourceInformation, instruction.sourceDetails);
           }
         }
 
@@ -8360,7 +8413,6 @@ export default class Core {
 
     let newStateVariableValues = {};
     let newStateVariableValuesProcessed = [];
-    let sourceInformation = {};
     let workspace = {};
     let recordItemSubmissions = [];
 
@@ -8372,8 +8424,8 @@ export default class Core {
           componentSourceInformation = sourceInformation[instruction.componentName] = {};
         }
 
-        if (instruction.sourceInformation) {
-          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        if (instruction.sourceDetails) {
+          Object.assign(componentSourceInformation, instruction.sourceDetails);
         }
       }
 
@@ -8439,41 +8491,11 @@ export default class Core {
       updateInstructions.forEach(comp => { if (comp.componentName) { this.updateInfo.componentsToUpdateRenderers.add(comp.componentName) } });
     }
 
-    let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
-    this.updateInfo.componentsToUpdateRenderers.clear();
-
-    await this.updateRendererInstructions({
-      componentNamesToUpdate,
-      sourceOfUpdate: { sourceInformation, local: true },
-      actionId,
-    });
-
-
-
-    // updating renderer instructions could trigger more composite updates
-    // (presumably from deriving child results)
-    // if so, make replacement changes and update renderer instructions again
-    // TODO: should we check for child results earlier so we don't have to check them
-    // when updating renderer instructions?
-    if (this.updateInfo.compositesToUpdateReplacements.size > 0) {
-      await this.replacementChangesFromCompositesToUpdate();
-
-      let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
-      this.updateInfo.componentsToUpdateRenderers.clear();
-
-      await this.updateRendererInstructions({
-        componentNamesToUpdate,
-        sourceOfUpdate: { sourceInformation, local: true },
-        actionId,
-      });
-    }
-
     await this.processStateVariableTriggers();
 
-    // it is possible that components were added back to componentNamesToUpdateRenderers
-    // while processing the renderer instructions
-    // so delete any names that were just addressed
-    componentNamesToUpdate.forEach(cName => this.updateInfo.componentsToUpdateRenderers.delete(cName));
+    if (!skipRendererUpdate) {
+      await this.updateAllChangedRenderers(sourceInformation, actionId);
+    }
 
     // TODO: when should we actually warn of unmatchedChildren
     // It shouldn't be just on update, but also on initial construction!
@@ -8594,6 +8616,37 @@ export default class Core {
     }
 
 
+  }
+
+  async updateAllChangedRenderers(sourceInformation = {}, actionId) {
+
+    let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+    this.updateInfo.componentsToUpdateRenderers.clear();
+
+    await this.updateRendererInstructions({
+      componentNamesToUpdate,
+      sourceOfUpdate: { sourceInformation, local: true },
+      actionId,
+    });
+
+
+    // updating renderer instructions could trigger more composite updates
+    // (presumably from deriving child results)
+    // if so, make replacement changes and update renderer instructions again
+    // TODO: should we check for child results earlier so we don't have to check them
+    // when updating renderer instructions?
+    if (this.updateInfo.compositesToUpdateReplacements.size > 0) {
+      await this.replacementChangesFromCompositesToUpdate();
+
+      let componentNamesToUpdate = [...this.updateInfo.componentsToUpdateRenderers];
+      this.updateInfo.componentsToUpdateRenderers.clear();
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate,
+        sourceOfUpdate: { sourceInformation, local: true },
+        actionId,
+      });
+    }
   }
 
   requestRecordEvent(event) {
@@ -9168,7 +9221,7 @@ export default class Core {
     inverseDefinitionArgs.stateValues = component.stateValues;
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
     inverseDefinitionArgs.shadowedVariable = instruction.shadowedVariable;
-    inverseDefinitionArgs.sourceInformation = instruction.sourceInformation;
+    inverseDefinitionArgs.sourceDetails = instruction.sourceDetails;
 
 
     let stateVariableForWorkspace = stateVariable;
@@ -9355,7 +9408,7 @@ export default class Core {
                   }
                 }
               } else {
-                if (depStateVarObj.nDimensions === 1) {
+                if (depStateVarObj.nDimensions === 1 || !Array.isArray(newInstruction.desiredValue)) {
                   Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
                 } else {
                   // need to convert multidimensional array (newInstruction.desiredValue)
@@ -10395,7 +10448,7 @@ export default class Core {
     }
   }
 
-  requestComponentDoenetML(componentName) {
+  requestComponentDoenetML(componentName, displayOnlyChildren) {
 
     let component = this.components[componentName];
 
@@ -10409,10 +10462,31 @@ export default class Core {
       return null;
     }
 
-    let startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
-    let endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd + 1;
+    let startInd, endInd;
+
+    if (displayOnlyChildren) {
+      if (range.selfCloseBegin !== undefined) {
+        return "";
+      }
+      startInd = range.openEnd + 1;
+      endInd = range.closeBegin;
+
+    } else {
+      startInd = range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
+      endInd = range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd;
+    }
 
     let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);
+
+    if (displayOnlyChildren) {
+      // remove any leading linebreak
+      // or any trailing linebreak (possibility followed by spaces or tabs)
+      // to remove spacing due to just having the children on different lines from the enclosing parent tags
+      if (componentDoenetML[0] === "\n") {
+        componentDoenetML = componentDoenetML.slice(1)
+      }
+      componentDoenetML = componentDoenetML.replace(/\n[ \t]*$(?!\n)/, '')
+    }
 
     let lines = componentDoenetML.split("\n");
 
@@ -10443,6 +10517,14 @@ export default class Core {
         args: { text, actionId }
       })
     }
+  }
+
+  navigateToTarget(args) {
+    postMessage({
+      messageType: "navigateToTarget",
+      coreId: this.coreId,
+      args
+    })
   }
 }
 

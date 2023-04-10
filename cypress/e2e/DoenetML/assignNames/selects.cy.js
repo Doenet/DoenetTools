@@ -13,7 +13,7 @@ describe('selects assignName Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('assignNamesSkip in selects', () => {

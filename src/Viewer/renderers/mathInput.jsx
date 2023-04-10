@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 import {
@@ -8,9 +8,8 @@ import {
   faTimes,
   faCloud,
 } from '@fortawesome/free-solid-svg-icons';
-import mathquill from 'react-mathquill';
-mathquill.addStyles(); // Styling for react-mathquill input field
-let EditableMathField = mathquill.EditableMathField;
+import {addStyles, EditableMathField} from 'react-mathquill';
+addStyles(); // Styling for react-mathquill input field
 import {
   focusedMathField,
   focusedMathFieldReturn,
@@ -19,7 +18,7 @@ import {
 } from '../../Tools/_framework/Footers/MathInputSelector';
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { rendererState } from './useDoenetRenderer';
+import { rendererState } from '../useDoenetRenderer';
 import './mathInput.css';
 
 // Moved most of checkWorkStyle styling into Button
@@ -96,14 +95,18 @@ export default function MathInput(props) {
 
       return;
     }
-    if (text.split(' ')[0] == 'cmd') {
-      mathField.cmd(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'write') {
-      mathField.write(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'keystroke') {
-      mathField.keystroke(text.split(' ')[1]);
-    } else if (text.split(' ')[0] == 'type') {
-      mathField.typedText(text.split(' ')[1]);
+    const splitCommand = text.split(' ');
+    const command = splitCommand[0];
+    const input = text.substring(command.length + 1);
+
+    if (command == 'cmd') {
+      mathField.cmd(input);
+    } else if (command == 'write') {
+      mathField.write(input);
+    } else if (command == 'keystroke') {
+      mathField.keystroke(input);
+    } else if (command == 'type') {
+      mathField.typedText(input);
     }
   };
 
@@ -193,16 +196,18 @@ export default function MathInput(props) {
   let mathInputStyle = {
     /* Set each border attribute separately since the borderColor is updated during rerender (checking mathInput's disabled state)
     Currently does not work with border: "var(--mainBorder)" */
-    borderColor: "black",
+    borderColor: "var(--canvastext)",
     borderStyle: "solid",
     borderWidth: "2px",
     margin: "0px",
     boxShadow: "none",
+    outlineOffset: "2px",
+    outlineColor: "var(--canvastext)",
+    outlineWidth: "2px",
   }
 
   if (focused) {
-    mathInputStyle.outline = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
-    mathInputStyle.outlineOffset = "2px";
+    mathInputStyle.outlineStyle = "solid";
   }
 
   let mathInputWrapperCursor = 'allowed';
@@ -327,7 +332,7 @@ export default function MathInput(props) {
             latex={rendererValue.current}
             config={{
               autoCommands:
-                'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity',
+                'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity forall exists',
               autoOperatorNames:
                 'arg deg det dim exp gcd hom ker lg lim ln log max min' +
                 ' Pr' +
@@ -344,6 +349,14 @@ export default function MathInput(props) {
               substituteTextarea: function () {
                 textareaRef.current = document.createElement('textarea');
                 textareaRef.current.disabled = SVs.disabled;
+                textareaRef.current.addEventListener("focusout", (e) => {
+                  let keyboard = document.getElementById("keyboard");
+                  if (keyboard?.contains(e.relatedTarget)) {
+                    e.target.focus();
+                  } else {
+                    // remove focus
+                  }
+                }, false);
                 return textareaRef.current;
               }
             }} //more commands go here

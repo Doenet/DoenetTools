@@ -70,8 +70,20 @@ export default class LineSegment extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -85,7 +97,7 @@ export default class LineSegment extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -524,9 +536,6 @@ export default class LineSegment extends GraphicalComponent {
           let numericalP = [];
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = endpoint[ind].evaluate_to_constant();
-            if (!Number.isFinite(val)) {
-              val = NaN;
-            }
             numericalP.push(val);
           }
           numericalEndpoints[arrayKey] = numericalP;
@@ -640,7 +649,9 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  async moveLineSegment({ point1coords, point2coords, transient, actionId }) {
+  async moveLineSegment({ point1coords, point2coords, transient, actionId, sourceDetails,
+    sourceInformation = {}, skipRendererUpdate = false
+  }) {
 
 
     if (point1coords === undefined || point2coords === undefined) {
@@ -674,10 +685,13 @@ export default class LineSegment extends GraphicalComponent {
           componentName: this.componentName,
           updateType: "updateValue",
           stateVariable: "endpoints",
-          value: newComponents
+          value: newComponents,
+          sourceDetails,
         }],
         transient: true,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -685,9 +699,12 @@ export default class LineSegment extends GraphicalComponent {
           componentName: this.componentName,
           updateType: "updateValue",
           stateVariable: "endpoints",
-          value: newComponents
+          value: newComponents,
+          sourceDetails,
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -705,22 +722,28 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  async lineSegmentClicked({ actionId }) {
+  async lineSegmentClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async lineSegmentFocused({ actionId }) {
+  async lineSegmentFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

@@ -2,7 +2,7 @@ describe('Function answer validation tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('simple function of input', () => {

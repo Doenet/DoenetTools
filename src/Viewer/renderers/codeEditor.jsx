@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import useDoenetRenderer from './useDoenetRenderer';
+import useDoenetRenderer from '../useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import CodeMirror from '../../Tools/_framework/CodeMirror';
 import VisibilitySensor from 'react-visibility-sensor-v2';

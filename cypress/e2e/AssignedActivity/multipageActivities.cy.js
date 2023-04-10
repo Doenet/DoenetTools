@@ -45,7 +45,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -78,7 +78,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -123,7 +123,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -168,7 +168,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -176,6 +176,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
+    cy.wait(100)
     cy.get('[data-test="Paginate"').click();
     cy.wait(100) //TODO: need the UI to let us know this was successful
 
@@ -184,7 +185,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
 
     cy.get('#page1\\/top').should('contain.text', 'top 1')
-    cy.get('#page2\\/top').should('contain.text', 'top 2') 
+    cy.get('#page2\\/top').should('contain.text', 'top 2')
 
     cy.url().should('match', /#page1$/)
 
@@ -254,17 +255,18 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(200);
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -309,7 +311,7 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2`)
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
     cy.get('#page1\\/_section1_title').should('not.exist')
@@ -346,7 +348,7 @@ describe('Multipage activity tests', function () {
 
     cy.wait(1000); // for debounce
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
 
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
@@ -394,7 +396,7 @@ describe('Multipage activity tests', function () {
     cy.wait(2000);
 
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`)
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
     cy.get('#page1\\/_section1_title').should('not.exist')
@@ -468,7 +470,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
@@ -481,7 +483,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -533,7 +535,7 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2`)
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
@@ -566,7 +568,7 @@ describe('Multipage activity tests', function () {
 
     cy.wait(1000); // for debounce
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
 
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
@@ -608,7 +610,7 @@ describe('Multipage activity tests', function () {
     cy.wait(2000);
 
 
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`)
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
@@ -685,7 +687,7 @@ describe('Multipage activity tests', function () {
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
     cy.createActivity({ courseId, doenetId: doenetId2, parentDoenetId: courseId, pageDoenetId: pageDoenetId3, doenetML: doenetMLother });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -700,7 +702,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -728,7 +730,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
 
@@ -744,7 +746,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
@@ -911,7 +913,7 @@ describe('Multipage activity tests', function () {
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
     cy.createActivity({ courseId, doenetId: doenetId2, parentDoenetId: courseId, pageDoenetId: pageDoenetId3, doenetML: doenetMLother });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -924,7 +926,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -952,7 +954,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
@@ -962,7 +964,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
@@ -1131,23 +1133,24 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100);
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.log('go to page 1 url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page1`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page1`)
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.get('#page2\\/_section1_title').should('not.exist')
@@ -1167,7 +1170,7 @@ describe('Multipage activity tests', function () {
 
 
     cy.log('go to page 2 url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2`)
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
     cy.get('#page1\\/_section1_title').should('not.exist')
@@ -1187,7 +1190,7 @@ describe('Multipage activity tests', function () {
 
 
     cy.log('go to page 1 aside url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page1/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page1/aside`)
 
     cy.get('#page1\\/insideAside').should('have.text', 'Content in aside');
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
@@ -1210,7 +1213,7 @@ describe('Multipage activity tests', function () {
 
 
     cy.log('go to page 2 aside url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
 
     cy.get('#page2\\/insideAside').should('have.text', 'Content in aside');
     cy.get('#page1\\/_section1_title').should('not.exist')
@@ -1263,7 +1266,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1276,7 +1279,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1304,7 +1307,7 @@ describe('Multipage activity tests', function () {
 
 
     cy.log('go to page 1 url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page1`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page1`)
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
@@ -1321,7 +1324,7 @@ describe('Multipage activity tests', function () {
 
 
     cy.log('go to page 2 url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2`)
 
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
@@ -1339,7 +1342,7 @@ describe('Multipage activity tests', function () {
 
 
     cy.log('go to page 1 aside url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page1/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page1/aside`)
 
     cy.get('#page1\\/insideAside').should('have.text', 'Content in aside');
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
@@ -1364,7 +1367,7 @@ describe('Multipage activity tests', function () {
 
 
     cy.log('go to page 2 aside url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#page2/aside`)
 
     cy.get('#page2\\/insideAside').should('have.text', 'Content in aside');
     cy.get('#page1\\/insideAside').should('have.text', 'Content in aside');
@@ -1410,7 +1413,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1537,17 +1540,18 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100);
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1621,7 +1625,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1634,7 +1638,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1691,7 +1695,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -1991,7 +1995,7 @@ describe('Multipage activity tests', function () {
       doenetML1: doenetML, doenetML2: doenetML, doenetML3: doenetML
     });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2081,7 +2085,7 @@ describe('Multipage activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId: pageDoenetId1, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2172,7 +2176,7 @@ describe('Multipage activity tests', function () {
 
     cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId: pageDoenetId1, doenetML });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2350,7 +2354,7 @@ describe('Multipage activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500);  // wait for update
-    
+
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -2392,7 +2396,7 @@ describe('Multipage activity tests', function () {
 
     cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, pageDoenetId3, pageDoenetId4, doenetML1, doenetML2, doenetML3, doenetML4 });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2410,7 +2414,7 @@ describe('Multipage activity tests', function () {
 
     cy.signin({ userId: studentUserId })
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2456,7 +2460,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
 
     cy.get(`#page4\\/_answer1 .mq-editable-field`).should('have.text', '4')
     cy.get(`#page4\\/_answer1_correct`).should('be.visible')
@@ -2499,7 +2503,7 @@ describe('Multipage activity tests', function () {
 
 
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
 
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
@@ -2537,9 +2541,9 @@ describe('Multipage activity tests', function () {
 
     // TODO: how do we get the gradebook to reload and show the new attempt?
     cy.reload();
-    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
     cy.reload();
-    cy.visit(`http://localhost/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`)
 
     cy.get(`#page2\\/_answer1 .mq-editable-field`).should('have.text', '2')
     cy.get(`#page2\\/_answer1_correct`).should('be.visible')
@@ -2559,5 +2563,83 @@ describe('Multipage activity tests', function () {
 
   })
 
+  it('Change pages with navigateToTarget action and choiceinput', () => {
+    const doenetML1 = `
+    <setup>
+      <ref page="1" name="refpage1" />
+      <ref page="2" name="refpage2" />
+      <ref page="3" name="refpage3" />
+    </setup>
+
+    <p>Page 1</p>
+
+    <choiceinput inline name="moveToPage">
+      <choice>Page 1</choice>
+      <choice>Page 2</choice>
+      <choice>Page 3</choice>
+    </choiceinput>
+
+    <callAction triggerWhen="$moveToPage.selectedIndex=1" target="refpage1" actionName="navigateToTarget" />
+    <callAction triggerWhen="$moveToPage.selectedIndex=2" target="refpage2" actionName="navigateToTarget" />
+    <callAction triggerWhen="$moveToPage.selectedIndex=3" target="refpage3" actionName="navigateToTarget" />
+    `
+
+    const doenetML2 = `Page 2`
+    const doenetML3 = `Page 3`
+
+    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, pageDoenetId3, doenetML1, doenetML2, doenetML3 });
+
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#page1').should('contain.text', 'Page 1')
+
+    cy.url().should('match', /#page1$/)
+
+
+    cy.get(`#page1\\/moveToPage`).select('2');
+
+    cy.get('#page2').should('contain.text', 'Page 2')
+
+    cy.url().should('match', /#page2$/)
+
+
+    cy.get('[data-test=previous]').click();
+
+    cy.get('#page1').should('contain.text', 'Page 1')
+
+    cy.url().should('match', /#page1$/)
+
+
+    cy.get(`#page1\\/moveToPage`).select('3');
+
+    cy.get('#page3').should('contain.text', 'Page 3')
+
+    cy.url().should('match', /#page3$/)
+
+
+    cy.get('[data-test=previous]').click();
+
+    cy.get('#page2').should('contain.text', 'Page 2')
+
+    cy.url().should('match', /#page2$/)
+
+
+    cy.get('[data-test=previous]').click();
+
+    cy.get('#page1').should('contain.text', 'Page 1')
+
+    cy.url().should('match', /#page1$/)
+
+
+
+  })
 
 })

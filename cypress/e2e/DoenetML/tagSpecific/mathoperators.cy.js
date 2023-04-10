@@ -15,7 +15,7 @@ describe('Math Operator Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('sum', () => {
@@ -2071,10 +2071,10 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('floor(2.1x)')
+        expect(text.trim()).equal('⌊2.1x⌋')
       });
       cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('ceil(−3.2y)')
+        expect(text.trim()).equal('⌈−3.2y⌉')
       });
 
       cy.window().then(async (win) => {
@@ -6792,7 +6792,7 @@ describe('Math Operator Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <function name="f" domain="[0,2]">(x+1)(x-2)(x-4)</function>
+      <function name="f" domain="[0,2]" simplify>(x+1)(x-2)(x-4)</function>
       <p>Min on [0,2]: <min name="min02">$$f(0) $(f.minimumValues) $$f(2)</min>.</p>
       <p>Abs treats as product of three factors: <abs name="abs">$$f(0) $(f.minimumValues) $$f(2)</abs>.</p>
       `}, "*");

@@ -1,14 +1,14 @@
 import React, { useRef, useState } from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import useDoenetRender from '../useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
-import { rendererState } from './useDoenetRenderer';
+import { rendererState } from '../useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 // Moved most of checkWorkStyle styling into Button
-const Button = styled.button `
+const Button = styled.button`
   position: relative;
   height: 24px;
   width: 24px;
@@ -27,7 +27,7 @@ const Button = styled.button `
   };
 `;
 
-const TextArea = styled.textarea `
+const TextArea = styled.textarea`
   width: ${props => props.textAreaWidth};
   height: ${props => props.textAreaHeight}; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
@@ -40,7 +40,7 @@ const TextArea = styled.textarea `
   }
 `;
 
-const Input = styled.input `
+const Input = styled.input`
   width: ${props => props.inputWidth}px;
   height: 20px; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
@@ -102,7 +102,7 @@ export default function TextInput(props) {
         baseVariableValue: rendererValue,
       });
 
-      if (SVs.includeCheckWork && !SVs.suppressCheckwork && validationState === "unvalidated") {
+      if (SVs.includeCheckWork && !SVs.suppressCheckwork && !SVs.expanded && validationState === "unvalidated") {
         callAction({
           action: actions.submitAnswer,
         })
@@ -195,30 +195,30 @@ export default function TextInput(props) {
   let checkWorkButton = null;
   if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
     if (validationState === "unvalidated") {
-      checkWorkButton = 
-      <Button
-        id={id + '_submit'}
-        tabIndex="0"
-        disabled={disabled}
-        style={checkWorkStyle}
-        onClick={() => callAction({
-          action: actions.submitAnswer,
-        })}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            callAction({
-              action: actions.submitAnswer,
-            });
-          }
-        }}
-      >
-        <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </Button>
+      checkWorkButton =
+        <Button
+          id={id + '_submit'}
+          tabIndex="0"
+          disabled={disabled}
+          style={checkWorkStyle}
+          onClick={() => callAction({
+            action: actions.submitAnswer,
+          })}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              callAction({
+                action: actions.submitAnswer,
+              });
+            }
+          }}
+        >
+          <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        </Button>
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
-          checkWorkButton = 
+          checkWorkButton =
             <Button
               id={id + '_correct'}
               style={checkWorkStyle}
@@ -232,7 +232,7 @@ export default function TextInput(props) {
           checkWorkStyle.width = '44px';
 
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = 
+          checkWorkButton =
             <Button
               id={id + '_partial'}
               style={checkWorkStyle}
@@ -242,7 +242,7 @@ export default function TextInput(props) {
         } else {
           //incorrect
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
-          checkWorkButton = 
+          checkWorkButton =
             <Button
               id={id + '_incorrect'}
               style={checkWorkStyle}
@@ -254,7 +254,7 @@ export default function TextInput(props) {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
-        checkWorkButton = 
+        checkWorkButton =
           <Button
             id={id + '_saved'}
             style={checkWorkStyle}
@@ -302,7 +302,7 @@ export default function TextInput(props) {
       onFocus={handleFocus}
       textAreaWidth={textAreaWidth}
       textAreaHeight={textAreaHeight}
-      style={{margin: "0px 4px 4px 4px"}}
+      style={{ margin: "0px 4px 4px 4px" }}
 
     />
   } else {
@@ -317,13 +317,13 @@ export default function TextInput(props) {
       onBlur={handleBlur}
       onFocus={handleFocus}
       inputWidth={inputWidth}
-      style={{margin: "0px 4px 4px 4px"}}
+      style={{ margin: "0px 4px 4px 4px" }}
     />
   }
 
   return <React.Fragment>
     <a name={id} />
-    <span className="textInputSurroundingBox" id={id} style={{display: "inline-flex", maxWidth: "100%" }}>
+    <span className="textInputSurroundingBox" id={id} style={{ display: "inline-flex", maxWidth: "100%" }}>
       {input}
       {checkWorkButton}
     </span>

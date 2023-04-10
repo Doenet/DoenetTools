@@ -4,7 +4,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
+    cy.visit('/src/Tools/cypressTest/')
   })
 
   it('sugar a parameterization in terms of x', () => {
@@ -592,7 +592,7 @@ describe('Parameterized Curve Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
-    cy.get("#\\/m1").should('contain.text', "2")
+    cy.get("#\\/m1 .mjx-mrow").should('contain.text', "2")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -607,7 +607,7 @@ describe('Parameterized Curve Tag Tests', function () {
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-3{enter}", { force: true });
-    cy.get("#\\/m1").should('contain.text', "−3")
+    cy.get("#\\/m1 .mjx-mrow").should('contain.text', "−3")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_curve1"].stateValues.parMin).eq(-10);

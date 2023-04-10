@@ -52,8 +52,20 @@ export default class Polyline extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"]
+        },
       }),
       definition: function ({ dependencyValues }) {
+
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -67,7 +79,7 @@ export default class Polyline extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord
 
         return { setValue: { styleDescription } };
       }
@@ -567,7 +579,9 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  async movePolyline({ pointCoords, transient, sourceInformation, actionId }) {
+  async movePolyline({ pointCoords, transient, sourceDetails, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
 
     let nVerticesMoved = Object.keys(pointCoords).length;
 
@@ -596,10 +610,12 @@ export default class Polyline extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "vertices",
           value: vertexComponents,
-          sourceInformation
+          sourceDetails
         }],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
 
@@ -609,9 +625,11 @@ export default class Polyline extends GraphicalComponent {
           componentName: this.componentName,
           stateVariable: "vertices",
           value: vertexComponents,
-          sourceInformation
+          sourceDetails
         }],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -627,34 +645,41 @@ export default class Polyline extends GraphicalComponent {
 
   }
 
-  async finalizePolylinePosition() {
+  async finalizePolylinePosition({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
     // trigger a movePolyline 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
     return await this.actions.movePolyline({
       pointCoords: await this.stateValues.numericalVertices,
-      transient: false
+      transient: false,
+      actionId, sourceInformation, skipRendererUpdate
     });
   }
 
 
-  async polylineClicked({ actionId }) {
+  async polylineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async polylineFocused({ actionId }) {
+  async polylineFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     })
 
     this.coreFunctions.resolveAction({ actionId });

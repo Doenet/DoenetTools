@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
+import useDoenetRender from '../useDoenetRenderer';
+import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 
 export default React.memo(function LineSegment(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   LineSegment.ignoreActionsWithoutCore = true;
 
@@ -30,6 +32,9 @@ export default React.memo(function LineSegment(props) {
   lastPositionsFromCore.current = SVs.numericalEndpoints;
   fixed.current = !SVs.draggable || SVs.fixed;
   endpointsFixed.current = !SVs.endpointsDraggable || SVs.fixed;
+
+
+  const darkMode = useRecoilValue(darkModeAtom);
 
 
   useEffect(() => {
@@ -69,16 +74,19 @@ export default React.memo(function LineSegment(props) {
 
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
+    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    lineColor = lineColor.toLowerCase();
+
     //things to be passed to JSXGraph as attributes
     var jsxSegmentAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withlabel,
       fixed: fixed.current,
-      layer: 10 * SVs.layer + 7,
-      strokeColor: SVs.selectedStyle.lineColor,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
+      strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: lineColor,
       highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
@@ -120,9 +128,9 @@ export default React.memo(function LineSegment(props) {
       }
 
       if (SVs.applyStyleToLabel) {
-        jsxSegmentAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+        jsxSegmentAttributes.label.strokeColor = lineColor;
       } else {
-        jsxSegmentAttributes.label.strokeColor = "#000000";
+        jsxSegmentAttributes.label.strokeColor = "var(--canvastext)";
       }
     } else {
       jsxSegmentAttributes.label = {
@@ -144,7 +152,7 @@ export default React.memo(function LineSegment(props) {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      layer: 10 * SVs.layer + 8,
+      layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
       showInfoBox: SVs.showCoordsWhenDragging,
       visible: endpointsVisible
     });
@@ -406,6 +414,7 @@ export default React.memo(function LineSegment(props) {
             point1coords: pointCoords.current,
             transient: true,
             skippable: true,
+            sourceDetails: { endpoint: i },
           }
         })
       } else if (i == 2) {
@@ -416,8 +425,10 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current,
             transient: true,
             skippable: true,
+            sourceDetails: { endpoint: i },
           }
         })
+
       } else {
         pointCoords.current = []
 
@@ -460,6 +471,11 @@ export default React.memo(function LineSegment(props) {
 
     lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
     lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
+    if (i == 1) {
+      board.updateInfobox(lineSegmentJXG.current.point1)
+    } else if (i == 2) {
+      board.updateInfobox(lineSegmentJXG.current.point2)
+    }
 
   }
 
@@ -520,6 +536,18 @@ export default React.memo(function LineSegment(props) {
       lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
       lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
 
+      if (sourceOfUpdate.sourceInformation &&
+        name in sourceOfUpdate.sourceInformation
+      ) {
+        let ind = sourceOfUpdate.sourceInformation[name].endpoint;
+        if (ind === 1) {
+          board.updateInfobox(lineSegmentJXG.current.point1)
+        } else if (ind === 2) {
+          board.updateInfobox(lineSegmentJXG.current.point2)
+        }
+      }
+
+
       let visible = !SVs.hidden && validCoords;
 
       if (validCoords) {
@@ -549,18 +577,22 @@ export default React.memo(function LineSegment(props) {
       lineSegmentJXG.current.visProp.fixed = fixed.current;
       lineSegmentJXG.current.visProp.highlight = !fixed.current;
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = lineSegmentJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
         lineSegmentJXG.current.setAttribute({ layer });
-        point1JXG.current.setAttribute({ layer: layer + 1 });
-        point2JXG.current.setAttribute({ layer: layer + 1 });
+        point1JXG.current.setAttribute({ layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET });
+        point2JXG.current.setAttribute({ layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET });
       }
 
-      if (lineSegmentJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
-        lineSegmentJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
-        lineSegmentJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+
+      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      lineColor = lineColor.toLowerCase();
+
+      if (lineSegmentJXG.current.visProp.strokecolor !== lineColor) {
+        lineSegmentJXG.current.visProp.strokecolor = lineColor;
+        lineSegmentJXG.current.visProp.highlightstrokecolor = lineColor;
       }
       if (lineSegmentJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
         lineSegmentJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
@@ -595,9 +627,9 @@ export default React.memo(function LineSegment(props) {
       if (lineSegmentJXG.current.hasLabel) {
         lineSegmentJXG.current.label.needsUpdate = true;
         if (SVs.applyStyleToLabel) {
-          lineSegmentJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+          lineSegmentJXG.current.label.visProp.strokecolor = lineColor
         } else {
-          lineSegmentJXG.current.label.visProp.strokecolor = "#000000";
+          lineSegmentJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
         if (SVs.labelPosition !== previousLabelPosition.current) {
           let anchorx, anchory, offset;
