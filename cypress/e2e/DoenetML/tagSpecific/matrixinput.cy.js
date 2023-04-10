@@ -9583,4 +9583,65 @@ describe('MatrixInput Tag Tests', function () {
 
   });
 
+  it('minComponentWidth attribute', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <p>Specify min component width: <mathinput name="mcw" prefill="0" /></p>
+
+      <p>Original: <matrixInput name="original" /></p>
+      <p>Result: <matrixInput minComponentWidth="$mcw" name="result" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/mcw .mq-editable-field').should('have.css', 'min-width', "50px");
+
+    cy.get('#\\/original_component_0_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/result_component_0_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+
+    cy.get('#\\/mcw textarea').type("{end}{backspace}100{enter}", { force: true });
+    cy.get('#\\/result_component_0_0 .mq-editable-field').should('have.css', 'min-width', "100px");
+
+
+    cy.get('#\\/original_rowIncrement').click();
+    cy.get('#\\/original_columnIncrement').click();
+    cy.get('#\\/result_rowIncrement').click();
+    cy.get('#\\/result_columnIncrement').click();
+
+
+    cy.get('#\\/result_component_1_1 .mq-editable-field').should('have.css', 'min-width', "100px");
+    cy.get('#\\/result_component_0_0 .mq-editable-field').should('have.css', 'min-width', "100px");
+    cy.get('#\\/result_component_0_1 .mq-editable-field').should('have.css', 'min-width', "100px");
+    cy.get('#\\/result_component_1_0 .mq-editable-field').should('have.css', 'min-width', "100px");
+
+    cy.get('#\\/original_component_0_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/original_component_0_1 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/original_component_1_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/original_component_1_1 .mq-editable-field').should('have.css', 'min-width', "0px");
+
+
+    cy.get('#\\/mcw textarea').type("{end}x{enter}", { force: true });
+
+    cy.get('#\\/result_component_0_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/result_component_0_1 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/result_component_1_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/result_component_1_1 .mq-editable-field').should('have.css', 'min-width', "0px");
+
+
+    cy.get('#\\/mcw textarea').type("{end}{backspace}{backspace}{backspace}7{enter}", { force: true });
+
+    cy.get('#\\/result_component_0_0 .mq-editable-field').should('have.css', 'min-width', "17px");
+    cy.get('#\\/result_component_0_1 .mq-editable-field').should('have.css', 'min-width', "17px");
+    cy.get('#\\/result_component_1_0 .mq-editable-field').should('have.css', 'min-width', "17px");
+    cy.get('#\\/result_component_1_1 .mq-editable-field').should('have.css', 'min-width', "17px");
+
+
+    cy.get('#\\/mcw textarea').type("{end}{backspace}{backspace}-20{enter}", { force: true });
+
+    cy.get('#\\/result_component_0_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/result_component_0_1 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/result_component_1_0 .mq-editable-field').should('have.css', 'min-width', "0px");
+    cy.get('#\\/result_component_1_1 .mq-editable-field').should('have.css', 'min-width', "0px");
+  });
+
 });

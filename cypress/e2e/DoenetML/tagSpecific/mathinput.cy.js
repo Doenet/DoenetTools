@@ -7629,4 +7629,38 @@ describe('MathInput Tag Tests', function () {
 
   });
 
+  it('minWidth attribute', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <p>Specify min width: <mathinput name="mw" prefill="0" /></p>
+
+      <p>Result: <mathinput minWidth="$mw" name="result" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/mw .mq-editable-field').should('have.css', 'min-width', "50px");
+
+    cy.get('#\\/result .mq-editable-field').should('have.css', 'min-width', "0px");
+
+    cy.get('#\\/mw textarea').type("{end}{backspace}100{enter}", { force: true });
+    cy.get('#\\/result .mq-editable-field').should('have.css', 'min-width', "100px");
+
+    cy.get('#\\/mw textarea').type("{end}{backspace}{backspace}{backspace}{enter}", { force: true });
+    cy.get('#\\/result .mq-editable-field').should('have.css', 'min-width', "0px");
+
+    cy.get('#\\/mw textarea').type("{end}{backspace}40{enter}", { force: true });
+    cy.get('#\\/result .mq-editable-field').should('have.css', 'min-width', "40px");
+
+    cy.get('#\\/mw textarea').type("{end}x{enter}", { force: true });
+    cy.get('#\\/result .mq-editable-field').should('have.css', 'min-width', "0px");
+
+    cy.get('#\\/mw textarea').type("{end}{backspace}{backspace}7{enter}", { force: true });
+    cy.get('#\\/result .mq-editable-field').should('have.css', 'min-width', "47px");
+
+    cy.get('#\\/mw textarea').type("{end}{backspace}{backspace}-20{enter}", { force: true });
+    cy.get('#\\/result .mq-editable-field').should('have.css', 'min-width', "0px");
+
+  });
+
 });
